@@ -27,6 +27,11 @@ import {
   Sun,
   Settings,
   Mail,
+  ListChecks,
+  Plus,
+  Trash2,
+  Save,
+  Check,
 } from "lucide-react";
 import {
   Tooltip,
@@ -34,6 +39,12 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 export const Route = createFileRoute("/")({
   head: () => ({
