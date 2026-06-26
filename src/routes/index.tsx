@@ -86,6 +86,7 @@ function Page() {
 
 function Sidebar() {
   return (
+    <TooltipProvider delayDuration={150}>
     <aside className="hidden md:flex w-72 shrink-0 flex-col border-r border-sidebar-border bg-sidebar text-sidebar-foreground">
       <div className="flex items-center justify-center gap-2 px-6 py-6 border-b border-sidebar-border">
         <svg width="28" height="28" viewBox="0 0 32 32" fill="none">
