@@ -198,9 +198,6 @@ function UserMenu() {
     </div>
   );
 }
-    </aside>
-  );
-}
 
 function SidebarGroup({ label, children }: { label: string; children: React.ReactNode }) {
   return (
