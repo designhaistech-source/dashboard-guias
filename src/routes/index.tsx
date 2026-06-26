@@ -282,7 +282,10 @@ function SidebarItem({
 function Upload_Section() {
   return (
     <section className="space-y-4">
-      <h1 className="text-2xl font-bold tracking-tight">Processamento de guias</h1>
+      <div className="flex items-center justify-between gap-3 flex-wrap">
+        <h1 className="text-2xl font-bold tracking-tight">Processamento de guias</h1>
+        <RequiredFieldsModal />
+      </div>
       <div className="rounded-2xl border-2 border-dashed border-border bg-card px-6 py-14 flex flex-col items-center justify-center text-center">
         <div className="mb-5 grid place-items-center h-16 w-16 rounded-full bg-muted">
           <Upload className="h-7 w-7 text-muted-foreground" />
