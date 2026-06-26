@@ -239,14 +239,28 @@ function SidebarItem({
       <Icon className="h-[18px] w-[18px] shrink-0" />
       <span className="flex-1 text-left">{label}</span>
       {hint && (
-        <span
-          title={hint}
-          aria-label={hint}
-          onClick={(e) => e.stopPropagation()}
-          className="opacity-0 group-hover:opacity-100 transition-opacity text-sidebar-muted hover:text-foreground"
-        >
-          <HelpCircle className="h-3.5 w-3.5" />
-        </span>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <span
+              role="button"
+              tabIndex={0}
+              aria-label={`Sobre ${label}`}
+              onClick={(e) => e.stopPropagation()}
+              className="shrink-0 opacity-60 hover:opacity-100 focus:opacity-100 transition-opacity text-sidebar-muted hover:text-foreground"
+            >
+              <HelpCircle className="h-3.5 w-3.5" />
+            </span>
+          </TooltipTrigger>
+          <TooltipContent
+            side="right"
+            align="center"
+            sideOffset={10}
+            collisionPadding={12}
+            className="max-w-[min(18rem,calc(100vw-2rem))] whitespace-normal break-words text-xs leading-snug px-3 py-2"
+          >
+            {hint}
+          </TooltipContent>
+        </Tooltip>
       )}
     </button>
   );
