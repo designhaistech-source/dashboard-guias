@@ -28,6 +28,12 @@ import {
   Settings,
   Mail,
 } from "lucide-react";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 export const Route = createFileRoute("/")({
   head: () => ({
