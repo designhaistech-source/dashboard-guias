@@ -527,20 +527,80 @@ function RequiredFieldsModal() {
   const [guideType, setGuideType] = useState<GuideType>("SADT");
   const [typeOpen, setTypeOpen] = useState(false);
   const [fieldOpen, setFieldOpen] = useState(false);
-  const [selectedField, setSelectedField] = useState<string>("");
-  const [fields, setFields] = useState<Record<GuideType, string[]>>(DEFAULT_FIELDS);
+  const [fieldSearch, setFieldSearch] = useState("");
+  const [pickerSelection, setPickerSelection] = useState<string[]>([]);
+  const [confirmDiscard, setConfirmDiscard] = useState(false);
 
-  const current = fields[guideType];
+  // Saved (persisted) state vs draft (being edited)
+  const [saved, setSaved] = useState<Record<GuideType, string[]>>(DEFAULT_FIELDS);
+  const [draft, setDraft] = useState<Record<GuideType, string[]>>(DEFAULT_FIELDS);
+  const [saving, setSaving] = useState(false);
+
+  const current = draft[guideType];
   const remaining = AVAILABLE_FIELDS.filter((f) => !current.includes(f));
+  const visibleRemaining = remaining.filter((f) =>
+    f.toLowerCase().includes(fieldSearch.trim().toLowerCase()),
+  );
 
-  const addField = () => {
-    if (!selectedField) return;
-    setFields((prev) => ({ ...prev, [guideType]: [...prev[guideType], selectedField] }));
-    setSelectedField("");
+  const isDirty = (Object.keys(draft) as GuideType[]).some(
+    (k) => draft[k].length !== saved[k].length || draft[k].some((f, i) => f !== saved[k][i]),
+  );
+  const isEmpty = current.length === 0;
+
+  const addSelected = () => {
+    if (pickerSelection.length === 0) return;
+    setDraft((prev) => ({
+      ...prev,
+      [guideType]: [...prev[guideType], ...pickerSelection.filter((f) => !prev[guideType].includes(f))],
+    }));
+    setPickerSelection([]);
+    setFieldSearch("");
+    setFieldOpen(false);
+  };
+
+  const togglePick = (f: string) => {
+    setPickerSelection((prev) => (prev.includes(f) ? prev.filter((x) => x !== f) : [...prev, f]));
   };
 
   const removeField = (f: string) => {
-    setFields((prev) => ({ ...prev, [guideType]: prev[guideType].filter((x) => x !== f) }));
+    setDraft((prev) => ({ ...prev, [guideType]: prev[guideType].filter((x) => x !== f) }));
+  };
+
+  const attemptClose = (next: boolean) => {
+    if (!next && isDirty) {
+      setConfirmDiscard(true);
+      return;
+    }
+    setOpen(next);
+  };
+
+  const discardChanges = () => {
+    setDraft(saved);
+    setPickerSelection([]);
+    setFieldSearch("");
+    setConfirmDiscard(false);
+    setOpen(false);
+  };
+
+  const handleSave = async () => {
+    if (isEmpty) {
+      toast.error("Adicione ao menos um campo obrigatório para salvar.");
+      return;
+    }
+    setSaving(true);
+    try {
+      // Simulação de chamada ao backend
+      await new Promise((r) => setTimeout(r, 700));
+      setSaved(draft);
+      toast.success("Configuração salva", {
+        description: `Campos obrigatórios atualizados para ${guideType}.`,
+      });
+      setOpen(false);
+    } catch {
+      toast.error("Não foi possível salvar. Tente novamente.");
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
@@ -553,10 +613,26 @@ function RequiredFieldsModal() {
         Campos obrigatórios
       </button>
 
-      <Dialog open={open} onOpenChange={setOpen}>
+      <Dialog open={open} onOpenChange={attemptClose}>
         <DialogContent className="max-w-3xl">
           <DialogHeader>
-            <DialogTitle className="text-xl">Campos obrigatórios por tipo de guia</DialogTitle>
+            <div className="flex items-start justify-between gap-3 pr-6">
+              <DialogTitle className="text-xl">Campos obrigatórios por tipo de guia</DialogTitle>
+              {isDirty && (
+                <span className="shrink-0 inline-flex items-center gap-1.5 rounded-full bg-warning/15 text-warning px-2.5 py-1 text-xs font-medium">
+                  <span className="h-1.5 w-1.5 rounded-full bg-warning" />
+                  Alterações não salvas
+                </span>
+              )}
+            </div>
+            <div className="mt-2 flex items-start gap-2 rounded-lg bg-muted/60 border border-border px-3 py-2 text-xs text-muted-foreground">
+              <Info className="h-4 w-4 mt-0.5 shrink-0 text-info" />
+              <p>
+                Defina quais campos a guia precisa conter para ser processada automaticamente.
+                Ao enviar um arquivo, se algum desses campos estiver ausente, a guia será
+                marcada com aviso e exigirá revisão manual antes de seguir no fluxo.
+              </p>
+            </div>
           </DialogHeader>
 
           <div className="space-y-4">
@@ -582,7 +658,8 @@ function RequiredFieldsModal() {
                         onClick={() => {
                           setGuideType(t);
                           setTypeOpen(false);
-                          setSelectedField("");
+                          setPickerSelection([]);
+                          setFieldSearch("");
                         }}
                         className="w-full flex items-center gap-2 px-3 py-2 text-sm text-left hover:bg-muted"
                       >
@@ -605,78 +682,164 @@ function RequiredFieldsModal() {
                   }}
                   className="w-full inline-flex items-center justify-between rounded-lg border border-border bg-card px-3 py-2.5 text-sm"
                 >
-                  <span className={selectedField ? "" : "text-muted-foreground"}>
-                    {selectedField || "Selecione um campo"}
+                  <span className={pickerSelection.length ? "" : "text-muted-foreground"}>
+                    {pickerSelection.length
+                      ? `${pickerSelection.length} campo${pickerSelection.length > 1 ? "s" : ""} selecionado${pickerSelection.length > 1 ? "s" : ""}`
+                      : "Selecione um ou mais campos"}
                   </span>
                   <ChevronDown className="h-4 w-4 text-muted-foreground" />
                 </button>
                 {fieldOpen && (
-                  <div className="absolute z-20 mt-1 w-full max-h-72 overflow-y-auto rounded-lg border border-border bg-popover shadow-lg">
-                    {remaining.length === 0 ? (
-                      <div className="px-3 py-3 text-sm text-muted-foreground">
-                        Todos os campos disponíveis já foram adicionados.
-                      </div>
-                    ) : (
-                      remaining.map((f) => (
-                        <button
-                          key={f}
-                          onClick={() => {
-                            setSelectedField(f);
-                            setFieldOpen(false);
-                          }}
-                          className="w-full px-3 py-2 text-sm text-left hover:bg-muted"
-                        >
-                          {f}
-                        </button>
-                      ))
-                    )}
+                  <div className="absolute z-20 mt-1 w-full rounded-lg border border-border bg-popover shadow-lg overflow-hidden">
+                    <div className="relative border-b border-border">
+                      <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                      <input
+                        autoFocus
+                        type="text"
+                        value={fieldSearch}
+                        onChange={(e) => setFieldSearch(e.target.value)}
+                        placeholder="Buscar campo…"
+                        className="w-full bg-transparent pl-9 pr-3 py-2 text-sm focus:outline-none"
+                      />
+                    </div>
+                    <div className="max-h-64 overflow-y-auto">
+                      {visibleRemaining.length === 0 ? (
+                        <div className="px-3 py-3 text-sm text-muted-foreground">
+                          {remaining.length === 0
+                            ? "Todos os campos disponíveis já foram adicionados."
+                            : "Nenhum campo corresponde à busca."}
+                        </div>
+                      ) : (
+                        visibleRemaining.map((f) => {
+                          const picked = pickerSelection.includes(f);
+                          return (
+                            <button
+                              key={f}
+                              onClick={() => togglePick(f)}
+                              className="w-full flex items-center gap-2 px-3 py-2 text-sm text-left hover:bg-muted"
+                            >
+                              <span
+                                className={`grid place-items-center h-4 w-4 rounded border ${
+                                  picked
+                                    ? "bg-primary border-primary text-primary-foreground"
+                                    : "border-border bg-card"
+                                }`}
+                              >
+                                {picked && <Check className="h-3 w-3" />}
+                              </span>
+                              {f}
+                            </button>
+                          );
+                        })
+                      )}
+                    </div>
                   </div>
                 )}
               </div>
               <button
-                onClick={addField}
-                disabled={!selectedField}
+                onClick={addSelected}
+                disabled={pickerSelection.length === 0}
                 className="inline-flex items-center justify-center gap-2 rounded-lg bg-primary text-primary-foreground px-4 py-2.5 text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed hover:bg-primary/90"
               >
                 <Plus className="h-4 w-4" />
                 Adicionar
+                {pickerSelection.length > 0 && ` (${pickerSelection.length})`}
               </button>
             </div>
 
             {/* Lista de campos */}
-            <div className="rounded-lg border border-border bg-card p-4 min-h-[140px]">
-              {current.length === 0 ? (
-                <p className="text-sm text-muted-foreground">Nenhum campo obrigatório.</p>
-              ) : (
-                <div className="flex flex-wrap gap-2">
-                  {current.map((f) => (
-                    <span
-                      key={f}
-                      className="inline-flex items-center gap-2 rounded-full bg-muted px-3 py-1.5 text-sm"
-                    >
-                      {f}
-                      <button
-                        onClick={() => removeField(f)}
-                        aria-label={`Remover ${f}`}
-                        className="text-muted-foreground hover:text-destructive"
-                      >
-                        <Trash2 className="h-3.5 w-3.5" />
-                      </button>
-                    </span>
-                  ))}
+            <div
+              className={`rounded-lg border bg-card p-4 min-h-[140px] ${
+                isEmpty ? "border-destructive/50" : "border-border"
+              }`}
+            >
+              {isEmpty ? (
+                <div className="flex items-start gap-2 text-sm text-destructive">
+                  <AlertTriangle className="h-4 w-4 mt-0.5 shrink-0" />
+                  <p>
+                    Adicione ao menos um campo obrigatório para que este tipo de guia possa ser
+                    processado.
+                  </p>
                 </div>
+              ) : (
+                <>
+                  <div className="mb-3 text-xs text-muted-foreground">
+                    {current.length} campo{current.length > 1 ? "s" : ""} obrigatório
+                    {current.length > 1 ? "s" : ""} para {guideType}
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {current.map((f) => (
+                      <span
+                        key={f}
+                        className="inline-flex items-center gap-2 rounded-full bg-muted px-3 py-1.5 text-sm"
+                      >
+                        {f}
+                        <button
+                          onClick={() => removeField(f)}
+                          aria-label={`Remover ${f}`}
+                          className="text-muted-foreground hover:text-destructive"
+                        >
+                          <Trash2 className="h-3.5 w-3.5" />
+                        </button>
+                      </span>
+                    ))}
+                  </div>
+                </>
               )}
             </div>
 
-            <div className="flex justify-end pt-2">
+            <div className="flex flex-col-reverse sm:flex-row sm:justify-end gap-2 pt-2">
               <button
-                onClick={() => setOpen(false)}
-                className="inline-flex items-center gap-2 rounded-lg bg-primary text-primary-foreground px-4 py-2.5 text-sm font-medium hover:bg-primary/90"
+                onClick={() => attemptClose(false)}
+                disabled={saving}
+                className="inline-flex items-center justify-center rounded-lg border border-border bg-card px-4 py-2.5 text-sm font-medium hover:bg-muted disabled:opacity-50"
               >
-                <Save className="h-4 w-4" />
-                Salvar alterações
+                Cancelar
+              </button>
+              <button
+                onClick={handleSave}
+                disabled={saving || isEmpty || !isDirty}
+                className="inline-flex items-center justify-center gap-2 rounded-lg bg-primary text-primary-foreground px-4 py-2.5 text-sm font-medium hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {saving ? (
+                  <>
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    Salvando…
+                  </>
+                ) : (
+                  <>
+                    <Save className="h-4 w-4" />
+                    Salvar alterações
+                  </>
+                )}
               </button>
             </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Confirmação de descarte */}
+      <Dialog open={confirmDiscard} onOpenChange={setConfirmDiscard}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Descartar alterações?</DialogTitle>
+          </DialogHeader>
+          <p className="text-sm text-muted-foreground">
+            Você tem alterações não salvas. Se sair agora, elas serão perdidas.
+          </p>
+          <div className="flex flex-col-reverse sm:flex-row sm:justify-end gap-2 pt-2">
+            <button
+              onClick={() => setConfirmDiscard(false)}
+              className="inline-flex items-center justify-center rounded-lg border border-border bg-card px-4 py-2.5 text-sm font-medium hover:bg-muted"
+            >
+              Continuar editando
+            </button>
+            <button
+              onClick={discardChanges}
+              className="inline-flex items-center justify-center rounded-lg bg-destructive text-destructive-foreground px-4 py-2.5 text-sm font-medium hover:bg-destructive/90"
+            >
+              Descartar
+            </button>
           </div>
         </DialogContent>
       </Dialog>
