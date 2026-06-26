@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useEffect, useRef, useState } from "react";
 import {
   LayoutGrid,
   FileText,
@@ -22,6 +23,10 @@ import {
   ChevronDown,
   ChevronLeft,
   ChevronRight,
+  Moon,
+  Sun,
+  Settings,
+  Mail,
 } from "lucide-react";
 
 export const Route = createFileRoute("/")({
