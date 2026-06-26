@@ -93,24 +93,24 @@ function Sidebar() {
 
       <nav className="flex-1 overflow-y-auto px-3 py-4 space-y-6">
         <SidebarGroup label="INÍCIO">
-          <SidebarItem icon={LayoutGrid} label="Dashboard" />
+          <SidebarItem icon={LayoutGrid} label="Dashboard" hint="Visão geral com indicadores e resumo das suas atividades recentes." />
         </SidebarGroup>
 
         <SidebarGroup label="GUIAS">
-          <SidebarItem icon={FileText} label="Emitir guia" />
-          <SidebarItem icon={FileCheck2} label="Extrair dados da guia" />
-          <SidebarItem icon={Files} label="Minhas guias" active />
-          <SidebarItem icon={ScanSearch} label="Buscar procedimento" />
+          <SidebarItem icon={FileText} label="Emitir guia" hint="Preencha e gere novas guias médicas (SADT, consultas, encaminhamentos)." />
+          <SidebarItem icon={FileCheck2} label="Extrair dados da guia" hint="Envie um PDF ou imagem para extrair automaticamente os dados da guia." />
+          <SidebarItem icon={Files} label="Minhas guias" active hint="Histórico completo das guias processadas, com filtros, status e ações." />
+          <SidebarItem icon={ScanSearch} label="Buscar procedimento" hint="Consulte códigos e descrições de procedimentos (TUSS / tabelas)." />
         </SidebarGroup>
 
         <SidebarGroup label="ATENDIMENTO CLÍNICO">
-          <SidebarItem icon={Pill} label="Prescrição médica" />
-          <SidebarItem icon={ScanLine} label="Buscar CID" />
+          <SidebarItem icon={Pill} label="Prescrição médica" hint="Crie e gerencie prescrições de medicamentos para seus pacientes." />
+          <SidebarItem icon={ScanLine} label="Buscar CID" hint="Pesquise códigos da Classificação Internacional de Doenças (CID‑10/11)." />
         </SidebarGroup>
 
         <div className="border-t border-sidebar-border pt-4">
           <SidebarGroup label="AJUDA">
-            <SidebarItem icon={HelpCircle} label="Relatar Problema" />
+            <SidebarItem icon={HelpCircle} label="Relatar Problema" hint="Envie um relato de erro ou sugestão para o time de suporte." />
           </SidebarGroup>
         </div>
       </nav>
