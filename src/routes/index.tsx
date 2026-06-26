@@ -124,6 +124,7 @@ function Sidebar() {
 
       <UserMenu />
     </aside>
+    </TooltipProvider>
   );
 }
 
