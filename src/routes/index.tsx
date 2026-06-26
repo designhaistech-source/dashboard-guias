@@ -27,6 +27,11 @@ import {
   Sun,
   Settings,
   Mail,
+  ListChecks,
+  Plus,
+  Trash2,
+  Save,
+  Check,
 } from "lucide-react";
 import {
   Tooltip,
@@ -34,6 +39,12 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -271,7 +282,10 @@ function SidebarItem({
 function Upload_Section() {
   return (
     <section className="space-y-4">
-      <h1 className="text-2xl font-bold tracking-tight">Processamento de guias</h1>
+      <div className="flex items-center justify-between gap-3 flex-wrap">
+        <h1 className="text-2xl font-bold tracking-tight">Processamento de guias</h1>
+        <RequiredFieldsModal />
+      </div>
       <div className="rounded-2xl border-2 border-dashed border-border bg-card px-6 py-14 flex flex-col items-center justify-center text-center">
         <div className="mb-5 grid place-items-center h-16 w-16 rounded-full bg-muted">
           <Upload className="h-7 w-7 text-muted-foreground" />
@@ -472,5 +486,197 @@ function PagBtn({
     >
       {children}
     </button>
+  );
+}
+
+/* ---------- Required Fields Modal ---------- */
+
+const GUIDE_TYPES = ["SADT", "Solicitação de exame", "Encaminhamento"] as const;
+type GuideType = (typeof GUIDE_TYPES)[number];
+
+const AVAILABLE_FIELDS = [
+  "Data autorização",
+  "Nome social",
+  "Nº carteira",
+  "Validade carteira",
+  "Atend. RN",
+  "Nome prestador",
+  "Profissional",
+  "Especialidade",
+  "Conselho",
+  "Nº conselho",
+  "UF",
+  "Código procedimento",
+  "Descrição procedimento",
+  "Quantidade",
+  "Data solicitação",
+  "CID",
+];
+
+const DEFAULT_FIELDS: Record<GuideType, string[]> = {
+  SADT: ["Nome", "Registro ANS", "Nº guia operadora", "Senha", "Validade senha", "Nº guia prestador"],
+  "Solicitação de exame": ["Nome", "Nº carteira", "CID"],
+  Encaminhamento: ["Nome", "Especialidade", "Profissional"],
+};
+
+function RequiredFieldsModal() {
+  const [open, setOpen] = useState(false);
+  const [guideType, setGuideType] = useState<GuideType>("SADT");
+  const [typeOpen, setTypeOpen] = useState(false);
+  const [fieldOpen, setFieldOpen] = useState(false);
+  const [selectedField, setSelectedField] = useState<string>("");
+  const [fields, setFields] = useState<Record<GuideType, string[]>>(DEFAULT_FIELDS);
+
+  const current = fields[guideType];
+  const remaining = AVAILABLE_FIELDS.filter((f) => !current.includes(f));
+
+  const addField = () => {
+    if (!selectedField) return;
+    setFields((prev) => ({ ...prev, [guideType]: [...prev[guideType], selectedField] }));
+    setSelectedField("");
+  };
+
+  const removeField = (f: string) => {
+    setFields((prev) => ({ ...prev, [guideType]: prev[guideType].filter((x) => x !== f) }));
+  };
+
+  return (
+    <>
+      <button
+        onClick={() => setOpen(true)}
+        className="inline-flex items-center gap-2 rounded-lg bg-primary text-primary-foreground px-4 py-2 text-sm font-medium shadow-sm hover:bg-primary/90 transition-colors"
+      >
+        <ListChecks className="h-4 w-4" />
+        Campos obrigatórios
+      </button>
+
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogContent className="max-w-3xl">
+          <DialogHeader>
+            <DialogTitle className="text-xl">Campos obrigatórios por tipo de guia</DialogTitle>
+          </DialogHeader>
+
+          <div className="space-y-4">
+            {/* Tipo de guia */}
+            <div className="space-y-1.5">
+              <label className="text-sm font-medium">Tipo de guia</label>
+              <div className="relative">
+                <button
+                  onClick={() => {
+                    setTypeOpen((v) => !v);
+                    setFieldOpen(false);
+                  }}
+                  className="w-full sm:w-72 inline-flex items-center justify-between rounded-lg border border-border bg-card px-3 py-2.5 text-sm"
+                >
+                  <span>{guideType}</span>
+                  <ChevronDown className="h-4 w-4 text-muted-foreground" />
+                </button>
+                {typeOpen && (
+                  <div className="absolute z-20 mt-1 w-full sm:w-72 rounded-lg border border-border bg-popover shadow-lg overflow-hidden">
+                    {GUIDE_TYPES.map((t) => (
+                      <button
+                        key={t}
+                        onClick={() => {
+                          setGuideType(t);
+                          setTypeOpen(false);
+                          setSelectedField("");
+                        }}
+                        className="w-full flex items-center gap-2 px-3 py-2 text-sm text-left hover:bg-muted"
+                      >
+                        <Check className={`h-4 w-4 ${t === guideType ? "opacity-100" : "opacity-0"}`} />
+                        {t}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Selecionar campo */}
+            <div className="flex flex-col sm:flex-row gap-2">
+              <div className="relative flex-1">
+                <button
+                  onClick={() => {
+                    setFieldOpen((v) => !v);
+                    setTypeOpen(false);
+                  }}
+                  className="w-full inline-flex items-center justify-between rounded-lg border border-border bg-card px-3 py-2.5 text-sm"
+                >
+                  <span className={selectedField ? "" : "text-muted-foreground"}>
+                    {selectedField || "Selecione um campo"}
+                  </span>
+                  <ChevronDown className="h-4 w-4 text-muted-foreground" />
+                </button>
+                {fieldOpen && (
+                  <div className="absolute z-20 mt-1 w-full max-h-72 overflow-y-auto rounded-lg border border-border bg-popover shadow-lg">
+                    {remaining.length === 0 ? (
+                      <div className="px-3 py-3 text-sm text-muted-foreground">
+                        Todos os campos disponíveis já foram adicionados.
+                      </div>
+                    ) : (
+                      remaining.map((f) => (
+                        <button
+                          key={f}
+                          onClick={() => {
+                            setSelectedField(f);
+                            setFieldOpen(false);
+                          }}
+                          className="w-full px-3 py-2 text-sm text-left hover:bg-muted"
+                        >
+                          {f}
+                        </button>
+                      ))
+                    )}
+                  </div>
+                )}
+              </div>
+              <button
+                onClick={addField}
+                disabled={!selectedField}
+                className="inline-flex items-center justify-center gap-2 rounded-lg bg-primary text-primary-foreground px-4 py-2.5 text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed hover:bg-primary/90"
+              >
+                <Plus className="h-4 w-4" />
+                Adicionar
+              </button>
+            </div>
+
+            {/* Lista de campos */}
+            <div className="rounded-lg border border-border bg-card p-4 min-h-[140px]">
+              {current.length === 0 ? (
+                <p className="text-sm text-muted-foreground">Nenhum campo obrigatório.</p>
+              ) : (
+                <div className="flex flex-wrap gap-2">
+                  {current.map((f) => (
+                    <span
+                      key={f}
+                      className="inline-flex items-center gap-2 rounded-full bg-muted px-3 py-1.5 text-sm"
+                    >
+                      {f}
+                      <button
+                        onClick={() => removeField(f)}
+                        aria-label={`Remover ${f}`}
+                        className="text-muted-foreground hover:text-destructive"
+                      >
+                        <Trash2 className="h-3.5 w-3.5" />
+                      </button>
+                    </span>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            <div className="flex justify-end pt-2">
+              <button
+                onClick={() => setOpen(false)}
+                className="inline-flex items-center gap-2 rounded-lg bg-primary text-primary-foreground px-4 py-2.5 text-sm font-medium hover:bg-primary/90"
+              >
+                <Save className="h-4 w-4" />
+                Salvar alterações
+              </button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }
