@@ -212,22 +212,34 @@ function SidebarItem({
   icon: Icon,
   label,
   active,
+  hint,
 }: {
   icon: React.ComponentType<{ className?: string }>;
   label: string;
   active?: boolean;
+  hint?: string;
 }) {
   return (
     <button
       className={[
-        "w-full flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors",
+        "group w-full flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors",
         active
           ? "bg-sidebar-accent text-sidebar-accent-foreground font-semibold"
           : "text-sidebar-foreground hover:bg-muted",
       ].join(" ")}
     >
-      <Icon className="h-[18px] w-[18px]" />
-      <span>{label}</span>
+      <Icon className="h-[18px] w-[18px] shrink-0" />
+      <span className="flex-1 text-left">{label}</span>
+      {hint && (
+        <span
+          title={hint}
+          aria-label={hint}
+          onClick={(e) => e.stopPropagation()}
+          className="opacity-0 group-hover:opacity-100 transition-opacity text-sidebar-muted hover:text-foreground"
+        >
+          <HelpCircle className="h-3.5 w-3.5" />
+        </span>
+      )}
     </button>
   );
 }
