@@ -504,7 +504,9 @@ function DashboardPage() {
                       fill="url(#gradPrimary)"
                       dot={{ r: 0 }}
                       activeDot={{ r: 5, strokeWidth: 2, stroke: "var(--card)" }}
+                      isAnimationActive={false}
                     />
+
                   </AreaChart>
                 </ResponsiveContainer>
               </div>
