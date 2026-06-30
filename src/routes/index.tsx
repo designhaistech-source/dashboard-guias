@@ -282,52 +282,48 @@ async function generateReportPdf(range: Range, dailyAvg: number, total: number) 
     });
     y = (doc as any).lastAutoTable.finalY + 24;
 
-    // Guias por dia — full width chart (no companion table)
+    // Spacing token between sections / between a chart and the next block.
+    const GAP = 18;
+
+    // Guias por dia — full width chart
     const daily = await captureChartPng('[data-chart="daily"]');
     const dailyMaxH = Math.min(260, pageInnerH * 0.38);
-    sectionTitle("Guias extraídas por dia", dailyMaxH + 10);
+    sectionTitle("Guias extraídas por dia", dailyMaxH);
     const dailyH = drawChart(daily, contentW, dailyMaxH);
-    y += dailyH + 24;
+    y += dailyH + GAP;
 
-    // Distribuição por tipo — donut left, table right (must render on same row)
-    const colGap = 20;
-    const chartColW = (contentW - colGap) * 0.42;
-    const tableX = margin + chartColW + colGap;
-    const tableW = contentW - chartColW - colGap;
-    const donutMaxH = Math.min(chartColW, pageInnerH * 0.45);
-    const typesTableH = tableBlockH(typeData.length);
-    const typesBlockH = Math.max(donutMaxH, typesTableH);
-    sectionTitle("Distribuição por tipo de guia", typesBlockH + 10);
+    // Distribuição por tipo — donut full width on top, table below
     const types = await captureChartPng('[data-chart="types"]');
-    keepTogether(typesBlockH);
-    const typesY = y;
-    const typesH = drawChart(types, chartColW, donutMaxH);
+    const donutMaxH = Math.min(200, pageInnerH * 0.32);
+    sectionTitle("Distribuição por tipo de guia", donutMaxH);
+    const donutW = Math.min(contentW, donutMaxH * (types ? types.w / types.h : 2));
+    const typesH = drawChart(types, donutW, donutMaxH, margin + (contentW - donutW) / 2);
+    y += typesH + GAP;
     autoTable(doc, {
-      startY: typesY,
-      margin: { left: tableX, right: margin },
-      tableWidth: tableW,
+      startY: y,
+      margin: { left: margin, right: margin },
+      tableWidth: contentW,
       head: [["Tipo", "Qtd.", "%"]],
       body: typeData.map((t) => [t.name, String(t.value), `${Math.round((t.value / total) * 100)}%`]),
       theme: "striped",
       headStyles: tableHeadStyles,
       bodyStyles: { font: FONT, fontStyle: "normal", textColor: TYPE.tableBody.color },
-      columnStyles: { 1: { halign: "right", cellWidth: 50 }, 2: { halign: "right", cellWidth: 50 } },
+      columnStyles: { 1: { halign: "right", cellWidth: 60 }, 2: { halign: "right", cellWidth: 60 } },
       styles: tableStyleDefaults,
       rowPageBreak: "avoid",
       showHead: "everyPage",
     });
-    y = Math.max((doc as any).lastAutoTable.finalY, typesY + typesH) + 24;
+    y = (doc as any).lastAutoTable.finalY + GAP + 6;
 
-    // Procedimentos — chart + at least the table header & first 3 rows together
+    // Procedimentos — chart, then table (keep title with chart)
     const proc = await captureChartPng('[data-chart="procedures"]');
     const procMaxH = Math.min(280, pageInnerH * 0.42);
-    const procMinTableH = tableBlockH(Math.min(3, procedures.length));
-    sectionTitle("Procedimentos mais realizados", procMaxH + 16 + procMinTableH);
+    sectionTitle("Procedimentos mais realizados", procMaxH);
     const procDrawnH = drawChart(proc, contentW, procMaxH);
-    y += procDrawnH + 16;
-    // Make sure the table header + a few rows don't get stranded alone on the
-    // next page right after the chart.
-    keepTogether(procMinTableH);
+    y += procDrawnH + GAP;
+    // Don't strand the table header alone after the chart.
+    keepTogether(tableBlockH(Math.min(3, procedures.length)));
+
 
     autoTable(doc, {
       startY: y,
