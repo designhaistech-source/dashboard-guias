@@ -624,7 +624,7 @@ function DashboardPage() {
                       axisLine={false}
                     />
                     <RTooltip content={<ChartTooltip />} cursor={{ fill: "var(--muted)", opacity: 0.4 }} />
-                    <Bar dataKey="count" fill="url(#gradBar)" radius={[0, 6, 6, 0]} maxBarSize={22}>
+                    <Bar dataKey="count" fill="url(#gradBar)" radius={[0, 6, 6, 0]} maxBarSize={22} isAnimationActive={false}>
                       <LabelList
                         dataKey="count"
                         position="right"
@@ -632,6 +632,7 @@ function DashboardPage() {
                         style={{ fontSize: 11, fontWeight: 600 }}
                       />
                     </Bar>
+
                   </BarChart>
                 </ResponsiveContainer>
               </div>
