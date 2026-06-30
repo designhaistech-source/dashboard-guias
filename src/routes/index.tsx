@@ -81,10 +81,67 @@ const sparkHoje = [3, 5, 4, 6, 8, 7, 10, 9, 12, 14].map((v) => ({ v }));
 const sparkMedia = [6, 7, 7, 8, 8, 9, 8, 9, 8, 8].map((v) => ({ v }));
 const sparkTipos = [3, 3, 4, 4, 4, 5, 5, 5, 5, 5].map((v) => ({ v }));
 
-function generateReportPdf(range: Range, dailyAvg: number, total: number) {
+async function captureChartPng(selector: string, scale = 2): Promise<{ dataUrl: string; w: number; h: number } | null> {
+  const container = document.querySelector(selector) as HTMLElement | null;
+  if (!container) return null;
+  const svg = container.querySelector("svg") as SVGSVGElement | null;
+  if (!svg) return null;
+
+  const rect = svg.getBoundingClientRect();
+  const w = Math.max(1, Math.floor(rect.width));
+  const h = Math.max(1, Math.floor(rect.height));
+
+  // Clone and inline computed styles so external CSS variables resolve
+  const clone = svg.cloneNode(true) as SVGSVGElement;
+  clone.setAttribute("xmlns", "http://www.w3.org/2000/svg");
+  clone.setAttribute("width", String(w));
+  clone.setAttribute("height", String(h));
+  if (!clone.getAttribute("viewBox")) clone.setAttribute("viewBox", `0 0 ${w} ${h}`);
+
+  const srcEls = svg.querySelectorAll<SVGElement>("*");
+  const dstEls = clone.querySelectorAll<SVGElement>("*");
+  srcEls.forEach((el, i) => {
+    const cs = window.getComputedStyle(el);
+    const dst = dstEls[i] as SVGElement;
+    if (!dst) return;
+    const props = ["fill", "stroke", "stroke-width", "stroke-dasharray", "opacity", "fill-opacity", "stroke-opacity", "font-size", "font-family", "font-weight"];
+    let style = "";
+    for (const p of props) {
+      const v = cs.getPropertyValue(p);
+      if (v) style += `${p}:${v};`;
+    }
+    dst.setAttribute("style", style);
+  });
+
+  const xml = new XMLSerializer().serializeToString(clone);
+  const svgBlob = new Blob([xml], { type: "image/svg+xml;charset=utf-8" });
+  const url = URL.createObjectURL(svgBlob);
+
+  try {
+    const img = await new Promise<HTMLImageElement>((resolve, reject) => {
+      const i = new Image();
+      i.onload = () => resolve(i);
+      i.onerror = reject;
+      i.src = url;
+    });
+    const canvas = document.createElement("canvas");
+    canvas.width = w * scale;
+    canvas.height = h * scale;
+    const ctx = canvas.getContext("2d")!;
+    ctx.fillStyle = "#ffffff";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+    return { dataUrl: canvas.toDataURL("image/png"), w, h };
+  } finally {
+    URL.revokeObjectURL(url);
+  }
+}
+
+async function generateReportPdf(range: Range, dailyAvg: number, total: number) {
   try {
     const doc = new jsPDF({ unit: "pt", format: "a4" });
     const pageWidth = doc.internal.pageSize.getWidth();
+    const pageHeight = doc.internal.pageSize.getHeight();
     const rangeLabel = range === "7d" ? "Últimos 7 dias" : range === "30d" ? "Últimos 30 dias" : "Últimos 90 dias";
     const now = new Date();
     const dateStr = now.toLocaleString("pt-BR");
@@ -119,66 +176,62 @@ function generateReportPdf(range: Range, dailyAvg: number, total: number) {
       styles: { fontSize: 10 },
     });
 
-    // Tipos de guia
+    // --- Chart: Guias por dia ---
+    const daily = await captureChartPng('[data-chart="daily"]');
     y = (doc as any).lastAutoTable.finalY + 20;
-    doc.setFontSize(13);
-    doc.text("Distribuição por tipo de guia", 40, y);
-    autoTable(doc, {
-      startY: y + 5,
-      head: [["Tipo", "Quantidade", "Participação"]],
-      body: typeData.map((t) => [
-        t.name,
-        String(t.value),
-        `${Math.round((t.value / total) * 100)}%`,
-      ]),
-      theme: "striped",
-      headStyles: { fillColor: [37, 99, 235] },
-      styles: { fontSize: 10 },
-    });
-
-    // Procedimentos
-    y = (doc as any).lastAutoTable.finalY + 20;
-    doc.setFontSize(13);
-    doc.text("Procedimentos mais realizados", 40, y);
-    autoTable(doc, {
-      startY: y + 5,
-      head: [["Código TUSS", "Procedimento", "Qtd.", "Tendência"]],
-      body: procedures.map((p) => [
-        p.code,
-        p.name,
-        String(p.count),
-        `${p.trend >= 0 ? "+" : ""}${p.trend}%`,
-      ]),
-      theme: "striped",
-      headStyles: { fillColor: [37, 99, 235] },
-      styles: { fontSize: 10 },
-    });
-
-    // Guias por dia
-    y = (doc as any).lastAutoTable.finalY + 20;
-    if (y > 700) {
-      doc.addPage();
-      y = 60;
-    }
     doc.setFontSize(13);
     doc.text("Guias extraídas por dia", 40, y);
-    const chunkSize = 10;
-    const rows: string[][] = [];
-    for (let i = 0; i < dailyData30.length; i += chunkSize) {
-      const slice = dailyData30.slice(i, i + chunkSize);
-      rows.push([
-        `Dias ${slice[0].day}–${slice[slice.length - 1].day}`,
-        slice.map((d) => `${d.day}: ${d.guias}`).join("   "),
-      ]);
+    y += 8;
+    if (daily) {
+      const imgW = pageWidth - 80;
+      const imgH = (daily.h / daily.w) * imgW;
+      if (y + imgH > pageHeight - 40) { doc.addPage(); y = 60; }
+      doc.addImage(daily.dataUrl, "PNG", 40, y, imgW, imgH);
+      y += imgH + 10;
+    }
+
+    // --- Chart + table: Tipos de guia ---
+    if (y > pageHeight - 260) { doc.addPage(); y = 60; }
+    doc.setFontSize(13);
+    doc.text("Distribuição por tipo de guia", 40, y);
+    y += 8;
+    const types = await captureChartPng('[data-chart="types"]');
+    if (types) {
+      const imgW = 220;
+      const imgH = (types.h / types.w) * imgW;
+      doc.addImage(types.dataUrl, "PNG", 40, y, imgW, imgH);
     }
     autoTable(doc, {
-      startY: y + 5,
-      head: [["Intervalo", "Guias por dia"]],
-      body: rows,
-      theme: "grid",
+      startY: y,
+      margin: { left: 280 },
+      head: [["Tipo", "Qtd.", "%"]],
+      body: typeData.map((t) => [t.name, String(t.value), `${Math.round((t.value / total) * 100)}%`]),
+      theme: "striped",
       headStyles: { fillColor: [37, 99, 235] },
-      styles: { fontSize: 9 },
-      columnStyles: { 0: { cellWidth: 110 } },
+      styles: { fontSize: 10 },
+    });
+    y = Math.max((doc as any).lastAutoTable.finalY, y + (types ? (types.h / types.w) * 220 : 0)) + 20;
+
+    // --- Chart: Procedimentos ---
+    if (y > pageHeight - 260) { doc.addPage(); y = 60; }
+    doc.setFontSize(13);
+    doc.text("Procedimentos mais realizados", 40, y);
+    y += 8;
+    const proc = await captureChartPng('[data-chart="procedures"]');
+    if (proc) {
+      const imgW = pageWidth - 80;
+      const imgH = (proc.h / proc.w) * imgW;
+      if (y + imgH > pageHeight - 40) { doc.addPage(); y = 60; }
+      doc.addImage(proc.dataUrl, "PNG", 40, y, imgW, imgH);
+      y += imgH + 10;
+    }
+    autoTable(doc, {
+      startY: y,
+      head: [["Código TUSS", "Procedimento", "Qtd."]],
+      body: procedures.map((p) => [p.code, p.name, String(p.count)]),
+      theme: "striped",
+      headStyles: { fillColor: [37, 99, 235] },
+      styles: { fontSize: 10 },
     });
 
     // Footer
@@ -190,7 +243,7 @@ function generateReportPdf(range: Range, dailyAvg: number, total: number) {
       doc.text(
         `HaisGuias  •  Página ${i} de ${pageCount}`,
         pageWidth / 2,
-        doc.internal.pageSize.getHeight() - 20,
+        pageHeight - 20,
         { align: "center" },
       );
     }
@@ -203,6 +256,7 @@ function generateReportPdf(range: Range, dailyAvg: number, total: number) {
     toast.error("Falha ao gerar o relatório PDF.");
   }
 }
+
 
 function ChartTooltip({ active, payload, label, suffix }: any) {
   if (!active || !payload?.length) return null;
@@ -295,7 +349,7 @@ function DashboardPage() {
                   <LegendDot color="oklch(0.55 0.19 255)" label="Guias" />
                 </div>
               </div>
-              <div className="h-72">
+              <div className="h-72" data-chart="daily">
                 <ResponsiveContainer width="100%" height="100%">
                   <AreaChart data={dailyData30} margin={{ top: 10, right: 10, left: -10, bottom: 0 }}>
                     <defs>
@@ -332,7 +386,7 @@ function DashboardPage() {
                 <p className="text-xs text-muted-foreground">Distribuição no período</p>
               </div>
               <div className="space-y-4">
-                <div className="relative h-44">
+                <div className="relative h-44" data-chart="types">
                   <ResponsiveContainer width="100%" height="100%">
                     <PieChart>
                       <Pie
@@ -410,7 +464,7 @@ function DashboardPage() {
               </div>
             </div>
             <div className="grid gap-6 lg:grid-cols-2">
-              <div className="h-64">
+              <div className="h-64" data-chart="procedures">
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart
                     data={procedures.map((p) => ({ name: p.name, count: p.count }))}
