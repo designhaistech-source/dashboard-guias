@@ -466,7 +466,7 @@ function DashboardPage() {
                       <th className="px-4 py-2 font-medium">Código</th>
                       <th className="px-4 py-2 font-medium">Procedimento</th>
                       <th className="px-4 py-2 font-medium text-right">Qtd.</th>
-                      <th className="px-4 py-2 font-medium text-right">Tend.</th>
+                      
                     </tr>
                   </thead>
                   <tbody>
