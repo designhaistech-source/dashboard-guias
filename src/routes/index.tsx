@@ -313,17 +313,6 @@ function DashboardPage() {
                     />
                     <Area
                       type="monotone"
-                      dataKey="meta"
-                      name="Meta"
-                      stroke="oklch(0.6 0 0)"
-                      strokeDasharray="4 4"
-                      strokeWidth={1.5}
-                      fill="transparent"
-                      dot={false}
-                      activeDot={false}
-                    />
-                    <Area
-                      type="monotone"
                       dataKey="guias"
                       name="Guias"
                       stroke="oklch(0.55 0.19 255)"
