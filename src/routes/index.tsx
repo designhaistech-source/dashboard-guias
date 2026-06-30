@@ -140,7 +140,7 @@ function DashboardPage() {
                 ))}
               </div>
               <button
-                onClick={() => toast.success("Relatório gerado com sucesso!")}
+                onClick={() => generateReportPdf(range, dailyAvg, total)}
                 className="inline-flex items-center gap-2 rounded-lg border border-primary bg-card px-4 py-2 text-sm font-medium text-primary hover:bg-primary/5 transition-colors"
               >
                 <Download className="h-4 w-4" />
