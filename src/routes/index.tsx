@@ -98,6 +98,20 @@ async function captureChartPng(selector: string, scale = 2): Promise<{ dataUrl: 
   clone.setAttribute("height", String(h));
   if (!clone.getAttribute("viewBox")) clone.setAttribute("viewBox", `0 0 ${w} ${h}`);
 
+  // Convert modern color functions (oklch / oklab / color()) to rgb(),
+  // because the SVG renderer used by Image+canvas can't paint those directly
+  // when written as style/attribute values during off-DOM rasterization.
+  const colorProbe = document.createElement("div");
+  colorProbe.style.position = "absolute";
+  colorProbe.style.visibility = "hidden";
+  document.body.appendChild(colorProbe);
+  const resolveColor = (v: string) => {
+    if (!v || v === "none" || v.startsWith("url(")) return v;
+    if (!/oklch|oklab|color\(/i.test(v)) return v;
+    colorProbe.style.color = v;
+    return window.getComputedStyle(colorProbe).color || v;
+  };
+
   const srcEls = svg.querySelectorAll<SVGElement>("*");
   const dstEls = clone.querySelectorAll<SVGElement>("*");
   srcEls.forEach((el, i) => {
@@ -107,11 +121,20 @@ async function captureChartPng(selector: string, scale = 2): Promise<{ dataUrl: 
     const props = ["fill", "stroke", "stroke-width", "stroke-dasharray", "opacity", "fill-opacity", "stroke-opacity", "font-size", "font-family", "font-weight"];
     let style = "";
     for (const p of props) {
-      const v = cs.getPropertyValue(p);
-      if (v) style += `${p}:${v};`;
+      let v = cs.getPropertyValue(p);
+      if (!v) continue;
+      if (p === "fill" || p === "stroke") v = resolveColor(v);
+      style += `${p}:${v};`;
     }
     dst.setAttribute("style", style);
+    // Also normalize fill/stroke attributes (Recharts sets them on paths)
+    const attrFill = el.getAttribute("fill");
+    if (attrFill) dst.setAttribute("fill", resolveColor(attrFill));
+    const attrStroke = el.getAttribute("stroke");
+    if (attrStroke) dst.setAttribute("stroke", resolveColor(attrStroke));
   });
+  colorProbe.remove();
+
 
   const xml = new XMLSerializer().serializeToString(clone);
   const svgBlob = new Blob([xml], { type: "image/svg+xml;charset=utf-8" });
