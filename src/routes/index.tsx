@@ -293,7 +293,6 @@ function DashboardPage() {
                 </div>
                 <div className="flex items-center gap-3 text-xs">
                   <LegendDot color="oklch(0.55 0.19 255)" label="Guias" />
-                  <LegendDot color="oklch(0.6 0 0)" label="Meta" dashed />
                 </div>
               </div>
               <div className="h-72">
@@ -311,17 +310,6 @@ function DashboardPage() {
                     <RTooltip
                       content={<ChartTooltip />}
                       cursor={{ stroke: "oklch(0.55 0.19 255)", strokeOpacity: 0.25, strokeWidth: 1 }}
-                    />
-                    <Area
-                      type="monotone"
-                      dataKey="meta"
-                      name="Meta"
-                      stroke="oklch(0.6 0 0)"
-                      strokeDasharray="4 4"
-                      strokeWidth={1.5}
-                      fill="transparent"
-                      dot={false}
-                      activeDot={false}
                     />
                     <Area
                       type="monotone"
