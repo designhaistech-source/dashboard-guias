@@ -295,7 +295,7 @@ function DashboardPage() {
                   <LegendDot color="oklch(0.55 0.19 255)" label="Guias" />
                 </div>
               </div>
-              <div className="h-72">
+              <div className="h-72" data-chart="daily">
                 <ResponsiveContainer width="100%" height="100%">
                   <AreaChart data={dailyData30} margin={{ top: 10, right: 10, left: -10, bottom: 0 }}>
                     <defs>
