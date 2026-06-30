@@ -535,7 +535,9 @@ function DashboardPage() {
                         )}
                         onMouseEnter={(_, i) => setActiveType(i)}
                         onMouseLeave={() => setActiveType(undefined)}
+                        isAnimationActive={false}
                       >
+
                         {typeData.map((d, i) => (
                           <Cell key={i} fill={d.color} />
                         ))}
