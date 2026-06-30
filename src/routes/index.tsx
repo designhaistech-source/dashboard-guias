@@ -553,22 +553,6 @@ function Kpi({
         {trend === "up" && <ArrowUpRight className="h-3 w-3" />}
         {hint}
       </div>
-      {spark && (
-        <div className="mt-3 h-10 -mx-1">
-          <ResponsiveContainer width="100%" height="100%">
-            <LineChart data={spark} margin={{ top: 2, right: 2, left: 2, bottom: 2 }}>
-              <Line
-                type="monotone"
-                dataKey="v"
-                stroke={toneStroke}
-                strokeWidth={2}
-                dot={false}
-                isAnimationActive={false}
-              />
-            </LineChart>
-          </ResponsiveContainer>
-        </div>
-      )}
     </div>
   );
 }
