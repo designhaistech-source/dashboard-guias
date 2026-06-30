@@ -142,6 +142,8 @@ async function generateReportPdf(range: Range, dailyAvg: number, total: number) 
     const doc = new jsPDF({ unit: "pt", format: "a4" });
     const pageWidth = doc.internal.pageSize.getWidth();
     const pageHeight = doc.internal.pageSize.getHeight();
+    const margin = 40;
+    const contentW = pageWidth - margin * 2;
     const rangeLabel = range === "7d" ? "Últimos 7 dias" : range === "30d" ? "Últimos 30 dias" : "Últimos 90 dias";
     const now = new Date();
     const dateStr = now.toLocaleString("pt-BR");
@@ -150,20 +152,54 @@ async function generateReportPdf(range: Range, dailyAvg: number, total: number) 
     doc.setFillColor(37, 99, 235);
     doc.rect(0, 0, pageWidth, 70, "F");
     doc.setTextColor(255, 255, 255);
+    doc.setFont("helvetica", "bold");
     doc.setFontSize(18);
-    doc.text("HaisGuias — Relatório do Dashboard", 40, 35);
+    doc.text("HaisGuias — Relatório do Dashboard", margin, 35);
+    doc.setFont("helvetica", "normal");
     doc.setFontSize(10);
-    doc.text(`Período: ${rangeLabel}  •  Gerado em: ${dateStr}`, 40, 55);
+    doc.text(`Período: ${rangeLabel}  •  Gerado em: ${dateStr}`, margin, 55);
 
     doc.setTextColor(20, 20, 20);
     let y = 100;
 
+    const ensureSpace = (needed: number) => {
+      if (y + needed > pageHeight - 50) {
+        doc.addPage();
+        y = 60;
+      }
+    };
+
+    const sectionTitle = (text: string) => {
+      ensureSpace(30);
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(12);
+      doc.setTextColor(20, 20, 20);
+      doc.text(text, margin, y);
+      doc.setDrawColor(220);
+      doc.setLineWidth(0.6);
+      doc.line(margin, y + 4, pageWidth - margin, y + 4);
+      y += 16;
+      doc.setFont("helvetica", "normal");
+    };
+
+    const drawChart = (img: { dataUrl: string; w: number; h: number } | null, width: number, maxHeight: number, x = margin) => {
+      if (!img) return 0;
+      const ratio = img.h / img.w;
+      let w = width;
+      let h = w * ratio;
+      if (h > maxHeight) {
+        h = maxHeight;
+        w = h / ratio;
+      }
+      doc.addImage(img.dataUrl, "PNG", x, y, w, h);
+      return h;
+    };
+
     // KPIs
-    doc.setFontSize(13);
-    doc.text("Indicadores", 40, y);
-    y += 10;
+    sectionTitle("Indicadores");
     autoTable(doc, {
       startY: y,
+      margin: { left: margin, right: margin },
       head: [["Indicador", "Valor"]],
       body: [
         ["Total extraídas", String(total)],
@@ -172,80 +208,75 @@ async function generateReportPdf(range: Range, dailyAvg: number, total: number) 
         ["Tipos diferentes", String(typeData.length)],
       ],
       theme: "grid",
-      headStyles: { fillColor: [37, 99, 235] },
-      styles: { fontSize: 10 },
+      headStyles: { fillColor: [37, 99, 235], halign: "left" },
+      columnStyles: { 1: { halign: "right", cellWidth: 120 } },
+      styles: { fontSize: 10, cellPadding: 6 },
+      tableWidth: contentW,
     });
+    y = (doc as any).lastAutoTable.finalY + 24;
 
-    // --- Chart: Guias por dia ---
+    // Guias por dia — full width chart
     const daily = await captureChartPng('[data-chart="daily"]');
-    y = (doc as any).lastAutoTable.finalY + 20;
-    doc.setFontSize(13);
-    doc.text("Guias extraídas por dia", 40, y);
-    y += 8;
-    if (daily) {
-      const imgW = pageWidth - 80;
-      const imgH = (daily.h / daily.w) * imgW;
-      if (y + imgH > pageHeight - 40) { doc.addPage(); y = 60; }
-      doc.addImage(daily.dataUrl, "PNG", 40, y, imgW, imgH);
-      y += imgH + 10;
-    }
+    sectionTitle("Guias extraídas por dia");
+    const dailyH = 220;
+    ensureSpace(dailyH + 10);
+    const drawnH = drawChart(daily, contentW, dailyH);
+    y += drawnH + 24;
 
-    // --- Chart + table: Tipos de guia ---
-    if (y > pageHeight - 260) { doc.addPage(); y = 60; }
-    doc.setFontSize(13);
-    doc.text("Distribuição por tipo de guia", 40, y);
-    y += 8;
+    // Distribuição por tipo — chart left, table right
+    sectionTitle("Distribuição por tipo de guia");
     const types = await captureChartPng('[data-chart="types"]');
-    if (types) {
-      const imgW = 220;
-      const imgH = (types.h / types.w) * imgW;
-      doc.addImage(types.dataUrl, "PNG", 40, y, imgW, imgH);
-    }
+    const colGap = 20;
+    const chartW = (contentW - colGap) * 0.42;
+    const tableX = margin + chartW + colGap;
+    const tableW = contentW - chartW - colGap;
+    const rowsH = 22 + typeData.length * 20;
+    ensureSpace(Math.max(chartW, rowsH) + 10);
+    const typesY = y;
+    const typesH = drawChart(types, chartW, chartW);
     autoTable(doc, {
-      startY: y,
-      margin: { left: 280 },
+      startY: typesY,
+      margin: { left: tableX, right: margin },
+      tableWidth: tableW,
       head: [["Tipo", "Qtd.", "%"]],
       body: typeData.map((t) => [t.name, String(t.value), `${Math.round((t.value / total) * 100)}%`]),
       theme: "striped",
       headStyles: { fillColor: [37, 99, 235] },
-      styles: { fontSize: 10 },
+      columnStyles: { 1: { halign: "right", cellWidth: 50 }, 2: { halign: "right", cellWidth: 50 } },
+      styles: { fontSize: 10, cellPadding: 5 },
     });
-    y = Math.max((doc as any).lastAutoTable.finalY, y + (types ? (types.h / types.w) * 220 : 0)) + 20;
+    y = Math.max((doc as any).lastAutoTable.finalY, typesY + typesH) + 24;
 
-    // --- Chart: Procedimentos ---
-    if (y > pageHeight - 260) { doc.addPage(); y = 60; }
-    doc.setFontSize(13);
-    doc.text("Procedimentos mais realizados", 40, y);
-    y += 8;
+    // Procedimentos — full width chart + full width table
+    sectionTitle("Procedimentos mais realizados");
     const proc = await captureChartPng('[data-chart="procedures"]');
-    if (proc) {
-      const imgW = pageWidth - 80;
-      const imgH = (proc.h / proc.w) * imgW;
-      if (y + imgH > pageHeight - 40) { doc.addPage(); y = 60; }
-      doc.addImage(proc.dataUrl, "PNG", 40, y, imgW, imgH);
-      y += imgH + 10;
-    }
+    const procH = 230;
+    ensureSpace(procH + 10);
+    const procDrawnH = drawChart(proc, contentW, procH);
+    y += procDrawnH + 16;
     autoTable(doc, {
       startY: y,
+      margin: { left: margin, right: margin },
+      tableWidth: contentW,
       head: [["Código TUSS", "Procedimento", "Qtd."]],
       body: procedures.map((p) => [p.code, p.name, String(p.count)]),
       theme: "striped",
       headStyles: { fillColor: [37, 99, 235] },
-      styles: { fontSize: 10 },
+      columnStyles: { 0: { cellWidth: 110 }, 2: { halign: "right", cellWidth: 60 } },
+      styles: { fontSize: 10, cellPadding: 5 },
     });
 
     // Footer
     const pageCount = doc.getNumberOfPages();
     for (let i = 1; i <= pageCount; i++) {
       doc.setPage(i);
+      doc.setDrawColor(230);
+      doc.setLineWidth(0.5);
+      doc.line(margin, pageHeight - 32, pageWidth - margin, pageHeight - 32);
       doc.setFontSize(8);
-      doc.setTextColor(120);
-      doc.text(
-        `HaisGuias  •  Página ${i} de ${pageCount}`,
-        pageWidth / 2,
-        pageHeight - 20,
-        { align: "center" },
-      );
+      doc.setTextColor(130);
+      doc.text("HaisGuias", margin, pageHeight - 18);
+      doc.text(`Página ${i} de ${pageCount}`, pageWidth - margin, pageHeight - 18, { align: "right" });
     }
 
     const filename = `relatorio-haisguias-${now.toISOString().slice(0, 10)}.pdf`;
@@ -256,6 +287,7 @@ async function generateReportPdf(range: Range, dailyAvg: number, total: number) 
     toast.error("Falha ao gerar o relatório PDF.");
   }
 }
+
 
 
 function ChartTooltip({ active, payload, label, suffix }: any) {
