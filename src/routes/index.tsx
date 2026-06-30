@@ -1,5 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
 import {
   LayoutGrid,
   FileText,
@@ -79,6 +81,129 @@ const sparkHoje = [3, 5, 4, 6, 8, 7, 10, 9, 12, 14].map((v) => ({ v }));
 const sparkMedia = [6, 7, 7, 8, 8, 9, 8, 9, 8, 8].map((v) => ({ v }));
 const sparkTipos = [3, 3, 4, 4, 4, 5, 5, 5, 5, 5].map((v) => ({ v }));
 
+function generateReportPdf(range: Range, dailyAvg: number, total: number) {
+  try {
+    const doc = new jsPDF({ unit: "pt", format: "a4" });
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const rangeLabel = range === "7d" ? "Últimos 7 dias" : range === "30d" ? "Últimos 30 dias" : "Últimos 90 dias";
+    const now = new Date();
+    const dateStr = now.toLocaleString("pt-BR");
+
+    // Header
+    doc.setFillColor(37, 99, 235);
+    doc.rect(0, 0, pageWidth, 70, "F");
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(18);
+    doc.text("HaisGuias — Relatório do Dashboard", 40, 35);
+    doc.setFontSize(10);
+    doc.text(`Período: ${rangeLabel}  •  Gerado em: ${dateStr}`, 40, 55);
+
+    doc.setTextColor(20, 20, 20);
+    let y = 100;
+
+    // KPIs
+    doc.setFontSize(13);
+    doc.text("Indicadores", 40, y);
+    y += 10;
+    autoTable(doc, {
+      startY: y,
+      head: [["Indicador", "Valor"]],
+      body: [
+        ["Total extraídas", String(total)],
+        ["Extraídas hoje", "14"],
+        ["Média por dia", String(dailyAvg)],
+        ["Tipos diferentes", String(typeData.length)],
+      ],
+      theme: "grid",
+      headStyles: { fillColor: [37, 99, 235] },
+      styles: { fontSize: 10 },
+    });
+
+    // Tipos de guia
+    y = (doc as any).lastAutoTable.finalY + 20;
+    doc.setFontSize(13);
+    doc.text("Distribuição por tipo de guia", 40, y);
+    autoTable(doc, {
+      startY: y + 5,
+      head: [["Tipo", "Quantidade", "Participação"]],
+      body: typeData.map((t) => [
+        t.name,
+        String(t.value),
+        `${Math.round((t.value / total) * 100)}%`,
+      ]),
+      theme: "striped",
+      headStyles: { fillColor: [37, 99, 235] },
+      styles: { fontSize: 10 },
+    });
+
+    // Procedimentos
+    y = (doc as any).lastAutoTable.finalY + 20;
+    doc.setFontSize(13);
+    doc.text("Procedimentos mais realizados", 40, y);
+    autoTable(doc, {
+      startY: y + 5,
+      head: [["Código TUSS", "Procedimento", "Qtd.", "Tendência"]],
+      body: procedures.map((p) => [
+        p.code,
+        p.name,
+        String(p.count),
+        `${p.trend >= 0 ? "+" : ""}${p.trend}%`,
+      ]),
+      theme: "striped",
+      headStyles: { fillColor: [37, 99, 235] },
+      styles: { fontSize: 10 },
+    });
+
+    // Guias por dia
+    y = (doc as any).lastAutoTable.finalY + 20;
+    if (y > 700) {
+      doc.addPage();
+      y = 60;
+    }
+    doc.setFontSize(13);
+    doc.text("Guias extraídas por dia", 40, y);
+    const chunkSize = 10;
+    const rows: string[][] = [];
+    for (let i = 0; i < dailyData30.length; i += chunkSize) {
+      const slice = dailyData30.slice(i, i + chunkSize);
+      rows.push([
+        `Dias ${slice[0].day}–${slice[slice.length - 1].day}`,
+        slice.map((d) => `${d.day}: ${d.guias}`).join("   "),
+      ]);
+    }
+    autoTable(doc, {
+      startY: y + 5,
+      head: [["Intervalo", "Guias por dia"]],
+      body: rows,
+      theme: "grid",
+      headStyles: { fillColor: [37, 99, 235] },
+      styles: { fontSize: 9 },
+      columnStyles: { 0: { cellWidth: 110 } },
+    });
+
+    // Footer
+    const pageCount = doc.getNumberOfPages();
+    for (let i = 1; i <= pageCount; i++) {
+      doc.setPage(i);
+      doc.setFontSize(8);
+      doc.setTextColor(120);
+      doc.text(
+        `HaisGuias  •  Página ${i} de ${pageCount}`,
+        pageWidth / 2,
+        doc.internal.pageSize.getHeight() - 20,
+        { align: "center" },
+      );
+    }
+
+    const filename = `relatorio-haisguias-${now.toISOString().slice(0, 10)}.pdf`;
+    doc.save(filename);
+    toast.success("Relatório PDF gerado com sucesso!");
+  } catch (err) {
+    console.error(err);
+    toast.error("Falha ao gerar o relatório PDF.");
+  }
+}
+
 function ChartTooltip({ active, payload, label, suffix }: any) {
   if (!active || !payload?.length) return null;
   return (
@@ -138,7 +263,7 @@ function DashboardPage() {
                 ))}
               </div>
               <button
-                onClick={() => toast.success("Relatório gerado com sucesso!")}
+                onClick={() => generateReportPdf(range, dailyAvg, total)}
                 className="inline-flex items-center gap-2 rounded-lg border border-primary bg-card px-4 py-2 text-sm font-medium text-primary hover:bg-primary/5 transition-colors"
               >
                 <Download className="h-4 w-4" />
