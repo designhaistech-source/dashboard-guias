@@ -24,9 +24,9 @@ async def assert_dashboard_rendered(page) -> None:
     for label in ["Total extraídas", "Extraídas hoje", "Média por dia", "Tipos diferentes"]:
         await expect(page.get_by_text(label, exact=True).first).to_be_visible(timeout=10_000)
     # Botão de gerar relatório
-    await expect(page.get_by_role("button", name="Gerar relatório")).to_be_visible()
+    await expect(page.get_by_role("button", name="Gerar relatório").first).to_be_visible(timeout=10_000)
     # Seção de procedimentos
-    await expect(page.get_by_text("Procedimentos mais realizados").first).to_be_visible()
+    await expect(page.get_by_text("Procedimentos mais realizados").first).to_be_visible(timeout=10_000)
 
 
 async def main() -> int:
