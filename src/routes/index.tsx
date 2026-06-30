@@ -466,7 +466,7 @@ function DashboardPage() {
                       <th className="px-4 py-2 font-medium">Código</th>
                       <th className="px-4 py-2 font-medium">Procedimento</th>
                       <th className="px-4 py-2 font-medium text-right">Qtd.</th>
-                      <th className="px-4 py-2 font-medium text-right">Tend.</th>
+                      
                     </tr>
                   </thead>
                   <tbody>
@@ -475,21 +475,6 @@ function DashboardPage() {
                         <td className="px-4 py-2 text-muted-foreground tabular-nums">{p.code}</td>
                         <td className="px-4 py-2 truncate max-w-[180px]">{p.name}</td>
                         <td className="px-4 py-2 text-right tabular-nums font-medium">{p.count}</td>
-                        <td className="px-4 py-2 text-right">
-                          <span
-                            className={[
-                              "inline-flex items-center gap-1 text-xs font-medium",
-                              p.trend >= 0 ? "text-success" : "text-destructive",
-                            ].join(" ")}
-                          >
-                            {p.trend >= 0 ? (
-                              <ArrowUpRight className="h-3 w-3" />
-                            ) : (
-                              <ArrowDownRight className="h-3 w-3" />
-                            )}
-                            {Math.abs(p.trend)}%
-                          </span>
-                        </td>
                       </tr>
                     ))}
                   </tbody>
