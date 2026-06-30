@@ -1,16 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import {
-  LayoutGrid,
-  FileText,
-  FileCheck2,
-  Files,
-  ScanSearch,
-  Pill,
-  ScanLine,
-  HelpCircle,
-  CircleUser,
-  LogOut,
   Upload,
   FileUp,
   Search,
@@ -23,10 +13,6 @@ import {
   ChevronDown,
   ChevronLeft,
   ChevronRight,
-  Moon,
-  Sun,
-  Settings,
-  Mail,
   ListChecks,
   Plus,
   Trash2,
@@ -37,17 +23,12 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
-import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { AppSidebar } from "@/components/app-sidebar";
 
 export const Route = createFileRoute("/")({
   head: () => ({
