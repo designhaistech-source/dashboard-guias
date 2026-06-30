@@ -410,7 +410,7 @@ function DashboardPage() {
               </div>
             </div>
             <div className="grid gap-6 lg:grid-cols-2">
-              <div className="h-64">
+              <div className="h-64" data-chart="procedures">
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart
                     data={procedures.map((p) => ({ name: p.name, count: p.count }))}
