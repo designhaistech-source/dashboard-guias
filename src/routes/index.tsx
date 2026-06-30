@@ -160,12 +160,17 @@ async function generateReportPdf(range: Range, dailyAvg: number, total: number) 
     doc.text(`Período: ${rangeLabel}  •  Gerado em: ${dateStr}`, margin, 55);
 
     doc.setTextColor(20, 20, 20);
+    const footerH = 50;
+    const headerOffsetTop = 60;
     let y = 100;
 
+    const availableH = () => pageHeight - footerH - y;
+    const pageInnerH = pageHeight - footerH - headerOffsetTop;
+
     const ensureSpace = (needed: number) => {
-      if (y + needed > pageHeight - 50) {
+      if (y + needed > pageHeight - footerH) {
         doc.addPage();
-        y = 60;
+        y = headerOffsetTop;
       }
     };
 
@@ -182,15 +187,40 @@ async function generateReportPdf(range: Range, dailyAvg: number, total: number) 
       doc.setFont("helvetica", "normal");
     };
 
-    const drawChart = (img: { dataUrl: string; w: number; h: number } | null, width: number, maxHeight: number, x = margin) => {
-      if (!img) return 0;
-      const ratio = img.h / img.w;
-      let w = width;
-      let h = w * ratio;
-      if (h > maxHeight) {
-        h = maxHeight;
-        w = h / ratio;
+    // Fit image into a box preserving aspect ratio (contain).
+    const fitSize = (img: { w: number; h: number }, maxW: number, maxH: number) => {
+      const ratio = img.w / img.h;
+      let w = maxW;
+      let h = w / ratio;
+      if (h > maxH) {
+        h = maxH;
+        w = h * ratio;
       }
+      return { w, h };
+    };
+
+    // Draw chart centered horizontally inside [boxX, boxX+boxW], scaled to fit
+    // [boxW x maxH]. If maxH would overflow current page, reserve a new page
+    // and recompute against the full inner page height so the chart never gets
+    // clipped on small page sizes.
+    const drawChart = (
+      img: { dataUrl: string; w: number; h: number } | null,
+      boxW: number,
+      maxH: number,
+      boxX = margin,
+    ) => {
+      if (!img) return 0;
+      let cap = Math.min(maxH, pageInnerH);
+      if (cap > availableH()) {
+        // not enough room on this page — start a new one
+        if (availableH() < cap * 0.6) {
+          doc.addPage();
+          y = headerOffsetTop;
+        }
+        cap = Math.min(cap, availableH());
+      }
+      const { w, h } = fitSize(img, boxW, cap);
+      const x = boxX + (boxW - w) / 2;
       doc.addImage(img.dataUrl, "PNG", x, y, w, h);
       return h;
     };
@@ -215,25 +245,25 @@ async function generateReportPdf(range: Range, dailyAvg: number, total: number) 
     });
     y = (doc as any).lastAutoTable.finalY + 24;
 
-    // Guias por dia — full width chart
+    // Guias por dia — full width chart, capped to a share of page height
     const daily = await captureChartPng('[data-chart="daily"]');
     sectionTitle("Guias extraídas por dia");
-    const dailyH = 220;
-    ensureSpace(dailyH + 10);
-    const drawnH = drawChart(daily, contentW, dailyH);
-    y += drawnH + 24;
+    const dailyMaxH = Math.min(260, pageInnerH * 0.38);
+    const dailyH = drawChart(daily, contentW, dailyMaxH);
+    y += dailyH + 24;
 
-    // Distribuição por tipo — chart left, table right
+    // Distribuição por tipo — donut left, table right
     sectionTitle("Distribuição por tipo de guia");
     const types = await captureChartPng('[data-chart="types"]');
     const colGap = 20;
-    const chartW = (contentW - colGap) * 0.42;
-    const tableX = margin + chartW + colGap;
-    const tableW = contentW - chartW - colGap;
+    const chartColW = (contentW - colGap) * 0.42;
+    const tableX = margin + chartColW + colGap;
+    const tableW = contentW - chartColW - colGap;
     const rowsH = 22 + typeData.length * 20;
-    ensureSpace(Math.max(chartW, rowsH) + 10);
+    const donutMaxH = Math.min(chartColW, pageInnerH * 0.45);
+    ensureSpace(Math.max(donutMaxH, rowsH) + 10);
     const typesY = y;
-    const typesH = drawChart(types, chartW, chartW);
+    const typesH = drawChart(types, chartColW, donutMaxH);
     autoTable(doc, {
       startY: typesY,
       margin: { left: tableX, right: margin },
@@ -250,10 +280,10 @@ async function generateReportPdf(range: Range, dailyAvg: number, total: number) 
     // Procedimentos — full width chart + full width table
     sectionTitle("Procedimentos mais realizados");
     const proc = await captureChartPng('[data-chart="procedures"]');
-    const procH = 230;
-    ensureSpace(procH + 10);
-    const procDrawnH = drawChart(proc, contentW, procH);
+    const procMaxH = Math.min(280, pageInnerH * 0.42);
+    const procDrawnH = drawChart(proc, contentW, procMaxH);
     y += procDrawnH + 16;
+
     autoTable(doc, {
       startY: y,
       margin: { left: margin, right: margin },
