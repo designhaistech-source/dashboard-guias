@@ -15,16 +15,16 @@ import { reportLovableError } from "../lib/lovable-error-reporting";
 function NotFoundComponent() {
   useEffect(() => {
     if (typeof window !== "undefined") {
-      window.location.replace("/dashboard");
+      window.location.replace("/");
     }
   }, []);
   // Fallback redirect that runs even if hydration fails (SSR not-found path).
   return (
     <>
-      <meta httpEquiv="refresh" content="0; url=/dashboard" />
+      <meta httpEquiv="refresh" content="0; url=/" />
       <script
         dangerouslySetInnerHTML={{
-          __html: `window.location.replace('/dashboard');`,
+          __html: `window.location.replace('/');`,
         }}
       />
     </>

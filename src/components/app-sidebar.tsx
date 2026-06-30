@@ -56,10 +56,11 @@ export function AppSidebar({ activeKey }: { activeKey: ItemKey }) {
             <SidebarItem
               icon={LayoutGrid}
               label="Dashboard"
-              to="/dashboard"
+              to="/"
               active={activeKey === "dashboard"}
               hint="Visão geral com indicadores e resumo das suas atividades recentes."
             />
+
           </SidebarGroup>
 
           <SidebarGroup label="GUIAS">
@@ -78,10 +79,11 @@ export function AppSidebar({ activeKey }: { activeKey: ItemKey }) {
             <SidebarItem
               icon={Files}
               label="Minhas guias"
-              to="/"
+              to="/guias"
               active={activeKey === "guias"}
               hint="Histórico completo das guias processadas, com filtros, status e ações."
             />
+
             <SidebarItem
               icon={ScanSearch}
               label="Buscar procedimento"

@@ -1,646 +1,371 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import {
-  Upload,
-  FileUp,
-  Search,
-  Calendar,
-  Eye,
-  ClipboardCopy,
-  AlertTriangle,
-  CheckCircle2,
-  XCircle,
-  ChevronDown,
-  ChevronLeft,
-  ChevronRight,
-  ListChecks,
-  Plus,
-  Trash2,
-  Save,
-  Check,
-  Info,
-  Loader2,
+  LayoutGrid,
+  FileText,
+  TrendingUp,
+  Layers,
+  Download,
+  ArrowUpRight,
+  ArrowDownRight,
+  Activity,
 } from "lucide-react";
-import { toast } from "sonner";
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip as RTooltip,
+  ResponsiveContainer,
+  PieChart,
+  Pie,
+  Cell,
+  BarChart,
+  Bar,
+} from "recharts";
 import { AppSidebar } from "@/components/app-sidebar";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "HaisGuias — Minhas guias" },
-      { name: "description", content: "Processamento e histórico de guias médicas." },
+      { title: "HaisGuias — Dashboard" },
+      { name: "description", content: "Visão geral das guias médicas processadas." },
     ],
   }),
-  component: Page,
+  component: DashboardPage,
 });
 
-type Row = {
-  file: string;
-  id: number;
-  patient: string;
-  type: "SADT" | "Não válido" | "Encaminhamento";
-  date: string;
-  status: "Concluído" | "Erro";
-  warn?: boolean;
-};
+type Range = "7d" | "30d" | "90d";
 
-const rows: Row[] = [
-  { file: "4397007_1.png", id: 308, patient: "MARIA DENEYCARLA CAMPELO …", type: "SADT", date: "25/06/2026, 17:49", status: "Concluído" },
-  { file: "3167897_1.png", id: 307, patient: "—", type: "Não válido", date: "19/06/2026, 09:25", status: "Erro" },
-  { file: "4397583_1.png", id: 306, patient: "FRANCISCA IONE DANTAS DA SI…", type: "SADT", date: "19/06/2026, 09:24", status: "Concluído" },
-  { file: "uqnw2vgi12_1773841465312_page_1.…", id: 305, patient: "—", type: "Não válido", date: "19/06/2026, 09:21", status: "Erro" },
-  { file: "2139711_0224802026031810271…", id: 304, patient: "Luann Coutinho de A. Bassani", type: "SADT", date: "19/06/2026, 09:20", status: "Concluído", warn: true },
-  { file: "s599yu9p1m_1773839606479.png", id: 303, patient: "MARTA FIGUEREDO DOS ANJOS", type: "Encaminhamento", date: "19/06/2026, 09:18", status: "Concluído" },
-  { file: "2139853_0476902026031813221…", id: 302, patient: "Maíra Costa de Morais Nobre", type: "SADT", date: "19/06/2026, 09:18", status: "Concluído", warn: true },
-  { file: "2140004_0118542026031815233…", id: 301, patient: "—", type: "SADT", date: "19/06/2026, 09:18", status: "Erro" },
-  { file: "50863329-0e71-4018-8d88-04232…", id: 300, patient: "CONCEICAO APARECIDA LIMA D…", type: "SADT", date: "18/06/2026, 09:44", status: "Concluído" },
-  { file: "50863329-0e71-4018-8d88-04232…", id: 299, patient: "CONCEICAO APARECIDA LIMA D…", type: "SADT", date: "17/06/2026, 21:01", status: "Concluído" },
+const dailyData30: { day: string; guias: number }[] = [
+  { day: "01", guias: 4 }, { day: "02", guias: 6 }, { day: "03", guias: 3 },
+  { day: "04", guias: 8 }, { day: "05", guias: 5 }, { day: "06", guias: 9 },
+  { day: "07", guias: 11 }, { day: "08", guias: 7 }, { day: "09", guias: 12 },
+  { day: "10", guias: 10 }, { day: "11", guias: 14 }, { day: "12", guias: 8 },
+  { day: "13", guias: 6 }, { day: "14", guias: 9 }, { day: "15", guias: 13 },
+  { day: "16", guias: 11 }, { day: "17", guias: 15 }, { day: "18", guias: 9 },
+  { day: "19", guias: 12 }, { day: "20", guias: 7 }, { day: "21", guias: 10 },
+  { day: "22", guias: 14 }, { day: "23", guias: 16 }, { day: "24", guias: 11 },
+  { day: "25", guias: 13 }, { day: "26", guias: 9 }, { day: "27", guias: 12 },
+  { day: "28", guias: 15 }, { day: "29", guias: 14 }, { day: "30", guias: 18 },
 ];
 
-function Page() {
+const typeData = [
+  { name: "Consulta", value: 89, color: "oklch(0.55 0.19 255)" },
+  { name: "SP/SADT", value: 78, color: "oklch(0.62 0.18 285)" },
+  { name: "Internação", value: 41, color: "oklch(0.68 0.16 35)" },
+  { name: "Honorários", value: 26, color: "oklch(0.70 0.17 145)" },
+  { name: "Odontológica", value: 18, color: "oklch(0.72 0.15 80)" },
+];
+
+const procedures = [
+  { code: "10101012", name: "Consulta em consultório", count: 64, trend: 12 },
+  { code: "40901408", name: "Hemograma completo", count: 47, trend: 8 },
+  { code: "40802089", name: "Ultrassonografia abdominal", count: 39, trend: -3 },
+  { code: "31602045", name: "Eletrocardiograma", count: 31, trend: 5 },
+  { code: "40803115", name: "Ressonância magnética", count: 22, trend: -1 },
+  { code: "20203020", name: "Curativo grau II", count: 17, trend: 4 },
+];
+
+function DashboardPage() {
+  const [range, setRange] = useState<Range>("30d");
+
+  const total = useMemo(() => typeData.reduce((s, t) => s + t.value, 0), []);
+
   return (
     <div className="flex min-h-screen w-full bg-background text-foreground">
-      <AppSidebar activeKey="guias" />
+      <AppSidebar activeKey="dashboard" />
       <main className="flex-1 px-8 py-8">
-        <div className="mx-auto max-w-[1400px] space-y-8">
-          <Upload_Section />
-          <History_Section />
+        <div className="mx-auto max-w-[1400px] space-y-6">
+          {/* Header */}
+          <div className="rounded-2xl border border-border bg-card p-6 flex flex-wrap items-center justify-between gap-4">
+            <div className="flex items-center gap-4">
+              <div className="grid place-items-center h-12 w-12 rounded-xl bg-primary/10 text-primary">
+                <LayoutGrid className="h-6 w-6" />
+              </div>
+              <div>
+                <h1 className="text-2xl font-bold tracking-tight">Início</h1>
+                <p className="text-sm text-muted-foreground">
+                  Visão geral das guias extraídas
+                </p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="inline-flex rounded-lg border border-border bg-card p-1">
+                {(["7d", "30d", "90d"] as Range[]).map((r) => (
+                  <button
+                    key={r}
+                    onClick={() => setRange(r)}
+                    className={[
+                      "px-3 py-1.5 text-sm rounded-md transition-colors",
+                      range === r
+                        ? "bg-primary text-primary-foreground font-medium"
+                        : "text-muted-foreground hover:text-foreground",
+                    ].join(" ")}
+                  >
+                    {r === "7d" ? "7 dias" : r === "30d" ? "30 dias" : "90 dias"}
+                  </button>
+                ))}
+              </div>
+              <button
+                onClick={() => toast.success("Relatório gerado com sucesso!")}
+                className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors"
+              >
+                <Download className="h-4 w-4" />
+                Gerar relatório
+              </button>
+            </div>
+          </div>
+
+          {/* KPIs */}
+          <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
+            <Kpi
+              icon={FileText}
+              label="Total extraídas"
+              value="252"
+              hint="no período"
+              tone="primary"
+            />
+            <Kpi
+              icon={Activity}
+              label="Extraídas hoje"
+              value="14"
+              hint="+4 vs. ontem"
+              tone="success"
+              trend="up"
+            />
+            <Kpi
+              icon={TrendingUp}
+              label="Média por dia"
+              value="8"
+              hint="guias/dia no período"
+              tone="info"
+            />
+            <Kpi
+              icon={Layers}
+              label="Tipos diferentes"
+              value="5"
+              hint="categorias de guia"
+              tone="purple"
+            />
+          </div>
+
+          {/* Charts row */}
+          <div className="grid gap-4 grid-cols-1 lg:grid-cols-3">
+            <div className="lg:col-span-2 rounded-2xl border border-border bg-card p-6">
+              <div className="mb-4">
+                <h3 className="font-semibold">Guias extraídas por dia</h3>
+                <p className="text-xs text-muted-foreground">
+                  Últimos {range === "7d" ? 7 : range === "30d" ? 30 : 90} dias
+                </p>
+              </div>
+              <div className="h-72">
+                <ResponsiveContainer width="100%" height="100%">
+                  <LineChart data={dailyData30} margin={{ top: 10, right: 10, left: -10, bottom: 0 }}>
+                    <defs>
+                      <linearGradient id="gradPrimary" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stopColor="oklch(0.55 0.19 255)" stopOpacity={0.35} />
+                        <stop offset="100%" stopColor="oklch(0.55 0.19 255)" stopOpacity={0} />
+                      </linearGradient>
+                    </defs>
+                    <CartesianGrid strokeDasharray="3 3" stroke="oklch(0.92 0 0)" vertical={false} />
+                    <XAxis dataKey="day" stroke="oklch(0.6 0 0)" fontSize={11} tickLine={false} axisLine={false} />
+                    <YAxis stroke="oklch(0.6 0 0)" fontSize={11} tickLine={false} axisLine={false} />
+                    <RTooltip
+                      contentStyle={{
+                        background: "var(--popover)",
+                        border: "1px solid var(--border)",
+                        borderRadius: 8,
+                        fontSize: 12,
+                      }}
+                    />
+                    <Line
+                      type="monotone"
+                      dataKey="guias"
+                      stroke="oklch(0.55 0.19 255)"
+                      strokeWidth={2.5}
+                      dot={{ r: 3 }}
+                      activeDot={{ r: 5 }}
+                      fill="url(#gradPrimary)"
+                    />
+                  </LineChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
+
+            <div className="rounded-2xl border border-border bg-card p-6">
+              <div className="mb-4">
+                <h3 className="font-semibold">Por tipo de guia</h3>
+                <p className="text-xs text-muted-foreground">Distribuição no período</p>
+              </div>
+              <div className="flex items-center gap-4">
+                <div className="relative h-44 w-44 shrink-0">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <PieChart>
+                      <Pie
+                        data={typeData}
+                        innerRadius={55}
+                        outerRadius={80}
+                        paddingAngle={2}
+                        dataKey="value"
+                        stroke="none"
+                      >
+                        {typeData.map((d, i) => (
+                          <Cell key={i} fill={d.color} />
+                        ))}
+                      </Pie>
+                    </PieChart>
+                  </ResponsiveContainer>
+                  <div className="absolute inset-0 flex flex-col items-center justify-center">
+                    <div className="text-2xl font-bold">{total}</div>
+                    <div className="text-[10px] uppercase tracking-wider text-muted-foreground">
+                      guias
+                    </div>
+                  </div>
+                </div>
+                <ul className="flex-1 space-y-2 text-sm min-w-0">
+                  {typeData.map((d) => (
+                    <li key={d.name} className="flex items-center gap-2">
+                      <span
+                        className="h-2.5 w-2.5 rounded-full shrink-0"
+                        style={{ background: d.color }}
+                      />
+                      <span className="flex-1 truncate">{d.name}</span>
+                      <span className="text-muted-foreground tabular-nums">
+                        {Math.round((d.value / total) * 100)}%
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          {/* Procedures */}
+          <div className="rounded-2xl border border-border bg-card p-6">
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <h3 className="font-semibold">Procedimentos mais realizados</h3>
+                <p className="text-xs text-muted-foreground">Top códigos TUSS no período</p>
+              </div>
+            </div>
+            <div className="grid gap-6 lg:grid-cols-2">
+              <div className="h-64">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart
+                    data={procedures.map((p) => ({ name: p.name, count: p.count }))}
+                    layout="vertical"
+                    margin={{ top: 4, right: 16, left: 16, bottom: 0 }}
+                  >
+                    <CartesianGrid strokeDasharray="3 3" stroke="oklch(0.92 0 0)" horizontal={false} />
+                    <XAxis type="number" stroke="oklch(0.6 0 0)" fontSize={11} tickLine={false} axisLine={false} />
+                    <YAxis
+                      type="category"
+                      dataKey="name"
+                      stroke="oklch(0.6 0 0)"
+                      fontSize={11}
+                      width={140}
+                      tickLine={false}
+                      axisLine={false}
+                    />
+                    <RTooltip
+                      contentStyle={{
+                        background: "var(--popover)",
+                        border: "1px solid var(--border)",
+                        borderRadius: 8,
+                        fontSize: 12,
+                      }}
+                    />
+                    <Bar dataKey="count" fill="oklch(0.55 0.19 255)" radius={[0, 6, 6, 0]} />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+              <div className="overflow-hidden rounded-lg border border-border">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="text-left text-muted-foreground bg-muted/40">
+                      <th className="px-4 py-2 font-medium">Código</th>
+                      <th className="px-4 py-2 font-medium">Procedimento</th>
+                      <th className="px-4 py-2 font-medium text-right">Qtd.</th>
+                      <th className="px-4 py-2 font-medium text-right">Tend.</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {procedures.map((p) => (
+                      <tr key={p.code} className="border-t border-border hover:bg-muted/30">
+                        <td className="px-4 py-2 text-muted-foreground tabular-nums">{p.code}</td>
+                        <td className="px-4 py-2 truncate max-w-[180px]">{p.name}</td>
+                        <td className="px-4 py-2 text-right tabular-nums font-medium">{p.count}</td>
+                        <td className="px-4 py-2 text-right">
+                          <span
+                            className={[
+                              "inline-flex items-center gap-1 text-xs font-medium",
+                              p.trend >= 0 ? "text-success" : "text-destructive",
+                            ].join(" ")}
+                          >
+                            {p.trend >= 0 ? (
+                              <ArrowUpRight className="h-3 w-3" />
+                            ) : (
+                              <ArrowDownRight className="h-3 w-3" />
+                            )}
+                            {Math.abs(p.trend)}%
+                          </span>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
         </div>
       </main>
     </div>
   );
 }
 
+function Kpi({
+  icon: Icon,
+  label,
+  value,
+  hint,
+  tone,
+  trend,
+}: {
+  icon: React.ComponentType<{ className?: string }>;
+  label: string;
+  value: string;
+  hint: string;
+  tone: "primary" | "success" | "info" | "purple";
+  trend?: "up" | "down";
+}) {
+  const toneClass = {
+    primary: "bg-primary/10 text-primary",
+    success: "bg-success/15 text-success",
+    info: "bg-info/15 text-info",
+    purple: "bg-purple/15 text-purple",
+  }[tone];
 
-/* ---------- Upload Section ---------- */
-
-function Upload_Section() {
   return (
-    <section className="space-y-4">
-      <div className="flex items-center justify-between gap-3 flex-wrap">
-        <h1 className="text-2xl font-bold tracking-tight">Processamento de guias</h1>
-        <RequiredFieldsModal />
+    <div className="rounded-2xl border border-border bg-card p-5">
+      <div className="flex items-center justify-between">
+        <span className="text-sm text-muted-foreground">{label}</span>
+        <span className={`grid place-items-center h-8 w-8 rounded-lg ${toneClass}`}>
+          <Icon className="h-4 w-4" />
+        </span>
       </div>
-      <div className="rounded-2xl border-2 border-dashed border-border bg-card px-6 py-14 flex flex-col items-center justify-center text-center">
-        <div className="mb-5 grid place-items-center h-16 w-16 rounded-full bg-muted">
-          <Upload className="h-7 w-7 text-muted-foreground" />
-        </div>
-        <p className="text-lg font-semibold">Arraste suas guias médicas aqui</p>
-        <p className="mt-1 text-sm text-muted-foreground">
-          ou clique para selecionar arquivos (PDF, imagem)
-        </p>
-        <button className="mt-6 inline-flex items-center gap-2 rounded-lg border border-border bg-card px-4 py-2 text-sm font-medium shadow-sm hover:bg-muted transition-colors">
-          <FileUp className="h-4 w-4" />
-          Selecionar arquivos
-        </button>
-      </div>
-    </section>
-  );
-}
-
-/* ---------- History Section ---------- */
-
-function History_Section() {
-  return (
-    <section className="space-y-4">
-      <h2 className="text-2xl font-bold tracking-tight">Histórico de processamento</h2>
-
-      <div className="flex flex-wrap items-center gap-3">
-        <div className="relative flex-1 min-w-[260px] max-w-md">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <input
-            type="text"
-            placeholder="Buscar por arquivo ou paciente"
-            className="w-full rounded-lg border border-border bg-card pl-9 pr-3 py-2 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/40"
-          />
-        </div>
-        <FilterSelect label="Todos" />
-        <FilterSelect label="Todos os tipos" />
-        <DateField label="Data início" />
-        <DateField label="Data fim" />
-        <button className="text-sm font-medium text-foreground hover:text-primary">
-          Limpar filtros
-        </button>
-      </div>
-
-      <div className="rounded-xl border border-border bg-card overflow-hidden">
-        <table className="w-full text-sm">
-          <thead>
-            <tr className="text-left text-muted-foreground bg-muted/40">
-              <Th>Arquivo</Th>
-              <Th>ID da guia</Th>
-              <Th>Paciente</Th>
-              <Th>Tipo de guia</Th>
-              <Th>Data de envio</Th>
-              <Th>Status</Th>
-              <Th className="text-right pr-6">Ações</Th>
-            </tr>
-          </thead>
-          <tbody>
-            {rows.map((r, i) => (
-              <tr key={i} className="border-t border-border hover:bg-muted/30">
-                <Td>
-                  <div className="flex items-center gap-2">
-                    <span className="truncate max-w-[260px]">{r.file}</span>
-                    {r.warn && <AlertTriangle className="h-4 w-4 text-warning" />}
-                  </div>
-                </Td>
-                <Td className="text-muted-foreground">{r.id}</Td>
-                <Td className="max-w-[260px] truncate">{r.patient}</Td>
-                <Td>
-                  <TypeBadge type={r.type} />
-                </Td>
-                <Td className="text-muted-foreground">{r.date}</Td>
-                <Td>
-                  <StatusBadge status={r.status} />
-                </Td>
-                <Td className="text-right pr-6">
-                  <div className="inline-flex items-center gap-3 text-muted-foreground">
-                    <button aria-label="Visualizar" className="hover:text-foreground">
-                      <Eye className="h-4 w-4" />
-                    </button>
-                    <button
-                      aria-label="Copiar"
-                      className={r.status === "Erro" ? "opacity-40 cursor-not-allowed" : "hover:text-foreground"}
-                    >
-                      <ClipboardCopy className="h-4 w-4" />
-                    </button>
-                  </div>
-                </Td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-
-        <div className="flex flex-wrap items-center justify-between gap-4 px-6 py-4 border-t border-border">
-          <div className="text-sm text-muted-foreground">
-            Mostrando 1 a 10 de 130 resultados
-          </div>
-          <div className="flex items-center gap-4">
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              Itens por página
-              <button className="inline-flex items-center gap-1 rounded-md border border-border bg-card px-2 py-1 text-foreground">
-                10 <ChevronDown className="h-3.5 w-3.5" />
-              </button>
-            </div>
-            <Pagination />
-          </div>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function Th({ children, className = "" }: { children: React.ReactNode; className?: string }) {
-  return <th className={`px-6 py-3 font-medium ${className}`}>{children}</th>;
-}
-function Td({ children, className = "" }: { children: React.ReactNode; className?: string }) {
-  return <td className={`px-6 py-4 align-middle ${className}`}>{children}</td>;
-}
-
-function FilterSelect({ label }: { label: string }) {
-  return (
-    <button className="inline-flex items-center justify-between gap-3 rounded-lg border border-border bg-card px-3 py-2 text-sm min-w-[160px]">
-      <span className="text-muted-foreground">{label}</span>
-      <ChevronDown className="h-4 w-4 text-muted-foreground" />
-    </button>
-  );
-}
-
-function DateField({ label }: { label: string }) {
-  return (
-    <button className="inline-flex items-center gap-2 rounded-lg border border-border bg-card px-3 py-2 text-sm min-w-[150px]">
-      <Calendar className="h-4 w-4 text-muted-foreground" />
-      <span className="text-muted-foreground">{label}</span>
-    </button>
-  );
-}
-
-function TypeBadge({ type }: { type: Row["type"] }) {
-  const styles =
-    type === "SADT"
-      ? "bg-info text-info-foreground"
-      : type === "Não válido"
-      ? "bg-destructive text-destructive-foreground"
-      : "bg-purple text-purple-foreground";
-  return (
-    <span className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold ${styles}`}>
-      {type}
-    </span>
-  );
-}
-
-function StatusBadge({ status }: { status: Row["status"] }) {
-  if (status === "Concluído") {
-    return (
-      <span className="inline-flex items-center gap-1.5 rounded-full bg-success text-success-foreground px-3 py-1 text-xs font-semibold">
-        <CheckCircle2 className="h-3.5 w-3.5" /> Concluído
-      </span>
-    );
-  }
-  return (
-    <span className="inline-flex items-center gap-1.5 rounded-full bg-destructive text-destructive-foreground px-3 py-1 text-xs font-semibold">
-      <XCircle className="h-3.5 w-3.5" /> Erro
-    </span>
-  );
-}
-
-function Pagination() {
-  const pages = [1, 2, 3, 4, 5];
-  return (
-    <div className="flex items-center gap-1">
-      <PagBtn aria-label="Anterior">
-        <ChevronLeft className="h-4 w-4" />
-      </PagBtn>
-      {pages.map((p) => (
-        <PagBtn key={p} active={p === 1}>
-          {p}
-        </PagBtn>
-      ))}
-      <PagBtn aria-label="Próximo">
-        <ChevronRight className="h-4 w-4" />
-      </PagBtn>
-    </div>
-  );
-}
-
-function PagBtn({
-  children,
-  active,
-  ...rest
-}: React.ButtonHTMLAttributes<HTMLButtonElement> & { active?: boolean }) {
-  return (
-    <button
-      {...rest}
-      className={[
-        "h-8 min-w-8 px-2 rounded-md text-sm border transition-colors inline-flex items-center justify-center",
-        active
-          ? "bg-primary text-primary-foreground border-primary"
-          : "bg-card text-foreground border-border hover:bg-muted",
-      ].join(" ")}
-    >
-      {children}
-    </button>
-  );
-}
-
-/* ---------- Required Fields Modal ---------- */
-
-const GUIDE_TYPES = ["SADT", "Solicitação de exame", "Encaminhamento"] as const;
-type GuideType = (typeof GUIDE_TYPES)[number];
-
-const AVAILABLE_FIELDS = [
-  "Data autorização",
-  "Nome social",
-  "Nº carteira",
-  "Validade carteira",
-  "Atend. RN",
-  "Nome prestador",
-  "Profissional",
-  "Especialidade",
-  "Conselho",
-  "Nº conselho",
-  "UF",
-  "Código procedimento",
-  "Descrição procedimento",
-  "Quantidade",
-  "Data solicitação",
-  "CID",
-];
-
-const DEFAULT_FIELDS: Record<GuideType, string[]> = {
-  SADT: ["Nome", "Registro ANS", "Nº guia operadora", "Senha", "Validade senha", "Nº guia prestador"],
-  "Solicitação de exame": ["Nome", "Nº carteira", "CID"],
-  Encaminhamento: ["Nome", "Especialidade", "Profissional"],
-};
-
-function RequiredFieldsModal() {
-  const [open, setOpen] = useState(false);
-  const [guideType, setGuideType] = useState<GuideType>("SADT");
-  const [typeOpen, setTypeOpen] = useState(false);
-  const [fieldOpen, setFieldOpen] = useState(false);
-  const [fieldSearch, setFieldSearch] = useState("");
-  const [pickerSelection, setPickerSelection] = useState<string[]>([]);
-  const [confirmDiscard, setConfirmDiscard] = useState(false);
-
-  // Saved (persisted) state vs draft (being edited)
-  const [saved, setSaved] = useState<Record<GuideType, string[]>>(DEFAULT_FIELDS);
-  const [draft, setDraft] = useState<Record<GuideType, string[]>>(DEFAULT_FIELDS);
-  const [saving, setSaving] = useState(false);
-
-  const current = draft[guideType];
-  const remaining = AVAILABLE_FIELDS.filter((f) => !current.includes(f));
-  const visibleRemaining = remaining.filter((f) =>
-    f.toLowerCase().includes(fieldSearch.trim().toLowerCase()),
-  );
-
-  const isDirty = (Object.keys(draft) as GuideType[]).some(
-    (k) => draft[k].length !== saved[k].length || draft[k].some((f, i) => f !== saved[k][i]),
-  );
-  const isEmpty = current.length === 0;
-
-  const addSelected = () => {
-    if (pickerSelection.length === 0) return;
-    setDraft((prev) => ({
-      ...prev,
-      [guideType]: [...prev[guideType], ...pickerSelection.filter((f) => !prev[guideType].includes(f))],
-    }));
-    setPickerSelection([]);
-    setFieldSearch("");
-    setFieldOpen(false);
-  };
-
-  const togglePick = (f: string) => {
-    setPickerSelection((prev) => (prev.includes(f) ? prev.filter((x) => x !== f) : [...prev, f]));
-  };
-
-  const removeField = (f: string) => {
-    setDraft((prev) => ({ ...prev, [guideType]: prev[guideType].filter((x) => x !== f) }));
-  };
-
-  const attemptClose = (next: boolean) => {
-    if (!next && isDirty) {
-      setConfirmDiscard(true);
-      return;
-    }
-    setOpen(next);
-  };
-
-  const discardChanges = () => {
-    setDraft(saved);
-    setPickerSelection([]);
-    setFieldSearch("");
-    setConfirmDiscard(false);
-    setOpen(false);
-  };
-
-  const handleSave = async () => {
-    if (isEmpty) {
-      toast.error("Adicione ao menos um campo obrigatório para salvar.");
-      return;
-    }
-    setSaving(true);
-    try {
-      // Simulação de chamada ao backend
-      await new Promise((r) => setTimeout(r, 700));
-      setSaved(draft);
-      toast.success("Configuração salva", {
-        description: `Campos obrigatórios atualizados para ${guideType}.`,
-      });
-      setOpen(false);
-    } catch {
-      toast.error("Não foi possível salvar. Tente novamente.");
-    } finally {
-      setSaving(false);
-    }
-  };
-
-  return (
-    <>
-      <button
-        onClick={() => setOpen(true)}
-        className="inline-flex items-center gap-2 rounded-lg bg-primary text-primary-foreground px-4 py-2 text-sm font-medium shadow-sm hover:bg-primary/90 transition-colors"
+      <div className="mt-3 text-3xl font-bold tabular-nums">{value}</div>
+      <div
+        className={[
+          "mt-1 text-xs flex items-center gap-1",
+          trend === "up" ? "text-success" : "text-muted-foreground",
+        ].join(" ")}
       >
-        <ListChecks className="h-4 w-4" />
-        Campos obrigatórios
-      </button>
-
-      <Dialog open={open} onOpenChange={attemptClose}>
-        <DialogContent className="max-w-3xl">
-          <DialogHeader>
-            <div className="flex items-start justify-between gap-3 pr-6">
-              <DialogTitle className="text-xl">Campos obrigatórios por tipo de guia</DialogTitle>
-              {isDirty && (
-                <span className="shrink-0 inline-flex items-center gap-1.5 rounded-full bg-warning/15 text-warning px-2.5 py-1 text-xs font-medium">
-                  <span className="h-1.5 w-1.5 rounded-full bg-warning" />
-                  Alterações não salvas
-                </span>
-              )}
-            </div>
-            <div className="mt-2 flex items-start gap-2 rounded-lg bg-muted/60 border border-border px-3 py-2 text-xs text-muted-foreground">
-              <Info className="h-4 w-4 mt-0.5 shrink-0 text-info" />
-              <p>
-                Defina quais campos a guia precisa conter para ser processada automaticamente.
-                Ao enviar um arquivo, se algum desses campos estiver ausente, a guia será
-                marcada com aviso e exigirá revisão manual antes de seguir no fluxo.
-              </p>
-            </div>
-          </DialogHeader>
-
-          <div className="space-y-4">
-            {/* Tipo de guia */}
-            <div className="space-y-1.5">
-              <label className="text-sm font-medium">Tipo de guia</label>
-              <div className="relative">
-                <button
-                  onClick={() => {
-                    setTypeOpen((v) => !v);
-                    setFieldOpen(false);
-                  }}
-                  className="w-full sm:w-72 inline-flex items-center justify-between rounded-lg border border-border bg-card px-3 py-2.5 text-sm"
-                >
-                  <span>{guideType}</span>
-                  <ChevronDown className="h-4 w-4 text-muted-foreground" />
-                </button>
-                {typeOpen && (
-                  <div className="absolute z-20 mt-1 w-full sm:w-72 rounded-lg border border-border bg-popover shadow-lg overflow-hidden">
-                    {GUIDE_TYPES.map((t) => (
-                      <button
-                        key={t}
-                        onClick={() => {
-                          setGuideType(t);
-                          setTypeOpen(false);
-                          setPickerSelection([]);
-                          setFieldSearch("");
-                        }}
-                        className="w-full flex items-center gap-2 px-3 py-2 text-sm text-left hover:bg-muted"
-                      >
-                        <Check className={`h-4 w-4 ${t === guideType ? "opacity-100" : "opacity-0"}`} />
-                        {t}
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </div>
-            </div>
-
-            {/* Selecionar campo */}
-            <div className="flex flex-col sm:flex-row gap-2">
-              <div className="relative flex-1">
-                <button
-                  onClick={() => {
-                    setFieldOpen((v) => !v);
-                    setTypeOpen(false);
-                  }}
-                  className="w-full inline-flex items-center justify-between rounded-lg border border-border bg-card px-3 py-2.5 text-sm"
-                >
-                  <span className={pickerSelection.length ? "" : "text-muted-foreground"}>
-                    {pickerSelection.length
-                      ? `${pickerSelection.length} campo${pickerSelection.length > 1 ? "s" : ""} selecionado${pickerSelection.length > 1 ? "s" : ""}`
-                      : "Selecione um ou mais campos"}
-                  </span>
-                  <ChevronDown className="h-4 w-4 text-muted-foreground" />
-                </button>
-                {fieldOpen && (
-                  <div className="absolute z-20 mt-1 w-full rounded-lg border border-border bg-popover shadow-lg overflow-hidden">
-                    <div className="relative border-b border-border">
-                      <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                      <input
-                        autoFocus
-                        type="text"
-                        value={fieldSearch}
-                        onChange={(e) => setFieldSearch(e.target.value)}
-                        placeholder="Buscar campo…"
-                        className="w-full bg-transparent pl-9 pr-3 py-2 text-sm focus:outline-none"
-                      />
-                    </div>
-                    <div className="max-h-64 overflow-y-auto">
-                      {visibleRemaining.length === 0 ? (
-                        <div className="px-3 py-3 text-sm text-muted-foreground">
-                          {remaining.length === 0
-                            ? "Todos os campos disponíveis já foram adicionados."
-                            : "Nenhum campo corresponde à busca."}
-                        </div>
-                      ) : (
-                        visibleRemaining.map((f) => {
-                          const picked = pickerSelection.includes(f);
-                          return (
-                            <button
-                              key={f}
-                              onClick={() => togglePick(f)}
-                              className="w-full flex items-center gap-2 px-3 py-2 text-sm text-left hover:bg-muted"
-                            >
-                              <span
-                                className={`grid place-items-center h-4 w-4 rounded border ${
-                                  picked
-                                    ? "bg-primary border-primary text-primary-foreground"
-                                    : "border-border bg-card"
-                                }`}
-                              >
-                                {picked && <Check className="h-3 w-3" />}
-                              </span>
-                              {f}
-                            </button>
-                          );
-                        })
-                      )}
-                    </div>
-                  </div>
-                )}
-              </div>
-              <button
-                onClick={addSelected}
-                disabled={pickerSelection.length === 0}
-                className="inline-flex items-center justify-center gap-2 rounded-lg bg-primary text-primary-foreground px-4 py-2.5 text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed hover:bg-primary/90"
-              >
-                <Plus className="h-4 w-4" />
-                Adicionar
-                {pickerSelection.length > 0 && ` (${pickerSelection.length})`}
-              </button>
-            </div>
-
-            {/* Lista de campos */}
-            <div
-              className={`rounded-lg border bg-card p-4 min-h-[140px] ${
-                isEmpty ? "border-destructive/50" : "border-border"
-              }`}
-            >
-              {isEmpty ? (
-                <div className="flex items-start gap-2 text-sm text-destructive">
-                  <AlertTriangle className="h-4 w-4 mt-0.5 shrink-0" />
-                  <p>
-                    Adicione ao menos um campo obrigatório para que este tipo de guia possa ser
-                    processado.
-                  </p>
-                </div>
-              ) : (
-                <>
-                  <div className="mb-3 text-xs text-muted-foreground">
-                    {current.length} campo{current.length > 1 ? "s" : ""} obrigatório
-                    {current.length > 1 ? "s" : ""} para {guideType}
-                  </div>
-                  <div className="flex flex-wrap gap-2">
-                    {current.map((f) => (
-                      <span
-                        key={f}
-                        className="inline-flex items-center gap-2 rounded-full bg-muted px-3 py-1.5 text-sm"
-                      >
-                        {f}
-                        <button
-                          onClick={() => removeField(f)}
-                          aria-label={`Remover ${f}`}
-                          className="text-muted-foreground hover:text-destructive"
-                        >
-                          <Trash2 className="h-3.5 w-3.5" />
-                        </button>
-                      </span>
-                    ))}
-                  </div>
-                </>
-              )}
-            </div>
-
-            <div className="flex flex-col-reverse sm:flex-row sm:justify-end gap-2 pt-2">
-              <button
-                onClick={() => attemptClose(false)}
-                disabled={saving}
-                className="inline-flex items-center justify-center rounded-lg border border-border bg-card px-4 py-2.5 text-sm font-medium hover:bg-muted disabled:opacity-50"
-              >
-                Cancelar
-              </button>
-              <button
-                onClick={handleSave}
-                disabled={saving || isEmpty || !isDirty}
-                className="inline-flex items-center justify-center gap-2 rounded-lg bg-primary text-primary-foreground px-4 py-2.5 text-sm font-medium hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {saving ? (
-                  <>
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                    Salvando…
-                  </>
-                ) : (
-                  <>
-                    <Save className="h-4 w-4" />
-                    Salvar alterações
-                  </>
-                )}
-              </button>
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
-
-      {/* Confirmação de descarte */}
-      <Dialog open={confirmDiscard} onOpenChange={setConfirmDiscard}>
-        <DialogContent className="max-w-md">
-          <DialogHeader>
-            <DialogTitle>Descartar alterações?</DialogTitle>
-          </DialogHeader>
-          <p className="text-sm text-muted-foreground">
-            Você tem alterações não salvas. Se sair agora, elas serão perdidas.
-          </p>
-          <div className="flex flex-col-reverse sm:flex-row sm:justify-end gap-2 pt-2">
-            <button
-              onClick={() => setConfirmDiscard(false)}
-              className="inline-flex items-center justify-center rounded-lg border border-border bg-card px-4 py-2.5 text-sm font-medium hover:bg-muted"
-            >
-              Continuar editando
-            </button>
-            <button
-              onClick={discardChanges}
-              className="inline-flex items-center justify-center rounded-lg bg-destructive text-destructive-foreground px-4 py-2.5 text-sm font-medium hover:bg-destructive/90"
-            >
-              Descartar
-            </button>
-          </div>
-        </DialogContent>
-      </Dialog>
-    </>
+        {trend === "up" && <ArrowUpRight className="h-3 w-3" />}
+        {hint}
+      </div>
+    </div>
   );
 }

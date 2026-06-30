@@ -35,31 +35,32 @@ async def main() -> int:
         context = await browser.new_context(viewport={"width": 1280, "height": 1800})
         page = await context.new_page()
 
-        # 1. Abre a home.
-        await page.goto(f"{BASE_URL}/", wait_until="domcontentloaded")
+        # 1. Abre a home (que agora é o dashboard).
+        await page.goto(f"{BASE_URL}/guias", wait_until="domcontentloaded")
 
         # 2. Clica em "Dashboard" no sidebar.
         dashboard_link = page.get_by_role("link", name="Dashboard").first
         await dashboard_link.wait_for(state="visible", timeout=10_000)
         await dashboard_link.click()
 
-        # 3. Aguarda a navegação client-side.
-        await page.wait_for_url(f"{BASE_URL}/dashboard", timeout=10_000)
+        # 3. Aguarda a navegação client-side para "/".
+        await page.wait_for_url(f"{BASE_URL}/", timeout=10_000)
 
         # 4. Valida elementos esperados.
         await assert_dashboard_rendered(page)
 
         # 5. Recarrega a URL diretamente (SPA fallback) e revalida.
-        await page.goto(f"{BASE_URL}/dashboard", wait_until="domcontentloaded")
+        await page.goto(f"{BASE_URL}/", wait_until="domcontentloaded")
         await assert_dashboard_rendered(page)
 
-        # 6. Rota inexistente deve redirecionar para /dashboard.
+        # 6. Rota inexistente deve redirecionar para "/" (dashboard).
         nonexistent = f"{BASE_URL}/rota-que-nao-existe-{int(asyncio.get_event_loop().time())}"
         await page.goto(nonexistent, wait_until="domcontentloaded")
-        await page.wait_for_url(f"{BASE_URL}/dashboard", timeout=10_000)
+        await page.wait_for_url(f"{BASE_URL}/", timeout=10_000)
         await assert_dashboard_rendered(page)
 
-        print(f"OK — /dashboard renderiza e rotas inexistentes redirecionam em {BASE_URL}")
+        print(f"OK — dashboard na home e rotas inexistentes redirecionam em {BASE_URL}")
+
         await browser.close()
         return 0
 
