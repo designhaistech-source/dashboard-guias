@@ -202,8 +202,18 @@ async function generateReportPdf(range: Range, dailyAvg: number, total: number) 
       }
     };
 
-    const sectionTitle = (text: string) => {
-      ensureSpace(30);
+    // Push to a new page whenever the next block wouldn't fit alongside the
+    // section title or chart — keeps title+chart+table groups visually together.
+    const keepTogether = (needed: number) => {
+      if (needed > availableH()) {
+        doc.addPage();
+        y = headerOffsetTop;
+      }
+    };
+
+    const sectionTitle = (text: string, keepNextH = 0) => {
+      const titleBlock = 28;
+      keepTogether(titleBlock + keepNextH);
       applyType(TYPE.sectionH);
       doc.text(text, margin, y);
       doc.setDrawColor(220);
@@ -232,13 +242,12 @@ async function generateReportPdf(range: Range, dailyAvg: number, total: number) 
       boxX = margin,
     ) => {
       if (!img) return 0;
-      let cap = Math.min(maxH, pageInnerH);
+      const cap = Math.min(maxH, pageInnerH);
+      // If the full intended chart height doesn't fit on the current page,
+      // move to a fresh page so the chart is never sliced.
       if (cap > availableH()) {
-        if (availableH() < cap * 0.6) {
-          doc.addPage();
-          y = headerOffsetTop;
-        }
-        cap = Math.min(cap, availableH());
+        doc.addPage();
+        y = headerOffsetTop;
       }
       const { w, h } = fitSize(img, boxW, cap);
       const x = boxX + (boxW - w) / 2;
@@ -246,8 +255,12 @@ async function generateReportPdf(range: Range, dailyAvg: number, total: number) 
       return h;
     };
 
+    // Approx height for an autoTable block (header + N rows + padding).
+    const tableBlockH = (rows: number, rowH = 22, headH = 26) => headH + rows * rowH + 6;
+
     // KPIs
-    sectionTitle("Indicadores");
+    const kpiRows = 4;
+    sectionTitle("Indicadores", tableBlockH(kpiRows));
     autoTable(doc, {
       startY: y,
       margin: { left: margin, right: margin },
@@ -264,26 +277,29 @@ async function generateReportPdf(range: Range, dailyAvg: number, total: number) 
       columnStyles: { 1: { halign: "right", cellWidth: 120 } },
       styles: tableStyleDefaults,
       tableWidth: contentW,
+      rowPageBreak: "avoid",
+      showHead: "everyPage",
     });
     y = (doc as any).lastAutoTable.finalY + 24;
 
-    // Guias por dia — full width chart
+    // Guias por dia — full width chart (no companion table)
     const daily = await captureChartPng('[data-chart="daily"]');
-    sectionTitle("Guias extraídas por dia");
     const dailyMaxH = Math.min(260, pageInnerH * 0.38);
+    sectionTitle("Guias extraídas por dia", dailyMaxH + 10);
     const dailyH = drawChart(daily, contentW, dailyMaxH);
     y += dailyH + 24;
 
-    // Distribuição por tipo — donut left, table right
-    sectionTitle("Distribuição por tipo de guia");
-    const types = await captureChartPng('[data-chart="types"]');
+    // Distribuição por tipo — donut left, table right (must render on same row)
     const colGap = 20;
     const chartColW = (contentW - colGap) * 0.42;
     const tableX = margin + chartColW + colGap;
     const tableW = contentW - chartColW - colGap;
-    const rowsH = 22 + typeData.length * 20;
     const donutMaxH = Math.min(chartColW, pageInnerH * 0.45);
-    ensureSpace(Math.max(donutMaxH, rowsH) + 10);
+    const typesTableH = tableBlockH(typeData.length);
+    const typesBlockH = Math.max(donutMaxH, typesTableH);
+    sectionTitle("Distribuição por tipo de guia", typesBlockH + 10);
+    const types = await captureChartPng('[data-chart="types"]');
+    keepTogether(typesBlockH);
     const typesY = y;
     const typesH = drawChart(types, chartColW, donutMaxH);
     autoTable(doc, {
@@ -297,15 +313,21 @@ async function generateReportPdf(range: Range, dailyAvg: number, total: number) 
       bodyStyles: { font: FONT, fontStyle: "normal", textColor: TYPE.tableBody.color },
       columnStyles: { 1: { halign: "right", cellWidth: 50 }, 2: { halign: "right", cellWidth: 50 } },
       styles: tableStyleDefaults,
+      rowPageBreak: "avoid",
+      showHead: "everyPage",
     });
     y = Math.max((doc as any).lastAutoTable.finalY, typesY + typesH) + 24;
 
-    // Procedimentos
-    sectionTitle("Procedimentos mais realizados");
+    // Procedimentos — chart + at least the table header & first 3 rows together
     const proc = await captureChartPng('[data-chart="procedures"]');
     const procMaxH = Math.min(280, pageInnerH * 0.42);
+    const procMinTableH = tableBlockH(Math.min(3, procedures.length));
+    sectionTitle("Procedimentos mais realizados", procMaxH + 16 + procMinTableH);
     const procDrawnH = drawChart(proc, contentW, procMaxH);
     y += procDrawnH + 16;
+    // Make sure the table header + a few rows don't get stranded alone on the
+    // next page right after the chart.
+    keepTogether(procMinTableH);
 
     autoTable(doc, {
       startY: y,
@@ -318,7 +340,10 @@ async function generateReportPdf(range: Range, dailyAvg: number, total: number) 
       bodyStyles: { font: FONT, fontStyle: "normal", textColor: TYPE.tableBody.color },
       columnStyles: { 0: { cellWidth: 110 }, 2: { halign: "right", cellWidth: 60 } },
       styles: tableStyleDefaults,
+      rowPageBreak: "avoid",
+      showHead: "everyPage",
     });
+
 
     // Footer
     const pageCount = doc.getNumberOfPages();
