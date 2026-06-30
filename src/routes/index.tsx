@@ -148,18 +148,46 @@ async function generateReportPdf(range: Range, dailyAvg: number, total: number) 
     const now = new Date();
     const dateStr = now.toLocaleString("pt-BR");
 
+    // ---- Type system: single source of truth for fonts/weights/sizes ----
+    const FONT = "helvetica";
+    const TYPE = {
+      title:       { size: 18, weight: "bold"   as const, color: [255, 255, 255] as [number, number, number] },
+      subtitle:    { size: 10, weight: "normal" as const, color: [255, 255, 255] as [number, number, number] },
+      sectionH:    { size: 12, weight: "bold"   as const, color: [20, 20, 20]    as [number, number, number] },
+      body:        { size: 10, weight: "normal" as const, color: [20, 20, 20]    as [number, number, number] },
+      tableHead:   { size: 10, weight: "bold"   as const, color: [255, 255, 255] as [number, number, number] },
+      tableBody:   { size: 10, weight: "normal" as const, color: [40, 40, 40]    as [number, number, number] },
+      caption:     { size: 8,  weight: "normal" as const, color: [130, 130, 130] as [number, number, number] },
+    };
+    const applyType = (t: typeof TYPE[keyof typeof TYPE]) => {
+      doc.setFont(FONT, t.weight);
+      doc.setFontSize(t.size);
+      doc.setTextColor(t.color[0], t.color[1], t.color[2]);
+    };
+    const tableStyleDefaults = {
+      font: FONT,
+      fontSize: TYPE.tableBody.size,
+      cellPadding: 6,
+      textColor: TYPE.tableBody.color,
+      lineColor: [220, 220, 220] as [number, number, number],
+    };
+    const tableHeadStyles = {
+      font: FONT,
+      fontStyle: "bold" as const,
+      fontSize: TYPE.tableHead.size,
+      fillColor: [37, 99, 235] as [number, number, number],
+      textColor: TYPE.tableHead.color,
+      halign: "left" as const,
+    };
+
     // Header
     doc.setFillColor(37, 99, 235);
     doc.rect(0, 0, pageWidth, 70, "F");
-    doc.setTextColor(255, 255, 255);
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(18);
+    applyType(TYPE.title);
     doc.text("HaisGuias — Relatório do Dashboard", margin, 35);
-    doc.setFont("helvetica", "normal");
-    doc.setFontSize(10);
+    applyType(TYPE.subtitle);
     doc.text(`Período: ${rangeLabel}  •  Gerado em: ${dateStr}`, margin, 55);
 
-    doc.setTextColor(20, 20, 20);
     const footerH = 50;
     const headerOffsetTop = 60;
     let y = 100;
@@ -176,15 +204,13 @@ async function generateReportPdf(range: Range, dailyAvg: number, total: number) 
 
     const sectionTitle = (text: string) => {
       ensureSpace(30);
-      doc.setFont("helvetica", "bold");
-      doc.setFontSize(12);
-      doc.setTextColor(20, 20, 20);
+      applyType(TYPE.sectionH);
       doc.text(text, margin, y);
       doc.setDrawColor(220);
       doc.setLineWidth(0.6);
       doc.line(margin, y + 4, pageWidth - margin, y + 4);
-      y += 16;
-      doc.setFont("helvetica", "normal");
+      y += 18;
+      applyType(TYPE.body);
     };
 
     // Fit image into a box preserving aspect ratio (contain).
@@ -199,10 +225,6 @@ async function generateReportPdf(range: Range, dailyAvg: number, total: number) 
       return { w, h };
     };
 
-    // Draw chart centered horizontally inside [boxX, boxX+boxW], scaled to fit
-    // [boxW x maxH]. If maxH would overflow current page, reserve a new page
-    // and recompute against the full inner page height so the chart never gets
-    // clipped on small page sizes.
     const drawChart = (
       img: { dataUrl: string; w: number; h: number } | null,
       boxW: number,
@@ -212,7 +234,6 @@ async function generateReportPdf(range: Range, dailyAvg: number, total: number) 
       if (!img) return 0;
       let cap = Math.min(maxH, pageInnerH);
       if (cap > availableH()) {
-        // not enough room on this page — start a new one
         if (availableH() < cap * 0.6) {
           doc.addPage();
           y = headerOffsetTop;
@@ -238,14 +259,15 @@ async function generateReportPdf(range: Range, dailyAvg: number, total: number) 
         ["Tipos diferentes", String(typeData.length)],
       ],
       theme: "grid",
-      headStyles: { fillColor: [37, 99, 235], halign: "left" },
+      headStyles: tableHeadStyles,
+      bodyStyles: { font: FONT, fontStyle: "normal", textColor: TYPE.tableBody.color },
       columnStyles: { 1: { halign: "right", cellWidth: 120 } },
-      styles: { fontSize: 10, cellPadding: 6 },
+      styles: tableStyleDefaults,
       tableWidth: contentW,
     });
     y = (doc as any).lastAutoTable.finalY + 24;
 
-    // Guias por dia — full width chart, capped to a share of page height
+    // Guias por dia — full width chart
     const daily = await captureChartPng('[data-chart="daily"]');
     sectionTitle("Guias extraídas por dia");
     const dailyMaxH = Math.min(260, pageInnerH * 0.38);
@@ -271,13 +293,14 @@ async function generateReportPdf(range: Range, dailyAvg: number, total: number) 
       head: [["Tipo", "Qtd.", "%"]],
       body: typeData.map((t) => [t.name, String(t.value), `${Math.round((t.value / total) * 100)}%`]),
       theme: "striped",
-      headStyles: { fillColor: [37, 99, 235] },
+      headStyles: tableHeadStyles,
+      bodyStyles: { font: FONT, fontStyle: "normal", textColor: TYPE.tableBody.color },
       columnStyles: { 1: { halign: "right", cellWidth: 50 }, 2: { halign: "right", cellWidth: 50 } },
-      styles: { fontSize: 10, cellPadding: 5 },
+      styles: tableStyleDefaults,
     });
     y = Math.max((doc as any).lastAutoTable.finalY, typesY + typesH) + 24;
 
-    // Procedimentos — full width chart + full width table
+    // Procedimentos
     sectionTitle("Procedimentos mais realizados");
     const proc = await captureChartPng('[data-chart="procedures"]');
     const procMaxH = Math.min(280, pageInnerH * 0.42);
@@ -291,9 +314,10 @@ async function generateReportPdf(range: Range, dailyAvg: number, total: number) 
       head: [["Código TUSS", "Procedimento", "Qtd."]],
       body: procedures.map((p) => [p.code, p.name, String(p.count)]),
       theme: "striped",
-      headStyles: { fillColor: [37, 99, 235] },
+      headStyles: tableHeadStyles,
+      bodyStyles: { font: FONT, fontStyle: "normal", textColor: TYPE.tableBody.color },
       columnStyles: { 0: { cellWidth: 110 }, 2: { halign: "right", cellWidth: 60 } },
-      styles: { fontSize: 10, cellPadding: 5 },
+      styles: tableStyleDefaults,
     });
 
     // Footer
@@ -303,11 +327,11 @@ async function generateReportPdf(range: Range, dailyAvg: number, total: number) 
       doc.setDrawColor(230);
       doc.setLineWidth(0.5);
       doc.line(margin, pageHeight - 32, pageWidth - margin, pageHeight - 32);
-      doc.setFontSize(8);
-      doc.setTextColor(130);
+      applyType(TYPE.caption);
       doc.text("HaisGuias", margin, pageHeight - 18);
       doc.text(`Página ${i} de ${pageCount}`, pageWidth - margin, pageHeight - 18, { align: "right" });
     }
+
 
     const filename = `relatorio-haisguias-${now.toISOString().slice(0, 10)}.pdf`;
     doc.save(filename);
