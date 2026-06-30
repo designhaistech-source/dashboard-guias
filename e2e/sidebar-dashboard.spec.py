@@ -53,7 +53,13 @@ async def main() -> int:
         await page.goto(f"{BASE_URL}/dashboard", wait_until="domcontentloaded")
         await assert_dashboard_rendered(page)
 
-        print(f"OK — /dashboard renderiza os elementos esperados em {BASE_URL}")
+        # 6. Rota inexistente deve redirecionar para /dashboard.
+        nonexistent = f"{BASE_URL}/rota-que-nao-existe-{int(asyncio.get_event_loop().time())}"
+        await page.goto(nonexistent, wait_until="domcontentloaded")
+        await page.wait_for_url(f"{BASE_URL}/dashboard", timeout=10_000)
+        await assert_dashboard_rendered(page)
+
+        print(f"OK — /dashboard renderiza e rotas inexistentes redirecionam em {BASE_URL}")
         await browser.close()
         return 0
 
