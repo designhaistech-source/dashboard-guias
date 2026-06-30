@@ -30,7 +30,7 @@ import {
 } from "@/components/ui/dialog";
 import { AppSidebar } from "@/components/app-sidebar";
 
-export const Route = createFileRoute("/")({
+export const Route = createFileRoute("/guias")({
   head: () => ({
     meta: [
       { title: "HaisGuias — Minhas guias" },

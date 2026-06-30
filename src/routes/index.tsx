@@ -27,7 +27,7 @@ import {
 import { AppSidebar } from "@/components/app-sidebar";
 import { toast } from "sonner";
 
-export const Route = createFileRoute("/dashboard")({
+export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
       { title: "HaisGuias — Dashboard" },
