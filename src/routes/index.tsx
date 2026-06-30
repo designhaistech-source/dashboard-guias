@@ -98,6 +98,20 @@ async function captureChartPng(selector: string, scale = 2): Promise<{ dataUrl: 
   clone.setAttribute("height", String(h));
   if (!clone.getAttribute("viewBox")) clone.setAttribute("viewBox", `0 0 ${w} ${h}`);
 
+  // Convert modern color functions (oklch / oklab / color()) to rgb(),
+  // because the SVG renderer used by Image+canvas can't paint those directly
+  // when written as style/attribute values during off-DOM rasterization.
+  const colorProbe = document.createElement("div");
+  colorProbe.style.position = "absolute";
+  colorProbe.style.visibility = "hidden";
+  document.body.appendChild(colorProbe);
+  const resolveColor = (v: string) => {
+    if (!v || v === "none" || v.startsWith("url(")) return v;
+    if (!/oklch|oklab|color\(/i.test(v)) return v;
+    colorProbe.style.color = v;
+    return window.getComputedStyle(colorProbe).color || v;
+  };
+
   const srcEls = svg.querySelectorAll<SVGElement>("*");
   const dstEls = clone.querySelectorAll<SVGElement>("*");
   srcEls.forEach((el, i) => {
@@ -107,11 +121,20 @@ async function captureChartPng(selector: string, scale = 2): Promise<{ dataUrl: 
     const props = ["fill", "stroke", "stroke-width", "stroke-dasharray", "opacity", "fill-opacity", "stroke-opacity", "font-size", "font-family", "font-weight"];
     let style = "";
     for (const p of props) {
-      const v = cs.getPropertyValue(p);
-      if (v) style += `${p}:${v};`;
+      let v = cs.getPropertyValue(p);
+      if (!v) continue;
+      if (p === "fill" || p === "stroke") v = resolveColor(v);
+      style += `${p}:${v};`;
     }
     dst.setAttribute("style", style);
+    // Also normalize fill/stroke attributes (Recharts sets them on paths)
+    const attrFill = el.getAttribute("fill");
+    if (attrFill) dst.setAttribute("fill", resolveColor(attrFill));
+    const attrStroke = el.getAttribute("stroke");
+    if (attrStroke) dst.setAttribute("stroke", resolveColor(attrStroke));
   });
+  colorProbe.remove();
+
 
   const xml = new XMLSerializer().serializeToString(clone);
   const svgBlob = new Blob([xml], { type: "image/svg+xml;charset=utf-8" });
@@ -282,52 +305,48 @@ async function generateReportPdf(range: Range, dailyAvg: number, total: number) 
     });
     y = (doc as any).lastAutoTable.finalY + 24;
 
-    // Guias por dia — full width chart (no companion table)
+    // Spacing token between sections / between a chart and the next block.
+    const GAP = 18;
+
+    // Guias por dia — full width chart
     const daily = await captureChartPng('[data-chart="daily"]');
     const dailyMaxH = Math.min(260, pageInnerH * 0.38);
-    sectionTitle("Guias extraídas por dia", dailyMaxH + 10);
+    sectionTitle("Guias extraídas por dia", dailyMaxH);
     const dailyH = drawChart(daily, contentW, dailyMaxH);
-    y += dailyH + 24;
+    y += dailyH + GAP;
 
-    // Distribuição por tipo — donut left, table right (must render on same row)
-    const colGap = 20;
-    const chartColW = (contentW - colGap) * 0.42;
-    const tableX = margin + chartColW + colGap;
-    const tableW = contentW - chartColW - colGap;
-    const donutMaxH = Math.min(chartColW, pageInnerH * 0.45);
-    const typesTableH = tableBlockH(typeData.length);
-    const typesBlockH = Math.max(donutMaxH, typesTableH);
-    sectionTitle("Distribuição por tipo de guia", typesBlockH + 10);
+    // Distribuição por tipo — donut full width on top, table below
     const types = await captureChartPng('[data-chart="types"]');
-    keepTogether(typesBlockH);
-    const typesY = y;
-    const typesH = drawChart(types, chartColW, donutMaxH);
+    const donutMaxH = Math.min(200, pageInnerH * 0.32);
+    sectionTitle("Distribuição por tipo de guia", donutMaxH);
+    const donutW = Math.min(contentW, donutMaxH * (types ? types.w / types.h : 2));
+    const typesH = drawChart(types, donutW, donutMaxH, margin + (contentW - donutW) / 2);
+    y += typesH + GAP;
     autoTable(doc, {
-      startY: typesY,
-      margin: { left: tableX, right: margin },
-      tableWidth: tableW,
+      startY: y,
+      margin: { left: margin, right: margin },
+      tableWidth: contentW,
       head: [["Tipo", "Qtd.", "%"]],
       body: typeData.map((t) => [t.name, String(t.value), `${Math.round((t.value / total) * 100)}%`]),
       theme: "striped",
       headStyles: tableHeadStyles,
       bodyStyles: { font: FONT, fontStyle: "normal", textColor: TYPE.tableBody.color },
-      columnStyles: { 1: { halign: "right", cellWidth: 50 }, 2: { halign: "right", cellWidth: 50 } },
+      columnStyles: { 1: { halign: "right", cellWidth: 60 }, 2: { halign: "right", cellWidth: 60 } },
       styles: tableStyleDefaults,
       rowPageBreak: "avoid",
       showHead: "everyPage",
     });
-    y = Math.max((doc as any).lastAutoTable.finalY, typesY + typesH) + 24;
+    y = (doc as any).lastAutoTable.finalY + GAP + 6;
 
-    // Procedimentos — chart + at least the table header & first 3 rows together
+    // Procedimentos — chart, then table (keep title with chart)
     const proc = await captureChartPng('[data-chart="procedures"]');
     const procMaxH = Math.min(280, pageInnerH * 0.42);
-    const procMinTableH = tableBlockH(Math.min(3, procedures.length));
-    sectionTitle("Procedimentos mais realizados", procMaxH + 16 + procMinTableH);
+    sectionTitle("Procedimentos mais realizados", procMaxH);
     const procDrawnH = drawChart(proc, contentW, procMaxH);
-    y += procDrawnH + 16;
-    // Make sure the table header + a few rows don't get stranded alone on the
-    // next page right after the chart.
-    keepTogether(procMinTableH);
+    y += procDrawnH + GAP;
+    // Don't strand the table header alone after the chart.
+    keepTogether(tableBlockH(Math.min(3, procedures.length)));
+
 
     autoTable(doc, {
       startY: y,
@@ -485,7 +504,9 @@ function DashboardPage() {
                       fill="url(#gradPrimary)"
                       dot={{ r: 0 }}
                       activeDot={{ r: 5, strokeWidth: 2, stroke: "var(--card)" }}
+                      isAnimationActive={false}
                     />
+
                   </AreaChart>
                 </ResponsiveContainer>
               </div>
@@ -514,7 +535,9 @@ function DashboardPage() {
                         )}
                         onMouseEnter={(_, i) => setActiveType(i)}
                         onMouseLeave={() => setActiveType(undefined)}
+                        isAnimationActive={false}
                       >
+
                         {typeData.map((d, i) => (
                           <Cell key={i} fill={d.color} />
                         ))}
@@ -601,7 +624,7 @@ function DashboardPage() {
                       axisLine={false}
                     />
                     <RTooltip content={<ChartTooltip />} cursor={{ fill: "var(--muted)", opacity: 0.4 }} />
-                    <Bar dataKey="count" fill="url(#gradBar)" radius={[0, 6, 6, 0]} maxBarSize={22}>
+                    <Bar dataKey="count" fill="url(#gradBar)" radius={[0, 6, 6, 0]} maxBarSize={22} isAnimationActive={false}>
                       <LabelList
                         dataKey="count"
                         position="right"
@@ -609,6 +632,7 @@ function DashboardPage() {
                         style={{ fontSize: 11, fontWeight: 600 }}
                       />
                     </Bar>
+
                   </BarChart>
                 </ResponsiveContainer>
               </div>
