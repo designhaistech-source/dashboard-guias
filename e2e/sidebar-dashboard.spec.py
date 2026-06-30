@@ -33,13 +33,14 @@ async def main() -> int:
         # 3. Aguarda a navegação client-side concluir.
         await page.wait_for_url(f"{BASE_URL}/dashboard", timeout=10_000)
 
-        # 4. Valida que a página de Dashboard carregou (título "Dashboard" presente).
-        heading = page.get_by_role("heading", name="Dashboard").first
+        # 4. Valida que a página de Dashboard carregou (heading "Início" presente).
+        heading = page.get_by_role("heading", name="Início").first
         await heading.wait_for(state="visible", timeout=10_000)
 
         # 5. Valida que recarregar /dashboard direto também funciona (SPA fallback no build publicado).
         await page.goto(f"{BASE_URL}/dashboard", wait_until="domcontentloaded")
-        await page.get_by_role("heading", name="Dashboard").first.wait_for(state="visible")
+        await page.get_by_role("heading", name="Início").first.wait_for(state="visible")
+
 
         print(f"OK — navegação da sidebar para /dashboard funcionando em {BASE_URL}")
         await browser.close()
