@@ -18,7 +18,17 @@ function NotFoundComponent() {
       window.location.replace("/dashboard");
     }
   }, []);
-  return null;
+  // Fallback redirect that runs even if hydration fails (SSR not-found path).
+  return (
+    <>
+      <meta httpEquiv="refresh" content="0; url=/dashboard" />
+      <script
+        dangerouslySetInnerHTML={{
+          __html: `window.location.replace('/dashboard');`,
+        }}
+      />
+    </>
+  );
 }
 
 
