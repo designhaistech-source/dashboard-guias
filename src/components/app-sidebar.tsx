@@ -79,10 +79,11 @@ export function AppSidebar({ activeKey }: { activeKey: ItemKey }) {
             <SidebarItem
               icon={Files}
               label="Minhas guias"
-              to="/"
+              to="/guias"
               active={activeKey === "guias"}
               hint="Histórico completo das guias processadas, com filtros, status e ações."
             />
+
             <SidebarItem
               icon={ScanSearch}
               label="Buscar procedimento"
