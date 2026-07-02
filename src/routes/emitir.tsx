@@ -38,7 +38,7 @@ import {
 } from "@/components/ui/dialog";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
-import { Building2 as HospitalIcon, Shield } from "lucide-react";
+import { Shield, Landmark } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/emitir")({
