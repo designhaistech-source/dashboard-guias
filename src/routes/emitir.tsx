@@ -46,6 +46,7 @@ import { Shield, Landmark, ArrowUp, Stethoscope as StethIcon, BedDouble, HeartPu
 import type { LucideIcon } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { cn } from "@/lib/utils";
+import { SadtForm } from "@/components/sadt-form";
 
 export const Route = createFileRoute("/emitir")({
   head: () => ({
