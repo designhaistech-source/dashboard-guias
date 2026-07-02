@@ -1324,7 +1324,7 @@ function Section({
   children,
 }: {
   icon: React.ReactNode;
-  title: string;
+  title: React.ReactNode;
   description?: string;
   action?: React.ReactNode;
   children: React.ReactNode;
