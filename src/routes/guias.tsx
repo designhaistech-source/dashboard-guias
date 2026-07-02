@@ -73,6 +73,7 @@ function Page() {
           <Upload_Section />
           <History_Section />
         </div>
+        <SiteFooter />
       </main>
     </div>
   );
