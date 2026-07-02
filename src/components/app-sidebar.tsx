@@ -23,6 +23,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import logoAsset from "@/assets/haisguias-logo.png.asset.json";
 
 type ItemKey =
   | "dashboard"
