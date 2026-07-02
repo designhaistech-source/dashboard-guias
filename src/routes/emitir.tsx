@@ -73,7 +73,7 @@ const CONVENIOS: {
 }[] = [
   {
     id: "tiss",
-    label: "Convênio (TISS)",
+    label: "Guias Padronizadas TISS",
     short: "TISS",
     description: "Padrão ANS para planos de saúde privados.",
     guides: [
