@@ -12,7 +12,7 @@ import {
   Stethoscope,
   ClipboardList,
   Building2,
-  
+  Settings2,
   Info,
 } from "lucide-react";
 import { toast } from "sonner";
