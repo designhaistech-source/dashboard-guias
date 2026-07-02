@@ -670,6 +670,72 @@ function EmitirPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <Dialog open={prefsOpen} onOpenChange={setPrefsOpen}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle>Preferências do Usuário</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div className="space-y-1.5">
+              <Label>Nome do Prestador</Label>
+              <Input
+                value={prefPrestador}
+                onChange={(e) => setPrefPrestador(e.target.value)}
+                placeholder="Nome completo do prestador"
+              />
+              <p className="text-xs text-muted-foreground">Utilizado em todas as guias.</p>
+            </div>
+            <div className="space-y-1.5">
+              <Label>Matrícula / Conselho</Label>
+              <Input
+                value={prefMatricula}
+                onChange={(e) => setPrefMatricula(e.target.value)}
+                placeholder="CRM 0000/UF ou nº de matrícula"
+              />
+              <p className="text-xs text-muted-foreground">Utilizado como identificação do profissional.</p>
+            </div>
+            <div className="space-y-1.5">
+              <Label>Estabelecimento (Guia SUS)</Label>
+              <Input
+                value={prefEstabelecimento}
+                onChange={(e) => setPrefEstabelecimento(e.target.value)}
+                placeholder="Ex: Hospital Municipal, UBS Centro..."
+              />
+              <p className="text-xs text-muted-foreground">
+                Preenche automaticamente o campo <span className="font-medium">Estabelecimento</span> nas guias SUS.
+              </p>
+            </div>
+            <div className="space-y-1.5">
+              <Label>UF</Label>
+              <Select value={prefUf} onValueChange={setPrefUf}>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {["AC","AL","AP","AM","BA","CE","DF","ES","GO","MA","MT","MS","MG","PA","PB","PR","PE","PI","RJ","RN","RS","RO","RR","SC","SP","SE","TO"].map((uf) => (
+                    <SelectItem key={uf} value={uf}>{uf}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="rounded-md border border-primary/30 bg-primary/5 text-primary text-xs px-3 py-2 flex gap-2">
+              <Info className="h-4 w-4 shrink-0 mt-0.5" />
+              <span>
+                Estas preferências serão utilizadas para preencher automaticamente os campos
+                nas guias, evitando retrabalho. Você pode editá-las a qualquer momento.
+              </span>
+            </div>
+          </div>
+          <DialogFooter className="gap-2 sm:gap-2">
+            <Button variant="outline" onClick={() => setPrefsOpen(false)}>Fechar</Button>
+            <Button onClick={savePrefs}>
+              <Save className="h-4 w-4" />
+              Salvar preferências
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
