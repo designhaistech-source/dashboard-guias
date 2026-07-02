@@ -14,6 +14,10 @@ import {
   Building2,
   Settings2,
   Info,
+  GripVertical,
+  Wrench,
+  Pencil,
+  Package,
 } from "lucide-react";
 import { toast } from "sonner";
 import { AppSidebar } from "@/components/app-sidebar";
@@ -40,6 +44,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Shield, Landmark, ArrowUp, Stethoscope as StethIcon, BedDouble, HeartPulse, Hospital, Check, ChevronRight } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/emitir")({
@@ -119,8 +124,60 @@ const CONVENIOS: {
 
 
 type Procedure = { id: string; code: string; description: string; quantity: number };
+type OpmeItem = { id: string; code: string; description: string; quantity: number };
+type Kit = { id: string; name: string; specialty?: string; procedures: Omit<Procedure, "id">[] };
 
 const CHARACTER_OPTIONS = ["Eletivo", "Urgência", "Emergência"];
+
+const GUIDE_SHORT: Record<GuideKind, string> = {
+  sadt: "SADT",
+  internacao: "Internação",
+  apac: "APAC",
+  aih: "AIH",
+};
+
+// Kits pré-cadastrados por especialidade (CBO)
+const SPECIALTY_KITS: Kit[] = [
+  {
+    id: "cbo-oftalmo-estrabismo",
+    name: "Músculos (estrabismo)",
+    specialty: "CBO - Oftalmologia",
+    procedures: [
+      { code: "3.03.11.02-0", description: "Cirurgia com sutura ajustável (7C)", quantity: 1 },
+      { code: "3.03.11.03-9", description: "Estrabismo ciclo vertical/transposição - monocular (8A)", quantity: 1 },
+      { code: "3.03.11.04-7", description: "Estrabismo horizontal - monocular (7C)", quantity: 1 },
+    ],
+  },
+  {
+    id: "cbo-oftalmo-catarata",
+    name: "Catarata",
+    specialty: "CBO - Oftalmologia",
+    procedures: [
+      { code: "3.03.06.03-0", description: "Facectomia com implante de lente intraocular", quantity: 1 },
+    ],
+  },
+  {
+    id: "cbo-cardio-check",
+    name: "Check-up cardiológico",
+    specialty: "CBO - Cardiologia",
+    procedures: [
+      { code: "4.01.01.04-2", description: "Eletrocardiograma", quantity: 1 },
+      { code: "4.09.01.03-6", description: "Ecocardiograma transtorácico", quantity: 1 },
+      { code: "4.01.02.03-0", description: "Teste ergométrico", quantity: 1 },
+    ],
+  },
+  {
+    id: "cbo-clinica-rotina",
+    name: "Exames de rotina",
+    specialty: "CBO - Clínica Médica",
+    procedures: [
+      { code: "4.03.04.36-1", description: "Hemograma com contagem de plaquetas ou frações", quantity: 1 },
+      { code: "4.03.02.14-9", description: "Colesterol total", quantity: 1 },
+      { code: "4.03.02.20-3", description: "Glicose", quantity: 1 },
+      { code: "4.03.04.86-8", description: "TSH", quantity: 1 },
+    ],
+  },
+];
 
 function EmitirPage() {
   // Hub — convênio + tipo de guia
@@ -260,6 +317,93 @@ function EmitirPage() {
     setProcedures((p) => p.map((x) => (x.id === id ? { ...x, ...patch } : x)));
   const removeProcedure = (id: string) =>
     setProcedures((p) => (p.length === 1 ? p : p.filter((x) => x.id !== id)));
+  const clearProcedures = () =>
+    setProcedures([{ id: crypto.randomUUID(), code: "", description: "", quantity: 1 }]);
+
+  // Drag & drop reorder
+  const [dragId, setDragId] = useState<string | null>(null);
+  const onDragStart = (id: string) => setDragId(id);
+  const onDragOver = (e: React.DragEvent) => e.preventDefault();
+  const onDrop = (targetId: string) => {
+    if (!dragId || dragId === targetId) return setDragId(null);
+    setProcedures((list) => {
+      const from = list.findIndex((x) => x.id === dragId);
+      const to = list.findIndex((x) => x.id === targetId);
+      if (from < 0 || to < 0) return list;
+      const next = [...list];
+      const [moved] = next.splice(from, 1);
+      next.splice(to, 0, moved);
+      return next;
+    });
+    setDragId(null);
+  };
+
+  // Kits do usuário (persistidos)
+  const [userKits, setUserKits] = useState<Kit[]>([]);
+  const [kitsEditOpen, setKitsEditOpen] = useState(false);
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem("haisguias:kits");
+      if (raw) setUserKits(JSON.parse(raw));
+    } catch { /* ignore */ }
+  }, []);
+  useEffect(() => {
+    localStorage.setItem("haisguias:kits", JSON.stringify(userKits));
+  }, [userKits]);
+
+  const [selectedUserKit, setSelectedUserKit] = useState<string>("");
+  const [selectedSpecialty, setSelectedSpecialty] = useState<string>("");
+  const [selectedSpecialtyKit, setSelectedSpecialtyKit] = useState<string>("");
+
+  const specialties = useMemo(
+    () => Array.from(new Set(SPECIALTY_KITS.map((k) => k.specialty!).filter(Boolean))),
+    [],
+  );
+  const specialtyKitOptions = useMemo(
+    () => SPECIALTY_KITS.filter((k) => k.specialty === selectedSpecialty),
+    [selectedSpecialty],
+  );
+
+  const applyKit = (kit: Kit) => {
+    setProcedures(
+      kit.procedures.map((p) => ({ id: crypto.randomUUID(), ...p })),
+    );
+    toast.success(`Kit "${kit.name}" aplicado (${kit.procedures.length} procedimentos)`);
+  };
+
+  const saveAsKit = () => {
+    const filled = procedures.filter((p) => p.code.trim() && p.description.trim());
+    if (filled.length === 0) {
+      toast.error("Preencha ao menos um procedimento para salvar como kit");
+      return;
+    }
+    const name = window.prompt("Nome do kit:", "");
+    if (!name?.trim()) return;
+    const kit: Kit = {
+      id: crypto.randomUUID(),
+      name: name.trim(),
+      procedures: filled.map(({ code, description, quantity }) => ({ code, description, quantity })),
+    };
+    setUserKits((k) => [...k, kit]);
+    toast.success(`Kit "${kit.name}" salvo`);
+  };
+
+  // OPME
+  const [opmeItems, setOpmeItems] = useState<OpmeItem[]>([]);
+  const addOpme = () =>
+    setOpmeItems((o) => [
+      ...o,
+      { id: crypto.randomUUID(), code: "", description: "", quantity: 1 },
+    ]);
+  const updateOpme = (id: string, patch: Partial<OpmeItem>) =>
+    setOpmeItems((o) => o.map((x) => (x.id === id ? { ...x, ...patch } : x)));
+  const removeOpme = (id: string) =>
+    setOpmeItems((o) => o.filter((x) => x.id !== id));
+
+  // Separar em guias
+  const [splitInGuides, setSplitInGuides] = useState(false);
+  const filledProceduresCount = procedures.filter((p) => p.code.trim() && p.description.trim()).length;
+
 
   const validate = () => {
     const missing: string[] = [];
@@ -761,30 +905,158 @@ function EmitirPage() {
                 </Field>
               </Section>
 
-              {/* Procedimentos */}
+              {/* Kits */}
               <Section
-                icon={<ClipboardList className="h-4 w-4" />}
-                title="Procedimentos solicitados"
-                description="Adicione um ou mais procedimentos (TUSS)."
+                icon={<Package className="h-4 w-4" />}
+                title="Kits"
+                description="Aplique um conjunto de procedimentos salvo ou por especialidade."
                 action={
-                  <Button type="button" size="sm" variant="outline" onClick={addProcedure}>
-                    <Plus className="h-4 w-4" /> Adicionar
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant="outline"
+                    onClick={() => setKitsEditOpen(true)}
+                  >
+                    <Pencil className="h-4 w-4" /> Editar kits
                   </Button>
                 }
               >
-                <div className="space-y-3">
+                <Field label="Kits do usuário">
+                  <Select
+                    value={selectedUserKit}
+                    onValueChange={(v) => {
+                      setSelectedUserKit(v);
+                      const kit = userKits.find((k) => k.id === v);
+                      if (kit) applyKit(kit);
+                    }}
+                  >
+                    <SelectTrigger>
+                      <SelectValue
+                        placeholder={
+                          userKits.length === 0
+                            ? "Nenhum kit cadastrado"
+                            : "Selecione um kit salvo"
+                        }
+                      />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {userKits.map((k) => (
+                        <SelectItem key={k.id} value={k.id}>
+                          {k.name} ({k.procedures.length})
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </Field>
+                <Grid cols={2}>
+                  <Field label="Kits por Especialidade Médica">
+                    <Select
+                      value={selectedSpecialty}
+                      onValueChange={(v) => {
+                        setSelectedSpecialty(v);
+                        setSelectedSpecialtyKit("");
+                      }}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Selecione uma especialidade (CBO)" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {specialties.map((s) => (
+                          <SelectItem key={s} value={s}>
+                            {s}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </Field>
+                  <Field label="Procedimento">
+                    <Select
+                      value={selectedSpecialtyKit}
+                      onValueChange={(v) => {
+                        setSelectedSpecialtyKit(v);
+                        const kit = specialtyKitOptions.find((k) => k.id === v);
+                        if (kit) applyKit(kit);
+                      }}
+                      disabled={!selectedSpecialty}
+                    >
+                      <SelectTrigger>
+                        <SelectValue
+                          placeholder={
+                            selectedSpecialty
+                              ? "Selecione um kit"
+                              : "Escolha a especialidade primeiro"
+                          }
+                        />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {specialtyKitOptions.map((k) => (
+                          <SelectItem key={k.id} value={k.id}>
+                            {k.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </Field>
+                </Grid>
+              </Section>
+
+              {/* Procedimentos */}
+              <Section
+                icon={<ClipboardList className="h-4 w-4" />}
+                title={
+                  <span className="flex items-center gap-2">
+                    Procedimentos solicitados
+                    {guideKind && (
+                      <span className="text-destructive font-semibold text-sm">
+                        - {GUIDE_SHORT[guideKind]}
+                      </span>
+                    )}
+                  </span>
+                }
+                description="Arraste para reordenar. Adicione um ou mais procedimentos (TUSS)."
+                action={
+                  <div className="flex items-center gap-2">
+                    <Button type="button" size="sm" variant="outline" onClick={clearProcedures}>
+                      Limpar
+                    </Button>
+                    <Button type="button" size="sm" onClick={addProcedure}>
+                      <Plus className="h-4 w-4" /> Adicionar
+                    </Button>
+                    <Button
+                      type="button"
+                      size="sm"
+                      onClick={saveAsKit}
+                      className="bg-emerald-600 hover:bg-emerald-700 text-white"
+                    >
+                      <Plus className="h-4 w-4" /> Salvar como kit
+                    </Button>
+                  </div>
+                }
+              >
+                <div className="space-y-2">
                   {procedures.map((p, idx) => (
-                    <div key={p.id} className="grid grid-cols-12 gap-2 items-end">
-                      <div className="col-span-3">
-                        <Label className="text-xs text-muted-foreground">Código TUSS</Label>
+                    <div
+                      key={p.id}
+                      draggable
+                      onDragStart={() => onDragStart(p.id)}
+                      onDragOver={onDragOver}
+                      onDrop={() => onDrop(p.id)}
+                      className={cn(
+                        "grid grid-cols-12 gap-2 items-end rounded-md",
+                        dragId === p.id && "opacity-50",
+                      )}
+                    >
+                      <div className="col-span-1 flex items-center justify-center pb-2 cursor-grab active:cursor-grabbing text-muted-foreground">
+                        <GripVertical className="h-4 w-4" />
+                      </div>
+                      <div className="col-span-2">
                         <Input
                           value={p.code}
                           onChange={(e) => updateProcedure(p.id, { code: e.target.value })}
-                          placeholder="00000000"
+                          placeholder="Código"
                         />
                       </div>
                       <div className="col-span-7">
-                        <Label className="text-xs text-muted-foreground">Descrição</Label>
                         <Input
                           value={p.description}
                           onChange={(e) =>
@@ -794,7 +1066,6 @@ function EmitirPage() {
                         />
                       </div>
                       <div className="col-span-1">
-                        <Label className="text-xs text-muted-foreground">Qtd.</Label>
                         <Input
                           type="number"
                           min={1}
@@ -821,7 +1092,98 @@ function EmitirPage() {
                     </div>
                   ))}
                 </div>
+
+                {filledProceduresCount > 1 && (
+                  <div className="flex items-center justify-end gap-2 pt-2 border-t">
+                    <Checkbox
+                      id="split-guides"
+                      checked={splitInGuides}
+                      onCheckedChange={(c) => setSplitInGuides(!!c)}
+                    />
+                    <Label htmlFor="split-guides" className="text-sm cursor-pointer">
+                      Solicitar os exames em {filledProceduresCount} guias separadas
+                    </Label>
+                  </div>
+                )}
               </Section>
+
+              {/* OPME */}
+              <Section
+                icon={<Wrench className="h-4 w-4" />}
+                title="OPME — Órteses, Próteses e Materiais Especiais"
+                description="Adicione materiais/próteses solicitados (opcional)."
+                action={
+                  <Button type="button" size="sm" onClick={addOpme}>
+                    <Plus className="h-4 w-4" /> Adicionar OPME
+                  </Button>
+                }
+              >
+                {opmeItems.length === 0 ? (
+                  <p className="text-xs text-muted-foreground">
+                    Nenhum item OPME adicionado.
+                  </p>
+                ) : (
+                  <div className="space-y-2">
+                    {opmeItems.map((o) => (
+                      <div key={o.id} className="grid grid-cols-12 gap-2 items-end">
+                        <div className="col-span-3">
+                          <Input
+                            value={o.code}
+                            onChange={(e) => updateOpme(o.id, { code: e.target.value })}
+                            placeholder="Código"
+                          />
+                        </div>
+                        <div className="col-span-7">
+                          <Input
+                            value={o.description}
+                            onChange={(e) =>
+                              updateOpme(o.id, { description: e.target.value })
+                            }
+                            placeholder="Descrição do material/prótese"
+                          />
+                        </div>
+                        <div className="col-span-1">
+                          <Input
+                            type="number"
+                            min={1}
+                            value={o.quantity}
+                            onChange={(e) =>
+                              updateOpme(o.id, {
+                                quantity: Math.max(1, Number(e.target.value) || 1),
+                              })
+                            }
+                          />
+                        </div>
+                        <div className="col-span-1 flex justify-end">
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => removeOpme(o.id)}
+                            aria-label="Remover OPME"
+                          >
+                            <Trash2 className="h-4 w-4 text-destructive" />
+                          </Button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </Section>
+
+              {/* Assinatura */}
+              <Section
+                icon={<User className="h-4 w-4" />}
+                title="Assinatura do Solicitante"
+                description="Nome do profissional responsável pela emissão."
+              >
+                <Input
+                  value={medicoNome}
+                  readOnly
+                  className="bg-muted/40 font-medium"
+                />
+              </Section>
+
 
               <div className="flex items-start gap-2 text-xs text-muted-foreground bg-muted/40 border rounded-md px-3 py-2">
                 <Info className="h-4 w-4 shrink-0 mt-0.5" />
@@ -962,7 +1324,7 @@ function Section({
   children,
 }: {
   icon: React.ReactNode;
-  title: string;
+  title: React.ReactNode;
   description?: string;
   action?: React.ReactNode;
   children: React.ReactNode;
