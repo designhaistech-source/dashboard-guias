@@ -55,14 +55,7 @@ export const Route = createFileRoute("/emitir")({
 
 type ConvenioId = "tiss" | "sus";
 
-type GuideKind =
-  | "sadt"
-  | "consulta"
-  | "internacao"
-  | "honorarios"
-  | "apac"
-  | "aih"
-  | "bpa";
+type GuideKind = "sadt" | "internacao" | "apac" | "aih";
 
 const CONVENIOS: {
   id: ConvenioId;
@@ -77,10 +70,8 @@ const CONVENIOS: {
     short: "TISS",
     description: "Padrão ANS para planos de saúde privados.",
     guides: [
-      { id: "consulta", label: "Consulta" },
-      { id: "sadt", label: "SP / SADT" },
+      { id: "sadt", label: "Ambulatorial / SADT" },
       { id: "internacao", label: "Internação" },
-      { id: "honorarios", label: "Honorários" },
     ],
   },
   {
@@ -91,7 +82,6 @@ const CONVENIOS: {
     guides: [
       { id: "apac", label: "APAC" },
       { id: "aih", label: "AIH" },
-      { id: "bpa", label: "BPA" },
     ],
   },
 ];
@@ -122,20 +112,14 @@ function EmitirPage() {
 
   const guideHeaderTitle = useMemo(() => {
     switch (guideKind) {
-      case "consulta":
-        return "Guia de Consulta — TISS";
       case "sadt":
-        return "Guia de Serviço Profissional / Serviço Auxiliar de Diagnóstico e Terapia — SP/SADT";
+        return "TISS — Ambulatorial / SADT (SP/SADT)";
       case "internacao":
-        return "Guia de Solicitação de Internação — TISS";
-      case "honorarios":
-        return "Guia de Honorários — TISS";
+        return "TISS — Guia de Solicitação de Internação";
       case "apac":
         return "SUS — APAC (Autorização de Procedimentos Ambulatoriais)";
       case "aih":
         return "SUS — AIH (Autorização de Internação Hospitalar)";
-      case "bpa":
-        return "SUS — BPA (Boletim de Produção Ambulatorial)";
       default:
         return "";
     }
