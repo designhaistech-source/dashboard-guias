@@ -317,6 +317,93 @@ function EmitirPage() {
     setProcedures((p) => p.map((x) => (x.id === id ? { ...x, ...patch } : x)));
   const removeProcedure = (id: string) =>
     setProcedures((p) => (p.length === 1 ? p : p.filter((x) => x.id !== id)));
+  const clearProcedures = () =>
+    setProcedures([{ id: crypto.randomUUID(), code: "", description: "", quantity: 1 }]);
+
+  // Drag & drop reorder
+  const [dragId, setDragId] = useState<string | null>(null);
+  const onDragStart = (id: string) => setDragId(id);
+  const onDragOver = (e: React.DragEvent) => e.preventDefault();
+  const onDrop = (targetId: string) => {
+    if (!dragId || dragId === targetId) return setDragId(null);
+    setProcedures((list) => {
+      const from = list.findIndex((x) => x.id === dragId);
+      const to = list.findIndex((x) => x.id === targetId);
+      if (from < 0 || to < 0) return list;
+      const next = [...list];
+      const [moved] = next.splice(from, 1);
+      next.splice(to, 0, moved);
+      return next;
+    });
+    setDragId(null);
+  };
+
+  // Kits do usuário (persistidos)
+  const [userKits, setUserKits] = useState<Kit[]>([]);
+  const [kitsEditOpen, setKitsEditOpen] = useState(false);
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem("haisguias:kits");
+      if (raw) setUserKits(JSON.parse(raw));
+    } catch { /* ignore */ }
+  }, []);
+  useEffect(() => {
+    localStorage.setItem("haisguias:kits", JSON.stringify(userKits));
+  }, [userKits]);
+
+  const [selectedUserKit, setSelectedUserKit] = useState<string>("");
+  const [selectedSpecialty, setSelectedSpecialty] = useState<string>("");
+  const [selectedSpecialtyKit, setSelectedSpecialtyKit] = useState<string>("");
+
+  const specialties = useMemo(
+    () => Array.from(new Set(SPECIALTY_KITS.map((k) => k.specialty!).filter(Boolean))),
+    [],
+  );
+  const specialtyKitOptions = useMemo(
+    () => SPECIALTY_KITS.filter((k) => k.specialty === selectedSpecialty),
+    [selectedSpecialty],
+  );
+
+  const applyKit = (kit: Kit) => {
+    setProcedures(
+      kit.procedures.map((p) => ({ id: crypto.randomUUID(), ...p })),
+    );
+    toast.success(`Kit "${kit.name}" aplicado (${kit.procedures.length} procedimentos)`);
+  };
+
+  const saveAsKit = () => {
+    const filled = procedures.filter((p) => p.code.trim() && p.description.trim());
+    if (filled.length === 0) {
+      toast.error("Preencha ao menos um procedimento para salvar como kit");
+      return;
+    }
+    const name = window.prompt("Nome do kit:", "");
+    if (!name?.trim()) return;
+    const kit: Kit = {
+      id: crypto.randomUUID(),
+      name: name.trim(),
+      procedures: filled.map(({ code, description, quantity }) => ({ code, description, quantity })),
+    };
+    setUserKits((k) => [...k, kit]);
+    toast.success(`Kit "${kit.name}" salvo`);
+  };
+
+  // OPME
+  const [opmeItems, setOpmeItems] = useState<OpmeItem[]>([]);
+  const addOpme = () =>
+    setOpmeItems((o) => [
+      ...o,
+      { id: crypto.randomUUID(), code: "", description: "", quantity: 1 },
+    ]);
+  const updateOpme = (id: string, patch: Partial<OpmeItem>) =>
+    setOpmeItems((o) => o.map((x) => (x.id === id ? { ...x, ...patch } : x)));
+  const removeOpme = (id: string) =>
+    setOpmeItems((o) => o.filter((x) => x.id !== id));
+
+  // Separar em guias
+  const [splitInGuides, setSplitInGuides] = useState(false);
+  const filledProceduresCount = procedures.filter((p) => p.code.trim() && p.description.trim()).length;
+
 
   const validate = () => {
     const missing: string[] = [];
