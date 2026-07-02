@@ -10,12 +10,18 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as GuiasRouteImport } from './routes/guias'
+import { Route as EmitirRouteImport } from './routes/emitir'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as IndexRouteImport } from './routes/index'
 
 const GuiasRoute = GuiasRouteImport.update({
   id: '/guias',
   path: '/guias',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EmitirRoute = EmitirRouteImport.update({
+  id: '/emitir',
+  path: '/emitir',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DashboardRoute = DashboardRouteImport.update({
@@ -32,30 +38,34 @@ const IndexRoute = IndexRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/dashboard': typeof DashboardRoute
+  '/emitir': typeof EmitirRoute
   '/guias': typeof GuiasRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/dashboard': typeof DashboardRoute
+  '/emitir': typeof EmitirRoute
   '/guias': typeof GuiasRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/dashboard': typeof DashboardRoute
+  '/emitir': typeof EmitirRoute
   '/guias': typeof GuiasRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/dashboard' | '/guias'
+  fullPaths: '/' | '/dashboard' | '/emitir' | '/guias'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/dashboard' | '/guias'
-  id: '__root__' | '/' | '/dashboard' | '/guias'
+  to: '/' | '/dashboard' | '/emitir' | '/guias'
+  id: '__root__' | '/' | '/dashboard' | '/emitir' | '/guias'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   DashboardRoute: typeof DashboardRoute
+  EmitirRoute: typeof EmitirRoute
   GuiasRoute: typeof GuiasRoute
 }
 
@@ -66,6 +76,13 @@ declare module '@tanstack/react-router' {
       path: '/guias'
       fullPath: '/guias'
       preLoaderRoute: typeof GuiasRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/emitir': {
+      id: '/emitir'
+      path: '/emitir'
+      fullPath: '/emitir'
+      preLoaderRoute: typeof EmitirRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/dashboard': {
@@ -88,18 +105,9 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   DashboardRoute: DashboardRoute,
+  EmitirRoute: EmitirRoute,
   GuiasRoute: GuiasRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
