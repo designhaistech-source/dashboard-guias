@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   FileText,
   Plus,
@@ -12,6 +12,8 @@ import {
   Stethoscope,
   ClipboardList,
   Building2,
+  Settings2,
+  Info,
 } from "lucide-react";
 import { toast } from "sonner";
 import { AppSidebar } from "@/components/app-sidebar";
@@ -33,6 +35,7 @@ import {
   DialogTitle,
   DialogFooter,
 } from "@/components/ui/dialog";
+import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/emitir")({
   head: () => ({
@@ -44,52 +47,118 @@ export const Route = createFileRoute("/emitir")({
   component: EmitirPage,
 });
 
-type Procedure = {
-  id: string;
-  code: string;
-  description: string;
-  quantity: number;
-};
+// -------- Modelo inspirado no fluxo PedeGuia --------
 
-type GuideType = "sadt" | "consulta" | "exame" | "encaminhamento";
+type ConvenioId =
+  | "tiss"
+  | "ipsemg"
+  | "ipsm"
+  | "ipers"
+  | "iasep"
+  | "sus"
+  | "termos";
 
-const GUIDE_TYPES: { value: GuideType; label: string }[] = [
-  { value: "sadt", label: "SADT" },
-  { value: "consulta", label: "Consulta" },
-  { value: "exame", label: "Solicitação de exame" },
-  { value: "encaminhamento", label: "Encaminhamento" },
+type GuideKind =
+  | "sadt"
+  | "internacao"
+  | "apac"
+  | "aih"
+  | "termo_consentimento"
+  | "termo_responsabilidade";
+
+const CONVENIOS: { id: ConvenioId; label: string; guides: { id: GuideKind; label: string }[] }[] = [
+  {
+    id: "tiss",
+    label: "Guias Padronizadas TISS",
+    guides: [
+      { id: "sadt", label: "Ambulatorial / SADT" },
+      { id: "internacao", label: "Internação" },
+    ],
+  },
+  { id: "ipsemg", label: "IPSEMG", guides: [{ id: "sadt", label: "Ambulatorial / SADT" }] },
+  { id: "ipsm", label: "IPSM - PMMG", guides: [{ id: "sadt", label: "Ambulatorial / SADT" }] },
+  { id: "ipers", label: "IPE-RS", guides: [{ id: "sadt", label: "Ambulatorial / SADT" }] },
+  { id: "iasep", label: "IASEP-PA", guides: [{ id: "sadt", label: "Ambulatorial / SADT" }] },
+  {
+    id: "sus",
+    label: "SUS",
+    guides: [
+      { id: "apac", label: "APAC" },
+      { id: "aih", label: "AIH" },
+    ],
+  },
+  {
+    id: "termos",
+    label: "Termos",
+    guides: [
+      { id: "termo_consentimento", label: "Consentimento" },
+      { id: "termo_responsabilidade", label: "Responsabilidade" },
+    ],
+  },
 ];
 
-const CHARACTER_OPTIONS = [
-  "Eletivo",
-  "Urgência",
-  "Emergência",
-];
+type Procedure = { id: string; code: string; description: string; quantity: number };
+
+const CHARACTER_OPTIONS = ["Eletivo", "Urgência", "Emergência"];
 
 function EmitirPage() {
-  const [guideType, setGuideType] = useState<GuideType>("sadt");
-  const [character, setCharacter] = useState("Eletivo");
+  // Hub — convênio + tipo de guia
+  const [convenioId, setConvenioId] = useState<ConvenioId>("tiss");
+  const convenio = useMemo(
+    () => CONVENIOS.find((c) => c.id === convenioId)!,
+    [convenioId],
+  );
+  const [guideKind, setGuideKind] = useState<GuideKind | null>(null);
 
-  // Operadora / prestador
-  const [operadora, setOperadora] = useState("");
-  const [registroAns, setRegistroAns] = useState("");
-  const [numeroGuia, setNumeroGuia] = useState(() =>
-    `G-${Math.floor(Math.random() * 900000 + 100000)}`,
+  // Ao trocar de convênio, limpa a escolha de guia
+  useEffect(() => {
+    setGuideKind(null);
+  }, [convenioId]);
+
+  const guideLabel = useMemo(
+    () => convenio.guides.find((g) => g.id === guideKind)?.label ?? "",
+    [convenio, guideKind],
   );
 
-  // Paciente
+  const guideHeaderTitle = useMemo(() => {
+    switch (guideKind) {
+      case "sadt":
+        return "Guia de Serviço Profissional / Serviço Auxiliar de Diagnóstico e Terapia — SP/SADT";
+      case "internacao":
+        return "Guia de Solicitação de Internação";
+      case "apac":
+        return "SUS — APAC (Alto Custo / Procedimentos Especiais)";
+      case "aih":
+        return "SUS — AIH (Autorização de Internação Hospitalar)";
+      case "termo_consentimento":
+        return "Termo de Consentimento";
+      case "termo_responsabilidade":
+        return "Termo de Responsabilidade";
+      default:
+        return "";
+    }
+  }, [guideKind]);
+
+  const [character, setCharacter] = useState("Eletivo");
+  const [operadora, setOperadora] = useState("");
+  const [registroAns, setRegistroAns] = useState("");
+
+  // nº da guia — gerado somente no cliente para evitar hydration mismatch
+  const [numeroGuia, setNumeroGuia] = useState<string>("—");
+  useEffect(() => {
+    setNumeroGuia(`G-${Math.floor(Math.random() * 900000 + 100000)}`);
+  }, []);
+
   const [pacienteNome, setPacienteNome] = useState("");
   const [pacienteCarteira, setPacienteCarteira] = useState("");
   const [pacienteCpf, setPacienteCpf] = useState("");
   const [pacienteNascimento, setPacienteNascimento] = useState("");
   const [pacienteSexo, setPacienteSexo] = useState("F");
 
-  // Solicitante
   const [medicoNome, setMedicoNome] = useState("Dr. Fulano");
   const [medicoCrm, setMedicoCrm] = useState("1234/RN");
   const [medicoEspecialidade, setMedicoEspecialidade] = useState("");
 
-  // Clínico
   const [cidPrincipal, setCidPrincipal] = useState("");
   const [indicacaoClinica, setIndicacaoClinica] = useState("");
   const [observacoes, setObservacoes] = useState("");
@@ -97,9 +166,8 @@ function EmitirPage() {
     () => new Date().toISOString().slice(0, 10),
   );
 
-  // Procedimentos
   const [procedures, setProcedures] = useState<Procedure[]>([
-    { id: crypto.randomUUID(), code: "", description: "", quantity: 1 },
+    { id: "p-1", code: "", description: "", quantity: 1 },
   ]);
 
   const [preview, setPreview] = useState<null | {
@@ -109,20 +177,13 @@ function EmitirPage() {
   }>(null);
   const [submitting, setSubmitting] = useState(false);
 
-  const guideTypeLabel = useMemo(
-    () => GUIDE_TYPES.find((t) => t.value === guideType)?.label ?? "",
-    [guideType],
-  );
-
   const addProcedure = () =>
     setProcedures((p) => [
       ...p,
       { id: crypto.randomUUID(), code: "", description: "", quantity: 1 },
     ]);
-
   const updateProcedure = (id: string, patch: Partial<Procedure>) =>
     setProcedures((p) => p.map((x) => (x.id === id ? { ...x, ...patch } : x)));
-
   const removeProcedure = (id: string) =>
     setProcedures((p) => (p.length === 1 ? p : p.filter((x) => x.id !== id)));
 
@@ -155,11 +216,11 @@ function EmitirPage() {
       setSubmitting(false);
       setPreview({
         numero: numeroGuia,
-        tipo: guideTypeLabel,
+        tipo: guideLabel,
         createdAt: new Date().toLocaleString("pt-BR"),
       });
       toast.success("Guia gerada com sucesso", {
-        description: `Nº ${numeroGuia} — ${guideTypeLabel}`,
+        description: `Nº ${numeroGuia} — ${guideLabel}`,
       });
     }, 700);
   };
@@ -172,9 +233,7 @@ function EmitirPage() {
     setCidPrincipal("");
     setIndicacaoClinica("");
     setObservacoes("");
-    setProcedures([
-      { id: crypto.randomUUID(), code: "", description: "", quantity: 1 },
-    ]);
+    setProcedures([{ id: crypto.randomUUID(), code: "", description: "", quantity: 1 }]);
     setNumeroGuia(`G-${Math.floor(Math.random() * 900000 + 100000)}`);
     toast.info("Formulário limpo");
   };
@@ -185,12 +244,19 @@ function EmitirPage() {
 
       <main className="flex-1 overflow-x-hidden">
         <div className="max-w-6xl mx-auto px-6 py-8 space-y-6">
+          {/* Header do hub */}
           <header className="flex items-start justify-between gap-4 flex-wrap">
-            <div>
-              <h1 className="text-2xl font-semibold tracking-tight">Emitir guia</h1>
-              <p className="text-sm text-muted-foreground mt-1">
-                Preencha os dados abaixo para gerar uma nova guia médica.
-              </p>
+            <div className="flex items-start gap-3">
+              <div className="h-10 w-10 rounded-lg bg-primary/10 text-primary flex items-center justify-center">
+                <FileText className="h-5 w-5" />
+              </div>
+              <div>
+                <h1 className="text-2xl font-semibold tracking-tight">Emitir Guias</h1>
+                <p className="text-sm text-muted-foreground mt-1 max-w-2xl">
+                  Gere guias para todos os convênios. A maioria dos convênios usa as guias
+                  padronizadas TISS. Guias especiais estão disponíveis nas abas ao lado.
+                </p>
+              </div>
             </div>
             <div className="flex items-center gap-2 text-xs px-3 py-1.5 rounded-md border bg-card">
               <FileText className="h-4 w-4 text-primary" />
@@ -199,208 +265,327 @@ function EmitirPage() {
             </div>
           </header>
 
-          <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Tipo de guia */}
-            <Section
-              icon={<ClipboardList className="h-4 w-4" />}
-              title="Tipo de guia"
-              description="Selecione o tipo e o caráter do atendimento."
-            >
-              <Grid cols={2}>
-                <Field label="Tipo de guia" required>
-                  <Select value={guideType} onValueChange={(v) => setGuideType(v as GuideType)}>
-                    <SelectTrigger><SelectValue /></SelectTrigger>
-                    <SelectContent>
-                      {GUIDE_TYPES.map((t) => (
-                        <SelectItem key={t.value} value={t.value}>{t.label}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </Field>
-                <Field label="Caráter do atendimento" required>
-                  <Select value={character} onValueChange={setCharacter}>
-                    <SelectTrigger><SelectValue /></SelectTrigger>
-                    <SelectContent>
-                      {CHARACTER_OPTIONS.map((c) => (
-                        <SelectItem key={c} value={c}>{c}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </Field>
-              </Grid>
-            </Section>
-
-            {/* Operadora */}
-            <Section
-              icon={<Building2 className="h-4 w-4" />}
-              title="Operadora"
-              description="Dados do convênio responsável pela guia."
-            >
-              <Grid cols={2}>
-                <Field label="Operadora / Convênio" required>
-                  <Input value={operadora} onChange={(e) => setOperadora(e.target.value)} placeholder="Unimed, Amil, SulAmérica..." />
-                </Field>
-                <Field label="Registro ANS">
-                  <Input value={registroAns} onChange={(e) => setRegistroAns(e.target.value)} placeholder="000000" />
-                </Field>
-              </Grid>
-            </Section>
-
-            {/* Paciente */}
-            <Section
-              icon={<User className="h-4 w-4" />}
-              title="Paciente"
-              description="Identificação do beneficiário."
-            >
-              <Grid cols={2}>
-                <Field label="Nome completo" required>
-                  <Input value={pacienteNome} onChange={(e) => setPacienteNome(e.target.value)} placeholder="Nome do paciente" />
-                </Field>
-                <Field label="Nº da carteira" required>
-                  <Input value={pacienteCarteira} onChange={(e) => setPacienteCarteira(e.target.value)} placeholder="0000 0000 0000 0000" />
-                </Field>
-                <Field label="CPF">
-                  <Input value={pacienteCpf} onChange={(e) => setPacienteCpf(e.target.value)} placeholder="000.000.000-00" />
-                </Field>
-                <Field label="Data de nascimento">
-                  <Input type="date" value={pacienteNascimento} onChange={(e) => setPacienteNascimento(e.target.value)} />
-                </Field>
-                <Field label="Sexo">
-                  <Select value={pacienteSexo} onValueChange={setPacienteSexo}>
-                    <SelectTrigger><SelectValue /></SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="F">Feminino</SelectItem>
-                      <SelectItem value="M">Masculino</SelectItem>
-                      <SelectItem value="O">Outro</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </Field>
-              </Grid>
-            </Section>
-
-            {/* Solicitante */}
-            <Section
-              icon={<Stethoscope className="h-4 w-4" />}
-              title="Profissional solicitante"
-              description="Médico responsável pela emissão."
-            >
-              <Grid cols={2}>
-                <Field label="Nome do profissional" required>
-                  <Input value={medicoNome} onChange={(e) => setMedicoNome(e.target.value)} />
-                </Field>
-                <Field label="CRM" required>
-                  <Input value={medicoCrm} onChange={(e) => setMedicoCrm(e.target.value)} placeholder="0000/UF" />
-                </Field>
-                <Field label="Especialidade">
-                  <Input value={medicoEspecialidade} onChange={(e) => setMedicoEspecialidade(e.target.value)} placeholder="Cardiologia, Ortopedia..." />
-                </Field>
-                <Field label="Data da solicitação">
-                  <Input type="date" value={dataSolicitacao} onChange={(e) => setDataSolicitacao(e.target.value)} />
-                </Field>
-              </Grid>
-            </Section>
-
-            {/* Clínico */}
-            <Section
-              icon={<FileText className="h-4 w-4" />}
-              title="Dados clínicos"
-              description="Hipótese diagnóstica e justificativa."
-            >
-              <Grid cols={2}>
-                <Field label="CID principal">
-                  <Input value={cidPrincipal} onChange={(e) => setCidPrincipal(e.target.value)} placeholder="Ex.: I10" />
-                </Field>
-              </Grid>
-              <Field label="Indicação clínica / justificativa" required>
-                <Textarea
-                  rows={3}
-                  value={indicacaoClinica}
-                  onChange={(e) => setIndicacaoClinica(e.target.value)}
-                  placeholder="Descreva a justificativa clínica do procedimento."
-                />
-              </Field>
-              <Field label="Observações">
-                <Textarea
-                  rows={2}
-                  value={observacoes}
-                  onChange={(e) => setObservacoes(e.target.value)}
-                  placeholder="Informações adicionais (opcional)."
-                />
-              </Field>
-            </Section>
-
-            {/* Procedimentos */}
-            <Section
-              icon={<ClipboardList className="h-4 w-4" />}
-              title="Procedimentos solicitados"
-              description="Adicione um ou mais procedimentos (TUSS)."
-              action={
-                <Button type="button" size="sm" variant="outline" onClick={addProcedure}>
-                  <Plus className="h-4 w-4" /> Adicionar
-                </Button>
-              }
-            >
-              <div className="space-y-3">
-                {procedures.map((p, idx) => (
-                  <div key={p.id} className="grid grid-cols-12 gap-2 items-end">
-                    <div className="col-span-3">
-                      <Label className="text-xs text-muted-foreground">Código TUSS</Label>
-                      <Input
-                        value={p.code}
-                        onChange={(e) => updateProcedure(p.id, { code: e.target.value })}
-                        placeholder="00000000"
-                      />
-                    </div>
-                    <div className="col-span-7">
-                      <Label className="text-xs text-muted-foreground">Descrição</Label>
-                      <Input
-                        value={p.description}
-                        onChange={(e) => updateProcedure(p.id, { description: e.target.value })}
-                        placeholder="Descrição do procedimento"
-                      />
-                    </div>
-                    <div className="col-span-1">
-                      <Label className="text-xs text-muted-foreground">Qtd.</Label>
-                      <Input
-                        type="number"
-                        min={1}
-                        value={p.quantity}
-                        onChange={(e) =>
-                          updateProcedure(p.id, { quantity: Math.max(1, Number(e.target.value) || 1) })
-                        }
-                      />
-                    </div>
-                    <div className="col-span-1 flex justify-end">
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => removeProcedure(p.id)}
-                        disabled={procedures.length === 1}
-                        aria-label={`Remover procedimento ${idx + 1}`}
-                      >
-                        <Trash2 className="h-4 w-4 text-destructive" />
-                      </Button>
-                    </div>
-                  </div>
-                ))}
+          {/* Hub: convênio + tipo de guia */}
+          <section className="rounded-xl border bg-card shadow-sm">
+            <div className="flex items-center justify-between gap-3 px-4 py-3 border-b overflow-x-auto">
+              <div className="flex items-center gap-1.5">
+                {CONVENIOS.map((c) => {
+                  const active = c.id === convenioId;
+                  return (
+                    <button
+                      key={c.id}
+                      type="button"
+                      onClick={() => setConvenioId(c.id)}
+                      className={cn(
+                        "text-xs px-3 py-1.5 rounded-md whitespace-nowrap transition-colors border",
+                        active
+                          ? "bg-primary/10 text-primary border-primary/30"
+                          : "bg-transparent text-muted-foreground border-transparent hover:bg-muted",
+                      )}
+                    >
+                      {c.label}
+                    </button>
+                  );
+                })}
               </div>
-            </Section>
-
-            {/* Actions */}
-            <div className="flex flex-wrap items-center justify-end gap-2 sticky bottom-0 bg-background/80 backdrop-blur py-3 border-t">
-              <Button type="button" variant="ghost" onClick={handleReset}>
-                Limpar
-              </Button>
-              <Button type="button" variant="outline">
-                <Save className="h-4 w-4" /> Salvar rascunho
-              </Button>
-              <Button type="submit" disabled={submitting}>
-                <FileText className="h-4 w-4" />
-                {submitting ? "Gerando..." : "Gerar guia"}
+              <Button variant="ghost" size="icon" aria-label="Configurações">
+                <Settings2 className="h-4 w-4" />
               </Button>
             </div>
-          </form>
+
+            <div className="px-5 py-4">
+              <p className="text-xs text-muted-foreground mb-2">Escolha o tipo de guia:</p>
+              <div className="flex flex-wrap gap-2">
+                {convenio.guides.map((g) => {
+                  const active = g.id === guideKind;
+                  return (
+                    <button
+                      key={g.id}
+                      type="button"
+                      onClick={() => setGuideKind(g.id)}
+                      className={cn(
+                        "text-sm px-4 py-2 rounded-md border transition-colors",
+                        active
+                          ? "bg-primary text-primary-foreground border-primary"
+                          : "bg-background border-border hover:bg-muted",
+                      )}
+                    >
+                      {g.label}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          </section>
+
+          {/* Estado vazio quando ainda não escolheu tipo */}
+          {!guideKind && (
+            <div className="rounded-xl border border-dashed bg-card/40 py-16 flex flex-col items-center justify-center text-center gap-3">
+              <div className="h-12 w-12 rounded-full border-2 border-dashed border-muted-foreground/40" />
+              <p className="text-sm text-muted-foreground max-w-md px-6">
+                Selecione acima o tipo de guia que deseja emitir para {convenio.label}. O
+                formulário adequado aparecerá aqui.
+              </p>
+            </div>
+          )}
+
+          {guideKind && (
+            <form onSubmit={handleSubmit} className="space-y-6">
+              {/* Cabeçalho do formulário selecionado */}
+              <div className="rounded-xl border bg-card shadow-sm">
+                <div className="border-l-4 border-primary px-5 py-4">
+                  <p className="text-[11px] uppercase tracking-wider text-muted-foreground">
+                    {convenio.label}
+                  </p>
+                  <h2 className="text-sm font-semibold mt-1 leading-snug">
+                    {guideHeaderTitle}
+                  </h2>
+                </div>
+              </div>
+
+              {/* Operadora + caráter */}
+              <Section
+                icon={<Building2 className="h-4 w-4" />}
+                title="Convênio e atendimento"
+                description="Operadora responsável e caráter da solicitação."
+              >
+                <Grid cols={2}>
+                  <Field label="Operadora / Convênio" required>
+                    <Input
+                      value={operadora}
+                      onChange={(e) => setOperadora(e.target.value)}
+                      placeholder="Unimed, Amil, SulAmérica..."
+                    />
+                  </Field>
+                  <Field label="Registro ANS">
+                    <Input
+                      value={registroAns}
+                      onChange={(e) => setRegistroAns(e.target.value)}
+                      placeholder="000000"
+                    />
+                  </Field>
+                  <Field label="Caráter do atendimento" required>
+                    <Select value={character} onValueChange={setCharacter}>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {CHARACTER_OPTIONS.map((c) => (
+                          <SelectItem key={c} value={c}>
+                            {c}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </Field>
+                  <Field label="Data da solicitação">
+                    <Input
+                      type="date"
+                      value={dataSolicitacao}
+                      onChange={(e) => setDataSolicitacao(e.target.value)}
+                    />
+                  </Field>
+                </Grid>
+              </Section>
+
+              {/* Paciente */}
+              <Section
+                icon={<User className="h-4 w-4" />}
+                title="Beneficiário / Paciente"
+                description="Identificação do paciente na operadora."
+              >
+                <Grid cols={2}>
+                  <Field label="Nome do beneficiário" required>
+                    <Input
+                      value={pacienteNome}
+                      onChange={(e) => setPacienteNome(e.target.value)}
+                      placeholder="Nome completo"
+                    />
+                  </Field>
+                  <Field label="Nº da carteira / Código na operadora" required>
+                    <Input
+                      value={pacienteCarteira}
+                      onChange={(e) => setPacienteCarteira(e.target.value)}
+                      placeholder="0000 0000 0000 0000"
+                    />
+                  </Field>
+                  <Field label="CPF">
+                    <Input
+                      value={pacienteCpf}
+                      onChange={(e) => setPacienteCpf(e.target.value)}
+                      placeholder="000.000.000-00"
+                    />
+                  </Field>
+                  <Field label="Data de nascimento">
+                    <Input
+                      type="date"
+                      value={pacienteNascimento}
+                      onChange={(e) => setPacienteNascimento(e.target.value)}
+                    />
+                  </Field>
+                  <Field label="Sexo">
+                    <Select value={pacienteSexo} onValueChange={setPacienteSexo}>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="F">Feminino</SelectItem>
+                        <SelectItem value="M">Masculino</SelectItem>
+                        <SelectItem value="O">Outro</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </Field>
+                </Grid>
+              </Section>
+
+              {/* Solicitante */}
+              <Section
+                icon={<Stethoscope className="h-4 w-4" />}
+                title="Profissional solicitante"
+                description="Médico responsável pela emissão."
+              >
+                <Grid cols={2}>
+                  <Field label="Nome do profissional" required>
+                    <Input
+                      value={medicoNome}
+                      onChange={(e) => setMedicoNome(e.target.value)}
+                    />
+                  </Field>
+                  <Field label="Conselho / Nº" required>
+                    <Input
+                      value={medicoCrm}
+                      onChange={(e) => setMedicoCrm(e.target.value)}
+                      placeholder="CRM 0000/UF"
+                    />
+                  </Field>
+                  <Field label="Especialidade">
+                    <Input
+                      value={medicoEspecialidade}
+                      onChange={(e) => setMedicoEspecialidade(e.target.value)}
+                      placeholder="Cardiologia, Ortopedia..."
+                    />
+                  </Field>
+                </Grid>
+              </Section>
+
+              {/* Clínico */}
+              <Section
+                icon={<FileText className="h-4 w-4" />}
+                title="Dados clínicos"
+                description="Hipótese diagnóstica e justificativa técnica."
+              >
+                <Grid cols={2}>
+                  <Field label="CID principal">
+                    <Input
+                      value={cidPrincipal}
+                      onChange={(e) => setCidPrincipal(e.target.value)}
+                      placeholder="Ex.: I10"
+                    />
+                  </Field>
+                </Grid>
+                <Field label="Indicação clínica / justificativa" required>
+                  <Textarea
+                    rows={3}
+                    value={indicacaoClinica}
+                    onChange={(e) => setIndicacaoClinica(e.target.value)}
+                    placeholder="Descreva a justificativa clínica do procedimento."
+                  />
+                </Field>
+                <Field label="Observações">
+                  <Textarea
+                    rows={2}
+                    value={observacoes}
+                    onChange={(e) => setObservacoes(e.target.value)}
+                    placeholder="Informações adicionais (opcional)."
+                  />
+                </Field>
+              </Section>
+
+              {/* Procedimentos */}
+              <Section
+                icon={<ClipboardList className="h-4 w-4" />}
+                title="Procedimentos solicitados"
+                description="Adicione um ou mais procedimentos (TUSS)."
+                action={
+                  <Button type="button" size="sm" variant="outline" onClick={addProcedure}>
+                    <Plus className="h-4 w-4" /> Adicionar
+                  </Button>
+                }
+              >
+                <div className="space-y-3">
+                  {procedures.map((p, idx) => (
+                    <div key={p.id} className="grid grid-cols-12 gap-2 items-end">
+                      <div className="col-span-3">
+                        <Label className="text-xs text-muted-foreground">Código TUSS</Label>
+                        <Input
+                          value={p.code}
+                          onChange={(e) => updateProcedure(p.id, { code: e.target.value })}
+                          placeholder="00000000"
+                        />
+                      </div>
+                      <div className="col-span-7">
+                        <Label className="text-xs text-muted-foreground">Descrição</Label>
+                        <Input
+                          value={p.description}
+                          onChange={(e) =>
+                            updateProcedure(p.id, { description: e.target.value })
+                          }
+                          placeholder="Descrição do procedimento"
+                        />
+                      </div>
+                      <div className="col-span-1">
+                        <Label className="text-xs text-muted-foreground">Qtd.</Label>
+                        <Input
+                          type="number"
+                          min={1}
+                          value={p.quantity}
+                          onChange={(e) =>
+                            updateProcedure(p.id, {
+                              quantity: Math.max(1, Number(e.target.value) || 1),
+                            })
+                          }
+                        />
+                      </div>
+                      <div className="col-span-1 flex justify-end">
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => removeProcedure(p.id)}
+                          disabled={procedures.length === 1}
+                          aria-label={`Remover procedimento ${idx + 1}`}
+                        >
+                          <Trash2 className="h-4 w-4 text-destructive" />
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </Section>
+
+              <div className="flex items-start gap-2 text-xs text-muted-foreground bg-muted/40 border rounded-md px-3 py-2">
+                <Info className="h-4 w-4 shrink-0 mt-0.5" />
+                <span>
+                  Campos marcados com <span className="text-destructive">*</span> são
+                  obrigatórios. A guia será validada antes da emissão.
+                </span>
+              </div>
+
+              {/* Actions */}
+              <div className="flex flex-wrap items-center justify-end gap-2 sticky bottom-0 bg-background/80 backdrop-blur py-3 border-t">
+                <Button type="button" variant="ghost" onClick={handleReset}>
+                  Limpar
+                </Button>
+                <Button type="button" variant="outline">
+                  <Save className="h-4 w-4" /> Salvar rascunho
+                </Button>
+                <Button type="submit" disabled={submitting}>
+                  <FileText className="h-4 w-4" />
+                  {submitting ? "Gerando..." : "Gerar guia"}
+                </Button>
+              </div>
+            </form>
+          )}
         </div>
       </main>
 
@@ -415,6 +600,7 @@ function EmitirPage() {
           {preview && (
             <div className="space-y-3 text-sm">
               <Row label="Número da guia" value={preview.numero} mono />
+              <Row label="Convênio" value={convenio.label} />
               <Row label="Tipo" value={preview.tipo} />
               <Row label="Paciente" value={pacienteNome} />
               <Row label="Operadora" value={operadora} />
