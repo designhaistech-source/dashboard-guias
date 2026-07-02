@@ -124,8 +124,60 @@ const CONVENIOS: {
 
 
 type Procedure = { id: string; code: string; description: string; quantity: number };
+type OpmeItem = { id: string; code: string; description: string; quantity: number };
+type Kit = { id: string; name: string; specialty?: string; procedures: Omit<Procedure, "id">[] };
 
 const CHARACTER_OPTIONS = ["Eletivo", "Urgência", "Emergência"];
+
+const GUIDE_SHORT: Record<GuideKind, string> = {
+  sadt: "SADT",
+  internacao: "Internação",
+  apac: "APAC",
+  aih: "AIH",
+};
+
+// Kits pré-cadastrados por especialidade (CBO)
+const SPECIALTY_KITS: Kit[] = [
+  {
+    id: "cbo-oftalmo-estrabismo",
+    name: "Músculos (estrabismo)",
+    specialty: "CBO - Oftalmologia",
+    procedures: [
+      { code: "3.03.11.02-0", description: "Cirurgia com sutura ajustável (7C)", quantity: 1 },
+      { code: "3.03.11.03-9", description: "Estrabismo ciclo vertical/transposição - monocular (8A)", quantity: 1 },
+      { code: "3.03.11.04-7", description: "Estrabismo horizontal - monocular (7C)", quantity: 1 },
+    ],
+  },
+  {
+    id: "cbo-oftalmo-catarata",
+    name: "Catarata",
+    specialty: "CBO - Oftalmologia",
+    procedures: [
+      { code: "3.03.06.03-0", description: "Facectomia com implante de lente intraocular", quantity: 1 },
+    ],
+  },
+  {
+    id: "cbo-cardio-check",
+    name: "Check-up cardiológico",
+    specialty: "CBO - Cardiologia",
+    procedures: [
+      { code: "4.01.01.04-2", description: "Eletrocardiograma", quantity: 1 },
+      { code: "4.09.01.03-6", description: "Ecocardiograma transtorácico", quantity: 1 },
+      { code: "4.01.02.03-0", description: "Teste ergométrico", quantity: 1 },
+    ],
+  },
+  {
+    id: "cbo-clinica-rotina",
+    name: "Exames de rotina",
+    specialty: "CBO - Clínica Médica",
+    procedures: [
+      { code: "4.03.04.36-1", description: "Hemograma com contagem de plaquetas ou frações", quantity: 1 },
+      { code: "4.03.02.14-9", description: "Colesterol total", quantity: 1 },
+      { code: "4.03.02.20-3", description: "Glicose", quantity: 1 },
+      { code: "4.03.04.86-8", description: "TSH", quantity: 1 },
+    ],
+  },
+];
 
 function EmitirPage() {
   // Hub — convênio + tipo de guia
