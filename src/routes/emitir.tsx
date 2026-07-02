@@ -36,6 +36,9 @@ import {
   DialogTitle,
   DialogFooter,
 } from "@/components/ui/dialog";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { Badge } from "@/components/ui/badge";
+import { Shield, Landmark } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/emitir")({
@@ -311,57 +314,78 @@ function EmitirPage() {
             </div>
           </header>
 
-          {/* Hub: modo (TISS/SUS) + tipo de guia */}
-          <section className="rounded-xl border bg-card shadow-sm">
-            <div className="px-5 py-4 border-b">
-              <p className="text-xs text-muted-foreground mb-2">Modo de emissão:</p>
-              <div className="inline-flex rounded-lg border bg-muted/50 p-1">
-                {CONVENIOS.map((c) => {
-                  const active = c.id === convenioId;
-                  return (
-                    <button
-                      key={c.id}
-                      type="button"
-                      onClick={() => setConvenioId(c.id)}
-                      className={cn(
-                        "text-sm px-4 py-1.5 rounded-md transition-colors font-medium",
-                        active
-                          ? "bg-background text-foreground shadow-sm"
-                          : "text-muted-foreground hover:text-foreground",
-                      )}
-                    >
-                      {c.label}
-                    </button>
-                  );
-                })}
-              </div>
-              <p className="text-xs text-muted-foreground mt-2">{convenio.description}</p>
-            </div>
+          {/* Hub: modo (TISS/SUS) via Tabs */}
+          <Tabs
+            value={convenioId}
+            onValueChange={(v) => setConvenioId(v as ConvenioId)}
+          >
+            <TabsList className="w-full h-auto p-1 bg-muted/60 grid grid-cols-2 gap-1">
+              {CONVENIOS.map((c) => {
+                const Icon = c.id === "tiss" ? Shield : Landmark;
+                return (
+                  <TabsTrigger
+                    key={c.id}
+                    value={c.id}
+                    className="flex items-center gap-2 py-2.5 data-[state=active]:bg-background data-[state=active]:shadow-sm"
+                  >
+                    <Icon className="h-4 w-4" />
+                    <span className="font-medium">{c.label}</span>
+                  </TabsTrigger>
+                );
+              })}
+            </TabsList>
 
-            <div className="px-5 py-4">
-              <p className="text-xs text-muted-foreground mb-2">Escolha o tipo de guia:</p>
-              <div className="flex flex-wrap gap-2">
-                {convenio.guides.map((g) => {
-                  const active = g.id === guideKind;
-                  return (
-                    <button
-                      key={g.id}
-                      type="button"
-                      onClick={() => setGuideKind(g.id)}
-                      className={cn(
-                        "text-sm px-4 py-2 rounded-md border transition-colors",
-                        active
-                          ? "bg-primary text-primary-foreground border-primary"
-                          : "bg-background border-border hover:bg-muted",
-                      )}
-                    >
-                      {g.label}
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-          </section>
+            {CONVENIOS.map((c) => (
+              <TabsContent key={c.id} value={c.id} className="mt-4">
+                <section className="rounded-xl border bg-card shadow-sm overflow-hidden">
+                  <div className="flex items-start gap-3 px-5 py-4 border-b bg-muted/30">
+                    {c.id === "tiss" ? (
+                      <Shield className="h-5 w-5 text-primary mt-0.5 shrink-0" />
+                    ) : (
+                      <Landmark className="h-5 w-5 text-primary mt-0.5 shrink-0" />
+                    )}
+                    <div className="min-w-0">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <h3 className="text-sm font-semibold">{c.label}</h3>
+                        <Badge variant="secondary" className="text-[10px] uppercase tracking-wider">
+                          {c.short}
+                        </Badge>
+                      </div>
+                      <p className="text-xs text-muted-foreground mt-0.5">{c.description}</p>
+                    </div>
+                  </div>
+
+                  <div className="px-5 py-4">
+                    <p className="text-xs text-muted-foreground mb-3">
+                      Escolha o tipo de guia:
+                    </p>
+                    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
+                      {c.guides.map((g) => {
+                        const active = c.id === convenioId && g.id === guideKind;
+                        return (
+                          <button
+                            key={g.id}
+                            type="button"
+                            onClick={() => setGuideKind(g.id)}
+                            className={cn(
+                              "text-sm px-4 py-3 rounded-lg border text-left transition-all",
+                              active
+                                ? "bg-primary text-primary-foreground border-primary shadow-sm"
+                                : "bg-background border-border hover:border-primary/40 hover:bg-muted",
+                            )}
+                          >
+                            <div className="font-medium">{g.label}</div>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </section>
+              </TabsContent>
+            ))}
+          </Tabs>
+
+
 
 
           {/* Estado vazio quando ainda não escolheu tipo */}
