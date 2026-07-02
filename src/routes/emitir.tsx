@@ -50,53 +50,49 @@ export const Route = createFileRoute("/emitir")({
 
 // -------- Modelo inspirado no fluxo PedeGuia --------
 
-type ConvenioId =
-  | "tiss"
-  | "ipsemg"
-  | "ipsm"
-  | "ipers"
-  | "iasep"
-  | "sus"
-  | "termos";
+type ConvenioId = "tiss" | "sus";
 
 type GuideKind =
   | "sadt"
+  | "consulta"
   | "internacao"
+  | "honorarios"
   | "apac"
   | "aih"
-  | "termo_consentimento"
-  | "termo_responsabilidade";
+  | "bpa";
 
-const CONVENIOS: { id: ConvenioId; label: string; guides: { id: GuideKind; label: string }[] }[] = [
+const CONVENIOS: {
+  id: ConvenioId;
+  label: string;
+  short: string;
+  description: string;
+  guides: { id: GuideKind; label: string }[];
+}[] = [
   {
     id: "tiss",
-    label: "Guias Padronizadas TISS",
+    label: "Convênio (TISS)",
+    short: "TISS",
+    description: "Padrão ANS para planos de saúde privados.",
     guides: [
-      { id: "sadt", label: "Ambulatorial / SADT" },
+      { id: "consulta", label: "Consulta" },
+      { id: "sadt", label: "SP / SADT" },
       { id: "internacao", label: "Internação" },
+      { id: "honorarios", label: "Honorários" },
     ],
   },
-  { id: "ipsemg", label: "IPSEMG", guides: [{ id: "sadt", label: "Ambulatorial / SADT" }] },
-  { id: "ipsm", label: "IPSM - PMMG", guides: [{ id: "sadt", label: "Ambulatorial / SADT" }] },
-  { id: "ipers", label: "IPE-RS", guides: [{ id: "sadt", label: "Ambulatorial / SADT" }] },
-  { id: "iasep", label: "IASEP-PA", guides: [{ id: "sadt", label: "Ambulatorial / SADT" }] },
   {
     id: "sus",
     label: "SUS",
+    short: "SUS",
+    description: "Guias do Sistema Único de Saúde (DATASUS).",
     guides: [
       { id: "apac", label: "APAC" },
       { id: "aih", label: "AIH" },
-    ],
-  },
-  {
-    id: "termos",
-    label: "Termos",
-    guides: [
-      { id: "termo_consentimento", label: "Consentimento" },
-      { id: "termo_responsabilidade", label: "Responsabilidade" },
+      { id: "bpa", label: "BPA" },
     ],
   },
 ];
+
 
 type Procedure = { id: string; code: string; description: string; quantity: number };
 
