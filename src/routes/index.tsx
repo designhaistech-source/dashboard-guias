@@ -31,6 +31,7 @@ import {
   Sector,
 } from "recharts";
 import { AppSidebar } from "@/components/app-sidebar";
+import { SiteFooter } from "@/components/site-footer";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/")({
@@ -660,6 +661,7 @@ function DashboardPage() {
             </div>
           </div>
         </div>
+        <SiteFooter />
       </main>
     </div>
   );

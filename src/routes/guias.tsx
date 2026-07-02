@@ -29,6 +29,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { AppSidebar } from "@/components/app-sidebar";
+import { SiteFooter } from "@/components/site-footer";
 
 export const Route = createFileRoute("/guias")({
   head: () => ({
@@ -72,6 +73,7 @@ function Page() {
           <Upload_Section />
           <History_Section />
         </div>
+        <SiteFooter />
       </main>
     </div>
   );
