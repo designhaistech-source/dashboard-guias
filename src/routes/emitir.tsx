@@ -1213,7 +1213,10 @@ function EmitirPage() {
                   {submitting ? "Gerando..." : "Gerar guia"}
                 </Button>
               </div>
+              </>
+              )}
             </form>
+
           )}
         </div>
         <SiteFooter />
