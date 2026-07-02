@@ -38,7 +38,7 @@ import {
 } from "@/components/ui/dialog";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
-import { Shield, Landmark } from "lucide-react";
+import { Shield, Landmark, ArrowUp } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/emitir")({
@@ -390,8 +390,15 @@ function EmitirPage() {
 
           {/* Estado vazio quando ainda não escolheu tipo */}
           {!guideKind && (
-            <div className="rounded-xl border border-dashed bg-card/40 py-16 flex flex-col items-center justify-center text-center gap-3">
-              <div className="h-12 w-12 rounded-full border-2 border-dashed border-muted-foreground/40" />
+            <div className="rounded-xl border border-dashed bg-card/40 py-16 flex flex-col items-center justify-center text-center gap-4">
+              <div className="relative">
+                <div className="h-14 w-14 rounded-xl bg-muted/60 border flex items-center justify-center">
+                  <FileText className="h-6 w-6 text-muted-foreground" />
+                </div>
+                <div className="absolute -top-2 -right-2 h-6 w-6 rounded-full bg-primary/10 border border-primary/30 flex items-center justify-center">
+                  <ArrowUp className="h-3.5 w-3.5 text-primary" />
+                </div>
+              </div>
               <p className="text-sm text-muted-foreground max-w-md px-6">
                 Selecione acima o tipo de guia que deseja emitir para {convenio.label}. O
                 formulário adequado aparecerá aqui.
