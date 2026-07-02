@@ -660,6 +660,7 @@ function DashboardPage() {
             </div>
           </div>
         </div>
+        <SiteFooter />
       </main>
     </div>
   );
