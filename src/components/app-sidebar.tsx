@@ -23,6 +23,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import logoAsset from "@/assets/haisguias-logo.png.asset.json";
 
 type ItemKey =
   | "dashboard"
@@ -38,18 +39,14 @@ export function AppSidebar({ activeKey }: { activeKey: ItemKey }) {
   return (
     <TooltipProvider delayDuration={150}>
       <aside className="hidden md:flex w-72 shrink-0 flex-col border-r border-sidebar-border bg-sidebar text-sidebar-foreground">
-        <div className="flex items-center justify-center gap-2 px-6 py-6 border-b border-sidebar-border">
-          <svg width="28" height="28" viewBox="0 0 32 32" fill="none">
-            <path
-              d="M16 2L20 12L30 14L22 20L24 30L16 24L8 30L10 20L2 14L12 12Z"
-              fill="oklch(0.55 0.19 255)"
-            />
-          </svg>
-          <span className="text-2xl font-semibold tracking-tight">
-            <span className="text-primary">Hais</span>
-            <span className="text-sidebar-foreground">Guias</span>
-          </span>
+        <div className="flex items-center justify-center px-6 py-6 border-b border-sidebar-border">
+          <img
+            src={logoAsset.url}
+            alt="HaisGuias"
+            className="h-9 w-auto object-contain"
+          />
         </div>
+
 
         <nav className="flex-1 overflow-y-auto px-3 py-4 space-y-6">
           <SidebarGroup label="INÍCIO">
