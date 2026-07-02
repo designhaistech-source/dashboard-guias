@@ -905,30 +905,158 @@ function EmitirPage() {
                 </Field>
               </Section>
 
-              {/* Procedimentos */}
+              {/* Kits */}
               <Section
-                icon={<ClipboardList className="h-4 w-4" />}
-                title="Procedimentos solicitados"
-                description="Adicione um ou mais procedimentos (TUSS)."
+                icon={<Package className="h-4 w-4" />}
+                title="Kits"
+                description="Aplique um conjunto de procedimentos salvo ou por especialidade."
                 action={
-                  <Button type="button" size="sm" variant="outline" onClick={addProcedure}>
-                    <Plus className="h-4 w-4" /> Adicionar
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant="outline"
+                    onClick={() => setKitsEditOpen(true)}
+                  >
+                    <Pencil className="h-4 w-4" /> Editar kits
                   </Button>
                 }
               >
-                <div className="space-y-3">
+                <Field label="Kits do usuário">
+                  <Select
+                    value={selectedUserKit}
+                    onValueChange={(v) => {
+                      setSelectedUserKit(v);
+                      const kit = userKits.find((k) => k.id === v);
+                      if (kit) applyKit(kit);
+                    }}
+                  >
+                    <SelectTrigger>
+                      <SelectValue
+                        placeholder={
+                          userKits.length === 0
+                            ? "Nenhum kit cadastrado"
+                            : "Selecione um kit salvo"
+                        }
+                      />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {userKits.map((k) => (
+                        <SelectItem key={k.id} value={k.id}>
+                          {k.name} ({k.procedures.length})
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </Field>
+                <Grid cols={2}>
+                  <Field label="Kits por Especialidade Médica">
+                    <Select
+                      value={selectedSpecialty}
+                      onValueChange={(v) => {
+                        setSelectedSpecialty(v);
+                        setSelectedSpecialtyKit("");
+                      }}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Selecione uma especialidade (CBO)" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {specialties.map((s) => (
+                          <SelectItem key={s} value={s}>
+                            {s}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </Field>
+                  <Field label="Procedimento">
+                    <Select
+                      value={selectedSpecialtyKit}
+                      onValueChange={(v) => {
+                        setSelectedSpecialtyKit(v);
+                        const kit = specialtyKitOptions.find((k) => k.id === v);
+                        if (kit) applyKit(kit);
+                      }}
+                      disabled={!selectedSpecialty}
+                    >
+                      <SelectTrigger>
+                        <SelectValue
+                          placeholder={
+                            selectedSpecialty
+                              ? "Selecione um kit"
+                              : "Escolha a especialidade primeiro"
+                          }
+                        />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {specialtyKitOptions.map((k) => (
+                          <SelectItem key={k.id} value={k.id}>
+                            {k.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </Field>
+                </Grid>
+              </Section>
+
+              {/* Procedimentos */}
+              <Section
+                icon={<ClipboardList className="h-4 w-4" />}
+                title={
+                  <span className="flex items-center gap-2">
+                    Procedimentos solicitados
+                    {guideKind && (
+                      <span className="text-destructive font-semibold text-sm">
+                        - {GUIDE_SHORT[guideKind]}
+                      </span>
+                    )}
+                  </span>
+                }
+                description="Arraste para reordenar. Adicione um ou mais procedimentos (TUSS)."
+                action={
+                  <div className="flex items-center gap-2">
+                    <Button type="button" size="sm" variant="outline" onClick={clearProcedures}>
+                      Limpar
+                    </Button>
+                    <Button type="button" size="sm" onClick={addProcedure}>
+                      <Plus className="h-4 w-4" /> Adicionar
+                    </Button>
+                    <Button
+                      type="button"
+                      size="sm"
+                      onClick={saveAsKit}
+                      className="bg-emerald-600 hover:bg-emerald-700 text-white"
+                    >
+                      <Plus className="h-4 w-4" /> Salvar como kit
+                    </Button>
+                  </div>
+                }
+              >
+                <div className="space-y-2">
                   {procedures.map((p, idx) => (
-                    <div key={p.id} className="grid grid-cols-12 gap-2 items-end">
-                      <div className="col-span-3">
-                        <Label className="text-xs text-muted-foreground">Código TUSS</Label>
+                    <div
+                      key={p.id}
+                      draggable
+                      onDragStart={() => onDragStart(p.id)}
+                      onDragOver={onDragOver}
+                      onDrop={() => onDrop(p.id)}
+                      className={cn(
+                        "grid grid-cols-12 gap-2 items-end rounded-md",
+                        dragId === p.id && "opacity-50",
+                      )}
+                    >
+                      <div className="col-span-1 flex items-center justify-center pb-2 cursor-grab active:cursor-grabbing text-muted-foreground">
+                        <GripVertical className="h-4 w-4" />
+                      </div>
+                      <div className="col-span-2">
                         <Input
                           value={p.code}
                           onChange={(e) => updateProcedure(p.id, { code: e.target.value })}
-                          placeholder="00000000"
+                          placeholder="Código"
                         />
                       </div>
                       <div className="col-span-7">
-                        <Label className="text-xs text-muted-foreground">Descrição</Label>
                         <Input
                           value={p.description}
                           onChange={(e) =>
@@ -938,7 +1066,6 @@ function EmitirPage() {
                         />
                       </div>
                       <div className="col-span-1">
-                        <Label className="text-xs text-muted-foreground">Qtd.</Label>
                         <Input
                           type="number"
                           min={1}
@@ -965,7 +1092,98 @@ function EmitirPage() {
                     </div>
                   ))}
                 </div>
+
+                {filledProceduresCount > 1 && (
+                  <div className="flex items-center justify-end gap-2 pt-2 border-t">
+                    <Checkbox
+                      id="split-guides"
+                      checked={splitInGuides}
+                      onCheckedChange={(c) => setSplitInGuides(!!c)}
+                    />
+                    <Label htmlFor="split-guides" className="text-sm cursor-pointer">
+                      Solicitar os exames em {filledProceduresCount} guias separadas
+                    </Label>
+                  </div>
+                )}
               </Section>
+
+              {/* OPME */}
+              <Section
+                icon={<Wrench className="h-4 w-4" />}
+                title="OPME — Órteses, Próteses e Materiais Especiais"
+                description="Adicione materiais/próteses solicitados (opcional)."
+                action={
+                  <Button type="button" size="sm" onClick={addOpme}>
+                    <Plus className="h-4 w-4" /> Adicionar OPME
+                  </Button>
+                }
+              >
+                {opmeItems.length === 0 ? (
+                  <p className="text-xs text-muted-foreground">
+                    Nenhum item OPME adicionado.
+                  </p>
+                ) : (
+                  <div className="space-y-2">
+                    {opmeItems.map((o) => (
+                      <div key={o.id} className="grid grid-cols-12 gap-2 items-end">
+                        <div className="col-span-3">
+                          <Input
+                            value={o.code}
+                            onChange={(e) => updateOpme(o.id, { code: e.target.value })}
+                            placeholder="Código"
+                          />
+                        </div>
+                        <div className="col-span-7">
+                          <Input
+                            value={o.description}
+                            onChange={(e) =>
+                              updateOpme(o.id, { description: e.target.value })
+                            }
+                            placeholder="Descrição do material/prótese"
+                          />
+                        </div>
+                        <div className="col-span-1">
+                          <Input
+                            type="number"
+                            min={1}
+                            value={o.quantity}
+                            onChange={(e) =>
+                              updateOpme(o.id, {
+                                quantity: Math.max(1, Number(e.target.value) || 1),
+                              })
+                            }
+                          />
+                        </div>
+                        <div className="col-span-1 flex justify-end">
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => removeOpme(o.id)}
+                            aria-label="Remover OPME"
+                          >
+                            <Trash2 className="h-4 w-4 text-destructive" />
+                          </Button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </Section>
+
+              {/* Assinatura */}
+              <Section
+                icon={<User className="h-4 w-4" />}
+                title="Assinatura do Solicitante"
+                description="Nome do profissional responsável pela emissão."
+              >
+                <Input
+                  value={medicoNome}
+                  readOnly
+                  className="bg-muted/40 font-medium"
+                />
+              </Section>
+
 
               <div className="flex items-start gap-2 text-xs text-muted-foreground bg-muted/40 border rounded-md px-3 py-2">
                 <Info className="h-4 w-4 shrink-0 mt-0.5" />
