@@ -252,8 +252,8 @@ function EmitirPage() {
               <div>
                 <h1 className="text-2xl font-semibold tracking-tight">Emitir Guias</h1>
                 <p className="text-sm text-muted-foreground mt-1 max-w-2xl">
-                  Gere guias padronizadas TISS para qualquer convênio. Escolha o tipo de guia
-                  abaixo para começar.
+                  Escolha entre guias de convênio (TISS) ou guias do SUS e selecione o tipo
+                  correspondente para começar.
                 </p>
               </div>
             </div>
