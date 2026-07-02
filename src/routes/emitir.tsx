@@ -63,7 +63,13 @@ const CONVENIOS: {
   label: string;
   short: string;
   description: string;
-  guides: { id: GuideKind; label: string }[];
+  guides: {
+    id: GuideKind;
+    label: string;
+    description: string;
+    badge: string;
+    icon: LucideIcon;
+  }[];
 }[] = [
   {
     id: "tiss",
@@ -71,8 +77,20 @@ const CONVENIOS: {
     short: "TISS",
     description: "Padrão ANS para planos de saúde privados.",
     guides: [
-      { id: "sadt", label: "Ambulatorial / SADT" },
-      { id: "internacao", label: "Internação" },
+      {
+        id: "sadt",
+        label: "Ambulatorial / SADT",
+        description: "Consultas, exames diagnósticos e terapias externas.",
+        badge: "SP / SADT",
+        icon: StethIcon,
+      },
+      {
+        id: "internacao",
+        label: "Internação",
+        description: "Procedimentos cirúrgicos ou clínicos hospitalares.",
+        badge: "Hospitalar",
+        icon: BedDouble,
+      },
     ],
   },
   {
@@ -81,8 +99,20 @@ const CONVENIOS: {
     short: "SUS",
     description: "Guias do Sistema Único de Saúde (DATASUS).",
     guides: [
-      { id: "apac", label: "APAC" },
-      { id: "aih", label: "AIH" },
+      {
+        id: "apac",
+        label: "APAC",
+        description: "Autorização de Procedimentos Ambulatoriais de alta complexidade.",
+        badge: "Ambulatorial",
+        icon: HeartPulse,
+      },
+      {
+        id: "aih",
+        label: "AIH",
+        description: "Autorização de Internação Hospitalar no SUS.",
+        badge: "Hospitalar",
+        icon: Hospital,
+      },
     ],
   },
 ];
