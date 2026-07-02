@@ -314,9 +314,6 @@ function EmitirPage() {
             </div>
           </header>
 
-          {/* Hub: modo (TISS/SUS) + tipo de guia */}
-          <section className="rounded-xl border bg-card shadow-sm">
-            <div className="px-5 py-4 border-b">
           {/* Hub: modo (TISS/SUS) via Tabs */}
           <Tabs
             value={convenioId}
