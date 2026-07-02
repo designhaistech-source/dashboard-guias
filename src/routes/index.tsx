@@ -426,7 +426,7 @@ function DashboardPage() {
     <div className="flex min-h-screen w-full bg-background text-foreground">
       <AppSidebar activeKey="dashboard" />
       <main className="flex-1 px-8 py-8 flex flex-col min-h-screen">
-        <div className="mx-auto max-w-[1400px] space-y-6">
+        <div className="w-full space-y-6">
           {/* Header */}
           <div className="flex flex-wrap items-center justify-between gap-4">
             <h1 className="text-xl font-semibold tracking-tight text-foreground">Dashboard</h1>
