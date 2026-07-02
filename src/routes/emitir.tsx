@@ -267,31 +267,7 @@ function EmitirPage() {
 
           {/* Hub: convênio + tipo de guia */}
           <section className="rounded-xl border bg-card shadow-sm">
-            <div className="flex items-center justify-between gap-3 px-4 py-3 border-b overflow-x-auto">
-              <div className="flex items-center gap-1.5">
-                {CONVENIOS.map((c) => {
-                  const active = c.id === convenioId;
-                  return (
-                    <button
-                      key={c.id}
-                      type="button"
-                      onClick={() => setConvenioId(c.id)}
-                      className={cn(
-                        "text-xs px-3 py-1.5 rounded-md whitespace-nowrap transition-colors border",
-                        active
-                          ? "bg-primary/10 text-primary border-primary/30"
-                          : "bg-transparent text-muted-foreground border-transparent hover:bg-muted",
-                      )}
-                    >
-                      {c.label}
-                    </button>
-                  );
-                })}
-              </div>
-              <Button variant="ghost" size="icon" aria-label="Configurações">
-                <Settings2 className="h-4 w-4" />
-              </Button>
-            </div>
+
 
             <div className="px-5 py-4">
               <p className="text-xs text-muted-foreground mb-2">Escolha o tipo de guia:</p>
