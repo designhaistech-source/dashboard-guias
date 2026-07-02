@@ -67,6 +67,7 @@ export function AppSidebar({ activeKey }: { activeKey: ItemKey }) {
             <SidebarItem
               icon={FileText}
               label="Emitir guia"
+              to="/emitir"
               active={activeKey === "emitir"}
               hint="Preencha e gere novas guias médicas (SADT, consultas, encaminhamentos)."
             />
