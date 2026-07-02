@@ -463,7 +463,7 @@ function EmitirPage() {
       <AppSidebar activeKey="emitir" />
 
       <main className="flex-1 overflow-x-hidden flex flex-col min-h-screen">
-        <div className="max-w-6xl mx-auto px-6 py-8 space-y-6">
+        <div className="w-full px-6 lg:px-10 py-8 space-y-6">
           {/* Header do hub */}
           <header className="flex items-start justify-between gap-4 flex-wrap">
             <div className="flex items-start gap-3">
