@@ -348,18 +348,8 @@ function EmitirPage() {
             {CONVENIOS.map((c) => (
               <TabsContent key={c.id} value={c.id} className="mt-4">
                 <section className="rounded-xl border bg-card shadow-sm overflow-hidden">
-                  <div className="flex items-center justify-between gap-3 px-5 py-3 border-b bg-muted/30">
-                    <div className="flex items-center gap-2 text-xs text-muted-foreground min-w-0">
-                      <span>Emitir guia</span>
-                      <ChevronRight className="h-3.5 w-3.5 shrink-0 opacity-60" />
-                      <span className="text-primary font-medium truncate">{c.label}</span>
-                    </div>
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground shrink-0">
-                      Passo 1 de 2
-                    </span>
-                  </div>
-
                   <div className="px-5 sm:px-7 py-6">
+
                     <div className="mb-5">
                       <h2 className="text-lg font-semibold">Escolha o tipo de guia</h2>
                       <p className="text-sm text-muted-foreground mt-0.5">
