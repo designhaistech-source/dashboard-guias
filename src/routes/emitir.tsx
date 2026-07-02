@@ -119,18 +119,20 @@ function EmitirPage() {
 
   const guideHeaderTitle = useMemo(() => {
     switch (guideKind) {
+      case "consulta":
+        return "Guia de Consulta — TISS";
       case "sadt":
         return "Guia de Serviço Profissional / Serviço Auxiliar de Diagnóstico e Terapia — SP/SADT";
       case "internacao":
-        return "Guia de Solicitação de Internação";
+        return "Guia de Solicitação de Internação — TISS";
+      case "honorarios":
+        return "Guia de Honorários — TISS";
       case "apac":
-        return "SUS — APAC (Alto Custo / Procedimentos Especiais)";
+        return "SUS — APAC (Autorização de Procedimentos Ambulatoriais)";
       case "aih":
         return "SUS — AIH (Autorização de Internação Hospitalar)";
-      case "termo_consentimento":
-        return "Termo de Consentimento";
-      case "termo_responsabilidade":
-        return "Termo de Responsabilidade";
+      case "bpa":
+        return "SUS — BPA (Boletim de Produção Ambulatorial)";
       default:
         return "";
     }
