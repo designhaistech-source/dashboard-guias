@@ -46,7 +46,6 @@ import { Shield, Landmark, ArrowUp, Stethoscope as StethIcon, BedDouble, HeartPu
 import type { LucideIcon } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { cn } from "@/lib/utils";
-import { SadtForm } from "@/components/sadt-form";
 
 export const Route = createFileRoute("/emitir")({
   head: () => ({
@@ -607,12 +606,6 @@ function EmitirPage() {
                   <p className="text-sm font-semibold truncate">{guideHeaderTitle}</p>
                 </div>
               </div>
-
-              {guideKind === "sadt" ? (
-                <SadtForm />
-              ) : (
-              <>
-
 
               {/* Convênio / Estabelecimento */}
               {convenioId === "tiss" ? (
@@ -1213,10 +1206,7 @@ function EmitirPage() {
                   {submitting ? "Gerando..." : "Gerar guia"}
                 </Button>
               </div>
-              </>
-              )}
             </form>
-
           )}
         </div>
         <SiteFooter />
