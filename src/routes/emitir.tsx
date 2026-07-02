@@ -264,8 +264,10 @@ function EmitirPage() {
   const validate = () => {
     const missing: string[] = [];
     if (!pacienteNome.trim()) missing.push("Nome do paciente");
-    if (!pacienteCarteira.trim()) missing.push("Nº da carteira");
-    if (!operadora.trim()) missing.push("Operadora");
+    if (!pacienteCarteira.trim())
+      missing.push(convenioId === "sus" ? "Cartão SUS" : "Nº da carteira");
+    if (convenioId === "tiss" && !operadora.trim()) missing.push("Operadora");
+    if (convenioId === "sus" && !susEstabelecimento.trim()) missing.push("Estabelecimento");
     if (!medicoNome.trim()) missing.push("Nome do profissional");
     if (!medicoCrm.trim()) missing.push("CRM");
     if (!indicacaoClinica.trim()) missing.push("Indicação clínica");
