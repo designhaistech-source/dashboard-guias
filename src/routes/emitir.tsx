@@ -513,8 +513,8 @@ function EmitirPage() {
             </TabsList>
 
             {CONVENIOS.map((c) => (
-              <TabsContent key={c.id} value={c.id} className="mt-4">
-                <section className="rounded-xl border bg-card shadow-sm overflow-hidden">
+              <TabsContent key={c.id} value={c.id} className="mt-4 w-full">
+                <section className="w-full rounded-xl border bg-card shadow-sm overflow-hidden">
                   <div className="px-5 sm:px-7 py-6">
 
                     <div className="mb-5">
@@ -524,7 +524,7 @@ function EmitirPage() {
                       </p>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <div className="grid grid-cols-2 gap-3">
                       {c.guides.map((g) => {
                         const active = c.id === convenioId && g.id === guideKind;
                         const Icon = g.icon;
@@ -534,7 +534,7 @@ function EmitirPage() {
                             type="button"
                             onClick={() => setGuideKind(g.id)}
                             className={cn(
-                              "group text-left p-4 rounded-xl border-2 transition-all",
+                              "group text-left p-4 rounded-xl border-2 transition-colors min-h-[168px] flex flex-col",
                               active
                                 ? "bg-primary/5 border-primary ring-4 ring-primary/10"
                                 : "bg-background border-border hover:border-primary/40 hover:bg-muted/40",
