@@ -68,7 +68,7 @@ function Page() {
   return (
     <div className="flex min-h-screen w-full bg-background text-foreground">
       <AppSidebar activeKey="guias" />
-      <main className="flex-1 px-8 py-8">
+      <main className="flex-1 px-8 py-8 flex flex-col min-h-screen">
         <div className="mx-auto max-w-[1400px] space-y-8">
           <Upload_Section />
           <History_Section />
