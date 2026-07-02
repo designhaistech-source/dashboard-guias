@@ -563,6 +563,7 @@ function EmitirPage() {
             </form>
           )}
         </div>
+        <SiteFooter />
       </main>
 
       <Dialog open={!!preview} onOpenChange={(o) => !o && setPreview(null)}>
