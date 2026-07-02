@@ -219,6 +219,27 @@ function EmitirPage() {
     () => new Date().toISOString().slice(0, 10),
   );
 
+  // Campos SUS (substituem operadora/ANS)
+  const [susEstabelecimento, setSusEstabelecimento] = useState("");
+  const [susCnes, setSusCnes] = useState("");
+  useEffect(() => {
+    if (prefEstabelecimento) setSusEstabelecimento(prefEstabelecimento);
+  }, [prefEstabelecimento]);
+
+  // Específicos por tipo de guia
+  const [internacaoTipo, setInternacaoTipo] = useState("Clínica");
+  const [internacaoRegime, setInternacaoRegime] = useState("Hospitalar");
+  const [internacaoDias, setInternacaoDias] = useState(1);
+  const [internacaoAcomodacao, setInternacaoAcomodacao] = useState("Enfermaria");
+
+  const [apacCompetencia, setApacCompetencia] = useState(
+    () => new Date().toISOString().slice(0, 7),
+  );
+  const [apacTipo, setApacTipo] = useState("Inicial");
+
+  const [aihMotivo, setAihMotivo] = useState("");
+  const [aihCaraterEntry, setAihCaraterEntry] = useState("Eletivo");
+
   const [procedures, setProcedures] = useState<Procedure[]>([
     { id: "p-1", code: "", description: "", quantity: 1 },
   ]);
@@ -243,8 +264,10 @@ function EmitirPage() {
   const validate = () => {
     const missing: string[] = [];
     if (!pacienteNome.trim()) missing.push("Nome do paciente");
-    if (!pacienteCarteira.trim()) missing.push("Nº da carteira");
-    if (!operadora.trim()) missing.push("Operadora");
+    if (!pacienteCarteira.trim())
+      missing.push(convenioId === "sus" ? "Cartão SUS" : "Nº da carteira");
+    if (convenioId === "tiss" && !operadora.trim()) missing.push("Operadora");
+    if (convenioId === "sus" && !susEstabelecimento.trim()) missing.push("Estabelecimento");
     if (!medicoNome.trim()) missing.push("Nome do profissional");
     if (!medicoCrm.trim()) missing.push("CRM");
     if (!indicacaoClinica.trim()) missing.push("Indicação clínica");
@@ -424,7 +447,11 @@ function EmitirPage() {
           </Tabs>
 
           {guideKind && (
-            <form onSubmit={handleSubmit} className="space-y-6">
+            <form
+              key={guideKind}
+              onSubmit={handleSubmit}
+              className="space-y-6 animate-fade-in"
+            >
               {/* Cabeçalho integrado do formulário selecionado */}
               <div className="flex items-center gap-3">
                 <div className="w-1 h-8 bg-primary rounded-full" />
@@ -436,51 +463,190 @@ function EmitirPage() {
                 </div>
               </div>
 
+              {/* Convênio / Estabelecimento */}
+              {convenioId === "tiss" ? (
+                <Section
+                  icon={<Building2 className="h-4 w-4" />}
+                  title="Convênio e atendimento"
+                  description="Operadora responsável e caráter da solicitação."
+                >
+                  <Grid cols={2}>
+                    <Field label="Operadora / Convênio" required>
+                      <Input
+                        value={operadora}
+                        onChange={(e) => setOperadora(e.target.value)}
+                        placeholder="Unimed, Amil, SulAmérica..."
+                      />
+                    </Field>
+                    <Field label="Registro ANS">
+                      <Input
+                        value={registroAns}
+                        onChange={(e) => setRegistroAns(e.target.value)}
+                        placeholder="000000"
+                      />
+                    </Field>
+                    <Field label="Caráter do atendimento" required>
+                      <Select value={character} onValueChange={setCharacter}>
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {CHARACTER_OPTIONS.map((c) => (
+                            <SelectItem key={c} value={c}>
+                              {c}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </Field>
+                    <Field label="Data da solicitação">
+                      <Input
+                        type="date"
+                        value={dataSolicitacao}
+                        onChange={(e) => setDataSolicitacao(e.target.value)}
+                      />
+                    </Field>
+                  </Grid>
+                </Section>
+              ) : (
+                <Section
+                  icon={<Building2 className="h-4 w-4" />}
+                  title="Estabelecimento (SUS)"
+                  description="Unidade executante e identificação DATASUS."
+                >
+                  <Grid cols={2}>
+                    <Field label="Estabelecimento" required>
+                      <Input
+                        value={susEstabelecimento}
+                        onChange={(e) => setSusEstabelecimento(e.target.value)}
+                        placeholder="Nome da unidade de saúde"
+                      />
+                    </Field>
+                    <Field label="CNES">
+                      <Input
+                        value={susCnes}
+                        onChange={(e) => setSusCnes(e.target.value)}
+                        placeholder="0000000"
+                      />
+                    </Field>
+                    <Field label="Data da solicitação">
+                      <Input
+                        type="date"
+                        value={dataSolicitacao}
+                        onChange={(e) => setDataSolicitacao(e.target.value)}
+                      />
+                    </Field>
+                  </Grid>
+                </Section>
+              )}
 
-              {/* Operadora + caráter */}
-              <Section
-                icon={<Building2 className="h-4 w-4" />}
-                title="Convênio e atendimento"
-                description="Operadora responsável e caráter da solicitação."
-              >
-                <Grid cols={2}>
-                  <Field label="Operadora / Convênio" required>
-                    <Input
-                      value={operadora}
-                      onChange={(e) => setOperadora(e.target.value)}
-                      placeholder="Unimed, Amil, SulAmérica..."
-                    />
-                  </Field>
-                  <Field label="Registro ANS">
-                    <Input
-                      value={registroAns}
-                      onChange={(e) => setRegistroAns(e.target.value)}
-                      placeholder="000000"
-                    />
-                  </Field>
-                  <Field label="Caráter do atendimento" required>
-                    <Select value={character} onValueChange={setCharacter}>
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {CHARACTER_OPTIONS.map((c) => (
-                          <SelectItem key={c} value={c}>
-                            {c}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </Field>
-                  <Field label="Data da solicitação">
-                    <Input
-                      type="date"
-                      value={dataSolicitacao}
-                      onChange={(e) => setDataSolicitacao(e.target.value)}
-                    />
-                  </Field>
-                </Grid>
-              </Section>
+              {/* Detalhes específicos por tipo de guia */}
+              {guideKind === "internacao" && (
+                <Section
+                  icon={<BedDouble className="h-4 w-4" />}
+                  title="Dados da internação"
+                  description="Regime, acomodação e previsão de permanência."
+                >
+                  <Grid cols={2}>
+                    <Field label="Tipo de internação" required>
+                      <Select value={internacaoTipo} onValueChange={setInternacaoTipo}>
+                        <SelectTrigger><SelectValue /></SelectTrigger>
+                        <SelectContent>
+                          {["Clínica", "Cirúrgica", "Obstétrica", "Pediátrica", "Psiquiátrica"].map((o) => (
+                            <SelectItem key={o} value={o}>{o}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </Field>
+                    <Field label="Regime">
+                      <Select value={internacaoRegime} onValueChange={setInternacaoRegime}>
+                        <SelectTrigger><SelectValue /></SelectTrigger>
+                        <SelectContent>
+                          {["Hospitalar", "Hospital-dia", "Domiciliar"].map((o) => (
+                            <SelectItem key={o} value={o}>{o}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </Field>
+                    <Field label="Dias solicitados" required>
+                      <Input
+                        type="number"
+                        min={1}
+                        value={internacaoDias}
+                        onChange={(e) =>
+                          setInternacaoDias(Math.max(1, Number(e.target.value) || 1))
+                        }
+                      />
+                    </Field>
+                    <Field label="Acomodação">
+                      <Select value={internacaoAcomodacao} onValueChange={setInternacaoAcomodacao}>
+                        <SelectTrigger><SelectValue /></SelectTrigger>
+                        <SelectContent>
+                          {["Enfermaria", "Apartamento", "UTI"].map((o) => (
+                            <SelectItem key={o} value={o}>{o}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </Field>
+                  </Grid>
+                </Section>
+              )}
+
+              {guideKind === "apac" && (
+                <Section
+                  icon={<HeartPulse className="h-4 w-4" />}
+                  title="Dados da APAC"
+                  description="Competência e tipo de autorização."
+                >
+                  <Grid cols={2}>
+                    <Field label="Competência" required>
+                      <Input
+                        type="month"
+                        value={apacCompetencia}
+                        onChange={(e) => setApacCompetencia(e.target.value)}
+                      />
+                    </Field>
+                    <Field label="Tipo de APAC" required>
+                      <Select value={apacTipo} onValueChange={setApacTipo}>
+                        <SelectTrigger><SelectValue /></SelectTrigger>
+                        <SelectContent>
+                          {["Inicial", "Continuidade", "Única"].map((o) => (
+                            <SelectItem key={o} value={o}>{o}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </Field>
+                  </Grid>
+                </Section>
+              )}
+
+              {guideKind === "aih" && (
+                <Section
+                  icon={<Hospital className="h-4 w-4" />}
+                  title="Dados da AIH"
+                  description="Caráter da internação e motivo."
+                >
+                  <Grid cols={2}>
+                    <Field label="Caráter da internação" required>
+                      <Select value={aihCaraterEntry} onValueChange={setAihCaraterEntry}>
+                        <SelectTrigger><SelectValue /></SelectTrigger>
+                        <SelectContent>
+                          {["Eletivo", "Urgência"].map((o) => (
+                            <SelectItem key={o} value={o}>{o}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </Field>
+                    <Field label="Motivo da internação" required>
+                      <Input
+                        value={aihMotivo}
+                        onChange={(e) => setAihMotivo(e.target.value)}
+                        placeholder="Descreva brevemente"
+                      />
+                    </Field>
+                  </Grid>
+                </Section>
+              )}
 
               {/* Paciente */}
               <Section
