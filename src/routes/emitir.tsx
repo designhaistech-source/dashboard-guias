@@ -50,53 +50,49 @@ export const Route = createFileRoute("/emitir")({
 
 // -------- Modelo inspirado no fluxo PedeGuia --------
 
-type ConvenioId =
-  | "tiss"
-  | "ipsemg"
-  | "ipsm"
-  | "ipers"
-  | "iasep"
-  | "sus"
-  | "termos";
+type ConvenioId = "tiss" | "sus";
 
 type GuideKind =
   | "sadt"
+  | "consulta"
   | "internacao"
+  | "honorarios"
   | "apac"
   | "aih"
-  | "termo_consentimento"
-  | "termo_responsabilidade";
+  | "bpa";
 
-const CONVENIOS: { id: ConvenioId; label: string; guides: { id: GuideKind; label: string }[] }[] = [
+const CONVENIOS: {
+  id: ConvenioId;
+  label: string;
+  short: string;
+  description: string;
+  guides: { id: GuideKind; label: string }[];
+}[] = [
   {
     id: "tiss",
-    label: "Guias Padronizadas TISS",
+    label: "Convênio (TISS)",
+    short: "TISS",
+    description: "Padrão ANS para planos de saúde privados.",
     guides: [
-      { id: "sadt", label: "Ambulatorial / SADT" },
+      { id: "consulta", label: "Consulta" },
+      { id: "sadt", label: "SP / SADT" },
       { id: "internacao", label: "Internação" },
+      { id: "honorarios", label: "Honorários" },
     ],
   },
-  { id: "ipsemg", label: "IPSEMG", guides: [{ id: "sadt", label: "Ambulatorial / SADT" }] },
-  { id: "ipsm", label: "IPSM - PMMG", guides: [{ id: "sadt", label: "Ambulatorial / SADT" }] },
-  { id: "ipers", label: "IPE-RS", guides: [{ id: "sadt", label: "Ambulatorial / SADT" }] },
-  { id: "iasep", label: "IASEP-PA", guides: [{ id: "sadt", label: "Ambulatorial / SADT" }] },
   {
     id: "sus",
     label: "SUS",
+    short: "SUS",
+    description: "Guias do Sistema Único de Saúde (DATASUS).",
     guides: [
       { id: "apac", label: "APAC" },
       { id: "aih", label: "AIH" },
-    ],
-  },
-  {
-    id: "termos",
-    label: "Termos",
-    guides: [
-      { id: "termo_consentimento", label: "Consentimento" },
-      { id: "termo_responsabilidade", label: "Responsabilidade" },
+      { id: "bpa", label: "BPA" },
     ],
   },
 ];
+
 
 type Procedure = { id: string; code: string; description: string; quantity: number };
 
@@ -123,18 +119,20 @@ function EmitirPage() {
 
   const guideHeaderTitle = useMemo(() => {
     switch (guideKind) {
+      case "consulta":
+        return "Guia de Consulta — TISS";
       case "sadt":
         return "Guia de Serviço Profissional / Serviço Auxiliar de Diagnóstico e Terapia — SP/SADT";
       case "internacao":
-        return "Guia de Solicitação de Internação";
+        return "Guia de Solicitação de Internação — TISS";
+      case "honorarios":
+        return "Guia de Honorários — TISS";
       case "apac":
-        return "SUS — APAC (Alto Custo / Procedimentos Especiais)";
+        return "SUS — APAC (Autorização de Procedimentos Ambulatoriais)";
       case "aih":
         return "SUS — AIH (Autorização de Internação Hospitalar)";
-      case "termo_consentimento":
-        return "Termo de Consentimento";
-      case "termo_responsabilidade":
-        return "Termo de Responsabilidade";
+      case "bpa":
+        return "SUS — BPA (Boletim de Produção Ambulatorial)";
       default:
         return "";
     }
@@ -254,8 +252,8 @@ function EmitirPage() {
               <div>
                 <h1 className="text-2xl font-semibold tracking-tight">Emitir Guias</h1>
                 <p className="text-sm text-muted-foreground mt-1 max-w-2xl">
-                  Gere guias padronizadas TISS para qualquer convênio. Escolha o tipo de guia
-                  abaixo para começar.
+                  Escolha entre guias de convênio (TISS) ou guias do SUS e selecione o tipo
+                  correspondente para começar.
                 </p>
               </div>
             </div>
@@ -266,9 +264,32 @@ function EmitirPage() {
             </div>
           </header>
 
-          {/* Hub: convênio + tipo de guia */}
+          {/* Hub: modo (TISS/SUS) + tipo de guia */}
           <section className="rounded-xl border bg-card shadow-sm">
-
+            <div className="px-5 py-4 border-b">
+              <p className="text-xs text-muted-foreground mb-2">Modo de emissão:</p>
+              <div className="inline-flex rounded-lg border bg-muted/50 p-1">
+                {CONVENIOS.map((c) => {
+                  const active = c.id === convenioId;
+                  return (
+                    <button
+                      key={c.id}
+                      type="button"
+                      onClick={() => setConvenioId(c.id)}
+                      className={cn(
+                        "text-sm px-4 py-1.5 rounded-md transition-colors font-medium",
+                        active
+                          ? "bg-background text-foreground shadow-sm"
+                          : "text-muted-foreground hover:text-foreground",
+                      )}
+                    >
+                      {c.label}
+                    </button>
+                  );
+                })}
+              </div>
+              <p className="text-xs text-muted-foreground mt-2">{convenio.description}</p>
+            </div>
 
             <div className="px-5 py-4">
               <p className="text-xs text-muted-foreground mb-2">Escolha o tipo de guia:</p>
@@ -294,6 +315,7 @@ function EmitirPage() {
               </div>
             </div>
           </section>
+
 
           {/* Estado vazio quando ainda não escolheu tipo */}
           {!guideKind && (
