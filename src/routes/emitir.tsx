@@ -608,6 +608,12 @@ function EmitirPage() {
                 </div>
               </div>
 
+              {guideKind === "sadt" ? (
+                <SadtForm />
+              ) : (
+              <>
+
+
               {/* Convênio / Estabelecimento */}
               {convenioId === "tiss" ? (
                 <Section
