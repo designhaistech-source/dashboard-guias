@@ -219,6 +219,27 @@ function EmitirPage() {
     () => new Date().toISOString().slice(0, 10),
   );
 
+  // Campos SUS (substituem operadora/ANS)
+  const [susEstabelecimento, setSusEstabelecimento] = useState("");
+  const [susCnes, setSusCnes] = useState("");
+  useEffect(() => {
+    if (prefEstabelecimento) setSusEstabelecimento(prefEstabelecimento);
+  }, [prefEstabelecimento]);
+
+  // Específicos por tipo de guia
+  const [internacaoTipo, setInternacaoTipo] = useState("Clínica");
+  const [internacaoRegime, setInternacaoRegime] = useState("Hospitalar");
+  const [internacaoDias, setInternacaoDias] = useState(1);
+  const [internacaoAcomodacao, setInternacaoAcomodacao] = useState("Enfermaria");
+
+  const [apacCompetencia, setApacCompetencia] = useState(
+    () => new Date().toISOString().slice(0, 7),
+  );
+  const [apacTipo, setApacTipo] = useState("Inicial");
+
+  const [aihMotivo, setAihMotivo] = useState("");
+  const [aihCaraterEntry, setAihCaraterEntry] = useState("Eletivo");
+
   const [procedures, setProcedures] = useState<Procedure[]>([
     { id: "p-1", code: "", description: "", quantity: 1 },
   ]);
