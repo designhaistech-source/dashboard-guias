@@ -148,6 +148,42 @@ function EmitirPage() {
     setNumeroGuia(`G-${Math.floor(Math.random() * 900000 + 100000)}`);
   }, []);
 
+  // Preferências do usuário (persistidas em localStorage)
+  const [prefsOpen, setPrefsOpen] = useState(false);
+  const [prefPrestador, setPrefPrestador] = useState("");
+  const [prefMatricula, setPrefMatricula] = useState("");
+  const [prefEstabelecimento, setPrefEstabelecimento] = useState("");
+  const [prefUf, setPrefUf] = useState("RN");
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem("haisguias:prefs");
+      if (raw) {
+        const p = JSON.parse(raw);
+        setPrefPrestador(p.prestador ?? "");
+        setPrefMatricula(p.matricula ?? "");
+        setPrefEstabelecimento(p.estabelecimento ?? "");
+        setPrefUf(p.uf ?? "RN");
+        if (p.prestador) setMedicoNome(p.prestador);
+        if (p.matricula) setMedicoCrm(p.matricula);
+      }
+    } catch { /* ignore */ }
+  }, []);
+  const savePrefs = () => {
+    localStorage.setItem(
+      "haisguias:prefs",
+      JSON.stringify({
+        prestador: prefPrestador,
+        matricula: prefMatricula,
+        estabelecimento: prefEstabelecimento,
+        uf: prefUf,
+      }),
+    );
+    if (prefPrestador) setMedicoNome(prefPrestador);
+    if (prefMatricula) setMedicoCrm(prefMatricula);
+    toast.success("Preferências salvas");
+    setPrefsOpen(false);
+  };
+
   const [pacienteNome, setPacienteNome] = useState("");
   const [pacienteCarteira, setPacienteCarteira] = useState("");
   const [pacienteCpf, setPacienteCpf] = useState("");
