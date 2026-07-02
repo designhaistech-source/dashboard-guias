@@ -264,9 +264,32 @@ function EmitirPage() {
             </div>
           </header>
 
-          {/* Hub: convênio + tipo de guia */}
+          {/* Hub: modo (TISS/SUS) + tipo de guia */}
           <section className="rounded-xl border bg-card shadow-sm">
-
+            <div className="px-5 py-4 border-b">
+              <p className="text-xs text-muted-foreground mb-2">Modo de emissão:</p>
+              <div className="inline-flex rounded-lg border bg-muted/50 p-1">
+                {CONVENIOS.map((c) => {
+                  const active = c.id === convenioId;
+                  return (
+                    <button
+                      key={c.id}
+                      type="button"
+                      onClick={() => setConvenioId(c.id)}
+                      className={cn(
+                        "text-sm px-4 py-1.5 rounded-md transition-colors font-medium",
+                        active
+                          ? "bg-background text-foreground shadow-sm"
+                          : "text-muted-foreground hover:text-foreground",
+                      )}
+                    >
+                      {c.label}
+                    </button>
+                  );
+                })}
+              </div>
+              <p className="text-xs text-muted-foreground mt-2">{convenio.description}</p>
+            </div>
 
             <div className="px-5 py-4">
               <p className="text-xs text-muted-foreground mb-2">Escolha o tipo de guia:</p>
@@ -292,6 +315,7 @@ function EmitirPage() {
               </div>
             </div>
           </section>
+
 
           {/* Estado vazio quando ainda não escolheu tipo */}
           {!guideKind && (
