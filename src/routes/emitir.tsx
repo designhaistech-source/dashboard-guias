@@ -38,7 +38,8 @@ import {
 } from "@/components/ui/dialog";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
-import { Shield, Landmark, ArrowUp } from "lucide-react";
+import { Shield, Landmark, ArrowUp, Stethoscope as StethIcon, BedDouble, HeartPulse, Hospital, Check, ChevronRight } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/emitir")({
@@ -62,7 +63,13 @@ const CONVENIOS: {
   label: string;
   short: string;
   description: string;
-  guides: { id: GuideKind; label: string }[];
+  guides: {
+    id: GuideKind;
+    label: string;
+    description: string;
+    badge: string;
+    icon: LucideIcon;
+  }[];
 }[] = [
   {
     id: "tiss",
@@ -70,8 +77,20 @@ const CONVENIOS: {
     short: "TISS",
     description: "Padrão ANS para planos de saúde privados.",
     guides: [
-      { id: "sadt", label: "Ambulatorial / SADT" },
-      { id: "internacao", label: "Internação" },
+      {
+        id: "sadt",
+        label: "Ambulatorial / SADT",
+        description: "Consultas, exames diagnósticos e terapias externas.",
+        badge: "SP / SADT",
+        icon: StethIcon,
+      },
+      {
+        id: "internacao",
+        label: "Internação",
+        description: "Procedimentos cirúrgicos ou clínicos hospitalares.",
+        badge: "Hospitalar",
+        icon: BedDouble,
+      },
     ],
   },
   {
@@ -80,8 +99,20 @@ const CONVENIOS: {
     short: "SUS",
     description: "Guias do Sistema Único de Saúde (DATASUS).",
     guides: [
-      { id: "apac", label: "APAC" },
-      { id: "aih", label: "AIH" },
+      {
+        id: "apac",
+        label: "APAC",
+        description: "Autorização de Procedimentos Ambulatoriais de alta complexidade.",
+        badge: "Ambulatorial",
+        icon: HeartPulse,
+      },
+      {
+        id: "aih",
+        label: "AIH",
+        description: "Autorização de Internação Hospitalar no SUS.",
+        badge: "Hospitalar",
+        icon: Hospital,
+      },
     ],
   },
 ];
@@ -317,43 +348,81 @@ function EmitirPage() {
             {CONVENIOS.map((c) => (
               <TabsContent key={c.id} value={c.id} className="mt-4">
                 <section className="rounded-xl border bg-card shadow-sm overflow-hidden">
-                  <div className="flex items-start gap-3 px-5 py-4 border-b bg-muted/30">
-                    {c.id === "tiss" ? (
-                      <Shield className="h-5 w-5 text-primary mt-0.5 shrink-0" />
-                    ) : (
-                      <Landmark className="h-5 w-5 text-primary mt-0.5 shrink-0" />
-                    )}
-                    <div className="min-w-0">
-                      <div className="flex items-center gap-2 flex-wrap">
-                        <h3 className="text-sm font-semibold">{c.label}</h3>
-                        <Badge variant="secondary" className="text-[10px] uppercase tracking-wider">
-                          {c.short}
-                        </Badge>
-                      </div>
-                      <p className="text-xs text-muted-foreground mt-0.5">{c.description}</p>
+                  <div className="flex items-center justify-between gap-3 px-5 py-3 border-b bg-muted/30">
+                    <div className="flex items-center gap-2 text-xs text-muted-foreground min-w-0">
+                      <span>Emitir guia</span>
+                      <ChevronRight className="h-3.5 w-3.5 shrink-0 opacity-60" />
+                      <span className="text-primary font-medium truncate">{c.label}</span>
                     </div>
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground shrink-0">
+                      Passo 1 de 2
+                    </span>
                   </div>
 
-                  <div className="px-5 py-4">
-                    <p className="text-xs text-muted-foreground mb-3">
-                      Escolha o tipo de guia:
-                    </p>
-                    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
+                  <div className="px-5 sm:px-7 py-6">
+                    <div className="mb-5">
+                      <h2 className="text-lg font-semibold">Escolha o tipo de guia</h2>
+                      <p className="text-sm text-muted-foreground mt-0.5">
+                        Selecione a modalidade de atendimento para prosseguir com o formulário.
+                      </p>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                       {c.guides.map((g) => {
                         const active = c.id === convenioId && g.id === guideKind;
+                        const Icon = g.icon;
                         return (
                           <button
                             key={g.id}
                             type="button"
                             onClick={() => setGuideKind(g.id)}
                             className={cn(
-                              "text-sm px-4 py-3 rounded-lg border text-left transition-all",
+                              "group text-left p-4 rounded-xl border-2 transition-all",
                               active
-                                ? "bg-primary text-primary-foreground border-primary shadow-sm"
-                                : "bg-background border-border hover:border-primary/40 hover:bg-muted",
+                                ? "bg-primary/5 border-primary ring-4 ring-primary/10"
+                                : "bg-background border-border hover:border-primary/40 hover:bg-muted/40",
                             )}
                           >
-                            <div className="font-medium">{g.label}</div>
+                            <div className="flex items-center justify-between">
+                              <div
+                                className={cn(
+                                  "h-10 w-10 rounded-lg flex items-center justify-center shrink-0 transition-colors",
+                                  active
+                                    ? "bg-primary text-primary-foreground shadow-sm"
+                                    : "bg-muted text-muted-foreground group-hover:bg-muted/80",
+                                )}
+                              >
+                                <Icon className="h-5 w-5" />
+                              </div>
+                              <div
+                                className={cn(
+                                  "h-5 w-5 rounded-full border-2 flex items-center justify-center transition-colors",
+                                  active
+                                    ? "border-primary bg-primary"
+                                    : "border-border bg-background",
+                                )}
+                              >
+                                {active && <Check className="h-3 w-3 text-primary-foreground" strokeWidth={3} />}
+                              </div>
+                            </div>
+                            <div className="mt-3">
+                              <h3 className={cn("font-semibold leading-tight", active ? "text-foreground" : "text-foreground/90")}>
+                                {g.label}
+                              </h3>
+                              <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
+                                {g.description}
+                              </p>
+                            </div>
+                            <div
+                              className={cn(
+                                "mt-3 inline-flex items-center text-[10px] font-bold uppercase tracking-tight px-2 py-0.5 rounded",
+                                active
+                                  ? "bg-primary/10 text-primary"
+                                  : "text-muted-foreground",
+                              )}
+                            >
+                              {g.badge}
+                            </div>
                           </button>
                         );
                       })}
@@ -364,40 +433,19 @@ function EmitirPage() {
             ))}
           </Tabs>
 
-
-
-
-          {/* Estado vazio quando ainda não escolheu tipo */}
-          {!guideKind && (
-            <div className="rounded-xl border border-dashed bg-card/40 py-16 flex flex-col items-center justify-center text-center gap-4">
-              <div className="relative">
-                <div className="h-14 w-14 rounded-xl bg-muted/60 border flex items-center justify-center">
-                  <FileText className="h-6 w-6 text-muted-foreground" />
-                </div>
-                <div className="absolute -top-2 -right-2 h-6 w-6 rounded-full bg-primary/10 border border-primary/30 flex items-center justify-center">
-                  <ArrowUp className="h-3.5 w-3.5 text-primary" />
-                </div>
-              </div>
-              <p className="text-sm text-muted-foreground max-w-md px-6">
-                Selecione acima o tipo de guia que deseja emitir para {convenio.label}. O
-                formulário adequado aparecerá aqui.
-              </p>
-            </div>
-          )}
-
           {guideKind && (
             <form onSubmit={handleSubmit} className="space-y-6">
-              {/* Cabeçalho do formulário selecionado */}
-              <div className="rounded-xl border bg-card shadow-sm">
-                <div className="border-l-4 border-primary px-5 py-4">
-                  <p className="text-[11px] uppercase tracking-wider text-muted-foreground">
-                    {convenio.label}
+              {/* Cabeçalho integrado do formulário selecionado */}
+              <div className="flex items-center gap-3">
+                <div className="w-1 h-8 bg-primary rounded-full" />
+                <div className="min-w-0">
+                  <p className="text-[10px] uppercase font-bold tracking-widest text-muted-foreground">
+                    Formulário de emissão
                   </p>
-                  <h2 className="text-sm font-semibold mt-1 leading-snug">
-                    {guideHeaderTitle}
-                  </h2>
+                  <p className="text-sm font-semibold truncate">{guideHeaderTitle}</p>
                 </div>
               </div>
+
 
               {/* Operadora + caráter */}
               <Section
