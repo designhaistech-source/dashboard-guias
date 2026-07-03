@@ -1566,7 +1566,15 @@ function GuiaLivePreview(props: {
             <div className="grid grid-cols-[220px_1fr_260px] border-b border-black min-h-[110px]">
               <div className="flex items-center justify-center border-r border-black px-3 py-3">
                 {operadoraLogo ? (
-                  <img src={operadoraLogo} alt={operadora} className="h-24 max-w-[190px] w-auto object-contain" />
+                  <img
+                    src={operadoraLogo}
+                    alt={operadora}
+                    className="w-auto object-contain"
+                    style={{
+                      height: operadora === "CAURN" ? 160 : 90,
+                      maxWidth: operadora === "CAURN" ? 260 : 200,
+                    }}
+                  />
                 ) : (
                   <span className="text-[9px] text-slate-500 italic">Logo da Empresa</span>
                 )}
