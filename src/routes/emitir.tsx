@@ -603,12 +603,13 @@ function EmitirPage() {
           </Tabs>
 
           {guideKind && (
-            <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_460px]">
+            <div>
             <form
               key={guideKind}
               onSubmit={handleSubmit}
-              className="space-y-6 animate-fade-in min-w-0"
+              className="space-y-6 animate-fade-in"
             >
+
               {/* Cabeçalho integrado do formulário selecionado */}
               <div className="flex items-center gap-3">
                 <div className="w-1 h-8 bg-primary rounded-full" />
