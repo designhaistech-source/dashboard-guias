@@ -1538,20 +1538,29 @@ function GuiaLivePreview(props: {
   const execRows = rows;
   const profRows = Array.from({ length: 4 }, () => null);
 
-  return (
-    <div className="rounded-xl border bg-card shadow-sm overflow-hidden">
-      <div className="px-4 py-2.5 border-b bg-muted/40 flex items-center justify-between">
-        <p className="text-[10px] uppercase font-bold tracking-widest text-muted-foreground">
-          Pré-visualização · Modelo TISS SP/SADT
-        </p>
-        <span className="text-[10px] text-muted-foreground">Atualiza em tempo real</span>
-      </div>
+  const fullSize = props.fullSize;
 
-      <div className="bg-slate-100 p-2 overflow-hidden">
+  return (
+    <div className={fullSize ? "" : "rounded-xl border bg-card shadow-sm overflow-hidden"}>
+      {!fullSize && (
+        <div className="px-4 py-2.5 border-b bg-muted/40 flex items-center justify-between">
+          <p className="text-[10px] uppercase font-bold tracking-widest text-muted-foreground">
+            Pré-visualização · Modelo TISS SP/SADT
+          </p>
+          <span className="text-[10px] text-muted-foreground">Atualiza em tempo real</span>
+        </div>
+      )}
+
+      <div className={fullSize ? "bg-slate-100 p-4 overflow-auto" : "bg-slate-100 p-2 overflow-hidden"}>
         <div
           className="origin-top-left"
-          style={{ transform: "scale(0.4)", width: 1100, height: 820, transformOrigin: "top left" }}
+          style={
+            fullSize
+              ? { width: 1100 }
+              : { transform: "scale(0.4)", width: 1100, height: 820, transformOrigin: "top left" }
+          }
         >
+
           <div className="w-[1100px] bg-white text-black font-sans text-[9px] leading-tight border border-black">
             {/* Header */}
             <div className="grid grid-cols-[140px_1fr_260px] border-b border-black">
