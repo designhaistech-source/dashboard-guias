@@ -18,6 +18,7 @@ import {
   Wrench,
   Pencil,
   Package,
+  Eye,
 } from "lucide-react";
 import { toast } from "sonner";
 import { AppSidebar } from "@/components/app-sidebar";
@@ -313,6 +314,7 @@ function EmitirPage() {
     { id: "p-1", code: "", description: "", quantity: 1 },
   ]);
 
+  const [previewOpen, setPreviewOpen] = useState(false);
   const [preview, setPreview] = useState<null | {
     numero: string;
     tipo: string;
@@ -603,12 +605,13 @@ function EmitirPage() {
           </Tabs>
 
           {guideKind && (
-            <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_460px]">
+            <div>
             <form
               key={guideKind}
               onSubmit={handleSubmit}
-              className="space-y-6 animate-fade-in min-w-0"
+              className="space-y-6 animate-fade-in"
             >
+
               {/* Cabeçalho integrado do formulário selecionado */}
               <div className="flex items-center gap-3">
                 <div className="w-1 h-8 bg-primary rounded-full" />
@@ -1236,6 +1239,9 @@ function EmitirPage() {
                 <Button type="button" variant="ghost" onClick={handleReset}>
                   Limpar
                 </Button>
+                <Button type="button" variant="outline" onClick={() => setPreviewOpen(true)}>
+                  <Eye className="h-4 w-4" /> Pré-visualizar
+                </Button>
                 <Button type="button" variant="outline">
                   <Save className="h-4 w-4" /> Salvar rascunho
                 </Button>
@@ -1245,48 +1251,60 @@ function EmitirPage() {
                 </Button>
               </div>
             </form>
-              <aside className="xl:sticky xl:top-6 xl:self-start">
-                <GuiaLivePreview
-                  numeroGuia={numeroGuia}
-                  guideKind={guideKind}
-                  guideLabel={guideLabel}
-                  guideHeaderTitle={guideHeaderTitle}
-                  convenioId={convenioId}
-                  operadora={operadora}
-                  operadoraLogo={OPERADORAS.find((o) => o.value === operadora)?.logo}
-                  registroAns={registroAns}
-                  character={character}
-                  dataSolicitacao={dataSolicitacao}
-                  susEstabelecimento={susEstabelecimento}
-                  susCnes={susCnes}
-                  pacienteNome={pacienteNome}
-                  pacienteCarteira={pacienteCarteira}
-                  pacienteCpf={pacienteCpf}
-                  pacienteNascimento={pacienteNascimento}
-                  pacienteSexo={pacienteSexo}
-                  medicoNome={medicoNome}
-                  medicoCrm={medicoCrm}
-                  medicoEspecialidade={medicoEspecialidade}
-                  cidPrincipal={cidPrincipal}
-                  indicacaoClinica={indicacaoClinica}
-                  observacoes={observacoes}
-                  procedures={procedures}
-                  opmeItems={opmeItems}
-                  internacaoTipo={internacaoTipo}
-                  internacaoRegime={internacaoRegime}
-                  internacaoDias={internacaoDias}
-                  internacaoAcomodacao={internacaoAcomodacao}
-                  apacCompetencia={apacCompetencia}
-                  apacTipo={apacTipo}
-                  aihMotivo={aihMotivo}
-                  aihCaraterEntry={aihCaraterEntry}
-                />
-              </aside>
             </div>
           )}
+
         </div>
         <SiteFooter />
       </main>
+
+      <Dialog open={previewOpen} onOpenChange={setPreviewOpen}>
+        <DialogContent className="max-w-[1200px] w-[95vw] max-h-[95vh] overflow-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Eye className="h-5 w-5 text-primary" /> Pré-visualização da guia
+            </DialogTitle>
+          </DialogHeader>
+          {guideKind && (
+            <GuiaLivePreview
+              numeroGuia={numeroGuia}
+              guideKind={guideKind}
+              guideLabel={guideLabel}
+              guideHeaderTitle={guideHeaderTitle}
+              convenioId={convenioId}
+              operadora={operadora}
+              operadoraLogo={OPERADORAS.find((o) => o.value === operadora)?.logo}
+              registroAns={registroAns}
+              character={character}
+              dataSolicitacao={dataSolicitacao}
+              susEstabelecimento={susEstabelecimento}
+              susCnes={susCnes}
+              pacienteNome={pacienteNome}
+              pacienteCarteira={pacienteCarteira}
+              pacienteCpf={pacienteCpf}
+              pacienteNascimento={pacienteNascimento}
+              pacienteSexo={pacienteSexo}
+              medicoNome={medicoNome}
+              medicoCrm={medicoCrm}
+              medicoEspecialidade={medicoEspecialidade}
+              cidPrincipal={cidPrincipal}
+              indicacaoClinica={indicacaoClinica}
+              observacoes={observacoes}
+              procedures={procedures}
+              opmeItems={opmeItems}
+              internacaoTipo={internacaoTipo}
+              internacaoRegime={internacaoRegime}
+              internacaoDias={internacaoDias}
+              internacaoAcomodacao={internacaoAcomodacao}
+              apacCompetencia={apacCompetencia}
+              apacTipo={apacTipo}
+              aihMotivo={aihMotivo}
+              aihCaraterEntry={aihCaraterEntry}
+              fullSize
+            />
+          )}
+        </DialogContent>
+      </Dialog>
 
       <Dialog open={!!preview} onOpenChange={(o) => !o && setPreview(null)}>
         <DialogContent className="max-w-md">
@@ -1499,6 +1517,7 @@ function GuiaLivePreview(props: {
   apacTipo: string;
   aihMotivo: string;
   aihCaraterEntry: string;
+  fullSize?: boolean;
 }) {
   const {
     numeroGuia, operadora, operadoraLogo,
@@ -1519,20 +1538,29 @@ function GuiaLivePreview(props: {
   const execRows = rows;
   const profRows = Array.from({ length: 4 }, () => null);
 
-  return (
-    <div className="rounded-xl border bg-card shadow-sm overflow-hidden">
-      <div className="px-4 py-2.5 border-b bg-muted/40 flex items-center justify-between">
-        <p className="text-[10px] uppercase font-bold tracking-widest text-muted-foreground">
-          Pré-visualização · Modelo TISS SP/SADT
-        </p>
-        <span className="text-[10px] text-muted-foreground">Atualiza em tempo real</span>
-      </div>
+  const fullSize = props.fullSize;
 
-      <div className="bg-slate-100 p-2 overflow-hidden">
+  return (
+    <div className={fullSize ? "" : "rounded-xl border bg-card shadow-sm overflow-hidden"}>
+      {!fullSize && (
+        <div className="px-4 py-2.5 border-b bg-muted/40 flex items-center justify-between">
+          <p className="text-[10px] uppercase font-bold tracking-widest text-muted-foreground">
+            Pré-visualização · Modelo TISS SP/SADT
+          </p>
+          <span className="text-[10px] text-muted-foreground">Atualiza em tempo real</span>
+        </div>
+      )}
+
+      <div className={fullSize ? "bg-slate-100 p-4 overflow-auto" : "bg-slate-100 p-2 overflow-hidden"}>
         <div
           className="origin-top-left"
-          style={{ transform: "scale(0.4)", width: 1100, height: 820, transformOrigin: "top left" }}
+          style={
+            fullSize
+              ? { width: 1100 }
+              : { transform: "scale(0.4)", width: 1100, height: 820, transformOrigin: "top left" }
+          }
         >
+
           <div className="w-[1100px] bg-white text-black font-sans text-[9px] leading-tight border border-black">
             {/* Header */}
             <div className="grid grid-cols-[140px_1fr_260px] border-b border-black">
