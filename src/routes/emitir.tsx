@@ -1242,9 +1242,6 @@ function EmitirPage() {
                 <Button type="button" variant="ghost" onClick={handleReset}>
                   Limpar
                 </Button>
-                <Button type="button" variant="outline" onClick={() => setPreviewOpen(true)}>
-                  <Eye className="h-4 w-4" /> Pré-visualizar
-                </Button>
                 <Button type="button" variant="outline">
                   <Save className="h-4 w-4" /> Salvar rascunho
                 </Button>
