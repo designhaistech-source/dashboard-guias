@@ -1563,7 +1563,7 @@ function GuiaLivePreview(props: {
 
           <div className="w-[1100px] bg-white text-black font-sans text-[9px] leading-tight border border-black">
             {/* Header */}
-            <div className="grid grid-cols-[200px_1fr_260px] border-b border-black">
+            <div className="grid grid-cols-[220px_1fr_260px] border-b border-black min-h-[110px]">
               <div className="flex items-center justify-center border-r border-black px-3 py-3">
                 {operadoraLogo ? (
                   <img src={operadoraLogo} alt={operadora} className="h-24 max-w-[190px] w-auto object-contain" />
