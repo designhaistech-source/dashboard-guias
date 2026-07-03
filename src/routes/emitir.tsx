@@ -46,6 +46,15 @@ import { Shield, Landmark, ArrowUp, Stethoscope as StethIcon, BedDouble, HeartPu
 import type { LucideIcon } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { cn } from "@/lib/utils";
+import convenioHumanasLogo from "@/assets/convenio-humanas.png";
+import convenioUnimedLogo from "@/assets/convenio-unimed.png";
+import convenioCaurnLogo from "@/assets/convenio-caurn.png";
+
+const OPERADORAS = [
+  { value: "Humanas", label: "Humanas", logo: convenioHumanasLogo },
+  { value: "Unimed", label: "Unimed", logo: convenioUnimedLogo },
+  { value: "CAURN", label: "CAURN", logo: convenioCaurnLogo },
+] as const;
 
 export const Route = createFileRoute("/emitir")({
   head: () => ({
@@ -616,11 +625,36 @@ function EmitirPage() {
                 >
                   <Grid cols={2}>
                     <Field label="Operadora / Convênio" required>
-                      <Input
-                        value={operadora}
-                        onChange={(e) => setOperadora(e.target.value)}
-                        placeholder="Unimed, Amil, SulAmérica..."
-                      />
+                      <div className="space-y-2">
+                        <Select value={operadora} onValueChange={setOperadora}>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Selecione o convênio" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {OPERADORAS.map((o) => (
+                              <SelectItem key={o.value} value={o.value}>
+                                {o.label}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        {(() => {
+                          const selected = OPERADORAS.find((o) => o.value === operadora);
+                          if (!selected) return null;
+                          return (
+                            <div className="flex items-center gap-2 pt-1">
+                              <img
+                                src={selected.logo}
+                                alt={`Logo ${selected.label}`}
+                                width={64}
+                                height={64}
+                                loading="lazy"
+                                className="h-10 w-auto object-contain"
+                              />
+                            </div>
+                          );
+                        })()}
+                      </div>
                     </Field>
                     <Field label="Registro ANS">
                       <Input
