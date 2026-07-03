@@ -1464,7 +1464,7 @@ function Row({ label, value, mono }: { label: string; value: string; mono?: bool
   );
 }
 
-// ---- Live preview of the guide being filled ----
+// ---- Live preview of the guide being filled (modelo TISS SP/SADT) ----
 function GuiaLivePreview(props: {
   numeroGuia: string;
   guideKind: GuideKind | null;
@@ -1501,203 +1501,249 @@ function GuiaLivePreview(props: {
   aihCaraterEntry: string;
 }) {
   const {
-    numeroGuia, guideKind, guideHeaderTitle, convenioId, operadora, operadoraLogo,
-    registroAns, character, dataSolicitacao, susEstabelecimento, susCnes,
-    pacienteNome, pacienteCarteira, pacienteCpf, pacienteNascimento, pacienteSexo,
+    numeroGuia, operadora, operadoraLogo,
+    registroAns, character, dataSolicitacao,
+    pacienteNome, pacienteCarteira, pacienteCpf,
     medicoNome, medicoCrm, medicoEspecialidade, cidPrincipal, indicacaoClinica,
     observacoes, procedures, opmeItems,
-    internacaoTipo, internacaoRegime, internacaoDias, internacaoAcomodacao,
-    apacCompetencia, apacTipo, aihMotivo, aihCaraterEntry,
   } = props;
 
-  const filledProcs = procedures.filter((p) => p.code.trim() || p.description.trim());
-  const filledOpme = opmeItems.filter((o) => o.code.trim() || o.description.trim());
+  const dd = (iso: string) => {
+    const f = fmtDate(iso);
+    const m = /^(\d{2})\/(\d{2})\/(\d{4})$/.exec(f);
+    return m ? { d: m[1], m: m[2], y: m[3] } : { d: "", m: "", y: "" };
+  };
+
+  const dataSol = dd(dataSolicitacao);
+  const rows = Array.from({ length: 5 }, (_, i) => procedures[i]);
+  const execRows = rows;
+  const profRows = Array.from({ length: 4 }, () => null);
 
   return (
     <div className="rounded-xl border bg-card shadow-sm overflow-hidden">
       <div className="px-4 py-2.5 border-b bg-muted/40 flex items-center justify-between">
         <p className="text-[10px] uppercase font-bold tracking-widest text-muted-foreground">
-          Pré-visualização da guia
+          Pré-visualização · Modelo TISS SP/SADT
         </p>
-        <span className="text-[10px] text-muted-foreground">
-          Atualiza em tempo real
-        </span>
+        <span className="text-[10px] text-muted-foreground">Atualiza em tempo real</span>
       </div>
 
-      <div className="p-4 bg-[#f6f7f5]">
-        <div className="bg-white border border-slate-300 shadow-sm text-[10px] leading-tight text-slate-800 font-sans">
-          {/* Header: logo + title + numero */}
-          <div className="grid grid-cols-[110px_1fr_130px] items-center border-b-2 border-emerald-700 px-2 py-1.5 gap-2">
-            <div className="flex items-center justify-start h-8">
-              {operadoraLogo ? (
-                <img
-                  src={operadoraLogo}
-                  alt={`Logo ${operadora}`}
-                  className="max-h-8 max-w-[100px] object-contain"
-                />
-              ) : (
-                <div className="text-[9px] text-slate-400 italic">
-                  (logo do convênio)
+      <div className="bg-slate-100 p-2 overflow-hidden">
+        <div
+          className="origin-top-left"
+          style={{ transform: "scale(0.4)", width: 1100, height: 820, transformOrigin: "top left" }}
+        >
+          <div className="w-[1100px] bg-white text-black font-sans text-[9px] leading-tight border border-black">
+            {/* Header */}
+            <div className="grid grid-cols-[140px_1fr_260px] border-b border-black">
+              <div className="flex items-center justify-center border-r border-black px-2 py-2">
+                {operadoraLogo ? (
+                  <img src={operadoraLogo} alt={operadora} className="max-h-10 max-w-[120px] object-contain" />
+                ) : (
+                  <span className="text-[9px] text-slate-500 italic">Logo da Empresa</span>
+                )}
+              </div>
+              <div className="flex items-center justify-center px-2 py-2 text-center">
+                <div className="font-bold text-[13px] uppercase leading-tight">
+                  Guia de Serviço Profissional / Serviço Auxiliar de<br />Diagnóstico e Terapia — SP/SADT
                 </div>
-              )}
-            </div>
-            <div className="text-center">
-              <div className="font-bold text-[11px] uppercase tracking-tight leading-tight">
-                {guideHeaderTitle || "Guia TISS / SUS"}
               </div>
-              <div className="text-[9px] text-slate-500 mt-0.5">
-                Padrão ANS TISS · Modelo eletrônico
+              <div className="border-l border-black px-2 py-1 flex flex-col justify-center">
+                <div className="text-[8px] font-bold">2 - Nº Guia no Prestador</div>
+                <div className="font-mono font-bold text-[11px] mt-0.5">{numeroGuia !== "—" ? numeroGuia : "\u00A0"}</div>
               </div>
             </div>
-            <div className="text-right">
-              <div className="text-[8px] uppercase text-slate-500">Nº Guia Prestador</div>
-              <div className="font-mono font-bold text-[11px] tracking-wider">
-                {numeroGuia}
+
+            <FieldRow>
+              <FieldBox n="1" label="Registro ANS" value={registroAns} width={140} />
+              <FieldBox n="3" label="Número da Guia Principal" value="" grow />
+            </FieldRow>
+
+            <FieldRow>
+              <FieldBoxDate n="4" label="Data da Autorização" d="" m="" y="" width={170} />
+              <FieldBox n="5" label="Senha" value="" grow />
+              <FieldBoxDate n="6" label="Data de Validade da Senha" d="" m="" y="" width={190} />
+              <FieldBox n="7" label="Nº Guia Atribuído pela Operadora" value="" width={280} />
+            </FieldRow>
+
+            <SectionBar>Dados do Beneficiário</SectionBar>
+            <FieldRow>
+              <FieldBox n="8" label="Número da Carteira" value={pacienteCarteira} width={230} />
+              <FieldBoxDate n="9" label="Validade da Carteira" d="" m="" y="" width={170} />
+              <FieldBox n="10" label="Nome" value={pacienteNome} grow />
+              <FieldBox n="11" label="Cartão Nacional de Saúde" value={pacienteCpf} width={200} />
+              <FieldBox n="12" label="Atend. RN" value="" width={90} />
+            </FieldRow>
+
+            <SectionBar>Dados do Solicitante</SectionBar>
+            <FieldRow>
+              <FieldBox n="13" label="Código na Operadora" value="" width={190} />
+              <FieldBox n="14" label="Nome do Contratado" value={operadora} grow />
+            </FieldRow>
+            <FieldRow>
+              <FieldBox n="15" label="Nome do Profissional Solicitante" value={medicoNome} grow />
+              <FieldBox n="16" label="Conselho" value={medicoCrm ? "CRM" : ""} width={90} />
+              <FieldBox n="17" label="Nº Conselho" value={medicoCrm} width={140} />
+              <FieldBox n="18" label="UF" value="" width={50} />
+              <FieldBox n="19" label="Cód CBO" value={medicoEspecialidade} width={140} />
+              <FieldBox n="20" label="Assinatura Solicitante" value="" width={220} />
+            </FieldRow>
+
+            <SectionBar>Dados da Solicitação / Procedimentos ou Itens Assistenciais Solicitados</SectionBar>
+            <FieldRow>
+              <FieldBox n="21" label="Caráter" value={character} width={140} />
+              <FieldBoxDate n="22" label="Data da Solicitação" d={dataSol.d} m={dataSol.m} y={dataSol.y} width={180} />
+              <FieldBox n="23" label="Indicação Clínica" value={`${cidPrincipal ? cidPrincipal + " · " : ""}${indicacaoClinica}`} grow />
+            </FieldRow>
+
+            <div className="border-b border-black">
+              <div className="grid grid-cols-[38px_60px_140px_1fr_60px_60px] text-[8px] font-bold border-b border-black bg-slate-50">
+                <div className="px-1 py-0.5 border-r border-black">&nbsp;</div>
+                <div className="px-1 py-0.5 border-r border-black">24-Tab</div>
+                <div className="px-1 py-0.5 border-r border-black">25-Código</div>
+                <div className="px-1 py-0.5 border-r border-black">26-Descrição</div>
+                <div className="px-1 py-0.5 border-r border-black text-center">27-Qtd.Sol</div>
+                <div className="px-1 py-0.5 text-center">28-Qtd.Aut</div>
+              </div>
+              {rows.map((p, i) => (
+                <div key={i} className="grid grid-cols-[38px_60px_140px_1fr_60px_60px] text-[10px] border-b last:border-b-0 border-slate-300 min-h-[16px]">
+                  <div className="px-1 py-0.5 border-r border-slate-300 font-mono">{i + 1} -</div>
+                  <div className="px-1 py-0.5 border-r border-slate-300 font-mono">{p ? "22" : ""}</div>
+                  <div className="px-1 py-0.5 border-r border-slate-300 font-mono">{p?.code ?? ""}</div>
+                  <div className="px-1 py-0.5 border-r border-slate-300 truncate">{p?.description ?? ""}</div>
+                  <div className="px-1 py-0.5 border-r border-slate-300 text-center font-mono">{p?.quantity ?? ""}</div>
+                  <div className="px-1 py-0.5 text-center font-mono">{p?.quantity ?? ""}</div>
+                </div>
+              ))}
+            </div>
+
+            <SectionBar>Dados do Contratado Executante</SectionBar>
+            <FieldRow>
+              <FieldBox n="29" label="Código na Operadora" value="" width={190} />
+              <FieldBox n="30" label="Nome do Contratado" value={operadora} grow />
+              <FieldBox n="31" label="Código CNES" value="" width={160} />
+            </FieldRow>
+
+            <SectionBar>Dados do Atendimento</SectionBar>
+            <FieldRow>
+              <FieldBox n="32" label="Tipo de Atendimento" value="" width={160} />
+              <FieldBox n="33" label="Indicação de Acidente" value="" width={200} />
+              <FieldBox n="34" label="Tipo de Consulta" value="" width={140} />
+              <FieldBox n="35" label="Motivo de Encerramento" value="" grow />
+            </FieldRow>
+
+            <SectionBar>Dados da Execução / Procedimentos e Exames Realizados</SectionBar>
+            <div className="border-b border-black">
+              <div className="grid grid-cols-[24px_80px_100px_50px_70px_1fr_40px_40px_40px_60px_70px_70px] text-[8px] font-bold border-b border-black bg-slate-50">
+                <div className="px-1 py-0.5 border-r border-black">&nbsp;</div>
+                <div className="px-1 py-0.5 border-r border-black">36-Data</div>
+                <div className="px-1 py-0.5 border-r border-black">37/38-Hora</div>
+                <div className="px-1 py-0.5 border-r border-black text-center">39-Tab</div>
+                <div className="px-1 py-0.5 border-r border-black">40-Código</div>
+                <div className="px-1 py-0.5 border-r border-black">41-Descrição</div>
+                <div className="px-1 py-0.5 border-r border-black text-center">42-Qtd</div>
+                <div className="px-1 py-0.5 border-r border-black text-center">43-Via</div>
+                <div className="px-1 py-0.5 border-r border-black text-center">44-Tec</div>
+                <div className="px-1 py-0.5 border-r border-black text-center">45-Red/Acr</div>
+                <div className="px-1 py-0.5 border-r border-black text-center">46-Vl Unit</div>
+                <div className="px-1 py-0.5 text-center">47-Vl Total</div>
+              </div>
+              {execRows.map((p, i) => (
+                <div key={i} className="grid grid-cols-[24px_80px_100px_50px_70px_1fr_40px_40px_40px_60px_70px_70px] text-[10px] border-b last:border-b-0 border-slate-300 min-h-[16px]">
+                  <div className="px-1 py-0.5 border-r border-slate-300 font-mono">{i + 1}-</div>
+                  <div className="px-1 py-0.5 border-r border-slate-300 font-mono">{p ? fmtDate(dataSolicitacao) : ""}</div>
+                  <div className="px-1 py-0.5 border-r border-slate-300"></div>
+                  <div className="px-1 py-0.5 border-r border-slate-300 text-center font-mono">{p ? "22" : ""}</div>
+                  <div className="px-1 py-0.5 border-r border-slate-300 font-mono truncate">{p?.code ?? ""}</div>
+                  <div className="px-1 py-0.5 border-r border-slate-300 truncate">{p?.description ?? ""}</div>
+                  <div className="px-1 py-0.5 border-r border-slate-300 text-center font-mono">{p?.quantity ?? ""}</div>
+                  <div className="px-1 py-0.5 border-r border-slate-300"></div>
+                  <div className="px-1 py-0.5 border-r border-slate-300"></div>
+                  <div className="px-1 py-0.5 border-r border-slate-300"></div>
+                  <div className="px-1 py-0.5 border-r border-slate-300"></div>
+                  <div className="px-1 py-0.5"></div>
+                </div>
+              ))}
+            </div>
+
+            <SectionBar>Identificação do(s) Profissional(is) Executante(s)</SectionBar>
+            <div className="border-b border-black">
+              <div className="grid grid-cols-[50px_60px_110px_1fr_90px_90px_40px_80px] text-[8px] font-bold border-b border-black bg-slate-50">
+                <div className="px-1 py-0.5 border-r border-black">48-Seq</div>
+                <div className="px-1 py-0.5 border-r border-black">49-Grau</div>
+                <div className="px-1 py-0.5 border-r border-black">50-Cód/CPF</div>
+                <div className="px-1 py-0.5 border-r border-black">51-Nome</div>
+                <div className="px-1 py-0.5 border-r border-black">52-Conselho</div>
+                <div className="px-1 py-0.5 border-r border-black">53-Nº</div>
+                <div className="px-1 py-0.5 border-r border-black">54-UF</div>
+                <div className="px-1 py-0.5">55-CBO</div>
+              </div>
+              {profRows.map((_, i) => (
+                <div key={i} className="grid grid-cols-[50px_60px_110px_1fr_90px_90px_40px_80px] text-[10px] border-b last:border-b-0 border-slate-300 min-h-[16px]">
+                  <div className="px-1 py-0.5 border-r border-slate-300"></div>
+                  <div className="px-1 py-0.5 border-r border-slate-300"></div>
+                  <div className="px-1 py-0.5 border-r border-slate-300"></div>
+                  <div className="px-1 py-0.5 border-r border-slate-300 truncate">{i === 0 ? medicoNome : ""}</div>
+                  <div className="px-1 py-0.5 border-r border-slate-300">{i === 0 && medicoCrm ? "CRM" : ""}</div>
+                  <div className="px-1 py-0.5 border-r border-slate-300 font-mono">{i === 0 ? medicoCrm : ""}</div>
+                  <div className="px-1 py-0.5 border-r border-slate-300"></div>
+                  <div className="px-1 py-0.5"></div>
+                </div>
+              ))}
+            </div>
+
+            <div className="grid grid-cols-[1fr_260px] border-b border-black">
+              <div className="border-r border-black">
+                <div className="px-1 py-0.5 text-[8px] font-bold bg-slate-50 border-b border-slate-300">
+                  56 - Data de Realização de Procedimentos em Série
+                </div>
+                <div className="px-1 py-1 grid grid-cols-5 gap-1 text-[9px] font-mono">
+                  {Array.from({ length: 10 }).map((_, i) => (
+                    <div key={i}>{i + 1}- __/__/____</div>
+                  ))}
+                </div>
+              </div>
+              <div>
+                <div className="px-1 py-0.5 text-[8px] font-bold bg-slate-50 border-b border-slate-300">
+                  57 - Assinatura do Beneficiário
+                </div>
+                <div className="h-10"></div>
               </div>
             </div>
-          </div>
 
-          {/* Convênio / estabelecimento band */}
-          <PreviewRow>
-            {convenioId === "tiss" ? (
-              <>
-                <PreviewCell label="1 · Registro ANS" value={registroAns} width="w-28" />
-                <PreviewCell label="2 · Operadora / Convênio" value={operadora} grow />
-                <PreviewCell label="3 · Caráter" value={character} width="w-24" />
-                <PreviewCell label="4 · Data solicitação" value={fmtDate(dataSolicitacao)} width="w-28" />
-              </>
-            ) : (
-              <>
-                <PreviewCell label="1 · CNES" value={susCnes} width="w-28" />
-                <PreviewCell label="2 · Estabelecimento" value={susEstabelecimento} grow />
-                <PreviewCell label="3 · Data solicitação" value={fmtDate(dataSolicitacao)} width="w-28" />
-              </>
-            )}
-          </PreviewRow>
-
-          {/* Paciente */}
-          <PreviewSectionTitle>Dados do beneficiário</PreviewSectionTitle>
-          <PreviewRow>
-            <PreviewCell label="5 · Nº carteira" value={pacienteCarteira} width="w-40" />
-            <PreviewCell label="6 · Nome" value={pacienteNome} grow />
-            <PreviewCell label="7 · Sexo" value={pacienteSexo} width="w-14" />
-          </PreviewRow>
-          <PreviewRow>
-            <PreviewCell label="8 · CPF" value={pacienteCpf} width="w-40" />
-            <PreviewCell label="9 · Nascimento" value={fmtDate(pacienteNascimento)} width="w-32" />
-          </PreviewRow>
-
-          {/* Guia-específico */}
-          {guideKind === "internacao" && (
-            <>
-              <PreviewSectionTitle>Dados da internação</PreviewSectionTitle>
-              <PreviewRow>
-                <PreviewCell label="10 · Tipo" value={internacaoTipo} width="w-32" />
-                <PreviewCell label="11 · Regime" value={internacaoRegime} width="w-32" />
-                <PreviewCell label="12 · Acomodação" value={internacaoAcomodacao} width="w-32" />
-                <PreviewCell label="13 · Dias" value={String(internacaoDias)} width="w-16" />
-              </PreviewRow>
-            </>
-          )}
-          {guideKind === "apac" && (
-            <>
-              <PreviewSectionTitle>Dados APAC</PreviewSectionTitle>
-              <PreviewRow>
-                <PreviewCell label="10 · Competência" value={apacCompetencia} width="w-32" />
-                <PreviewCell label="11 · Tipo APAC" value={apacTipo} width="w-32" />
-              </PreviewRow>
-            </>
-          )}
-          {guideKind === "aih" && (
-            <>
-              <PreviewSectionTitle>Dados AIH</PreviewSectionTitle>
-              <PreviewRow>
-                <PreviewCell label="10 · Caráter" value={aihCaraterEntry} width="w-32" />
-                <PreviewCell label="11 · Motivo" value={aihMotivo} grow />
-              </PreviewRow>
-            </>
-          )}
-
-          {/* Indicação clínica */}
-          <PreviewSectionTitle>Indicação clínica</PreviewSectionTitle>
-          <PreviewRow>
-            <PreviewCell label="14 · CID principal" value={cidPrincipal} width="w-28" />
-            <PreviewCell label="15 · Indicação / justificativa" value={indicacaoClinica} grow multiline />
-          </PreviewRow>
-
-          {/* Procedimentos */}
-          <PreviewSectionTitle>Procedimentos solicitados</PreviewSectionTitle>
-          <div className="px-2 py-1.5 border-b border-slate-200">
-            <div className="grid grid-cols-[22px_1fr_60px_36px] gap-1 text-[8px] uppercase text-slate-500 font-semibold pb-1">
-              <div>#</div>
-              <div>Código · Descrição</div>
-              <div className="text-center">Qtd</div>
-              <div></div>
+            <div className="border-b border-black">
+              <div className="px-1 py-0.5 text-[8px] font-bold bg-slate-200">58 - Observação / Justificativa</div>
+              <div className="px-1 py-1 min-h-[24px] text-[10px] whitespace-pre-wrap">{observacoes}</div>
             </div>
-            {filledProcs.length === 0 ? (
-              <div className="text-[9px] text-slate-400 italic py-1">
-                Nenhum procedimento adicionado.
-              </div>
-            ) : (
-              <div className="divide-y divide-slate-100">
-                {filledProcs.map((p, i) => (
-                  <div key={p.id} className="grid grid-cols-[22px_1fr_60px_36px] gap-1 py-1 items-start">
-                    <div className="text-slate-500 font-mono">{String(i + 1).padStart(2, "0")}</div>
-                    <div>
-                      {p.code && (
-                        <div className="font-mono text-[9px] text-slate-600">{p.code}</div>
-                      )}
-                      <div className="text-[10px]">{p.description || <em className="text-slate-400">Sem descrição</em>}</div>
-                    </div>
-                    <div className="text-center font-mono">{p.quantity}</div>
-                    <div />
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
 
-          {/* OPME */}
-          {filledOpme.length > 0 && (
-            <>
-              <PreviewSectionTitle>OPME</PreviewSectionTitle>
-              <div className="px-2 py-1.5 border-b border-slate-200 divide-y divide-slate-100">
-                {filledOpme.map((o, i) => (
-                  <div key={o.id} className="grid grid-cols-[22px_1fr_60px] gap-1 py-1">
-                    <div className="text-slate-500 font-mono">{String(i + 1).padStart(2, "0")}</div>
-                    <div>
-                      {o.code && <div className="font-mono text-[9px] text-slate-600">{o.code}</div>}
-                      <div>{o.description}</div>
-                    </div>
-                    <div className="text-center font-mono">{o.quantity}</div>
-                  </div>
-                ))}
-              </div>
-            </>
-          )}
+            <div className="grid grid-cols-7 border-b border-black text-[9px]">
+              {[
+                ["59", "Total Procedimentos"],
+                ["60", "Total Taxas/Aluguéis"],
+                ["61", "Total Materiais"],
+                ["62", "Total OPME"],
+                ["63", "Total Medicamentos"],
+                ["64", "Total Gases Med."],
+                ["65", "Total Geral (R$)"],
+              ].map(([n, l]) => (
+                <div key={n} className="border-r last:border-r-0 border-slate-400 px-1 py-0.5">
+                  <div className="text-[8px] font-bold">{n} - {l}</div>
+                  <div className="font-mono text-right min-h-[12px]">{opmeItems.length > 0 && n === "62" ? "" : ""}</div>
+                </div>
+              ))}
+            </div>
 
-          {/* Observações */}
-          {observacoes.trim() && (
-            <>
-              <PreviewSectionTitle>Observações</PreviewSectionTitle>
-              <div className="px-2 py-1.5 border-b border-slate-200 text-[10px] whitespace-pre-wrap">
-                {observacoes}
-              </div>
-            </>
-          )}
-
-          {/* Solicitante */}
-          <PreviewSectionTitle>Profissional solicitante</PreviewSectionTitle>
-          <PreviewRow>
-            <PreviewCell label="16 · Nome" value={medicoNome} grow />
-            <PreviewCell label="17 · Conselho" value={medicoCrm} width="w-28" />
-            <PreviewCell label="18 · Especialidade" value={medicoEspecialidade} width="w-36" />
-          </PreviewRow>
-
-          {/* Assinatura */}
-          <div className="px-2 pt-4 pb-3">
-            <div className="border-t border-dashed border-slate-400 w-3/4 mx-auto pt-1 text-center text-[9px] text-slate-500">
-              Assinatura e carimbo do solicitante
+            <div className="grid grid-cols-3 text-[9px]">
+              {[
+                "66 - Assinatura Responsável pela Autorização",
+                "67 - Assinatura Beneficiário",
+                "68 - Assinatura do Contratado",
+              ].map((l) => (
+                <div key={l} className="border-r last:border-r-0 border-slate-400 px-1 py-1">
+                  <div className="text-[8px] font-bold">{l}</div>
+                  <div className="h-8"></div>
+                </div>
+              ))}
             </div>
           </div>
         </div>
@@ -1706,54 +1752,67 @@ function GuiaLivePreview(props: {
   );
 }
 
-function PreviewSectionTitle({ children }: { children: React.ReactNode }) {
+function SectionBar({ children }: { children: React.ReactNode }) {
   return (
-    <div className="px-2 py-1 bg-emerald-50 border-y border-emerald-200 text-[9px] uppercase font-bold tracking-wide text-emerald-800">
+    <div className="px-2 py-0.5 bg-slate-200 border-y border-black text-[9px] font-bold">
       {children}
     </div>
   );
 }
 
-function PreviewRow({ children }: { children: React.ReactNode }) {
-  return (
-    <div className="flex flex-wrap gap-0 border-b border-slate-200">
-      {children}
-    </div>
-  );
+function FieldRow({ children }: { children: React.ReactNode }) {
+  return <div className="flex border-b border-black">{children}</div>;
 }
 
-function PreviewCell({
+function FieldBox({
+  n,
   label,
   value,
   width,
   grow,
-  multiline,
 }: {
+  n: string;
   label: string;
   value: string;
-  width?: string;
+  width?: number;
   grow?: boolean;
-  multiline?: boolean;
 }) {
   return (
     <div
-      className={`${grow ? "flex-1 min-w-[120px]" : width ?? "w-32"} border-r border-slate-200 last:border-r-0 px-2 py-1`}
+      className="border-r last:border-r-0 border-black px-1 py-0.5"
+      style={{ width: grow ? undefined : width, flex: grow ? 1 : undefined, minWidth: 0 }}
     >
-      <div className="text-[8px] uppercase text-slate-500 font-semibold">{label}</div>
-      <div
-        className={`text-[10px] mt-0.5 ${
-          value ? "text-slate-800" : "text-slate-300 italic"
-        } ${multiline ? "whitespace-pre-wrap" : "truncate"}`}
-      >
-        {value || "—"}
-      </div>
+      <div className="text-[8px] font-bold">{n} - {label}</div>
+      <div className="text-[10px] font-mono truncate min-h-[12px]">{value}</div>
+    </div>
+  );
+}
+
+function FieldBoxDate({
+  n,
+  label,
+  d,
+  m,
+  y,
+  width,
+}: {
+  n: string;
+  label: string;
+  d: string;
+  m: string;
+  y: string;
+  width?: number;
+}) {
+  return (
+    <div className="border-r border-black px-1 py-0.5" style={{ width }}>
+      <div className="text-[8px] font-bold">{n} - {label}</div>
+      <div className="text-[10px] font-mono min-h-[12px]">{d || "__"}/{m || "__"}/{y || "____"}</div>
     </div>
   );
 }
 
 function fmtDate(iso: string) {
   if (!iso) return "";
-  // Accept YYYY-MM-DD or YYYY-MM
   if (/^\d{4}-\d{2}-\d{2}$/.test(iso)) {
     const [y, m, d] = iso.split("-");
     return `${d}/${m}/${y}`;
