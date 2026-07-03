@@ -54,9 +54,9 @@ const convenioUnimedLogo = convenioUnimedAsset.url;
 const convenioCaurnLogo = convenioCaurnAsset.url;
 
 const OPERADORAS = [
-  { value: "Humanas", label: "Humanas", logo: convenioHumanasLogo },
-  { value: "Unimed", label: "Unimed", logo: convenioUnimedLogo },
-  { value: "CAURN", label: "CAURN", logo: convenioCaurnLogo },
+  { value: "Humanas", label: "Humanas", logo: convenioHumanasLogo, ans: "357511" },
+  { value: "Unimed", label: "Unimed Natal/RN", logo: convenioUnimedLogo, ans: "335592" },
+  { value: "CAURN", label: "CAURN", logo: convenioCaurnLogo, ans: "31425-1" },
 ] as const;
 
 export const Route = createFileRoute("/emitir")({
@@ -630,7 +630,7 @@ function EmitirPage() {
                   <Grid cols={2}>
                     <Field label="Operadora / Convênio" required>
                       <div className="space-y-2">
-                        <Select value={operadora} onValueChange={setOperadora}>
+                        <Select value={operadora} onValueChange={(v) => { setOperadora(v); const op = OPERADORAS.find((o) => o.value === v); if (op) setRegistroAns(op.ans); }}>
                           <SelectTrigger>
                             <SelectValue placeholder="Selecione o convênio" />
                           </SelectTrigger>
