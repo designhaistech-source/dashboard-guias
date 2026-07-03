@@ -314,6 +314,7 @@ function EmitirPage() {
     { id: "p-1", code: "", description: "", quantity: 1 },
   ]);
 
+  const [previewOpen, setPreviewOpen] = useState(false);
   const [preview, setPreview] = useState<null | {
     numero: string;
     tipo: string;
