@@ -630,7 +630,7 @@ function EmitirPage() {
                   <Grid cols={2}>
                     <Field label="Operadora / Convênio" required>
                       <div className="space-y-2">
-                        <Select value={operadora} onValueChange={setOperadora}>
+                        <Select value={operadora} onValueChange={(v) => { setOperadora(v); const op = OPERADORAS.find((o) => o.value === v); if (op) setRegistroAns(op.ans); }}>
                           <SelectTrigger>
                             <SelectValue placeholder="Selecione o convênio" />
                           </SelectTrigger>
