@@ -1245,6 +1245,44 @@ function EmitirPage() {
                 </Button>
               </div>
             </form>
+              <aside className="xl:sticky xl:top-6 xl:self-start">
+                <GuiaLivePreview
+                  numeroGuia={numeroGuia}
+                  guideKind={guideKind}
+                  guideLabel={guideLabel}
+                  guideHeaderTitle={guideHeaderTitle}
+                  convenioId={convenioId}
+                  operadora={operadora}
+                  operadoraLogo={OPERADORAS.find((o) => o.value === operadora)?.logo}
+                  registroAns={registroAns}
+                  character={character}
+                  dataSolicitacao={dataSolicitacao}
+                  susEstabelecimento={susEstabelecimento}
+                  susCnes={susCnes}
+                  pacienteNome={pacienteNome}
+                  pacienteCarteira={pacienteCarteira}
+                  pacienteCpf={pacienteCpf}
+                  pacienteNascimento={pacienteNascimento}
+                  pacienteSexo={pacienteSexo}
+                  medicoNome={medicoNome}
+                  medicoCrm={medicoCrm}
+                  medicoEspecialidade={medicoEspecialidade}
+                  cidPrincipal={cidPrincipal}
+                  indicacaoClinica={indicacaoClinica}
+                  observacoes={observacoes}
+                  procedures={procedures}
+                  opmeItems={opmeItems}
+                  internacaoTipo={internacaoTipo}
+                  internacaoRegime={internacaoRegime}
+                  internacaoDias={internacaoDias}
+                  internacaoAcomodacao={internacaoAcomodacao}
+                  apacCompetencia={apacCompetencia}
+                  apacTipo={apacTipo}
+                  aihMotivo={aihMotivo}
+                  aihCaraterEntry={aihCaraterEntry}
+                />
+              </aside>
+            </div>
           )}
         </div>
         <SiteFooter />
