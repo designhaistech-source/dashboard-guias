@@ -603,10 +603,11 @@ function EmitirPage() {
           </Tabs>
 
           {guideKind && (
+            <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_460px]">
             <form
               key={guideKind}
               onSubmit={handleSubmit}
-              className="space-y-6 animate-fade-in"
+              className="space-y-6 animate-fade-in min-w-0"
             >
               {/* Cabeçalho integrado do formulário selecionado */}
               <div className="flex items-center gap-3">
@@ -1244,6 +1245,44 @@ function EmitirPage() {
                 </Button>
               </div>
             </form>
+              <aside className="xl:sticky xl:top-6 xl:self-start">
+                <GuiaLivePreview
+                  numeroGuia={numeroGuia}
+                  guideKind={guideKind}
+                  guideLabel={guideLabel}
+                  guideHeaderTitle={guideHeaderTitle}
+                  convenioId={convenioId}
+                  operadora={operadora}
+                  operadoraLogo={OPERADORAS.find((o) => o.value === operadora)?.logo}
+                  registroAns={registroAns}
+                  character={character}
+                  dataSolicitacao={dataSolicitacao}
+                  susEstabelecimento={susEstabelecimento}
+                  susCnes={susCnes}
+                  pacienteNome={pacienteNome}
+                  pacienteCarteira={pacienteCarteira}
+                  pacienteCpf={pacienteCpf}
+                  pacienteNascimento={pacienteNascimento}
+                  pacienteSexo={pacienteSexo}
+                  medicoNome={medicoNome}
+                  medicoCrm={medicoCrm}
+                  medicoEspecialidade={medicoEspecialidade}
+                  cidPrincipal={cidPrincipal}
+                  indicacaoClinica={indicacaoClinica}
+                  observacoes={observacoes}
+                  procedures={procedures}
+                  opmeItems={opmeItems}
+                  internacaoTipo={internacaoTipo}
+                  internacaoRegime={internacaoRegime}
+                  internacaoDias={internacaoDias}
+                  internacaoAcomodacao={internacaoAcomodacao}
+                  apacCompetencia={apacCompetencia}
+                  apacTipo={apacTipo}
+                  aihMotivo={aihMotivo}
+                  aihCaraterEntry={aihCaraterEntry}
+                />
+              </aside>
+            </div>
           )}
         </div>
         <SiteFooter />
@@ -1423,4 +1462,305 @@ function Row({ label, value, mono }: { label: string; value: string; mono?: bool
       <span className={`font-medium text-right ${mono ? "font-mono" : ""}`}>{value || "—"}</span>
     </div>
   );
+}
+
+// ---- Live preview of the guide being filled ----
+function GuiaLivePreview(props: {
+  numeroGuia: string;
+  guideKind: GuideKind | null;
+  guideLabel: string;
+  guideHeaderTitle: string;
+  convenioId: ConvenioId;
+  operadora: string;
+  operadoraLogo?: string;
+  registroAns: string;
+  character: string;
+  dataSolicitacao: string;
+  susEstabelecimento: string;
+  susCnes: string;
+  pacienteNome: string;
+  pacienteCarteira: string;
+  pacienteCpf: string;
+  pacienteNascimento: string;
+  pacienteSexo: string;
+  medicoNome: string;
+  medicoCrm: string;
+  medicoEspecialidade: string;
+  cidPrincipal: string;
+  indicacaoClinica: string;
+  observacoes: string;
+  procedures: Procedure[];
+  opmeItems: OpmeItem[];
+  internacaoTipo: string;
+  internacaoRegime: string;
+  internacaoDias: number;
+  internacaoAcomodacao: string;
+  apacCompetencia: string;
+  apacTipo: string;
+  aihMotivo: string;
+  aihCaraterEntry: string;
+}) {
+  const {
+    numeroGuia, guideKind, guideHeaderTitle, convenioId, operadora, operadoraLogo,
+    registroAns, character, dataSolicitacao, susEstabelecimento, susCnes,
+    pacienteNome, pacienteCarteira, pacienteCpf, pacienteNascimento, pacienteSexo,
+    medicoNome, medicoCrm, medicoEspecialidade, cidPrincipal, indicacaoClinica,
+    observacoes, procedures, opmeItems,
+    internacaoTipo, internacaoRegime, internacaoDias, internacaoAcomodacao,
+    apacCompetencia, apacTipo, aihMotivo, aihCaraterEntry,
+  } = props;
+
+  const filledProcs = procedures.filter((p) => p.code.trim() || p.description.trim());
+  const filledOpme = opmeItems.filter((o) => o.code.trim() || o.description.trim());
+
+  return (
+    <div className="rounded-xl border bg-card shadow-sm overflow-hidden">
+      <div className="px-4 py-2.5 border-b bg-muted/40 flex items-center justify-between">
+        <p className="text-[10px] uppercase font-bold tracking-widest text-muted-foreground">
+          Pré-visualização da guia
+        </p>
+        <span className="text-[10px] text-muted-foreground">
+          Atualiza em tempo real
+        </span>
+      </div>
+
+      <div className="p-4 bg-[#f6f7f5]">
+        <div className="bg-white border border-slate-300 shadow-sm text-[10px] leading-tight text-slate-800 font-sans">
+          {/* Header: logo + title + numero */}
+          <div className="grid grid-cols-[110px_1fr_130px] items-center border-b-2 border-emerald-700 px-2 py-1.5 gap-2">
+            <div className="flex items-center justify-start h-8">
+              {operadoraLogo ? (
+                <img
+                  src={operadoraLogo}
+                  alt={`Logo ${operadora}`}
+                  className="max-h-8 max-w-[100px] object-contain"
+                />
+              ) : (
+                <div className="text-[9px] text-slate-400 italic">
+                  (logo do convênio)
+                </div>
+              )}
+            </div>
+            <div className="text-center">
+              <div className="font-bold text-[11px] uppercase tracking-tight leading-tight">
+                {guideHeaderTitle || "Guia TISS / SUS"}
+              </div>
+              <div className="text-[9px] text-slate-500 mt-0.5">
+                Padrão ANS TISS · Modelo eletrônico
+              </div>
+            </div>
+            <div className="text-right">
+              <div className="text-[8px] uppercase text-slate-500">Nº Guia Prestador</div>
+              <div className="font-mono font-bold text-[11px] tracking-wider">
+                {numeroGuia}
+              </div>
+            </div>
+          </div>
+
+          {/* Convênio / estabelecimento band */}
+          <PreviewRow>
+            {convenioId === "tiss" ? (
+              <>
+                <PreviewCell label="1 · Registro ANS" value={registroAns} width="w-28" />
+                <PreviewCell label="2 · Operadora / Convênio" value={operadora} grow />
+                <PreviewCell label="3 · Caráter" value={character} width="w-24" />
+                <PreviewCell label="4 · Data solicitação" value={fmtDate(dataSolicitacao)} width="w-28" />
+              </>
+            ) : (
+              <>
+                <PreviewCell label="1 · CNES" value={susCnes} width="w-28" />
+                <PreviewCell label="2 · Estabelecimento" value={susEstabelecimento} grow />
+                <PreviewCell label="3 · Data solicitação" value={fmtDate(dataSolicitacao)} width="w-28" />
+              </>
+            )}
+          </PreviewRow>
+
+          {/* Paciente */}
+          <PreviewSectionTitle>Dados do beneficiário</PreviewSectionTitle>
+          <PreviewRow>
+            <PreviewCell label="5 · Nº carteira" value={pacienteCarteira} width="w-40" />
+            <PreviewCell label="6 · Nome" value={pacienteNome} grow />
+            <PreviewCell label="7 · Sexo" value={pacienteSexo} width="w-14" />
+          </PreviewRow>
+          <PreviewRow>
+            <PreviewCell label="8 · CPF" value={pacienteCpf} width="w-40" />
+            <PreviewCell label="9 · Nascimento" value={fmtDate(pacienteNascimento)} width="w-32" />
+          </PreviewRow>
+
+          {/* Guia-específico */}
+          {guideKind === "internacao" && (
+            <>
+              <PreviewSectionTitle>Dados da internação</PreviewSectionTitle>
+              <PreviewRow>
+                <PreviewCell label="10 · Tipo" value={internacaoTipo} width="w-32" />
+                <PreviewCell label="11 · Regime" value={internacaoRegime} width="w-32" />
+                <PreviewCell label="12 · Acomodação" value={internacaoAcomodacao} width="w-32" />
+                <PreviewCell label="13 · Dias" value={String(internacaoDias)} width="w-16" />
+              </PreviewRow>
+            </>
+          )}
+          {guideKind === "apac" && (
+            <>
+              <PreviewSectionTitle>Dados APAC</PreviewSectionTitle>
+              <PreviewRow>
+                <PreviewCell label="10 · Competência" value={apacCompetencia} width="w-32" />
+                <PreviewCell label="11 · Tipo APAC" value={apacTipo} width="w-32" />
+              </PreviewRow>
+            </>
+          )}
+          {guideKind === "aih" && (
+            <>
+              <PreviewSectionTitle>Dados AIH</PreviewSectionTitle>
+              <PreviewRow>
+                <PreviewCell label="10 · Caráter" value={aihCaraterEntry} width="w-32" />
+                <PreviewCell label="11 · Motivo" value={aihMotivo} grow />
+              </PreviewRow>
+            </>
+          )}
+
+          {/* Indicação clínica */}
+          <PreviewSectionTitle>Indicação clínica</PreviewSectionTitle>
+          <PreviewRow>
+            <PreviewCell label="14 · CID principal" value={cidPrincipal} width="w-28" />
+            <PreviewCell label="15 · Indicação / justificativa" value={indicacaoClinica} grow multiline />
+          </PreviewRow>
+
+          {/* Procedimentos */}
+          <PreviewSectionTitle>Procedimentos solicitados</PreviewSectionTitle>
+          <div className="px-2 py-1.5 border-b border-slate-200">
+            <div className="grid grid-cols-[22px_1fr_60px_36px] gap-1 text-[8px] uppercase text-slate-500 font-semibold pb-1">
+              <div>#</div>
+              <div>Código · Descrição</div>
+              <div className="text-center">Qtd</div>
+              <div></div>
+            </div>
+            {filledProcs.length === 0 ? (
+              <div className="text-[9px] text-slate-400 italic py-1">
+                Nenhum procedimento adicionado.
+              </div>
+            ) : (
+              <div className="divide-y divide-slate-100">
+                {filledProcs.map((p, i) => (
+                  <div key={p.id} className="grid grid-cols-[22px_1fr_60px_36px] gap-1 py-1 items-start">
+                    <div className="text-slate-500 font-mono">{String(i + 1).padStart(2, "0")}</div>
+                    <div>
+                      {p.code && (
+                        <div className="font-mono text-[9px] text-slate-600">{p.code}</div>
+                      )}
+                      <div className="text-[10px]">{p.description || <em className="text-slate-400">Sem descrição</em>}</div>
+                    </div>
+                    <div className="text-center font-mono">{p.quantity}</div>
+                    <div />
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* OPME */}
+          {filledOpme.length > 0 && (
+            <>
+              <PreviewSectionTitle>OPME</PreviewSectionTitle>
+              <div className="px-2 py-1.5 border-b border-slate-200 divide-y divide-slate-100">
+                {filledOpme.map((o, i) => (
+                  <div key={o.id} className="grid grid-cols-[22px_1fr_60px] gap-1 py-1">
+                    <div className="text-slate-500 font-mono">{String(i + 1).padStart(2, "0")}</div>
+                    <div>
+                      {o.code && <div className="font-mono text-[9px] text-slate-600">{o.code}</div>}
+                      <div>{o.description}</div>
+                    </div>
+                    <div className="text-center font-mono">{o.quantity}</div>
+                  </div>
+                ))}
+              </div>
+            </>
+          )}
+
+          {/* Observações */}
+          {observacoes.trim() && (
+            <>
+              <PreviewSectionTitle>Observações</PreviewSectionTitle>
+              <div className="px-2 py-1.5 border-b border-slate-200 text-[10px] whitespace-pre-wrap">
+                {observacoes}
+              </div>
+            </>
+          )}
+
+          {/* Solicitante */}
+          <PreviewSectionTitle>Profissional solicitante</PreviewSectionTitle>
+          <PreviewRow>
+            <PreviewCell label="16 · Nome" value={medicoNome} grow />
+            <PreviewCell label="17 · Conselho" value={medicoCrm} width="w-28" />
+            <PreviewCell label="18 · Especialidade" value={medicoEspecialidade} width="w-36" />
+          </PreviewRow>
+
+          {/* Assinatura */}
+          <div className="px-2 pt-4 pb-3">
+            <div className="border-t border-dashed border-slate-400 w-3/4 mx-auto pt-1 text-center text-[9px] text-slate-500">
+              Assinatura e carimbo do solicitante
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function PreviewSectionTitle({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="px-2 py-1 bg-emerald-50 border-y border-emerald-200 text-[9px] uppercase font-bold tracking-wide text-emerald-800">
+      {children}
+    </div>
+  );
+}
+
+function PreviewRow({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="flex flex-wrap gap-0 border-b border-slate-200">
+      {children}
+    </div>
+  );
+}
+
+function PreviewCell({
+  label,
+  value,
+  width,
+  grow,
+  multiline,
+}: {
+  label: string;
+  value: string;
+  width?: string;
+  grow?: boolean;
+  multiline?: boolean;
+}) {
+  return (
+    <div
+      className={`${grow ? "flex-1 min-w-[120px]" : width ?? "w-32"} border-r border-slate-200 last:border-r-0 px-2 py-1`}
+    >
+      <div className="text-[8px] uppercase text-slate-500 font-semibold">{label}</div>
+      <div
+        className={`text-[10px] mt-0.5 ${
+          value ? "text-slate-800" : "text-slate-300 italic"
+        } ${multiline ? "whitespace-pre-wrap" : "truncate"}`}
+      >
+        {value || "—"}
+      </div>
+    </div>
+  );
+}
+
+function fmtDate(iso: string) {
+  if (!iso) return "";
+  // Accept YYYY-MM-DD or YYYY-MM
+  if (/^\d{4}-\d{2}-\d{2}$/.test(iso)) {
+    const [y, m, d] = iso.split("-");
+    return `${d}/${m}/${y}`;
+  }
+  if (/^\d{4}-\d{2}$/.test(iso)) {
+    const [y, m] = iso.split("-");
+    return `${m}/${y}`;
+  }
+  return iso;
 }
