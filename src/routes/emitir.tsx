@@ -18,6 +18,8 @@ import {
   Wrench,
   Pencil,
   Package,
+  Package,
+  Eye,
 } from "lucide-react";
 import { toast } from "sonner";
 import { AppSidebar } from "@/components/app-sidebar";
