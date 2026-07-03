@@ -48,7 +48,8 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { cn } from "@/lib/utils";
 import convenioHumanasLogo from "@/assets/convenio-humanas.png";
 import convenioUnimedLogo from "@/assets/convenio-unimed.png";
-import convenioCaurnLogo from "@/assets/convenio-caurn.png";
+import convenioCaurnAsset from "@/assets/convenio-caurn-real.png.asset.json";
+const convenioCaurnLogo = convenioCaurnAsset.url;
 
 const OPERADORAS = [
   { value: "Humanas", label: "Humanas", logo: convenioHumanasLogo },
