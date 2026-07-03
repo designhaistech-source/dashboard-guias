@@ -1258,6 +1258,54 @@ function EmitirPage() {
         <SiteFooter />
       </main>
 
+      <Dialog open={previewOpen} onOpenChange={setPreviewOpen}>
+        <DialogContent className="max-w-[1200px] w-[95vw] max-h-[95vh] overflow-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Eye className="h-5 w-5 text-primary" /> Pré-visualização da guia
+            </DialogTitle>
+          </DialogHeader>
+          {guideKind && (
+            <GuiaLivePreview
+              numeroGuia={numeroGuia}
+              guideKind={guideKind}
+              guideLabel={guideLabel}
+              guideHeaderTitle={guideHeaderTitle}
+              convenioId={convenioId}
+              operadora={operadora}
+              operadoraLogo={OPERADORAS.find((o) => o.value === operadora)?.logo}
+              registroAns={registroAns}
+              character={character}
+              dataSolicitacao={dataSolicitacao}
+              susEstabelecimento={susEstabelecimento}
+              susCnes={susCnes}
+              pacienteNome={pacienteNome}
+              pacienteCarteira={pacienteCarteira}
+              pacienteCpf={pacienteCpf}
+              pacienteNascimento={pacienteNascimento}
+              pacienteSexo={pacienteSexo}
+              medicoNome={medicoNome}
+              medicoCrm={medicoCrm}
+              medicoEspecialidade={medicoEspecialidade}
+              cidPrincipal={cidPrincipal}
+              indicacaoClinica={indicacaoClinica}
+              observacoes={observacoes}
+              procedures={procedures}
+              opmeItems={opmeItems}
+              internacaoTipo={internacaoTipo}
+              internacaoRegime={internacaoRegime}
+              internacaoDias={internacaoDias}
+              internacaoAcomodacao={internacaoAcomodacao}
+              apacCompetencia={apacCompetencia}
+              apacTipo={apacTipo}
+              aihMotivo={aihMotivo}
+              aihCaraterEntry={aihCaraterEntry}
+              fullSize
+            />
+          )}
+        </DialogContent>
+      </Dialog>
+
       <Dialog open={!!preview} onOpenChange={(o) => !o && setPreview(null)}>
         <DialogContent className="max-w-md">
           <DialogHeader>
