@@ -46,9 +46,10 @@ import { Shield, Landmark, ArrowUp, Stethoscope as StethIcon, BedDouble, HeartPu
 import type { LucideIcon } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { cn } from "@/lib/utils";
-import convenioHumanasLogo from "@/assets/convenio-humanas.png";
+import convenioHumanasAsset from "@/assets/convenio-humanas-real.png.asset.json";
 import convenioUnimedLogo from "@/assets/convenio-unimed.png";
 import convenioCaurnAsset from "@/assets/convenio-caurn-real.png.asset.json";
+const convenioHumanasLogo = convenioHumanasAsset.url;
 const convenioCaurnLogo = convenioCaurnAsset.url;
 
 const OPERADORAS = [
