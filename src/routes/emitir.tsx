@@ -47,9 +47,10 @@ import type { LucideIcon } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { cn } from "@/lib/utils";
 import convenioHumanasAsset from "@/assets/convenio-humanas-real.png.asset.json";
-import convenioUnimedLogo from "@/assets/convenio-unimed.png";
+import convenioUnimedAsset from "@/assets/convenio-unimed-real.png.asset.json";
 import convenioCaurnAsset from "@/assets/convenio-caurn-real.png.asset.json";
 const convenioHumanasLogo = convenioHumanasAsset.url;
+const convenioUnimedLogo = convenioUnimedAsset.url;
 const convenioCaurnLogo = convenioCaurnAsset.url;
 
 const OPERADORAS = [
