@@ -1563,10 +1563,10 @@ function GuiaLivePreview(props: {
 
           <div className="w-[1100px] bg-white text-black font-sans text-[9px] leading-tight border border-black">
             {/* Header */}
-            <div className="grid grid-cols-[140px_1fr_260px] border-b border-black">
-              <div className="flex items-center justify-center border-r border-black px-2 py-2">
+            <div className="grid grid-cols-[200px_1fr_260px] border-b border-black">
+              <div className="flex items-center justify-center border-r border-black px-3 py-3">
                 {operadoraLogo ? (
-                  <img src={operadoraLogo} alt={operadora} className="max-h-10 max-w-[120px] object-contain" />
+                  <img src={operadoraLogo} alt={operadora} className="max-h-20 max-w-[180px] object-contain" />
                 ) : (
                   <span className="text-[9px] text-slate-500 italic">Logo da Empresa</span>
                 )}
