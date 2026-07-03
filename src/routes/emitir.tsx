@@ -1517,6 +1517,7 @@ function GuiaLivePreview(props: {
   apacTipo: string;
   aihMotivo: string;
   aihCaraterEntry: string;
+  fullSize?: boolean;
 }) {
   const {
     numeroGuia, operadora, operadoraLogo,
