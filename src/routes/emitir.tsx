@@ -615,12 +615,15 @@ function EmitirPage() {
               {/* Cabeçalho integrado do formulário selecionado */}
               <div className="flex items-center gap-3">
                 <div className="w-1 h-8 bg-primary rounded-full" />
-                <div className="min-w-0">
+                <div className="min-w-0 flex-1">
                   <p className="text-[10px] uppercase font-bold tracking-widest text-muted-foreground">
                     Formulário de emissão
                   </p>
                   <p className="text-sm font-semibold truncate">{guideHeaderTitle}</p>
                 </div>
+                <Button type="button" variant="outline" size="sm" onClick={() => setPreviewOpen(true)}>
+                  <Eye className="h-4 w-4" /> Pré-visualizar
+                </Button>
               </div>
 
               {/* Convênio / Estabelecimento */}
