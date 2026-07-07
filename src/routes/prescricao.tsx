@@ -1258,10 +1258,14 @@ function PrescricaoForm() {
               {itens.map((it, i) => {
                 const isDragging = dragIndex === i;
                 const isOver = overIndex === i && dragIndex !== null && dragIndex !== i;
+                const posCheck = checkPosologia(it.posologia);
+                const isEditing = editingPosIdx === i;
+                const editCheck = isEditing ? checkPosologia(editingPosValue) : null;
                 return (
                   <li
+                    id={`item-receita-${i}`}
                     key={i}
-                    draggable
+                    draggable={!isEditing}
                     onDragStart={(e) => {
                       setDragIndex(i);
                       e.dataTransfer.effectAllowed = "move";
@@ -1286,8 +1290,14 @@ function PrescricaoForm() {
                       setOverIndex(null);
                     }}
                     className={`rounded-xl border bg-background/40 p-4 transition-all ${
-                      isDragging ? "opacity-40 border-primary/60" : "border-border/70"
-                    } ${isOver ? "ring-2 ring-primary/60 border-primary/60" : ""}`}
+                      isDragging ? "opacity-40 border-primary/60" : ""
+                    } ${
+                      isOver
+                        ? "ring-2 ring-primary/60 border-primary/60"
+                        : posCheck.ok
+                          ? "border-border/70"
+                          : "border-destructive/60 bg-destructive/5"
+                    }`}
                   >
                     <div className="flex items-start gap-2">
                       <button
@@ -1308,11 +1318,73 @@ function PrescricaoForm() {
                           {it.med.principios} | {it.med.fabricante} | {it.med.forma} |{" "}
                           {it.med.tipo}
                         </div>
-                        <div className="mt-1 flex items-start gap-2 text-sm text-foreground/90">
-                          <Link2 className="h-3.5 w-3.5 mt-0.5 text-primary shrink-0" />
-                          <span>{it.posologia}</span>
-                        </div>
+                        {isEditing ? (
+                          <div className="mt-2 space-y-1.5">
+                            <textarea
+                              value={editingPosValue}
+                              onChange={(e) => setEditingPosValue(e.target.value)}
+                              rows={2}
+                              autoFocus
+                              className={`w-full rounded-lg border bg-background px-2.5 py-2 text-sm focus:outline-none focus:ring-2 ${
+                                editCheck?.ok
+                                  ? "border-emerald-500/40 focus:ring-emerald-500/40"
+                                  : "border-destructive/50 focus:ring-destructive/40"
+                              }`}
+                            />
+                            {editCheck && !editCheck.ok && (
+                              <div className="text-[11px] text-destructive">
+                                ⚠ {editCheck.mensagem}
+                              </div>
+                            )}
+                            <div className="flex items-center gap-2">
+                              <button
+                                onClick={saveEditPos}
+                                disabled={!editCheck?.ok}
+                                className="rounded-lg bg-primary text-primary-foreground px-3 py-1 text-xs font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
+                              >
+                                Salvar
+                              </button>
+                              <button
+                                onClick={cancelEditPos}
+                                className="rounded-lg border border-border px-3 py-1 text-xs hover:bg-muted"
+                              >
+                                Cancelar
+                              </button>
+                            </div>
+                          </div>
+                        ) : (
+                          <>
+                            <div className="mt-1 flex items-start gap-2 text-sm text-foreground/90">
+                              <Link2
+                                className={`h-3.5 w-3.5 mt-0.5 shrink-0 ${
+                                  posCheck.ok ? "text-primary" : "text-destructive"
+                                }`}
+                              />
+                              <span>{it.posologia || <em className="text-muted-foreground">sem posologia</em>}</span>
+                            </div>
+                            {!posCheck.ok && (
+                              <div className="text-[11px] text-destructive flex items-center gap-2">
+                                <span>⚠ {posCheck.mensagem}</span>
+                                <button
+                                  onClick={() => startEditPos(i)}
+                                  className="underline hover:no-underline font-medium"
+                                >
+                                  Editar posologia
+                                </button>
+                              </div>
+                            )}
+                            {posCheck.ok && (
+                              <button
+                                onClick={() => startEditPos(i)}
+                                className="text-[11px] text-muted-foreground hover:text-primary hover:underline"
+                              >
+                                Editar posologia
+                              </button>
+                            )}
+                          </>
+                        )}
                       </div>
+
                       <div className="flex flex-col gap-1 shrink-0">
                         <button
                           onClick={() => moveItem(i, i - 1)}
