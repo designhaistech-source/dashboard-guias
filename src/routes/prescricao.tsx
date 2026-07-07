@@ -16,6 +16,9 @@ import {
   GripVertical,
   ArrowUp,
   ArrowDown,
+  History,
+  RefreshCw,
+  Trash2,
 } from "lucide-react";
 import { jsPDF } from "jspdf";
 import { toast } from "sonner";
@@ -181,6 +184,8 @@ function isEnderecoCompleto(endereco: string): boolean {
 const LS_PACIENTES = "hg:prescricao:pacientes-recentes";
 const LS_MEDS = "hg:prescricao:meds-recentes";
 const LS_DRAFT = "hg:prescricao:rascunho";
+const LS_HISTORICO = "hg:prescricao:historico";
+const HIST_MAX = 30;
 
 type Rascunho = {
   paciente: string;
@@ -191,6 +196,19 @@ type Rascunho = {
   especial: boolean;
   tipos: MedType[];
   savedAt: number;
+};
+
+type Historico = {
+  id: string;
+  emittedAt: number;
+  action: "imprimir" | "pdf";
+  paciente: string;
+  cpfDigits: string;
+  cepDigits: string;
+  endereco: string;
+  itens: ItemReceita[];
+  especial: boolean;
+  tipos: MedType[];
 };
 
 function loadRascunho(): Rascunho | null {
@@ -204,6 +222,23 @@ function loadRascunho(): Rascunho | null {
   } catch {
     return null;
   }
+}
+
+function loadHistorico(): Historico[] {
+  if (typeof window === "undefined") return [];
+  try {
+    const raw = window.localStorage.getItem(LS_HISTORICO);
+    if (!raw) return [];
+    const arr = JSON.parse(raw);
+    return Array.isArray(arr) ? (arr as Historico[]) : [];
+  } catch {
+    return [];
+  }
+}
+
+function saveHistorico(list: Historico[]) {
+  if (typeof window === "undefined") return;
+  window.localStorage.setItem(LS_HISTORICO, JSON.stringify(list.slice(0, HIST_MAX)));
 }
 
 function loadRecentes(key: string): string[] {
@@ -302,6 +337,8 @@ function PrescricaoForm() {
   const [medsRecentes, setMedsRecentes] = useState<string[]>([]);
   const [rascunhoRestaurado, setRascunhoRestaurado] = useState<number | null>(null);
   const [savedAt, setSavedAt] = useState<number | null>(null);
+  const [historico, setHistorico] = useState<Historico[]>([]);
+  const [historicoAberto, setHistoricoAberto] = useState(false);
   const hidratado = useRef(false);
 
   const pacienteRef = useRef<HTMLInputElement>(null);
@@ -313,6 +350,7 @@ function PrescricaoForm() {
   useEffect(() => {
     setPacientesRecentes(loadRecentes(LS_PACIENTES));
     setMedsRecentes(loadRecentes(LS_MEDS));
+    setHistorico(loadHistorico());
     const d = loadRascunho();
     if (d) {
       const temConteudo =
@@ -467,10 +505,59 @@ function PrescricaoForm() {
     }
     pushRecente(LS_PACIENTES, paciente);
     setPacientesRecentes(loadRecentes(LS_PACIENTES));
+    registrarHistorico("imprimir");
     toast.success(
       especial ? "Receituário especial enviado para impressão." : "Receita enviada para impressão.",
     );
   };
+
+  const registrarHistorico = (action: "imprimir" | "pdf") => {
+    const entry: Historico = {
+      id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+      emittedAt: Date.now(),
+      action,
+      paciente: paciente.trim(),
+      cpfDigits,
+      cepDigits,
+      endereco,
+      itens,
+      especial,
+      tipos: Array.from(tipos),
+    };
+    const next = [entry, ...historico].slice(0, HIST_MAX);
+    setHistorico(next);
+    saveHistorico(next);
+  };
+
+  const reutilizarHistorico = (h: Historico) => {
+    setPaciente(h.paciente);
+    setCpfDigits(h.cpfDigits || "");
+    setCepDigits(h.cepDigits || "");
+    setEndereco(h.endereco || "");
+    setItens(h.itens || []);
+    setEspecial(!!h.especial);
+    if (Array.isArray(h.tipos) && h.tipos.length > 0) setTipos(new Set(h.tipos));
+    setHistoricoAberto(false);
+    setRascunhoRestaurado(null);
+    toast.success(`Prescrição de ${h.paciente || "paciente"} carregada como base.`);
+    setTimeout(() => receitaRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }), 100);
+  };
+
+  const removerHistorico = (id: string) => {
+    const next = historico.filter((h) => h.id !== id);
+    setHistorico(next);
+    saveHistorico(next);
+  };
+
+  const limparHistorico = () => {
+    if (historico.length === 0) return;
+    if (typeof window !== "undefined" && !window.confirm("Apagar todo o histórico de prescrições?"))
+      return;
+    setHistorico([]);
+    saveHistorico([]);
+    toast.success("Histórico apagado.");
+  };
+
 
 
   const baixarPdf = () => {
@@ -607,6 +694,9 @@ function PrescricaoForm() {
       .replace(/(^-|-$)/g, "");
     const nome = `${especial ? "receita-especial" : "prescricao"}-${slugPaciente || "paciente"}.pdf`;
     doc.save(nome);
+    pushRecente(LS_PACIENTES, paciente);
+    setPacientesRecentes(loadRecentes(LS_PACIENTES));
+    registrarHistorico("pdf");
     toast.success("PDF gerado.");
   };
 
@@ -900,15 +990,34 @@ function PrescricaoForm() {
           <span className="font-medium">Receituário de controle especial</span>
           <span className="text-xs text-muted-foreground">(exige CPF e endereço)</span>
         </label>
-        {itens.length > 0 && (
+        <div className="flex items-center gap-3">
           <button
-            onClick={scrollToReceita}
-            className="text-xs text-primary hover:underline"
+            onClick={() => setHistoricoAberto((v) => !v)}
+            className="inline-flex items-center gap-1.5 text-xs rounded-lg border border-border px-2.5 py-1.5 hover:bg-muted transition-colors"
           >
-            Ir para a receita ({itens.length})
+            <History className="h-3.5 w-3.5" />
+            Histórico {historico.length > 0 && `(${historico.length})`}
           </button>
-        )}
+          {itens.length > 0 && (
+            <button
+              onClick={scrollToReceita}
+              className="text-xs text-primary hover:underline"
+            >
+              Ir para a receita ({itens.length})
+            </button>
+          )}
+        </div>
       </div>
+
+      {historicoAberto && (
+        <HistoricoPanel
+          historico={historico}
+          onClose={() => setHistoricoAberto(false)}
+          onReutilizar={reutilizarHistorico}
+          onRemover={removerHistorico}
+          onLimpar={limparHistorico}
+        />
+      )}
 
       {/* Dados do paciente para receita especial */}
       {especial && (
@@ -1420,5 +1529,118 @@ function TipoBadge({ tipo }: { tipo: MedType }) {
   );
 }
 
-// unused Check import guard (kept for future added state)
+function HistoricoPanel({
+  historico,
+  onClose,
+  onReutilizar,
+  onRemover,
+  onLimpar,
+}: {
+  historico: Historico[];
+  onClose: () => void;
+  onReutilizar: (h: Historico) => void;
+  onRemover: (id: string) => void;
+  onLimpar: () => void;
+}) {
+  const fmt = (ts: number) =>
+    new Date(ts).toLocaleString("pt-BR", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  return (
+    <div className="rounded-2xl border border-border bg-card p-5 space-y-3">
+      <div className="flex items-center justify-between gap-3">
+        <div className="flex items-center gap-2">
+          <History className="h-4 w-4 text-primary" />
+          <h3 className="text-sm font-semibold">Histórico de prescrições</h3>
+          <span className="text-xs text-muted-foreground">
+            ({historico.length} {historico.length === 1 ? "entrada" : "entradas"} — só neste navegador)
+          </span>
+        </div>
+        <div className="flex items-center gap-2">
+          {historico.length > 0 && (
+            <button
+              onClick={onLimpar}
+              className="text-xs text-destructive hover:underline"
+            >
+              Limpar tudo
+            </button>
+          )}
+          <button
+            onClick={onClose}
+            className="grid place-items-center h-6 w-6 rounded border border-border text-muted-foreground hover:text-foreground"
+            aria-label="Fechar histórico"
+          >
+            <X className="h-3.5 w-3.5" />
+          </button>
+        </div>
+      </div>
+
+      {historico.length === 0 ? (
+        <div className="rounded-xl border border-dashed border-border p-6 text-sm text-muted-foreground text-center">
+          Ainda não há prescrições emitidas. Ao imprimir ou baixar um PDF, a
+          prescrição fica registrada aqui.
+        </div>
+      ) : (
+        <ul className="space-y-2 max-h-[480px] overflow-y-auto">
+          {historico.map((h) => (
+            <li
+              key={h.id}
+              className={`rounded-xl border p-3 ${
+                h.especial ? "border-destructive/40 bg-destructive/5" : "border-border bg-background/40"
+              }`}
+            >
+              <div className="flex items-start justify-between gap-3">
+                <div className="min-w-0 flex-1 space-y-1">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span className="text-sm font-semibold truncate">
+                      {h.paciente || "Sem paciente"}
+                    </span>
+                    {h.especial && (
+                      <span className="text-[10px] font-semibold uppercase tracking-wide rounded px-1.5 py-0.5 bg-destructive/15 text-destructive border border-destructive/30">
+                        Especial
+                      </span>
+                    )}
+                    <span className="text-[10px] uppercase tracking-wide text-muted-foreground">
+                      {h.action === "pdf" ? "PDF" : "Impressão"}
+                    </span>
+                  </div>
+                  <div className="text-xs text-muted-foreground">
+                    {fmt(h.emittedAt)} · {h.itens.length}{" "}
+                    {h.itens.length === 1 ? "medicamento" : "medicamentos"}
+                  </div>
+                  <div className="text-xs text-foreground/80 line-clamp-2">
+                    {h.itens.map((it) => it.med.nome.split(" ")[0]).join(", ") || "—"}
+                  </div>
+                </div>
+                <div className="flex flex-col gap-1 shrink-0">
+                  <button
+                    onClick={() => onReutilizar(h)}
+                    className="inline-flex items-center gap-1.5 rounded-lg border border-primary/50 text-primary px-2.5 py-1.5 text-xs font-medium hover:bg-primary/10"
+                    title="Carregar esta prescrição no formulário como base"
+                  >
+                    <RefreshCw className="h-3.5 w-3.5" />
+                    Reutilizar
+                  </button>
+                  <button
+                    onClick={() => onRemover(h.id)}
+                    className="inline-flex items-center gap-1.5 rounded-lg border border-border text-muted-foreground px-2.5 py-1.5 text-xs hover:text-destructive hover:border-destructive/60"
+                    title="Remover do histórico"
+                  >
+                    <Trash2 className="h-3.5 w-3.5" />
+                    Remover
+                  </button>
+                </div>
+              </div>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+}
+
 void Check;
