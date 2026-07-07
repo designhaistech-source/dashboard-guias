@@ -9,11 +9,17 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as PrescricaoRouteImport } from './routes/prescricao'
 import { Route as GuiasRouteImport } from './routes/guias'
 import { Route as EmitirRouteImport } from './routes/emitir'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as IndexRouteImport } from './routes/index'
 
+const PrescricaoRoute = PrescricaoRouteImport.update({
+  id: '/prescricao',
+  path: '/prescricao',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const GuiasRoute = GuiasRouteImport.update({
   id: '/guias',
   path: '/guias',
@@ -40,12 +46,14 @@ export interface FileRoutesByFullPath {
   '/dashboard': typeof DashboardRoute
   '/emitir': typeof EmitirRoute
   '/guias': typeof GuiasRoute
+  '/prescricao': typeof PrescricaoRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/dashboard': typeof DashboardRoute
   '/emitir': typeof EmitirRoute
   '/guias': typeof GuiasRoute
+  '/prescricao': typeof PrescricaoRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -53,13 +61,14 @@ export interface FileRoutesById {
   '/dashboard': typeof DashboardRoute
   '/emitir': typeof EmitirRoute
   '/guias': typeof GuiasRoute
+  '/prescricao': typeof PrescricaoRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/dashboard' | '/emitir' | '/guias'
+  fullPaths: '/' | '/dashboard' | '/emitir' | '/guias' | '/prescricao'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/dashboard' | '/emitir' | '/guias'
-  id: '__root__' | '/' | '/dashboard' | '/emitir' | '/guias'
+  to: '/' | '/dashboard' | '/emitir' | '/guias' | '/prescricao'
+  id: '__root__' | '/' | '/dashboard' | '/emitir' | '/guias' | '/prescricao'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -67,10 +76,18 @@ export interface RootRouteChildren {
   DashboardRoute: typeof DashboardRoute
   EmitirRoute: typeof EmitirRoute
   GuiasRoute: typeof GuiasRoute
+  PrescricaoRoute: typeof PrescricaoRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/prescricao': {
+      id: '/prescricao'
+      path: '/prescricao'
+      fullPath: '/prescricao'
+      preLoaderRoute: typeof PrescricaoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/guias': {
       id: '/guias'
       path: '/guias'
@@ -107,6 +124,7 @@ const rootRouteChildren: RootRouteChildren = {
   DashboardRoute: DashboardRoute,
   EmitirRoute: EmitirRoute,
   GuiasRoute: GuiasRoute,
+  PrescricaoRoute: PrescricaoRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
