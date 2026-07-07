@@ -227,10 +227,22 @@ async function generateReportPdf(range: Range, dailyAvg: number, total: number) 
     // Header
     doc.setFillColor(37, 99, 235);
     doc.rect(0, 0, pageWidth, 70, "F");
+
+    // HaisGuias logo (top-right of header band)
+    try {
+      const logo = await loadImageDataUrl(logoAsset.url);
+      const logoH = 36;
+      const logoW = (logo.w / logo.h) * logoH;
+      doc.addImage(logo.dataUrl, "PNG", pageWidth - margin - logoW, (70 - logoH) / 2, logoW, logoH);
+    } catch {
+      // fallback: skip logo if it fails to load
+    }
+
     applyType(TYPE.title);
     doc.text("HaisGuias — Relatório do Dashboard", margin, 35);
     applyType(TYPE.subtitle);
     doc.text(`Período: ${rangeLabel}  •  Gerado em: ${dateStr}`, margin, 55);
+
 
     const footerH = 50;
     const headerOffsetTop = 60;
