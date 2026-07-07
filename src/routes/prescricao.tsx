@@ -1,7 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import { Pill, Settings2, Search, User, X } from "lucide-react";
+import { Pill, Settings2, Search, User, X, FileText, ClipboardList, Plus, Check } from "lucide-react";
+import { toast } from "sonner";
 import { AppSidebar } from "@/components/app-sidebar";
+
 import { SiteFooter } from "@/components/site-footer";
 
 export const Route = createFileRoute("/prescricao")({
