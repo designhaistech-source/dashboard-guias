@@ -337,6 +337,8 @@ function PrescricaoForm() {
   const [medsRecentes, setMedsRecentes] = useState<string[]>([]);
   const [rascunhoRestaurado, setRascunhoRestaurado] = useState<number | null>(null);
   const [savedAt, setSavedAt] = useState<number | null>(null);
+  const [historico, setHistorico] = useState<Historico[]>([]);
+  const [historicoAberto, setHistoricoAberto] = useState(false);
   const hidratado = useRef(false);
 
   const pacienteRef = useRef<HTMLInputElement>(null);
