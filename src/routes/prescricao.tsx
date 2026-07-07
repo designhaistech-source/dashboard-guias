@@ -747,151 +747,165 @@ function PrescricaoForm() {
         )}
       </div>
 
+      {/* Toggle receita especial — sempre visível */}
+      <div className="rounded-2xl border border-border bg-card px-5 py-3 flex items-center justify-between">
+        <label className="inline-flex items-center gap-2 text-sm cursor-pointer select-none">
+          <input
+            type="checkbox"
+            checked={especial}
+            onChange={(e) => setEspecial(e.target.checked)}
+            className="h-4 w-4 rounded border-border accent-primary"
+          />
+          <span className="font-medium">Receituário de controle especial</span>
+          <span className="text-xs text-muted-foreground">(exige CPF e endereço)</span>
+        </label>
+        {itens.length > 0 && (
+          <button
+            onClick={scrollToReceita}
+            className="text-xs text-primary hover:underline"
+          >
+            Ir para a receita ({itens.length})
+          </button>
+        )}
+      </div>
+
+      {/* Dados do paciente para receita especial */}
+      {especial && (
+        <div className="rounded-2xl border border-destructive/40 bg-card p-5 space-y-3">
+          <div className="text-sm font-semibold">Dados obrigatórios do paciente</div>
+          <div className="grid gap-3 md:grid-cols-[180px_minmax(0,1fr)]">
+            <div className="space-y-1">
+              <label className="text-xs text-muted-foreground">CPF</label>
+              <input
+                ref={cpfRef}
+                value={formatCpf(cpfDigits)}
+                onChange={(e) => setCpfDigits(e.target.value.replace(/\D/g, "").slice(0, 11))}
+                onPaste={(e) => {
+                  e.preventDefault();
+                  const text = e.clipboardData.getData("text").replace(/\D/g, "").slice(0, 11);
+                  setCpfDigits(text);
+                }}
+                autoComplete="off"
+                inputMode="numeric"
+                maxLength={14}
+                placeholder="000.000.000-00"
+                aria-invalid={!cpfValido}
+                className={`w-full rounded-xl border bg-background/40 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 ${
+                  cpfValido
+                    ? "border-emerald-500/40 focus:ring-emerald-500/40"
+                    : "border-destructive/50 focus:ring-destructive/40"
+                }`}
+              />
+              <p className={`text-[11px] ${cpfValido ? "text-emerald-500" : "text-destructive"}`}>
+                {cpfDigits.length === 0
+                  ? "Obrigatório."
+                  : cpfDigits.length < 11
+                    ? `Faltam ${11 - cpfDigits.length} dígito(s).`
+                    : cpfValido
+                      ? "CPF válido."
+                      : "Dígito verificador inválido."}
+              </p>
+            </div>
+            <div className="space-y-1">
+              <label className="text-xs text-muted-foreground">
+                CEP (preenche endereço automaticamente)
+              </label>
+              <div className="flex gap-2">
+                <input
+                  value={cepDigits.replace(/(\d{5})(\d)/, "$1-$2")}
+                  onChange={(e) => onCepChange(e.target.value)}
+                  inputMode="numeric"
+                  maxLength={9}
+                  placeholder="00000-000"
+                  className="w-32 rounded-xl border border-border bg-background/40 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring/40"
+                />
+                {cepLoading && (
+                  <span className="text-xs text-muted-foreground self-center">Buscando…</span>
+                )}
+              </div>
+            </div>
+          </div>
+          <div className="space-y-1">
+            <label className="text-xs text-muted-foreground">Endereço completo</label>
+            <input
+              ref={enderecoRef}
+              value={endereco}
+              onChange={(e) => setEndereco(e.target.value)}
+              placeholder="Rua, número, bairro, cidade/UF"
+              aria-invalid={!enderecoValido}
+              className={`w-full rounded-xl border bg-background/40 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 ${
+                enderecoValido
+                  ? "border-emerald-500/40 focus:ring-emerald-500/40"
+                  : "border-destructive/50 focus:ring-destructive/40"
+              }`}
+            />
+            <p className={`text-[11px] ${enderecoValido ? "text-emerald-500" : "text-destructive"}`}>
+              {enderecoValido
+                ? "Endereço completo."
+                : "Inclua rua, número, bairro e cidade/UF."}
+            </p>
+          </div>
+        </div>
+      )}
+
       {/* Receita */}
       {itens.length > 0 && (
         <div
+          ref={receitaRef}
           className={`rounded-2xl border bg-card ${
             especial ? "border-destructive/60" : "border-border"
           }`}
         >
           {especial && <div className="h-1.5 rounded-t-2xl bg-destructive" />}
           <div className="p-5 space-y-4">
-            <div className="flex flex-wrap items-center justify-between gap-3">
-              <div>
+            <div className="sticky top-2 z-10 -mx-5 -mt-5 px-5 pt-5 pb-3 bg-card/95 backdrop-blur rounded-t-2xl">
+              <div className="flex flex-wrap items-center justify-between gap-3">
                 <h3 className="text-sm font-semibold tracking-wide">
                   {especial
                     ? "RECEITUÁRIO CONTROLE ESPECIAL"
-                    : `Prescrição médica (${itens.length} ${itens.length > 1 ? "medicamentos" : "medicamento"}) - Página única`}
+                    : `Prescrição médica — ${itens.length} ${itens.length > 1 ? "medicamentos" : "medicamento"}`}
                 </h3>
-                {especial && (
-                  <div className="mt-1 text-xs text-muted-foreground space-x-4">
-                    <span>
-                      CPF: <span className="text-foreground/80">campo obrigatório</span>
-                    </span>
-                    <span>
-                      Endereço:{" "}
-                      <span className="text-foreground/80">endereço do paciente (receita especial)</span>
-                    </span>
-                  </div>
-                )}
-              </div>
-              <div className="flex flex-wrap items-center gap-2">
-                <label className="inline-flex items-center gap-2 text-sm mr-2 cursor-pointer select-none">
-                  <input
-                    type="checkbox"
-                    checked={especial}
-                    onChange={(e) => setEspecial(e.target.checked)}
-                    className="h-4 w-4 rounded border-border accent-primary"
-                  />
-                  Receita especial
-                </label>
-                <ActionBtn
-                  onClick={imprimir}
-                  icon={<Printer className="h-4 w-4" />}
-                  disabled={!podeEmitir}
-                  title={
-                    !podeEmitir
-                      ? especial
-                        ? "Preencha CPF e endereço válidos para emitir."
-                        : "Informe paciente e adicione medicamentos."
-                      : undefined
-                  }
-                >
-                  Imprimir
-                </ActionBtn>
-                <ActionBtn
-                  onClick={baixarPdf}
-                  icon={<Download className="h-4 w-4" />}
-                  disabled={!podeEmitir}
-                  title={
-                    !podeEmitir
-                      ? especial
-                        ? "Preencha CPF e endereço válidos para baixar."
-                        : "Informe paciente e adicione medicamentos."
-                      : undefined
-                  }
-                >
-                  Baixar PDF
-                </ActionBtn>
-
-                <ActionBtn
-                  onClick={salvarKit}
-                  icon={<Save className="h-4 w-4" />}
-                  variant="primary"
-                >
-                  Salvar como Kit
-                </ActionBtn>
-                <ActionBtn
-                  onClick={() => toast.info("Nenhum kit salvo.")}
-                  icon={<FolderCog className="h-4 w-4" />}
-                >
-                  Gerenciar kits
-                </ActionBtn>
-                <button
-                  onClick={() => setItens([])}
-                  className="text-sm text-destructive hover:underline"
-                >
-                  Limpar receita
-                </button>
+                <div className="flex flex-wrap items-center gap-2">
+                  <ActionBtn
+                    onClick={imprimir}
+                    icon={<Printer className="h-4 w-4" />}
+                    disabled={!podeEmitir}
+                    title={!podeEmitir ? "Complete os campos pendentes." : "Ctrl+P"}
+                  >
+                    Imprimir
+                  </ActionBtn>
+                  <ActionBtn
+                    onClick={baixarPdf}
+                    icon={<Download className="h-4 w-4" />}
+                    disabled={!podeEmitir}
+                  >
+                    PDF
+                  </ActionBtn>
+                  <ActionBtn
+                    onClick={salvarKit}
+                    icon={<Save className="h-4 w-4" />}
+                    variant="primary"
+                    title="Ctrl+S"
+                  >
+                    Salvar Kit
+                  </ActionBtn>
+                  <ActionBtn
+                    onClick={() => toast.info("Nenhum kit salvo.")}
+                    icon={<FolderCog className="h-4 w-4" />}
+                  >
+                    Kits
+                  </ActionBtn>
+                  <button
+                    onClick={() => setItens([])}
+                    className="text-sm text-destructive hover:underline"
+                  >
+                    Limpar
+                  </button>
+                </div>
               </div>
             </div>
 
-            {especial && (
-              <div className="grid gap-3 md:grid-cols-2">
-                <div className="space-y-1">
-                  <input
-                    value={formatCpf(cpfDigits)}
-                    onChange={(e) => setCpfDigits(e.target.value.replace(/\D/g, "").slice(0, 11))}
-                    onPaste={(e) => {
-                      e.preventDefault();
-                      const text = e.clipboardData.getData("text").replace(/\D/g, "").slice(0, 11);
-                      setCpfDigits(text);
-                    }}
-                    autoComplete="off"
-                    inputMode="numeric"
-                    maxLength={14}
-                    placeholder="CPF do paciente (000.000.000-00)"
-                    aria-invalid={!cpfValido}
-                    className={`w-full rounded-xl border bg-background/40 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 ${
-                      cpfValido
-                        ? "border-emerald-500/40 focus:ring-emerald-500/40"
-                        : "border-destructive/50 focus:ring-destructive/40"
-                    }`}
-                  />
-                  <p
-                    className={`text-xs ${cpfValido ? "text-emerald-400" : "text-destructive"}`}
-                  >
-                    {cpfDigits.length === 0
-                      ? "Obrigatório — informe os 11 dígitos do CPF."
-                      : cpfDigits.length < 11
-                        ? `Faltam ${11 - cpfDigits.length} dígito(s).`
-                        : cpfValido
-                          ? "CPF válido."
-                          : "CPF inválido — confira os dígitos."}
-                  </p>
-                </div>
-                <div className="space-y-1">
-                  <input
-                    value={endereco}
-                    onChange={(e) => setEndereco(e.target.value)}
-                    placeholder="Rua, número, bairro, cidade/UF"
-                    aria-invalid={!enderecoValido}
-                    className={`w-full rounded-xl border bg-background/40 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 ${
-                      enderecoValido
-                        ? "border-emerald-500/40 focus:ring-emerald-500/40"
-                        : "border-destructive/50 focus:ring-destructive/40"
-                    }`}
-                  />
-                  <p
-                    className={`text-xs ${enderecoValido ? "text-emerald-400" : "text-destructive"}`}
-                  >
-                    {enderecoValido
-                      ? "Endereço completo."
-                      : "Obrigatório — inclua rua, número, bairro e cidade/UF."}
-                  </p>
-                </div>
-              </div>
-            )}
+
 
 
             <ul className="space-y-3">
