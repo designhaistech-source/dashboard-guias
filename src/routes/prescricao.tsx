@@ -563,12 +563,15 @@ function PrescricaoForm() {
     const q = query.trim().toLowerCase();
     const base = MEDICAMENTOS.filter((m) => tipos.has(m.tipo));
     if (!q) {
-      // Sem busca: favoritos + recentes primeiro
+      // Sem busca: favoritos + recentes primeiro, depois os demais do tipo
       const favs = base.filter((m) => m.favorito);
       const recentes = medsRecentes
         .map((n) => base.find((m) => m.nome === n))
         .filter((m): m is Medicamento => !!m && !favs.includes(m));
-      return [...favs, ...recentes];
+      const restantes = base.filter(
+        (m) => !favs.includes(m) && !recentes.includes(m),
+      );
+      return [...favs, ...recentes, ...restantes];
     }
     return base.filter(
       (m) =>
@@ -578,6 +581,7 @@ function PrescricaoForm() {
         m.classe.toLowerCase().includes(q),
     );
   }, [query, tipos, medsRecentes]);
+
 
   useEffect(() => {
     setHighlight(0);
