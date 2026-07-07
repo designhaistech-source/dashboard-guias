@@ -510,11 +510,15 @@ function ActionBtn({
   icon,
   children,
   variant = "default",
+  disabled,
+  title,
 }: {
   onClick: () => void;
   icon: React.ReactNode;
   children: React.ReactNode;
   variant?: "default" | "primary";
+  disabled?: boolean;
+  title?: string;
 }) {
   const cls =
     variant === "primary"
@@ -523,13 +527,16 @@ function ActionBtn({
   return (
     <button
       onClick={onClick}
-      className={`inline-flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-sm font-medium transition-colors ${cls}`}
+      disabled={disabled}
+      title={title}
+      className={`inline-flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-sm font-medium transition-colors ${cls} disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-transparent`}
     >
       {icon}
       {children}
     </button>
   );
 }
+
 
 function PosologiaPanel({
   med,
