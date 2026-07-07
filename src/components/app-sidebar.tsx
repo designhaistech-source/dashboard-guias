@@ -107,17 +107,6 @@ export function AppSidebar({ activeKey }: { activeKey: ItemKey }) {
               hint="Pesquise códigos da Classificação Internacional de Doenças (CID‑10/11)."
             />
           </SidebarGroup>
-
-          <div className="border-t border-sidebar-border pt-4">
-            <SidebarGroup label="AJUDA">
-              <SidebarItem
-                icon={HelpCircle}
-                label="Relatar Problema"
-                active={activeKey === "ajuda"}
-                hint="Envie um relato de erro ou sugestão para o time de suporte."
-              />
-            </SidebarGroup>
-          </div>
         </nav>
 
         <UserMenu />
