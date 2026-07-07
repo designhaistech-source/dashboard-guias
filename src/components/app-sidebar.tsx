@@ -34,6 +34,8 @@ type ItemKey =
   | "guias"
   | "procedimento"
   | "prescricao"
+  | "opme"
+  | "relatorios"
   | "cid"
   | "ajuda";
 
