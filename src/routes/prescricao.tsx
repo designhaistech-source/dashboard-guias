@@ -693,8 +693,36 @@ function PrescricaoForm() {
     }
   };
 
+  const fmtHora = (ts: number) =>
+    new Date(ts).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
+
   return (
     <div className="space-y-5 pb-8">
+      {rascunhoRestaurado && (
+        <div className="rounded-2xl border border-primary/40 bg-primary/5 p-3 flex flex-wrap items-center justify-between gap-3">
+          <div className="text-sm">
+            <span className="font-semibold text-primary">Rascunho recuperado</span>
+            <span className="text-muted-foreground">
+              {" "}— salvo às {fmtHora(rascunhoRestaurado)}.
+            </span>
+          </div>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setRascunhoRestaurado(null)}
+              className="text-xs text-muted-foreground hover:text-foreground px-2 py-1"
+            >
+              Ocultar
+            </button>
+            <button
+              onClick={descartarRascunho}
+              className="text-xs text-destructive hover:underline px-2 py-1"
+            >
+              Descartar rascunho
+            </button>
+          </div>
+        </div>
+      )}
+
       {pendencias.length > 0 && (
         <div
           role="alert"
