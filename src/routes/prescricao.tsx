@@ -451,20 +451,55 @@ function PrescricaoForm() {
 
             {especial && (
               <div className="grid gap-3 md:grid-cols-2">
-                <input
-                  value={cpf}
-                  onChange={(e) => setCpf(e.target.value)}
-                  placeholder="CPF do paciente"
-                  className="w-full rounded-xl border border-destructive/40 bg-background/40 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-destructive/40"
-                />
-                <input
-                  value={endereco}
-                  onChange={(e) => setEndereco(e.target.value)}
-                  placeholder="Endereço completo do paciente"
-                  className="w-full rounded-xl border border-destructive/40 bg-background/40 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-destructive/40"
-                />
+                <div className="space-y-1">
+                  <input
+                    value={cpf}
+                    onChange={(e) => setCpf(formatCpf(e.target.value.replace(/\D/g, "")))}
+                    inputMode="numeric"
+                    maxLength={14}
+                    placeholder="CPF do paciente (000.000.000-00)"
+                    aria-invalid={!cpfValido}
+                    className={`w-full rounded-xl border bg-background/40 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 ${
+                      cpfValido
+                        ? "border-emerald-500/40 focus:ring-emerald-500/40"
+                        : "border-destructive/50 focus:ring-destructive/40"
+                    }`}
+                  />
+                  <p
+                    className={`text-xs ${cpfValido ? "text-emerald-400" : "text-destructive"}`}
+                  >
+                    {cpfDigits.length === 0
+                      ? "Obrigatório — informe os 11 dígitos do CPF."
+                      : cpfDigits.length < 11
+                        ? `Faltam ${11 - cpfDigits.length} dígito(s).`
+                        : cpfValido
+                          ? "CPF válido."
+                          : "CPF inválido — confira os dígitos."}
+                  </p>
+                </div>
+                <div className="space-y-1">
+                  <input
+                    value={endereco}
+                    onChange={(e) => setEndereco(e.target.value)}
+                    placeholder="Rua, número, bairro, cidade/UF"
+                    aria-invalid={!enderecoValido}
+                    className={`w-full rounded-xl border bg-background/40 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 ${
+                      enderecoValido
+                        ? "border-emerald-500/40 focus:ring-emerald-500/40"
+                        : "border-destructive/50 focus:ring-destructive/40"
+                    }`}
+                  />
+                  <p
+                    className={`text-xs ${enderecoValido ? "text-emerald-400" : "text-destructive"}`}
+                  >
+                    {enderecoValido
+                      ? "Endereço completo."
+                      : "Obrigatório — inclua rua, número, bairro e cidade/UF."}
+                  </p>
+                </div>
               </div>
             )}
+
 
             <ul className="space-y-3">
               {itens.map((it, i) => (
