@@ -110,12 +110,23 @@ export function AppSidebar({ activeKey }: { activeKey: ItemKey }) {
               active={activeKey === "prescricao"}
               hint="Emita prescrições médicas para os pacientes."
             />
-
+            <SidebarItem
+              icon={Wrench}
+              label="Solicitar OPME"
+              active={activeKey === "opme"}
+              hint="Solicite Órteses, Próteses e Materiais Especiais para procedimentos."
+            />
+            <SidebarItem
+              icon={FileSpreadsheet}
+              label="Relatórios e documentos"
+              active={activeKey === "relatorios"}
+              hint="Gere e gerencie relatórios, atestados e documentos clínicos."
+            />
             <SidebarItem
               icon={ScanLine}
-              label="Buscar CID"
+              label="Buscar CID-10"
               active={activeKey === "cid"}
-              hint="Pesquise códigos da Classificação Internacional de Doenças (CID‑10/11)."
+              hint="Pesquise códigos da Classificação Internacional de Doenças (CID-10)."
             />
           </SidebarGroup>
         </nav>
