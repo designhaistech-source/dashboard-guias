@@ -180,6 +180,31 @@ function isEnderecoCompleto(endereco: string): boolean {
 
 const LS_PACIENTES = "hg:prescricao:pacientes-recentes";
 const LS_MEDS = "hg:prescricao:meds-recentes";
+const LS_DRAFT = "hg:prescricao:rascunho";
+
+type Rascunho = {
+  paciente: string;
+  cpfDigits: string;
+  cepDigits: string;
+  endereco: string;
+  itens: ItemReceita[];
+  especial: boolean;
+  tipos: MedType[];
+  savedAt: number;
+};
+
+function loadRascunho(): Rascunho | null {
+  if (typeof window === "undefined") return null;
+  try {
+    const raw = window.localStorage.getItem(LS_DRAFT);
+    if (!raw) return null;
+    const d = JSON.parse(raw);
+    if (!d || typeof d !== "object") return null;
+    return d as Rascunho;
+  } catch {
+    return null;
+  }
+}
 
 function loadRecentes(key: string): string[] {
   if (typeof window === "undefined") return [];
