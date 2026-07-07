@@ -410,8 +410,8 @@ function PrescricaoPage() {
   return (
     <div className="flex min-h-screen w-full bg-background text-foreground">
       <AppSidebar activeKey="prescricao" />
-      <main className="flex-1 px-8 py-8 flex flex-col min-h-screen">
-        <div className="w-full max-w-5xl mx-auto space-y-6 flex-1">
+      <main className="flex-1 flex flex-col min-h-screen">
+        <div className="w-full max-w-5xl mx-auto space-y-6 flex-1 px-8 pt-8 pb-16">
           <Header />
           <PrescricaoForm />
         </div>
@@ -420,6 +420,7 @@ function PrescricaoPage() {
     </div>
   );
 }
+
 
 function Header() {
   return (
