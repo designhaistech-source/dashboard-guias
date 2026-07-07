@@ -243,7 +243,31 @@ function PrescricaoForm() {
 
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-5 pb-28">
+      {/* Tipo de receita */}
+      <div className="space-y-2">
+        <div className="text-sm text-muted-foreground">Tipo de prescrição</div>
+        <div className="inline-flex rounded-xl border border-border bg-card p-1">
+          <TipoReceitaButton
+            active={tipoReceita === "montada"}
+            onClick={() => setTipoReceita("montada")}
+            icon={<ClipboardList className="h-4 w-4" />}
+            label="Receita montada"
+          />
+          <TipoReceitaButton
+            active={tipoReceita === "especial"}
+            onClick={() => setTipoReceita("especial")}
+            icon={<FileText className="h-4 w-4" />}
+            label="Receituário especial"
+          />
+        </div>
+        <p className="text-xs text-muted-foreground">
+          {tipoReceita === "montada"
+            ? "Receita comum para medicamentos de uso livre, similares, genéricos e de referência."
+            : "Receituário de controle especial (Portaria 344/98) para medicamentos controlados."}
+        </p>
+      </div>
+
       {/* Paciente */}
       <div className="space-y-2">
         <label className="text-sm text-muted-foreground">Paciente</label>
@@ -308,19 +332,104 @@ function PrescricaoForm() {
       </div>
 
       {/* Resultados */}
-      <div className="rounded-xl border border-border bg-card divide-y divide-border max-h-[520px] overflow-y-auto">
+      <div className="rounded-xl border border-border bg-card divide-y divide-border max-h-[420px] overflow-y-auto">
         {resultados.length === 0 && (
           <div className="p-6 text-sm text-muted-foreground text-center">
             Nenhum medicamento encontrado para os filtros atuais.
           </div>
         )}
-        {resultados.map((m, i) => (
-          <MedRow key={i} m={m} />
-        ))}
+        {resultados.map((m, i) => {
+          const added = selecionados.some(
+            (x) => x.nome === m.nome && x.preco === m.preco,
+          );
+          return <MedRow key={i} m={m} added={added} onAdd={() => addMedicamento(m)} />;
+        })}
+      </div>
+
+      {/* Receita montada */}
+      {selecionados.length > 0 && (
+        <div className="rounded-xl border border-border bg-card p-4 space-y-3">
+          <div className="flex items-center justify-between">
+            <h3 className="text-sm font-semibold">
+              Medicamentos na receita ({selecionados.length})
+            </h3>
+            <button
+              onClick={() => setSelecionados([])}
+              className="text-xs text-muted-foreground hover:text-destructive"
+            >
+              Limpar
+            </button>
+          </div>
+          <ul className="space-y-2">
+            {selecionados.map((m, i) => (
+              <li
+                key={i}
+                className="flex items-start justify-between gap-3 rounded-lg border border-border/60 bg-background/40 px-3 py-2"
+              >
+                <div className="min-w-0">
+                  <div className="text-sm font-medium truncate">{m.nome}</div>
+                  <div className="text-xs text-muted-foreground truncate">
+                    {m.forma} · {m.fabricante}
+                  </div>
+                </div>
+                <button
+                  onClick={() => removeMedicamento(i)}
+                  className="text-muted-foreground hover:text-destructive shrink-0"
+                  aria-label="Remover"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {/* Barra emitir */}
+      <div className="sticky bottom-0 -mx-2 mt-4 border-t border-border bg-background/95 backdrop-blur px-2 py-3 flex items-center justify-between gap-3">
+        <div className="text-sm text-muted-foreground">
+          {selecionados.length === 0
+            ? "Nenhum medicamento selecionado"
+            : `${selecionados.length} medicamento${selecionados.length > 1 ? "s" : ""} · ${tipoReceita === "montada" ? "Receita montada" : "Receituário especial"}`}
+        </div>
+        <button
+          onClick={emitir}
+          className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground hover:bg-primary/90 transition-colors"
+        >
+          <FileText className="h-4 w-4" />
+          Emitir prescrição
+        </button>
       </div>
     </div>
   );
 }
+
+function TipoReceitaButton({
+  active,
+  onClick,
+  icon,
+  label,
+}: {
+  active: boolean;
+  onClick: () => void;
+  icon: React.ReactNode;
+  label: string;
+}) {
+  return (
+    <button
+      onClick={onClick}
+      className={`inline-flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
+        active
+          ? "bg-primary text-primary-foreground"
+          : "text-muted-foreground hover:text-foreground hover:bg-muted"
+      }`}
+    >
+      {icon}
+      {label}
+    </button>
+  );
+}
+
 
 function TipoCheckbox({
   label,
