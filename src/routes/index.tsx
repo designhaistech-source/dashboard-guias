@@ -277,7 +277,8 @@ async function generateReportPdf(range: Range, dailyAvg: number, total: number) 
 
     const footerH = 50;
     const headerOffsetTop = 60;
-    let y = 100;
+    let y = 140;
+
 
     const availableH = () => pageHeight - footerH - y;
     const pageInnerH = pageHeight - footerH - headerOffsetTop;
