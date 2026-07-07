@@ -12,7 +12,9 @@ import {
   Save,
   FolderCog,
   Link2,
+  Download,
 } from "lucide-react";
+import { jsPDF } from "jspdf";
 import { toast } from "sonner";
 import { AppSidebar } from "@/components/app-sidebar";
 import { SiteFooter } from "@/components/site-footer";
