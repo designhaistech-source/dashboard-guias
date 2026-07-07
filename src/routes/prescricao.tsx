@@ -1135,12 +1135,25 @@ function TipoCheckbox({
   );
 }
 
-function MedRow({ m, onPick }: { m: Medicamento; onPick: () => void }) {
+function MedRow({
+  m,
+  onPick,
+  highlighted,
+  onHover,
+}: {
+  m: Medicamento;
+  onPick: () => void;
+  highlighted?: boolean;
+  onHover?: () => void;
+}) {
   return (
     <button
       type="button"
       onClick={onPick}
-      className="w-full text-left px-4 py-3 hover:bg-muted/40 transition-colors flex items-start gap-3"
+      onMouseEnter={onHover}
+      className={`w-full text-left px-4 py-3 transition-colors flex items-start gap-3 ${
+        highlighted ? "bg-primary/10" : "hover:bg-muted/40"
+      }`}
     >
       <div className="flex-1 min-w-0">
         <div className="flex items-start gap-2 flex-wrap">
