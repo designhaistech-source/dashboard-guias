@@ -300,6 +300,9 @@ function PrescricaoForm() {
   const [highlight, setHighlight] = useState(0);
   const [pacientesRecentes, setPacientesRecentes] = useState<string[]>([]);
   const [medsRecentes, setMedsRecentes] = useState<string[]>([]);
+  const [rascunhoRestaurado, setRascunhoRestaurado] = useState<number | null>(null);
+  const [savedAt, setSavedAt] = useState<number | null>(null);
+  const hidratado = useRef(false);
 
   const pacienteRef = useRef<HTMLInputElement>(null);
   const searchRef = useRef<HTMLInputElement>(null);
@@ -310,8 +313,75 @@ function PrescricaoForm() {
   useEffect(() => {
     setPacientesRecentes(loadRecentes(LS_PACIENTES));
     setMedsRecentes(loadRecentes(LS_MEDS));
+    const d = loadRascunho();
+    if (d) {
+      const temConteudo =
+        (d.paciente && d.paciente.trim()) ||
+        (d.itens && d.itens.length > 0) ||
+        (d.cpfDigits && d.cpfDigits.length > 0) ||
+        (d.endereco && d.endereco.trim());
+      if (temConteudo) {
+        setPaciente(d.paciente || "");
+        setCpfDigits(d.cpfDigits || "");
+        setCepDigits(d.cepDigits || "");
+        setEndereco(d.endereco || "");
+        setItens(Array.isArray(d.itens) ? d.itens : []);
+        setEspecial(!!d.especial);
+        if (Array.isArray(d.tipos) && d.tipos.length > 0) setTipos(new Set(d.tipos));
+        setRascunhoRestaurado(d.savedAt || Date.now());
+        setSavedAt(d.savedAt || Date.now());
+      }
+    }
+    hidratado.current = true;
     pacienteRef.current?.focus();
   }, []);
+
+  // Autosave debounced
+  useEffect(() => {
+    if (!hidratado.current || typeof window === "undefined") return;
+    const id = window.setTimeout(() => {
+      const vazio =
+        !paciente.trim() &&
+        itens.length === 0 &&
+        !cpfDigits &&
+        !endereco.trim() &&
+        !cepDigits;
+      if (vazio) {
+        window.localStorage.removeItem(LS_DRAFT);
+        setSavedAt(null);
+        return;
+      }
+      const draft: Rascunho = {
+        paciente,
+        cpfDigits,
+        cepDigits,
+        endereco,
+        itens,
+        especial,
+        tipos: Array.from(tipos),
+        savedAt: Date.now(),
+      };
+      window.localStorage.setItem(LS_DRAFT, JSON.stringify(draft));
+      setSavedAt(draft.savedAt);
+    }, 400);
+    return () => window.clearTimeout(id);
+  }, [paciente, cpfDigits, cepDigits, endereco, itens, especial, tipos]);
+
+  const descartarRascunho = () => {
+    if (typeof window !== "undefined") window.localStorage.removeItem(LS_DRAFT);
+    setPaciente("");
+    setCpfDigits("");
+    setCepDigits("");
+    setEndereco("");
+    setItens([]);
+    setEspecial(false);
+    setTipos(new Set(["Genérico", "Referência", "Específico"]));
+    setRascunhoRestaurado(null);
+    setSavedAt(null);
+    toast.success("Rascunho descartado.");
+  };
+
+
 
 
 
