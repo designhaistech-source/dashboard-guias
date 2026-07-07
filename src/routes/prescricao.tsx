@@ -180,6 +180,31 @@ function isEnderecoCompleto(endereco: string): boolean {
 
 const LS_PACIENTES = "hg:prescricao:pacientes-recentes";
 const LS_MEDS = "hg:prescricao:meds-recentes";
+const LS_DRAFT = "hg:prescricao:rascunho";
+
+type Rascunho = {
+  paciente: string;
+  cpfDigits: string;
+  cepDigits: string;
+  endereco: string;
+  itens: ItemReceita[];
+  especial: boolean;
+  tipos: MedType[];
+  savedAt: number;
+};
+
+function loadRascunho(): Rascunho | null {
+  if (typeof window === "undefined") return null;
+  try {
+    const raw = window.localStorage.getItem(LS_DRAFT);
+    if (!raw) return null;
+    const d = JSON.parse(raw);
+    if (!d || typeof d !== "object") return null;
+    return d as Rascunho;
+  } catch {
+    return null;
+  }
+}
 
 function loadRecentes(key: string): string[] {
   if (typeof window === "undefined") return [];
@@ -275,6 +300,9 @@ function PrescricaoForm() {
   const [highlight, setHighlight] = useState(0);
   const [pacientesRecentes, setPacientesRecentes] = useState<string[]>([]);
   const [medsRecentes, setMedsRecentes] = useState<string[]>([]);
+  const [rascunhoRestaurado, setRascunhoRestaurado] = useState<number | null>(null);
+  const [savedAt, setSavedAt] = useState<number | null>(null);
+  const hidratado = useRef(false);
 
   const pacienteRef = useRef<HTMLInputElement>(null);
   const searchRef = useRef<HTMLInputElement>(null);
@@ -285,8 +313,75 @@ function PrescricaoForm() {
   useEffect(() => {
     setPacientesRecentes(loadRecentes(LS_PACIENTES));
     setMedsRecentes(loadRecentes(LS_MEDS));
+    const d = loadRascunho();
+    if (d) {
+      const temConteudo =
+        (d.paciente && d.paciente.trim()) ||
+        (d.itens && d.itens.length > 0) ||
+        (d.cpfDigits && d.cpfDigits.length > 0) ||
+        (d.endereco && d.endereco.trim());
+      if (temConteudo) {
+        setPaciente(d.paciente || "");
+        setCpfDigits(d.cpfDigits || "");
+        setCepDigits(d.cepDigits || "");
+        setEndereco(d.endereco || "");
+        setItens(Array.isArray(d.itens) ? d.itens : []);
+        setEspecial(!!d.especial);
+        if (Array.isArray(d.tipos) && d.tipos.length > 0) setTipos(new Set(d.tipos));
+        setRascunhoRestaurado(d.savedAt || Date.now());
+        setSavedAt(d.savedAt || Date.now());
+      }
+    }
+    hidratado.current = true;
     pacienteRef.current?.focus();
   }, []);
+
+  // Autosave debounced
+  useEffect(() => {
+    if (!hidratado.current || typeof window === "undefined") return;
+    const id = window.setTimeout(() => {
+      const vazio =
+        !paciente.trim() &&
+        itens.length === 0 &&
+        !cpfDigits &&
+        !endereco.trim() &&
+        !cepDigits;
+      if (vazio) {
+        window.localStorage.removeItem(LS_DRAFT);
+        setSavedAt(null);
+        return;
+      }
+      const draft: Rascunho = {
+        paciente,
+        cpfDigits,
+        cepDigits,
+        endereco,
+        itens,
+        especial,
+        tipos: Array.from(tipos),
+        savedAt: Date.now(),
+      };
+      window.localStorage.setItem(LS_DRAFT, JSON.stringify(draft));
+      setSavedAt(draft.savedAt);
+    }, 400);
+    return () => window.clearTimeout(id);
+  }, [paciente, cpfDigits, cepDigits, endereco, itens, especial, tipos]);
+
+  const descartarRascunho = () => {
+    if (typeof window !== "undefined") window.localStorage.removeItem(LS_DRAFT);
+    setPaciente("");
+    setCpfDigits("");
+    setCepDigits("");
+    setEndereco("");
+    setItens([]);
+    setEspecial(false);
+    setTipos(new Set(["Genérico", "Referência", "Específico"]));
+    setRascunhoRestaurado(null);
+    setSavedAt(null);
+    toast.success("Rascunho descartado.");
+  };
+
+
 
 
 
@@ -598,8 +693,36 @@ function PrescricaoForm() {
     }
   };
 
+  const fmtHora = (ts: number) =>
+    new Date(ts).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
+
   return (
     <div className="space-y-5 pb-8">
+      {rascunhoRestaurado && (
+        <div className="rounded-2xl border border-primary/40 bg-primary/5 p-3 flex flex-wrap items-center justify-between gap-3">
+          <div className="text-sm">
+            <span className="font-semibold text-primary">Rascunho recuperado</span>
+            <span className="text-muted-foreground">
+              {" "}— salvo às {fmtHora(rascunhoRestaurado)}.
+            </span>
+          </div>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setRascunhoRestaurado(null)}
+              className="text-xs text-muted-foreground hover:text-foreground px-2 py-1"
+            >
+              Ocultar
+            </button>
+            <button
+              onClick={descartarRascunho}
+              className="text-xs text-destructive hover:underline px-2 py-1"
+            >
+              Descartar rascunho
+            </button>
+          </div>
+        </div>
+      )}
+
       {pendencias.length > 0 && (
         <div
           role="alert"
@@ -878,11 +1001,18 @@ function PrescricaoForm() {
           <div className="p-5 space-y-4">
             <div className="sticky top-2 z-10 -mx-5 -mt-5 px-5 pt-5 pb-3 bg-card/95 backdrop-blur rounded-t-2xl">
               <div className="flex flex-wrap items-center justify-between gap-3">
-                <h3 className="text-sm font-semibold tracking-wide">
-                  {especial
-                    ? "RECEITUÁRIO CONTROLE ESPECIAL"
-                    : `Prescrição médica — ${itens.length} ${itens.length > 1 ? "medicamentos" : "medicamento"}`}
-                </h3>
+                <div className="flex items-center gap-3 min-w-0">
+                  <h3 className="text-sm font-semibold tracking-wide truncate">
+                    {especial
+                      ? "RECEITUÁRIO CONTROLE ESPECIAL"
+                      : `Prescrição médica — ${itens.length} ${itens.length > 1 ? "medicamentos" : "medicamento"}`}
+                  </h3>
+                  {savedAt && (
+                    <span className="text-[11px] text-muted-foreground shrink-0">
+                      · rascunho salvo às {fmtHora(savedAt)}
+                    </span>
+                  )}
+                </div>
                 <div className="flex flex-wrap items-center gap-2">
                   <ActionBtn
                     onClick={imprimir}
