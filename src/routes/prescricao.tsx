@@ -139,6 +139,41 @@ const SUGESTOES_POSOLOGIA = [
   "Tomar 1 comprimido, por via oral, de 8 em 8 horas por 7 dias.",
 ];
 
+function isCpfValid(digits: string): boolean {
+  if (digits.length !== 11) return false;
+  if (/^(\d)\1{10}$/.test(digits)) return false;
+  const calc = (len: number) => {
+    let sum = 0;
+    for (let i = 0; i < len; i++) sum += parseInt(digits[i], 10) * (len + 1 - i);
+    const r = (sum * 10) % 11;
+    return r === 10 ? 0 : r;
+  };
+  return calc(9) === parseInt(digits[9], 10) && calc(10) === parseInt(digits[10], 10);
+}
+
+function formatCpf(digits: string): string {
+  const d = digits.slice(0, 11);
+  const p1 = d.slice(0, 3);
+  const p2 = d.slice(3, 6);
+  const p3 = d.slice(6, 9);
+  const p4 = d.slice(9, 11);
+  let out = p1;
+  if (d.length > 3) out += "." + p2;
+  if (d.length > 6) out += "." + p3;
+  if (d.length > 9) out += "-" + p4;
+  return out;
+}
+
+function isEnderecoCompleto(endereco: string): boolean {
+  const s = endereco.trim();
+  if (s.length < 15) return false;
+  // exige um número e uma vírgula/traço separando partes
+  if (!/\d/.test(s)) return false;
+  if (!/[,\-]/.test(s)) return false;
+  return true;
+}
+
+
 function PrescricaoPage() {
   return (
     <div className="flex min-h-screen w-full bg-background text-foreground">
@@ -221,18 +256,30 @@ function PrescricaoForm() {
   const removeItem = (i: number) =>
     setItens((prev) => prev.filter((_, idx) => idx !== i));
 
+  const cpfDigits = cpf.replace(/\D/g, "");
+  const cpfValido = isCpfValid(cpfDigits);
+  const enderecoValido = isEnderecoCompleto(endereco);
+  const especialInvalido =
+    especial && (!cpfValido || !enderecoValido);
+  const podeEmitir =
+    paciente.trim().length > 0 && itens.length > 0 && !especialInvalido;
+
   const imprimir = () => {
     if (!paciente.trim()) return toast.error("Informe o paciente.");
     if (itens.length === 0) return toast.error("Adicione ao menos um medicamento.");
     if (especial) {
-      if (!cpf.trim()) return toast.error("CPF é obrigatório na receita especial.");
-      if (!endereco.trim())
-        return toast.error("Endereço é obrigatório na receita especial.");
+      if (!cpfValido)
+        return toast.error("Informe um CPF válido (11 dígitos) do paciente.");
+      if (!enderecoValido)
+        return toast.error(
+          "Informe o endereço completo do paciente (rua, número, bairro, cidade/UF).",
+        );
     }
     toast.success(
       especial ? "Receituário especial enviado para impressão." : "Receita enviada para impressão.",
     );
   };
+
 
   const salvarKit = () => {
     if (itens.length === 0) return toast.error("Adicione medicamentos para salvar um kit.");
@@ -365,9 +412,21 @@ function PrescricaoForm() {
                   />
                   Receita especial
                 </label>
-                <ActionBtn onClick={imprimir} icon={<Printer className="h-4 w-4" />}>
+                <ActionBtn
+                  onClick={imprimir}
+                  icon={<Printer className="h-4 w-4" />}
+                  disabled={!podeEmitir}
+                  title={
+                    !podeEmitir
+                      ? especial
+                        ? "Preencha CPF e endereço válidos para emitir."
+                        : "Informe paciente e adicione medicamentos."
+                      : undefined
+                  }
+                >
                   Imprimir
                 </ActionBtn>
+
                 <ActionBtn
                   onClick={salvarKit}
                   icon={<Save className="h-4 w-4" />}
@@ -392,20 +451,55 @@ function PrescricaoForm() {
 
             {especial && (
               <div className="grid gap-3 md:grid-cols-2">
-                <input
-                  value={cpf}
-                  onChange={(e) => setCpf(e.target.value)}
-                  placeholder="CPF do paciente"
-                  className="w-full rounded-xl border border-destructive/40 bg-background/40 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-destructive/40"
-                />
-                <input
-                  value={endereco}
-                  onChange={(e) => setEndereco(e.target.value)}
-                  placeholder="Endereço completo do paciente"
-                  className="w-full rounded-xl border border-destructive/40 bg-background/40 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-destructive/40"
-                />
+                <div className="space-y-1">
+                  <input
+                    value={cpf}
+                    onChange={(e) => setCpf(formatCpf(e.target.value.replace(/\D/g, "")))}
+                    inputMode="numeric"
+                    maxLength={14}
+                    placeholder="CPF do paciente (000.000.000-00)"
+                    aria-invalid={!cpfValido}
+                    className={`w-full rounded-xl border bg-background/40 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 ${
+                      cpfValido
+                        ? "border-emerald-500/40 focus:ring-emerald-500/40"
+                        : "border-destructive/50 focus:ring-destructive/40"
+                    }`}
+                  />
+                  <p
+                    className={`text-xs ${cpfValido ? "text-emerald-400" : "text-destructive"}`}
+                  >
+                    {cpfDigits.length === 0
+                      ? "Obrigatório — informe os 11 dígitos do CPF."
+                      : cpfDigits.length < 11
+                        ? `Faltam ${11 - cpfDigits.length} dígito(s).`
+                        : cpfValido
+                          ? "CPF válido."
+                          : "CPF inválido — confira os dígitos."}
+                  </p>
+                </div>
+                <div className="space-y-1">
+                  <input
+                    value={endereco}
+                    onChange={(e) => setEndereco(e.target.value)}
+                    placeholder="Rua, número, bairro, cidade/UF"
+                    aria-invalid={!enderecoValido}
+                    className={`w-full rounded-xl border bg-background/40 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 ${
+                      enderecoValido
+                        ? "border-emerald-500/40 focus:ring-emerald-500/40"
+                        : "border-destructive/50 focus:ring-destructive/40"
+                    }`}
+                  />
+                  <p
+                    className={`text-xs ${enderecoValido ? "text-emerald-400" : "text-destructive"}`}
+                  >
+                    {enderecoValido
+                      ? "Endereço completo."
+                      : "Obrigatório — inclua rua, número, bairro e cidade/UF."}
+                  </p>
+                </div>
               </div>
             )}
+
 
             <ul className="space-y-3">
               {itens.map((it, i) => (
@@ -451,11 +545,15 @@ function ActionBtn({
   icon,
   children,
   variant = "default",
+  disabled,
+  title,
 }: {
   onClick: () => void;
   icon: React.ReactNode;
   children: React.ReactNode;
   variant?: "default" | "primary";
+  disabled?: boolean;
+  title?: string;
 }) {
   const cls =
     variant === "primary"
@@ -464,13 +562,16 @@ function ActionBtn({
   return (
     <button
       onClick={onClick}
-      className={`inline-flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-sm font-medium transition-colors ${cls}`}
+      disabled={disabled}
+      title={title}
+      className={`inline-flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-sm font-medium transition-colors ${cls} disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-transparent`}
     >
       {icon}
       {children}
     </button>
   );
 }
+
 
 function PosologiaPanel({
   med,
