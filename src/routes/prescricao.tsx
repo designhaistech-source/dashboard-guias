@@ -19,7 +19,9 @@ import {
   History,
   RefreshCw,
   Trash2,
+  ChevronDown,
 } from "lucide-react";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { jsPDF } from "jspdf";
 import { toast } from "sonner";
 import { AppSidebar } from "@/components/app-sidebar";
@@ -1070,44 +1072,87 @@ function PrescricaoForm() {
         </div>
 
         <div className="space-y-2">
-          <div className="flex items-center justify-between gap-2">
-            <div className="text-sm text-muted-foreground">
-              Tipos de medicamentos
-              <span className="ml-2 text-[11px] text-muted-foreground/70">
-                {tipos.size === 0
-                  ? "nenhum selecionado"
-                  : `${tipos.size} de ${TIPOS.length}`}
-              </span>
-            </div>
-            <div className="flex items-center gap-1">
+          <label className="text-sm text-muted-foreground">Tipos de medicamentos</label>
+          <Popover>
+            <PopoverTrigger asChild>
               <button
                 type="button"
-                onClick={() => setTipos(new Set(TIPOS))}
-                className="text-[11px] px-2 py-1 rounded-md text-muted-foreground hover:text-foreground hover:bg-accent/40 transition"
+                className="w-full flex items-center justify-between gap-2 rounded-xl border border-border bg-background/40 px-3 py-2.5 text-sm hover:bg-accent/40 transition"
               >
-                Todos
+                <span className="flex items-center gap-2 min-w-0">
+                  <Settings2 className="h-4 w-4 text-muted-foreground shrink-0" />
+                  {tipos.size === 0 ? (
+                    <span className="text-muted-foreground">Nenhum tipo selecionado</span>
+                  ) : tipos.size === TIPOS.length ? (
+                    <span>Todos os tipos</span>
+                  ) : (
+                    <span className="truncate">
+                      {TIPOS.filter((t) => tipos.has(t)).join(", ")}
+                    </span>
+                  )}
+                </span>
+                <span className="flex items-center gap-2 shrink-0">
+                  <span className="text-[11px] text-muted-foreground">
+                    {tipos.size}/{TIPOS.length}
+                  </span>
+                  <ChevronDown className="h-4 w-4 text-muted-foreground" />
+                </span>
               </button>
-              <span className="text-muted-foreground/40 text-[11px]">·</span>
-              <button
-                type="button"
-                onClick={() => setTipos(new Set())}
-                className="text-[11px] px-2 py-1 rounded-md text-muted-foreground hover:text-foreground hover:bg-accent/40 transition"
-              >
-                Limpar
-              </button>
-            </div>
-          </div>
-          <div className="flex flex-wrap gap-1.5">
-            {TIPOS.map((t) => (
-              <TipoChip
-                key={t}
-                tipo={t}
-                active={tipos.has(t)}
-                onClick={() => toggleTipo(t)}
-              />
-            ))}
-          </div>
+            </PopoverTrigger>
+            <PopoverContent align="start" className="w-[--radix-popover-trigger-width] p-0">
+              <div className="flex items-center justify-between px-3 py-2 border-b border-border">
+                <span className="text-[11px] uppercase tracking-wide text-muted-foreground">
+                  Filtrar por tipo
+                </span>
+                <div className="flex items-center gap-1">
+                  <button
+                    type="button"
+                    onClick={() => setTipos(new Set(TIPOS))}
+                    className="text-[11px] px-2 py-1 rounded-md text-muted-foreground hover:text-foreground hover:bg-accent/40 transition"
+                  >
+                    Todos
+                  </button>
+                  <span className="text-muted-foreground/40 text-[11px]">·</span>
+                  <button
+                    type="button"
+                    onClick={() => setTipos(new Set())}
+                    className="text-[11px] px-2 py-1 rounded-md text-muted-foreground hover:text-foreground hover:bg-accent/40 transition"
+                  >
+                    Limpar
+                  </button>
+                </div>
+              </div>
+              <div className="max-h-72 overflow-y-auto py-1">
+                {TIPOS.map((t) => {
+                  const active = tipos.has(t);
+                  return (
+                    <button
+                      key={t}
+                      type="button"
+                      onClick={() => toggleTipo(t)}
+                      className="w-full flex items-center justify-between gap-2 px-3 py-2 text-sm text-left hover:bg-accent/40 transition"
+                    >
+                      <span className="flex items-center gap-2">
+                        <span
+                          className={`h-4 w-4 rounded border flex items-center justify-center transition ${
+                            active
+                              ? "bg-primary border-primary text-primary-foreground"
+                              : "border-border bg-background"
+                          }`}
+                        >
+                          {active && <Check className="h-3 w-3" />}
+                        </span>
+                        {t}
+                      </span>
+                      <TipoBadge tipo={t} />
+                    </button>
+                  );
+                })}
+              </div>
+            </PopoverContent>
+          </Popover>
         </div>
+
 
         <div className="space-y-2">
           <label className="text-sm text-muted-foreground" htmlFor="med-search">
