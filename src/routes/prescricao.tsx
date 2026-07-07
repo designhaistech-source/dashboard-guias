@@ -1001,11 +1001,18 @@ function PrescricaoForm() {
           <div className="p-5 space-y-4">
             <div className="sticky top-2 z-10 -mx-5 -mt-5 px-5 pt-5 pb-3 bg-card/95 backdrop-blur rounded-t-2xl">
               <div className="flex flex-wrap items-center justify-between gap-3">
-                <h3 className="text-sm font-semibold tracking-wide">
-                  {especial
-                    ? "RECEITUÁRIO CONTROLE ESPECIAL"
-                    : `Prescrição médica — ${itens.length} ${itens.length > 1 ? "medicamentos" : "medicamento"}`}
-                </h3>
+                <div className="flex items-center gap-3 min-w-0">
+                  <h3 className="text-sm font-semibold tracking-wide truncate">
+                    {especial
+                      ? "RECEITUÁRIO CONTROLE ESPECIAL"
+                      : `Prescrição médica — ${itens.length} ${itens.length > 1 ? "medicamentos" : "medicamento"}`}
+                  </h3>
+                  {savedAt && (
+                    <span className="text-[11px] text-muted-foreground shrink-0">
+                      · rascunho salvo às {fmtHora(savedAt)}
+                    </span>
+                  )}
+                </div>
                 <div className="flex flex-wrap items-center gap-2">
                   <ActionBtn
                     onClick={imprimir}
