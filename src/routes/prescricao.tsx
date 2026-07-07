@@ -175,6 +175,47 @@ function isEnderecoCompleto(endereco: string): boolean {
   return true;
 }
 
+const LS_PACIENTES = "hg:prescricao:pacientes-recentes";
+const LS_MEDS = "hg:prescricao:meds-recentes";
+
+function loadRecentes(key: string): string[] {
+  if (typeof window === "undefined") return [];
+  try {
+    const raw = window.localStorage.getItem(key);
+    if (!raw) return [];
+    const arr = JSON.parse(raw);
+    return Array.isArray(arr) ? arr.filter((x) => typeof x === "string") : [];
+  } catch {
+    return [];
+  }
+}
+
+function pushRecente(key: string, value: string, max = 8) {
+  if (typeof window === "undefined") return;
+  const v = value.trim();
+  if (!v) return;
+  const cur = loadRecentes(key).filter((x) => x.toLowerCase() !== v.toLowerCase());
+  cur.unshift(v);
+  window.localStorage.setItem(key, JSON.stringify(cur.slice(0, max)));
+}
+
+async function buscarCep(cep: string): Promise<string | null> {
+  const digits = cep.replace(/\D/g, "");
+  if (digits.length !== 8) return null;
+  try {
+    const r = await fetch(`https://viacep.com.br/ws/${digits}/json/`);
+    if (!r.ok) return null;
+    const j = await r.json();
+    if (j.erro) return null;
+    const partes = [j.logradouro, j.bairro, j.localidade && `${j.localidade}/${j.uf}`]
+      .filter(Boolean)
+      .join(", ");
+    return partes || null;
+  } catch {
+    return null;
+  }
+}
+
 
 function PrescricaoPage() {
   return (
