@@ -94,10 +94,10 @@ export function AppSidebar({ activeKey }: { activeKey: ItemKey }) {
           <SidebarGroup label="ATENDIMENTO CLÍNICO">
             <SidebarItem
               icon={Pill}
-              label="Prescrição médica"
+              label="Emitir prescrição"
               to="/prescricao"
               active={activeKey === "prescricao"}
-              hint="Crie e gerencie prescrições de medicamentos para seus pacientes."
+              hint="Emita prescrições médicas para os pacientes."
             />
 
             <SidebarItem
