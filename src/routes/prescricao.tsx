@@ -519,20 +519,49 @@ function PrescricaoForm() {
   const enderecoValido = isEnderecoCompleto(endereco);
   const especialInvalido =
     especial && (!cpfValido || !enderecoValido);
+  const posologiasInvalidas = itens
+    .map((it, i) => ({ i, med: it.med, check: checkPosologia(it.posologia) }))
+    .filter((x) => !x.check.ok);
   const podeEmitir =
-    paciente.trim().length > 0 && itens.length > 0 && !especialInvalido;
+    paciente.trim().length > 0 &&
+    itens.length > 0 &&
+    !especialInvalido &&
+    posologiasInvalidas.length === 0;
 
-  const imprimir = () => {
-    if (!paciente.trim()) return toast.error("Informe o paciente.");
-    if (itens.length === 0) return toast.error("Adicione ao menos um medicamento.");
+  const validarEmissao = (): boolean => {
+    if (!paciente.trim()) {
+      toast.error("Informe o paciente.");
+      return false;
+    }
+    if (itens.length === 0) {
+      toast.error("Adicione ao menos um medicamento.");
+      return false;
+    }
+    if (posologiasInvalidas.length > 0) {
+      const primeira = posologiasInvalidas[0];
+      toast.error(
+        `Posologia do item ${primeira.i + 1} (${primeira.med.nome.split(" ")[0]}) — ${primeira.check.mensagem}.`,
+      );
+      return false;
+    }
     if (especial) {
-      if (!cpfValido)
-        return toast.error("Informe um CPF válido (11 dígitos) do paciente.");
-      if (!enderecoValido)
-        return toast.error(
+      if (!cpfValido) {
+        toast.error("Informe um CPF válido (11 dígitos) do paciente.");
+        return false;
+      }
+      if (!enderecoValido) {
+        toast.error(
           "Informe o endereço completo do paciente (rua, número, bairro, cidade/UF).",
         );
+        return false;
+      }
     }
+    return true;
+  };
+
+  const imprimir = () => {
+    if (!validarEmissao()) return;
+
     pushRecente(LS_PACIENTES, paciente);
     setPacientesRecentes(loadRecentes(LS_PACIENTES));
     registrarHistorico("imprimir");
