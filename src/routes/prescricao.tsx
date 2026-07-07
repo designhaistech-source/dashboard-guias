@@ -510,6 +510,33 @@ function PrescricaoForm() {
   };
 
   const [dragIndex, setDragIndex] = useState<number | null>(null);
+  const [editingPosIdx, setEditingPosIdx] = useState<number | null>(null);
+  const [editingPosValue, setEditingPosValue] = useState("");
+
+  const startEditPos = (i: number) => {
+    setEditingPosIdx(i);
+    setEditingPosValue(itens[i]?.posologia ?? "");
+  };
+  const saveEditPos = () => {
+    if (editingPosIdx === null) return;
+    const check = checkPosologia(editingPosValue);
+    if (!check.ok) {
+      toast.error(`Posologia inválida — ${check.mensagem}.`);
+      return;
+    }
+    const idx = editingPosIdx;
+    setItens((prev) =>
+      prev.map((it, j) => (j === idx ? { ...it, posologia: editingPosValue.trim() } : it)),
+    );
+    setEditingPosIdx(null);
+    setEditingPosValue("");
+    toast.success("Posologia atualizada.");
+  };
+  const cancelEditPos = () => {
+    setEditingPosIdx(null);
+    setEditingPosValue("");
+  };
+
   const [overIndex, setOverIndex] = useState<number | null>(null);
 
 
