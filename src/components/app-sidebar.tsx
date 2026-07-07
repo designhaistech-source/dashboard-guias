@@ -44,11 +44,19 @@ export function AppSidebar({ activeKey }: { activeKey: ItemKey }) {
     <TooltipProvider delayDuration={150}>
       <aside className="hidden md:flex w-72 shrink-0 flex-col border-r border-sidebar-border bg-sidebar text-sidebar-foreground">
         <div className="flex items-center justify-center px-4 py-5 border-b border-sidebar-border min-w-0">
+        <div className="flex items-center justify-between gap-2 px-4 py-5 border-b border-sidebar-border min-w-0">
           <img
             src={logoAsset.url}
             alt="HaisGuias"
             className="block h-8 w-auto max-w-full object-contain"
           />
+          <button
+            type="button"
+            aria-label="Recolher menu"
+            className="shrink-0 p-1.5 rounded-md text-sidebar-muted hover:text-foreground hover:bg-muted transition-colors"
+          >
+            <PanelLeft className="h-4 w-4" />
+          </button>
         </div>
 
 
