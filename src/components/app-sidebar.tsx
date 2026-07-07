@@ -107,17 +107,6 @@ export function AppSidebar({ activeKey }: { activeKey: ItemKey }) {
               hint="Pesquise códigos da Classificação Internacional de Doenças (CID‑10/11)."
             />
           </SidebarGroup>
-
-          <div className="border-t border-sidebar-border pt-4">
-            <SidebarGroup label="AJUDA">
-              <SidebarItem
-                icon={HelpCircle}
-                label="Relatar Problema"
-                active={activeKey === "ajuda"}
-                hint="Envie um relato de erro ou sugestão para o time de suporte."
-              />
-            </SidebarGroup>
-          </div>
         </nav>
 
         <UserMenu />
@@ -191,6 +180,10 @@ function UserMenu() {
             <button className="w-full px-4 py-2 flex items-center gap-3 text-sm hover:bg-muted transition-colors">
               <Settings className="h-4 w-4" />
               Configurações
+            </button>
+            <button className="w-full px-4 py-2 flex items-center gap-3 text-sm hover:bg-muted transition-colors">
+              <HelpCircle className="h-4 w-4" />
+              <span className="flex-1 text-left">Ajuda</span>
             </button>
           </div>
           <div className="border-t border-border py-1">
