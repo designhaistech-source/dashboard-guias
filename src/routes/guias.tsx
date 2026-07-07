@@ -68,15 +68,14 @@ function Page() {
   return (
     <div className="flex min-h-screen w-full bg-background text-foreground">
       <AppSidebar activeKey="extrair" />
-      <main className="flex-1 px-8 py-8 flex flex-col min-h-screen">
-        <div className="w-full space-y-8 flex-1">
+      <main className="flex-1 flex flex-col min-h-screen">
+        <div className="w-full space-y-8 flex-1 px-8 pt-8 pb-16">
           <Upload_Section />
           <History_Section />
         </div>
-        <div className="mt-16">
-          <SiteFooter />
-        </div>
+        <SiteFooter />
       </main>
+
     </div>
   );
 }
