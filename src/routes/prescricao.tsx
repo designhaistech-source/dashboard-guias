@@ -990,15 +990,34 @@ function PrescricaoForm() {
           <span className="font-medium">Receituário de controle especial</span>
           <span className="text-xs text-muted-foreground">(exige CPF e endereço)</span>
         </label>
-        {itens.length > 0 && (
+        <div className="flex items-center gap-3">
           <button
-            onClick={scrollToReceita}
-            className="text-xs text-primary hover:underline"
+            onClick={() => setHistoricoAberto((v) => !v)}
+            className="inline-flex items-center gap-1.5 text-xs rounded-lg border border-border px-2.5 py-1.5 hover:bg-muted transition-colors"
           >
-            Ir para a receita ({itens.length})
+            <History className="h-3.5 w-3.5" />
+            Histórico {historico.length > 0 && `(${historico.length})`}
           </button>
-        )}
+          {itens.length > 0 && (
+            <button
+              onClick={scrollToReceita}
+              className="text-xs text-primary hover:underline"
+            >
+              Ir para a receita ({itens.length})
+            </button>
+          )}
+        </div>
       </div>
+
+      {historicoAberto && (
+        <HistoricoPanel
+          historico={historico}
+          onClose={() => setHistoricoAberto(false)}
+          onReutilizar={reutilizarHistorico}
+          onRemover={removerHistorico}
+          onLimpar={limparHistorico}
+        />
+      )}
 
       {/* Dados do paciente para receita especial */}
       {especial && (
