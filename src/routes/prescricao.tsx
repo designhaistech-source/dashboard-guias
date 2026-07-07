@@ -221,18 +221,30 @@ function PrescricaoForm() {
   const removeItem = (i: number) =>
     setItens((prev) => prev.filter((_, idx) => idx !== i));
 
+  const cpfDigits = cpf.replace(/\D/g, "");
+  const cpfValido = isCpfValid(cpfDigits);
+  const enderecoValido = isEnderecoCompleto(endereco);
+  const especialInvalido =
+    especial && (!cpfValido || !enderecoValido);
+  const podeEmitir =
+    paciente.trim().length > 0 && itens.length > 0 && !especialInvalido;
+
   const imprimir = () => {
     if (!paciente.trim()) return toast.error("Informe o paciente.");
     if (itens.length === 0) return toast.error("Adicione ao menos um medicamento.");
     if (especial) {
-      if (!cpf.trim()) return toast.error("CPF é obrigatório na receita especial.");
-      if (!endereco.trim())
-        return toast.error("Endereço é obrigatório na receita especial.");
+      if (!cpfValido)
+        return toast.error("Informe um CPF válido (11 dígitos) do paciente.");
+      if (!enderecoValido)
+        return toast.error(
+          "Informe o endereço completo do paciente (rua, número, bairro, cidade/UF).",
+        );
     }
     toast.success(
       especial ? "Receituário especial enviado para impressão." : "Receita enviada para impressão.",
     );
   };
+
 
   const salvarKit = () => {
     if (itens.length === 0) return toast.error("Adicione medicamentos para salvar um kit.");
