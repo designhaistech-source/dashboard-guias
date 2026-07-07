@@ -336,6 +336,21 @@ function PrescricaoForm() {
   const removeItem = (i: number) =>
     setItens((prev) => prev.filter((_, idx) => idx !== i));
 
+  const moveItem = (from: number, to: number) => {
+    setItens((prev) => {
+      if (to < 0 || to >= prev.length || from === to) return prev;
+      const next = prev.slice();
+      const [it] = next.splice(from, 1);
+      next.splice(to, 0, it);
+      return next;
+    });
+  };
+
+  const [dragIndex, setDragIndex] = useState<number | null>(null);
+  const [overIndex, setOverIndex] = useState<number | null>(null);
+
+
+
 
   const cpfValido = isCpfValid(cpfDigits);
   const enderecoValido = isEnderecoCompleto(endereco);
