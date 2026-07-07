@@ -184,6 +184,8 @@ function isEnderecoCompleto(endereco: string): boolean {
 const LS_PACIENTES = "hg:prescricao:pacientes-recentes";
 const LS_MEDS = "hg:prescricao:meds-recentes";
 const LS_DRAFT = "hg:prescricao:rascunho";
+const LS_HISTORICO = "hg:prescricao:historico";
+const HIST_MAX = 30;
 
 type Rascunho = {
   paciente: string;
@@ -194,6 +196,19 @@ type Rascunho = {
   especial: boolean;
   tipos: MedType[];
   savedAt: number;
+};
+
+type Historico = {
+  id: string;
+  emittedAt: number;
+  action: "imprimir" | "pdf";
+  paciente: string;
+  cpfDigits: string;
+  cepDigits: string;
+  endereco: string;
+  itens: ItemReceita[];
+  especial: boolean;
+  tipos: MedType[];
 };
 
 function loadRascunho(): Rascunho | null {
@@ -207,6 +222,23 @@ function loadRascunho(): Rascunho | null {
   } catch {
     return null;
   }
+}
+
+function loadHistorico(): Historico[] {
+  if (typeof window === "undefined") return [];
+  try {
+    const raw = window.localStorage.getItem(LS_HISTORICO);
+    if (!raw) return [];
+    const arr = JSON.parse(raw);
+    return Array.isArray(arr) ? (arr as Historico[]) : [];
+  } catch {
+    return [];
+  }
+}
+
+function saveHistorico(list: Historico[]) {
+  if (typeof window === "undefined") return;
+  window.localStorage.setItem(LS_HISTORICO, JSON.stringify(list.slice(0, HIST_MAX)));
 }
 
 function loadRecentes(key: string): string[] {
