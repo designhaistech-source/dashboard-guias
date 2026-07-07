@@ -455,12 +455,23 @@ function TipoCheckbox({
   );
 }
 
-function MedRow({ m }: { m: Medicamento }) {
+function MedRow({
+  m,
+  added,
+  onAdd,
+}: {
+  m: Medicamento;
+  added: boolean;
+  onAdd: () => void;
+}) {
   return (
     <button
       type="button"
-      className="w-full text-left px-4 py-3 hover:bg-muted/40 transition-colors"
+      onClick={onAdd}
+      className="w-full text-left px-4 py-3 hover:bg-muted/40 transition-colors flex items-start gap-3"
     >
+      <div className="flex-1 min-w-0">
+
       <div className="flex items-start gap-2 flex-wrap">
         <span className="font-semibold text-sm text-foreground">{m.nome}</span>
         {m.favorito && <span className="text-amber-400 text-sm leading-none">★</span>}
