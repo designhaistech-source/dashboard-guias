@@ -438,12 +438,6 @@ function Header() {
           </p>
         </div>
       </div>
-      <button
-        className="grid place-items-center h-9 w-9 rounded-lg border border-border hover:bg-muted transition-colors text-muted-foreground"
-        aria-label="Configurações da prescrição"
-      >
-        <Settings2 className="h-4 w-4" />
-      </button>
     </div>
   );
 }
