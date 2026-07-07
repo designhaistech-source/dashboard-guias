@@ -67,7 +67,7 @@ const rows: Row[] = [
 function Page() {
   return (
     <div className="flex min-h-screen w-full bg-background text-foreground">
-      <AppSidebar activeKey="guias" />
+      <AppSidebar activeKey="extrair" />
       <main className="flex-1 px-8 py-8 flex flex-col min-h-screen">
         <div className="w-full space-y-8">
           <Upload_Section />

@@ -83,13 +83,13 @@ export function AppSidebar({ activeKey }: { activeKey: ItemKey }) {
             <SidebarItem
               icon={FileCheck2}
               label="Extrair dados da guia"
+              to="/guias"
               active={activeKey === "extrair"}
               hint="Extraia automaticamente os dados de uma guia por meio de IA."
             />
             <SidebarItem
               icon={Files}
               label="Histórico de guias"
-              to="/guias"
               active={activeKey === "guias"}
               hint="Consulte o histórico e acompanhe o status das guias processadas."
             />
