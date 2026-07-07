@@ -969,17 +969,42 @@ function PrescricaoForm() {
         </div>
 
         <div className="space-y-2">
-          <div className="text-sm text-muted-foreground">Tipos de medicamentos</div>
-          <div className="flex flex-wrap gap-x-6 gap-y-2">
+          <div className="flex items-center justify-between gap-2">
+            <div className="text-sm text-muted-foreground">
+              Tipos de medicamentos
+              <span className="ml-2 text-[11px] text-muted-foreground/70">
+                {tipos.size === 0
+                  ? "nenhum selecionado"
+                  : `${tipos.size} de ${TIPOS.length}`}
+              </span>
+            </div>
+            <div className="flex items-center gap-1">
+              <button
+                type="button"
+                onClick={() => setTipos(new Set(TIPOS))}
+                className="text-[11px] px-2 py-1 rounded-md text-muted-foreground hover:text-foreground hover:bg-accent/40 transition"
+              >
+                Todos
+              </button>
+              <span className="text-muted-foreground/40 text-[11px]">·</span>
+              <button
+                type="button"
+                onClick={() => setTipos(new Set())}
+                className="text-[11px] px-2 py-1 rounded-md text-muted-foreground hover:text-foreground hover:bg-accent/40 transition"
+              >
+                Limpar
+              </button>
+            </div>
+          </div>
+          <div className="flex flex-wrap gap-1.5">
             {TIPOS.map((t) => (
-              <TipoCheckbox
+              <TipoChip
                 key={t}
-                label={t}
-                checked={tipos.has(t)}
-                onChange={() => toggleTipo(t)}
+                tipo={t}
+                active={tipos.has(t)}
+                onClick={() => toggleTipo(t)}
               />
             ))}
-            <TipoCheckbox label="Todos" checked={todos} onChange={toggleTodos} bold />
           </div>
         </div>
 
