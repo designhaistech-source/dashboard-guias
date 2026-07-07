@@ -43,7 +43,6 @@ export function AppSidebar({ activeKey }: { activeKey: ItemKey }) {
   return (
     <TooltipProvider delayDuration={150}>
       <aside className="hidden md:flex w-72 shrink-0 flex-col border-r border-sidebar-border bg-sidebar text-sidebar-foreground">
-        <div className="flex items-center justify-center px-4 py-5 border-b border-sidebar-border min-w-0">
         <div className="flex items-center justify-between gap-2 px-4 py-5 border-b border-sidebar-border min-w-0">
           <img
             src={logoAsset.url}
