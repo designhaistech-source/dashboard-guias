@@ -139,6 +139,41 @@ const SUGESTOES_POSOLOGIA = [
   "Tomar 1 comprimido, por via oral, de 8 em 8 horas por 7 dias.",
 ];
 
+function isCpfValid(digits: string): boolean {
+  if (digits.length !== 11) return false;
+  if (/^(\d)\1{10}$/.test(digits)) return false;
+  const calc = (len: number) => {
+    let sum = 0;
+    for (let i = 0; i < len; i++) sum += parseInt(digits[i], 10) * (len + 1 - i);
+    const r = (sum * 10) % 11;
+    return r === 10 ? 0 : r;
+  };
+  return calc(9) === parseInt(digits[9], 10) && calc(10) === parseInt(digits[10], 10);
+}
+
+function formatCpf(digits: string): string {
+  const d = digits.slice(0, 11);
+  const p1 = d.slice(0, 3);
+  const p2 = d.slice(3, 6);
+  const p3 = d.slice(6, 9);
+  const p4 = d.slice(9, 11);
+  let out = p1;
+  if (d.length > 3) out += "." + p2;
+  if (d.length > 6) out += "." + p3;
+  if (d.length > 9) out += "-" + p4;
+  return out;
+}
+
+function isEnderecoCompleto(endereco: string): boolean {
+  const s = endereco.trim();
+  if (s.length < 15) return false;
+  // exige um número e uma vírgula/traço separando partes
+  if (!/\d/.test(s)) return false;
+  if (!/[,\-]/.test(s)) return false;
+  return true;
+}
+
+
 function PrescricaoPage() {
   return (
     <div className="flex min-h-screen w-full bg-background text-foreground">
