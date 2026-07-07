@@ -350,6 +350,7 @@ function PrescricaoForm() {
   useEffect(() => {
     setPacientesRecentes(loadRecentes(LS_PACIENTES));
     setMedsRecentes(loadRecentes(LS_MEDS));
+    setHistorico(loadHistorico());
     const d = loadRascunho();
     if (d) {
       const temConteudo =
