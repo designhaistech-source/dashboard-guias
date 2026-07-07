@@ -1369,13 +1369,17 @@ function PosologiaPanel({
     }
   };
 
+  const check = checkPosologia(pos);
+
   const submit = () => {
-    if (!pos.trim()) {
-      toast.error("Informe a posologia.");
+    if (!check.ok) {
+      toast.error(`Posologia inválida — ${check.mensagem}.`);
+      taRef.current?.focus();
       return;
     }
     onAdd(pos.trim());
   };
+
 
   return (
     <div className="rounded-xl border border-primary/50 bg-primary/5 p-4 space-y-3">
