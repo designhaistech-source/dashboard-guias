@@ -181,6 +181,36 @@ function isEnderecoCompleto(endereco: string): boolean {
   return true;
 }
 
+// Valida a posologia: exige texto mínimo, quantidade (número) e intervalo/frequência.
+type PosologiaCheck = {
+  ok: boolean;
+  motivo?: "vazia" | "curta" | "sem-quantidade" | "sem-intervalo";
+  mensagem?: string;
+};
+const INTERVAL_RE =
+  /\b(hora|horas|hr|h\b|vez|vezes|x\/dia|x ao dia|ao dia|por dia|dia|dias|semana|semanas|mes|mês|meses|min|minutos|em em|de \d+ em \d+|contínuo|continuo|sos|s\/n)\b/i;
+
+function checkPosologia(pos: string): PosologiaCheck {
+  const s = pos.trim();
+  if (!s) return { ok: false, motivo: "vazia", mensagem: "posologia em branco" };
+  if (s.length < 12)
+    return { ok: false, motivo: "curta", mensagem: "posologia muito curta (mín. 12 caracteres)" };
+  if (!/\d/.test(s))
+    return {
+      ok: false,
+      motivo: "sem-quantidade",
+      mensagem: "falta a quantidade (ex.: 1 comprimido, 10 ml)",
+    };
+  if (!INTERVAL_RE.test(s))
+    return {
+      ok: false,
+      motivo: "sem-intervalo",
+      mensagem: "falta o intervalo/frequência (ex.: de 8 em 8 horas, 1x ao dia)",
+    };
+  return { ok: true };
+}
+
+
 const LS_PACIENTES = "hg:prescricao:pacientes-recentes";
 const LS_MEDS = "hg:prescricao:meds-recentes";
 const LS_DRAFT = "hg:prescricao:rascunho";
@@ -480,6 +510,33 @@ function PrescricaoForm() {
   };
 
   const [dragIndex, setDragIndex] = useState<number | null>(null);
+  const [editingPosIdx, setEditingPosIdx] = useState<number | null>(null);
+  const [editingPosValue, setEditingPosValue] = useState("");
+
+  const startEditPos = (i: number) => {
+    setEditingPosIdx(i);
+    setEditingPosValue(itens[i]?.posologia ?? "");
+  };
+  const saveEditPos = () => {
+    if (editingPosIdx === null) return;
+    const check = checkPosologia(editingPosValue);
+    if (!check.ok) {
+      toast.error(`Posologia inválida — ${check.mensagem}.`);
+      return;
+    }
+    const idx = editingPosIdx;
+    setItens((prev) =>
+      prev.map((it, j) => (j === idx ? { ...it, posologia: editingPosValue.trim() } : it)),
+    );
+    setEditingPosIdx(null);
+    setEditingPosValue("");
+    toast.success("Posologia atualizada.");
+  };
+  const cancelEditPos = () => {
+    setEditingPosIdx(null);
+    setEditingPosValue("");
+  };
+
   const [overIndex, setOverIndex] = useState<number | null>(null);
 
 
@@ -489,20 +546,49 @@ function PrescricaoForm() {
   const enderecoValido = isEnderecoCompleto(endereco);
   const especialInvalido =
     especial && (!cpfValido || !enderecoValido);
+  const posologiasInvalidas = itens
+    .map((it, i) => ({ i, med: it.med, check: checkPosologia(it.posologia) }))
+    .filter((x) => !x.check.ok);
   const podeEmitir =
-    paciente.trim().length > 0 && itens.length > 0 && !especialInvalido;
+    paciente.trim().length > 0 &&
+    itens.length > 0 &&
+    !especialInvalido &&
+    posologiasInvalidas.length === 0;
 
-  const imprimir = () => {
-    if (!paciente.trim()) return toast.error("Informe o paciente.");
-    if (itens.length === 0) return toast.error("Adicione ao menos um medicamento.");
+  const validarEmissao = (): boolean => {
+    if (!paciente.trim()) {
+      toast.error("Informe o paciente.");
+      return false;
+    }
+    if (itens.length === 0) {
+      toast.error("Adicione ao menos um medicamento.");
+      return false;
+    }
+    if (posologiasInvalidas.length > 0) {
+      const primeira = posologiasInvalidas[0];
+      toast.error(
+        `Posologia do item ${primeira.i + 1} (${primeira.med.nome.split(" ")[0]}) — ${primeira.check.mensagem}.`,
+      );
+      return false;
+    }
     if (especial) {
-      if (!cpfValido)
-        return toast.error("Informe um CPF válido (11 dígitos) do paciente.");
-      if (!enderecoValido)
-        return toast.error(
+      if (!cpfValido) {
+        toast.error("Informe um CPF válido (11 dígitos) do paciente.");
+        return false;
+      }
+      if (!enderecoValido) {
+        toast.error(
           "Informe o endereço completo do paciente (rua, número, bairro, cidade/UF).",
         );
+        return false;
+      }
     }
+    return true;
+  };
+
+  const imprimir = () => {
+    if (!validarEmissao()) return;
+
     pushRecente(LS_PACIENTES, paciente);
     setPacientesRecentes(loadRecentes(LS_PACIENTES));
     registrarHistorico("imprimir");
@@ -561,16 +647,9 @@ function PrescricaoForm() {
 
 
   const baixarPdf = () => {
-    if (!paciente.trim()) return toast.error("Informe o paciente.");
-    if (itens.length === 0) return toast.error("Adicione ao menos um medicamento.");
-    if (especial) {
-      if (!cpfValido)
-        return toast.error("Informe um CPF válido (11 dígitos) do paciente.");
-      if (!enderecoValido)
-        return toast.error(
-          "Informe o endereço completo do paciente (rua, número, bairro, cidade/UF).",
-        );
-    }
+    if (!validarEmissao()) return;
+
+
 
     const doc = new jsPDF({ unit: "mm", format: "a4" });
     const pageW = doc.internal.pageSize.getWidth();
@@ -739,6 +818,16 @@ function PrescricaoForm() {
         focus: () => focusEl(enderecoRef.current),
       });
   }
+  posologiasInvalidas.forEach(({ i, med, check }) => {
+    pendencias.push({
+      msg: `Posologia do item ${i + 1} (${med.nome.split(" ")[0]}) — ${check.mensagem}`,
+      focus: () => {
+        const el = document.getElementById(`item-receita-${i}`);
+        focusEl(el);
+      },
+    });
+  });
+
 
   // Atalhos globais: Ctrl/Cmd+P imprimir, Ctrl/Cmd+S salvar kit, "/" foca busca
   useEffect(() => {
@@ -1169,10 +1258,14 @@ function PrescricaoForm() {
               {itens.map((it, i) => {
                 const isDragging = dragIndex === i;
                 const isOver = overIndex === i && dragIndex !== null && dragIndex !== i;
+                const posCheck = checkPosologia(it.posologia);
+                const isEditing = editingPosIdx === i;
+                const editCheck = isEditing ? checkPosologia(editingPosValue) : null;
                 return (
                   <li
+                    id={`item-receita-${i}`}
                     key={i}
-                    draggable
+                    draggable={!isEditing}
                     onDragStart={(e) => {
                       setDragIndex(i);
                       e.dataTransfer.effectAllowed = "move";
@@ -1197,8 +1290,14 @@ function PrescricaoForm() {
                       setOverIndex(null);
                     }}
                     className={`rounded-xl border bg-background/40 p-4 transition-all ${
-                      isDragging ? "opacity-40 border-primary/60" : "border-border/70"
-                    } ${isOver ? "ring-2 ring-primary/60 border-primary/60" : ""}`}
+                      isDragging ? "opacity-40 border-primary/60" : ""
+                    } ${
+                      isOver
+                        ? "ring-2 ring-primary/60 border-primary/60"
+                        : posCheck.ok
+                          ? "border-border/70"
+                          : "border-destructive/60 bg-destructive/5"
+                    }`}
                   >
                     <div className="flex items-start gap-2">
                       <button
@@ -1219,11 +1318,73 @@ function PrescricaoForm() {
                           {it.med.principios} | {it.med.fabricante} | {it.med.forma} |{" "}
                           {it.med.tipo}
                         </div>
-                        <div className="mt-1 flex items-start gap-2 text-sm text-foreground/90">
-                          <Link2 className="h-3.5 w-3.5 mt-0.5 text-primary shrink-0" />
-                          <span>{it.posologia}</span>
-                        </div>
+                        {isEditing ? (
+                          <div className="mt-2 space-y-1.5">
+                            <textarea
+                              value={editingPosValue}
+                              onChange={(e) => setEditingPosValue(e.target.value)}
+                              rows={2}
+                              autoFocus
+                              className={`w-full rounded-lg border bg-background px-2.5 py-2 text-sm focus:outline-none focus:ring-2 ${
+                                editCheck?.ok
+                                  ? "border-emerald-500/40 focus:ring-emerald-500/40"
+                                  : "border-destructive/50 focus:ring-destructive/40"
+                              }`}
+                            />
+                            {editCheck && !editCheck.ok && (
+                              <div className="text-[11px] text-destructive">
+                                ⚠ {editCheck.mensagem}
+                              </div>
+                            )}
+                            <div className="flex items-center gap-2">
+                              <button
+                                onClick={saveEditPos}
+                                disabled={!editCheck?.ok}
+                                className="rounded-lg bg-primary text-primary-foreground px-3 py-1 text-xs font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
+                              >
+                                Salvar
+                              </button>
+                              <button
+                                onClick={cancelEditPos}
+                                className="rounded-lg border border-border px-3 py-1 text-xs hover:bg-muted"
+                              >
+                                Cancelar
+                              </button>
+                            </div>
+                          </div>
+                        ) : (
+                          <>
+                            <div className="mt-1 flex items-start gap-2 text-sm text-foreground/90">
+                              <Link2
+                                className={`h-3.5 w-3.5 mt-0.5 shrink-0 ${
+                                  posCheck.ok ? "text-primary" : "text-destructive"
+                                }`}
+                              />
+                              <span>{it.posologia || <em className="text-muted-foreground">sem posologia</em>}</span>
+                            </div>
+                            {!posCheck.ok && (
+                              <div className="text-[11px] text-destructive flex items-center gap-2">
+                                <span>⚠ {posCheck.mensagem}</span>
+                                <button
+                                  onClick={() => startEditPos(i)}
+                                  className="underline hover:no-underline font-medium"
+                                >
+                                  Editar posologia
+                                </button>
+                              </div>
+                            )}
+                            {posCheck.ok && (
+                              <button
+                                onClick={() => startEditPos(i)}
+                                className="text-[11px] text-muted-foreground hover:text-primary hover:underline"
+                              >
+                                Editar posologia
+                              </button>
+                            )}
+                          </>
+                        )}
                       </div>
+
                       <div className="flex flex-col gap-1 shrink-0">
                         <button
                           onClick={() => moveItem(i, i - 1)}
@@ -1339,13 +1500,17 @@ function PosologiaPanel({
     }
   };
 
+  const check = checkPosologia(pos);
+
   const submit = () => {
-    if (!pos.trim()) {
-      toast.error("Informe a posologia.");
+    if (!check.ok) {
+      toast.error(`Posologia inválida — ${check.mensagem}.`);
+      taRef.current?.focus();
       return;
     }
     onAdd(pos.trim());
   };
+
 
   return (
     <div className="rounded-xl border border-primary/50 bg-primary/5 p-4 space-y-3">
@@ -1400,10 +1565,18 @@ function PosologiaPanel({
         <Kbd>Shift</Kbd>+<Kbd>Enter</Kbd> <span className="mx-1">quebra linha</span>
       </div>
 
+      {pos.trim() && !check.ok && (
+        <div className="text-xs text-destructive">
+          ⚠ {check.mensagem}. Ex.: "Tomar 1 comprimido de 8 em 8 horas por 5 dias."
+        </div>
+      )}
+
       <div className="flex items-center gap-2 pt-1">
         <button
           onClick={submit}
-          className="inline-flex items-center gap-1.5 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground hover:bg-primary/90"
+          disabled={!check.ok}
+          className="inline-flex items-center gap-1.5 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed"
+          title={!check.ok ? check.mensagem : undefined}
         >
           <Plus className="h-4 w-4" />
           Adicionar à receita
