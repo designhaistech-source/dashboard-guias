@@ -12,7 +12,9 @@ import {
   Save,
   FolderCog,
   Link2,
+  Download,
 } from "lucide-react";
+import { jsPDF } from "jspdf";
 import { toast } from "sonner";
 import { AppSidebar } from "@/components/app-sidebar";
 import { SiteFooter } from "@/components/site-footer";
@@ -279,6 +281,142 @@ function PrescricaoForm() {
     );
   };
 
+  const baixarPdf = () => {
+    if (!paciente.trim()) return toast.error("Informe o paciente.");
+    if (itens.length === 0) return toast.error("Adicione ao menos um medicamento.");
+    if (especial) {
+      if (!cpfValido)
+        return toast.error("Informe um CPF válido (11 dígitos) do paciente.");
+      if (!enderecoValido)
+        return toast.error(
+          "Informe o endereço completo do paciente (rua, número, bairro, cidade/UF).",
+        );
+    }
+
+    const doc = new jsPDF({ unit: "mm", format: "a4" });
+    const pageW = doc.internal.pageSize.getWidth();
+    const pageH = doc.internal.pageSize.getHeight();
+    const margin = 15;
+    const maxW = pageW - margin * 2;
+    let y = margin;
+
+    // Tarja vermelha para receita especial
+    if (especial) {
+      doc.setFillColor(220, 38, 38);
+      doc.rect(0, 0, pageW, 6, "F");
+      y = 14;
+    }
+
+    // Cabeçalho
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(14);
+    doc.setTextColor(20, 20, 20);
+    doc.text(
+      especial ? "RECEITUÁRIO DE CONTROLE ESPECIAL" : "PRESCRIÇÃO MÉDICA",
+      pageW / 2,
+      y,
+      { align: "center" },
+    );
+    y += 8;
+
+    doc.setDrawColor(200);
+    doc.line(margin, y, pageW - margin, y);
+    y += 6;
+
+    // Paciente
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(10);
+    doc.text("Paciente:", margin, y);
+    doc.setFont("helvetica", "normal");
+    doc.text(paciente.trim(), margin + 22, y);
+    y += 6;
+
+    if (especial) {
+      doc.setFont("helvetica", "bold");
+      doc.text("CPF:", margin, y);
+      doc.setFont("helvetica", "normal");
+      doc.text(formatCpf(cpfDigits), margin + 22, y);
+      y += 6;
+
+      doc.setFont("helvetica", "bold");
+      doc.text("Endereço:", margin, y);
+      doc.setFont("helvetica", "normal");
+      const endLines = doc.splitTextToSize(endereco.trim(), maxW - 22);
+      doc.text(endLines, margin + 22, y);
+      y += endLines.length * 5 + 2;
+    }
+
+    y += 2;
+    doc.line(margin, y, pageW - margin, y);
+    y += 6;
+
+    // Itens
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(11);
+    doc.text("Medicamentos", margin, y);
+    y += 6;
+
+    itens.forEach((it, idx) => {
+      const bloco: string[] = [];
+      bloco.push(`${idx + 1}. ${it.med.nome}`);
+      if (it.med.forma) bloco.push(`   ${it.med.forma}`);
+      if (it.med.principios) bloco.push(`   Princípio ativo: ${it.med.principios}`);
+      const posLinhas = it.posologia.trim()
+        ? doc.splitTextToSize(`   Posologia: ${it.posologia.trim()}`, maxW)
+        : ["   Posologia: —"];
+
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(10);
+      const wrapped: string[] = [];
+      bloco.forEach((line) => {
+        wrapped.push(...doc.splitTextToSize(line, maxW));
+      });
+
+      // Estimativa de altura para nova página
+      const alturaEstim = (wrapped.length + posLinhas.length) * 5 + 4;
+      if (y + alturaEstim > pageH - margin - 30) {
+        doc.addPage();
+        y = margin;
+      }
+
+      doc.setFont("helvetica", "bold");
+      doc.text(wrapped[0], margin, y);
+      y += 5;
+      doc.setFont("helvetica", "normal");
+      for (let i = 1; i < wrapped.length; i++) {
+        doc.text(wrapped[i], margin, y);
+        y += 5;
+      }
+      doc.text(posLinhas, margin, y);
+      y += posLinhas.length * 5 + 3;
+    });
+
+    // Assinatura
+    const assY = Math.max(y + 20, pageH - margin - 25);
+    doc.setDrawColor(120);
+    doc.line(margin + 30, assY, pageW - margin - 30, assY);
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(9);
+    doc.text("Assinatura e carimbo do médico", pageW / 2, assY + 5, {
+      align: "center",
+    });
+
+    const dataEmissao = new Date().toLocaleDateString("pt-BR");
+    doc.text(`Emitido em ${dataEmissao}`, pageW - margin, pageH - margin, {
+      align: "right",
+    });
+
+    const slugPaciente = paciente
+      .trim()
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/(^-|-$)/g, "");
+    const nome = `${especial ? "receita-especial" : "prescricao"}-${slugPaciente || "paciente"}.pdf`;
+    doc.save(nome);
+    toast.success("PDF gerado.");
+  };
 
   const salvarKit = () => {
     if (itens.length === 0) return toast.error("Adicione medicamentos para salvar um kit.");
@@ -424,6 +562,20 @@ function PrescricaoForm() {
                   }
                 >
                   Imprimir
+                </ActionBtn>
+                <ActionBtn
+                  onClick={baixarPdf}
+                  icon={<Download className="h-4 w-4" />}
+                  disabled={!podeEmitir}
+                  title={
+                    !podeEmitir
+                      ? especial
+                        ? "Preencha CPF e endereço válidos para baixar."
+                        : "Informe paciente e adicione medicamentos."
+                      : undefined
+                  }
+                >
+                  Baixar PDF
                 </ActionBtn>
 
                 <ActionBtn
