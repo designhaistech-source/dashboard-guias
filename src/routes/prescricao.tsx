@@ -423,10 +423,47 @@ function PrescricaoForm() {
     toast.success("Kit salvo.");
   };
 
+  const pendencias: string[] = [];
+  if (!paciente.trim()) pendencias.push("Nome do paciente");
+  if (itens.length === 0) pendencias.push("Ao menos um medicamento na receita");
+  if (especial) {
+    if (cpfDigits.length === 0) pendencias.push("CPF do paciente (obrigatório em receita especial)");
+    else if (cpfDigits.length < 11) pendencias.push(`CPF incompleto — faltam ${11 - cpfDigits.length} dígito(s)`);
+    else if (!cpfValido) pendencias.push("CPF inválido — confira o dígito verificador");
+    if (!enderecoValido)
+      pendencias.push("Endereço completo do paciente (rua, número, bairro, cidade/UF)");
+  }
+
   return (
     <div className="space-y-5 pb-8">
+      {pendencias.length > 0 && (
+        <div
+          role="alert"
+          className="rounded-2xl border border-destructive/50 bg-destructive/10 p-4"
+        >
+          <div className="flex items-start gap-3">
+            <div className="mt-0.5 grid place-items-center h-6 w-6 rounded-full bg-destructive text-destructive-foreground text-xs font-bold">
+              !
+            </div>
+            <div className="flex-1 space-y-1">
+              <div className="text-sm font-semibold text-destructive">
+                {especial
+                  ? "Complete os campos abaixo para emitir a receita especial:"
+                  : "Complete os campos abaixo para emitir a receita:"}
+              </div>
+              <ul className="list-disc pl-5 text-sm text-foreground/85 space-y-0.5">
+                {pendencias.map((p) => (
+                  <li key={p}>{p}</li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Paciente */}
       <div className="rounded-2xl border border-border bg-card p-5 space-y-4">
+
         <div className="space-y-2">
           <label className="text-sm text-muted-foreground">Paciente</label>
           <div className="relative">
