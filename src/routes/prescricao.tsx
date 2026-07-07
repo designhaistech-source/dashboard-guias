@@ -215,7 +215,7 @@ function Header() {
 
 function PrescricaoForm() {
   const [paciente, setPaciente] = useState("");
-  const [cpf, setCpf] = useState("");
+  const [cpfDigits, setCpfDigits] = useState("");
   const [endereco, setEndereco] = useState("");
   const [query, setQuery] = useState("");
   const [tipos, setTipos] = useState<Set<MedType>>(
