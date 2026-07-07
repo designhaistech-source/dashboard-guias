@@ -95,9 +95,11 @@ export function AppSidebar({ activeKey }: { activeKey: ItemKey }) {
             <SidebarItem
               icon={Pill}
               label="Prescrição médica"
+              to="/prescricao"
               active={activeKey === "prescricao"}
               hint="Crie e gerencie prescrições de medicamentos para seus pacientes."
             />
+
             <SidebarItem
               icon={ScanLine}
               label="Buscar CID"
