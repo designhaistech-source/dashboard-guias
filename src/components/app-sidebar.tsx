@@ -156,19 +156,23 @@ function UserMenu() {
   }, [open]);
 
   return (
-    <div ref={ref} className="relative border-t border-sidebar-border">
+    <div ref={ref} className="relative border-t border-sidebar-border flex items-center">
       <button
         onClick={() => setOpen((v) => !v)}
-        className="w-full px-4 py-4 flex items-center gap-3 hover:bg-muted transition-colors text-left"
+        className="flex-1 min-w-0 px-4 py-4 flex items-center gap-3 hover:bg-muted transition-colors text-left"
       >
         <CircleUser className="h-9 w-9 text-sidebar-muted shrink-0" strokeWidth={1.5} />
         <div className="flex-1 min-w-0">
           <div className="text-sm font-semibold truncate">Dr Fulano</div>
           <div className="text-xs text-sidebar-muted">CRM 1234/RN</div>
         </div>
-        <ChevronDown
-          className={`h-4 w-4 text-sidebar-muted transition-transform ${open ? "rotate-180" : ""}`}
-        />
+      </button>
+      <button
+        type="button"
+        aria-label="Sair"
+        className="shrink-0 mr-3 p-2 rounded-md text-sidebar-muted hover:text-destructive hover:bg-muted transition-colors"
+      >
+        <LogOut className="h-4 w-4" />
       </button>
 
       {open && (
