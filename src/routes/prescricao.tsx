@@ -563,6 +563,20 @@ function PrescricaoForm() {
                 >
                   Imprimir
                 </ActionBtn>
+                <ActionBtn
+                  onClick={baixarPdf}
+                  icon={<Download className="h-4 w-4" />}
+                  disabled={!podeEmitir}
+                  title={
+                    !podeEmitir
+                      ? especial
+                        ? "Preencha CPF e endereço válidos para baixar."
+                        : "Informe paciente e adicione medicamentos."
+                      : undefined
+                  }
+                >
+                  Baixar PDF
+                </ActionBtn>
 
                 <ActionBtn
                   onClick={salvarKit}
