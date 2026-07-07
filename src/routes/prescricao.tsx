@@ -452,8 +452,14 @@ function PrescricaoForm() {
               <div className="grid gap-3 md:grid-cols-2">
                 <div className="space-y-1">
                   <input
-                    value={cpf}
-                    onChange={(e) => setCpf(formatCpf(e.target.value.replace(/\D/g, "")))}
+                    value={formatCpf(cpfDigits)}
+                    onChange={(e) => setCpfDigits(e.target.value.replace(/\D/g, "").slice(0, 11))}
+                    onPaste={(e) => {
+                      e.preventDefault();
+                      const text = e.clipboardData.getData("text").replace(/\D/g, "").slice(0, 11);
+                      setCpfDigits(text);
+                    }}
+                    autoComplete="off"
                     inputMode="numeric"
                     maxLength={14}
                     placeholder="CPF do paciente (000.000.000-00)"
