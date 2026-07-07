@@ -791,6 +791,16 @@ function PrescricaoForm() {
         focus: () => focusEl(enderecoRef.current),
       });
   }
+  posologiasInvalidas.forEach(({ i, med, check }) => {
+    pendencias.push({
+      msg: `Posologia do item ${i + 1} (${med.nome.split(" ")[0]}) — ${check.mensagem}`,
+      focus: () => {
+        const el = document.getElementById(`item-receita-${i}`);
+        focusEl(el);
+      },
+    });
+  });
+
 
   // Atalhos globais: Ctrl/Cmd+P imprimir, Ctrl/Cmd+S salvar kit, "/" foca busca
   useEffect(() => {
