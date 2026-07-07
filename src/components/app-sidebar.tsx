@@ -181,6 +181,10 @@ function UserMenu() {
               <Settings className="h-4 w-4" />
               Configurações
             </button>
+            <button className="w-full px-4 py-2 flex items-center gap-3 text-sm hover:bg-muted transition-colors">
+              <HelpCircle className="h-4 w-4" />
+              <span className="flex-1 text-left">Ajuda</span>
+            </button>
           </div>
           <div className="border-t border-border py-1">
             <button className="w-full px-4 py-2 flex items-center gap-3 text-sm text-destructive hover:bg-muted transition-colors">
