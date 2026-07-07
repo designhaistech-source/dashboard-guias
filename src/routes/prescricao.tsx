@@ -259,6 +259,8 @@ function Header() {
 function PrescricaoForm() {
   const [paciente, setPaciente] = useState("");
   const [cpfDigits, setCpfDigits] = useState("");
+  const [cepDigits, setCepDigits] = useState("");
+  const [cepLoading, setCepLoading] = useState(false);
   const [endereco, setEndereco] = useState("");
   const [query, setQuery] = useState("");
   const [tipos, setTipos] = useState<Set<MedType>>(
@@ -267,6 +269,23 @@ function PrescricaoForm() {
   const [itens, setItens] = useState<ItemReceita[]>([]);
   const [especial, setEspecial] = useState(false);
   const [editing, setEditing] = useState<Medicamento | null>(null);
+  const [highlight, setHighlight] = useState(0);
+  const [pacientesRecentes, setPacientesRecentes] = useState<string[]>([]);
+  const [medsRecentes, setMedsRecentes] = useState<string[]>([]);
+
+  const pacienteRef = useRef<HTMLInputElement>(null);
+  const searchRef = useRef<HTMLInputElement>(null);
+  const cpfRef = useRef<HTMLInputElement>(null);
+  const enderecoRef = useRef<HTMLInputElement>(null);
+  const receitaRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    setPacientesRecentes(loadRecentes(LS_PACIENTES));
+    setMedsRecentes(loadRecentes(LS_MEDS));
+    pacienteRef.current?.focus();
+  }, []);
+
+
 
   const todos = tipos.size === TIPOS.length;
   const toggleTipo = (t: MedType) =>
