@@ -502,16 +502,83 @@ function PrescricaoForm() {
     toast.success("Kit salvo.");
   };
 
-  const pendencias: string[] = [];
-  if (!paciente.trim()) pendencias.push("Nome do paciente");
-  if (itens.length === 0) pendencias.push("Ao menos um medicamento na receita");
+  type Pend = { msg: string; focus?: () => void };
+  const focusEl = (el: HTMLElement | null) => {
+    if (!el) return;
+    el.scrollIntoView({ behavior: "smooth", block: "center" });
+    setTimeout(() => (el as HTMLInputElement).focus?.(), 300);
+  };
+  const scrollToReceita = () =>
+    receitaRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+
+  const pendencias: Pend[] = [];
+  if (!paciente.trim())
+    pendencias.push({ msg: "Nome do paciente", focus: () => focusEl(pacienteRef.current) });
+  if (itens.length === 0)
+    pendencias.push({
+      msg: "Ao menos um medicamento na receita",
+      focus: () => focusEl(searchRef.current),
+    });
   if (especial) {
-    if (cpfDigits.length === 0) pendencias.push("CPF do paciente (obrigatório em receita especial)");
-    else if (cpfDigits.length < 11) pendencias.push(`CPF incompleto — faltam ${11 - cpfDigits.length} dígito(s)`);
-    else if (!cpfValido) pendencias.push("CPF inválido — confira o dígito verificador");
+    const focusCpf = () => focusEl(cpfRef.current);
+    if (cpfDigits.length === 0)
+      pendencias.push({ msg: "CPF do paciente (obrigatório em receita especial)", focus: focusCpf });
+    else if (cpfDigits.length < 11)
+      pendencias.push({
+        msg: `CPF incompleto — faltam ${11 - cpfDigits.length} dígito(s)`,
+        focus: focusCpf,
+      });
+    else if (!cpfValido)
+      pendencias.push({ msg: "CPF inválido — confira o dígito verificador", focus: focusCpf });
     if (!enderecoValido)
-      pendencias.push("Endereço completo do paciente (rua, número, bairro, cidade/UF)");
+      pendencias.push({
+        msg: "Endereço completo do paciente (rua, número, bairro, cidade/UF)",
+        focus: () => focusEl(enderecoRef.current),
+      });
   }
+
+  // Atalhos globais: Ctrl/Cmd+P imprimir, Ctrl/Cmd+S salvar kit, "/" foca busca
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      const meta = e.ctrlKey || e.metaKey;
+      const tag = (e.target as HTMLElement | null)?.tagName;
+      const digitando = tag === "INPUT" || tag === "TEXTAREA";
+      if (meta && e.key.toLowerCase() === "p") {
+        e.preventDefault();
+        imprimir();
+      } else if (meta && e.key.toLowerCase() === "s") {
+        e.preventDefault();
+        salvarKit();
+      } else if (e.key === "/" && !digitando) {
+        e.preventDefault();
+        searchRef.current?.focus();
+      }
+    };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  });
+
+  // Auto-preenchimento de endereço por CEP
+  const onCepChange = async (raw: string) => {
+    const d = raw.replace(/\D/g, "").slice(0, 8);
+    setCepDigits(d);
+    if (d.length === 8) {
+      setCepLoading(true);
+      const end = await buscarCep(d);
+      setCepLoading(false);
+      if (end) {
+        setEndereco((cur) => {
+          // Se o usuário já digitou número após a rua, preserva; senão substitui
+          if (!cur.trim() || cur.trim().length < end.length) return end + ", ";
+          return cur;
+        });
+        toast.success("Endereço preenchido pelo CEP.");
+        setTimeout(() => enderecoRef.current?.focus(), 50);
+      } else {
+        toast.error("CEP não encontrado.");
+      }
+    }
+  };
 
   return (
     <div className="space-y-5 pb-8">
@@ -521,18 +588,26 @@ function PrescricaoForm() {
           className="rounded-2xl border border-destructive/50 bg-destructive/10 p-4"
         >
           <div className="flex items-start gap-3">
-            <div className="mt-0.5 grid place-items-center h-6 w-6 rounded-full bg-destructive text-destructive-foreground text-xs font-bold">
+            <div className="mt-0.5 grid place-items-center h-6 w-6 rounded-full bg-destructive text-destructive-foreground text-xs font-bold shrink-0">
               !
             </div>
-            <div className="flex-1 space-y-1">
+            <div className="flex-1 space-y-1 min-w-0">
               <div className="text-sm font-semibold text-destructive">
                 {especial
                   ? "Complete os campos abaixo para emitir a receita especial:"
                   : "Complete os campos abaixo para emitir a receita:"}
               </div>
-              <ul className="list-disc pl-5 text-sm text-foreground/85 space-y-0.5">
+              <ul className="pl-1 text-sm text-foreground/85 space-y-0.5">
                 {pendencias.map((p) => (
-                  <li key={p}>{p}</li>
+                  <li key={p.msg}>
+                    <button
+                      type="button"
+                      onClick={p.focus}
+                      className="text-left underline-offset-2 hover:underline hover:text-destructive transition-colors"
+                    >
+                      → {p.msg}
+                    </button>
+                  </li>
                 ))}
               </ul>
             </div>
@@ -544,24 +619,33 @@ function PrescricaoForm() {
       <div className="rounded-2xl border border-border bg-card p-5 space-y-4">
 
         <div className="space-y-2">
-          <label className="text-sm text-muted-foreground">Paciente</label>
+          <label className="text-sm text-muted-foreground" htmlFor="paciente-input">
+            Paciente
+          </label>
           <div className="relative">
             <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <input
+              id="paciente-input"
+              ref={pacienteRef}
               type="text"
+              list="pacientes-recentes"
               value={paciente}
               onChange={(e) => setPaciente(e.target.value)}
               placeholder="Digite o nome do beneficiário..."
+              autoComplete="off"
               className="w-full rounded-xl border border-border bg-background/40 pl-10 pr-3 py-3 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/40"
             />
+            <datalist id="pacientes-recentes">
+              {pacientesRecentes.map((n) => (
+                <option key={n} value={n} />
+              ))}
+            </datalist>
           </div>
-        </div>
-
-        <div className="space-y-1">
-          <div className="text-sm text-muted-foreground">Kits disponíveis</div>
-          <div className="text-sm text-foreground/80">
-            Nenhum kit. Use "Salvar como Kit" na receita para criar.
-          </div>
+          {pacientesRecentes.length > 0 && (
+            <p className="text-[11px] text-muted-foreground">
+              {pacientesRecentes.length} paciente(s) recente(s) — comece a digitar para sugerir.
+            </p>
+          )}
         </div>
 
         <div className="space-y-2">
@@ -580,44 +664,80 @@ function PrescricaoForm() {
         </div>
 
         <div className="space-y-2">
-          <label className="text-sm text-muted-foreground">Medicamento</label>
+          <label className="text-sm text-muted-foreground" htmlFor="med-search">
+            Medicamento
+          </label>
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <input
+              id="med-search"
+              ref={searchRef}
               type="text"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder="Nome comercial do produto ou princípio ativo..."
-              className="w-full rounded-xl border border-border bg-background/40 pl-10 pr-10 py-3 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/40"
+              onKeyDown={(e) => {
+                if (editing) return;
+                if (e.key === "ArrowDown") {
+                  e.preventDefault();
+                  setHighlight((h) => Math.min(h + 1, resultados.length - 1));
+                } else if (e.key === "ArrowUp") {
+                  e.preventDefault();
+                  setHighlight((h) => Math.max(h - 1, 0));
+                } else if (e.key === "Enter" && resultados[highlight]) {
+                  e.preventDefault();
+                  setEditing(resultados[highlight]);
+                } else if (e.key === "Escape") {
+                  setQuery("");
+                }
+              }}
+              placeholder='Nome comercial ou princípio ativo…  (tecle "/" para focar)'
+              className="w-full rounded-xl border border-border bg-background/40 pl-10 pr-16 py-3 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/40"
             />
-            {query && (
-              <button
-                onClick={() => setQuery("")}
-                aria-label="Limpar busca"
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-              >
-                <X className="h-4 w-4" />
-              </button>
-            )}
+            <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1">
+              {!query && (
+                <Kbd>/</Kbd>
+              )}
+              {query && (
+                <button
+                  onClick={() => setQuery("")}
+                  aria-label="Limpar busca"
+                  className="text-muted-foreground hover:text-foreground p-1"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              )}
+            </div>
           </div>
+          {!query && resultados.length > 0 && !editing && (
+            <p className="text-[11px] text-muted-foreground">
+              Mostrando favoritos e usados recentemente. Use <Kbd>↑</Kbd> <Kbd>↓</Kbd>{" "}
+              <Kbd>Enter</Kbd> para selecionar.
+            </p>
+          )}
         </div>
 
-        {/* Resultados (apenas quando busca ativa e sem edição) */}
-        {query && !editing && (
+        {/* Resultados: sempre que houver e sem edição (favoritos+recentes quando vazio) */}
+        {!editing && resultados.length > 0 && (
           <div className="rounded-xl border border-border bg-background/40 divide-y divide-border max-h-[420px] overflow-y-auto">
-            {resultados.length === 0 ? (
-              <div className="p-6 text-sm text-muted-foreground text-center">
-                Nenhum medicamento encontrado para os filtros atuais.
-              </div>
-            ) : (
-              resultados.map((m, i) => (
-                <MedRow key={i} m={m} onPick={() => setEditing(m)} />
-              ))
-            )}
+            {resultados.map((m, i) => (
+              <MedRow
+                key={m.nome}
+                m={m}
+                highlighted={i === highlight}
+                onHover={() => setHighlight(i)}
+                onPick={() => setEditing(m)}
+              />
+            ))}
+          </div>
+        )}
+        {query && !editing && resultados.length === 0 && (
+          <div className="rounded-xl border border-border bg-background/40 p-6 text-sm text-muted-foreground text-center">
+            Nenhum medicamento encontrado para os filtros atuais.
           </div>
         )}
 
         {/* Painel de posologia */}
+
         {editing && (
           <PosologiaPanel
             med={editing}
