@@ -32,7 +32,27 @@ import {
 } from "recharts";
 import { AppSidebar } from "@/components/app-sidebar";
 import { SiteFooter } from "@/components/site-footer";
+import logoAsset from "@/assets/haisguias-logo.png.asset.json";
 import { toast } from "sonner";
+
+async function loadImageDataUrl(url: string): Promise<{ dataUrl: string; w: number; h: number }> {
+  const res = await fetch(url);
+  const blob = await res.blob();
+  const dataUrl = await new Promise<string>((resolve, reject) => {
+    const r = new FileReader();
+    r.onload = () => resolve(r.result as string);
+    r.onerror = reject;
+    r.readAsDataURL(blob);
+  });
+  const dims = await new Promise<{ w: number; h: number }>((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => resolve({ w: img.naturalWidth, h: img.naturalHeight });
+    img.onerror = reject;
+    img.src = dataUrl;
+  });
+  return { dataUrl, ...dims };
+}
+
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -207,10 +227,22 @@ async function generateReportPdf(range: Range, dailyAvg: number, total: number) 
     // Header
     doc.setFillColor(37, 99, 235);
     doc.rect(0, 0, pageWidth, 70, "F");
+
+    // HaisGuias logo (top-right of header band)
+    try {
+      const logo = await loadImageDataUrl(logoAsset.url);
+      const logoH = 36;
+      const logoW = (logo.w / logo.h) * logoH;
+      doc.addImage(logo.dataUrl, "PNG", pageWidth - margin - logoW, (70 - logoH) / 2, logoW, logoH);
+    } catch {
+      // fallback: skip logo if it fails to load
+    }
+
     applyType(TYPE.title);
     doc.text("HaisGuias — Relatório do Dashboard", margin, 35);
     applyType(TYPE.subtitle);
     doc.text(`Período: ${rangeLabel}  •  Gerado em: ${dateStr}`, margin, 55);
+
 
     const footerH = 50;
     const headerOffsetTop = 60;
