@@ -181,12 +181,16 @@ function Header() {
   );
 }
 
+type TipoReceita = "montada" | "especial";
+
 function PrescricaoForm() {
+  const [tipoReceita, setTipoReceita] = useState<TipoReceita>("montada");
   const [paciente, setPaciente] = useState("");
   const [query, setQuery] = useState("");
   const [tipos, setTipos] = useState<Set<MedType>>(
     new Set(["Genérico", "Referência", "Específico"]),
   );
+  const [selecionados, setSelecionados] = useState<Medicamento[]>([]);
   const todos = tipos.size === TIPOS.length;
 
   const toggleTipo = (t: MedType) => {
@@ -201,6 +205,29 @@ function PrescricaoForm() {
     setTipos(todos ? new Set() : new Set(TIPOS));
   };
 
+  const addMedicamento = (m: Medicamento) => {
+    setSelecionados((prev) =>
+      prev.some((x) => x.nome === m.nome && x.preco === m.preco) ? prev : [...prev, m],
+    );
+  };
+  const removeMedicamento = (idx: number) => {
+    setSelecionados((prev) => prev.filter((_, i) => i !== idx));
+  };
+
+  const emitir = () => {
+    if (!paciente.trim()) {
+      toast.error("Informe o paciente antes de emitir.");
+      return;
+    }
+    if (selecionados.length === 0) {
+      toast.error("Adicione ao menos um medicamento à receita.");
+      return;
+    }
+    toast.success(
+      `${tipoReceita === "montada" ? "Receita montada" : "Receituário especial"} emitida para ${paciente}.`,
+    );
+  };
+
   const resultados = useMemo(() => {
     const q = query.trim().toLowerCase();
     return MEDICAMENTOS.filter((m) => tipos.has(m.tipo)).filter((m) => {
@@ -213,6 +240,7 @@ function PrescricaoForm() {
       );
     });
   }, [query, tipos]);
+
 
   return (
     <div className="space-y-5">
