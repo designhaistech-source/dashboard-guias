@@ -694,6 +694,9 @@ function PrescricaoForm() {
       .replace(/(^-|-$)/g, "");
     const nome = `${especial ? "receita-especial" : "prescricao"}-${slugPaciente || "paciente"}.pdf`;
     doc.save(nome);
+    pushRecente(LS_PACIENTES, paciente);
+    setPacientesRecentes(loadRecentes(LS_PACIENTES));
+    registrarHistorico("pdf");
     toast.success("PDF gerado.");
   };
 
