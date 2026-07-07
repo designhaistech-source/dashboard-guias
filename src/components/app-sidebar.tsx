@@ -11,11 +11,13 @@ import {
   HelpCircle,
   CircleUser,
   LogOut,
-  ChevronDown,
   Moon,
   Sun,
   Settings,
   Mail,
+  PanelLeft,
+  Wrench,
+  FileSpreadsheet,
 } from "lucide-react";
 import {
   Tooltip,
