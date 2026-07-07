@@ -299,24 +299,40 @@ function PrescricaoForm() {
 
   const resultados = useMemo(() => {
     const q = query.trim().toLowerCase();
-    return MEDICAMENTOS.filter((m) => tipos.has(m.tipo)).filter((m) => {
-      if (!q) return true;
-      return (
+    const base = MEDICAMENTOS.filter((m) => tipos.has(m.tipo));
+    if (!q) {
+      // Sem busca: favoritos + recentes primeiro
+      const favs = base.filter((m) => m.favorito);
+      const recentes = medsRecentes
+        .map((n) => base.find((m) => m.nome === n))
+        .filter((m): m is Medicamento => !!m && !favs.includes(m));
+      return [...favs, ...recentes];
+    }
+    return base.filter(
+      (m) =>
         m.nome.toLowerCase().includes(q) ||
         m.principios.toLowerCase().includes(q) ||
         m.fabricante.toLowerCase().includes(q) ||
-        m.classe.toLowerCase().includes(q)
-      );
-    });
+        m.classe.toLowerCase().includes(q),
+    );
+  }, [query, tipos, medsRecentes]);
+
+  useEffect(() => {
+    setHighlight(0);
   }, [query, tipos]);
 
   const addItem = (med: Medicamento, posologia: string) => {
     setItens((prev) => [...prev, { med, posologia }]);
+    pushRecente(LS_MEDS, med.nome);
+    setMedsRecentes(loadRecentes(LS_MEDS));
     setEditing(null);
     setQuery("");
+    toast.success(`${med.nome.split(" ")[0]} adicionado à receita.`);
+    setTimeout(() => searchRef.current?.focus(), 50);
   };
   const removeItem = (i: number) =>
     setItens((prev) => prev.filter((_, idx) => idx !== i));
+
 
   const cpfValido = isCpfValid(cpfDigits);
   const enderecoValido = isEnderecoCompleto(endereco);
