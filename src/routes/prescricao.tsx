@@ -16,6 +16,9 @@ import {
   GripVertical,
   ArrowUp,
   ArrowDown,
+  History,
+  RefreshCw,
+  Trash2,
 } from "lucide-react";
 import { jsPDF } from "jspdf";
 import { toast } from "sonner";
