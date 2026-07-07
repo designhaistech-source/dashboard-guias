@@ -1810,13 +1810,13 @@ function TipoChip({
   onClick: () => void;
 }) {
   const activeStyles: Record<MedType, string> = {
-    Biológico: "bg-emerald-500/20 text-emerald-200 border-emerald-500/50 ring-emerald-500/30",
-    Similar: "bg-sky-500/20 text-sky-200 border-sky-500/50 ring-sky-500/30",
-    Genérico: "bg-fuchsia-500/20 text-fuchsia-200 border-fuchsia-500/50 ring-fuchsia-500/30",
-    Referência: "bg-primary/20 text-primary border-primary/50 ring-primary/30",
-    Fitoterápico: "bg-lime-500/20 text-lime-200 border-lime-500/50 ring-lime-500/30",
-    Oftalmológico: "bg-cyan-500/20 text-cyan-200 border-cyan-500/50 ring-cyan-500/30",
-    Específico: "bg-orange-500/20 text-orange-200 border-orange-500/50 ring-orange-500/30",
+    Biológico: "bg-emerald-500/15 text-emerald-700 dark:text-emerald-200 border-emerald-500/50 ring-emerald-500/30",
+    Similar: "bg-sky-500/15 text-sky-700 dark:text-sky-200 border-sky-500/50 ring-sky-500/30",
+    Genérico: "bg-fuchsia-500/15 text-fuchsia-700 dark:text-fuchsia-200 border-fuchsia-500/50 ring-fuchsia-500/30",
+    Referência: "bg-primary/15 text-primary border-primary/50 ring-primary/30",
+    Fitoterápico: "bg-lime-500/15 text-lime-700 dark:text-lime-200 border-lime-500/50 ring-lime-500/30",
+    Oftalmológico: "bg-cyan-500/15 text-cyan-700 dark:text-cyan-200 border-cyan-500/50 ring-cyan-500/30",
+    Específico: "bg-orange-500/15 text-orange-700 dark:text-orange-200 border-orange-500/50 ring-orange-500/30",
   };
   return (
     <button
