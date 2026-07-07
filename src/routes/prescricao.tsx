@@ -505,10 +505,59 @@ function PrescricaoForm() {
     }
     pushRecente(LS_PACIENTES, paciente);
     setPacientesRecentes(loadRecentes(LS_PACIENTES));
+    registrarHistorico("imprimir");
     toast.success(
       especial ? "Receituário especial enviado para impressão." : "Receita enviada para impressão.",
     );
   };
+
+  const registrarHistorico = (action: "imprimir" | "pdf") => {
+    const entry: Historico = {
+      id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+      emittedAt: Date.now(),
+      action,
+      paciente: paciente.trim(),
+      cpfDigits,
+      cepDigits,
+      endereco,
+      itens,
+      especial,
+      tipos: Array.from(tipos),
+    };
+    const next = [entry, ...historico].slice(0, HIST_MAX);
+    setHistorico(next);
+    saveHistorico(next);
+  };
+
+  const reutilizarHistorico = (h: Historico) => {
+    setPaciente(h.paciente);
+    setCpfDigits(h.cpfDigits || "");
+    setCepDigits(h.cepDigits || "");
+    setEndereco(h.endereco || "");
+    setItens(h.itens || []);
+    setEspecial(!!h.especial);
+    if (Array.isArray(h.tipos) && h.tipos.length > 0) setTipos(new Set(h.tipos));
+    setHistoricoAberto(false);
+    setRascunhoRestaurado(null);
+    toast.success(`Prescrição de ${h.paciente || "paciente"} carregada como base.`);
+    setTimeout(() => receitaRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }), 100);
+  };
+
+  const removerHistorico = (id: string) => {
+    const next = historico.filter((h) => h.id !== id);
+    setHistorico(next);
+    saveHistorico(next);
+  };
+
+  const limparHistorico = () => {
+    if (historico.length === 0) return;
+    if (typeof window !== "undefined" && !window.confirm("Apagar todo o histórico de prescrições?"))
+      return;
+    setHistorico([]);
+    saveHistorico([]);
+    toast.success("Histórico apagado.");
+  };
+
 
 
   const baixarPdf = () => {
