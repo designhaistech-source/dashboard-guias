@@ -71,9 +71,9 @@ export function AppSidebar({ activeKey }: { activeKey: ItemKey }) {
             />
             <SidebarItem
               icon={FileCheck2}
-              label="Extrair dados da guia"
+              label="Histórico de guias"
               active={activeKey === "extrair"}
-              hint="Envie um PDF ou imagem para extrair automaticamente os dados da guia."
+              hint="Consulte o histórico e acompanhe o status das guias processadas."
             />
             <SidebarItem
               icon={Files}
