@@ -124,6 +124,7 @@ const MEDICAMENTOS: Medicamento[] = [
     principios: "DIPIRONA SÓDICA",
     classe: "ANALGÉSICOS NÃO OPIOIDES",
     favorito: true,
+  },
   {
     nome: "LOSARTANA POTÁSSICA 50mg",
     forma: "comprimidos revestidos, 30 un",
