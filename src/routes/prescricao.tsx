@@ -352,10 +352,13 @@ function PrescricaoForm() {
           "Informe o endereço completo do paciente (rua, número, bairro, cidade/UF).",
         );
     }
+    pushRecente(LS_PACIENTES, paciente);
+    setPacientesRecentes(loadRecentes(LS_PACIENTES));
     toast.success(
       especial ? "Receituário especial enviado para impressão." : "Receita enviada para impressão.",
     );
   };
+
 
   const baixarPdf = () => {
     if (!paciente.trim()) return toast.error("Informe o paciente.");
