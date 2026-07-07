@@ -620,16 +620,9 @@ function PrescricaoForm() {
 
 
   const baixarPdf = () => {
-    if (!paciente.trim()) return toast.error("Informe o paciente.");
-    if (itens.length === 0) return toast.error("Adicione ao menos um medicamento.");
-    if (especial) {
-      if (!cpfValido)
-        return toast.error("Informe um CPF válido (11 dígitos) do paciente.");
-      if (!enderecoValido)
-        return toast.error(
-          "Informe o endereço completo do paciente (rua, número, bairro, cidade/UF).",
-        );
-    }
+    if (!validarEmissao()) return;
+
+
 
     const doc = new jsPDF({ unit: "mm", format: "a4" });
     const pageW = doc.internal.pageSize.getWidth();
