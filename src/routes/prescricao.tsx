@@ -256,7 +256,6 @@ function PrescricaoForm() {
   const removeItem = (i: number) =>
     setItens((prev) => prev.filter((_, idx) => idx !== i));
 
-  const cpfDigits = cpf.replace(/\D/g, "");
   const cpfValido = isCpfValid(cpfDigits);
   const enderecoValido = isEnderecoCompleto(endereco);
   const especialInvalido =
