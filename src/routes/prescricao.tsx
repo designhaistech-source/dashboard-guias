@@ -181,6 +181,36 @@ function isEnderecoCompleto(endereco: string): boolean {
   return true;
 }
 
+// Valida a posologia: exige texto mínimo, quantidade (número) e intervalo/frequência.
+type PosologiaCheck = {
+  ok: boolean;
+  motivo?: "vazia" | "curta" | "sem-quantidade" | "sem-intervalo";
+  mensagem?: string;
+};
+const INTERVAL_RE =
+  /\b(hora|horas|hr|h\b|vez|vezes|x\/dia|x ao dia|ao dia|por dia|dia|dias|semana|semanas|mes|mês|meses|min|minutos|em em|de \d+ em \d+|contínuo|continuo|sos|s\/n)\b/i;
+
+function checkPosologia(pos: string): PosologiaCheck {
+  const s = pos.trim();
+  if (!s) return { ok: false, motivo: "vazia", mensagem: "posologia em branco" };
+  if (s.length < 12)
+    return { ok: false, motivo: "curta", mensagem: "posologia muito curta (mín. 12 caracteres)" };
+  if (!/\d/.test(s))
+    return {
+      ok: false,
+      motivo: "sem-quantidade",
+      mensagem: "falta a quantidade (ex.: 1 comprimido, 10 ml)",
+    };
+  if (!INTERVAL_RE.test(s))
+    return {
+      ok: false,
+      motivo: "sem-intervalo",
+      mensagem: "falta o intervalo/frequência (ex.: de 8 em 8 horas, 1x ao dia)",
+    };
+  return { ok: true };
+}
+
+
 const LS_PACIENTES = "hg:prescricao:pacientes-recentes";
 const LS_MEDS = "hg:prescricao:meds-recentes";
 const LS_DRAFT = "hg:prescricao:rascunho";
