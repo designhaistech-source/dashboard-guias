@@ -412,9 +412,21 @@ function PrescricaoForm() {
                   />
                   Receita especial
                 </label>
-                <ActionBtn onClick={imprimir} icon={<Printer className="h-4 w-4" />}>
+                <ActionBtn
+                  onClick={imprimir}
+                  icon={<Printer className="h-4 w-4" />}
+                  disabled={!podeEmitir}
+                  title={
+                    !podeEmitir
+                      ? especial
+                        ? "Preencha CPF e endereço válidos para emitir."
+                        : "Informe paciente e adicione medicamentos."
+                      : undefined
+                  }
+                >
                   Imprimir
                 </ActionBtn>
+
                 <ActionBtn
                   onClick={salvarKit}
                   icon={<Save className="h-4 w-4" />}
