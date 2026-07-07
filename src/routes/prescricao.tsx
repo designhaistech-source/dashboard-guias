@@ -1704,6 +1704,43 @@ function MedRow({
   );
 }
 
+function TipoChip({
+  tipo,
+  active,
+  onClick,
+}: {
+  tipo: MedType;
+  active: boolean;
+  onClick: () => void;
+}) {
+  const activeStyles: Record<MedType, string> = {
+    Biológico: "bg-emerald-500/20 text-emerald-200 border-emerald-500/50 ring-emerald-500/30",
+    Similar: "bg-sky-500/20 text-sky-200 border-sky-500/50 ring-sky-500/30",
+    Genérico: "bg-fuchsia-500/20 text-fuchsia-200 border-fuchsia-500/50 ring-fuchsia-500/30",
+    Referência: "bg-primary/20 text-primary border-primary/50 ring-primary/30",
+    Fitoterápico: "bg-lime-500/20 text-lime-200 border-lime-500/50 ring-lime-500/30",
+    Oftalmológico: "bg-cyan-500/20 text-cyan-200 border-cyan-500/50 ring-cyan-500/30",
+    Específico: "bg-orange-500/20 text-orange-200 border-orange-500/50 ring-orange-500/30",
+  };
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-pressed={active}
+      className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[12px] font-medium transition ${
+        active
+          ? `${activeStyles[tipo]} shadow-sm`
+          : "border-border/60 bg-background/30 text-muted-foreground hover:text-foreground hover:border-border hover:bg-accent/40"
+      }`}
+    >
+      <span
+        className={`h-1.5 w-1.5 rounded-full ${active ? "bg-current" : "bg-muted-foreground/40"}`}
+      />
+      {tipo}
+    </button>
+  );
+}
+
 function Dot() {
   return <span className="text-muted-foreground/60 text-sm">-</span>;
 }
