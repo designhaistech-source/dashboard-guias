@@ -13,6 +13,9 @@ import {
   FolderCog,
   Link2,
   Download,
+  GripVertical,
+  ArrowUp,
+  ArrowDown,
 } from "lucide-react";
 import { jsPDF } from "jspdf";
 import { toast } from "sonner";
