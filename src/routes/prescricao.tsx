@@ -1529,5 +1529,118 @@ function TipoBadge({ tipo }: { tipo: MedType }) {
   );
 }
 
-// unused Check import guard (kept for future added state)
+function HistoricoPanel({
+  historico,
+  onClose,
+  onReutilizar,
+  onRemover,
+  onLimpar,
+}: {
+  historico: Historico[];
+  onClose: () => void;
+  onReutilizar: (h: Historico) => void;
+  onRemover: (id: string) => void;
+  onLimpar: () => void;
+}) {
+  const fmt = (ts: number) =>
+    new Date(ts).toLocaleString("pt-BR", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  return (
+    <div className="rounded-2xl border border-border bg-card p-5 space-y-3">
+      <div className="flex items-center justify-between gap-3">
+        <div className="flex items-center gap-2">
+          <History className="h-4 w-4 text-primary" />
+          <h3 className="text-sm font-semibold">Histórico de prescrições</h3>
+          <span className="text-xs text-muted-foreground">
+            ({historico.length} {historico.length === 1 ? "entrada" : "entradas"} — só neste navegador)
+          </span>
+        </div>
+        <div className="flex items-center gap-2">
+          {historico.length > 0 && (
+            <button
+              onClick={onLimpar}
+              className="text-xs text-destructive hover:underline"
+            >
+              Limpar tudo
+            </button>
+          )}
+          <button
+            onClick={onClose}
+            className="grid place-items-center h-6 w-6 rounded border border-border text-muted-foreground hover:text-foreground"
+            aria-label="Fechar histórico"
+          >
+            <X className="h-3.5 w-3.5" />
+          </button>
+        </div>
+      </div>
+
+      {historico.length === 0 ? (
+        <div className="rounded-xl border border-dashed border-border p-6 text-sm text-muted-foreground text-center">
+          Ainda não há prescrições emitidas. Ao imprimir ou baixar um PDF, a
+          prescrição fica registrada aqui.
+        </div>
+      ) : (
+        <ul className="space-y-2 max-h-[480px] overflow-y-auto">
+          {historico.map((h) => (
+            <li
+              key={h.id}
+              className={`rounded-xl border p-3 ${
+                h.especial ? "border-destructive/40 bg-destructive/5" : "border-border bg-background/40"
+              }`}
+            >
+              <div className="flex items-start justify-between gap-3">
+                <div className="min-w-0 flex-1 space-y-1">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span className="text-sm font-semibold truncate">
+                      {h.paciente || "Sem paciente"}
+                    </span>
+                    {h.especial && (
+                      <span className="text-[10px] font-semibold uppercase tracking-wide rounded px-1.5 py-0.5 bg-destructive/15 text-destructive border border-destructive/30">
+                        Especial
+                      </span>
+                    )}
+                    <span className="text-[10px] uppercase tracking-wide text-muted-foreground">
+                      {h.action === "pdf" ? "PDF" : "Impressão"}
+                    </span>
+                  </div>
+                  <div className="text-xs text-muted-foreground">
+                    {fmt(h.emittedAt)} · {h.itens.length}{" "}
+                    {h.itens.length === 1 ? "medicamento" : "medicamentos"}
+                  </div>
+                  <div className="text-xs text-foreground/80 line-clamp-2">
+                    {h.itens.map((it) => it.med.nome.split(" ")[0]).join(", ") || "—"}
+                  </div>
+                </div>
+                <div className="flex flex-col gap-1 shrink-0">
+                  <button
+                    onClick={() => onReutilizar(h)}
+                    className="inline-flex items-center gap-1.5 rounded-lg border border-primary/50 text-primary px-2.5 py-1.5 text-xs font-medium hover:bg-primary/10"
+                    title="Carregar esta prescrição no formulário como base"
+                  >
+                    <RefreshCw className="h-3.5 w-3.5" />
+                    Reutilizar
+                  </button>
+                  <button
+                    onClick={() => onRemover(h.id)}
+                    className="inline-flex items-center gap-1.5 rounded-lg border border-border text-muted-foreground px-2.5 py-1.5 text-xs hover:text-destructive hover:border-destructive/60"
+                    title="Remover do histórico"
+                  >
+                    <Trash2 className="h-3.5 w-3.5" />
+                    Remover
+                  </button>
+                </div>
+              </div>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+}
+
 void Check;
