@@ -195,14 +195,15 @@ async function generateReportPdf(range: Range, dailyAvg: number, total: number) 
     // ---- Type system: single source of truth for fonts/weights/sizes ----
     const FONT = "helvetica";
     const TYPE = {
-      title:       { size: 18, weight: "bold"   as const, color: [255, 255, 255] as [number, number, number] },
-      subtitle:    { size: 10, weight: "normal" as const, color: [255, 255, 255] as [number, number, number] },
-      sectionH:    { size: 12, weight: "bold"   as const, color: [20, 20, 20]    as [number, number, number] },
-      body:        { size: 10, weight: "normal" as const, color: [20, 20, 20]    as [number, number, number] },
-      tableHead:   { size: 10, weight: "bold"   as const, color: [255, 255, 255] as [number, number, number] },
-      tableBody:   { size: 10, weight: "normal" as const, color: [40, 40, 40]    as [number, number, number] },
-      caption:     { size: 8,  weight: "normal" as const, color: [130, 130, 130] as [number, number, number] },
+      title:       { size: 18, weight: "bold"   as const, color: [20, 20, 20]     as [number, number, number] },
+      subtitle:    { size: 10, weight: "normal" as const, color: [110, 110, 110]  as [number, number, number] },
+      sectionH:    { size: 12, weight: "bold"   as const, color: [20, 20, 20]     as [number, number, number] },
+      body:        { size: 10, weight: "normal" as const, color: [20, 20, 20]     as [number, number, number] },
+      tableHead:   { size: 10, weight: "bold"   as const, color: [255, 255, 255]  as [number, number, number] },
+      tableBody:   { size: 10, weight: "normal" as const, color: [40, 40, 40]     as [number, number, number] },
+      caption:     { size: 8,  weight: "normal" as const, color: [130, 130, 130]  as [number, number, number] },
     };
+
     const applyType = (t: typeof TYPE[keyof typeof TYPE]) => {
       doc.setFont(FONT, t.weight);
       doc.setFontSize(t.size);
@@ -224,24 +225,32 @@ async function generateReportPdf(range: Range, dailyAvg: number, total: number) 
       halign: "left" as const,
     };
 
-    // Header
-    doc.setFillColor(37, 99, 235);
+    // Header (white background, thin accent rule below)
+    doc.setFillColor(255, 255, 255);
     doc.rect(0, 0, pageWidth, 70, "F");
 
-    // HaisGuias logo (top-right of header band)
+    // HaisGuias logo (top-left)
+    let titleX = margin;
     try {
       const logo = await loadImageDataUrl(logoAsset.url);
-      const logoH = 36;
+      const logoH = 32;
       const logoW = (logo.w / logo.h) * logoH;
-      doc.addImage(logo.dataUrl, "PNG", pageWidth - margin - logoW, (70 - logoH) / 2, logoW, logoH);
+      doc.addImage(logo.dataUrl, "PNG", margin, (70 - logoH) / 2, logoW, logoH);
+      titleX = margin + logoW + 14;
     } catch {
       // fallback: skip logo if it fails to load
     }
 
     applyType(TYPE.title);
-    doc.text("HaisGuias — Relatório do Dashboard", margin, 35);
+    doc.text("Relatório do Dashboard", titleX, 35);
     applyType(TYPE.subtitle);
-    doc.text(`Período: ${rangeLabel}  •  Gerado em: ${dateStr}`, margin, 55);
+    doc.text(`Período: ${rangeLabel}  •  Gerado em: ${dateStr}`, titleX, 52);
+
+    // thin accent rule
+    doc.setDrawColor(37, 99, 235);
+    doc.setLineWidth(1.5);
+    doc.line(0, 70, pageWidth, 70);
+
 
 
     const footerH = 50;
