@@ -19,7 +19,9 @@ import {
   History,
   RefreshCw,
   Trash2,
+  ChevronDown,
 } from "lucide-react";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { jsPDF } from "jspdf";
 import { toast } from "sonner";
 import { AppSidebar } from "@/components/app-sidebar";
