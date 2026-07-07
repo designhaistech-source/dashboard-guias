@@ -415,9 +415,36 @@ async function generateReportPdf(range: Range, dailyAvg: number, total: number) 
       showHead: "everyPage",
     });
 
+    // "Gerado por" — bloco final, quebra página se não couber
+    const lastY = (doc as unknown as { lastAutoTable?: { finalY: number } }).lastAutoTable?.finalY ?? y;
+    y = lastY + 30;
+    const blockH = 60;
+    if (y + blockH > pageHeight - footerH) {
+      doc.addPage();
+      y = headerOffsetTop;
+    }
+    doc.setDrawColor(37, 99, 235);
+    doc.setLineWidth(1);
+    doc.line(margin, y, margin + 40, y);
+    y += 14;
+    applyType(TYPE.caption);
+    doc.text("GERADO POR", margin, y);
+    y += 14;
+    applyType(TYPE.body);
+    doc.setFont(FONT, "bold");
+    doc.text(user.name, margin, y);
+    y += 13;
+    doc.setFont(FONT, "normal");
+    doc.setTextColor(90, 90, 90);
+    doc.text(
+      `${user.role}  •  ${user.crm}  •  ${user.email}  •  ${user.clinic}`,
+      margin,
+      y,
+    );
 
     // Footer
     const pageCount = doc.getNumberOfPages();
+
 
     for (let i = 1; i <= pageCount; i++) {
       doc.setPage(i);
