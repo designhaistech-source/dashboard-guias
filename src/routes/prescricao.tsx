@@ -1825,10 +1825,6 @@ function MedRow({
               aria-label="Alerta"
             />
           )}
-          <Dot />
-          <span className="text-sm text-foreground/80">
-            R$ {m.preco.toFixed(2).replace(".", ",")}
-          </span>
         </div>
         <div className="mt-1 text-xs text-muted-foreground uppercase tracking-wide">
           {m.principios} · {m.classe}
