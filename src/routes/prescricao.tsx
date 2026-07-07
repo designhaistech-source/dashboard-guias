@@ -495,9 +495,21 @@ function MedRow({
       <div className="mt-1 text-xs text-muted-foreground uppercase tracking-wide">
         {m.principios} · {m.classe}
       </div>
+      </div>
+      <span
+        className={`shrink-0 mt-0.5 grid place-items-center h-7 w-7 rounded-md border ${
+          added
+            ? "border-primary/40 bg-primary/15 text-primary"
+            : "border-border text-muted-foreground"
+        }`}
+        aria-label={added ? "Adicionado" : "Adicionar"}
+      >
+        {added ? <Check className="h-4 w-4" /> : <Plus className="h-4 w-4" />}
+      </span>
     </button>
   );
 }
+
 
 function Dot() {
   return <span className="text-muted-foreground/60 text-sm">-</span>;
