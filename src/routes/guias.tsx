@@ -588,12 +588,15 @@ function GuidePreview({ src, alt }: { src: string; alt: string }) {
       </button>
 
       <button
-        aria-label="Redefinir zoom"
+        aria-label="Redefinir zoom para 100%"
+        title="Redefinir zoom (100%)"
         onClick={() => setZoom(1)}
-        className="ml-1 flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-muted"
+        disabled={zoom === 1}
+        className="ml-1 flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold border border-border bg-background text-foreground hover:bg-primary hover:text-primary-foreground hover:border-primary transition-colors disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-background disabled:hover:text-foreground disabled:hover:border-border"
       >
-        <RotateCcw className="h-3 w-3" /> Reset
+        <RotateCcw className="h-3.5 w-3.5" /> Reset
       </button>
+
       <button
         aria-label={expanded ? "Reduzir" : "Expandir"}
         onClick={() => setExpanded((v) => !v)}
