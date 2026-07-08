@@ -264,7 +264,9 @@ function Upload_Section({ onProcessed }: { onProcessed: (row: Row) => void }) {
 
 /* ---------- History Section ---------- */
 
-function History_Section() {
+function History_Section({ extraRows }: { extraRows: Row[] }) {
+  const allRows = [...extraRows, ...rows];
+
   const [detailRow, setDetailRow] = useState<Row | null>(null);
 
   return (
