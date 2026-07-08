@@ -100,8 +100,9 @@ type QueueItem = {
   done: boolean;
 };
 
-function Upload_Section() {
+function Upload_Section({ onProcessed }: { onProcessed: (row: Row) => void }) {
   const [queue, setQueue] = useState<QueueItem[]>([]);
+
 
   const handleFiles = (files: FileList | null) => {
     if (!files?.length) return;
