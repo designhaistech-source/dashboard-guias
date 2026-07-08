@@ -598,17 +598,18 @@ function GuidePreview({ src, alt }: { src: string; alt: string }) {
       <div className="relative rounded-lg border border-border bg-muted/40 overflow-hidden h-full min-h-[400px]">
         {controls}
         <div className="absolute inset-0 overflow-auto">
-          <div className="min-h-full min-w-full flex items-start justify-center p-4">
+          <div className="min-h-full min-w-full flex items-center justify-center p-4">
             <img
               src={src}
               alt={alt}
-              style={{ transform: `scale(${zoom})`, transformOrigin: "top center" }}
-              className="max-w-full h-auto transition-transform duration-150 select-none"
+              style={{ transform: `scale(${zoom})`, transformOrigin: "center center" }}
+              className="max-h-full max-w-full w-auto h-auto object-contain transition-transform duration-150 select-none"
               draggable={false}
             />
           </div>
         </div>
       </div>
+
 
       {expanded && (
         <div
