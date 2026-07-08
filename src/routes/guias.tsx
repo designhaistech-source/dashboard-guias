@@ -408,7 +408,7 @@ function RequiredFieldsModal() {
     <>
       <button
         onClick={() => setOpen(true)}
-        className="inline-flex items-center gap-2 rounded-lg bg-primary text-primary-foreground px-4 py-2 text-sm font-medium shadow-sm hover:bg-primary/90 transition-colors"
+        className="inline-flex items-center gap-2 rounded-lg bg-secondary text-secondary-foreground border border-border px-4 py-2 text-sm font-medium hover:bg-muted transition-colors"
       >
         <ListChecks className="h-4 w-4" />
         Campos obrigatórios
