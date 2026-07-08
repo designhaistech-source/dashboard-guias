@@ -555,7 +555,36 @@ function ProcedureTable({ columns, rows }: { columns: string[]; rows: string[][]
 function GuidePreview({ src, alt }: { src: string; alt: string }) {
   const [zoom, setZoom] = useState(1);
   const [expanded, setExpanded] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const dragStart = useRef({ x: 0, y: 0, scrollLeft: 0, scrollTop: 0 });
   const clamp = (v: number) => Math.min(4, Math.max(0.5, v));
+  const canPan = zoom > 1;
+
+  const onPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (!canPan || !scrollRef.current) return;
+    setIsDragging(true);
+    scrollRef.current.setPointerCapture(e.pointerId);
+    dragStart.current = {
+      x: e.clientX,
+      y: e.clientY,
+      scrollLeft: scrollRef.current.scrollLeft,
+      scrollTop: scrollRef.current.scrollTop,
+    };
+  };
+
+  const onPointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (!isDragging || !scrollRef.current) return;
+    scrollRef.current.scrollLeft = dragStart.current.scrollLeft - (e.clientX - dragStart.current.x);
+    scrollRef.current.scrollTop = dragStart.current.scrollTop - (e.clientY - dragStart.current.y);
+  };
+
+  const onPointerUp = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (!isDragging) return;
+    setIsDragging(false);
+    scrollRef.current?.releasePointerCapture(e.pointerId);
+  };
+
 
   const controls = (
     <div className="absolute top-3 left-1/2 -translate-x-1/2 z-10 flex items-center gap-1 rounded-full border border-border bg-card/95 backdrop-blur px-2 py-1 shadow-sm">
