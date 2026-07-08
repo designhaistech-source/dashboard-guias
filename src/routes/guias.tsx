@@ -595,7 +595,7 @@ function GuidePreview({ src, alt }: { src: string; alt: string }) {
 
   return (
     <>
-      <div className="relative rounded-lg border border-border bg-muted/40 overflow-hidden aspect-[3/4]">
+      <div className="relative rounded-lg border border-border bg-muted/40 overflow-hidden h-full min-h-[400px]">
         {controls}
         <div className="absolute inset-0 overflow-auto">
           <div className="min-h-full min-w-full flex items-start justify-center p-4">
