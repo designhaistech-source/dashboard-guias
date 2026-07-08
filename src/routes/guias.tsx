@@ -89,15 +89,59 @@ function Page() {
 
 /* ---------- Upload Section ---------- */
 
+type QueueItem = {
+  id: number;
+  name: string;
+  progress: number;
+  stage: string;
+  done: boolean;
+};
+
 function Upload_Section() {
+  const [queue, setQueue] = useState<QueueItem[]>([]);
+
   const handleFiles = (files: FileList | null) => {
     if (!files?.length) return;
 
+    const newItems: QueueItem[] = Array.from(files).map((file, idx) => ({
+      id: Date.now() + idx,
+      name: file.name,
+      progress: 0,
+      stage: "Enviando documento...",
+      done: false,
+    }));
+
+    setQueue((prev) => [...newItems, ...prev]);
     toast.success(
       files.length === 1
         ? `Arquivo selecionado: ${files[0].name}`
         : `${files.length} arquivos selecionados`,
     );
+
+    newItems.forEach((item) => {
+      const interval = setInterval(() => {
+        setQueue((prev) =>
+          prev.map((q) => {
+            if (q.id !== item.id) return q;
+            const next = Math.min(100, q.progress + Math.floor(Math.random() * 12) + 6);
+            let stage = q.stage;
+            if (next < 40) stage = "Enviando documento...";
+            else if (next < 75) stage = "Extraindo dados...";
+            else if (next < 100) stage = "Validando informações...";
+            else stage = "Processamento concluído";
+            if (next >= 100) {
+              clearInterval(interval);
+              return { ...q, progress: 100, stage, done: true };
+            }
+            return { ...q, progress: next, stage };
+          }),
+        );
+      }, 500);
+    });
+  };
+
+  const removeItem = (id: number) => {
+    setQueue((prev) => prev.filter((q) => q.id !== id));
   };
 
   return (
@@ -127,19 +171,78 @@ function Upload_Section() {
           accept=".pdf,image/*"
           multiple
           className="sr-only"
-          onChange={(event) => handleFiles(event.target.files)}
+          onChange={(event) => {
+            handleFiles(event.target.files);
+            event.target.value = "";
+          }}
         />
         <label
           htmlFor="guide-file-upload"
-          className="mt-6 inline-flex items-center gap-2 rounded-lg border border-border bg-card px-4 py-2 text-sm font-medium shadow-sm hover:bg-muted transition-colors"
+          className="mt-6 inline-flex items-center gap-2 rounded-lg border border-border bg-card px-4 py-2 text-sm font-medium shadow-sm hover:bg-muted transition-colors cursor-pointer"
         >
           <FileUp className="h-4 w-4" />
           Selecionar arquivos
         </label>
       </div>
+
+      {queue.length > 0 && (
+        <div className="space-y-3">
+          <h2 className="text-lg font-semibold">Fila de Processamento ({queue.length})</h2>
+          {queue.map((item) => (
+            <div
+              key={item.id}
+              className="rounded-xl border border-border bg-card p-4 flex flex-col gap-2"
+            >
+              <div className="flex items-center gap-3">
+                <div className="h-10 w-10 rounded-lg bg-primary/10 grid place-items-center shrink-0">
+                  <FileUp className="h-5 w-5 text-primary" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-medium truncate">{item.name}</p>
+                  <p className="text-xs text-muted-foreground">ID: {item.id.toString().slice(-3)}</p>
+                </div>
+                <span
+                  className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium ${
+                    item.done
+                      ? "bg-success/10 text-success"
+                      : "bg-primary/10 text-primary"
+                  }`}
+                >
+                  {item.done ? (
+                    <CheckCircle2 className="h-3.5 w-3.5" />
+                  ) : (
+                    <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                  )}
+                  {item.done ? "Concluído" : "Processando Dados"}
+                </span>
+                <button
+                  onClick={() => removeItem(item.id)}
+                  className="p-1 rounded hover:bg-muted text-muted-foreground"
+                  aria-label="Remover"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              </div>
+              <div className="h-1.5 w-full rounded-full bg-muted overflow-hidden">
+                <div
+                  className={`h-full transition-all ${item.done ? "bg-success" : "bg-primary"}`}
+                  style={{ width: `${item.progress}%` }}
+                />
+              </div>
+              <div className="flex items-center justify-between text-xs text-muted-foreground">
+                <span>{item.stage}</span>
+                <span className={item.done ? "text-success font-medium" : "text-primary font-medium"}>
+                  {item.progress}%
+                </span>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
     </section>
   );
 }
+
 
 /* ---------- History Section ---------- */
 
