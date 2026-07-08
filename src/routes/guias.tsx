@@ -292,10 +292,8 @@ function GuideDetailsModal({ row, onClose }: { row: Row | null; onClose: () => v
         {row && details && (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 p-6 bg-muted/30 overflow-y-auto flex-1">
             <div className="lg:sticky lg:top-0 lg:self-start rounded-xl border border-border bg-card p-6 space-y-4">
-              <div className="text-sm font-medium">Arquivo enviado: {row.file}</div>
-              <div className="rounded-lg border border-border bg-muted/40 aspect-[3/4] flex items-center justify-center text-muted-foreground text-sm">
-                Pré-visualização do arquivo
-              </div>
+              <div className="text-sm font-medium truncate">Arquivo enviado: {row.file}</div>
+              <GuidePreview src={guiaMock.url} alt={row.file} />
               <div className="flex justify-end">
                 <button className="inline-flex items-center gap-2 rounded-lg bg-primary text-primary-foreground px-4 py-2 text-sm font-medium hover:bg-primary/90 transition-colors">
                   <FileUp className="h-4 w-4" />
@@ -303,6 +301,7 @@ function GuideDetailsModal({ row, onClose }: { row: Row | null; onClose: () => v
                 </button>
               </div>
             </div>
+
 
             <div className="space-y-6 min-w-0">
               <DetailCard title="Cabeçalho" icon={<Info className="h-5 w-5 text-primary" />} items={details.header} />
