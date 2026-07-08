@@ -40,18 +40,31 @@ type ItemKey =
   | "ajuda";
 
 export function AppSidebar({ activeKey }: { activeKey: ItemKey }) {
+  const [collapsed, setCollapsed] = useState(false);
+
   return (
     <TooltipProvider delayDuration={150}>
-      <aside className="hidden md:flex w-72 shrink-0 flex-col border-r border-sidebar-border bg-sidebar text-sidebar-foreground">
-        <div className="flex items-center justify-between gap-2 px-4 py-5 border-b border-sidebar-border min-w-0">
-          <img
-            src={logoAsset.url}
-            alt="HaisGuias"
-            className="block h-8 w-auto max-w-full object-contain"
-          />
+      <aside
+        className={`hidden md:flex shrink-0 flex-col border-r border-sidebar-border bg-sidebar text-sidebar-foreground transition-[width] duration-200 ${
+          collapsed ? "w-16" : "w-72"
+        }`}
+      >
+        <div
+          className={`flex items-center gap-2 border-b border-sidebar-border min-w-0 py-5 ${
+            collapsed ? "justify-center px-2" : "justify-between px-4"
+          }`}
+        >
+          {!collapsed && (
+            <img
+              src={logoAsset.url}
+              alt="HaisGuias"
+              className="block h-8 w-auto max-w-full object-contain"
+            />
+          )}
           <button
             type="button"
-            aria-label="Recolher menu"
+            onClick={() => setCollapsed((v) => !v)}
+            aria-label={collapsed ? "Expandir menu" : "Recolher menu"}
             className="shrink-0 p-1.5 rounded-md text-sidebar-muted hover:text-foreground hover:bg-muted transition-colors"
           >
             <PanelLeft className="h-4 w-4" />
@@ -61,24 +74,26 @@ export function AppSidebar({ activeKey }: { activeKey: ItemKey }) {
 
 
         <nav className="flex-1 overflow-y-auto px-3 py-4 space-y-6">
-          <SidebarGroup label="INÍCIO">
+          <SidebarGroup label="INÍCIO" collapsed={collapsed}>
             <SidebarItem
               icon={LayoutGrid}
               label="Dashboard"
               to="/"
               active={activeKey === "dashboard"}
               hint="Visão geral com indicadores e resumo das suas atividades recentes."
+              collapsed={collapsed}
             />
 
           </SidebarGroup>
 
-          <SidebarGroup label="GUIAS">
+          <SidebarGroup label="GUIAS" collapsed={collapsed}>
             <SidebarItem
               icon={FileText}
               label="Emitir guia"
               to="/emitir"
               active={activeKey === "emitir"}
               hint="Preencha e gere novas guias médicas (SADT, consultas, encaminhamentos)."
+              collapsed={collapsed}
             />
             <SidebarItem
               icon={FileCheck2}
@@ -86,12 +101,14 @@ export function AppSidebar({ activeKey }: { activeKey: ItemKey }) {
               to="/guias"
               active={activeKey === "extrair"}
               hint="Extraia automaticamente os dados de uma guia por meio de IA."
+              collapsed={collapsed}
             />
             <SidebarItem
               icon={Files}
               label="Histórico de guias"
               active={activeKey === "guias"}
               hint="Consulte o histórico e acompanhe o status das guias processadas."
+              collapsed={collapsed}
             />
 
             <SidebarItem
@@ -99,45 +116,50 @@ export function AppSidebar({ activeKey }: { activeKey: ItemKey }) {
               label="Buscar procedimento"
               active={activeKey === "procedimento"}
               hint="Consulte códigos e descrições de procedimentos (TUSS / tabelas)."
+              collapsed={collapsed}
             />
           </SidebarGroup>
 
-          <SidebarGroup label="ATENDIMENTO CLÍNICO">
+          <SidebarGroup label="ATENDIMENTO CLÍNICO" collapsed={collapsed}>
             <SidebarItem
               icon={Pill}
               label="Emitir prescrição"
               to="/prescricao"
               active={activeKey === "prescricao"}
               hint="Emita prescrições médicas para os pacientes."
+              collapsed={collapsed}
             />
             <SidebarItem
               icon={Wrench}
               label="Solicitar OPME"
               active={activeKey === "opme"}
               hint="Solicite Órteses, Próteses e Materiais Especiais para procedimentos."
+              collapsed={collapsed}
             />
             <SidebarItem
               icon={FileSpreadsheet}
               label="Relatórios e documentos"
               active={activeKey === "relatorios"}
               hint="Gere e gerencie relatórios, atestados e documentos clínicos."
+              collapsed={collapsed}
             />
             <SidebarItem
               icon={ScanLine}
               label="Buscar CID-10"
               active={activeKey === "cid"}
               hint="Pesquise códigos da Classificação Internacional de Doenças (CID-10)."
+              collapsed={collapsed}
             />
           </SidebarGroup>
         </nav>
 
-        <UserMenu />
+        <UserMenu collapsed={collapsed} />
       </aside>
     </TooltipProvider>
   );
 }
 
-function UserMenu() {
+function UserMenu({ collapsed }: { collapsed: boolean }) {
   const [open, setOpen] = useState(false);
   const [dark, setDark] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
@@ -154,6 +176,33 @@ function UserMenu() {
     document.addEventListener("mousedown", onClick);
     return () => document.removeEventListener("mousedown", onClick);
   }, [open]);
+
+  if (collapsed) {
+    return (
+      <div className="border-t border-sidebar-border flex flex-col items-center py-3 gap-2">
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <button className="p-1.5 rounded-md hover:bg-muted transition-colors">
+              <CircleUser className="h-7 w-7 text-sidebar-muted" strokeWidth={1.5} />
+            </button>
+          </TooltipTrigger>
+          <TooltipContent side="right">Dr Fulano</TooltipContent>
+        </Tooltip>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <button
+              type="button"
+              aria-label="Sair"
+              className="p-2 rounded-md text-sidebar-muted hover:text-destructive hover:bg-muted transition-colors"
+            >
+              <LogOut className="h-4 w-4" />
+            </button>
+          </TooltipTrigger>
+          <TooltipContent side="right">Sair</TooltipContent>
+        </Tooltip>
+      </div>
+    );
+  }
 
   return (
     <div ref={ref} className="relative border-t border-sidebar-border flex items-center">
@@ -224,10 +273,22 @@ function UserMenu() {
   );
 }
 
-function SidebarGroup({ label, children }: { label: string; children: React.ReactNode }) {
+function SidebarGroup({
+  label,
+  children,
+  collapsed,
+}: {
+  label: string;
+  children: React.ReactNode;
+  collapsed?: boolean;
+}) {
   return (
     <div className="space-y-1">
-      <div className="px-3 text-[11px] font-medium tracking-wider text-sidebar-muted">{label}</div>
+      {!collapsed && (
+        <div className="px-3 text-[11px] font-medium tracking-wider text-sidebar-muted">
+          {label}
+        </div>
+      )}
       <div className="space-y-0.5">{children}</div>
     </div>
   );
@@ -239,21 +300,33 @@ function SidebarItem({
   active,
   hint,
   to,
+  collapsed,
 }: {
   icon: React.ComponentType<{ className?: string }>;
   label: string;
   active?: boolean;
   hint?: string;
   to?: string;
+  collapsed?: boolean;
 }) {
   const className = [
-    "group w-full flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors",
+    "group w-full flex items-center gap-3 rounded-md text-sm transition-colors",
+    collapsed ? "justify-center px-2 py-2" : "px-3 py-2",
     active
       ? "bg-sidebar-accent text-sidebar-accent-foreground font-semibold"
       : "text-sidebar-foreground hover:bg-muted",
   ].join(" ");
 
-  const inner = (
+  const inner = collapsed ? (
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <span className="flex items-center justify-center">
+          <Icon className="h-[18px] w-[18px] shrink-0" />
+        </span>
+      </TooltipTrigger>
+      <TooltipContent side="right">{label}</TooltipContent>
+    </Tooltip>
+  ) : (
     <>
       <Icon className="h-[18px] w-[18px] shrink-0" />
       <span className="flex-1 text-left">{label}</span>
