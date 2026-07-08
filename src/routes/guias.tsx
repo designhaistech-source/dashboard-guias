@@ -110,6 +110,8 @@ function Upload_Section() {
 /* ---------- History Section ---------- */
 
 function History_Section() {
+  const [detailRow, setDetailRow] = useState<Row | null>(null);
+
   return (
     <section className="space-y-4">
       <h2 className="text-2xl font-bold tracking-tight">Histórico de processamento</h2>
@@ -165,7 +167,12 @@ function History_Section() {
                 </Td>
                 <Td className="text-right pr-6">
                   <div className="inline-flex items-center gap-3 text-muted-foreground">
-                    <button aria-label="Visualizar" className="hover:text-foreground">
+                    <button
+                      aria-label="Visualizar"
+                      onClick={() => setDetailRow(r)}
+                      className={r.status === "Erro" ? "opacity-40 cursor-not-allowed" : "hover:text-foreground"}
+                      disabled={r.status === "Erro"}
+                    >
                       <Eye className="h-4 w-4" />
                     </button>
                     <button
@@ -196,9 +203,116 @@ function History_Section() {
           </div>
         </div>
       </div>
+
+      <GuideDetailsModal row={detailRow} onClose={() => setDetailRow(null)} />
     </section>
   );
 }
+
+function GuideDetailsModal({ row, onClose }: { row: Row | null; onClose: () => void }) {
+  const open = row !== null;
+  const details = row
+    ? {
+        header: [
+          { label: "Nº guia prestador", value: "178499" },
+          { label: "Nº guia operadora", value: "42263120251127828416" },
+          { label: "Senha", value: "A045158" },
+          { label: "Data autorização", value: "27/11/2025" },
+          { label: "Validade senha", value: "27/12/2025" },
+          { label: "Registro ANS", value: "366871" },
+        ],
+        beneficiary: [
+          { label: "Nome", value: row.patient !== "—" ? row.patient : "Não informado" },
+          { label: "Nome social", value: "Não informado" },
+          { label: "Nº carteira", value: "010170255406" },
+          { label: "Validade carteira", value: "29/12/2029" },
+          { label: "Atend. RN", value: "Não" },
+        ],
+      }
+    : null;
+
+  return (
+    <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
+      <DialogContent className="max-w-6xl p-0 gap-0 max-h-[92vh] overflow-hidden">
+        <DialogHeader className="px-8 pt-6 pb-5 border-b border-border">
+          <div className="flex items-center gap-2">
+            <FileUp className="h-5 w-5 text-primary" />
+            <DialogTitle className="text-xl">Detalhes da guia</DialogTitle>
+          </div>
+          {row && (
+            <div className="mt-1 text-sm text-muted-foreground">
+              {row.file} • ID: {row.id}
+            </div>
+          )}
+          {row && (
+            <div className="mt-3">
+              <TypeBadge type={row.type} />
+            </div>
+          )}
+        </DialogHeader>
+
+        {row && details && (
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 p-6 bg-muted/30 overflow-y-auto">
+            <div className="rounded-xl border border-border bg-card p-6 space-y-4">
+              <div className="text-sm font-medium">Arquivo enviado: {row.file}</div>
+              <div className="rounded-lg border border-border bg-muted/40 aspect-[3/4] flex items-center justify-center text-muted-foreground text-sm">
+                Pré-visualização do arquivo
+              </div>
+              <div className="flex justify-end">
+                <button className="inline-flex items-center gap-2 rounded-lg bg-primary text-primary-foreground px-4 py-2 text-sm font-medium hover:bg-primary/90 transition-colors">
+                  <FileUp className="h-4 w-4" />
+                  Baixar arquivo
+                </button>
+              </div>
+            </div>
+
+            <div className="space-y-6">
+              <DetailCard title="Cabeçalho" icon={<Info className="h-5 w-5 text-primary" />} items={details.header} />
+              <DetailCard title="Beneficiário" icon={<Info className="h-5 w-5 text-primary" />} items={details.beneficiary} />
+            </div>
+          </div>
+        )}
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+function DetailCard({
+  title,
+  icon,
+  items,
+}: {
+  title: string;
+  icon: React.ReactNode;
+  items: { label: string; value: string }[];
+}) {
+  return (
+    <div className="rounded-xl border border-border bg-card p-6">
+      <div className="flex items-center gap-2 mb-4">
+        {icon}
+        <h3 className="text-lg font-semibold">{title}</h3>
+      </div>
+      <dl className="divide-y divide-border">
+        {items.map((it) => (
+          <div key={it.label} className="flex items-center justify-between gap-4 py-3">
+            <dt className="text-sm text-muted-foreground">{it.label}</dt>
+            <dd className="flex items-center gap-2 text-sm font-medium text-foreground text-right">
+              <span className="truncate max-w-[280px]">{it.value}</span>
+              <button
+                aria-label={`Copiar ${it.label}`}
+                onClick={() => navigator.clipboard?.writeText(it.value)}
+                className="text-muted-foreground hover:text-foreground"
+              >
+                <ClipboardCopy className="h-3.5 w-3.5" />
+              </button>
+            </dd>
+          </div>
+        ))}
+      </dl>
+    </div>
+  );
+}
+
 
 function Th({ children, className = "" }: { children: React.ReactNode; className?: string }) {
   return <th className={`px-6 py-3 font-medium ${className}`}>{children}</th>;
