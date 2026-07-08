@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import {
   Upload,
   FileUp,
@@ -555,7 +555,36 @@ function ProcedureTable({ columns, rows }: { columns: string[]; rows: string[][]
 function GuidePreview({ src, alt }: { src: string; alt: string }) {
   const [zoom, setZoom] = useState(1);
   const [expanded, setExpanded] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const dragStart = useRef({ x: 0, y: 0, scrollLeft: 0, scrollTop: 0 });
   const clamp = (v: number) => Math.min(4, Math.max(0.5, v));
+  const canPan = zoom > 1;
+
+  const onPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (!canPan || !scrollRef.current) return;
+    setIsDragging(true);
+    scrollRef.current.setPointerCapture(e.pointerId);
+    dragStart.current = {
+      x: e.clientX,
+      y: e.clientY,
+      scrollLeft: scrollRef.current.scrollLeft,
+      scrollTop: scrollRef.current.scrollTop,
+    };
+  };
+
+  const onPointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (!isDragging || !scrollRef.current) return;
+    scrollRef.current.scrollLeft = dragStart.current.scrollLeft - (e.clientX - dragStart.current.x);
+    scrollRef.current.scrollTop = dragStart.current.scrollTop - (e.clientY - dragStart.current.y);
+  };
+
+  const onPointerUp = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (!isDragging) return;
+    setIsDragging(false);
+    scrollRef.current?.releasePointerCapture(e.pointerId);
+  };
+
 
   const controls = (
     <div className="absolute top-3 left-1/2 -translate-x-1/2 z-10 flex items-center gap-1 rounded-full border border-border bg-card/95 backdrop-blur px-2 py-1 shadow-sm">
@@ -611,18 +640,26 @@ function GuidePreview({ src, alt }: { src: string; alt: string }) {
     <>
       <div className="relative rounded-lg border border-border bg-muted/40 overflow-hidden h-full min-h-[400px]">
         {controls}
-        <div className="absolute inset-0 overflow-auto">
+        <div
+          ref={scrollRef}
+          onPointerDown={onPointerDown}
+          onPointerMove={onPointerMove}
+          onPointerUp={onPointerUp}
+          onPointerCancel={onPointerUp}
+          className={`absolute inset-0 overflow-auto ${canPan ? (isDragging ? "cursor-grabbing" : "cursor-grab") : ""}`}
+        >
           <div className="min-h-full min-w-full flex items-center justify-center p-4">
             <img
               src={src}
               alt={alt}
               style={{ transform: `scale(${zoom})`, transformOrigin: "center center" }}
-              className="max-h-full max-w-full w-auto h-auto object-contain transition-transform duration-150 select-none"
+              className="max-h-full max-w-full w-auto h-auto object-contain transition-transform duration-150 select-none pointer-events-none"
               draggable={false}
             />
           </div>
         </div>
       </div>
+
 
 
       {expanded && (
