@@ -71,13 +71,15 @@ const rows: Row[] = [
 ];
 
 function Page() {
+  const [extraRows, setExtraRows] = useState<Row[]>([]);
+
   return (
     <div className="flex min-h-screen w-full bg-background text-foreground">
       <AppSidebar activeKey="extrair" />
       <main className="flex-1 flex flex-col min-h-screen">
         <div className="w-full space-y-8 flex-1 px-8 pt-8 pb-16">
-          <Upload_Section />
-          <History_Section />
+          <Upload_Section onProcessed={(row) => setExtraRows((prev) => [row, ...prev])} />
+          <History_Section extraRows={extraRows} />
         </div>
         <SiteFooter />
       </main>
@@ -85,6 +87,7 @@ function Page() {
     </div>
   );
 }
+
 
 
 /* ---------- Upload Section ---------- */
@@ -97,8 +100,9 @@ type QueueItem = {
   done: boolean;
 };
 
-function Upload_Section() {
+function Upload_Section({ onProcessed }: { onProcessed: (row: Row) => void }) {
   const [queue, setQueue] = useState<QueueItem[]>([]);
+
 
   const handleFiles = (files: FileList | null) => {
     if (!files?.length) return;
@@ -131,8 +135,22 @@ function Upload_Section() {
             else stage = "Processamento concluído";
             if (next >= 100) {
               clearInterval(interval);
+              const now = new Date();
+              const date = `${String(now.getDate()).padStart(2, "0")}/${String(now.getMonth() + 1).padStart(2, "0")}/${now.getFullYear()}, ${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
+              onProcessed({
+                file: item.name,
+                id: Number(item.id.toString().slice(-4)),
+                patient: "CONCEICAO APARECIDA LIMA DOS SANTOS",
+                type: "SADT",
+                date,
+                status: "Concluído",
+              });
+              setTimeout(() => {
+                setQueue((p) => p.filter((x) => x.id !== item.id));
+              }, 2000);
               return { ...q, progress: 100, stage, done: true };
             }
+
             return { ...q, progress: next, stage };
           }),
         );
@@ -246,7 +264,9 @@ function Upload_Section() {
 
 /* ---------- History Section ---------- */
 
-function History_Section() {
+function History_Section({ extraRows }: { extraRows: Row[] }) {
+  const allRows = [...extraRows, ...rows];
+
   const [detailRow, setDetailRow] = useState<Row | null>(null);
 
   return (
@@ -285,7 +305,8 @@ function History_Section() {
             </tr>
           </thead>
           <tbody>
-            {rows.map((r, i) => (
+            {allRows.map((r, i) => (
+
               <tr key={i} className="border-t border-border hover:bg-muted/30">
                 <Td>
                   <div className="flex items-center gap-2">
