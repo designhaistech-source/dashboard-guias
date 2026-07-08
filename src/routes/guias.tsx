@@ -20,7 +20,13 @@ import {
   Check,
   Info,
   Loader2,
+  ZoomIn,
+  ZoomOut,
+  Maximize2,
+  RotateCcw,
+  X,
 } from "lucide-react";
+import guiaMock from "@/assets/guia-mock.png.asset.json";
 import { toast } from "sonner";
 import {
   Dialog,
@@ -286,10 +292,8 @@ function GuideDetailsModal({ row, onClose }: { row: Row | null; onClose: () => v
         {row && details && (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 p-6 bg-muted/30 overflow-y-auto flex-1">
             <div className="lg:sticky lg:top-0 lg:self-start rounded-xl border border-border bg-card p-6 space-y-4">
-              <div className="text-sm font-medium">Arquivo enviado: {row.file}</div>
-              <div className="rounded-lg border border-border bg-muted/40 aspect-[3/4] flex items-center justify-center text-muted-foreground text-sm">
-                Pré-visualização do arquivo
-              </div>
+              <div className="text-sm font-medium truncate">Arquivo enviado: {row.file}</div>
+              <GuidePreview src={guiaMock.url} alt={row.file} />
               <div className="flex justify-end">
                 <button className="inline-flex items-center gap-2 rounded-lg bg-primary text-primary-foreground px-4 py-2 text-sm font-medium hover:bg-primary/90 transition-colors">
                   <FileUp className="h-4 w-4" />
@@ -297,6 +301,7 @@ function GuideDetailsModal({ row, onClose }: { row: Row | null; onClose: () => v
                 </button>
               </div>
             </div>
+
 
             <div className="space-y-6 min-w-0">
               <DetailCard title="Cabeçalho" icon={<Info className="h-5 w-5 text-primary" />} items={details.header} />
@@ -389,6 +394,100 @@ function ProcedureTable({ columns, rows }: { columns: string[]; rows: string[][]
         </tbody>
       </table>
     </div>
+  );
+}
+
+function GuidePreview({ src, alt }: { src: string; alt: string }) {
+  const [zoom, setZoom] = useState(1);
+  const [expanded, setExpanded] = useState(false);
+  const clamp = (v: number) => Math.min(4, Math.max(0.5, v));
+
+  const controls = (
+    <div className="absolute top-3 left-1/2 -translate-x-1/2 z-10 flex items-center gap-1 rounded-full border border-border bg-card/95 backdrop-blur px-2 py-1 shadow-sm">
+      <button
+        aria-label="Diminuir zoom"
+        onClick={() => setZoom((z) => clamp(z - 0.25))}
+        className="p-1.5 rounded-full hover:bg-muted text-muted-foreground hover:text-foreground"
+      >
+        <ZoomOut className="h-4 w-4" />
+      </button>
+      <span className="text-xs font-medium tabular-nums w-12 text-center">
+        {Math.round(zoom * 100)}%
+      </span>
+      <button
+        aria-label="Aumentar zoom"
+        onClick={() => setZoom((z) => clamp(z + 0.25))}
+        className="p-1.5 rounded-full hover:bg-muted text-muted-foreground hover:text-foreground"
+      >
+        <ZoomIn className="h-4 w-4" />
+      </button>
+      <button
+        aria-label="Redefinir zoom"
+        onClick={() => setZoom(1)}
+        className="ml-1 flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-muted"
+      >
+        <RotateCcw className="h-3 w-3" /> Reset
+      </button>
+      <button
+        aria-label={expanded ? "Reduzir" : "Expandir"}
+        onClick={() => setExpanded((v) => !v)}
+        className="p-1.5 rounded-full hover:bg-muted text-muted-foreground hover:text-foreground"
+      >
+        <Maximize2 className="h-4 w-4" />
+      </button>
+    </div>
+  );
+
+  return (
+    <>
+      <div className="relative rounded-lg border border-border bg-muted/40 overflow-hidden aspect-[3/4]">
+        {controls}
+        <div className="absolute inset-0 overflow-auto">
+          <div className="min-h-full min-w-full flex items-start justify-center p-4">
+            <img
+              src={src}
+              alt={alt}
+              style={{ transform: `scale(${zoom})`, transformOrigin: "top center" }}
+              className="max-w-full h-auto transition-transform duration-150 select-none"
+              draggable={false}
+            />
+          </div>
+        </div>
+      </div>
+
+      {expanded && (
+        <div
+          className="fixed inset-0 z-[100] bg-background/95 backdrop-blur-sm flex flex-col"
+          role="dialog"
+          aria-modal="true"
+        >
+          <div className="flex items-center justify-between px-6 py-4 border-b border-border">
+            <div className="text-sm font-medium truncate">{alt}</div>
+            <button
+              aria-label="Fechar"
+              onClick={() => setExpanded(false)}
+              className="p-2 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted"
+            >
+              <X className="h-5 w-5" />
+            </button>
+          </div>
+          <div className="relative flex-1 overflow-hidden">
+            {controls}
+            <div className="absolute inset-0 overflow-auto">
+              <div className="min-h-full min-w-full flex items-start justify-center p-6">
+                <img
+                  src={src}
+                  alt={alt}
+                  style={{ transform: `scale(${zoom})`, transformOrigin: "top center" }}
+                  className="max-w-full h-auto transition-transform duration-150 select-none"
+                  draggable={false}
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
   );
 }
 
