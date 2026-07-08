@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useRef, useState } from "react";
+import { useState } from "react";
 import {
   Upload,
   FileUp,
@@ -90,8 +90,6 @@ function Page() {
 /* ---------- Upload Section ---------- */
 
 function Upload_Section() {
-  const fileInputRef = useRef<HTMLInputElement>(null);
-
   const handleFiles = (files: FileList | null) => {
     if (!files?.length) return;
 
@@ -124,21 +122,20 @@ function Upload_Section() {
           ou clique para selecionar arquivos (PDF, imagem)
         </p>
         <input
-          ref={fileInputRef}
+          id="guide-file-upload"
           type="file"
           accept=".pdf,image/*"
           multiple
           className="sr-only"
           onChange={(event) => handleFiles(event.target.files)}
         />
-        <button
-          type="button"
-          onClick={() => fileInputRef.current?.click()}
+        <label
+          htmlFor="guide-file-upload"
           className="mt-6 inline-flex items-center gap-2 rounded-lg border border-border bg-card px-4 py-2 text-sm font-medium shadow-sm hover:bg-muted transition-colors"
         >
           <FileUp className="h-4 w-4" />
           Selecionar arquivos
-        </button>
+        </label>
       </div>
     </section>
   );
