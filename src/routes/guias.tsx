@@ -71,13 +71,15 @@ const rows: Row[] = [
 ];
 
 function Page() {
+  const [extraRows, setExtraRows] = useState<Row[]>([]);
+
   return (
     <div className="flex min-h-screen w-full bg-background text-foreground">
       <AppSidebar activeKey="extrair" />
       <main className="flex-1 flex flex-col min-h-screen">
         <div className="w-full space-y-8 flex-1 px-8 pt-8 pb-16">
-          <Upload_Section />
-          <History_Section />
+          <Upload_Section onProcessed={(row) => setExtraRows((prev) => [row, ...prev])} />
+          <History_Section extraRows={extraRows} />
         </div>
         <SiteFooter />
       </main>
@@ -85,6 +87,7 @@ function Page() {
     </div>
   );
 }
+
 
 
 /* ---------- Upload Section ---------- */
