@@ -305,7 +305,8 @@ function History_Section({ extraRows }: { extraRows: Row[] }) {
             </tr>
           </thead>
           <tbody>
-            {rows.map((r, i) => (
+            {allRows.map((r, i) => (
+
               <tr key={i} className="border-t border-border hover:bg-muted/30">
                 <Td>
                   <div className="flex items-center gap-2">
