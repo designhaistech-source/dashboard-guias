@@ -228,13 +228,45 @@ function GuideDetailsModal({ row, onClose }: { row: Row | null; onClose: () => v
           { label: "Validade carteira", value: "29/12/2029" },
           { label: "Atend. RN", value: "Não" },
         ],
+        solicitante: [
+          { label: "Nome prestador", value: "CECAN - CENTRO AVANCADO EM ONCOLOGIA" },
+          { label: "Profissional", value: "WILMA SANTIAGO KAMAKURA" },
+          { label: "Especialidade", value: "Não informado" },
+          { label: "Conselho", value: "06" },
+          { label: "Nº conselho", value: "1472" },
+          { label: "UF", value: "Não informado" },
+          { label: "CBO", value: "225315" },
+        ],
+        executante: [
+          { label: "Código operadora", value: "Não informado" },
+          { label: "Nome", value: "CECAN - DENSITOMETRIA OSSEA" },
+          { label: "CNES", value: "Não informado" },
+        ],
+        procedimentosSolicitados: [
+          { tabela: "22", codigo: "40808130", descricao: "DENSITOMETRIA OSSEA - ROTINA: COLUNA E FEMUR OU DOIS SEGMENTOS" },
+        ],
+        procedimentosRealizados: [
+          { data: "Não informado", codigo: "40808130", descricao: "DENSITOMETRIA OSSEA - ROTINA: COLUNA E FEMUR OU DOIS SEGMENTOS" },
+        ],
+        codigosProcedimento: [
+          { codigo: "40808130", proc: "densitometria óssea - rotina: coluna e fêmur (ou dois segmentos)", ref: "Tuss" },
+          { codigo: "204060028", proc: "densitometria ossea duo-energetica de coluna (vertebras lombares)", ref: "Sigtap" },
+        ],
+        financeiro: [
+          { label: "Honorários", value: "Não informado" },
+          { label: "Materiais", value: "Não informado" },
+          { label: "OPME", value: "Não informado" },
+          { label: "Medicamentos", value: "Não informado" },
+          { label: "Gases", value: "Não informado" },
+          { label: "Procedimentos", value: "Não informado" },
+        ],
       }
     : null;
 
   return (
     <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
-      <DialogContent className="max-w-6xl p-0 gap-0 max-h-[92vh] overflow-hidden">
-        <DialogHeader className="px-8 pt-6 pb-5 border-b border-border">
+      <DialogContent className="max-w-6xl p-0 gap-0 max-h-[92vh] overflow-hidden flex flex-col">
+        <DialogHeader className="px-8 pt-6 pb-5 border-b border-border shrink-0">
           <div className="flex items-center gap-2">
             <FileUp className="h-5 w-5 text-primary" />
             <DialogTitle className="text-xl">Detalhes da guia</DialogTitle>
@@ -252,8 +284,8 @@ function GuideDetailsModal({ row, onClose }: { row: Row | null; onClose: () => v
         </DialogHeader>
 
         {row && details && (
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 p-6 bg-muted/30 overflow-y-auto">
-            <div className="rounded-xl border border-border bg-card p-6 space-y-4">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 p-6 bg-muted/30 overflow-y-auto flex-1">
+            <div className="lg:sticky lg:top-0 lg:self-start rounded-xl border border-border bg-card p-6 space-y-4">
               <div className="text-sm font-medium">Arquivo enviado: {row.file}</div>
               <div className="rounded-lg border border-border bg-muted/40 aspect-[3/4] flex items-center justify-center text-muted-foreground text-sm">
                 Pré-visualização do arquivo
@@ -266,14 +298,97 @@ function GuideDetailsModal({ row, onClose }: { row: Row | null; onClose: () => v
               </div>
             </div>
 
-            <div className="space-y-6">
+            <div className="space-y-6 min-w-0">
               <DetailCard title="Cabeçalho" icon={<Info className="h-5 w-5 text-primary" />} items={details.header} />
               <DetailCard title="Beneficiário" icon={<Info className="h-5 w-5 text-primary" />} items={details.beneficiary} />
+              <DetailCard title="Prestador solicitante" icon={<Info className="h-5 w-5 text-primary" />} items={details.solicitante} />
+              <DetailCard title="Prestador executante" icon={<Info className="h-5 w-5 text-primary" />} items={details.executante} />
+
+              <SectionCard title="Procedimentos solicitados">
+                <ProcedureTable
+                  columns={["Tabela", "Código", "Descrição"]}
+                  rows={details.procedimentosSolicitados.map((p) => [p.tabela, p.codigo, p.descricao])}
+                />
+              </SectionCard>
+
+              <SectionCard title="Procedimentos realizados">
+                <ProcedureTable
+                  columns={["Data", "Código", "Descrição"]}
+                  rows={details.procedimentosRealizados.map((p) => [p.data, p.codigo, p.descricao])}
+                />
+              </SectionCard>
+
+              <SectionCard title="Códigos de procedimento">
+                <ProcedureTable
+                  columns={["Código", "Procedimento", "Referência"]}
+                  rows={details.codigosProcedimento.map((p) => [p.codigo, p.proc, p.ref])}
+                />
+              </SectionCard>
+
+              <SectionCard title="Financeiro" icon={<span className="text-primary font-bold">$</span>}>
+                <div className="grid grid-cols-2 gap-3">
+                  {details.financeiro.map((f) => (
+                    <div key={f.label} className="rounded-lg border border-border bg-muted/30 p-4 text-center">
+                      <div className="text-xs text-muted-foreground">{f.label}</div>
+                      <div className="mt-1 text-sm font-semibold">{f.value}</div>
+                    </div>
+                  ))}
+                </div>
+                <div className="mt-3 rounded-lg border border-primary/30 bg-primary/5 p-4 text-center">
+                  <div className="text-xs text-muted-foreground">Valor total geral</div>
+                  <div className="mt-1 text-base font-bold text-primary">Não informado</div>
+                </div>
+              </SectionCard>
             </div>
           </div>
         )}
       </DialogContent>
     </Dialog>
+  );
+}
+
+function SectionCard({
+  title,
+  icon,
+  children,
+}: {
+  title: string;
+  icon?: React.ReactNode;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="rounded-xl border border-border bg-card p-6">
+      <div className="flex items-center gap-2 mb-4">
+        {icon}
+        <h3 className="text-lg font-semibold">{title}</h3>
+      </div>
+      {children}
+    </div>
+  );
+}
+
+function ProcedureTable({ columns, rows }: { columns: string[]; rows: string[][] }) {
+  return (
+    <div className="overflow-x-auto">
+      <table className="w-full text-sm">
+        <thead>
+          <tr className="text-left text-muted-foreground">
+            {columns.map((c) => (
+              <th key={c} className="pb-3 pr-4 font-medium">{c}</th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {rows.map((r, i) => (
+            <tr key={i} className="border-t border-border">
+              {r.map((cell, j) => (
+                <td key={j} className="py-3 pr-4 align-top">{cell}</td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
   );
 }
 
