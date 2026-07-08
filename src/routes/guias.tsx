@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import {
   Upload,
   FileUp,
@@ -90,13 +90,32 @@ function Page() {
 /* ---------- Upload Section ---------- */
 
 function Upload_Section() {
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleFiles = (files: FileList | null) => {
+    if (!files?.length) return;
+
+    toast.success(
+      files.length === 1
+        ? `Arquivo selecionado: ${files[0].name}`
+        : `${files.length} arquivos selecionados`,
+    );
+  };
+
   return (
     <section className="space-y-4">
       <div className="flex items-center justify-between gap-3 flex-wrap">
         <h1 className="text-2xl font-bold tracking-tight">Processamento de guias</h1>
         <RequiredFieldsModal />
       </div>
-      <div className="rounded-2xl border-2 border-dashed border-border bg-card px-6 py-14 flex flex-col items-center justify-center text-center">
+      <div
+        className="rounded-2xl border-2 border-dashed border-border bg-card px-6 py-14 flex flex-col items-center justify-center text-center"
+        onDragOver={(event) => event.preventDefault()}
+        onDrop={(event) => {
+          event.preventDefault();
+          handleFiles(event.dataTransfer.files);
+        }}
+      >
         <div className="mb-5 grid place-items-center h-16 w-16 rounded-full bg-muted">
           <Upload className="h-7 w-7 text-muted-foreground" />
         </div>
@@ -104,7 +123,19 @@ function Upload_Section() {
         <p className="mt-1 text-sm text-muted-foreground">
           ou clique para selecionar arquivos (PDF, imagem)
         </p>
-        <button className="mt-6 inline-flex items-center gap-2 rounded-lg border border-border bg-card px-4 py-2 text-sm font-medium shadow-sm hover:bg-muted transition-colors">
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept=".pdf,image/*"
+          multiple
+          className="sr-only"
+          onChange={(event) => handleFiles(event.target.files)}
+        />
+        <button
+          type="button"
+          onClick={() => fileInputRef.current?.click()}
+          className="mt-6 inline-flex items-center gap-2 rounded-lg border border-border bg-card px-4 py-2 text-sm font-medium shadow-sm hover:bg-muted transition-colors"
+        >
           <FileUp className="h-4 w-4" />
           Selecionar arquivos
         </button>
