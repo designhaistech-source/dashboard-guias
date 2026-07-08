@@ -135,8 +135,22 @@ function Upload_Section({ onProcessed }: { onProcessed: (row: Row) => void }) {
             else stage = "Processamento concluído";
             if (next >= 100) {
               clearInterval(interval);
+              const now = new Date();
+              const date = `${String(now.getDate()).padStart(2, "0")}/${String(now.getMonth() + 1).padStart(2, "0")}/${now.getFullYear()}, ${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
+              onProcessed({
+                file: item.name,
+                id: Number(item.id.toString().slice(-4)),
+                patient: "CONCEICAO APARECIDA LIMA DOS SANTOS",
+                type: "SADT",
+                date,
+                status: "Concluído",
+              });
+              setTimeout(() => {
+                setQueue((p) => p.filter((x) => x.id !== item.id));
+              }, 2000);
               return { ...q, progress: 100, stage, done: true };
             }
+
             return { ...q, progress: next, stage };
           }),
         );
