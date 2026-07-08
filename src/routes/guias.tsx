@@ -20,7 +20,13 @@ import {
   Check,
   Info,
   Loader2,
+  ZoomIn,
+  ZoomOut,
+  Maximize2,
+  RotateCcw,
+  X,
 } from "lucide-react";
+import guiaMock from "@/assets/guia-mock.png.asset.json";
 import { toast } from "sonner";
 import {
   Dialog,
