@@ -595,16 +595,6 @@ function GuidePreview({ src, alt }: { src: string; alt: string }) {
       >
         <ZoomOut className="h-4 w-4" />
       </button>
-      <input
-        type="range"
-        aria-label="Ajustar zoom"
-        min={50}
-        max={400}
-        step={5}
-        value={Math.round(zoom * 100)}
-        onChange={(e) => setZoom(clamp(Number(e.target.value) / 100))}
-        className="w-32 h-1 accent-primary cursor-pointer"
-      />
       <span className="text-xs font-medium tabular-nums w-12 text-center">
         {Math.round(zoom * 100)}%
       </span>
@@ -615,6 +605,7 @@ function GuidePreview({ src, alt }: { src: string; alt: string }) {
       >
         <ZoomIn className="h-4 w-4" />
       </button>
+
 
       <button
         aria-label="Redefinir zoom para 100%"
