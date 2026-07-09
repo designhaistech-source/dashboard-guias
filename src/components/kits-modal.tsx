@@ -236,6 +236,12 @@ export function KitsModal({
         className="relative w-full max-w-3xl max-h-[90vh] rounded-2xl border border-border bg-card shadow-xl flex flex-col overflow-hidden focus:outline-none"
       >
 
+        <div
+          className={`flex flex-col flex-1 min-h-0 transition-all duration-200 ${
+            pendente ? "opacity-40 blur-[1px] pointer-events-none select-none" : ""
+          }`}
+          aria-hidden={pendente ? true : undefined}
+        >
         {/* Header */}
         <div className="px-5 py-4 border-b border-border flex items-center justify-between gap-3">
           <div className="flex items-center gap-3 min-w-0">
