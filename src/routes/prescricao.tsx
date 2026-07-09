@@ -19,8 +19,6 @@ import {
   RefreshCw,
   Trash2,
   ChevronDown,
-  ChevronLeft,
-  ChevronRight,
   Cloud,
   BookMarked,
 } from "lucide-react";
@@ -1012,120 +1010,55 @@ function PrescricaoForm() {
   const fmtHora = (ts: number) =>
     new Date(ts).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
 
-  const canGoStep2 =
-    paciente.trim().length > 0 && (!especial || (cpfValido && enderecoValido));
-  const canGoStep3 =
-    canGoStep2 && itens.length > 0 && posologiasInvalidas.length === 0;
 
-  const goStep = (n: 1 | 2 | 3) => {
-    if (n === 1) return setStep(1);
-    if (n === 2 && canGoStep2) return setStep(2);
-    if (n === 3 && canGoStep3) return setStep(3);
-    if (n === 2 && !canGoStep2) {
-      toast.error(
-        !paciente.trim()
-          ? "Informe o nome do paciente para avançar."
-          : "Complete CPF e endereço do paciente para receita especial.",
-      );
-    } else if (n === 3 && !canGoStep3) {
-      toast.error(
-        itens.length === 0
-          ? "Adicione ao menos um medicamento."
-          : "Corrija as posologias inválidas antes de continuar.",
-      );
-    }
-  };
+
 
   return (
     <div className="space-y-5 pb-8">
-      {/* Stepper */}
-      <div className="rounded-2xl border border-border bg-card px-5 py-4">
-        <div className="flex items-center justify-between gap-4">
-          <ol className="flex items-center gap-2 flex-1 min-w-0">
-            {(
-              [
-                { n: 1, label: "Paciente" },
-                { n: 2, label: "Medicamentos" },
-                { n: 3, label: "Revisar e emitir" },
-              ] as const
-            ).map((s, idx, arr) => {
-              const active = step === s.n;
-              const done = step > s.n;
-              const clickable =
-                s.n === 1 ||
-                (s.n === 2 && (canGoStep2 || step >= 2)) ||
-                (s.n === 3 && (canGoStep3 || step >= 3));
-              return (
-                <li key={s.n} className="flex items-center gap-2 min-w-0">
-                  <button
-                    type="button"
-                    onClick={() => clickable && goStep(s.n)}
-                    disabled={!clickable}
-                    className={`flex items-center gap-2 rounded-full pl-1.5 pr-3 py-1 text-sm transition-colors ${
-                      active
-                        ? "bg-primary/10 text-primary"
-                        : done
-                          ? "text-foreground hover:bg-muted"
-                          : "text-muted-foreground"
-                    } ${clickable ? "cursor-pointer" : "cursor-not-allowed opacity-60"}`}
-                  >
-                    <span
-                      className={`grid place-items-center h-6 w-6 rounded-full text-[11px] font-semibold ${
-                        active
-                          ? "bg-primary text-primary-foreground"
-                          : done
-                            ? "bg-emerald-500/15 text-emerald-600 dark:text-emerald-300"
-                            : "bg-muted text-muted-foreground"
-                      }`}
-                    >
-                      {done ? <Check className="h-3.5 w-3.5" /> : s.n}
-                    </span>
-                    <span className="font-medium hidden sm:inline">{s.label}</span>
-                  </button>
-                  {idx < arr.length - 1 && (
-                    <span
-                      className={`h-px w-6 sm:w-10 ${done ? "bg-emerald-500/40" : "bg-border"}`}
-                    />
-                  )}
-                </li>
-              );
-            })}
-          </ol>
-          {savedAt && (
-            <div
-              className="hidden md:flex items-center gap-1.5 text-[11px] text-muted-foreground"
-              title={`Rascunho salvo às ${fmtHora(savedAt)}`}
-            >
-              <Cloud className="h-3.5 w-3.5" />
-              salvo {fmtHora(savedAt)}
-            </div>
-          )}
+      {/* Header */}
+      <div className="rounded-2xl border border-border bg-card px-5 py-3 flex items-center justify-between gap-3">
+        <div className="min-w-0">
+          <h1 className="text-lg font-semibold leading-tight">Emitir prescrição</h1>
+          <p className="text-xs text-muted-foreground">
+            Preencha as seções em qualquer ordem — o botão de emitir libera quando houver paciente e ao menos um medicamento.
+          </p>
         </div>
-        {rascunhoRestaurado && (
-          <div className="mt-3 flex items-center justify-between gap-2 text-xs">
-            <span className="text-muted-foreground">
-              Rascunho recuperado de {fmtHora(rascunhoRestaurado)}.
-            </span>
-            <div className="flex items-center gap-3">
-              <button
-                onClick={() => setRascunhoRestaurado(null)}
-                className="text-muted-foreground hover:text-foreground"
-              >
-                Ocultar
-              </button>
-              <button
-                onClick={descartarRascunho}
-                className="text-destructive hover:underline"
-              >
-                Descartar
-              </button>
-            </div>
+        {savedAt && (
+          <div
+            className="hidden md:flex items-center gap-1.5 text-[11px] text-muted-foreground shrink-0"
+            title={`Rascunho salvo às ${fmtHora(savedAt)}`}
+          >
+            <Cloud className="h-3.5 w-3.5" />
+            salvo {fmtHora(savedAt)}
           </div>
         )}
       </div>
 
-      {/* Step 1 — Paciente */}
-      {step === 1 && (
+      {rascunhoRestaurado && (
+        <div className="rounded-xl border border-border bg-card px-4 py-2 flex items-center justify-between gap-2 text-xs">
+          <span className="text-muted-foreground">
+            Rascunho recuperado de {fmtHora(rascunhoRestaurado)}.
+          </span>
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => setRascunhoRestaurado(null)}
+              className="text-muted-foreground hover:text-foreground"
+            >
+              Ocultar
+            </button>
+            <button
+              onClick={descartarRascunho}
+              className="text-destructive hover:underline"
+            >
+              Descartar
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Seção 1 — Paciente */}
+      <section id="sec-paciente" className="scroll-mt-4">
+
         <div className="rounded-2xl border border-border bg-card p-5 space-y-5">
           <div>
             <h2 className="text-base font-semibold">Dados do paciente</h2>
@@ -1268,11 +1201,11 @@ function PrescricaoForm() {
             )}
           </div>
         </div>
-      )}
+      </section>
 
-      {/* Step 2 — Medicamentos */}
-      {step === 2 && (
-        <>
+      {/* Seção 2 — Medicamentos */}
+      <section id="sec-medicamentos" className="scroll-mt-4 space-y-5">
+
           <div className="rounded-2xl border border-border bg-card p-5 space-y-4">
             <div>
               <h2 className="text-base font-semibold">Buscar e adicionar medicamentos</h2>
@@ -1500,11 +1433,11 @@ function PrescricaoForm() {
               onLimpar={limparHistorico}
             />
           )}
-        </>
-      )}
+      </section>
 
-      {/* Step 3 — Revisar e emitir */}
-      {step === 3 && (
+      {/* Seção 3 — Revisar e emitir */}
+      <section id="sec-revisar" className="scroll-mt-4">
+
         <div
           ref={receitaRef}
           className={`rounded-2xl border bg-card ${
@@ -1568,15 +1501,18 @@ function PrescricaoForm() {
                       <button
                         type="button"
                         onClick={() => {
-                          if (
+                          const targetId =
                             p.msg.startsWith("Nome") ||
                             p.msg.includes("CPF") ||
                             p.msg.includes("Endereço")
-                          )
-                            setStep(1);
-                          else setStep(2);
-                          setTimeout(() => p.focus?.(), 60);
+                              ? "sec-paciente"
+                              : "sec-medicamentos";
+                          document
+                            .getElementById(targetId)
+                            ?.scrollIntoView({ behavior: "smooth", block: "start" });
+                          setTimeout(() => p.focus?.(), 300);
                         }}
+
                         className="text-left underline-offset-2 hover:underline hover:text-destructive"
                       >
                         → {p.msg}
@@ -1769,47 +1705,8 @@ function PrescricaoForm() {
             </p>
           </div>
         </div>
-      )}
+      </section>
 
-      {/* Wizard footer navigation */}
-      <div className="flex items-center justify-between gap-3 pt-2">
-        <button
-          type="button"
-          onClick={() => step > 1 && setStep((s) => (s - 1) as 1 | 2 | 3)}
-          disabled={step === 1}
-          className="inline-flex items-center gap-1.5 rounded-lg border border-border px-4 py-2 text-sm font-medium text-foreground hover:bg-muted disabled:opacity-40 disabled:cursor-not-allowed"
-        >
-          <ChevronLeft className="h-4 w-4" />
-          Voltar
-        </button>
-
-        {step < 3 ? (
-          <button
-            type="button"
-            onClick={() => goStep((step + 1) as 1 | 2 | 3)}
-            disabled={step === 1 ? !canGoStep2 : !canGoStep3}
-            className="inline-flex items-center gap-1.5 rounded-lg bg-primary px-5 py-2 text-sm font-semibold text-primary-foreground hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {step === 2 && itens.length > 0 && (
-              <span className="rounded-full bg-primary-foreground/20 px-1.5 py-0.5 text-[11px] font-semibold">
-                {itens.length}
-              </span>
-            )}
-            Continuar
-            <ChevronRight className="h-4 w-4" />
-          </button>
-        ) : (
-          <button
-            type="button"
-            onClick={baixarPdf}
-            disabled={!podeEmitir}
-            className="inline-flex items-center gap-1.5 rounded-lg bg-primary px-5 py-2 text-sm font-semibold text-primary-foreground hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            <Download className="h-4 w-4" />
-            Emitir e baixar PDF
-          </button>
-        )}
-      </div>
     </div>
   );
 }
