@@ -28,6 +28,7 @@ import { jsPDF } from "jspdf";
 import { toast } from "sonner";
 import { AppSidebar } from "@/components/app-sidebar";
 import { SiteFooter } from "@/components/site-footer";
+import { KitsModal } from "@/components/kits-modal";
 import { consumirKitParaAplicar, upsertKit, type Kit } from "@/lib/kits";
 
 
