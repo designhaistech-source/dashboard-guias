@@ -677,7 +677,7 @@ function DashboardPage() {
                 className="relative inline-flex items-center gap-2 rounded-lg border border-border bg-card px-4 py-2 text-sm font-medium text-foreground hover:bg-muted transition-colors"
               >
                 <SlidersHorizontal className="h-4 w-4" />
-                Mais filtros
+                Filtros
                 {activeFilters.length > 0 && (
                   <span className="ml-1 inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-primary px-1.5 text-[11px] font-semibold text-primary-foreground">
                     {activeFilters.length}
