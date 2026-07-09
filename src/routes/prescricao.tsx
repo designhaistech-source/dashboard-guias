@@ -1499,7 +1499,12 @@ function PrescricaoForm() {
                   onClick={imprimir}
                   icon={<Printer className="h-4 w-4" />}
                   disabled={!podeEmitir}
-                  title={!podeEmitir ? "Complete os campos pendentes." : "Ctrl+P"}
+                  title="Ctrl+P"
+                  disabledReason={
+                    pendencias.length > 0
+                      ? `Corrija ${pendencias.length} pendência${pendencias.length > 1 ? "s" : ""} antes de imprimir:\n• ${pendencias.map((p) => p.msg).join("\n• ")}`
+                      : undefined
+                  }
                 >
                   Imprimir
                 </ActionBtn>
@@ -1508,6 +1513,11 @@ function PrescricaoForm() {
                   icon={<Download className="h-4 w-4" />}
                   disabled={!podeEmitir}
                   variant="primary"
+                  disabledReason={
+                    pendencias.length > 0
+                      ? `Corrija ${pendencias.length} pendência${pendencias.length > 1 ? "s" : ""} antes de baixar:\n• ${pendencias.map((p) => p.msg).join("\n• ")}`
+                      : undefined
+                  }
                 >
                   Baixar PDF
                 </ActionBtn>
