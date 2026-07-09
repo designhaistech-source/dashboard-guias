@@ -1982,33 +1982,35 @@ function MedRow({
       type="button"
       onClick={onPick}
       onMouseEnter={onHover}
-      className={`w-full text-left px-4 py-3 transition-colors flex items-start gap-3 ${
+      className={`w-full text-left px-4 py-2.5 transition-colors grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 ${
         highlighted ? "bg-primary/10" : "hover:bg-muted/40"
       }`}
     >
-      <div className="flex-1 min-w-0">
-        <div className="flex items-start gap-2 flex-wrap">
-          <span className="font-semibold text-sm text-foreground">{m.nome}</span>
-          {m.favorito && <span className="text-amber-400 text-sm leading-none">★</span>}
-          <Dot />
-          <span className="text-sm text-foreground/80">{m.forma}</span>
-          <Dot />
-          <span className="text-sm text-foreground/80">{m.fabricante}</span>
-          <Dot />
-          <TipoBadge tipo={m.tipo} />
+      <div className="min-w-0">
+        <div className="flex items-center gap-2 min-w-0">
+          {m.favorito && (
+            <span className="text-amber-400 text-sm leading-none shrink-0" title="Favorito">
+              ★
+            </span>
+          )}
           {m.alerta && (
             <span
-              className="inline-block h-2.5 w-2.5 rounded-sm bg-destructive"
+              className="h-2 w-2 rounded-full bg-destructive shrink-0"
+              title="Alerta clínico"
               aria-label="Alerta"
             />
           )}
+          <span className="font-medium text-sm text-foreground truncate">{m.nome}</span>
+          <span className="text-xs text-muted-foreground truncate hidden sm:inline">
+            · {m.forma}
+          </span>
         </div>
-        <div className="mt-1 text-xs text-muted-foreground uppercase tracking-wide">
-          {m.principios} · {m.classe}
+        <div className="mt-0.5 text-[11px] text-muted-foreground truncate">
+          {m.principios}
         </div>
       </div>
       <span
-        className="shrink-0 mt-0.5 grid place-items-center h-7 w-7 rounded-md border border-border text-muted-foreground"
+        className="shrink-0 grid place-items-center h-7 w-7 rounded-md border border-border text-muted-foreground hover:text-primary hover:border-primary/60 transition-colors"
         aria-label="Selecionar"
       >
         <Plus className="h-4 w-4" />
