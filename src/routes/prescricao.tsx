@@ -22,6 +22,7 @@ import {
   ChevronLeft,
   ChevronRight,
   Cloud,
+  FileText,
 } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { jsPDF } from "jspdf";
@@ -1236,6 +1237,35 @@ function PrescricaoForm() {
       {/* Step 2 — Medicamentos */}
       {step === 2 && (
         <>
+          {/* Resumo da receita */}
+          <div className="rounded-2xl border border-border bg-muted/30 px-4 py-3 flex flex-wrap items-center gap-x-4 gap-y-1.5 text-sm">
+            <div className="flex items-center gap-1.5">
+              <FileText className="h-4 w-4 text-muted-foreground" />
+              <span className="text-muted-foreground">Resumo:</span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <span className="text-muted-foreground">Paciente</span>
+              <span className="font-medium truncate max-w-[240px]">
+                {paciente || "—"}
+              </span>
+            </div>
+            <div className="h-3.5 w-px bg-border" />
+            <div className="flex items-center gap-1.5">
+              <span className="text-muted-foreground">Medicamentos</span>
+              <span className="inline-flex items-center justify-center rounded-full bg-primary/10 text-primary font-semibold min-w-[1.5rem] px-1.5 py-0.5 text-xs">
+                {itens.length}
+              </span>
+            </div>
+            {especial && (
+              <>
+                <div className="h-3.5 w-px bg-border" />
+                <span className="inline-flex items-center gap-1 rounded-full bg-destructive/10 text-destructive px-2 py-0.5 text-[11px] font-semibold">
+                  Receituário especial
+                </span>
+              </>
+            )}
+          </div>
+
           <div className="rounded-2xl border border-border bg-card p-5 space-y-4">
             <div>
               <h2 className="text-base font-semibold">Buscar e adicionar medicamentos</h2>
