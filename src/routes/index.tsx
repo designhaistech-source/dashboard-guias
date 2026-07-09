@@ -1010,10 +1010,11 @@ function DashboardPage() {
 
           <SheetFooter className="mt-6 flex-row justify-between gap-2 sm:justify-between">
             <button
-              onClick={clearAll}
-              className="inline-flex items-center gap-1.5 rounded-md px-3 py-2 text-sm text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+              onClick={clearAllAndApply}
+              disabled={activeFilters.length === 0}
+              className="inline-flex items-center gap-1.5 rounded-md border border-border px-3 py-2 text-sm text-foreground hover:bg-muted transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              Limpar tudo
+              Limpar filtros
             </button>
             <button
               onClick={applyFilters}
