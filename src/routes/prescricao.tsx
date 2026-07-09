@@ -21,6 +21,8 @@ import {
   ChevronDown,
   Cloud,
   BookMarked,
+  AlertCircle,
+  CheckCircle2,
 } from "lucide-react";
 
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -419,7 +421,6 @@ function PrescricaoPage() {
       <AppSidebar activeKey="prescricao" />
       <main className="flex-1 flex flex-col min-h-screen">
         <div className="w-full max-w-5xl mx-auto space-y-6 flex-1 px-8 pt-8 pb-16">
-          <Header />
           <PrescricaoForm />
         </div>
         <SiteFooter />
@@ -1015,13 +1016,18 @@ function PrescricaoForm() {
 
   return (
     <div className="space-y-5 pb-8">
-      {/* Header */}
-      <div className="rounded-2xl border border-border bg-card px-5 py-3 flex items-center justify-between gap-3">
-        <div className="min-w-0">
-          <h1 className="text-lg font-semibold leading-tight">Emitir prescrição</h1>
-          <p className="text-xs text-muted-foreground">
-            Preencha as seções em qualquer ordem — o botão de emitir libera quando houver paciente e ao menos um medicamento.
-          </p>
+      {/* Header unificado */}
+      <div className="rounded-2xl border border-border bg-card px-5 py-4 flex flex-wrap items-center justify-between gap-3">
+        <div className="flex items-center gap-3 min-w-0">
+          <div className="grid place-items-center h-11 w-11 rounded-xl bg-primary/15 text-primary shrink-0">
+            <Pill className="h-5 w-5" />
+          </div>
+          <div className="min-w-0">
+            <h1 className="text-xl font-semibold leading-tight tracking-tight">Emitir prescrição</h1>
+            <p className="text-xs text-muted-foreground">
+              Preencha as seções em qualquer ordem — o botão libera com paciente e ao menos um medicamento.
+            </p>
+          </div>
         </div>
         <div className="flex items-center gap-2 shrink-0">
           {savedAt && (
@@ -1032,6 +1038,29 @@ function PrescricaoForm() {
               <Cloud className="h-3.5 w-3.5" />
               salvo {fmtHora(savedAt)}
             </div>
+          )}
+          {pendencias.length > 0 ? (
+            <button
+              type="button"
+              onClick={() =>
+                document
+                  .getElementById("sec-revisar")
+                  ?.scrollIntoView({ behavior: "smooth", block: "start" })
+              }
+              className="inline-flex items-center gap-1.5 text-xs font-medium rounded-lg border border-destructive/40 bg-destructive/10 text-destructive px-2.5 py-1.5 hover:bg-destructive/15 transition-colors"
+              title="Ver pendências"
+            >
+              <AlertCircle className="h-3.5 w-3.5" />
+              {pendencias.length} pendência{pendencias.length > 1 ? "s" : ""}
+            </button>
+          ) : (
+            <span
+              className="inline-flex items-center gap-1.5 text-xs font-medium rounded-lg border border-emerald-500/40 bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 px-2.5 py-1.5"
+              title="Todos os campos estão válidos"
+            >
+              <CheckCircle2 className="h-3.5 w-3.5" />
+              Pronto para emitir
+            </span>
           )}
           <button
             type="button"
@@ -1050,7 +1079,6 @@ function PrescricaoForm() {
             Histórico {historico.length > 0 && `(${historico.length})`}
           </button>
         </div>
-
       </div>
 
       {rascunhoRestaurado && (
