@@ -132,14 +132,8 @@ export function AppSidebar({ activeKey }: { activeKey: ItemKey }) {
               hint="Emita prescrições médicas para os pacientes."
               collapsed={collapsed}
             />
-            <SidebarItem
-              icon={BookMarked}
-              label="Kits salvos"
-              to="/kits"
-              active={activeKey === "kits"}
-              hint="Modelos reutilizáveis de prescrição para aplicar em receitas com um clique."
-              collapsed={collapsed}
-            />
+
+
 
             <SidebarItem
               icon={Wrench}

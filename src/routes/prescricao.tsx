@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useRef, useState, useEffect } from "react";
 import {
   Pill,
@@ -22,6 +22,7 @@ import {
   ChevronLeft,
   ChevronRight,
   Cloud,
+  BookMarked,
 } from "lucide-react";
 
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -1474,7 +1475,14 @@ function PrescricaoForm() {
             </div>
           )}
 
-          <div className="flex justify-end">
+          <div className="flex justify-end gap-2">
+            <Link
+              to="/kits"
+              className="inline-flex items-center gap-1.5 text-xs rounded-lg border border-border px-2.5 py-1.5 hover:bg-muted transition-colors"
+            >
+              <BookMarked className="h-3.5 w-3.5" />
+              Kits salvos
+            </Link>
             <button
               onClick={() => setHistoricoAberto((v) => !v)}
               className="inline-flex items-center gap-1.5 text-xs rounded-lg border border-border px-2.5 py-1.5 hover:bg-muted transition-colors"
