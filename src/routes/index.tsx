@@ -686,7 +686,18 @@ function DashboardPage() {
     setDraft(filters);
     setFiltersOpen(true);
   };
+  const dateRangeInvalid =
+    !!draft.dataAutorizacaoDe &&
+    !!draft.dataAutorizacaoAte &&
+    draft.dataAutorizacaoDe > draft.dataAutorizacaoAte;
+  const valueRangeInvalid =
+    draft.valorMin !== "" &&
+    draft.valorMax !== "" &&
+    Number(draft.valorMin) > Number(draft.valorMax);
+  const hasErrors = dateRangeInvalid || valueRangeInvalid;
+
   const applyFilters = () => {
+    if (hasErrors) return;
     setFilters(draft);
     setFiltersOpen(false);
     const count = Object.values(draft).filter((v) => v.trim() !== "").length;
