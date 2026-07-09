@@ -1453,18 +1453,8 @@ function PrescricaoForm() {
             </div>
           )}
 
-
-
-          {historicoAberto && (
-            <HistoricoPanel
-              historico={historico}
-              onClose={() => setHistoricoAberto(false)}
-              onReutilizar={reutilizarHistorico}
-              onRemover={removerHistorico}
-              onLimpar={limparHistorico}
-            />
-          )}
       </section>
+
 
       {/* Seção 3 — Revisar e emitir */}
       <section id="sec-revisar" className="scroll-mt-4">
