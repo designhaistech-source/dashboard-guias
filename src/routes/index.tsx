@@ -101,6 +101,15 @@ const typeData = [
   { name: "Odontológica", value: 18, color: "oklch(0.72 0.15 80)" },
 ];
 
+const prestadoresList = [
+  "Clínica São Lucas",
+  "Hospital Santa Marta",
+  "Laboratório Diagnóstico+",
+  "Centro Médico Vida",
+  "Instituto Cardio",
+  "UBS Central",
+];
+
 const procedures = [
   { code: "10101012", name: "Consulta em consultório", count: 64, trend: 12 },
   { code: "40901408", name: "Hemograma completo", count: 47, trend: 8 },
@@ -572,21 +581,63 @@ function FilterField({
   value,
   onChange,
   type = "text",
+  error,
 }: {
   label: string;
   value: string;
   onChange: (v: string) => void;
   type?: string;
+  error?: boolean;
 }) {
   return (
     <div className="flex flex-col gap-1">
       <label className="text-[11px] uppercase tracking-wider text-muted-foreground font-medium">
         {label}
       </label>
-      <Input type={type} value={value} onChange={(e) => onChange(e.target.value)} className="h-9" />
+      <Input
+        type={type}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        aria-invalid={error || undefined}
+        className={`h-9 ${error ? "border-destructive focus-visible:ring-destructive/40" : ""}`}
+      />
     </div>
   );
 }
+
+function FilterSelect({
+  label,
+  value,
+  onChange,
+  options,
+  placeholder = "Todos",
+}: {
+  label: string;
+  value: string;
+  onChange: (v: string) => void;
+  options: string[];
+  placeholder?: string;
+}) {
+  return (
+    <div className="flex flex-col gap-1">
+      <label className="text-[11px] uppercase tracking-wider text-muted-foreground font-medium">
+        {label}
+      </label>
+      <Select value={value || "__all__"} onValueChange={(v) => onChange(v === "__all__" ? "" : v)}>
+        <SelectTrigger className="h-9">
+          <SelectValue placeholder={placeholder} />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="__all__">{placeholder}</SelectItem>
+          {options.map((o) => (
+            <SelectItem key={o} value={o}>{o}</SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+    </div>
+  );
+}
+
 
 const filterLabels: Record<keyof GuideFilters, string> = {
   numGuiaPrestador: "Nº guia prestador",
