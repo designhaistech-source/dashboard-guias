@@ -636,22 +636,6 @@ function DashboardPage() {
               <p className="text-sm text-muted-foreground mt-0.5">Visão geral das guias processadas</p>
             </div>
             <div className="flex items-center gap-2">
-              <div className="inline-flex rounded-lg border border-border bg-card p-1">
-                {(["7d", "30d", "90d"] as Range[]).map((r) => (
-                  <button
-                    key={r}
-                    onClick={() => setRange(r)}
-                    className={[
-                      "px-3 py-1.5 text-sm rounded-md transition-colors",
-                      range === r
-                        ? "bg-primary text-primary-foreground font-medium"
-                        : "text-muted-foreground hover:text-foreground",
-                    ].join(" ")}
-                  >
-                    {r === "7d" ? "7 dias" : r === "30d" ? "30 dias" : "90 dias"}
-                  </button>
-                ))}
-              </div>
               <button
                 onClick={() => generateReportPdf(range, dailyAvg, total)}
                 className="inline-flex items-center gap-2 rounded-lg border border-primary bg-card px-4 py-2 text-sm font-medium text-primary hover:bg-primary/5 transition-colors"
