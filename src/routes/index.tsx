@@ -650,6 +650,12 @@ function DashboardPage() {
     );
   };
   const clearAll = () => setDraft(emptyFilters);
+  const clearAllAndApply = () => {
+    setDraft(emptyFilters);
+    setFilters(emptyFilters);
+    setFiltersOpen(false);
+    toast.success("Filtros limpos.");
+  };
   const removeFilter = (key: keyof GuideFilters) =>
     setFilters((f) => ({ ...f, [key]: "" }));
 
