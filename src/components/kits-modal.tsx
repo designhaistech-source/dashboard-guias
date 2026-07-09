@@ -243,11 +243,20 @@ export function KitsModal({
               <BookMarked className="h-4.5 w-4.5" />
             </div>
             <div className="min-w-0">
-              <h2 className="text-base font-semibold leading-tight">Kits salvos</h2>
-              <p className="text-xs text-muted-foreground truncate">
+              <h2
+                id="kits-modal-title"
+                className="text-base font-semibold leading-tight"
+              >
+                Kits salvos
+              </h2>
+              <p
+                id="kits-modal-desc"
+                className="text-xs text-muted-foreground truncate"
+              >
                 Modelos reutilizáveis — aplique com um clique.
               </p>
             </div>
+
           </div>
           <button
             type="button"
