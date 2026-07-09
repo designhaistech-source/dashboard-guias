@@ -835,6 +835,26 @@ function DashboardPage() {
               </div>
 
               <div>
+                <div className="text-[11px] uppercase tracking-wider text-muted-foreground font-medium mb-2">Atalhos</div>
+                <div className="flex flex-wrap gap-2">
+                  {[
+                    { id: "hoje", label: "Hoje" },
+                    { id: "7d", label: "Últimos 7 dias" },
+                    { id: "30d", label: "Últimos 30 dias" },
+                    { id: "valorAlto", label: "Valor > R$ 1.000" },
+                  ].map((p) => (
+                    <button
+                      key={p.id}
+                      onClick={() => applyPreset(p.id as any)}
+                      className="inline-flex items-center rounded-full border border-border bg-background px-3 py-1 text-xs font-medium text-foreground hover:border-primary hover:bg-primary/5 hover:text-primary transition-colors"
+                    >
+                      {p.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div>
                 <div className="text-[11px] uppercase tracking-wider text-muted-foreground font-medium mb-2">Período de autorização</div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
                   <FilterField label="De" type="date" error={dateRangeInvalid} value={draft.dataAutorizacaoDe} onChange={(v) => setDraft((d) => ({ ...d, dataAutorizacaoDe: v }))} />
