@@ -896,7 +896,7 @@ function DashboardPage() {
               <div>
                 <div className="text-[11px] uppercase tracking-wider text-muted-foreground font-medium mb-2">Período de autorização</div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-                  <FilterField label="De" type="date" error={dateRangeInvalid} value={draft.dataAutorizacaoDe} onChange={(v) => setDraft((d) => ({ ...d, dataAutorizacaoDe: v }))} />
+                  <FilterField label="De" type="date" error={dateRangeInvalid} value={draft.dataAutorizacaoDe} onChange={(v) => setDraft((d) => ({ ...d, dataAutorizacaoDe: v }))} inputRef={firstFieldRef} />
                   <FilterField label="Até" type="date" error={dateRangeInvalid} value={draft.dataAutorizacaoAte} onChange={(v) => setDraft((d) => ({ ...d, dataAutorizacaoAte: v }))} />
                 </div>
                 {dateRangeInvalid && (
