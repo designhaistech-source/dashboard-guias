@@ -913,9 +913,7 @@ function PrescricaoForm() {
     toast.success(`Kit "${kit.nome}" salvo.`, {
       action: {
         label: "Ver kits",
-        onClick: () => {
-          window.location.href = "/kits";
-        },
+        onClick: () => setKitsAberto(true),
       },
     });
   };
