@@ -508,7 +508,7 @@ export function KitsModal({
                     Aplicar kit à receita?
                   </h3>
 
-                  <p className="text-xs text-muted-foreground mt-1">
+                  <p id="kits-confirm-desc" className="text-xs text-muted-foreground mt-1">
                     A receita atual já contém{" "}
                     <strong className="text-foreground">
                       {currentCount}{" "}
