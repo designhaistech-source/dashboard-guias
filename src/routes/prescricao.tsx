@@ -1062,22 +1062,20 @@ function PrescricaoForm() {
               Pronto para emitir
             </span>
           )}
-          <button
-            type="button"
+          <ActionBtn
             onClick={() => setKitsAberto(true)}
-            className="inline-flex items-center gap-1.5 text-xs rounded-lg border border-border px-2.5 py-1.5 hover:bg-muted transition-colors"
+            icon={<BookMarked className="h-3.5 w-3.5" />}
+            size="sm"
           >
-            <BookMarked className="h-3.5 w-3.5" />
             Kits salvos
-          </button>
-          <button
-            type="button"
+          </ActionBtn>
+          <ActionBtn
             onClick={() => setHistoricoAberto((v) => !v)}
-            className="inline-flex items-center gap-1.5 text-xs rounded-lg border border-border px-2.5 py-1.5 hover:bg-muted transition-colors"
+            icon={<History className="h-3.5 w-3.5" />}
+            size="sm"
           >
-            <History className="h-3.5 w-3.5" />
-            Histórico {historico.length > 0 && `(${historico.length})`}
-          </button>
+            Histórico{historico.length > 0 ? ` (${historico.length})` : ""}
+          </ActionBtn>
         </div>
       </div>
 
@@ -1501,7 +1499,12 @@ function PrescricaoForm() {
                   onClick={imprimir}
                   icon={<Printer className="h-4 w-4" />}
                   disabled={!podeEmitir}
-                  title={!podeEmitir ? "Complete os campos pendentes." : "Ctrl+P"}
+                  title="Ctrl+P"
+                  disabledReason={
+                    pendencias.length > 0
+                      ? `Corrija ${pendencias.length} pendência${pendencias.length > 1 ? "s" : ""} antes de imprimir:\n• ${pendencias.map((p) => p.msg).join("\n• ")}`
+                      : undefined
+                  }
                 >
                   Imprimir
                 </ActionBtn>
@@ -1510,6 +1513,11 @@ function PrescricaoForm() {
                   icon={<Download className="h-4 w-4" />}
                   disabled={!podeEmitir}
                   variant="primary"
+                  disabledReason={
+                    pendencias.length > 0
+                      ? `Corrija ${pendencias.length} pendência${pendencias.length > 1 ? "s" : ""} antes de baixar:\n• ${pendencias.map((p) => p.msg).join("\n• ")}`
+                      : undefined
+                  }
                 >
                   Baixar PDF
                 </ActionBtn>
@@ -1774,26 +1782,35 @@ function ActionBtn({
   icon,
   children,
   variant = "default",
+  size = "md",
   disabled,
   title,
+  disabledReason,
 }: {
   onClick: () => void;
   icon: React.ReactNode;
   children: React.ReactNode;
-  variant?: "default" | "primary";
+  variant?: "default" | "primary" | "secondary";
+  size?: "sm" | "md";
   disabled?: boolean;
   title?: string;
+  disabledReason?: string;
 }) {
-  const cls =
+  const variantCls =
     variant === "primary"
       ? "bg-primary text-primary-foreground hover:bg-primary/90 border-primary"
       : "border-border text-foreground hover:bg-muted";
+  const sizeCls =
+    size === "sm" ? "px-2.5 py-1.5 text-xs gap-1.5" : "px-3 py-1.5 text-sm gap-1.5";
+  const effectiveTitle = disabled && disabledReason ? disabledReason : title;
   return (
     <button
+      type="button"
       onClick={onClick}
       disabled={disabled}
-      title={title}
-      className={`inline-flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-sm font-medium transition-colors ${cls} disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-transparent`}
+      aria-disabled={disabled}
+      title={effectiveTitle}
+      className={`inline-flex items-center rounded-lg border font-medium transition-colors ${sizeCls} ${variantCls} disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-transparent`}
     >
       {icon}
       {children}
