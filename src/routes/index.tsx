@@ -740,6 +740,32 @@ function DashboardPage() {
   const removeFilter = (key: keyof GuideFilters) =>
     setFilters((f) => ({ ...f, [key]: "" }));
 
+  const isDirty = useMemo(
+    () => (Object.keys(draft) as (keyof GuideFilters)[]).some((k) => draft[k] !== filters[k]),
+    [draft, filters],
+  );
+  const requestClose = () => {
+    if (isDirty) {
+      const ok = window.confirm("Você tem alterações não aplicadas. Deseja descartá-las?");
+      if (!ok) return;
+    }
+    setDraft(filters);
+    setFiltersOpen(false);
+  };
+  const cancelEdits = () => {
+    setDraft(filters);
+    setFiltersOpen(false);
+  };
+
+  const firstFieldRef = useRef<HTMLInputElement | null>(null);
+  useEffect(() => {
+    if (filtersOpen) {
+      const t = setTimeout(() => firstFieldRef.current?.focus(), 60);
+      return () => clearTimeout(t);
+    }
+  }, [filtersOpen]);
+
+
   const total = useMemo(() => typeData.reduce((s, t) => s + t.value, 0), []);
   const dailyAvg = useMemo(
     () => Math.round(dailyData30.reduce((s, d) => s + d.guias, 0) / dailyData30.length),
