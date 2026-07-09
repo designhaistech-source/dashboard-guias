@@ -670,6 +670,18 @@ function DashboardPage() {
                 ))}
               </div>
               <button
+                onClick={openFilters}
+                className="inline-flex items-center gap-2 rounded-lg border border-border bg-card px-3 py-2 text-sm font-medium text-foreground hover:bg-muted transition-colors"
+              >
+                <Filter className="h-4 w-4" />
+                Filtros
+                {activeFilters.length > 0 && (
+                  <span className="ml-1 inline-flex items-center justify-center rounded-full bg-primary text-primary-foreground text-[10px] font-semibold h-5 min-w-5 px-1.5">
+                    {activeFilters.length}
+                  </span>
+                )}
+              </button>
+              <button
                 onClick={() => generateReportPdf(range, dailyAvg, total)}
                 className="inline-flex items-center gap-2 rounded-lg border border-primary bg-card px-4 py-2 text-sm font-medium text-primary hover:bg-primary/5 transition-colors"
               >
@@ -678,6 +690,36 @@ function DashboardPage() {
               </button>
             </div>
           </div>
+
+          {activeFilters.length > 0 && (
+            <div className="flex flex-wrap items-center gap-2 -mt-2">
+              <span className="text-xs text-muted-foreground">Filtros ativos:</span>
+              {activeFilters.map(([key, value]) => (
+                <span
+                  key={key}
+                  className="inline-flex items-center gap-1.5 rounded-full border border-primary/30 bg-primary/5 text-primary pl-2.5 pr-1 py-1 text-xs"
+                >
+                  <span className="font-medium">{filterLabels[key]}:</span>
+                  <span className="max-w-[160px] truncate">{value}</span>
+                  <button
+                    onClick={() => removeFilter(key)}
+                    aria-label={`Remover filtro ${filterLabels[key]}`}
+                    className="ml-0.5 rounded-full hover:bg-primary/10 p-0.5"
+                  >
+                    <X className="h-3 w-3" />
+                  </button>
+                </span>
+              ))}
+              <button
+                onClick={() => setFilters(emptyFilters)}
+                className="text-xs text-muted-foreground hover:text-foreground underline underline-offset-2 ml-1"
+              >
+                Limpar tudo
+              </button>
+            </div>
+          )}
+
+
 
 
           {/* KPIs */}
