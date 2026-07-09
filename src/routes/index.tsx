@@ -1232,7 +1232,7 @@ function Kpi({
           trend === "up" ? "text-success" : "text-muted-foreground",
         ].join(" ")}
       >
-        {trend === "up" && <ArrowUpRight className="h-3 w-3" />}
+        {trend === "up" && <span className="text-success">↗</span>}
         {hint}
       </div>
     </div>
