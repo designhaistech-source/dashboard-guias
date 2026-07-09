@@ -690,6 +690,37 @@ function DashboardPage() {
     Number(draft.valorMin) > Number(draft.valorMax);
   const hasErrors = dateRangeInvalid || valueRangeInvalid;
 
+  const TOTAL_GUIAS = 252;
+  const previewCount = useMemo(() => {
+    if (hasErrors) return null;
+    const filled = Object.values(draft).filter((v) => v.trim() !== "").length;
+    if (filled === 0) return TOTAL_GUIAS;
+    // simulação: cada filtro reduz ~22% do resultado, mín 1
+    const factor = Math.pow(0.78, filled);
+    return Math.max(1, Math.round(TOTAL_GUIAS * factor));
+  }, [draft, hasErrors]);
+
+  const applyPreset = (preset: "hoje" | "7d" | "30d" | "valorAlto") => {
+    const today = new Date();
+    const iso = (d: Date) => d.toISOString().slice(0, 10);
+    setDraft((d) => {
+      if (preset === "hoje") {
+        const t = iso(today);
+        return { ...d, dataAutorizacaoDe: t, dataAutorizacaoAte: t };
+      }
+      if (preset === "7d") {
+        const from = new Date(today); from.setDate(today.getDate() - 7);
+        return { ...d, dataAutorizacaoDe: iso(from), dataAutorizacaoAte: iso(today) };
+      }
+      if (preset === "30d") {
+        const from = new Date(today); from.setDate(today.getDate() - 30);
+        return { ...d, dataAutorizacaoDe: iso(from), dataAutorizacaoAte: iso(today) };
+      }
+      // valorAlto
+      return { ...d, valorMin: "1000", valorMax: "" };
+    });
+  };
+
   const applyFilters = () => {
     if (hasErrors) return;
     setFilters(draft);
@@ -804,6 +835,26 @@ function DashboardPage() {
               </div>
 
               <div>
+                <div className="text-[11px] uppercase tracking-wider text-muted-foreground font-medium mb-2">Atalhos</div>
+                <div className="flex flex-wrap gap-2">
+                  {[
+                    { id: "hoje", label: "Hoje" },
+                    { id: "7d", label: "Últimos 7 dias" },
+                    { id: "30d", label: "Últimos 30 dias" },
+                    { id: "valorAlto", label: "Valor > R$ 1.000" },
+                  ].map((p) => (
+                    <button
+                      key={p.id}
+                      onClick={() => applyPreset(p.id as any)}
+                      className="inline-flex items-center rounded-full border border-border bg-background px-3 py-1 text-xs font-medium text-foreground hover:border-primary hover:bg-primary/5 hover:text-primary transition-colors"
+                    >
+                      {p.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div>
                 <div className="text-[11px] uppercase tracking-wider text-muted-foreground font-medium mb-2">Período de autorização</div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
                   <FilterField label="De" type="date" error={dateRangeInvalid} value={draft.dataAutorizacaoDe} onChange={(v) => setDraft((d) => ({ ...d, dataAutorizacaoDe: v }))} />
@@ -848,7 +899,7 @@ function DashboardPage() {
                   title={hasErrors ? "Corrija os campos destacados para aplicar" : undefined}
                   className="inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  Aplicar filtros
+                  Aplicar filtros{previewCount !== null && ` (${previewCount} ${previewCount === 1 ? "guia" : "guias"})`}
                 </button>
               </div>
             </div>
