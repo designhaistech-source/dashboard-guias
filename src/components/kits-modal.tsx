@@ -490,17 +490,24 @@ export function KitsModal({
             onClick={() => setPendente(null)}
           >
             <div
+              ref={confirmRef}
               onClick={(e) => e.stopPropagation()}
-              className="w-full max-w-md rounded-2xl border border-border bg-card shadow-xl p-5"
+              className="w-full max-w-md rounded-2xl border border-border bg-card shadow-xl p-5 focus:outline-none"
               role="alertdialog"
               aria-modal="true"
+              aria-labelledby="kits-confirm-title"
+              aria-describedby="kits-confirm-desc"
+              tabIndex={-1}
             >
               <div className="flex items-start gap-3">
                 <div className="grid place-items-center h-9 w-9 rounded-lg bg-amber-400/15 text-amber-600 dark:text-amber-300 shrink-0">
                   <AlertTriangle className="h-4.5 w-4.5" />
                 </div>
                 <div className="min-w-0">
-                  <h3 className="text-sm font-semibold">Aplicar kit à receita?</h3>
+                  <h3 id="kits-confirm-title" className="text-sm font-semibold">
+                    Aplicar kit à receita?
+                  </h3>
+
                   <p className="text-xs text-muted-foreground mt-1">
                     A receita atual já contém{" "}
                     <strong className="text-foreground">
