@@ -850,14 +850,22 @@ function DashboardPage() {
 
           {/* Painel de filtros inline */}
           {filtersOpen && (
-            <div className="rounded-2xl border border-border bg-card p-6 space-y-5">
+            <section
+              id="dashboard-filters-panel"
+              role="region"
+              aria-label="Filtros do dashboard"
+              className="rounded-2xl border border-border bg-card p-6 space-y-5"
+            >
               <div className="flex items-start justify-between gap-4">
                 <div>
                   <h3 className="font-semibold">Filtros</h3>
-                  <p className="text-xs text-muted-foreground">Refine as guias exibidas no dashboard.</p>
+                  <p className="text-xs text-muted-foreground">
+                    Refine as guias exibidas no dashboard.
+                    {isDirty && <span className="ml-2 text-amber-600 dark:text-amber-500">• alterações não aplicadas</span>}
+                  </p>
                 </div>
                 <button
-                  onClick={() => setFiltersOpen(false)}
+                  onClick={requestClose}
                   className="rounded-md p-1 text-muted-foreground hover:bg-muted hover:text-foreground"
                   aria-label="Fechar filtros"
                 >
