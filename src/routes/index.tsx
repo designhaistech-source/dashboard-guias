@@ -9,6 +9,7 @@ import {
   Download,
   Activity,
   X,
+  SlidersHorizontal,
 } from "lucide-react";
 import {
   AreaChart,
@@ -38,6 +39,20 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetFooter,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 
 
 async function loadImageDataUrl(url: string): Promise<{ dataUrl: string; w: number; h: number }> {
@@ -558,6 +573,27 @@ const emptyFilters: GuideFilters = {
   tipoGuia: "",
 };
 
+function FilterField({
+  label,
+  value,
+  onChange,
+  type = "text",
+}: {
+  label: string;
+  value: string;
+  onChange: (v: string) => void;
+  type?: string;
+}) {
+  return (
+    <div className="flex flex-col gap-1">
+      <label className="text-[11px] uppercase tracking-wider text-muted-foreground font-medium">
+        {label}
+      </label>
+      <Input type={type} value={value} onChange={(e) => onChange(e.target.value)} className="h-9" />
+    </div>
+  );
+}
+
 const filterLabels: Record<keyof GuideFilters, string> = {
   numGuiaPrestador: "Nº guia prestador",
   numGuiaOperadora: "Nº guia operadora",
@@ -637,6 +673,18 @@ function DashboardPage() {
             </div>
             <div className="flex items-center gap-2">
               <button
+                onClick={openFilters}
+                className="relative inline-flex items-center gap-2 rounded-lg border border-border bg-card px-4 py-2 text-sm font-medium text-foreground hover:bg-muted transition-colors"
+              >
+                <SlidersHorizontal className="h-4 w-4" />
+                Mais filtros
+                {activeFilters.length > 0 && (
+                  <span className="ml-1 inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-primary px-1.5 text-[11px] font-semibold text-primary-foreground">
+                    {activeFilters.length}
+                  </span>
+                )}
+              </button>
+              <button
                 onClick={() => generateReportPdf(range, dailyAvg, total)}
                 className="inline-flex items-center gap-2 rounded-lg border border-primary bg-card px-4 py-2 text-sm font-medium text-primary hover:bg-primary/5 transition-colors"
               >
@@ -708,6 +756,34 @@ function DashboardPage() {
               </button>
             )}
           </div>
+
+          {/* Chips de filtros ativos */}
+          {activeFilters.length > 0 && (
+            <div className="flex flex-wrap items-center gap-2">
+              {activeFilters.map(([k, v]) => (
+                <span
+                  key={k}
+                  className="inline-flex items-center gap-1.5 rounded-full border border-border bg-card px-3 py-1 text-xs text-foreground"
+                >
+                  <span className="text-muted-foreground">{filterLabels[k]}:</span>
+                  <span className="font-medium">{v}</span>
+                  <button
+                    onClick={() => removeFilter(k)}
+                    className="ml-1 rounded-full p-0.5 hover:bg-muted"
+                    aria-label={`Remover filtro ${filterLabels[k]}`}
+                  >
+                    <X className="h-3 w-3" />
+                  </button>
+                </span>
+              ))}
+              <button
+                onClick={() => setFilters(emptyFilters)}
+                className="text-xs text-muted-foreground hover:text-foreground underline underline-offset-2"
+              >
+                Limpar todos
+              </button>
+            </div>
+          )}
 
 
 
@@ -921,6 +997,89 @@ function DashboardPage() {
         </div>
         <SiteFooter />
       </main>
+
+      <Sheet open={filtersOpen} onOpenChange={setFiltersOpen}>
+        <SheetContent className="w-full sm:max-w-lg overflow-y-auto">
+          <SheetHeader>
+            <SheetTitle>Filtros avançados</SheetTitle>
+            <SheetDescription>
+              Filtre por qualquer campo do detalhamento da guia.
+            </SheetDescription>
+          </SheetHeader>
+
+          <Accordion type="multiple" defaultValue={["cab", "ben"]} className="mt-4">
+            <AccordionItem value="cab">
+              <AccordionTrigger>Cabeçalho</AccordionTrigger>
+              <AccordionContent className="grid grid-cols-2 gap-3 pt-2">
+                <FilterField label="Nº guia prestador" value={draft.numGuiaPrestador} onChange={(v) => setDraft((d) => ({ ...d, numGuiaPrestador: v }))} />
+                <FilterField label="Nº guia operadora" value={draft.numGuiaOperadora} onChange={(v) => setDraft((d) => ({ ...d, numGuiaOperadora: v }))} />
+                <FilterField label="Senha" value={draft.senha} onChange={(v) => setDraft((d) => ({ ...d, senha: v }))} />
+                <FilterField label="Registro ANS" value={draft.registroAns} onChange={(v) => setDraft((d) => ({ ...d, registroAns: v }))} />
+                <FilterField label="Autorização de" type="date" value={draft.dataAutorizacaoDe} onChange={(v) => setDraft((d) => ({ ...d, dataAutorizacaoDe: v }))} />
+                <FilterField label="Autorização até" type="date" value={draft.dataAutorizacaoAte} onChange={(v) => setDraft((d) => ({ ...d, dataAutorizacaoAte: v }))} />
+                <FilterField label="Tipo de guia" value={draft.tipoGuia} onChange={(v) => setDraft((d) => ({ ...d, tipoGuia: v }))} />
+              </AccordionContent>
+            </AccordionItem>
+
+            <AccordionItem value="ben">
+              <AccordionTrigger>Beneficiário</AccordionTrigger>
+              <AccordionContent className="grid grid-cols-2 gap-3 pt-2">
+                <FilterField label="Nome" value={draft.beneficiarioNome} onChange={(v) => setDraft((d) => ({ ...d, beneficiarioNome: v }))} />
+                <FilterField label="Nº carteira" value={draft.numCarteira} onChange={(v) => setDraft((d) => ({ ...d, numCarteira: v }))} />
+                <FilterField label="Atend. RN" value={draft.atendRn} onChange={(v) => setDraft((d) => ({ ...d, atendRn: v }))} />
+              </AccordionContent>
+            </AccordionItem>
+
+            <AccordionItem value="pres">
+              <AccordionTrigger>Prestadores</AccordionTrigger>
+              <AccordionContent className="grid grid-cols-2 gap-3 pt-2">
+                <FilterField label="Prestador solicitante" value={draft.prestadorSolicitante} onChange={(v) => setDraft((d) => ({ ...d, prestadorSolicitante: v }))} />
+                <FilterField label="Profissional" value={draft.profissional} onChange={(v) => setDraft((d) => ({ ...d, profissional: v }))} />
+                <FilterField label="Conselho" value={draft.conselho} onChange={(v) => setDraft((d) => ({ ...d, conselho: v }))} />
+                <FilterField label="Nº conselho" value={draft.numConselho} onChange={(v) => setDraft((d) => ({ ...d, numConselho: v }))} />
+                <FilterField label="UF conselho" value={draft.ufConselho} onChange={(v) => setDraft((d) => ({ ...d, ufConselho: v }))} />
+                <FilterField label="CBO" value={draft.cbo} onChange={(v) => setDraft((d) => ({ ...d, cbo: v }))} />
+                <FilterField label="Prestador executante" value={draft.prestadorExecutante} onChange={(v) => setDraft((d) => ({ ...d, prestadorExecutante: v }))} />
+                <FilterField label="CNES" value={draft.cnes} onChange={(v) => setDraft((d) => ({ ...d, cnes: v }))} />
+              </AccordionContent>
+            </AccordionItem>
+
+            <AccordionItem value="proc">
+              <AccordionTrigger>Procedimentos</AccordionTrigger>
+              <AccordionContent className="grid grid-cols-2 gap-3 pt-2">
+                <FilterField label="Tabela" value={draft.procTabela} onChange={(v) => setDraft((d) => ({ ...d, procTabela: v }))} />
+                <FilterField label="Código" value={draft.procCodigo} onChange={(v) => setDraft((d) => ({ ...d, procCodigo: v }))} />
+                <FilterField label="Descrição" value={draft.procDescricao} onChange={(v) => setDraft((d) => ({ ...d, procDescricao: v }))} />
+                <FilterField label="Referência" value={draft.procReferencia} onChange={(v) => setDraft((d) => ({ ...d, procReferencia: v }))} />
+              </AccordionContent>
+            </AccordionItem>
+
+            <AccordionItem value="fin">
+              <AccordionTrigger>Financeiro</AccordionTrigger>
+              <AccordionContent className="grid grid-cols-2 gap-3 pt-2">
+                <FilterField label="Valor mín." type="number" value={draft.valorMin} onChange={(v) => setDraft((d) => ({ ...d, valorMin: v }))} />
+                <FilterField label="Valor máx." type="number" value={draft.valorMax} onChange={(v) => setDraft((d) => ({ ...d, valorMax: v }))} />
+                <FilterField label="Componente financeiro" value={draft.componenteFinanceiro} onChange={(v) => setDraft((d) => ({ ...d, componenteFinanceiro: v }))} />
+              </AccordionContent>
+            </AccordionItem>
+          </Accordion>
+
+          <SheetFooter className="mt-6 flex-row justify-between gap-2 sm:justify-between">
+            <button
+              onClick={clearAll}
+              className="inline-flex items-center gap-1.5 rounded-md px-3 py-2 text-sm text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+            >
+              Limpar tudo
+            </button>
+            <button
+              onClick={applyFilters}
+              className="inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors"
+            >
+              Aplicar filtros
+            </button>
+          </SheetFooter>
+        </SheetContent>
+      </Sheet>
 
     </div>
   );
