@@ -1456,11 +1456,11 @@ function PrescricaoForm() {
               onLimpar={limparHistorico}
             />
           )}
-        </>
-      )}
+      </section>
 
-      {/* Step 3 — Revisar e emitir */}
-      {step === 3 && (
+      {/* Seção 3 — Revisar e emitir */}
+      <section id="sec-revisar" className="scroll-mt-4">
+
         <div
           ref={receitaRef}
           className={`rounded-2xl border bg-card ${
