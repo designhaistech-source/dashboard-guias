@@ -1002,13 +1002,8 @@ function DashboardPage() {
   );
 }
 
-// placeholder to keep structure
-function _unused_sheet_removed() { return null;
 
 
-    </div>
-  );
-}
 
 
 
