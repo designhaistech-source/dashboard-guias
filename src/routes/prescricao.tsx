@@ -1392,10 +1392,13 @@ function PrescricaoForm() {
           {/* Lista compacta de itens adicionados */}
           {itens.length > 0 && (
             <div className="rounded-2xl border border-border bg-card p-4">
-              <div className="flex items-center justify-between mb-2">
-                <div className="text-sm font-medium">
-                  {itens.length}{" "}
-                  {itens.length > 1 ? "medicamentos" : "medicamento"} na receita
+              <div className="flex items-center justify-between mb-3">
+                <div>
+                  <h2 className="text-base font-semibold">Resumo da receita</h2>
+                  <p className="text-xs text-muted-foreground mt-0.5">
+                    {itens.length}{" "}
+                    {itens.length > 1 ? "medicamentos adicionados" : "medicamento adicionado"}
+                  </p>
                 </div>
                 <button
                   onClick={() => setItens([])}
@@ -1404,6 +1407,7 @@ function PrescricaoForm() {
                   Limpar
                 </button>
               </div>
+
               <ul className="space-y-1.5">
                 {itens.map((it, i) => {
                   const c = checkPosologia(it.posologia);
