@@ -576,12 +576,14 @@ function FilterField({
   onChange,
   type = "text",
   error,
+  inputRef,
 }: {
   label: string;
   value: string;
   onChange: (v: string) => void;
   type?: string;
   error?: boolean;
+  inputRef?: React.Ref<HTMLInputElement>;
 }) {
   return (
     <div className="flex flex-col gap-1">
@@ -589,6 +591,7 @@ function FilterField({
         {label}
       </label>
       <Input
+        ref={inputRef}
         type={type}
         value={value}
         onChange={(e) => onChange(e.target.value)}
@@ -598,6 +601,7 @@ function FilterField({
     </div>
   );
 }
+
 
 function FilterSelect({
   label,
