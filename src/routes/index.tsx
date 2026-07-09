@@ -790,8 +790,9 @@ function DashboardPage() {
             </div>
             <div className="flex items-center gap-2">
               <button
-                onClick={() => (filtersOpen ? setFiltersOpen(false) : openFilters())}
+                onClick={() => (filtersOpen ? requestClose() : openFilters())}
                 aria-expanded={filtersOpen}
+                aria-controls="dashboard-filters-panel"
                 className={[
                   "relative inline-flex items-center gap-2 rounded-lg border px-4 py-2 text-sm font-medium transition-colors",
                   filtersOpen
