@@ -19,8 +19,6 @@ import {
   RefreshCw,
   Trash2,
   ChevronDown,
-  ChevronLeft,
-  ChevronRight,
   Cloud,
   BookMarked,
 } from "lucide-react";
