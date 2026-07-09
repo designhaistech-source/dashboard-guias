@@ -18,6 +18,7 @@ import {
   PanelLeft,
   Wrench,
   FileSpreadsheet,
+  BookMarked,
 } from "lucide-react";
 import {
   Tooltip,
@@ -34,10 +35,12 @@ type ItemKey =
   | "guias"
   | "procedimento"
   | "prescricao"
+  | "kits"
   | "opme"
   | "relatorios"
   | "cid"
   | "ajuda";
+
 
 export function AppSidebar({ activeKey }: { activeKey: ItemKey }) {
   const [collapsed, setCollapsed] = useState(false);
@@ -129,6 +132,15 @@ export function AppSidebar({ activeKey }: { activeKey: ItemKey }) {
               hint="Emita prescrições médicas para os pacientes."
               collapsed={collapsed}
             />
+            <SidebarItem
+              icon={BookMarked}
+              label="Kits salvos"
+              to="/kits"
+              active={activeKey === "kits"}
+              hint="Modelos reutilizáveis de prescrição para aplicar em receitas com um clique."
+              collapsed={collapsed}
+            />
+
             <SidebarItem
               icon={Wrench}
               label="Solicitar OPME"

@@ -23,11 +23,14 @@ import {
   ChevronRight,
   Cloud,
 } from "lucide-react";
+
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { jsPDF } from "jspdf";
 import { toast } from "sonner";
 import { AppSidebar } from "@/components/app-sidebar";
 import { SiteFooter } from "@/components/site-footer";
+import { consumirKitParaAplicar, upsertKit, type Kit } from "@/lib/kits";
+
 
 export const Route = createFileRoute("/prescricao")({
   head: () => ({
@@ -498,7 +501,16 @@ function PrescricaoForm() {
     }
     hidratado.current = true;
     pacienteRef.current?.focus();
+
+    // Se veio da página de Kits salvos com um kit para aplicar, aplica agora
+    const kit = consumirKitParaAplicar();
+    if (kit) {
+      setItens(kit.itens as unknown as ItemReceita[]);
+      setStep(paciente.trim() || (d && d.paciente) ? 2 : 1);
+      toast.success(`Kit "${kit.nome}" aplicado à receita.`);
+    }
   }, []);
+
 
   // Autosave debounced
   useEffect(() => {
@@ -880,9 +892,33 @@ function PrescricaoForm() {
   };
 
   const salvarKit = () => {
-    if (itens.length === 0) return toast.error("Adicione medicamentos para salvar um kit.");
-    toast.success("Kit salvo.");
+    if (itens.length === 0)
+      return toast.error("Adicione medicamentos para salvar um kit.");
+    const nomeSugerido = paciente.trim()
+      ? `Kit ${paciente.trim().split(" ")[0]}`
+      : `Kit ${new Date().toLocaleDateString("pt-BR")}`;
+    const nome = window.prompt("Nome do kit:", nomeSugerido);
+    if (!nome || !nome.trim()) return;
+    const kit: Kit = {
+      id: `kit-${Date.now()}`,
+      nome: nome.trim(),
+      descricao: `Modelo criado a partir da receita ${paciente.trim() ? `de ${paciente.trim()}` : "atual"}.`,
+      categoria: "Meus kits",
+      itens: itens.map((it) => ({ med: it.med, posologia: it.posologia })),
+      atualizadoEm: Date.now(),
+      usos: 0,
+    };
+    upsertKit(kit);
+    toast.success(`Kit "${kit.nome}" salvo.`, {
+      action: {
+        label: "Ver kits",
+        onClick: () => {
+          window.location.href = "/kits";
+        },
+      },
+    });
   };
+
 
   type Pend = { msg: string; focus?: () => void };
   const focusEl = (el: HTMLElement | null) => {
