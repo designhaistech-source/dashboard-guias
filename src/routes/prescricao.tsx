@@ -1023,15 +1023,34 @@ function PrescricaoForm() {
             Preencha as seções em qualquer ordem — o botão de emitir libera quando houver paciente e ao menos um medicamento.
           </p>
         </div>
-        {savedAt && (
-          <div
-            className="hidden md:flex items-center gap-1.5 text-[11px] text-muted-foreground shrink-0"
-            title={`Rascunho salvo às ${fmtHora(savedAt)}`}
+        <div className="flex items-center gap-2 shrink-0">
+          {savedAt && (
+            <div
+              className="hidden md:flex items-center gap-1.5 text-[11px] text-muted-foreground mr-1"
+              title={`Rascunho salvo às ${fmtHora(savedAt)}`}
+            >
+              <Cloud className="h-3.5 w-3.5" />
+              salvo {fmtHora(savedAt)}
+            </div>
+          )}
+          <button
+            type="button"
+            onClick={() => setKitsAberto(true)}
+            className="inline-flex items-center gap-1.5 text-xs rounded-lg border border-border px-2.5 py-1.5 hover:bg-muted transition-colors"
           >
-            <Cloud className="h-3.5 w-3.5" />
-            salvo {fmtHora(savedAt)}
-          </div>
-        )}
+            <BookMarked className="h-3.5 w-3.5" />
+            Kits salvos
+          </button>
+          <button
+            type="button"
+            onClick={() => setHistoricoAberto((v) => !v)}
+            className="inline-flex items-center gap-1.5 text-xs rounded-lg border border-border px-2.5 py-1.5 hover:bg-muted transition-colors"
+          >
+            <History className="h-3.5 w-3.5" />
+            Histórico {historico.length > 0 && `(${historico.length})`}
+          </button>
+        </div>
+
       </div>
 
       {rascunhoRestaurado && (
@@ -1408,23 +1427,8 @@ function PrescricaoForm() {
             </div>
           )}
 
-          <div className="flex justify-end gap-2">
-            <button
-              type="button"
-              onClick={() => setKitsAberto(true)}
-              className="inline-flex items-center gap-1.5 text-xs rounded-lg border border-border px-2.5 py-1.5 hover:bg-muted transition-colors"
-            >
-              <BookMarked className="h-3.5 w-3.5" />
-              Kits salvos
-            </button>
-            <button
-              onClick={() => setHistoricoAberto((v) => !v)}
-              className="inline-flex items-center gap-1.5 text-xs rounded-lg border border-border px-2.5 py-1.5 hover:bg-muted transition-colors"
-            >
-              <History className="h-3.5 w-3.5" />
-              Histórico {historico.length > 0 && `(${historico.length})`}
-            </button>
-          </div>
+
+
           {historicoAberto && (
             <HistoricoPanel
               historico={historico}
