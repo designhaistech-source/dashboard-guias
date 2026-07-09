@@ -1073,6 +1073,8 @@ function PrescricaoForm() {
             onClick={() => setHistoricoAberto((v) => !v)}
             icon={<History className="h-3.5 w-3.5" />}
             size="sm"
+            active={historicoAberto}
+            title={historicoAberto ? "Ocultar histórico" : "Mostrar histórico"}
           >
             Histórico{historico.length > 0 ? ` (${historico.length})` : ""}
           </ActionBtn>
