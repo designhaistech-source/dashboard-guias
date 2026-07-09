@@ -1708,6 +1708,19 @@ function PrescricaoForm() {
         </div>
       </section>
 
+      <KitsModal
+        open={kitsAberto}
+        onClose={() => setKitsAberto(false)}
+        onAplicar={(kit) => {
+          setItens(kit.itens as unknown as ItemReceita[]);
+          toast.success(`Kit "${kit.nome}" aplicado à receita.`);
+          setTimeout(() => {
+            document
+              .getElementById("sec-medicamentos")
+              ?.scrollIntoView({ behavior: "smooth", block: "start" });
+          }, 100);
+        }}
+      />
     </div>
   );
 }
