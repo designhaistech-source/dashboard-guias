@@ -1010,29 +1010,8 @@ function PrescricaoForm() {
   const fmtHora = (ts: number) =>
     new Date(ts).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
 
-  const canGoStep2 =
-    paciente.trim().length > 0 && (!especial || (cpfValido && enderecoValido));
-  const canGoStep3 =
-    canGoStep2 && itens.length > 0 && posologiasInvalidas.length === 0;
 
-  const goStep = (n: 1 | 2 | 3) => {
-    if (n === 1) return setStep(1);
-    if (n === 2 && canGoStep2) return setStep(2);
-    if (n === 3 && canGoStep3) return setStep(3);
-    if (n === 2 && !canGoStep2) {
-      toast.error(
-        !paciente.trim()
-          ? "Informe o nome do paciente para avançar."
-          : "Complete CPF e endereço do paciente para receita especial.",
-      );
-    } else if (n === 3 && !canGoStep3) {
-      toast.error(
-        itens.length === 0
-          ? "Adicione ao menos um medicamento."
-          : "Corrija as posologias inválidas antes de continuar.",
-      );
-    }
-  };
+
 
   return (
     <div className="space-y-5 pb-8">
