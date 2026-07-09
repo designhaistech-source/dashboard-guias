@@ -104,9 +104,21 @@ export function KitsModal({
     ordenacao !== "recentes";
 
   const aplicar = (kit: Kit) => {
-    onAplicar(kit);
+    if (currentCount > 0) {
+      setPendente(kit);
+      return;
+    }
+    onAplicar(kit, "replace");
     onClose();
   };
+
+  const confirmar = (mode: "replace" | "append") => {
+    if (!pendente) return;
+    onAplicar(pendente, mode);
+    setPendente(null);
+    onClose();
+  };
+
 
   const duplicar = (kit: Kit) => {
     const novo: Kit = {
