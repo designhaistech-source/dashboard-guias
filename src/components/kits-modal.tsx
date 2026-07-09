@@ -226,9 +226,16 @@ export function KitsModal({
       onClick={onClose}
     >
       <div
+        ref={dialogRef}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="kits-modal-title"
+        aria-describedby="kits-modal-desc"
+        tabIndex={-1}
         onClick={(e) => e.stopPropagation()}
-        className="relative w-full max-w-3xl max-h-[90vh] rounded-2xl border border-border bg-card shadow-xl flex flex-col overflow-hidden"
+        className="relative w-full max-w-3xl max-h-[90vh] rounded-2xl border border-border bg-card shadow-xl flex flex-col overflow-hidden focus:outline-none"
       >
+
         {/* Header */}
         <div className="px-5 py-4 border-b border-border flex items-center justify-between gap-3">
           <div className="flex items-center gap-3 min-w-0">
