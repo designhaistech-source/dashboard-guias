@@ -1073,6 +1073,8 @@ function PrescricaoForm() {
             onClick={() => setHistoricoAberto((v) => !v)}
             icon={<History className="h-3.5 w-3.5" />}
             size="sm"
+            active={historicoAberto}
+            title={historicoAberto ? "Ocultar histórico" : "Mostrar histórico"}
           >
             Histórico{historico.length > 0 ? ` (${historico.length})` : ""}
           </ActionBtn>
@@ -1790,6 +1792,7 @@ function ActionBtn({
   disabled,
   title,
   disabledReason,
+  active = false,
 }: {
   onClick: () => void;
   icon: React.ReactNode;
@@ -1799,11 +1802,14 @@ function ActionBtn({
   disabled?: boolean;
   title?: string;
   disabledReason?: string;
+  active?: boolean;
 }) {
   const variantCls =
     variant === "primary"
       ? "bg-primary text-primary-foreground hover:bg-primary/90 border-primary"
-      : "border-border text-foreground hover:bg-muted";
+      : active
+        ? "border-primary bg-primary/10 text-primary hover:bg-primary/15 ring-1 ring-primary/40"
+        : "border-border text-foreground hover:bg-muted";
   const sizeCls =
     size === "sm" ? "px-2.5 py-1.5 text-xs gap-1.5" : "px-3 py-1.5 text-sm gap-1.5";
   const effectiveTitle = disabled && disabledReason ? disabledReason : title;
@@ -1813,6 +1819,7 @@ function ActionBtn({
       onClick={onClick}
       disabled={disabled}
       aria-disabled={disabled}
+      aria-pressed={active}
       title={effectiveTitle}
       className={`inline-flex items-center rounded-lg border font-medium transition-colors ${sizeCls} ${variantCls} disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-transparent`}
     >
