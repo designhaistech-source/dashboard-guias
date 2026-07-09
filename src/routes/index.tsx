@@ -516,9 +516,126 @@ function ChartTooltip({ active, payload, label, suffix }: any) {
   );
 }
 
+type GuideFilters = {
+  // Cabeçalho
+  numGuiaPrestador: string;
+  numGuiaOperadora: string;
+  senha: string;
+  registroAns: string;
+  dataAutorizacaoDe: string;
+  dataAutorizacaoAte: string;
+  // Beneficiário
+  beneficiarioNome: string;
+  numCarteira: string;
+  atendRn: string; // "", "sim", "nao"
+  // Prestadores
+  prestadorSolicitante: string;
+  profissional: string;
+  conselho: string;
+  numConselho: string;
+  ufConselho: string;
+  cbo: string;
+  prestadorExecutante: string;
+  cnes: string;
+  // Procedimentos
+  procTabela: string;
+  procCodigo: string;
+  procDescricao: string;
+  procReferencia: string; // "", "tuss", "sigtap"
+  // Financeiro
+  valorMin: string;
+  valorMax: string;
+  componenteFinanceiro: string; // "", "honorarios", "materiais", ...
+  // Tipo (já existente conceitualmente)
+  tipoGuia: string;
+};
+
+const emptyFilters: GuideFilters = {
+  numGuiaPrestador: "",
+  numGuiaOperadora: "",
+  senha: "",
+  registroAns: "",
+  dataAutorizacaoDe: "",
+  dataAutorizacaoAte: "",
+  beneficiarioNome: "",
+  numCarteira: "",
+  atendRn: "",
+  prestadorSolicitante: "",
+  profissional: "",
+  conselho: "",
+  numConselho: "",
+  ufConselho: "",
+  cbo: "",
+  prestadorExecutante: "",
+  cnes: "",
+  procTabela: "",
+  procCodigo: "",
+  procDescricao: "",
+  procReferencia: "",
+  valorMin: "",
+  valorMax: "",
+  componenteFinanceiro: "",
+  tipoGuia: "",
+};
+
+const filterLabels: Record<keyof GuideFilters, string> = {
+  numGuiaPrestador: "Nº guia prestador",
+  numGuiaOperadora: "Nº guia operadora",
+  senha: "Senha",
+  registroAns: "Registro ANS",
+  dataAutorizacaoDe: "Autorização de",
+  dataAutorizacaoAte: "Autorização até",
+  beneficiarioNome: "Beneficiário",
+  numCarteira: "Nº carteira",
+  atendRn: "Atend. RN",
+  prestadorSolicitante: "Prestador solicitante",
+  profissional: "Profissional",
+  conselho: "Conselho",
+  numConselho: "Nº conselho",
+  ufConselho: "UF conselho",
+  cbo: "CBO",
+  prestadorExecutante: "Prestador executante",
+  cnes: "CNES",
+  procTabela: "Tabela",
+  procCodigo: "Código procedimento",
+  procDescricao: "Descrição procedimento",
+  procReferencia: "Referência",
+  valorMin: "Valor mín.",
+  valorMax: "Valor máx.",
+  componenteFinanceiro: "Componente financeiro",
+  tipoGuia: "Tipo de guia",
+};
+
 function DashboardPage() {
   const [range, setRange] = useState<Range>("30d");
   const [activeType, setActiveType] = useState<number | undefined>(undefined);
+  const [filtersOpen, setFiltersOpen] = useState(false);
+  const [filters, setFilters] = useState<GuideFilters>(emptyFilters);
+  const [draft, setDraft] = useState<GuideFilters>(emptyFilters);
+
+  const activeFilters = useMemo(
+    () =>
+      (Object.entries(filters) as [keyof GuideFilters, string][]).filter(
+        ([, v]) => v.trim() !== "",
+      ),
+    [filters],
+  );
+
+  const openFilters = () => {
+    setDraft(filters);
+    setFiltersOpen(true);
+  };
+  const applyFilters = () => {
+    setFilters(draft);
+    setFiltersOpen(false);
+    const count = Object.values(draft).filter((v) => v.trim() !== "").length;
+    toast.success(
+      count === 0 ? "Filtros limpos." : `${count} filtro${count > 1 ? "s" : ""} aplicado${count > 1 ? "s" : ""}.`,
+    );
+  };
+  const clearAll = () => setDraft(emptyFilters);
+  const removeFilter = (key: keyof GuideFilters) =>
+    setFilters((f) => ({ ...f, [key]: "" }));
 
   const total = useMemo(() => typeData.reduce((s, t) => s + t.value, 0), []);
   const dailyAvg = useMemo(
