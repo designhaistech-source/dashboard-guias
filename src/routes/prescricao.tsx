@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useRef, useState, useEffect } from "react";
 import {
   Pill,
@@ -28,6 +28,7 @@ import { jsPDF } from "jspdf";
 import { toast } from "sonner";
 import { AppSidebar } from "@/components/app-sidebar";
 import { SiteFooter } from "@/components/site-footer";
+import { KitsModal } from "@/components/kits-modal";
 import { consumirKitParaAplicar, upsertKit, type Kit } from "@/lib/kits";
 
 
@@ -466,6 +467,7 @@ function PrescricaoForm() {
   const [savedAt, setSavedAt] = useState<number | null>(null);
   const [historico, setHistorico] = useState<Historico[]>([]);
   const [historicoAberto, setHistoricoAberto] = useState(false);
+  const [kitsAberto, setKitsAberto] = useState(false);
   const hidratado = useRef(false);
   const [step, setStep] = useState<1 | 2 | 3>(1);
 
@@ -911,9 +913,7 @@ function PrescricaoForm() {
     toast.success(`Kit "${kit.nome}" salvo.`, {
       action: {
         label: "Ver kits",
-        onClick: () => {
-          window.location.href = "/kits";
-        },
+        onClick: () => setKitsAberto(true),
       },
     });
   };
@@ -1409,13 +1409,14 @@ function PrescricaoForm() {
           )}
 
           <div className="flex justify-end gap-2">
-            <Link
-              to="/kits"
+            <button
+              type="button"
+              onClick={() => setKitsAberto(true)}
               className="inline-flex items-center gap-1.5 text-xs rounded-lg border border-border px-2.5 py-1.5 hover:bg-muted transition-colors"
             >
               <BookMarked className="h-3.5 w-3.5" />
               Kits salvos
-            </Link>
+            </button>
             <button
               onClick={() => setHistoricoAberto((v) => !v)}
               className="inline-flex items-center gap-1.5 text-xs rounded-lg border border-border px-2.5 py-1.5 hover:bg-muted transition-colors"
@@ -1707,6 +1708,19 @@ function PrescricaoForm() {
         </div>
       </section>
 
+      <KitsModal
+        open={kitsAberto}
+        onClose={() => setKitsAberto(false)}
+        onAplicar={(kit) => {
+          setItens(kit.itens as unknown as ItemReceita[]);
+          toast.success(`Kit "${kit.nome}" aplicado à receita.`);
+          setTimeout(() => {
+            document
+              .getElementById("sec-medicamentos")
+              ?.scrollIntoView({ behavior: "smooth", block: "start" });
+          }, 100);
+        }}
+      />
     </div>
   );
 }

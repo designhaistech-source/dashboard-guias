@@ -10,7 +10,6 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as PrescricaoRouteImport } from './routes/prescricao'
-import { Route as KitsRouteImport } from './routes/kits'
 import { Route as GuiasRouteImport } from './routes/guias'
 import { Route as EmitirRouteImport } from './routes/emitir'
 import { Route as DashboardRouteImport } from './routes/dashboard'
@@ -19,11 +18,6 @@ import { Route as IndexRouteImport } from './routes/index'
 const PrescricaoRoute = PrescricaoRouteImport.update({
   id: '/prescricao',
   path: '/prescricao',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const KitsRoute = KitsRouteImport.update({
-  id: '/kits',
-  path: '/kits',
   getParentRoute: () => rootRouteImport,
 } as any)
 const GuiasRoute = GuiasRouteImport.update({
@@ -52,7 +46,6 @@ export interface FileRoutesByFullPath {
   '/dashboard': typeof DashboardRoute
   '/emitir': typeof EmitirRoute
   '/guias': typeof GuiasRoute
-  '/kits': typeof KitsRoute
   '/prescricao': typeof PrescricaoRoute
 }
 export interface FileRoutesByTo {
@@ -60,7 +53,6 @@ export interface FileRoutesByTo {
   '/dashboard': typeof DashboardRoute
   '/emitir': typeof EmitirRoute
   '/guias': typeof GuiasRoute
-  '/kits': typeof KitsRoute
   '/prescricao': typeof PrescricaoRoute
 }
 export interface FileRoutesById {
@@ -69,22 +61,14 @@ export interface FileRoutesById {
   '/dashboard': typeof DashboardRoute
   '/emitir': typeof EmitirRoute
   '/guias': typeof GuiasRoute
-  '/kits': typeof KitsRoute
   '/prescricao': typeof PrescricaoRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/dashboard' | '/emitir' | '/guias' | '/kits' | '/prescricao'
+  fullPaths: '/' | '/dashboard' | '/emitir' | '/guias' | '/prescricao'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/dashboard' | '/emitir' | '/guias' | '/kits' | '/prescricao'
-  id:
-    | '__root__'
-    | '/'
-    | '/dashboard'
-    | '/emitir'
-    | '/guias'
-    | '/kits'
-    | '/prescricao'
+  to: '/' | '/dashboard' | '/emitir' | '/guias' | '/prescricao'
+  id: '__root__' | '/' | '/dashboard' | '/emitir' | '/guias' | '/prescricao'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -92,7 +76,6 @@ export interface RootRouteChildren {
   DashboardRoute: typeof DashboardRoute
   EmitirRoute: typeof EmitirRoute
   GuiasRoute: typeof GuiasRoute
-  KitsRoute: typeof KitsRoute
   PrescricaoRoute: typeof PrescricaoRoute
 }
 
@@ -103,13 +86,6 @@ declare module '@tanstack/react-router' {
       path: '/prescricao'
       fullPath: '/prescricao'
       preLoaderRoute: typeof PrescricaoRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/kits': {
-      id: '/kits'
-      path: '/kits'
-      fullPath: '/kits'
-      preLoaderRoute: typeof KitsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/guias': {
@@ -148,7 +124,6 @@ const rootRouteChildren: RootRouteChildren = {
   DashboardRoute: DashboardRoute,
   EmitirRoute: EmitirRoute,
   GuiasRoute: GuiasRoute,
-  KitsRoute: KitsRoute,
   PrescricaoRoute: PrescricaoRoute,
 }
 export const routeTree = rootRouteImport
