@@ -943,70 +943,41 @@ function DashboardPage() {
       </main>
 
       <Sheet open={filtersOpen} onOpenChange={setFiltersOpen}>
-        <SheetContent className="w-full sm:max-w-lg overflow-y-auto">
+        <SheetContent className="w-full sm:max-w-md overflow-y-auto">
           <SheetHeader>
-            <SheetTitle>Filtros avançados</SheetTitle>
+            <SheetTitle>Filtros</SheetTitle>
             <SheetDescription>
-              Filtre por qualquer campo do detalhamento da guia.
+              Refine as guias exibidas no dashboard.
             </SheetDescription>
           </SheetHeader>
 
-          <Accordion type="multiple" defaultValue={["cab", "ben"]} className="mt-4">
-            <AccordionItem value="cab">
-              <AccordionTrigger>Cabeçalho</AccordionTrigger>
-              <AccordionContent className="grid grid-cols-2 gap-3 pt-2">
-                <FilterField label="Nº guia prestador" value={draft.numGuiaPrestador} onChange={(v) => setDraft((d) => ({ ...d, numGuiaPrestador: v }))} />
-                <FilterField label="Nº guia operadora" value={draft.numGuiaOperadora} onChange={(v) => setDraft((d) => ({ ...d, numGuiaOperadora: v }))} />
-                <FilterField label="Senha" value={draft.senha} onChange={(v) => setDraft((d) => ({ ...d, senha: v }))} />
-                <FilterField label="Registro ANS" value={draft.registroAns} onChange={(v) => setDraft((d) => ({ ...d, registroAns: v }))} />
-                <FilterField label="Autorização de" type="date" value={draft.dataAutorizacaoDe} onChange={(v) => setDraft((d) => ({ ...d, dataAutorizacaoDe: v }))} />
-                <FilterField label="Autorização até" type="date" value={draft.dataAutorizacaoAte} onChange={(v) => setDraft((d) => ({ ...d, dataAutorizacaoAte: v }))} />
-                <FilterField label="Tipo de guia" value={draft.tipoGuia} onChange={(v) => setDraft((d) => ({ ...d, tipoGuia: v }))} />
-              </AccordionContent>
-            </AccordionItem>
+          <div className="mt-6 space-y-5">
+            <div>
+              <div className="text-[11px] uppercase tracking-wider text-muted-foreground font-medium mb-2">Período de autorização</div>
+              <div className="grid grid-cols-2 gap-3">
+                <FilterField label="De" type="date" value={draft.dataAutorizacaoDe} onChange={(v) => setDraft((d) => ({ ...d, dataAutorizacaoDe: v }))} />
+                <FilterField label="Até" type="date" value={draft.dataAutorizacaoAte} onChange={(v) => setDraft((d) => ({ ...d, dataAutorizacaoAte: v }))} />
+              </div>
+            </div>
 
-            <AccordionItem value="ben">
-              <AccordionTrigger>Beneficiário</AccordionTrigger>
-              <AccordionContent className="grid grid-cols-2 gap-3 pt-2">
-                <FilterField label="Nome" value={draft.beneficiarioNome} onChange={(v) => setDraft((d) => ({ ...d, beneficiarioNome: v }))} />
-                <FilterField label="Nº carteira" value={draft.numCarteira} onChange={(v) => setDraft((d) => ({ ...d, numCarteira: v }))} />
-                <FilterField label="Atend. RN" value={draft.atendRn} onChange={(v) => setDraft((d) => ({ ...d, atendRn: v }))} />
-              </AccordionContent>
-            </AccordionItem>
+            <div className="grid grid-cols-2 gap-3">
+              <FilterField label="Beneficiário" value={draft.beneficiarioNome} onChange={(v) => setDraft((d) => ({ ...d, beneficiarioNome: v }))} />
+              <FilterField label="Nº guia" value={draft.numGuiaPrestador} onChange={(v) => setDraft((d) => ({ ...d, numGuiaPrestador: v }))} />
+              <FilterField label="Tipo de guia" value={draft.tipoGuia} onChange={(v) => setDraft((d) => ({ ...d, tipoGuia: v }))} />
+              <FilterField label="Prestador" value={draft.prestadorSolicitante} onChange={(v) => setDraft((d) => ({ ...d, prestadorSolicitante: v }))} />
+              <FilterField label="Procedimento" value={draft.procDescricao} onChange={(v) => setDraft((d) => ({ ...d, procDescricao: v }))} />
+              <FilterField label="Código proc." value={draft.procCodigo} onChange={(v) => setDraft((d) => ({ ...d, procCodigo: v }))} />
+            </div>
 
-            <AccordionItem value="pres">
-              <AccordionTrigger>Prestadores</AccordionTrigger>
-              <AccordionContent className="grid grid-cols-2 gap-3 pt-2">
-                <FilterField label="Prestador solicitante" value={draft.prestadorSolicitante} onChange={(v) => setDraft((d) => ({ ...d, prestadorSolicitante: v }))} />
-                <FilterField label="Profissional" value={draft.profissional} onChange={(v) => setDraft((d) => ({ ...d, profissional: v }))} />
-                <FilterField label="Conselho" value={draft.conselho} onChange={(v) => setDraft((d) => ({ ...d, conselho: v }))} />
-                <FilterField label="Nº conselho" value={draft.numConselho} onChange={(v) => setDraft((d) => ({ ...d, numConselho: v }))} />
-                <FilterField label="UF conselho" value={draft.ufConselho} onChange={(v) => setDraft((d) => ({ ...d, ufConselho: v }))} />
-                <FilterField label="CBO" value={draft.cbo} onChange={(v) => setDraft((d) => ({ ...d, cbo: v }))} />
-                <FilterField label="Prestador executante" value={draft.prestadorExecutante} onChange={(v) => setDraft((d) => ({ ...d, prestadorExecutante: v }))} />
-                <FilterField label="CNES" value={draft.cnes} onChange={(v) => setDraft((d) => ({ ...d, cnes: v }))} />
-              </AccordionContent>
-            </AccordionItem>
+            <div>
+              <div className="text-[11px] uppercase tracking-wider text-muted-foreground font-medium mb-2">Valor (R$)</div>
+              <div className="grid grid-cols-2 gap-3">
+                <FilterField label="Mínimo" type="number" value={draft.valorMin} onChange={(v) => setDraft((d) => ({ ...d, valorMin: v }))} />
+                <FilterField label="Máximo" type="number" value={draft.valorMax} onChange={(v) => setDraft((d) => ({ ...d, valorMax: v }))} />
+              </div>
+            </div>
+          </div>
 
-            <AccordionItem value="proc">
-              <AccordionTrigger>Procedimentos</AccordionTrigger>
-              <AccordionContent className="grid grid-cols-2 gap-3 pt-2">
-                <FilterField label="Tabela" value={draft.procTabela} onChange={(v) => setDraft((d) => ({ ...d, procTabela: v }))} />
-                <FilterField label="Código" value={draft.procCodigo} onChange={(v) => setDraft((d) => ({ ...d, procCodigo: v }))} />
-                <FilterField label="Descrição" value={draft.procDescricao} onChange={(v) => setDraft((d) => ({ ...d, procDescricao: v }))} />
-                <FilterField label="Referência" value={draft.procReferencia} onChange={(v) => setDraft((d) => ({ ...d, procReferencia: v }))} />
-              </AccordionContent>
-            </AccordionItem>
-
-            <AccordionItem value="fin">
-              <AccordionTrigger>Financeiro</AccordionTrigger>
-              <AccordionContent className="grid grid-cols-2 gap-3 pt-2">
-                <FilterField label="Valor mín." type="number" value={draft.valorMin} onChange={(v) => setDraft((d) => ({ ...d, valorMin: v }))} />
-                <FilterField label="Valor máx." type="number" value={draft.valorMax} onChange={(v) => setDraft((d) => ({ ...d, valorMax: v }))} />
-                <FilterField label="Componente financeiro" value={draft.componenteFinanceiro} onChange={(v) => setDraft((d) => ({ ...d, componenteFinanceiro: v }))} />
-              </AccordionContent>
-            </AccordionItem>
-          </Accordion>
 
           <SheetFooter className="mt-6 flex-row justify-between gap-2 sm:justify-between">
             <button
