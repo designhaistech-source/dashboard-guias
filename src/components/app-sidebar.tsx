@@ -18,6 +18,7 @@ import {
   PanelLeft,
   Wrench,
   FileSpreadsheet,
+  BookMarked,
 } from "lucide-react";
 import {
   Tooltip,
@@ -34,10 +35,12 @@ type ItemKey =
   | "guias"
   | "procedimento"
   | "prescricao"
+  | "kits"
   | "opme"
   | "relatorios"
   | "cid"
   | "ajuda";
+
 
 export function AppSidebar({ activeKey }: { activeKey: ItemKey }) {
   const [collapsed, setCollapsed] = useState(false);
