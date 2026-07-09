@@ -1711,9 +1711,20 @@ function PrescricaoForm() {
       <KitsModal
         open={kitsAberto}
         onClose={() => setKitsAberto(false)}
-        onAplicar={(kit) => {
-          setItens(kit.itens as unknown as ItemReceita[]);
-          toast.success(`Kit "${kit.nome}" aplicado à receita.`);
+        currentCount={itens.length}
+        onAplicar={(kit, mode) => {
+          const kitItens = kit.itens as unknown as ItemReceita[];
+          if (mode === "append") {
+            setItens((prev) => [...prev, ...kitItens]);
+            toast.success(
+              `Kit "${kit.nome}" adicionado (${kitItens.length} ${
+                kitItens.length === 1 ? "item" : "itens"
+              }).`,
+            );
+          } else {
+            setItens(kitItens);
+            toast.success(`Kit "${kit.nome}" aplicado à receita.`);
+          }
           setTimeout(() => {
             document
               .getElementById("sec-medicamentos")
@@ -1721,6 +1732,7 @@ function PrescricaoForm() {
           }, 100);
         }}
       />
+
     </div>
   );
 }
