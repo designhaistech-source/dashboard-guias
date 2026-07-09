@@ -237,9 +237,8 @@ export function KitsModal({
       >
 
         <div
-          className={`flex flex-col flex-1 min-h-0 transition-all duration-200 ${
-            pendente ? "opacity-40 blur-[1px] pointer-events-none select-none" : ""
-          }`}
+          className="flex flex-col flex-1 min-h-0"
+          {...(pendente ? { inert: "" as unknown as boolean } : {})}
           aria-hidden={pendente ? true : undefined}
         >
         {/* Header */}
