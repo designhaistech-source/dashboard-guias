@@ -1475,7 +1475,14 @@ function PrescricaoForm() {
             </div>
           )}
 
-          <div className="flex justify-end">
+          <div className="flex justify-end gap-2">
+            <Link
+              to="/kits"
+              className="inline-flex items-center gap-1.5 text-xs rounded-lg border border-border px-2.5 py-1.5 hover:bg-muted transition-colors"
+            >
+              <BookMarked className="h-3.5 w-3.5" />
+              Kits salvos
+            </Link>
             <button
               onClick={() => setHistoricoAberto((v) => !v)}
               className="inline-flex items-center gap-1.5 text-xs rounded-lg border border-border px-2.5 py-1.5 hover:bg-muted transition-colors"
