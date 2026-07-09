@@ -33,6 +33,10 @@ export function KitsModal({
   const [kits, setKits] = useState<Kit[]>([]);
   const [query, setQuery] = useState("");
   const [categoria, setCategoria] = useState<string>("Todas");
+  const [soFavoritos, setSoFavoritos] = useState(false);
+  const [ordenacao, setOrdenacao] = useState<
+    "recentes" | "usados" | "alfabetica"
+  >("recentes");
   const [expanded, setExpanded] = useState<Set<string>>(new Set());
 
   useEffect(() => {
@@ -56,21 +60,42 @@ export function KitsModal({
 
   const filtrados = useMemo(() => {
     const q = query.trim().toLowerCase();
-    return kits
+    const arr = kits
       .filter((k) => categoria === "Todas" || k.categoria === categoria)
+      .filter((k) => (soFavoritos ? !!k.favorito : true))
       .filter((k) => {
         if (!q) return true;
         return (
           k.nome.toLowerCase().includes(q) ||
           k.descricao.toLowerCase().includes(q) ||
+          k.categoria.toLowerCase().includes(q) ||
           k.itens.some((it) => it.med.nome.toLowerCase().includes(q))
         );
-      })
-      .sort((a, b) => {
-        if (!!b.favorito !== !!a.favorito) return b.favorito ? 1 : -1;
-        return b.atualizadoEm - a.atualizadoEm;
       });
-  }, [kits, query, categoria]);
+
+    const sorted = [...arr].sort((a, b) => {
+      if (ordenacao === "alfabetica") return a.nome.localeCompare(b.nome, "pt-BR");
+      if (ordenacao === "usados") return (b.usos ?? 0) - (a.usos ?? 0);
+      return b.atualizadoEm - a.atualizadoEm;
+    });
+    // Favoritos sempre no topo
+    return sorted.sort((a, b) => {
+      if (!!b.favorito !== !!a.favorito) return b.favorito ? 1 : -1;
+      return 0;
+    });
+  }, [kits, query, categoria, soFavoritos, ordenacao]);
+
+  const limparFiltros = () => {
+    setQuery("");
+    setCategoria("Todas");
+    setSoFavoritos(false);
+    setOrdenacao("recentes");
+  };
+  const filtrosAtivos =
+    query.trim() !== "" ||
+    categoria !== "Todas" ||
+    soFavoritos ||
+    ordenacao !== "recentes";
 
   const aplicar = (kit: Kit) => {
     onAplicar(kit);
@@ -148,17 +173,59 @@ export function KitsModal({
 
         {/* Filtros */}
         <div className="px-5 py-3 border-b border-border space-y-2.5 bg-background/40">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <input
-              type="text"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              placeholder="Buscar por nome, descrição ou medicamento…"
-              className="w-full pl-9 pr-3 py-2 rounded-lg border border-border bg-background text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50"
-            />
+          <div className="flex gap-2">
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <input
+                type="text"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                placeholder="Buscar por nome, categoria ou medicamento…"
+                autoFocus
+                className="w-full pl-9 pr-8 py-2 rounded-lg border border-border bg-background text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50"
+              />
+              {query && (
+                <button
+                  type="button"
+                  onClick={() => setQuery("")}
+                  aria-label="Limpar busca"
+                  className="absolute right-2 top-1/2 -translate-y-1/2 h-6 w-6 grid place-items-center rounded-md text-muted-foreground hover:bg-muted"
+                >
+                  <X className="h-3.5 w-3.5" />
+                </button>
+              )}
+            </div>
+            <select
+              value={ordenacao}
+              onChange={(e) =>
+                setOrdenacao(e.target.value as typeof ordenacao)
+              }
+              className="text-xs rounded-lg border border-border bg-background px-2.5 py-2 focus:outline-none focus:ring-2 focus:ring-primary/50"
+              title="Ordenar por"
+            >
+              <option value="recentes">Mais recentes</option>
+              <option value="usados">Mais usados</option>
+              <option value="alfabetica">A – Z</option>
+            </select>
           </div>
-          <div className="flex gap-1.5 flex-wrap">
+
+          <div className="flex gap-1.5 flex-wrap items-center">
+            <button
+              type="button"
+              onClick={() => setSoFavoritos((v) => !v)}
+              className={`inline-flex items-center gap-1 text-xs px-3 py-1.5 rounded-full border transition-colors ${
+                soFavoritos
+                  ? "bg-amber-400/15 border-amber-400/60 text-amber-600 dark:text-amber-300"
+                  : "bg-background border-border text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              <Star
+                className={`h-3 w-3 ${
+                  soFavoritos ? "fill-amber-400 text-amber-400" : ""
+                }`}
+              />
+              Favoritos
+            </button>
             {categorias.map((c) => (
               <button
                 key={c}
@@ -174,7 +241,25 @@ export function KitsModal({
               </button>
             ))}
           </div>
+
+          <div className="flex items-center justify-between text-[11px] text-muted-foreground pt-0.5">
+            <span>
+              {filtrados.length}{" "}
+              {filtrados.length === 1 ? "kit encontrado" : "kits encontrados"}
+              {kits.length !== filtrados.length && ` de ${kits.length}`}
+            </span>
+            {filtrosAtivos && (
+              <button
+                type="button"
+                onClick={limparFiltros}
+                className="text-primary hover:underline"
+              >
+                Limpar filtros
+              </button>
+            )}
+          </div>
         </div>
+
 
         {/* Lista */}
         <div className="flex-1 overflow-y-auto px-5 py-4">
