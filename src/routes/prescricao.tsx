@@ -1101,7 +1101,21 @@ function PrescricaoForm() {
         </div>
       )}
 
+
+
+
+      {historicoAberto && (
+        <HistoricoPanel
+          historico={historico}
+          onClose={() => setHistoricoAberto(false)}
+          onReutilizar={reutilizarHistorico}
+          onRemover={removerHistorico}
+          onLimpar={limparHistorico}
+        />
+      )}
+
       {/* Seção 1 — Paciente */}
+
       <section id="sec-paciente" className="scroll-mt-4">
 
         <div className="rounded-2xl border border-border bg-card p-5 space-y-5">
@@ -1453,18 +1467,8 @@ function PrescricaoForm() {
             </div>
           )}
 
-
-
-          {historicoAberto && (
-            <HistoricoPanel
-              historico={historico}
-              onClose={() => setHistoricoAberto(false)}
-              onReutilizar={reutilizarHistorico}
-              onRemover={removerHistorico}
-              onLimpar={limparHistorico}
-            />
-          )}
       </section>
+
 
       {/* Seção 3 — Revisar e emitir */}
       <section id="sec-revisar" className="scroll-mt-4">
