@@ -489,6 +489,9 @@ export function KitsModal({
             </div>
           )}
         </div>
+        </div>
+
+
 
         {pendente && (
           <div
