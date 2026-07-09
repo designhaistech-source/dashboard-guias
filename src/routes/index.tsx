@@ -11,6 +11,9 @@ import {
   ArrowUpRight,
   ArrowDownRight,
   Activity,
+  Filter,
+  X,
+  RotateCcw,
 } from "lucide-react";
 import {
   AreaChart,
