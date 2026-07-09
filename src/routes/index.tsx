@@ -3,17 +3,12 @@ import { useMemo, useState } from "react";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import {
-  LayoutGrid,
   FileText,
   TrendingUp,
   Layers,
   Download,
-  ArrowUpRight,
-  ArrowDownRight,
   Activity,
-  Filter,
   X,
-  RotateCcw,
 } from "lucide-react";
 import {
   AreaChart,
@@ -28,8 +23,6 @@ import {
   Cell,
   BarChart,
   Bar,
-  LineChart,
-  Line,
   LabelList,
   Sector,
 } from "recharts";
@@ -37,14 +30,6 @@ import { AppSidebar } from "@/components/app-sidebar";
 import { SiteFooter } from "@/components/site-footer";
 import logoAsset from "@/assets/haisguias-logo.png.asset.json";
 import { toast } from "sonner";
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetDescription,
-  SheetFooter,
-} from "@/components/ui/sheet";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -53,12 +38,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
+
 
 async function loadImageDataUrl(url: string): Promise<{ dataUrl: string; w: number; h: number }> {
   const res = await fetch(url);
@@ -651,7 +631,10 @@ function DashboardPage() {
 
           {/* Header */}
           <div className="flex flex-wrap items-center justify-between gap-4">
-            <h1 className="text-xl font-semibold tracking-tight text-foreground">Dashboard</h1>
+            <div>
+              <h1 className="text-xl font-semibold tracking-tight text-foreground">Dashboard</h1>
+              <p className="text-sm text-muted-foreground mt-0.5">Visão geral das guias processadas</p>
+            </div>
             <div className="flex items-center gap-2">
               <div className="inline-flex rounded-lg border border-border bg-card p-1">
                 {(["7d", "30d", "90d"] as Range[]).map((r) => (
@@ -670,18 +653,6 @@ function DashboardPage() {
                 ))}
               </div>
               <button
-                onClick={openFilters}
-                className="inline-flex items-center gap-2 rounded-lg border border-border bg-card px-3 py-2 text-sm font-medium text-foreground hover:bg-muted transition-colors"
-              >
-                <Filter className="h-4 w-4" />
-                Filtros
-                {activeFilters.length > 0 && (
-                  <span className="ml-1 inline-flex items-center justify-center rounded-full bg-primary text-primary-foreground text-[10px] font-semibold h-5 min-w-5 px-1.5">
-                    {activeFilters.length}
-                  </span>
-                )}
-              </button>
-              <button
                 onClick={() => generateReportPdf(range, dailyAvg, total)}
                 className="inline-flex items-center gap-2 rounded-lg border border-primary bg-card px-4 py-2 text-sm font-medium text-primary hover:bg-primary/5 transition-colors"
               >
@@ -691,37 +662,9 @@ function DashboardPage() {
             </div>
           </div>
 
-          {activeFilters.length > 0 && (
-            <div className="flex flex-wrap items-center gap-2 -mt-2">
-              <span className="text-xs text-muted-foreground">Filtros ativos:</span>
-              {activeFilters.map(([key, value]) => (
-                <span
-                  key={key}
-                  className="inline-flex items-center gap-1.5 rounded-full border border-primary/30 bg-primary/5 text-primary pl-2.5 pr-1 py-1 text-xs"
-                >
-                  <span className="font-medium">{filterLabels[key]}:</span>
-                  <span className="max-w-[160px] truncate">{value}</span>
-                  <button
-                    onClick={() => removeFilter(key)}
-                    aria-label={`Remover filtro ${filterLabels[key]}`}
-                    className="ml-0.5 rounded-full hover:bg-primary/10 p-0.5"
-                  >
-                    <X className="h-3 w-3" />
-                  </button>
-                </span>
-              ))}
-              <button
-                onClick={() => setFilters(emptyFilters)}
-                className="text-xs text-muted-foreground hover:text-foreground underline underline-offset-2 ml-1"
-              >
-                Limpar tudo
-              </button>
-            </div>
-          )}
-
-          {/* Filtros rápidos */}
-          <div className="grid gap-3 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 rounded-2xl border border-border bg-card p-4">
-            <div className="flex flex-col gap-1.5">
+          {/* Filtros */}
+          <div className="flex flex-wrap items-end gap-3">
+            <div className="flex flex-col gap-1 min-w-[160px]">
               <label className="text-[11px] uppercase tracking-wider text-muted-foreground font-medium">Dia</label>
               <Input
                 type="date"
@@ -732,7 +675,7 @@ function DashboardPage() {
                 className="h-9"
               />
             </div>
-            <div className="flex flex-col gap-1.5">
+            <div className="flex flex-col gap-1 min-w-[220px] flex-1">
               <label className="text-[11px] uppercase tracking-wider text-muted-foreground font-medium">Procedimento</label>
               <Select
                 value={filters.procDescricao || "__all"}
@@ -747,7 +690,7 @@ function DashboardPage() {
                 </SelectContent>
               </Select>
             </div>
-            <div className="flex flex-col gap-1.5">
+            <div className="flex flex-col gap-1 min-w-[200px] flex-1">
               <label className="text-[11px] uppercase tracking-wider text-muted-foreground font-medium">Solicitante</label>
               <Select
                 value={filters.prestadorSolicitante || "__all"}
@@ -762,7 +705,7 @@ function DashboardPage() {
                 </SelectContent>
               </Select>
             </div>
-            <div className="flex flex-col gap-1.5">
+            <div className="flex flex-col gap-1 min-w-[200px] flex-1">
               <label className="text-[11px] uppercase tracking-wider text-muted-foreground font-medium">Paciente</label>
               <Input
                 placeholder="Buscar por nome"
@@ -771,7 +714,18 @@ function DashboardPage() {
                 className="h-9"
               />
             </div>
+            {activeFilters.length > 0 && (
+              <button
+                onClick={() => setFilters(emptyFilters)}
+                className="inline-flex items-center gap-1.5 h-9 px-3 rounded-md text-xs text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+              >
+                <X className="h-3.5 w-3.5" />
+                Limpar
+              </button>
+            )}
           </div>
+
+
 
 
 
@@ -984,211 +938,12 @@ function DashboardPage() {
         <SiteFooter />
       </main>
 
-      <Sheet open={filtersOpen} onOpenChange={setFiltersOpen}>
-        <SheetContent className="w-full sm:max-w-lg overflow-y-auto flex flex-col p-0">
-          <SheetHeader className="px-6 pt-6 pb-4 border-b border-border">
-            <SheetTitle className="flex items-center gap-2">
-              <Filter className="h-5 w-5 text-primary" />
-              Filtros da guia
-            </SheetTitle>
-            <SheetDescription>
-              Filtre o dashboard pelos mesmos campos disponíveis no detalhamento da guia.
-            </SheetDescription>
-          </SheetHeader>
-
-          <div className="flex-1 overflow-y-auto px-6 py-4">
-            <Accordion type="multiple" defaultValue={["cabecalho", "beneficiario"]} className="w-full">
-              <AccordionItem value="cabecalho">
-                <AccordionTrigger className="text-sm font-semibold">Cabeçalho</AccordionTrigger>
-                <AccordionContent className="space-y-3 pt-2">
-                  <FilterField label="Nº guia prestador">
-                    <Input value={draft.numGuiaPrestador} onChange={(e) => setDraft({ ...draft, numGuiaPrestador: e.target.value })} placeholder="Ex.: 178499" />
-                  </FilterField>
-                  <FilterField label="Nº guia operadora">
-                    <Input value={draft.numGuiaOperadora} onChange={(e) => setDraft({ ...draft, numGuiaOperadora: e.target.value })} placeholder="Ex.: 4226..." />
-                  </FilterField>
-                  <div className="grid grid-cols-2 gap-3">
-                    <FilterField label="Senha">
-                      <Input value={draft.senha} onChange={(e) => setDraft({ ...draft, senha: e.target.value })} placeholder="A045158" />
-                    </FilterField>
-                    <FilterField label="Registro ANS">
-                      <Input value={draft.registroAns} onChange={(e) => setDraft({ ...draft, registroAns: e.target.value })} placeholder="366871" />
-                    </FilterField>
-                  </div>
-                  <div className="grid grid-cols-2 gap-3">
-                    <FilterField label="Autorização de">
-                      <Input type="date" value={draft.dataAutorizacaoDe} onChange={(e) => setDraft({ ...draft, dataAutorizacaoDe: e.target.value })} />
-                    </FilterField>
-                    <FilterField label="Autorização até">
-                      <Input type="date" value={draft.dataAutorizacaoAte} onChange={(e) => setDraft({ ...draft, dataAutorizacaoAte: e.target.value })} />
-                    </FilterField>
-                  </div>
-                </AccordionContent>
-              </AccordionItem>
-
-              <AccordionItem value="beneficiario">
-                <AccordionTrigger className="text-sm font-semibold">Beneficiário</AccordionTrigger>
-                <AccordionContent className="space-y-3 pt-2">
-                  <FilterField label="Nome">
-                    <Input value={draft.beneficiarioNome} onChange={(e) => setDraft({ ...draft, beneficiarioNome: e.target.value })} placeholder="Nome do beneficiário" />
-                  </FilterField>
-                  <div className="grid grid-cols-2 gap-3">
-                    <FilterField label="Nº carteira">
-                      <Input value={draft.numCarteira} onChange={(e) => setDraft({ ...draft, numCarteira: e.target.value })} placeholder="0101702..." />
-                    </FilterField>
-                    <FilterField label="Atendimento RN">
-                      <Select value={draft.atendRn || "todos"} onValueChange={(v) => setDraft({ ...draft, atendRn: v === "todos" ? "" : v })}>
-                        <SelectTrigger><SelectValue placeholder="Todos" /></SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="todos">Todos</SelectItem>
-                          <SelectItem value="Sim">Sim</SelectItem>
-                          <SelectItem value="Não">Não</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </FilterField>
-                  </div>
-                </AccordionContent>
-              </AccordionItem>
-
-              <AccordionItem value="prestadores">
-                <AccordionTrigger className="text-sm font-semibold">Prestadores</AccordionTrigger>
-                <AccordionContent className="space-y-3 pt-2">
-                  <FilterField label="Prestador solicitante">
-                    <Input value={draft.prestadorSolicitante} onChange={(e) => setDraft({ ...draft, prestadorSolicitante: e.target.value })} placeholder="Nome do prestador" />
-                  </FilterField>
-                  <FilterField label="Profissional">
-                    <Input value={draft.profissional} onChange={(e) => setDraft({ ...draft, profissional: e.target.value })} placeholder="Nome do profissional" />
-                  </FilterField>
-                  <div className="grid grid-cols-3 gap-3">
-                    <FilterField label="Conselho">
-                      <Input value={draft.conselho} onChange={(e) => setDraft({ ...draft, conselho: e.target.value })} placeholder="06" />
-                    </FilterField>
-                    <FilterField label="Nº conselho">
-                      <Input value={draft.numConselho} onChange={(e) => setDraft({ ...draft, numConselho: e.target.value })} placeholder="1472" />
-                    </FilterField>
-                    <FilterField label="UF">
-                      <Input value={draft.ufConselho} onChange={(e) => setDraft({ ...draft, ufConselho: e.target.value })} placeholder="SP" />
-                    </FilterField>
-                  </div>
-                  <div className="grid grid-cols-2 gap-3">
-                    <FilterField label="CBO">
-                      <Input value={draft.cbo} onChange={(e) => setDraft({ ...draft, cbo: e.target.value })} placeholder="225315" />
-                    </FilterField>
-                    <FilterField label="CNES">
-                      <Input value={draft.cnes} onChange={(e) => setDraft({ ...draft, cnes: e.target.value })} placeholder="CNES executante" />
-                    </FilterField>
-                  </div>
-                  <FilterField label="Prestador executante">
-                    <Input value={draft.prestadorExecutante} onChange={(e) => setDraft({ ...draft, prestadorExecutante: e.target.value })} placeholder="Nome do executante" />
-                  </FilterField>
-                </AccordionContent>
-              </AccordionItem>
-
-              <AccordionItem value="procedimentos">
-                <AccordionTrigger className="text-sm font-semibold">Procedimentos</AccordionTrigger>
-                <AccordionContent className="space-y-3 pt-2">
-                  <div className="grid grid-cols-2 gap-3">
-                    <FilterField label="Tabela">
-                      <Input value={draft.procTabela} onChange={(e) => setDraft({ ...draft, procTabela: e.target.value })} placeholder="22" />
-                    </FilterField>
-                    <FilterField label="Código">
-                      <Input value={draft.procCodigo} onChange={(e) => setDraft({ ...draft, procCodigo: e.target.value })} placeholder="40808130" />
-                    </FilterField>
-                  </div>
-                  <FilterField label="Descrição">
-                    <Input value={draft.procDescricao} onChange={(e) => setDraft({ ...draft, procDescricao: e.target.value })} placeholder="Ex.: densitometria" />
-                  </FilterField>
-                  <FilterField label="Referência">
-                    <Select value={draft.procReferencia || "todas"} onValueChange={(v) => setDraft({ ...draft, procReferencia: v === "todas" ? "" : v })}>
-                      <SelectTrigger><SelectValue placeholder="Todas" /></SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="todas">Todas</SelectItem>
-                        <SelectItem value="Tuss">Tuss</SelectItem>
-                        <SelectItem value="Sigtap">Sigtap</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </FilterField>
-                </AccordionContent>
-              </AccordionItem>
-
-              <AccordionItem value="financeiro">
-                <AccordionTrigger className="text-sm font-semibold">Financeiro</AccordionTrigger>
-                <AccordionContent className="space-y-3 pt-2">
-                  <div className="grid grid-cols-2 gap-3">
-                    <FilterField label="Valor mín. (R$)">
-                      <Input type="number" value={draft.valorMin} onChange={(e) => setDraft({ ...draft, valorMin: e.target.value })} placeholder="0" />
-                    </FilterField>
-                    <FilterField label="Valor máx. (R$)">
-                      <Input type="number" value={draft.valorMax} onChange={(e) => setDraft({ ...draft, valorMax: e.target.value })} placeholder="10000" />
-                    </FilterField>
-                  </div>
-                  <FilterField label="Componente">
-                    <Select value={draft.componenteFinanceiro || "todos"} onValueChange={(v) => setDraft({ ...draft, componenteFinanceiro: v === "todos" ? "" : v })}>
-                      <SelectTrigger><SelectValue placeholder="Todos" /></SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="todos">Todos</SelectItem>
-                        <SelectItem value="Honorários">Honorários</SelectItem>
-                        <SelectItem value="Materiais">Materiais</SelectItem>
-                        <SelectItem value="OPME">OPME</SelectItem>
-                        <SelectItem value="Medicamentos">Medicamentos</SelectItem>
-                        <SelectItem value="Gases">Gases</SelectItem>
-                        <SelectItem value="Procedimentos">Procedimentos</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </FilterField>
-                </AccordionContent>
-              </AccordionItem>
-
-              <AccordionItem value="tipo">
-                <AccordionTrigger className="text-sm font-semibold">Tipo de guia</AccordionTrigger>
-                <AccordionContent className="space-y-3 pt-2">
-                  <FilterField label="Tipo">
-                    <Select value={draft.tipoGuia || "todos"} onValueChange={(v) => setDraft({ ...draft, tipoGuia: v === "todos" ? "" : v })}>
-                      <SelectTrigger><SelectValue placeholder="Todos" /></SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="todos">Todos</SelectItem>
-                        <SelectItem value="Consulta">Consulta</SelectItem>
-                        <SelectItem value="SP/SADT">SP/SADT</SelectItem>
-                        <SelectItem value="Internação">Internação</SelectItem>
-                        <SelectItem value="Honorário">Honorário</SelectItem>
-                        <SelectItem value="Odontológica">Odontológica</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </FilterField>
-                </AccordionContent>
-              </AccordionItem>
-            </Accordion>
-          </div>
-
-          <SheetFooter className="px-6 py-4 border-t border-border flex-row justify-between gap-2 sm:justify-between">
-            <button
-              onClick={clearAll}
-              className="inline-flex items-center gap-2 rounded-lg border border-border bg-card px-3 py-2 text-sm font-medium text-foreground hover:bg-muted transition-colors"
-            >
-              <RotateCcw className="h-4 w-4" />
-              Limpar
-            </button>
-            <button
-              onClick={applyFilters}
-              className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors"
-            >
-              Aplicar filtros
-            </button>
-          </SheetFooter>
-        </SheetContent>
-      </Sheet>
     </div>
   );
 }
 
-function FilterField({ label, children }: { label: string; children: React.ReactNode }) {
-  return (
-    <label className="block space-y-1.5">
-      <span className="text-xs font-medium text-muted-foreground">{label}</span>
-      {children}
-    </label>
-  );
-}
+
+
 
 function LegendDot({ color, label, dashed }: { color: string; label: string; dashed?: boolean }) {
   return (
@@ -1252,7 +1007,7 @@ function Kpi({
           trend === "up" ? "text-success" : "text-muted-foreground",
         ].join(" ")}
       >
-        {trend === "up" && <ArrowUpRight className="h-3 w-3" />}
+        {trend === "up" && <span className="text-success">↗</span>}
         {hint}
       </div>
     </div>
