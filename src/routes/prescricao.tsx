@@ -1062,22 +1062,20 @@ function PrescricaoForm() {
               Pronto para emitir
             </span>
           )}
-          <button
-            type="button"
+          <ActionBtn
             onClick={() => setKitsAberto(true)}
-            className="inline-flex items-center gap-1.5 text-xs rounded-lg border border-border px-2.5 py-1.5 hover:bg-muted transition-colors"
+            icon={<BookMarked className="h-3.5 w-3.5" />}
+            size="sm"
           >
-            <BookMarked className="h-3.5 w-3.5" />
             Kits salvos
-          </button>
-          <button
-            type="button"
+          </ActionBtn>
+          <ActionBtn
             onClick={() => setHistoricoAberto((v) => !v)}
-            className="inline-flex items-center gap-1.5 text-xs rounded-lg border border-border px-2.5 py-1.5 hover:bg-muted transition-colors"
+            icon={<History className="h-3.5 w-3.5" />}
+            size="sm"
           >
-            <History className="h-3.5 w-3.5" />
-            Histórico {historico.length > 0 && `(${historico.length})`}
-          </button>
+            Histórico{historico.length > 0 ? ` (${historico.length})` : ""}
+          </ActionBtn>
         </div>
       </div>
 
