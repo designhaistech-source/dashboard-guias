@@ -10,7 +10,6 @@ import {
   Check,
   Printer,
   Save,
-  FolderCog,
   Link2,
   Download,
   GripVertical,
@@ -20,6 +19,9 @@ import {
   RefreshCw,
   Trash2,
   ChevronDown,
+  ChevronLeft,
+  ChevronRight,
+  Cloud,
 } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { jsPDF } from "jspdf";
