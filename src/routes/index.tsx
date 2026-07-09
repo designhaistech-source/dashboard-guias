@@ -694,68 +694,6 @@ function DashboardPage() {
             </div>
           </div>
 
-          {/* Filtros */}
-          <div className="flex flex-wrap items-end gap-3">
-            <div className="flex flex-col gap-1 min-w-[160px]">
-              <label className="text-[11px] uppercase tracking-wider text-muted-foreground font-medium">Dia</label>
-              <Input
-                type="date"
-                value={filters.dataAutorizacaoDe}
-                onChange={(e) =>
-                  setFilters((f) => ({ ...f, dataAutorizacaoDe: e.target.value, dataAutorizacaoAte: e.target.value }))
-                }
-                className="h-9"
-              />
-            </div>
-            <div className="flex flex-col gap-1 min-w-[220px] flex-1">
-              <label className="text-[11px] uppercase tracking-wider text-muted-foreground font-medium">Procedimento</label>
-              <Select
-                value={filters.procDescricao || "__all"}
-                onValueChange={(v) => setFilters((f) => ({ ...f, procDescricao: v === "__all" ? "" : v }))}
-              >
-                <SelectTrigger className="h-9"><SelectValue placeholder="Todos" /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="__all">Todos</SelectItem>
-                  {procedures.map((p) => (
-                    <SelectItem key={p.code} value={p.name}>{p.name}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="flex flex-col gap-1 min-w-[200px] flex-1">
-              <label className="text-[11px] uppercase tracking-wider text-muted-foreground font-medium">Solicitante</label>
-              <Select
-                value={filters.prestadorSolicitante || "__all"}
-                onValueChange={(v) => setFilters((f) => ({ ...f, prestadorSolicitante: v === "__all" ? "" : v }))}
-              >
-                <SelectTrigger className="h-9"><SelectValue placeholder="Todos" /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="__all">Todos</SelectItem>
-                  {["Dra. Camila Andrade", "Dr. Rafael Souza", "Dra. Marina Costa", "Dr. João Pereira", "Dra. Beatriz Lima"].map((n) => (
-                    <SelectItem key={n} value={n}>{n}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="flex flex-col gap-1 min-w-[200px] flex-1">
-              <label className="text-[11px] uppercase tracking-wider text-muted-foreground font-medium">Paciente</label>
-              <Input
-                placeholder="Buscar por nome"
-                value={filters.beneficiarioNome}
-                onChange={(e) => setFilters((f) => ({ ...f, beneficiarioNome: e.target.value }))}
-                className="h-9"
-              />
-            </div>
-            {activeFilters.length > 0 && (
-              <button
-                onClick={() => setFilters(emptyFilters)}
-                className="inline-flex items-center gap-1.5 h-9 px-3 rounded-md text-xs text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
-              >
-                <X className="h-3.5 w-3.5" />
-                Limpar
-              </button>
-            )}
-          </div>
 
           {/* Chips de filtros ativos */}
           {activeFilters.length > 0 && (
