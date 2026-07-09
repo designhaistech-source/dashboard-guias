@@ -466,6 +466,7 @@ function PrescricaoForm() {
   const [savedAt, setSavedAt] = useState<number | null>(null);
   const [historico, setHistorico] = useState<Historico[]>([]);
   const [historicoAberto, setHistoricoAberto] = useState(false);
+  const [kitsAberto, setKitsAberto] = useState(false);
   const hidratado = useRef(false);
   const [step, setStep] = useState<1 | 2 | 3>(1);
 
