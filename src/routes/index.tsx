@@ -3,17 +3,12 @@ import { useMemo, useState } from "react";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import {
-  LayoutGrid,
   FileText,
   TrendingUp,
   Layers,
   Download,
-  ArrowUpRight,
-  ArrowDownRight,
   Activity,
-  Filter,
   X,
-  RotateCcw,
 } from "lucide-react";
 import {
   AreaChart,
@@ -28,8 +23,6 @@ import {
   Cell,
   BarChart,
   Bar,
-  LineChart,
-  Line,
   LabelList,
   Sector,
 } from "recharts";
@@ -37,14 +30,6 @@ import { AppSidebar } from "@/components/app-sidebar";
 import { SiteFooter } from "@/components/site-footer";
 import logoAsset from "@/assets/haisguias-logo.png.asset.json";
 import { toast } from "sonner";
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetDescription,
-  SheetFooter,
-} from "@/components/ui/sheet";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -53,12 +38,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
+
 
 async function loadImageDataUrl(url: string): Promise<{ dataUrl: string; w: number; h: number }> {
   const res = await fetch(url);
