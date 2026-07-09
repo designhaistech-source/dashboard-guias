@@ -1099,6 +1099,9 @@ function PrescricaoForm() {
             </button>
           </div>
         </div>
+      )}
+
+
 
 
       {historicoAberto && (
