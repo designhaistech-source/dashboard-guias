@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import {
@@ -576,12 +576,14 @@ function FilterField({
   onChange,
   type = "text",
   error,
+  inputRef,
 }: {
   label: string;
   value: string;
   onChange: (v: string) => void;
   type?: string;
   error?: boolean;
+  inputRef?: React.Ref<HTMLInputElement>;
 }) {
   return (
     <div className="flex flex-col gap-1">
@@ -589,6 +591,7 @@ function FilterField({
         {label}
       </label>
       <Input
+        ref={inputRef}
         type={type}
         value={value}
         onChange={(e) => onChange(e.target.value)}
@@ -598,6 +601,7 @@ function FilterField({
     </div>
   );
 }
+
 
 function FilterSelect({
   label,
@@ -740,6 +744,32 @@ function DashboardPage() {
   const removeFilter = (key: keyof GuideFilters) =>
     setFilters((f) => ({ ...f, [key]: "" }));
 
+  const isDirty = useMemo(
+    () => (Object.keys(draft) as (keyof GuideFilters)[]).some((k) => draft[k] !== filters[k]),
+    [draft, filters],
+  );
+  const requestClose = () => {
+    if (isDirty) {
+      const ok = window.confirm("Você tem alterações não aplicadas. Deseja descartá-las?");
+      if (!ok) return;
+    }
+    setDraft(filters);
+    setFiltersOpen(false);
+  };
+  const cancelEdits = () => {
+    setDraft(filters);
+    setFiltersOpen(false);
+  };
+
+  const firstFieldRef = useRef<HTMLInputElement | null>(null);
+  useEffect(() => {
+    if (filtersOpen) {
+      const t = setTimeout(() => firstFieldRef.current?.focus(), 60);
+      return () => clearTimeout(t);
+    }
+  }, [filtersOpen]);
+
+
   const total = useMemo(() => typeData.reduce((s, t) => s + t.value, 0), []);
   const dailyAvg = useMemo(
     () => Math.round(dailyData30.reduce((s, d) => s + d.guias, 0) / dailyData30.length),
@@ -760,8 +790,9 @@ function DashboardPage() {
             </div>
             <div className="flex items-center gap-2">
               <button
-                onClick={() => (filtersOpen ? setFiltersOpen(false) : openFilters())}
+                onClick={() => (filtersOpen ? requestClose() : openFilters())}
                 aria-expanded={filtersOpen}
+                aria-controls="dashboard-filters-panel"
                 className={[
                   "relative inline-flex items-center gap-2 rounded-lg border px-4 py-2 text-sm font-medium transition-colors",
                   filtersOpen
@@ -819,14 +850,22 @@ function DashboardPage() {
 
           {/* Painel de filtros inline */}
           {filtersOpen && (
-            <div className="rounded-2xl border border-border bg-card p-6 space-y-5">
+            <section
+              id="dashboard-filters-panel"
+              role="region"
+              aria-label="Filtros do dashboard"
+              className="rounded-2xl border border-border bg-card p-6 space-y-5"
+            >
               <div className="flex items-start justify-between gap-4">
                 <div>
                   <h3 className="font-semibold">Filtros</h3>
-                  <p className="text-xs text-muted-foreground">Refine as guias exibidas no dashboard.</p>
+                  <p className="text-xs text-muted-foreground">
+                    Refine as guias exibidas no dashboard.
+                    {isDirty && <span className="ml-2 text-amber-600 dark:text-amber-500">• alterações não aplicadas</span>}
+                  </p>
                 </div>
                 <button
-                  onClick={() => setFiltersOpen(false)}
+                  onClick={requestClose}
                   className="rounded-md p-1 text-muted-foreground hover:bg-muted hover:text-foreground"
                   aria-label="Fechar filtros"
                 >
@@ -857,7 +896,7 @@ function DashboardPage() {
               <div>
                 <div className="text-[11px] uppercase tracking-wider text-muted-foreground font-medium mb-2">Período de autorização</div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-                  <FilterField label="De" type="date" error={dateRangeInvalid} value={draft.dataAutorizacaoDe} onChange={(v) => setDraft((d) => ({ ...d, dataAutorizacaoDe: v }))} />
+                  <FilterField label="De" type="date" error={dateRangeInvalid} value={draft.dataAutorizacaoDe} onChange={(v) => setDraft((d) => ({ ...d, dataAutorizacaoDe: v }))} inputRef={firstFieldRef} />
                   <FilterField label="Até" type="date" error={dateRangeInvalid} value={draft.dataAutorizacaoAte} onChange={(v) => setDraft((d) => ({ ...d, dataAutorizacaoAte: v }))} />
                 </div>
                 {dateRangeInvalid && (
@@ -893,16 +932,25 @@ function DashboardPage() {
                 >
                   Limpar filtros
                 </button>
-                <button
-                  onClick={applyFilters}
-                  disabled={hasErrors}
-                  title={hasErrors ? "Corrija os campos destacados para aplicar" : undefined}
-                  className="inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  Aplicar filtros{previewCount !== null && ` (${previewCount} ${previewCount === 1 ? "guia" : "guias"})`}
-                </button>
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={cancelEdits}
+                    disabled={!isDirty}
+                    className="inline-flex items-center gap-1.5 rounded-md border border-border px-3 py-2 text-sm text-foreground hover:bg-muted transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    Cancelar
+                  </button>
+                  <button
+                    onClick={applyFilters}
+                    disabled={hasErrors}
+                    title={hasErrors ? "Corrija os campos destacados para aplicar" : undefined}
+                    className="inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    Aplicar filtros{previewCount !== null && ` (${previewCount} ${previewCount === 1 ? "guia" : "guias"})`}
+                  </button>
+                </div>
               </div>
-            </div>
+            </section>
           )}
 
 
