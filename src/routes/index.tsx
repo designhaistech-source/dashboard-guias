@@ -735,8 +735,14 @@ function DashboardPage() {
             </div>
             <div className="flex items-center gap-2">
               <button
-                onClick={openFilters}
-                className="relative inline-flex items-center gap-2 rounded-lg border border-border bg-card px-4 py-2 text-sm font-medium text-foreground hover:bg-muted transition-colors"
+                onClick={() => (filtersOpen ? setFiltersOpen(false) : openFilters())}
+                aria-expanded={filtersOpen}
+                className={[
+                  "relative inline-flex items-center gap-2 rounded-lg border px-4 py-2 text-sm font-medium transition-colors",
+                  filtersOpen
+                    ? "border-primary bg-primary/5 text-primary"
+                    : "border-border bg-card text-foreground hover:bg-muted",
+                ].join(" ")}
               >
                 <SlidersHorizontal className="h-4 w-4" />
                 Filtros
@@ -746,6 +752,7 @@ function DashboardPage() {
                   </span>
                 )}
               </button>
+
               <button
                 onClick={() => generateReportPdf(range, dailyAvg, total)}
                 className="inline-flex items-center gap-2 rounded-lg border border-primary bg-card px-4 py-2 text-sm font-medium text-primary hover:bg-primary/5 transition-colors"
