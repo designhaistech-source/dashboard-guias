@@ -573,6 +573,27 @@ const emptyFilters: GuideFilters = {
   tipoGuia: "",
 };
 
+function FilterField({
+  label,
+  value,
+  onChange,
+  type = "text",
+}: {
+  label: string;
+  value: string;
+  onChange: (v: string) => void;
+  type?: string;
+}) {
+  return (
+    <div className="flex flex-col gap-1">
+      <label className="text-[11px] uppercase tracking-wider text-muted-foreground font-medium">
+        {label}
+      </label>
+      <Input type={type} value={value} onChange={(e) => onChange(e.target.value)} className="h-9" />
+    </div>
+  );
+}
+
 const filterLabels: Record<keyof GuideFilters, string> = {
   numGuiaPrestador: "Nº guia prestador",
   numGuiaOperadora: "Nº guia operadora",
