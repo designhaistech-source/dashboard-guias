@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   BookMarked,
   Search,
@@ -43,20 +43,83 @@ export function KitsModal({
   >("recentes");
   const [expanded, setExpanded] = useState<Set<string>>(new Set());
   const [pendente, setPendente] = useState<Kit | null>(null);
+  const dialogRef = useRef<HTMLDivElement>(null);
+  const confirmRef = useRef<HTMLDivElement>(null);
+  const previouslyFocused = useRef<HTMLElement | null>(null);
 
   useEffect(() => {
     if (open) setKits(loadKits());
   }, [open]);
 
-
+  // Salva/restaura foco + trava rolagem do body
   useEffect(() => {
     if (!open) return;
+    previouslyFocused.current = document.activeElement as HTMLElement | null;
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = prevOverflow;
+      previouslyFocused.current?.focus?.();
+    };
+  }, [open]);
+
+  // ESC + focus trap (Tab cíclico dentro do diálogo ativo)
+  useEffect(() => {
+    if (!open) return;
+    const getFocusables = (root: HTMLElement | null): HTMLElement[] => {
+      if (!root) return [];
+      return Array.from(
+        root.querySelectorAll<HTMLElement>(
+          'a[href], area[href], button:not([disabled]), input:not([disabled]):not([type="hidden"]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])',
+        ),
+      ).filter(
+        (el) =>
+          !el.hasAttribute("aria-hidden") &&
+          el.offsetParent !== null,
+      );
+    };
+
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
+      if (e.key === "Escape") {
+        e.stopPropagation();
+        if (pendente) setPendente(null);
+        else onClose();
+        return;
+      }
+      if (e.key !== "Tab") return;
+      const root = pendente ? confirmRef.current : dialogRef.current;
+      const focusables = getFocusables(root);
+      if (focusables.length === 0) {
+        e.preventDefault();
+        root?.focus();
+        return;
+      }
+      const first = focusables[0];
+      const last = focusables[focusables.length - 1];
+      const active = document.activeElement as HTMLElement | null;
+      if (e.shiftKey && (active === first || !root?.contains(active))) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && (active === last || !root?.contains(active))) {
+        e.preventDefault();
+        first.focus();
+      }
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [open, onClose]);
+  }, [open, onClose, pendente]);
+
+  // Move o foco inicial ao abrir cada camada
+  useEffect(() => {
+    if (!open) return;
+    const root = pendente ? confirmRef.current : dialogRef.current;
+    if (!root) return;
+    const focusable = root.querySelector<HTMLElement>(
+      'input, button, [tabindex]:not([tabindex="-1"])',
+    );
+    focusable?.focus();
+  }, [open, pendente]);
+
 
   const categorias = useMemo(() => {
     const s = new Set<string>();
@@ -163,9 +226,16 @@ export function KitsModal({
       onClick={onClose}
     >
       <div
+        ref={dialogRef}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="kits-modal-title"
+        aria-describedby="kits-modal-desc"
+        tabIndex={-1}
         onClick={(e) => e.stopPropagation()}
-        className="relative w-full max-w-3xl max-h-[90vh] rounded-2xl border border-border bg-card shadow-xl flex flex-col overflow-hidden"
+        className="relative w-full max-w-3xl max-h-[90vh] rounded-2xl border border-border bg-card shadow-xl flex flex-col overflow-hidden focus:outline-none"
       >
+
         {/* Header */}
         <div className="px-5 py-4 border-b border-border flex items-center justify-between gap-3">
           <div className="flex items-center gap-3 min-w-0">
@@ -173,11 +243,20 @@ export function KitsModal({
               <BookMarked className="h-4.5 w-4.5" />
             </div>
             <div className="min-w-0">
-              <h2 className="text-base font-semibold leading-tight">Kits salvos</h2>
-              <p className="text-xs text-muted-foreground truncate">
+              <h2
+                id="kits-modal-title"
+                className="text-base font-semibold leading-tight"
+              >
+                Kits salvos
+              </h2>
+              <p
+                id="kits-modal-desc"
+                className="text-xs text-muted-foreground truncate"
+              >
                 Modelos reutilizáveis — aplique com um clique.
               </p>
             </div>
+
           </div>
           <button
             type="button"
@@ -199,8 +278,8 @@ export function KitsModal({
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder="Buscar por nome, categoria ou medicamento…"
-                autoFocus
                 className="w-full pl-9 pr-8 py-2 rounded-lg border border-border bg-background text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50"
+
               />
               {query && (
                 <button
@@ -411,18 +490,25 @@ export function KitsModal({
             onClick={() => setPendente(null)}
           >
             <div
+              ref={confirmRef}
               onClick={(e) => e.stopPropagation()}
-              className="w-full max-w-md rounded-2xl border border-border bg-card shadow-xl p-5"
+              className="w-full max-w-md rounded-2xl border border-border bg-card shadow-xl p-5 focus:outline-none"
               role="alertdialog"
               aria-modal="true"
+              aria-labelledby="kits-confirm-title"
+              aria-describedby="kits-confirm-desc"
+              tabIndex={-1}
             >
               <div className="flex items-start gap-3">
                 <div className="grid place-items-center h-9 w-9 rounded-lg bg-amber-400/15 text-amber-600 dark:text-amber-300 shrink-0">
                   <AlertTriangle className="h-4.5 w-4.5" />
                 </div>
                 <div className="min-w-0">
-                  <h3 className="text-sm font-semibold">Aplicar kit à receita?</h3>
-                  <p className="text-xs text-muted-foreground mt-1">
+                  <h3 id="kits-confirm-title" className="text-sm font-semibold">
+                    Aplicar kit à receita?
+                  </h3>
+
+                  <p id="kits-confirm-desc" className="text-xs text-muted-foreground mt-1">
                     A receita atual já contém{" "}
                     <strong className="text-foreground">
                       {currentCount}{" "}
