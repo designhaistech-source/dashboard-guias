@@ -10,7 +10,9 @@ import {
   ChevronDown,
   ChevronUp,
   X,
+  AlertTriangle,
 } from "lucide-react";
+
 import { toast } from "sonner";
 import {
   type Kit,
