@@ -1725,47 +1725,8 @@ function PrescricaoForm() {
             </p>
           </div>
         </div>
-      )}
+      </section>
 
-      {/* Wizard footer navigation */}
-      <div className="flex items-center justify-between gap-3 pt-2">
-        <button
-          type="button"
-          onClick={() => step > 1 && setStep((s) => (s - 1) as 1 | 2 | 3)}
-          disabled={step === 1}
-          className="inline-flex items-center gap-1.5 rounded-lg border border-border px-4 py-2 text-sm font-medium text-foreground hover:bg-muted disabled:opacity-40 disabled:cursor-not-allowed"
-        >
-          <ChevronLeft className="h-4 w-4" />
-          Voltar
-        </button>
-
-        {step < 3 ? (
-          <button
-            type="button"
-            onClick={() => goStep((step + 1) as 1 | 2 | 3)}
-            disabled={step === 1 ? !canGoStep2 : !canGoStep3}
-            className="inline-flex items-center gap-1.5 rounded-lg bg-primary px-5 py-2 text-sm font-semibold text-primary-foreground hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {step === 2 && itens.length > 0 && (
-              <span className="rounded-full bg-primary-foreground/20 px-1.5 py-0.5 text-[11px] font-semibold">
-                {itens.length}
-              </span>
-            )}
-            Continuar
-            <ChevronRight className="h-4 w-4" />
-          </button>
-        ) : (
-          <button
-            type="button"
-            onClick={baixarPdf}
-            disabled={!podeEmitir}
-            className="inline-flex items-center gap-1.5 rounded-lg bg-primary px-5 py-2 text-sm font-semibold text-primary-foreground hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            <Download className="h-4 w-4" />
-            Emitir e baixar PDF
-          </button>
-        )}
-      </div>
     </div>
   );
 }
