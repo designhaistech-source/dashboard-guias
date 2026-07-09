@@ -27,10 +27,12 @@ export function KitsModal({
   open,
   onClose,
   onAplicar,
+  currentCount = 0,
 }: {
   open: boolean;
   onClose: () => void;
-  onAplicar: (kit: Kit) => void;
+  onAplicar: (kit: Kit, mode: "replace" | "append") => void;
+  currentCount?: number;
 }) {
   const [kits, setKits] = useState<Kit[]>([]);
   const [query, setQuery] = useState("");
@@ -40,10 +42,12 @@ export function KitsModal({
     "recentes" | "usados" | "alfabetica"
   >("recentes");
   const [expanded, setExpanded] = useState<Set<string>>(new Set());
+  const [pendente, setPendente] = useState<Kit | null>(null);
 
   useEffect(() => {
     if (open) setKits(loadKits());
   }, [open]);
+
 
   useEffect(() => {
     if (!open) return;
