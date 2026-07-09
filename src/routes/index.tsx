@@ -968,14 +968,8 @@ function DashboardPage() {
   );
 }
 
-function FilterField_REMOVED() { return null;
 
-    <label className="block space-y-1.5">
-      <span className="text-xs font-medium text-muted-foreground">{label}</span>
-      {children}
-    </label>
-  );
-}
+
 
 function LegendDot({ color, label, dashed }: { color: string; label: string; dashed?: boolean }) {
   return (
