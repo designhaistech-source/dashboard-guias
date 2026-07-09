@@ -1038,94 +1038,50 @@ function PrescricaoForm() {
 
   return (
     <div className="space-y-5 pb-8">
-      {/* Stepper */}
-      <div className="rounded-2xl border border-border bg-card px-5 py-4">
-        <div className="flex items-center justify-between gap-4">
-          <ol className="flex items-center gap-2 flex-1 min-w-0">
-            {(
-              [
-                { n: 1, label: "Paciente" },
-                { n: 2, label: "Medicamentos" },
-                { n: 3, label: "Revisar e emitir" },
-              ] as const
-            ).map((s, idx, arr) => {
-              const active = step === s.n;
-              const done = step > s.n;
-              const clickable =
-                s.n === 1 ||
-                (s.n === 2 && (canGoStep2 || step >= 2)) ||
-                (s.n === 3 && (canGoStep3 || step >= 3));
-              return (
-                <li key={s.n} className="flex items-center gap-2 min-w-0">
-                  <button
-                    type="button"
-                    onClick={() => clickable && goStep(s.n)}
-                    disabled={!clickable}
-                    className={`flex items-center gap-2 rounded-full pl-1.5 pr-3 py-1 text-sm transition-colors ${
-                      active
-                        ? "bg-primary/10 text-primary"
-                        : done
-                          ? "text-foreground hover:bg-muted"
-                          : "text-muted-foreground"
-                    } ${clickable ? "cursor-pointer" : "cursor-not-allowed opacity-60"}`}
-                  >
-                    <span
-                      className={`grid place-items-center h-6 w-6 rounded-full text-[11px] font-semibold ${
-                        active
-                          ? "bg-primary text-primary-foreground"
-                          : done
-                            ? "bg-emerald-500/15 text-emerald-600 dark:text-emerald-300"
-                            : "bg-muted text-muted-foreground"
-                      }`}
-                    >
-                      {done ? <Check className="h-3.5 w-3.5" /> : s.n}
-                    </span>
-                    <span className="font-medium hidden sm:inline">{s.label}</span>
-                  </button>
-                  {idx < arr.length - 1 && (
-                    <span
-                      className={`h-px w-6 sm:w-10 ${done ? "bg-emerald-500/40" : "bg-border"}`}
-                    />
-                  )}
-                </li>
-              );
-            })}
-          </ol>
-          {savedAt && (
-            <div
-              className="hidden md:flex items-center gap-1.5 text-[11px] text-muted-foreground"
-              title={`Rascunho salvo às ${fmtHora(savedAt)}`}
-            >
-              <Cloud className="h-3.5 w-3.5" />
-              salvo {fmtHora(savedAt)}
-            </div>
-          )}
+      {/* Header */}
+      <div className="rounded-2xl border border-border bg-card px-5 py-3 flex items-center justify-between gap-3">
+        <div className="min-w-0">
+          <h1 className="text-lg font-semibold leading-tight">Emitir prescrição</h1>
+          <p className="text-xs text-muted-foreground">
+            Preencha as seções em qualquer ordem — o botão de emitir libera quando houver paciente e ao menos um medicamento.
+          </p>
         </div>
-        {rascunhoRestaurado && (
-          <div className="mt-3 flex items-center justify-between gap-2 text-xs">
-            <span className="text-muted-foreground">
-              Rascunho recuperado de {fmtHora(rascunhoRestaurado)}.
-            </span>
-            <div className="flex items-center gap-3">
-              <button
-                onClick={() => setRascunhoRestaurado(null)}
-                className="text-muted-foreground hover:text-foreground"
-              >
-                Ocultar
-              </button>
-              <button
-                onClick={descartarRascunho}
-                className="text-destructive hover:underline"
-              >
-                Descartar
-              </button>
-            </div>
+        {savedAt && (
+          <div
+            className="hidden md:flex items-center gap-1.5 text-[11px] text-muted-foreground shrink-0"
+            title={`Rascunho salvo às ${fmtHora(savedAt)}`}
+          >
+            <Cloud className="h-3.5 w-3.5" />
+            salvo {fmtHora(savedAt)}
           </div>
         )}
       </div>
 
-      {/* Step 1 — Paciente */}
-      {step === 1 && (
+      {rascunhoRestaurado && (
+        <div className="rounded-xl border border-border bg-card px-4 py-2 flex items-center justify-between gap-2 text-xs">
+          <span className="text-muted-foreground">
+            Rascunho recuperado de {fmtHora(rascunhoRestaurado)}.
+          </span>
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => setRascunhoRestaurado(null)}
+              className="text-muted-foreground hover:text-foreground"
+            >
+              Ocultar
+            </button>
+            <button
+              onClick={descartarRascunho}
+              className="text-destructive hover:underline"
+            >
+              Descartar
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Seção 1 — Paciente */}
+      <section id="sec-paciente" className="scroll-mt-4">
+
         <div className="rounded-2xl border border-border bg-card p-5 space-y-5">
           <div>
             <h2 className="text-base font-semibold">Dados do paciente</h2>
