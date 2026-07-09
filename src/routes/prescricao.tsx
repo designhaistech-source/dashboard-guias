@@ -421,7 +421,6 @@ function PrescricaoPage() {
       <AppSidebar activeKey="prescricao" />
       <main className="flex-1 flex flex-col min-h-screen">
         <div className="w-full max-w-5xl mx-auto space-y-6 flex-1 px-8 pt-8 pb-16">
-          <Header />
           <PrescricaoForm />
         </div>
         <SiteFooter />
