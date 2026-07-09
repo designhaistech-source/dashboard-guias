@@ -941,7 +941,7 @@ function DashboardPage() {
                   Aplicar filtros{previewCount !== null && ` (${previewCount} ${previewCount === 1 ? "guia" : "guias"})`}
                 </button>
               </div>
-            </div>
+            </section>
           )}
 
 
