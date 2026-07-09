@@ -975,388 +975,488 @@ function PrescricaoForm() {
   const fmtHora = (ts: number) =>
     new Date(ts).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
 
+  const canGoStep2 =
+    paciente.trim().length > 0 && (!especial || (cpfValido && enderecoValido));
+  const canGoStep3 =
+    canGoStep2 && itens.length > 0 && posologiasInvalidas.length === 0;
+
+  const goStep = (n: 1 | 2 | 3) => {
+    if (n === 1) return setStep(1);
+    if (n === 2 && canGoStep2) return setStep(2);
+    if (n === 3 && canGoStep3) return setStep(3);
+    if (n === 2 && !canGoStep2) {
+      toast.error(
+        !paciente.trim()
+          ? "Informe o nome do paciente para avançar."
+          : "Complete CPF e endereço do paciente para receita especial.",
+      );
+    } else if (n === 3 && !canGoStep3) {
+      toast.error(
+        itens.length === 0
+          ? "Adicione ao menos um medicamento."
+          : "Corrija as posologias inválidas antes de continuar.",
+      );
+    }
+  };
+
   return (
     <div className="space-y-5 pb-8">
-      {rascunhoRestaurado && (
-        <div className="rounded-2xl border border-primary/40 bg-primary/5 p-3 flex flex-wrap items-center justify-between gap-3">
-          <div className="text-sm">
-            <span className="font-semibold text-primary">Rascunho recuperado</span>
-            <span className="text-muted-foreground">
-              {" "}— salvo às {fmtHora(rascunhoRestaurado)}.
-            </span>
-          </div>
-          <div className="flex items-center gap-2">
-            <button
-              onClick={() => setRascunhoRestaurado(null)}
-              className="text-xs text-muted-foreground hover:text-foreground px-2 py-1"
-            >
-              Ocultar
-            </button>
-            <button
-              onClick={descartarRascunho}
-              className="text-xs text-destructive hover:underline px-2 py-1"
-            >
-              Descartar rascunho
-            </button>
-          </div>
-        </div>
-      )}
-
-      {pendencias.length > 0 && (
-        <div
-          role="alert"
-          className="rounded-2xl border border-destructive/50 bg-destructive/10 p-4"
-        >
-          <div className="flex items-start gap-3">
-            <div className="mt-0.5 grid place-items-center h-6 w-6 rounded-full bg-destructive text-destructive-foreground text-xs font-bold shrink-0">
-              !
-            </div>
-            <div className="flex-1 space-y-1 min-w-0">
-              <div className="text-sm font-semibold text-destructive">
-                {especial
-                  ? "Complete os campos abaixo para emitir a receita especial:"
-                  : "Complete os campos abaixo para emitir a receita:"}
-              </div>
-              <ul className="pl-1 text-sm text-foreground/85 space-y-0.5">
-                {pendencias.map((p) => (
-                  <li key={p.msg}>
-                    <button
-                      type="button"
-                      onClick={p.focus}
-                      className="text-left underline-offset-2 hover:underline hover:text-destructive transition-colors"
+      {/* Stepper */}
+      <div className="rounded-2xl border border-border bg-card px-5 py-4">
+        <div className="flex items-center justify-between gap-4">
+          <ol className="flex items-center gap-2 flex-1 min-w-0">
+            {(
+              [
+                { n: 1, label: "Paciente" },
+                { n: 2, label: "Medicamentos" },
+                { n: 3, label: "Revisar e emitir" },
+              ] as const
+            ).map((s, idx, arr) => {
+              const active = step === s.n;
+              const done = step > s.n;
+              const clickable =
+                s.n === 1 ||
+                (s.n === 2 && (canGoStep2 || step >= 2)) ||
+                (s.n === 3 && (canGoStep3 || step >= 3));
+              return (
+                <li key={s.n} className="flex items-center gap-2 min-w-0">
+                  <button
+                    type="button"
+                    onClick={() => clickable && goStep(s.n)}
+                    disabled={!clickable}
+                    className={`flex items-center gap-2 rounded-full pl-1.5 pr-3 py-1 text-sm transition-colors ${
+                      active
+                        ? "bg-primary/10 text-primary"
+                        : done
+                          ? "text-foreground hover:bg-muted"
+                          : "text-muted-foreground"
+                    } ${clickable ? "cursor-pointer" : "cursor-not-allowed opacity-60"}`}
+                  >
+                    <span
+                      className={`grid place-items-center h-6 w-6 rounded-full text-[11px] font-semibold ${
+                        active
+                          ? "bg-primary text-primary-foreground"
+                          : done
+                            ? "bg-emerald-500/15 text-emerald-600 dark:text-emerald-300"
+                            : "bg-muted text-muted-foreground"
+                      }`}
                     >
-                      → {p.msg}
-                    </button>
-                  </li>
-                ))}
-              </ul>
+                      {done ? <Check className="h-3.5 w-3.5" /> : s.n}
+                    </span>
+                    <span className="font-medium hidden sm:inline">{s.label}</span>
+                  </button>
+                  {idx < arr.length - 1 && (
+                    <span
+                      className={`h-px w-6 sm:w-10 ${done ? "bg-emerald-500/40" : "bg-border"}`}
+                    />
+                  )}
+                </li>
+              );
+            })}
+          </ol>
+          {savedAt && (
+            <div
+              className="hidden md:flex items-center gap-1.5 text-[11px] text-muted-foreground"
+              title={`Rascunho salvo às ${fmtHora(savedAt)}`}
+            >
+              <Cloud className="h-3.5 w-3.5" />
+              salvo {fmtHora(savedAt)}
             </div>
-          </div>
-        </div>
-      )}
-
-      {/* Paciente */}
-      <div className="rounded-2xl border border-border bg-card p-5 space-y-4">
-
-        <div className="space-y-2">
-          <label className="text-sm text-muted-foreground" htmlFor="paciente-input">
-            Paciente
-          </label>
-          <div className="relative">
-            <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <input
-              id="paciente-input"
-              ref={pacienteRef}
-              type="text"
-              list="pacientes-recentes"
-              value={paciente}
-              onChange={(e) => setPaciente(e.target.value)}
-              placeholder="Digite o nome do beneficiário..."
-              autoComplete="off"
-              className="w-full rounded-xl border border-border bg-background/40 pl-10 pr-3 py-3 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/40"
-            />
-            <datalist id="pacientes-recentes">
-              {pacientesRecentes.map((n) => (
-                <option key={n} value={n} />
-              ))}
-            </datalist>
-          </div>
-          {pacientesRecentes.length > 0 && (
-            <p className="text-[11px] text-muted-foreground">
-              {pacientesRecentes.length} paciente(s) recente(s) — comece a digitar para sugerir.
-            </p>
           )}
         </div>
-
-        <div className="space-y-2">
-          <label className="text-sm text-muted-foreground">Tipos de medicamentos</label>
-          <Popover>
-            <PopoverTrigger asChild>
+        {rascunhoRestaurado && (
+          <div className="mt-3 flex items-center justify-between gap-2 text-xs">
+            <span className="text-muted-foreground">
+              Rascunho recuperado de {fmtHora(rascunhoRestaurado)}.
+            </span>
+            <div className="flex items-center gap-3">
               <button
-                type="button"
-                className="w-full flex items-center justify-between gap-2 rounded-xl border border-border bg-background/40 px-3 py-2.5 text-sm hover:bg-accent/40 transition"
+                onClick={() => setRascunhoRestaurado(null)}
+                className="text-muted-foreground hover:text-foreground"
               >
-                <span className="flex items-center gap-2 min-w-0">
-                  <Settings2 className="h-4 w-4 text-muted-foreground shrink-0" />
-                  {tipos.size === 0 ? (
-                    <span className="text-muted-foreground">Nenhum tipo selecionado</span>
-                  ) : tipos.size === TIPOS.length ? (
-                    <span>Todos os tipos</span>
-                  ) : (
-                    <span className="truncate">
-                      {TIPOS.filter((t) => tipos.has(t)).join(", ")}
-                    </span>
-                  )}
-                </span>
-                <span className="flex items-center gap-2 shrink-0">
-                  <span className="text-[11px] text-muted-foreground">
-                    {tipos.size}/{TIPOS.length}
-                  </span>
-                  <ChevronDown className="h-4 w-4 text-muted-foreground" />
-                </span>
+                Ocultar
               </button>
-            </PopoverTrigger>
-            <PopoverContent align="start" className="w-[--radix-popover-trigger-width] p-0">
-              <div className="flex items-center justify-between px-3 py-2 border-b border-border">
-                <span className="text-[11px] uppercase tracking-wide text-muted-foreground">
-                  Filtrar por tipo
+              <button
+                onClick={descartarRascunho}
+                className="text-destructive hover:underline"
+              >
+                Descartar
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Step 1 — Paciente */}
+      {step === 1 && (
+        <div className="rounded-2xl border border-border bg-card p-5 space-y-5">
+          <div>
+            <h2 className="text-base font-semibold">Dados do paciente</h2>
+            <p className="text-xs text-muted-foreground">
+              Comece pelo nome. Se for receita controlada, ative o receituário especial abaixo.
+            </p>
+          </div>
+
+          <div className="space-y-2">
+            <label className="text-sm text-muted-foreground" htmlFor="paciente-input">
+              Nome do paciente
+            </label>
+            <div className="relative">
+              <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <input
+                id="paciente-input"
+                ref={pacienteRef}
+                type="text"
+                list="pacientes-recentes"
+                value={paciente}
+                onChange={(e) => setPaciente(e.target.value)}
+                placeholder="Digite o nome do beneficiário..."
+                autoComplete="off"
+                className="w-full rounded-xl border border-border bg-background/40 pl-10 pr-3 py-3 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/40"
+              />
+              <datalist id="pacientes-recentes">
+                {pacientesRecentes.map((n) => (
+                  <option key={n} value={n} />
+                ))}
+              </datalist>
+            </div>
+          </div>
+
+          <div
+            className={`rounded-xl border ${especial ? "border-destructive/40 bg-destructive/5" : "border-border/70 bg-background/40"} px-4 py-3 space-y-3`}
+          >
+            <label className="flex items-start gap-2.5 cursor-pointer select-none">
+              <input
+                type="checkbox"
+                checked={especial}
+                onChange={(e) => setEspecial(e.target.checked)}
+                className="h-4 w-4 mt-0.5 rounded border-border accent-primary"
+              />
+              <span>
+                <span className="block text-sm font-medium">
+                  Receituário de controle especial
                 </span>
-                <div className="flex items-center gap-1">
-                  <button
-                    type="button"
-                    onClick={() => setTipos(new Set(TIPOS))}
-                    className="text-[11px] px-2 py-1 rounded-md text-muted-foreground hover:text-foreground hover:bg-accent/40 transition"
+                <span className="block text-xs text-muted-foreground">
+                  Para substâncias controladas — exige CPF e endereço completo do paciente.
+                </span>
+              </span>
+            </label>
+
+            {especial && (
+              <div className="space-y-3 pt-1">
+                <div className="grid gap-3 md:grid-cols-[minmax(0,200px)_minmax(0,1fr)]">
+                  <div className="space-y-1">
+                    <label className="text-xs text-muted-foreground">CPF</label>
+                    <input
+                      ref={cpfRef}
+                      value={formatCpf(cpfDigits)}
+                      onChange={(e) =>
+                        setCpfDigits(e.target.value.replace(/\D/g, "").slice(0, 11))
+                      }
+                      onPaste={(e) => {
+                        e.preventDefault();
+                        const text = e.clipboardData
+                          .getData("text")
+                          .replace(/\D/g, "")
+                          .slice(0, 11);
+                        setCpfDigits(text);
+                      }}
+                      autoComplete="off"
+                      inputMode="numeric"
+                      maxLength={14}
+                      placeholder="000.000.000-00"
+                      aria-invalid={!cpfValido}
+                      className={`w-full rounded-xl border bg-background/40 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 ${
+                        cpfValido
+                          ? "border-emerald-500/40 focus:ring-emerald-500/40"
+                          : "border-destructive/50 focus:ring-destructive/40"
+                      }`}
+                    />
+                    <p
+                      className={`text-[11px] ${cpfValido ? "text-emerald-500" : "text-destructive"}`}
+                    >
+                      {cpfDigits.length === 0
+                        ? "Obrigatório."
+                        : cpfDigits.length < 11
+                          ? `Faltam ${11 - cpfDigits.length} dígito(s).`
+                          : cpfValido
+                            ? "CPF válido."
+                            : "Dígito verificador inválido."}
+                    </p>
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-xs text-muted-foreground">
+                      CEP (preenche endereço automaticamente)
+                    </label>
+                    <div className="flex gap-2">
+                      <input
+                        value={cepDigits.replace(/(\d{5})(\d)/, "$1-$2")}
+                        onChange={(e) => onCepChange(e.target.value)}
+                        inputMode="numeric"
+                        maxLength={9}
+                        placeholder="00000-000"
+                        className="w-32 rounded-xl border border-border bg-background/40 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring/40"
+                      />
+                      {cepLoading && (
+                        <span className="text-xs text-muted-foreground self-center">
+                          Buscando…
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                </div>
+                <div className="space-y-1">
+                  <label className="text-xs text-muted-foreground">Endereço completo</label>
+                  <input
+                    ref={enderecoRef}
+                    value={endereco}
+                    onChange={(e) => setEndereco(e.target.value)}
+                    placeholder="Rua, número, bairro, cidade/UF"
+                    aria-invalid={!enderecoValido}
+                    className={`w-full rounded-xl border bg-background/40 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 ${
+                      enderecoValido
+                        ? "border-emerald-500/40 focus:ring-emerald-500/40"
+                        : "border-destructive/50 focus:ring-destructive/40"
+                    }`}
+                  />
+                  <p
+                    className={`text-[11px] ${enderecoValido ? "text-emerald-500" : "text-destructive"}`}
                   >
-                    Todos
-                  </button>
-                  <span className="text-muted-foreground/40 text-[11px]">·</span>
-                  <button
-                    type="button"
-                    onClick={() => setTipos(new Set())}
-                    className="text-[11px] px-2 py-1 rounded-md text-muted-foreground hover:text-foreground hover:bg-accent/40 transition"
-                  >
-                    Limpar
-                  </button>
+                    {enderecoValido
+                      ? "Endereço completo."
+                      : "Inclua rua, número, bairro e cidade/UF."}
+                  </p>
                 </div>
               </div>
-              <div className="max-h-72 overflow-y-auto py-1">
-                {TIPOS.map((t) => {
-                  const active = tipos.has(t);
-                  return (
-                    <button
-                      key={t}
-                      type="button"
-                      onClick={() => toggleTipo(t)}
-                      className="w-full flex items-center justify-between gap-2 px-3 py-2 text-sm text-left hover:bg-accent/40 transition"
-                    >
-                      <span className="flex items-center gap-2">
-                        <span
-                          className={`h-4 w-4 rounded border flex items-center justify-center transition ${
-                            active
-                              ? "bg-primary border-primary text-primary-foreground"
-                              : "border-border bg-background"
-                          }`}
-                        >
-                          {active && <Check className="h-3 w-3" />}
-                        </span>
-                        {t}
-                      </span>
-                      <TipoBadge tipo={t} />
-                    </button>
-                  );
-                })}
-              </div>
-            </PopoverContent>
-          </Popover>
-        </div>
-
-
-        <div className="space-y-2">
-          <label className="text-sm text-muted-foreground" htmlFor="med-search">
-            Medicamento
-          </label>
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <input
-              id="med-search"
-              ref={searchRef}
-              type="text"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              onKeyDown={(e) => {
-                if (editing) return;
-                if (e.key === "ArrowDown") {
-                  e.preventDefault();
-                  setHighlight((h) => Math.min(h + 1, resultados.length - 1));
-                } else if (e.key === "ArrowUp") {
-                  e.preventDefault();
-                  setHighlight((h) => Math.max(h - 1, 0));
-                } else if (e.key === "Enter" && resultados[highlight]) {
-                  e.preventDefault();
-                  setEditing(resultados[highlight]);
-                } else if (e.key === "Escape") {
-                  setQuery("");
-                }
-              }}
-              placeholder='Nome comercial ou princípio ativo…  (tecle "/" para focar)'
-              className="w-full rounded-xl border border-border bg-background/40 pl-10 pr-16 py-3 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/40"
-            />
-            <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1">
-              {!query && (
-                <Kbd>/</Kbd>
-              )}
-              {query && (
-                <button
-                  onClick={() => setQuery("")}
-                  aria-label="Limpar busca"
-                  className="text-muted-foreground hover:text-foreground p-1"
-                >
-                  <X className="h-4 w-4" />
-                </button>
-              )}
-            </div>
+            )}
           </div>
-          {!query && resultados.length > 0 && !editing && (
-            <p className="text-[11px] text-muted-foreground">
-              Mostrando favoritos e usados recentemente. Use <Kbd>↑</Kbd> <Kbd>↓</Kbd>{" "}
-              <Kbd>Enter</Kbd> para selecionar.
-            </p>
-          )}
         </div>
-
-        {/* Resultados: sempre que houver e sem edição (favoritos+recentes quando vazio) */}
-        {!editing && resultados.length > 0 && (
-          <div className="rounded-xl border border-border bg-background/40 divide-y divide-border max-h-[420px] overflow-y-auto">
-            {resultados.map((m, i) => (
-              <MedRow
-                key={m.nome}
-                m={m}
-                highlighted={i === highlight}
-                onHover={() => setHighlight(i)}
-                onPick={() => setEditing(m)}
-              />
-            ))}
-          </div>
-        )}
-        {query && !editing && resultados.length === 0 && (
-          <div className="rounded-xl border border-border bg-background/40 p-6 text-sm text-muted-foreground text-center">
-            Nenhum medicamento encontrado para os filtros atuais.
-          </div>
-        )}
-
-        {/* Painel de posologia */}
-
-        {editing && (
-          <PosologiaPanel
-            med={editing}
-            onCancel={() => setEditing(null)}
-            onAdd={(pos) => addItem(editing, pos)}
-          />
-        )}
-      </div>
-
-      {/* Toggle receita especial — sempre visível */}
-      <div className="rounded-2xl border border-border bg-card px-5 py-3 flex items-center justify-between">
-        <label className="inline-flex items-center gap-2 text-sm cursor-pointer select-none">
-          <input
-            type="checkbox"
-            checked={especial}
-            onChange={(e) => setEspecial(e.target.checked)}
-            className="h-4 w-4 rounded border-border accent-primary"
-          />
-          <span className="font-medium">Receituário de controle especial</span>
-          <span className="text-xs text-muted-foreground">(exige CPF e endereço)</span>
-        </label>
-        <div className="flex items-center gap-3">
-          <button
-            onClick={() => setHistoricoAberto((v) => !v)}
-            className="inline-flex items-center gap-1.5 text-xs rounded-lg border border-border px-2.5 py-1.5 hover:bg-muted transition-colors"
-          >
-            <History className="h-3.5 w-3.5" />
-            Histórico {historico.length > 0 && `(${historico.length})`}
-          </button>
-          {itens.length > 0 && (
-            <button
-              onClick={scrollToReceita}
-              className="text-xs text-primary hover:underline"
-            >
-              Ir para a receita ({itens.length})
-            </button>
-          )}
-        </div>
-      </div>
-
-      {historicoAberto && (
-        <HistoricoPanel
-          historico={historico}
-          onClose={() => setHistoricoAberto(false)}
-          onReutilizar={reutilizarHistorico}
-          onRemover={removerHistorico}
-          onLimpar={limparHistorico}
-        />
       )}
 
-      {/* Dados do paciente para receita especial */}
-      {especial && (
-        <div className="rounded-2xl border border-destructive/40 bg-card p-5 space-y-3">
-          <div className="text-sm font-semibold">Dados obrigatórios do paciente</div>
-          <div className="grid gap-3 md:grid-cols-[180px_minmax(0,1fr)]">
-            <div className="space-y-1">
-              <label className="text-xs text-muted-foreground">CPF</label>
-              <input
-                ref={cpfRef}
-                value={formatCpf(cpfDigits)}
-                onChange={(e) => setCpfDigits(e.target.value.replace(/\D/g, "").slice(0, 11))}
-                onPaste={(e) => {
-                  e.preventDefault();
-                  const text = e.clipboardData.getData("text").replace(/\D/g, "").slice(0, 11);
-                  setCpfDigits(text);
-                }}
-                autoComplete="off"
-                inputMode="numeric"
-                maxLength={14}
-                placeholder="000.000.000-00"
-                aria-invalid={!cpfValido}
-                className={`w-full rounded-xl border bg-background/40 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 ${
-                  cpfValido
-                    ? "border-emerald-500/40 focus:ring-emerald-500/40"
-                    : "border-destructive/50 focus:ring-destructive/40"
-                }`}
-              />
-              <p className={`text-[11px] ${cpfValido ? "text-emerald-500" : "text-destructive"}`}>
-                {cpfDigits.length === 0
-                  ? "Obrigatório."
-                  : cpfDigits.length < 11
-                    ? `Faltam ${11 - cpfDigits.length} dígito(s).`
-                    : cpfValido
-                      ? "CPF válido."
-                      : "Dígito verificador inválido."}
+      {/* Step 2 — Medicamentos */}
+      {step === 2 && (
+        <>
+          <div className="rounded-2xl border border-border bg-card p-5 space-y-4">
+            <div>
+              <h2 className="text-base font-semibold">Buscar e adicionar medicamentos</h2>
+              <p className="text-xs text-muted-foreground">
+                Nome comercial ou princípio ativo. Ajuste os filtros à direita se precisar.
               </p>
             </div>
-            <div className="space-y-1">
-              <label className="text-xs text-muted-foreground">
-                CEP (preenche endereço automaticamente)
-              </label>
-              <div className="flex gap-2">
+
+            <div className="grid gap-3 md:grid-cols-[minmax(0,1fr)_220px]">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <input
-                  value={cepDigits.replace(/(\d{5})(\d)/, "$1-$2")}
-                  onChange={(e) => onCepChange(e.target.value)}
-                  inputMode="numeric"
-                  maxLength={9}
-                  placeholder="00000-000"
-                  className="w-32 rounded-xl border border-border bg-background/40 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring/40"
+                  id="med-search"
+                  ref={searchRef}
+                  type="text"
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (editing) return;
+                    if (e.key === "ArrowDown") {
+                      e.preventDefault();
+                      setHighlight((h) => Math.min(h + 1, resultados.length - 1));
+                    } else if (e.key === "ArrowUp") {
+                      e.preventDefault();
+                      setHighlight((h) => Math.max(h - 1, 0));
+                    } else if (e.key === "Enter" && resultados[highlight]) {
+                      e.preventDefault();
+                      setEditing(resultados[highlight]);
+                    } else if (e.key === "Escape") {
+                      setQuery("");
+                    }
+                  }}
+                  placeholder='Nome comercial ou princípio ativo…  (tecle "/" para focar)'
+                  className="w-full rounded-xl border border-border bg-background/40 pl-10 pr-16 py-3 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/40"
                 />
-                {cepLoading && (
-                  <span className="text-xs text-muted-foreground self-center">Buscando…</span>
-                )}
+                <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1">
+                  {!query && <Kbd>/</Kbd>}
+                  {query && (
+                    <button
+                      onClick={() => setQuery("")}
+                      aria-label="Limpar busca"
+                      className="text-muted-foreground hover:text-foreground p-1"
+                    >
+                      <X className="h-4 w-4" />
+                    </button>
+                  )}
+                </div>
               </div>
+
+              <Popover>
+                <PopoverTrigger asChild>
+                  <button
+                    type="button"
+                    className="w-full flex items-center justify-between gap-2 rounded-xl border border-border bg-background/40 px-3 py-3 text-sm hover:bg-accent/40 transition"
+                  >
+                    <span className="flex items-center gap-2 min-w-0">
+                      <Settings2 className="h-4 w-4 text-muted-foreground shrink-0" />
+                      <span className="truncate">
+                        {tipos.size === 0
+                          ? "Nenhum tipo"
+                          : tipos.size === TIPOS.length
+                            ? "Todos os tipos"
+                            : `${tipos.size} tipos`}
+                      </span>
+                    </span>
+                    <ChevronDown className="h-4 w-4 text-muted-foreground" />
+                  </button>
+                </PopoverTrigger>
+                <PopoverContent
+                  align="end"
+                  className="w-[--radix-popover-trigger-width] p-0"
+                >
+                  <div className="flex items-center justify-between px-3 py-2 border-b border-border">
+                    <span className="text-[11px] uppercase tracking-wide text-muted-foreground">
+                      Filtrar por tipo
+                    </span>
+                    <div className="flex items-center gap-1">
+                      <button
+                        type="button"
+                        onClick={() => setTipos(new Set(TIPOS))}
+                        className="text-[11px] px-2 py-1 rounded-md text-muted-foreground hover:text-foreground hover:bg-accent/40 transition"
+                      >
+                        Todos
+                      </button>
+                      <span className="text-muted-foreground/40 text-[11px]">·</span>
+                      <button
+                        type="button"
+                        onClick={() => setTipos(new Set())}
+                        className="text-[11px] px-2 py-1 rounded-md text-muted-foreground hover:text-foreground hover:bg-accent/40 transition"
+                      >
+                        Limpar
+                      </button>
+                    </div>
+                  </div>
+                  <div className="max-h-72 overflow-y-auto py-1">
+                    {TIPOS.map((t) => {
+                      const active = tipos.has(t);
+                      return (
+                        <button
+                          key={t}
+                          type="button"
+                          onClick={() => toggleTipo(t)}
+                          className="w-full flex items-center justify-between gap-2 px-3 py-2 text-sm text-left hover:bg-accent/40 transition"
+                        >
+                          <span className="flex items-center gap-2">
+                            <span
+                              className={`h-4 w-4 rounded border flex items-center justify-center transition ${
+                                active
+                                  ? "bg-primary border-primary text-primary-foreground"
+                                  : "border-border bg-background"
+                              }`}
+                            >
+                              {active && <Check className="h-3 w-3" />}
+                            </span>
+                            {t}
+                          </span>
+                          <TipoBadge tipo={t} />
+                        </button>
+                      );
+                    })}
+                  </div>
+                </PopoverContent>
+              </Popover>
             </div>
+
+            {!editing && resultados.length > 0 && (
+              <div className="rounded-xl border border-border bg-background/40 divide-y divide-border max-h-[420px] overflow-y-auto">
+                {resultados.map((m, i) => (
+                  <MedRow
+                    key={m.nome}
+                    m={m}
+                    highlighted={i === highlight}
+                    onHover={() => setHighlight(i)}
+                    onPick={() => setEditing(m)}
+                  />
+                ))}
+              </div>
+            )}
+            {query && !editing && resultados.length === 0 && (
+              <div className="rounded-xl border border-border bg-background/40 p-6 text-sm text-muted-foreground text-center">
+                Nenhum medicamento encontrado para os filtros atuais.
+              </div>
+            )}
+
+            {editing && (
+              <PosologiaPanel
+                med={editing}
+                onCancel={() => setEditing(null)}
+                onAdd={(pos) => addItem(editing, pos)}
+              />
+            )}
           </div>
-          <div className="space-y-1">
-            <label className="text-xs text-muted-foreground">Endereço completo</label>
-            <input
-              ref={enderecoRef}
-              value={endereco}
-              onChange={(e) => setEndereco(e.target.value)}
-              placeholder="Rua, número, bairro, cidade/UF"
-              aria-invalid={!enderecoValido}
-              className={`w-full rounded-xl border bg-background/40 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 ${
-                enderecoValido
-                  ? "border-emerald-500/40 focus:ring-emerald-500/40"
-                  : "border-destructive/50 focus:ring-destructive/40"
-              }`}
+
+          {/* Lista compacta de itens adicionados */}
+          {itens.length > 0 && (
+            <div className="rounded-2xl border border-border bg-card p-4">
+              <div className="flex items-center justify-between mb-2">
+                <div className="text-sm font-medium">
+                  {itens.length}{" "}
+                  {itens.length > 1 ? "medicamentos" : "medicamento"} na receita
+                </div>
+                <button
+                  onClick={() => setItens([])}
+                  className="text-xs text-destructive hover:underline"
+                >
+                  Limpar
+                </button>
+              </div>
+              <ul className="space-y-1.5">
+                {itens.map((it, i) => {
+                  const c = checkPosologia(it.posologia);
+                  return (
+                    <li
+                      key={i}
+                      className="flex items-center gap-2 text-sm py-1.5 border-t border-border/60 first:border-0"
+                    >
+                      <span className="text-muted-foreground w-4 text-right">
+                        {i + 1}.
+                      </span>
+                      <span
+                        className={`h-1.5 w-1.5 rounded-full shrink-0 ${c.ok ? "bg-emerald-500" : "bg-destructive"}`}
+                        title={c.ok ? "Posologia ok" : c.mensagem}
+                      />
+                      <span className="flex-1 truncate">{it.med.nome}</span>
+                      <button
+                        onClick={() => removeItem(i)}
+                        className="text-muted-foreground hover:text-destructive"
+                        aria-label="Remover"
+                      >
+                        <X className="h-3.5 w-3.5" />
+                      </button>
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
+          )}
+
+          <div className="flex justify-end">
+            <button
+              onClick={() => setHistoricoAberto((v) => !v)}
+              className="inline-flex items-center gap-1.5 text-xs rounded-lg border border-border px-2.5 py-1.5 hover:bg-muted transition-colors"
+            >
+              <History className="h-3.5 w-3.5" />
+              Histórico {historico.length > 0 && `(${historico.length})`}
+            </button>
+          </div>
+          {historicoAberto && (
+            <HistoricoPanel
+              historico={historico}
+              onClose={() => setHistoricoAberto(false)}
+              onReutilizar={reutilizarHistorico}
+              onRemover={removerHistorico}
+              onLimpar={limparHistorico}
             />
-            <p className={`text-[11px] ${enderecoValido ? "text-emerald-500" : "text-destructive"}`}>
-              {enderecoValido
-                ? "Endereço completo."
-                : "Inclua rua, número, bairro e cidade/UF."}
-            </p>
-          </div>
-        </div>
+          )}
+        </>
       )}
 
-      {/* Receita */}
-      {itens.length > 0 && (
+      {/* Step 3 — Revisar e emitir */}
+      {step === 3 && (
         <div
           ref={receitaRef}
           className={`rounded-2xl border bg-card ${
@@ -1365,70 +1465,90 @@ function PrescricaoForm() {
         >
           {especial && <div className="h-1.5 rounded-t-2xl bg-destructive" />}
           <div className="p-5 space-y-4">
-            <div className="sticky top-2 z-10 -mx-5 -mt-5 px-5 pt-5 pb-3 bg-card/95 backdrop-blur rounded-t-2xl">
-              <div className="flex flex-wrap items-center justify-between gap-3">
-                <div className="flex items-center gap-3 min-w-0">
-                  <h3 className="text-sm font-semibold tracking-wide truncate">
-                    {especial
-                      ? "RECEITUÁRIO CONTROLE ESPECIAL"
-                      : `Prescrição médica — ${itens.length} ${itens.length > 1 ? "medicamentos" : "medicamento"}`}
-                  </h3>
-                  {savedAt && (
-                    <span className="text-[11px] text-muted-foreground shrink-0">
-                      · rascunho salvo às {fmtHora(savedAt)}
-                    </span>
+            <div className="flex flex-wrap items-start justify-between gap-3">
+              <div className="min-w-0">
+                <h3 className="text-sm font-semibold tracking-wide">
+                  {especial
+                    ? "RECEITUÁRIO CONTROLE ESPECIAL"
+                    : "Prescrição médica"}
+                </h3>
+                <p className="text-xs text-muted-foreground mt-0.5">
+                  Paciente:{" "}
+                  <span className="font-medium text-foreground">
+                    {paciente || "—"}
+                  </span>
+                  {especial && cpfDigits.length === 11 && (
+                    <> · CPF {formatCpf(cpfDigits)}</>
                   )}
-                </div>
-                <div className="flex flex-wrap items-center gap-2">
-                  <ActionBtn
-                    onClick={imprimir}
-                    icon={<Printer className="h-4 w-4" />}
-                    disabled={!podeEmitir}
-                    title={!podeEmitir ? "Complete os campos pendentes." : "Ctrl+P"}
-                  >
-                    Imprimir
-                  </ActionBtn>
-                  <ActionBtn
-                    onClick={baixarPdf}
-                    icon={<Download className="h-4 w-4" />}
-                    disabled={!podeEmitir}
-                  >
-                    PDF
-                  </ActionBtn>
-                  <ActionBtn
-                    onClick={salvarKit}
-                    icon={<Save className="h-4 w-4" />}
-                    variant="primary"
-                    title="Ctrl+S"
-                  >
-                    Salvar Kit
-                  </ActionBtn>
-                  <ActionBtn
-                    onClick={() => toast.info("Nenhum kit salvo.")}
-                    icon={<FolderCog className="h-4 w-4" />}
-                  >
-                    Kits
-                  </ActionBtn>
-                  <button
-                    onClick={() => setItens([])}
-                    className="text-sm text-destructive hover:underline"
-                  >
-                    Limpar
-                  </button>
-                </div>
+                </p>
+              </div>
+              <div className="flex flex-wrap items-center gap-2">
+                <ActionBtn
+                  onClick={imprimir}
+                  icon={<Printer className="h-4 w-4" />}
+                  disabled={!podeEmitir}
+                  title={!podeEmitir ? "Complete os campos pendentes." : "Ctrl+P"}
+                >
+                  Imprimir
+                </ActionBtn>
+                <ActionBtn
+                  onClick={baixarPdf}
+                  icon={<Download className="h-4 w-4" />}
+                  disabled={!podeEmitir}
+                  variant="primary"
+                >
+                  Baixar PDF
+                </ActionBtn>
+                <ActionBtn
+                  onClick={salvarKit}
+                  icon={<Save className="h-4 w-4" />}
+                  title="Ctrl+S"
+                >
+                  Salvar Kit
+                </ActionBtn>
               </div>
             </div>
 
-
-
+            {pendencias.length > 0 && (
+              <div className="rounded-xl border border-destructive/40 bg-destructive/5 p-3 text-sm">
+                <div className="font-semibold text-destructive mb-1">
+                  Corrija antes de emitir:
+                </div>
+                <ul className="space-y-0.5 pl-1">
+                  {pendencias.map((p) => (
+                    <li key={p.msg}>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if (
+                            p.msg.startsWith("Nome") ||
+                            p.msg.includes("CPF") ||
+                            p.msg.includes("Endereço")
+                          )
+                            setStep(1);
+                          else setStep(2);
+                          setTimeout(() => p.focus?.(), 60);
+                        }}
+                        className="text-left underline-offset-2 hover:underline hover:text-destructive"
+                      >
+                        → {p.msg}
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
 
             <ul className="space-y-3">
               {itens.map((it, i) => {
                 const isDragging = dragIndex === i;
-                const isOver = overIndex === i && dragIndex !== null && dragIndex !== i;
+                const isOver =
+                  overIndex === i && dragIndex !== null && dragIndex !== i;
                 const posCheck = checkPosologia(it.posologia);
                 const isEditing = editingPosIdx === i;
-                const editCheck = isEditing ? checkPosologia(editingPosValue) : null;
+                const editCheck = isEditing
+                  ? checkPosologia(editingPosValue)
+                  : null;
                 return (
                   <li
                     id={`item-receita-${i}`}
@@ -1449,7 +1569,8 @@ function PrescricaoForm() {
                     }}
                     onDrop={(e) => {
                       e.preventDefault();
-                      if (dragIndex !== null && dragIndex !== i) moveItem(dragIndex, i);
+                      if (dragIndex !== null && dragIndex !== i)
+                        moveItem(dragIndex, i);
                       setDragIndex(null);
                       setOverIndex(null);
                     }}
@@ -1479,18 +1600,22 @@ function PrescricaoForm() {
                       </button>
                       <div className="min-w-0 space-y-1 flex-1">
                         <div className="text-sm font-semibold">
-                          <span className="text-muted-foreground mr-1">{i + 1}.</span>
+                          <span className="text-muted-foreground mr-1">
+                            {i + 1}.
+                          </span>
                           {it.med.nome}, {it.med.forma}
                         </div>
                         <div className="text-xs text-muted-foreground">
-                          {it.med.principios} | {it.med.fabricante} | {it.med.forma} |{" "}
-                          {it.med.tipo}
+                          {it.med.principios} | {it.med.fabricante} |{" "}
+                          {it.med.forma} | {it.med.tipo}
                         </div>
                         {isEditing ? (
                           <div className="mt-2 space-y-1.5">
                             <textarea
                               value={editingPosValue}
-                              onChange={(e) => setEditingPosValue(e.target.value)}
+                              onChange={(e) =>
+                                setEditingPosValue(e.target.value)
+                              }
                               rows={2}
                               autoFocus
                               className={`w-full rounded-lg border bg-background px-2.5 py-2 text-sm focus:outline-none focus:ring-2 ${
@@ -1528,7 +1653,13 @@ function PrescricaoForm() {
                                   posCheck.ok ? "text-primary" : "text-destructive"
                                 }`}
                               />
-                              <span>{it.posologia || <em className="text-muted-foreground">sem posologia</em>}</span>
+                              <span>
+                                {it.posologia || (
+                                  <em className="text-muted-foreground">
+                                    sem posologia
+                                  </em>
+                                )}
+                              </span>
                             </div>
                             {!posCheck.ok && (
                               <div className="text-[11px] text-destructive flex items-center gap-2">
@@ -1559,7 +1690,6 @@ function PrescricaoForm() {
                           disabled={i === 0}
                           className="grid place-items-center h-6 w-6 rounded border border-border text-muted-foreground hover:text-foreground disabled:opacity-30 disabled:cursor-not-allowed"
                           aria-label="Mover para cima"
-                          title="Mover para cima"
                         >
                           <ArrowUp className="h-3 w-3" />
                         </button>
@@ -1568,7 +1698,6 @@ function PrescricaoForm() {
                           disabled={i === itens.length - 1}
                           className="grid place-items-center h-6 w-6 rounded border border-border text-muted-foreground hover:text-foreground disabled:opacity-30 disabled:cursor-not-allowed"
                           aria-label="Mover para baixo"
-                          title="Mover para baixo"
                         >
                           <ArrowDown className="h-3 w-3" />
                         </button>
@@ -1585,9 +1714,54 @@ function PrescricaoForm() {
                 );
               })}
             </ul>
+
+            <p className="text-[11px] text-muted-foreground pt-1">
+              Atalhos: <Kbd>Ctrl</Kbd>+<Kbd>P</Kbd> imprime ·{" "}
+              <Kbd>Ctrl</Kbd>+<Kbd>S</Kbd> salva como kit.
+            </p>
           </div>
         </div>
       )}
+
+      {/* Wizard footer navigation */}
+      <div className="flex items-center justify-between gap-3 pt-2">
+        <button
+          type="button"
+          onClick={() => step > 1 && setStep((s) => (s - 1) as 1 | 2 | 3)}
+          disabled={step === 1}
+          className="inline-flex items-center gap-1.5 rounded-lg border border-border px-4 py-2 text-sm font-medium text-foreground hover:bg-muted disabled:opacity-40 disabled:cursor-not-allowed"
+        >
+          <ChevronLeft className="h-4 w-4" />
+          Voltar
+        </button>
+
+        {step < 3 ? (
+          <button
+            type="button"
+            onClick={() => goStep((step + 1) as 1 | 2 | 3)}
+            disabled={step === 1 ? !canGoStep2 : !canGoStep3}
+            className="inline-flex items-center gap-1.5 rounded-lg bg-primary px-5 py-2 text-sm font-semibold text-primary-foreground hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {step === 2 && itens.length > 0 && (
+              <span className="rounded-full bg-primary-foreground/20 px-1.5 py-0.5 text-[11px] font-semibold">
+                {itens.length}
+              </span>
+            )}
+            Continuar
+            <ChevronRight className="h-4 w-4" />
+          </button>
+        ) : (
+          <button
+            type="button"
+            onClick={baixarPdf}
+            disabled={!podeEmitir}
+            className="inline-flex items-center gap-1.5 rounded-lg bg-primary px-5 py-2 text-sm font-semibold text-primary-foreground hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            <Download className="h-4 w-4" />
+            Emitir e baixar PDF
+          </button>
+        )}
+      </div>
     </div>
   );
 }
