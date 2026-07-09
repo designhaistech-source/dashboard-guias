@@ -736,6 +736,34 @@ function DashboardPage() {
             )}
           </div>
 
+          {/* Chips de filtros ativos */}
+          {activeFilters.length > 0 && (
+            <div className="flex flex-wrap items-center gap-2">
+              {activeFilters.map(([k, v]) => (
+                <span
+                  key={k}
+                  className="inline-flex items-center gap-1.5 rounded-full border border-border bg-card px-3 py-1 text-xs text-foreground"
+                >
+                  <span className="text-muted-foreground">{filterLabels[k]}:</span>
+                  <span className="font-medium">{v}</span>
+                  <button
+                    onClick={() => removeFilter(k)}
+                    className="ml-1 rounded-full p-0.5 hover:bg-muted"
+                    aria-label={`Remover filtro ${filterLabels[k]}`}
+                  >
+                    <X className="h-3 w-3" />
+                  </button>
+                </span>
+              ))}
+              <button
+                onClick={() => setFilters(emptyFilters)}
+                className="text-xs text-muted-foreground hover:text-foreground underline underline-offset-2"
+              >
+                Limpar todos
+              </button>
+            </div>
+          )}
+
 
 
 
