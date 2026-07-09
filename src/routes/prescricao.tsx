@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useRef, useState, useEffect } from "react";
 import {
   Pill,
@@ -22,8 +22,8 @@ import {
   ChevronLeft,
   ChevronRight,
   Cloud,
-  BookMarked,
 } from "lucide-react";
+
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { jsPDF } from "jspdf";
 import { toast } from "sonner";
