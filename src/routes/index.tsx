@@ -39,14 +39,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetFooter,
-  SheetHeader,
-  SheetTitle,
-} from "@/components/ui/sheet";
+
+
 
 
 async function loadImageDataUrl(url: string): Promise<{ dataUrl: string; w: number; h: number }> {
@@ -735,8 +729,14 @@ function DashboardPage() {
             </div>
             <div className="flex items-center gap-2">
               <button
-                onClick={openFilters}
-                className="relative inline-flex items-center gap-2 rounded-lg border border-border bg-card px-4 py-2 text-sm font-medium text-foreground hover:bg-muted transition-colors"
+                onClick={() => (filtersOpen ? setFiltersOpen(false) : openFilters())}
+                aria-expanded={filtersOpen}
+                className={[
+                  "relative inline-flex items-center gap-2 rounded-lg border px-4 py-2 text-sm font-medium transition-colors",
+                  filtersOpen
+                    ? "border-primary bg-primary/5 text-primary"
+                    : "border-border bg-card text-foreground hover:bg-muted",
+                ].join(" ")}
               >
                 <SlidersHorizontal className="h-4 w-4" />
                 Filtros
@@ -746,6 +746,7 @@ function DashboardPage() {
                   </span>
                 )}
               </button>
+
               <button
                 onClick={() => generateReportPdf(range, dailyAvg, total)}
                 className="inline-flex items-center gap-2 rounded-lg border border-primary bg-card px-4 py-2 text-sm font-medium text-primary hover:bg-primary/5 transition-colors"
@@ -785,11 +786,73 @@ function DashboardPage() {
             </div>
           )}
 
+          {/* Painel de filtros inline */}
+          {filtersOpen && (
+            <div className="rounded-2xl border border-border bg-card p-6 space-y-5">
+              <div className="flex items-start justify-between gap-4">
+                <div>
+                  <h3 className="font-semibold">Filtros</h3>
+                  <p className="text-xs text-muted-foreground">Refine as guias exibidas no dashboard.</p>
+                </div>
+                <button
+                  onClick={() => setFiltersOpen(false)}
+                  className="rounded-md p-1 text-muted-foreground hover:bg-muted hover:text-foreground"
+                  aria-label="Fechar filtros"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              </div>
 
+              <div>
+                <div className="text-[11px] uppercase tracking-wider text-muted-foreground font-medium mb-2">Período de autorização</div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                  <FilterField label="De" type="date" error={dateRangeInvalid} value={draft.dataAutorizacaoDe} onChange={(v) => setDraft((d) => ({ ...d, dataAutorizacaoDe: v }))} />
+                  <FilterField label="Até" type="date" error={dateRangeInvalid} value={draft.dataAutorizacaoAte} onChange={(v) => setDraft((d) => ({ ...d, dataAutorizacaoAte: v }))} />
+                </div>
+                {dateRangeInvalid && (
+                  <p className="mt-1.5 text-xs text-destructive">A data inicial deve ser anterior ou igual à data final.</p>
+                )}
+              </div>
 
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                <FilterField label="Beneficiário" value={draft.beneficiarioNome} onChange={(v) => setDraft((d) => ({ ...d, beneficiarioNome: v }))} />
+                <FilterField label="Nº guia" value={draft.numGuiaPrestador} onChange={(v) => setDraft((d) => ({ ...d, numGuiaPrestador: v }))} />
+                <FilterSelect label="Tipo de guia" value={draft.tipoGuia} onChange={(v) => setDraft((d) => ({ ...d, tipoGuia: v }))} options={typeData.map((t) => t.name)} />
+                <FilterSelect label="Prestador" value={draft.prestadorSolicitante} onChange={(v) => setDraft((d) => ({ ...d, prestadorSolicitante: v }))} options={prestadoresList} />
+                <FilterField label="Procedimento" value={draft.procDescricao} onChange={(v) => setDraft((d) => ({ ...d, procDescricao: v }))} />
+                <FilterField label="Código proc." value={draft.procCodigo} onChange={(v) => setDraft((d) => ({ ...d, procCodigo: v }))} />
+              </div>
 
+              <div>
+                <div className="text-[11px] uppercase tracking-wider text-muted-foreground font-medium mb-2">Valor (R$)</div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                  <FilterField label="Mínimo" type="number" error={valueRangeInvalid} value={draft.valorMin} onChange={(v) => setDraft((d) => ({ ...d, valorMin: v }))} />
+                  <FilterField label="Máximo" type="number" error={valueRangeInvalid} value={draft.valorMax} onChange={(v) => setDraft((d) => ({ ...d, valorMax: v }))} />
+                </div>
+                {valueRangeInvalid && (
+                  <p className="mt-1.5 text-xs text-destructive">O valor mínimo deve ser menor ou igual ao máximo.</p>
+                )}
+              </div>
 
-
+              <div className="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-border">
+                <button
+                  onClick={clearAllAndApply}
+                  disabled={activeFilters.length === 0}
+                  className="inline-flex items-center gap-1.5 rounded-md border border-border px-3 py-2 text-sm text-foreground hover:bg-muted transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  Limpar filtros
+                </button>
+                <button
+                  onClick={applyFilters}
+                  disabled={hasErrors}
+                  title={hasErrors ? "Corrija os campos destacados para aplicar" : undefined}
+                  className="inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  Aplicar filtros
+                </button>
+              </div>
+            </div>
+          )}
 
 
           {/* KPIs */}
@@ -998,73 +1061,12 @@ function DashboardPage() {
         <SiteFooter />
       </main>
 
-      <Sheet open={filtersOpen} onOpenChange={setFiltersOpen}>
-        <SheetContent className="w-full sm:max-w-md overflow-y-auto">
-          <SheetHeader>
-            <SheetTitle>Filtros</SheetTitle>
-            <SheetDescription>
-              Refine as guias exibidas no dashboard.
-            </SheetDescription>
-          </SheetHeader>
-
-          <div className="mt-6 space-y-5">
-            <div>
-              <div className="text-[11px] uppercase tracking-wider text-muted-foreground font-medium mb-2">Período de autorização</div>
-              <div className="grid grid-cols-2 gap-3">
-                <FilterField label="De" type="date" error={dateRangeInvalid} value={draft.dataAutorizacaoDe} onChange={(v) => setDraft((d) => ({ ...d, dataAutorizacaoDe: v }))} />
-                <FilterField label="Até" type="date" error={dateRangeInvalid} value={draft.dataAutorizacaoAte} onChange={(v) => setDraft((d) => ({ ...d, dataAutorizacaoAte: v }))} />
-              </div>
-              {dateRangeInvalid && (
-                <p className="mt-1.5 text-xs text-destructive">A data inicial deve ser anterior ou igual à data final.</p>
-              )}
-            </div>
-
-            <div className="grid grid-cols-2 gap-3">
-              <FilterField label="Beneficiário" value={draft.beneficiarioNome} onChange={(v) => setDraft((d) => ({ ...d, beneficiarioNome: v }))} />
-              <FilterField label="Nº guia" value={draft.numGuiaPrestador} onChange={(v) => setDraft((d) => ({ ...d, numGuiaPrestador: v }))} />
-              <FilterSelect label="Tipo de guia" value={draft.tipoGuia} onChange={(v) => setDraft((d) => ({ ...d, tipoGuia: v }))} options={typeData.map((t) => t.name)} />
-              <FilterSelect label="Prestador" value={draft.prestadorSolicitante} onChange={(v) => setDraft((d) => ({ ...d, prestadorSolicitante: v }))} options={prestadoresList} />
-              <FilterField label="Procedimento" value={draft.procDescricao} onChange={(v) => setDraft((d) => ({ ...d, procDescricao: v }))} />
-              <FilterField label="Código proc." value={draft.procCodigo} onChange={(v) => setDraft((d) => ({ ...d, procCodigo: v }))} />
-            </div>
-
-            <div>
-              <div className="text-[11px] uppercase tracking-wider text-muted-foreground font-medium mb-2">Valor (R$)</div>
-              <div className="grid grid-cols-2 gap-3">
-                <FilterField label="Mínimo" type="number" error={valueRangeInvalid} value={draft.valorMin} onChange={(v) => setDraft((d) => ({ ...d, valorMin: v }))} />
-                <FilterField label="Máximo" type="number" error={valueRangeInvalid} value={draft.valorMax} onChange={(v) => setDraft((d) => ({ ...d, valorMax: v }))} />
-              </div>
-              {valueRangeInvalid && (
-                <p className="mt-1.5 text-xs text-destructive">O valor mínimo deve ser menor ou igual ao máximo.</p>
-              )}
-            </div>
-          </div>
-
-
-          <SheetFooter className="mt-6 flex-row justify-between gap-2 sm:justify-between">
-            <button
-              onClick={clearAllAndApply}
-              disabled={activeFilters.length === 0}
-              className="inline-flex items-center gap-1.5 rounded-md border border-border px-3 py-2 text-sm text-foreground hover:bg-muted transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              Limpar filtros
-            </button>
-            <button
-              onClick={applyFilters}
-              disabled={hasErrors}
-              title={hasErrors ? "Corrija os campos destacados para aplicar" : undefined}
-              className="inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              Aplicar filtros
-            </button>
-          </SheetFooter>
-
-        </SheetContent>
-      </Sheet>
-
     </div>
   );
 }
+
+
+
 
 
 
