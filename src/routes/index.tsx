@@ -48,10 +48,6 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet";
 import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
 } from "@/components/ui/accordion";
 
 
@@ -649,7 +645,7 @@ function DashboardPage() {
       count === 0 ? "Filtros limpos." : `${count} filtro${count > 1 ? "s" : ""} aplicado${count > 1 ? "s" : ""}.`,
     );
   };
-  const clearAll = () => setDraft(emptyFilters);
+  
   const clearAllAndApply = () => {
     setDraft(emptyFilters);
     setFilters(emptyFilters);
