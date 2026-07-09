@@ -1524,15 +1524,18 @@ function PrescricaoForm() {
                       <button
                         type="button"
                         onClick={() => {
-                          if (
+                          const targetId =
                             p.msg.startsWith("Nome") ||
                             p.msg.includes("CPF") ||
                             p.msg.includes("Endereço")
-                          )
-                            setStep(1);
-                          else setStep(2);
-                          setTimeout(() => p.focus?.(), 60);
+                              ? "sec-paciente"
+                              : "sec-medicamentos";
+                          document
+                            .getElementById(targetId)
+                            ?.scrollIntoView({ behavior: "smooth", block: "start" });
+                          setTimeout(() => p.focus?.(), 300);
                         }}
+
                         className="text-left underline-offset-2 hover:underline hover:text-destructive"
                       >
                         → {p.msg}
