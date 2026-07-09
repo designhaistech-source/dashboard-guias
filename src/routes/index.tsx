@@ -690,6 +690,37 @@ function DashboardPage() {
     Number(draft.valorMin) > Number(draft.valorMax);
   const hasErrors = dateRangeInvalid || valueRangeInvalid;
 
+  const TOTAL_GUIAS = 252;
+  const previewCount = useMemo(() => {
+    if (hasErrors) return null;
+    const filled = Object.values(draft).filter((v) => v.trim() !== "").length;
+    if (filled === 0) return TOTAL_GUIAS;
+    // simulação: cada filtro reduz ~22% do resultado, mín 1
+    const factor = Math.pow(0.78, filled);
+    return Math.max(1, Math.round(TOTAL_GUIAS * factor));
+  }, [draft, hasErrors]);
+
+  const applyPreset = (preset: "hoje" | "7d" | "30d" | "valorAlto") => {
+    const today = new Date();
+    const iso = (d: Date) => d.toISOString().slice(0, 10);
+    setDraft((d) => {
+      if (preset === "hoje") {
+        const t = iso(today);
+        return { ...d, dataAutorizacaoDe: t, dataAutorizacaoAte: t };
+      }
+      if (preset === "7d") {
+        const from = new Date(today); from.setDate(today.getDate() - 7);
+        return { ...d, dataAutorizacaoDe: iso(from), dataAutorizacaoAte: iso(today) };
+      }
+      if (preset === "30d") {
+        const from = new Date(today); from.setDate(today.getDate() - 30);
+        return { ...d, dataAutorizacaoDe: iso(from), dataAutorizacaoAte: iso(today) };
+      }
+      // valorAlto
+      return { ...d, valorMin: "1000", valorMax: "" };
+    });
+  };
+
   const applyFilters = () => {
     if (hasErrors) return;
     setFilters(draft);
