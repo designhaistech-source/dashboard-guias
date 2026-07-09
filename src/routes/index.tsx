@@ -47,8 +47,6 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
-import {
-} from "@/components/ui/accordion";
 
 
 async function loadImageDataUrl(url: string): Promise<{ dataUrl: string; w: number; h: number }> {
