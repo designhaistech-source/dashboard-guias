@@ -164,7 +164,7 @@ export function KitsModal({
     >
       <div
         onClick={(e) => e.stopPropagation()}
-        className="w-full max-w-3xl max-h-[90vh] rounded-2xl border border-border bg-card shadow-xl flex flex-col overflow-hidden"
+        className="relative w-full max-w-3xl max-h-[90vh] rounded-2xl border border-border bg-card shadow-xl flex flex-col overflow-hidden"
       >
         {/* Header */}
         <div className="px-5 py-4 border-b border-border flex items-center justify-between gap-3">
