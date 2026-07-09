@@ -33,6 +33,10 @@ export function KitsModal({
   const [kits, setKits] = useState<Kit[]>([]);
   const [query, setQuery] = useState("");
   const [categoria, setCategoria] = useState<string>("Todas");
+  const [soFavoritos, setSoFavoritos] = useState(false);
+  const [ordenacao, setOrdenacao] = useState<
+    "recentes" | "usados" | "alfabetica"
+  >("recentes");
   const [expanded, setExpanded] = useState<Set<string>>(new Set());
 
   useEffect(() => {
@@ -56,21 +60,42 @@ export function KitsModal({
 
   const filtrados = useMemo(() => {
     const q = query.trim().toLowerCase();
-    return kits
+    const arr = kits
       .filter((k) => categoria === "Todas" || k.categoria === categoria)
+      .filter((k) => (soFavoritos ? !!k.favorito : true))
       .filter((k) => {
         if (!q) return true;
         return (
           k.nome.toLowerCase().includes(q) ||
           k.descricao.toLowerCase().includes(q) ||
+          k.categoria.toLowerCase().includes(q) ||
           k.itens.some((it) => it.med.nome.toLowerCase().includes(q))
         );
-      })
-      .sort((a, b) => {
-        if (!!b.favorito !== !!a.favorito) return b.favorito ? 1 : -1;
-        return b.atualizadoEm - a.atualizadoEm;
       });
-  }, [kits, query, categoria]);
+
+    const sorted = [...arr].sort((a, b) => {
+      if (ordenacao === "alfabetica") return a.nome.localeCompare(b.nome, "pt-BR");
+      if (ordenacao === "usados") return (b.usos ?? 0) - (a.usos ?? 0);
+      return b.atualizadoEm - a.atualizadoEm;
+    });
+    // Favoritos sempre no topo
+    return sorted.sort((a, b) => {
+      if (!!b.favorito !== !!a.favorito) return b.favorito ? 1 : -1;
+      return 0;
+    });
+  }, [kits, query, categoria, soFavoritos, ordenacao]);
+
+  const limparFiltros = () => {
+    setQuery("");
+    setCategoria("Todas");
+    setSoFavoritos(false);
+    setOrdenacao("recentes");
+  };
+  const filtrosAtivos =
+    query.trim() !== "" ||
+    categoria !== "Todas" ||
+    soFavoritos ||
+    ordenacao !== "recentes";
 
   const aplicar = (kit: Kit) => {
     onAplicar(kit);
