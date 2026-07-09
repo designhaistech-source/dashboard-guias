@@ -1224,11 +1224,11 @@ function PrescricaoForm() {
             )}
           </div>
         </div>
-      )}
+      </section>
 
-      {/* Step 2 — Medicamentos */}
-      {step === 2 && (
-        <>
+      {/* Seção 2 — Medicamentos */}
+      <section id="sec-medicamentos" className="scroll-mt-4 space-y-5">
+
           <div className="rounded-2xl border border-border bg-card p-5 space-y-4">
             <div>
               <h2 className="text-base font-semibold">Buscar e adicionar medicamentos</h2>
