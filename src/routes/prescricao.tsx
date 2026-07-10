@@ -1806,77 +1806,78 @@ function PrescricaoForm() {
               })}
             </ul>
 
+            <div className="mt-2 pt-4 border-t border-border">
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <div className="text-xs text-muted-foreground">
+                  {podeEmitir ? (
+                    <span className="inline-flex items-center gap-1.5 text-emerald-600 dark:text-emerald-400 font-medium">
+                      <Check className="h-3.5 w-3.5" /> Pronto para emitir
+                    </span>
+                  ) : pendencias.length > 0 ? (
+                    <span>
+                      Falta {pendencias.length}{" "}
+                      {pendencias.length === 1 ? "item" : "itens"} para emitir
+                    </span>
+                  ) : (
+                    <span>Adicione medicamentos para emitir</span>
+                  )}
+                  <span className="ml-3 hidden sm:inline">
+                    Atalhos: <Kbd>Ctrl</Kbd>+<Kbd>P</Kbd> imprime ·{" "}
+                    <Kbd>Ctrl</Kbd>+<Kbd>S</Kbd> salva kit
+                  </span>
+                </div>
+                <div className="flex flex-wrap items-center gap-2">
+                  <ActionBtn
+                    onClick={abrirSalvarKit}
+                    icon={<Save className="h-4 w-4" />}
+                    title="Ctrl+S"
+                  >
+                    Salvar como kit
+                  </ActionBtn>
+                  <ActionBtn
+                    onClick={baixarPdf}
+                    icon={<Download className="h-4 w-4" />}
+                    disabled={!podeEmitir}
+                    disabledReason={
+                      pendencias.length > 0
+                        ? `Corrija ${pendencias.length} pendência${pendencias.length > 1 ? "s" : ""} antes de baixar:\n• ${pendencias.map((p) => p.msg).join("\n• ")}`
+                        : undefined
+                    }
+                  >
+                    Baixar PDF
+                  </ActionBtn>
+                  <ActionBtn
+                    onClick={() => {
+                      setTriedEmit(true);
+                      if (!podeEmitir) {
+                        document
+                          .getElementById("sec-revisar")
+                          ?.scrollIntoView({ behavior: "smooth", block: "start" });
+                        return;
+                      }
+                      baixarPdf();
+                      toast.success("Receita emitida com sucesso.");
+                    }}
+                    icon={<ChevronRight className="h-4 w-4" />}
+                    variant="primary"
+                    disabled={!podeEmitir}
+                    disabledReason={
+                      pendencias.length > 0
+                        ? `Corrija ${pendencias.length} pendência${pendencias.length > 1 ? "s" : ""} antes de emitir:\n• ${pendencias.map((p) => p.msg).join("\n• ")}`
+                        : undefined
+                    }
+                  >
+                    Emitir receita
+                  </ActionBtn>
+                </div>
+              </div>
+            </div>
+
           </div>
         </div>
       </section>
 
-      {/* Barra de ações fixa no rodapé */}
-      <div className="sticky bottom-0 z-30 -mx-4 sm:-mx-6 mt-4 border-t border-border bg-background/95 backdrop-blur px-4 sm:px-6 py-3">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <div className="text-xs text-muted-foreground">
-            {podeEmitir ? (
-              <span className="inline-flex items-center gap-1.5 text-emerald-600 dark:text-emerald-400 font-medium">
-                <Check className="h-3.5 w-3.5" /> Pronto para emitir
-              </span>
-            ) : pendencias.length > 0 ? (
-              <span>
-                Falta {pendencias.length}{" "}
-                {pendencias.length === 1 ? "item" : "itens"} para emitir
-              </span>
-            ) : (
-              <span>Adicione medicamentos para emitir</span>
-            )}
-            <span className="ml-3 hidden sm:inline">
-              Atalhos: <Kbd>Ctrl</Kbd>+<Kbd>P</Kbd> imprime ·{" "}
-              <Kbd>Ctrl</Kbd>+<Kbd>S</Kbd> salva kit
-            </span>
-          </div>
-          <div className="flex flex-wrap items-center gap-2">
-            <ActionBtn
-              onClick={abrirSalvarKit}
-              icon={<Save className="h-4 w-4" />}
-              title="Ctrl+S"
-            >
-              Salvar como kit
-            </ActionBtn>
-            <ActionBtn
-              onClick={baixarPdf}
-              icon={<Download className="h-4 w-4" />}
-              disabled={!podeEmitir}
-              disabledReason={
-                pendencias.length > 0
-                  ? `Corrija ${pendencias.length} pendência${pendencias.length > 1 ? "s" : ""} antes de baixar:\n• ${pendencias.map((p) => p.msg).join("\n• ")}`
-                  : undefined
-              }
-            >
-              Baixar PDF
-            </ActionBtn>
-            <ActionBtn
-              onClick={() => {
-                setTriedEmit(true);
-                if (!podeEmitir) {
-                  document
-                    .getElementById("sec-revisar")
-                    ?.scrollIntoView({ behavior: "smooth", block: "start" });
-                  return;
-                }
-                baixarPdf();
-                toast.success("Receita emitida com sucesso.");
-              }}
-              icon={<ChevronRight className="h-4 w-4" />}
-              variant="primary"
-              disabled={!podeEmitir}
-              disabledReason={
-                pendencias.length > 0
-                  ? `Corrija ${pendencias.length} pendência${pendencias.length > 1 ? "s" : ""} antes de emitir:\n• ${pendencias.map((p) => p.msg).join("\n• ")}`
-                  : undefined
-              }
-            >
-              Emitir receita
-            </ActionBtn>
-          </div>
-        </div>
-      </div>
+
 
 
       <Dialog open={kitDialogOpen} onOpenChange={setKitDialogOpen}>
