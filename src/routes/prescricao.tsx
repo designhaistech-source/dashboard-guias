@@ -13,7 +13,6 @@ import {
   Link2,
   Download,
   GripVertical,
-  GripVertical,
   History,
   RefreshCw,
   Trash2,
