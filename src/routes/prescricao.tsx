@@ -2128,7 +2128,7 @@ function PosologiaPanel({
           onKeyDown={onKey}
           rows={3}
           placeholder="Ex: Tomar 1 comprimido de 12 em 12 horas por 05 dias."
-          className="w-full rounded-lg border border-primary/40 bg-background/60 px-3 py-2.5 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 resize-y"
+          className="w-full rounded-lg border border-border bg-background px-3 py-2.5 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/40 resize-y"
         />
         {showSug && (
           <div className="mt-2 rounded-lg border border-border bg-card max-h-56 overflow-y-auto">
