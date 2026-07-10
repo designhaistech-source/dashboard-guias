@@ -1078,11 +1078,12 @@ function DashboardPage() {
                   })}
                 </ul>
               </div>
-            </div>
+            </SurfaceCard>
           </div>
 
           {/* Procedures */}
-          <div className="rounded-2xl border border-border bg-card p-6">
+          <SurfaceCard>
+
             <div className="flex items-center justify-between mb-4">
               <div>
                 <h3 className="font-semibold">Procedimentos mais realizados</h3>
