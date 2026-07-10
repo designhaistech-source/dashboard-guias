@@ -945,33 +945,26 @@ function EmitirPage() {
                   </Button>
                 }
               >
-                <Field label="Kits do usuário">
-                  <Select
-                    value={selectedUserKit}
-                    onValueChange={(v) => {
-                      setSelectedUserKit(v);
-                      const kit = userKits.find((k) => k.id === v);
-                      if (kit) applyKit(kit);
-                    }}
-                  >
-                    <SelectTrigger>
-                      <SelectValue
-                        placeholder={
-                          userKits.length === 0
-                            ? "Nenhum kit cadastrado"
-                            : "Selecione um kit salvo"
-                        }
-                      />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {userKits.map((k) => (
-                        <SelectItem key={k.id} value={k.id}>
-                          {k.name} ({k.procedures.length})
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </Field>
+                <SelectField
+                  label="Kits do usuário"
+                  labelClassName="text-xs font-medium text-muted-foreground"
+                  value={selectedUserKit}
+                  onValueChange={(v) => {
+                    setSelectedUserKit(v);
+                    const kit = userKits.find((k) => k.id === v);
+                    if (kit) applyKit(kit);
+                  }}
+                  placeholder={
+                    userKits.length === 0
+                      ? "Nenhum kit cadastrado"
+                      : "Selecione um kit salvo"
+                  }
+                  options={userKits.map((k) => ({
+                    value: k.id,
+                    label: `${k.name} (${k.procedures.length})`,
+                  }))}
+                />
+
                 <Grid cols={2}>
                   <Field label="Kits por Especialidade Médica">
                     <Select
