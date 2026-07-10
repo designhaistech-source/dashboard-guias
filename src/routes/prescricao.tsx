@@ -24,6 +24,7 @@ import {
   AlertCircle,
   CheckCircle2,
   Loader2,
+  ChevronRight,
 } from "lucide-react";
 
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -1596,64 +1597,8 @@ function PrescricaoForm() {
             )}
           </div>
 
-          {/* Lista compacta de itens adicionados */}
-          {itens.length > 0 && (
-            <div className="rounded-2xl border border-border bg-card p-4">
-              <div className="flex items-center justify-between mb-3">
-                <div>
-                  <h2 className="text-base font-semibold">Resumo da receita</h2>
-                  <p className="text-xs text-muted-foreground mt-0.5">
-                    {itens.length}{" "}
-                    {itens.length > 1 ? "medicamentos adicionados" : "medicamento adicionado"}
-                  </p>
-                </div>
-                <div className="flex items-center gap-3">
-                  <button
-                    onClick={abrirSalvarKit}
-                    className="inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1.5 rounded-lg border border-border hover:bg-muted transition-colors"
-                    title="Salvar estes medicamentos como um kit reutilizável (Ctrl+S)"
-                  >
-                    <Save className="h-3.5 w-3.5" />
-                    Salvar como kit
-                  </button>
-                  <button
-                    onClick={() => setItens([])}
-                    className="text-xs text-destructive hover:underline"
-                  >
-                    Limpar
-                  </button>
-                </div>
-              </div>
 
-              <ul className="space-y-1.5">
-                {itens.map((it, i) => {
-                  const c = checkPosologia(it.posologia);
-                  return (
-                    <li
-                      key={i}
-                      className="flex items-center gap-2 text-sm py-1.5 border-t border-border/60 first:border-0"
-                    >
-                      <span className="text-muted-foreground w-4 text-right">
-                        {i + 1}.
-                      </span>
-                      <span
-                        className={`h-1.5 w-1.5 rounded-full shrink-0 ${c.ok ? "bg-emerald-500" : "bg-destructive"}`}
-                        title={c.ok ? "Posologia ok" : c.mensagem}
-                      />
-                      <span className="flex-1 truncate">{it.med.nome}</span>
-                      <button
-                        onClick={() => removeItem(i)}
-                        className="text-muted-foreground hover:text-destructive"
-                        aria-label="Remover"
-                      >
-                        <X className="h-3.5 w-3.5" />
-                      </button>
-                    </li>
-                  );
-                })}
-              </ul>
-            </div>
-          )}
+
 
       </section>
 
@@ -1674,53 +1619,32 @@ function PrescricaoForm() {
                 <h3 className="text-sm font-semibold tracking-wide">
                   {especial
                     ? "RECEITUÁRIO CONTROLE ESPECIAL"
-                    : "Prescrição médica"}
+                    : "Revisão da receita"}
                 </h3>
                 <p className="text-xs text-muted-foreground mt-0.5">
-                  Paciente:{" "}
-                  <span className="font-medium text-foreground">
-                    {paciente || "—"}
-                  </span>
+                  {itens.length}{" "}
+                  {itens.length === 1 ? "medicamento" : "medicamentos"}
+                  {paciente && (
+                    <>
+                      {" · "}Paciente:{" "}
+                      <span className="font-medium text-foreground">
+                        {paciente}
+                      </span>
+                    </>
+                  )}
                   {especial && cpfDigits.length === 11 && (
                     <> · CPF {formatCpf(cpfDigits)}</>
                   )}
                 </p>
               </div>
-              <div className="flex flex-wrap items-center gap-2">
-                <ActionBtn
-                  onClick={imprimir}
-                  icon={<Printer className="h-4 w-4" />}
-                  disabled={!podeEmitir}
-                  title="Ctrl+P"
-                  disabledReason={
-                    pendencias.length > 0
-                      ? `Corrija ${pendencias.length} pendência${pendencias.length > 1 ? "s" : ""} antes de imprimir:\n• ${pendencias.map((p) => p.msg).join("\n• ")}`
-                      : undefined
-                  }
+              {itens.length > 0 && (
+                <button
+                  onClick={() => setItens([])}
+                  className="text-xs text-muted-foreground hover:text-destructive hover:underline"
                 >
-                  Imprimir
-                </ActionBtn>
-                <ActionBtn
-                  onClick={baixarPdf}
-                  icon={<Download className="h-4 w-4" />}
-                  disabled={!podeEmitir}
-                  variant="primary"
-                  disabledReason={
-                    pendencias.length > 0
-                      ? `Corrija ${pendencias.length} pendência${pendencias.length > 1 ? "s" : ""} antes de baixar:\n• ${pendencias.map((p) => p.msg).join("\n• ")}`
-                      : undefined
-                  }
-                >
-                  Baixar PDF
-                </ActionBtn>
-                <ActionBtn
-                  onClick={abrirSalvarKit}
-                  icon={<Save className="h-4 w-4" />}
-                  title="Ctrl+S"
-                >
-                  Salvar Kit
-                </ActionBtn>
-              </div>
+                  Limpar itens
+                </button>
+              )}
             </div>
 
             {pendencias.length > 0 && (
@@ -1932,13 +1856,78 @@ function PrescricaoForm() {
               })}
             </ul>
 
-            <p className="text-[11px] text-muted-foreground pt-1">
-              Atalhos: <Kbd>Ctrl</Kbd>+<Kbd>P</Kbd> imprime ·{" "}
-              <Kbd>Ctrl</Kbd>+<Kbd>S</Kbd> salva como kit.
-            </p>
           </div>
         </div>
       </section>
+
+      {/* Barra de ações fixa no rodapé */}
+      <div className="sticky bottom-0 z-30 -mx-4 sm:-mx-6 mt-4 border-t border-border bg-background/95 backdrop-blur px-4 sm:px-6 py-3">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div className="text-xs text-muted-foreground">
+            {podeEmitir ? (
+              <span className="inline-flex items-center gap-1.5 text-emerald-600 dark:text-emerald-400 font-medium">
+                <Check className="h-3.5 w-3.5" /> Pronto para emitir
+              </span>
+            ) : pendencias.length > 0 ? (
+              <span>
+                Falta {pendencias.length}{" "}
+                {pendencias.length === 1 ? "item" : "itens"} para emitir
+              </span>
+            ) : (
+              <span>Adicione medicamentos para emitir</span>
+            )}
+            <span className="ml-3 hidden sm:inline">
+              Atalhos: <Kbd>Ctrl</Kbd>+<Kbd>P</Kbd> imprime ·{" "}
+              <Kbd>Ctrl</Kbd>+<Kbd>S</Kbd> salva kit
+            </span>
+          </div>
+          <div className="flex flex-wrap items-center gap-2">
+            <ActionBtn
+              onClick={abrirSalvarKit}
+              icon={<Save className="h-4 w-4" />}
+              title="Ctrl+S"
+            >
+              Salvar como kit
+            </ActionBtn>
+            <ActionBtn
+              onClick={baixarPdf}
+              icon={<Download className="h-4 w-4" />}
+              disabled={!podeEmitir}
+              disabledReason={
+                pendencias.length > 0
+                  ? `Corrija ${pendencias.length} pendência${pendencias.length > 1 ? "s" : ""} antes de baixar:\n• ${pendencias.map((p) => p.msg).join("\n• ")}`
+                  : undefined
+              }
+            >
+              Baixar PDF
+            </ActionBtn>
+            <ActionBtn
+              onClick={() => {
+                setTriedEmit(true);
+                if (!podeEmitir) {
+                  document
+                    .getElementById("sec-revisar")
+                    ?.scrollIntoView({ behavior: "smooth", block: "start" });
+                  return;
+                }
+                baixarPdf();
+                toast.success("Receita emitida com sucesso.");
+              }}
+              icon={<ChevronRight className="h-4 w-4" />}
+              variant="primary"
+              disabled={!podeEmitir}
+              disabledReason={
+                pendencias.length > 0
+                  ? `Corrija ${pendencias.length} pendência${pendencias.length > 1 ? "s" : ""} antes de emitir:\n• ${pendencias.map((p) => p.msg).join("\n• ")}`
+                  : undefined
+              }
+            >
+              Emitir receita
+            </ActionBtn>
+          </div>
+        </div>
+      </div>
+
 
       <Dialog open={kitDialogOpen} onOpenChange={setKitDialogOpen}>
         <DialogContent className="sm:max-w-md">
