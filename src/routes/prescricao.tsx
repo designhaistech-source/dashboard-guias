@@ -632,7 +632,12 @@ function PrescricaoForm() {
 
   const resultados = useMemo(() => {
     const q = query.trim().toLowerCase();
-    const base = MEDICAMENTOS.filter((m) => tipos.has(m.tipo));
+    const base = MEDICAMENTOS.filter(
+      (m) =>
+        tipos.has(m.tipo) &&
+        (tipoBusca === null ||
+          (tipoBusca === "controlado" ? !!m.controlado : !m.controlado)),
+    );
     if (!q) {
       // Sem busca: favoritos + recentes primeiro, depois os demais do tipo
       const favs = base.filter((m) => m.favorito);
@@ -651,7 +656,7 @@ function PrescricaoForm() {
         m.fabricante.toLowerCase().includes(q) ||
         m.classe.toLowerCase().includes(q),
     );
-  }, [query, tipos, medsRecentes]);
+  }, [query, tipos, tipoBusca, medsRecentes]);
 
 
   useEffect(() => {
