@@ -504,21 +504,22 @@ function EmitirPage() {
             value={convenioId}
             onValueChange={(v) => setConvenioId(v as ConvenioId)}
           >
-            <TabsList className="w-full h-auto p-1 bg-muted/60 grid grid-cols-2 gap-1">
+            <TabsList className="w-full h-auto p-1 bg-muted border border-border shadow-inner grid grid-cols-2 gap-1 rounded-xl">
               {CONVENIOS.map((c) => {
                 const Icon = c.id === "tiss" ? Shield : Landmark;
                 return (
                   <TabsTrigger
                     key={c.id}
                     value={c.id}
-                    className="flex items-center gap-2 py-2.5 data-[state=active]:bg-background data-[state=active]:shadow-sm"
+                    className="flex items-center justify-center gap-2.5 py-3 px-6 rounded-lg text-muted-foreground font-medium transition-all hover:text-foreground data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:font-semibold data-[state=active]:border data-[state=active]:border-border/60 data-[state=active]:shadow-sm"
                   >
                     <Icon className="h-4 w-4" />
-                    <span className="font-medium">{c.label}</span>
+                    <span className="text-sm tracking-tight">{c.label}</span>
                   </TabsTrigger>
                 );
               })}
             </TabsList>
+
 
             {CONVENIOS.map((c) => (
               <TabsContent key={c.id} value={c.id} className="mt-4 w-full">
