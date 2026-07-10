@@ -553,7 +553,9 @@ function PrescricaoForm() {
         itens.length === 0 &&
         !cpfDigits &&
         !endereco.trim() &&
-        !cepDigits;
+        !cepDigits &&
+        !numero.trim() &&
+        !complemento.trim();
       if (vazio) {
         window.localStorage.removeItem(LS_DRAFT);
         setSavedAt(null);
@@ -564,6 +566,8 @@ function PrescricaoForm() {
         cpfDigits,
         cepDigits,
         endereco,
+        numero,
+        complemento,
         itens,
         especial,
         tipos: Array.from(tipos),
@@ -573,7 +577,7 @@ function PrescricaoForm() {
       setSavedAt(draft.savedAt);
     }, 400);
     return () => window.clearTimeout(id);
-  }, [paciente, cpfDigits, cepDigits, endereco, itens, especial, tipos]);
+  }, [paciente, cpfDigits, cepDigits, endereco, numero, complemento, itens, especial, tipos]);
 
   const descartarRascunho = () => {
     if (typeof window !== "undefined") window.localStorage.removeItem(LS_DRAFT);
