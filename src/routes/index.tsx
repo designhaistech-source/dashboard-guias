@@ -1151,7 +1151,8 @@ function DashboardPage() {
                 </table>
               </div>
             </div>
-          </div>
+          </SurfaceCard>
+
         </div>
         <SiteFooter />
       </main>
