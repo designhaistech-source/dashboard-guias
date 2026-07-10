@@ -284,8 +284,31 @@ function History_Section({ extraRows }: { extraRows: Row[] }) {
         <div className="flex-1 min-w-[260px] max-w-md">
           <SearchInput placeholder="Buscar por arquivo ou paciente" />
         </div>
-        <FilterSelect label="Todos" />
-        <FilterSelect label="Todos os tipos" />
+        <div className="w-[180px]">
+          <Combobox
+            options={[
+              { value: "sucesso", label: "Sucesso" },
+              { value: "erro", label: "Erro" },
+              { value: "processando", label: "Processando" },
+            ]}
+            placeholder="Todos os status"
+            searchPlaceholder="Buscar status..."
+            clearable
+          />
+        </div>
+        <div className="w-[200px]">
+          <Combobox
+            options={[
+              { value: "sadt", label: "SADT" },
+              { value: "consulta", label: "Consulta" },
+              { value: "internacao", label: "Internação" },
+              { value: "honorario", label: "Honorário" },
+            ]}
+            placeholder="Todos os tipos"
+            searchPlaceholder="Buscar tipo..."
+            clearable
+          />
+        </div>
         <DateField label="Data início" />
         <DateField label="Data fim" />
         <button className="text-sm font-medium text-foreground hover:text-primary">
