@@ -1102,11 +1102,12 @@ function PrescricaoForm() {
       if (!emitir) documentosParaBaixar.push({ doc, nome });
     });
 
+    let abriuImpressao = false;
     if (emitir && docImpressao) {
       const nomeImpressao = grupos.length > 1
         ? `receitas-${slugPaciente || "paciente"}.pdf`
         : `${hasControlado ? "receita-especial" : "prescricao"}-${slugPaciente || "paciente"}.pdf`;
-      await imprimirPdfNoIframe(docImpressao, nomeImpressao);
+      abriuImpressao = imprimirPdf(docImpressao, nomeImpressao);
     } else {
       documentosParaBaixar.forEach(({ doc, nome }) => doc.save(nome));
     }
@@ -1116,11 +1117,15 @@ function PrescricaoForm() {
     setPacientesRecentes(loadRecentes(LS_PACIENTES));
     registrarHistorico(emitir ? "imprimir" : "pdf");
     if (emitir) {
-      toast.success(
-        grupos.length > 1
-          ? `${grupos.length} receitas emitidas. Janela de impressão aberta.`
-          : "Receita emitida. Janela de impressão aberta.",
-      );
+      if (abriuImpressao) {
+        toast.success(
+          grupos.length > 1
+            ? `${grupos.length} receitas emitidas. Janela de impressão aberta.`
+            : "Receita emitida. Janela de impressão aberta.",
+        );
+      } else {
+        toast.info("Pop-up bloqueado — baixamos o PDF para você imprimir manualmente.");
+      }
     } else {
       toast.success(
         grupos.length > 1
@@ -1128,6 +1133,7 @@ function PrescricaoForm() {
           : "PDF baixado.",
       );
     }
+
   };
 
 
