@@ -725,26 +725,21 @@ function EmitirPage() {
                   description="Regime, acomodação e previsão de permanência."
                 >
                   <Grid cols={2}>
-                    <Field label="Tipo de internação" required>
-                      <Select value={internacaoTipo} onValueChange={setInternacaoTipo}>
-                        <SelectTrigger><SelectValue /></SelectTrigger>
-                        <SelectContent>
-                          {["Clínica", "Cirúrgica", "Obstétrica", "Pediátrica", "Psiquiátrica"].map((o) => (
-                            <SelectItem key={o} value={o}>{o}</SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </Field>
-                    <Field label="Regime">
-                      <Select value={internacaoRegime} onValueChange={setInternacaoRegime}>
-                        <SelectTrigger><SelectValue /></SelectTrigger>
-                        <SelectContent>
-                          {["Hospitalar", "Hospital-dia", "Domiciliar"].map((o) => (
-                            <SelectItem key={o} value={o}>{o}</SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </Field>
+                    <SelectField
+                      label="Tipo de internação"
+                      required
+                      labelClassName="text-xs font-medium text-muted-foreground"
+                      value={internacaoTipo}
+                      onValueChange={setInternacaoTipo}
+                      options={["Clínica", "Cirúrgica", "Obstétrica", "Pediátrica", "Psiquiátrica"].map((o) => ({ value: o, label: o }))}
+                    />
+                    <SelectField
+                      label="Regime"
+                      labelClassName="text-xs font-medium text-muted-foreground"
+                      value={internacaoRegime}
+                      onValueChange={setInternacaoRegime}
+                      options={["Hospitalar", "Hospital-dia", "Domiciliar"].map((o) => ({ value: o, label: o }))}
+                    />
                     <Field label="Dias solicitados" required>
                       <Input
                         type="number"
@@ -755,16 +750,14 @@ function EmitirPage() {
                         }
                       />
                     </Field>
-                    <Field label="Acomodação">
-                      <Select value={internacaoAcomodacao} onValueChange={setInternacaoAcomodacao}>
-                        <SelectTrigger><SelectValue /></SelectTrigger>
-                        <SelectContent>
-                          {["Enfermaria", "Apartamento", "UTI"].map((o) => (
-                            <SelectItem key={o} value={o}>{o}</SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </Field>
+                    <SelectField
+                      label="Acomodação"
+                      labelClassName="text-xs font-medium text-muted-foreground"
+                      value={internacaoAcomodacao}
+                      onValueChange={setInternacaoAcomodacao}
+                      options={["Enfermaria", "Apartamento", "UTI"].map((o) => ({ value: o, label: o }))}
+                    />
+
                   </Grid>
                 </Section>
               )}
