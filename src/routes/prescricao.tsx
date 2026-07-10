@@ -1393,9 +1393,62 @@ function PrescricaoForm() {
             <div>
               <h2 className="text-base font-semibold">Buscar e adicionar medicamentos</h2>
               <p className="text-xs text-muted-foreground">
-                Nome comercial ou princípio ativo. Ajuste os filtros à direita se precisar.
+                Primeiro escolha o tipo de medicamento, depois busque pelo nome.
               </p>
             </div>
+
+            <div>
+              <span className="block text-[11px] uppercase tracking-wide text-muted-foreground mb-2">
+                Tipo do medicamento
+              </span>
+              <div className="inline-flex rounded-xl border border-border bg-background/40 p-1">
+                {([
+                  { id: "comum", label: "Comum" },
+                  { id: "controlado", label: "Controlado" },
+                ] as const).map((opt) => {
+                  const active = tipoBusca === opt.id;
+                  return (
+                    <button
+                      key={opt.id}
+                      type="button"
+                      onClick={() => {
+                        setTipoBusca(opt.id);
+                        setQuery("");
+                        setEditing(null);
+                        setTimeout(() => searchRef.current?.focus(), 0);
+                      }}
+                      aria-pressed={active}
+                      className={`px-4 py-1.5 rounded-lg text-sm transition ${
+                        active
+                          ? opt.id === "controlado"
+                            ? "bg-amber-500/15 text-amber-700 dark:text-amber-300 font-medium"
+                            : "bg-primary text-primary-foreground font-medium"
+                          : "text-muted-foreground hover:text-foreground"
+                      }`}
+                    >
+                      {opt.id === "controlado" && (
+                        <ShieldAlert className="inline h-3.5 w-3.5 mr-1.5 -mt-0.5" />
+                      )}
+                      {opt.label}
+                    </button>
+                  );
+                })}
+              </div>
+              {tipoBusca === "controlado" && (
+                <p className="mt-2 text-xs text-amber-700 dark:text-amber-400">
+                  Medicamentos controlados exigem receituário especial (CPF e endereço do paciente).
+                </p>
+              )}
+            </div>
+
+            {tipoBusca === null ? (
+              <div className="rounded-xl border border-dashed border-border bg-background/30 p-6 text-sm text-muted-foreground text-center">
+                Selecione <strong className="text-foreground">Comum</strong> ou{" "}
+                <strong className="text-foreground">Controlado</strong> acima para buscar medicamentos.
+              </div>
+            ) : (
+              <>
+
 
             <div className="grid gap-3 md:grid-cols-[minmax(0,1fr)_220px]">
               <div className="relative">
