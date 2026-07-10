@@ -1001,9 +1001,10 @@ function DashboardPage() {
                   </AreaChart>
                 </ResponsiveContainer>
               </div>
-            </div>
+            </SurfaceCard>
 
-            <div className="rounded-2xl border border-border bg-card p-6">
+            <SurfaceCard>
+
               <div className="mb-4">
                 <h3 className="font-semibold">Por tipo de guia</h3>
                 <p className="text-xs text-muted-foreground">Distribuição no período</p>
