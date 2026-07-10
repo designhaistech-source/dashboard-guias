@@ -30,6 +30,7 @@ import {
 import { AppSidebar } from "@/components/app-sidebar";
 import { SiteFooter } from "@/components/site-footer";
 import { PageHeader } from "@/components/page-header";
+import { SurfaceCard } from "@/components/surface-card";
 import { Button } from "@/components/ui/button";
 import logoAsset from "@/assets/haisguias-logo.png.asset.json";
 import { toast } from "sonner";
