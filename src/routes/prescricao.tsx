@@ -1073,21 +1073,36 @@ function PrescricaoForm() {
 
       const nome = `${isEspecial ? "receita-especial" : "prescricao"}-${slugPaciente || "paciente"}.pdf`;
       if (emitir) {
-        doc.autoPrint();
-        const blobUrl = doc.output("bloburl");
-        let iframe = document.getElementById("print-frame") as HTMLIFrameElement | null;
-        if (!iframe) {
-          iframe = document.createElement("iframe");
-          iframe.id = "print-frame";
-          iframe.style.position = "fixed";
-          iframe.style.right = "0";
-          iframe.style.bottom = "0";
-          iframe.style.width = "0";
-          iframe.style.height = "0";
-          iframe.style.border = "0";
-          document.body.appendChild(iframe);
-        }
-        iframe.src = blobUrl.toString();
+        const blob = doc.output("blob");
+        const blobUrl = URL.createObjectURL(blob);
+        const iframe = document.createElement("iframe");
+        iframe.style.position = "fixed";
+        iframe.style.right = "0";
+        iframe.style.bottom = "0";
+        iframe.style.width = "0";
+        iframe.style.height = "0";
+        iframe.style.border = "0";
+        iframe.setAttribute("aria-hidden", "true");
+        iframe.onload = () => {
+          // Aguarda o visualizador de PDF do Chrome montar antes de imprimir
+          setTimeout(() => {
+            try {
+              iframe.contentWindow?.focus();
+              iframe.contentWindow?.print();
+            } catch (err) {
+              console.error("Falha ao abrir impressão:", err);
+              // fallback: baixa o arquivo
+              doc.save(nome);
+            }
+          }, 400);
+          // Limpa após a janela de impressão fechar (~1min)
+          setTimeout(() => {
+            URL.revokeObjectURL(blobUrl);
+            iframe.remove();
+          }, 60_000);
+        };
+        iframe.src = blobUrl;
+        document.body.appendChild(iframe);
       } else {
         doc.save(nome);
       }
