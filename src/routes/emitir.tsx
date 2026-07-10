@@ -966,54 +966,35 @@ function EmitirPage() {
                 />
 
                 <Grid cols={2}>
-                  <Field label="Kits por Especialidade Médica">
-                    <Select
-                      value={selectedSpecialty}
-                      onValueChange={(v) => {
-                        setSelectedSpecialty(v);
-                        setSelectedSpecialtyKit("");
-                      }}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Selecione uma especialidade (CBO)" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {specialties.map((s) => (
-                          <SelectItem key={s} value={s}>
-                            {s}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </Field>
-                  <Field label="Procedimento">
-                    <Select
-                      value={selectedSpecialtyKit}
-                      onValueChange={(v) => {
-                        setSelectedSpecialtyKit(v);
-                        const kit = specialtyKitOptions.find((k) => k.id === v);
-                        if (kit) applyKit(kit);
-                      }}
-                      disabled={!selectedSpecialty}
-                    >
-                      <SelectTrigger>
-                        <SelectValue
-                          placeholder={
-                            selectedSpecialty
-                              ? "Selecione um kit"
-                              : "Escolha a especialidade primeiro"
-                          }
-                        />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {specialtyKitOptions.map((k) => (
-                          <SelectItem key={k.id} value={k.id}>
-                            {k.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </Field>
+                  <SelectField
+                    label="Kits por Especialidade Médica"
+                    labelClassName="text-xs font-medium text-muted-foreground"
+                    value={selectedSpecialty}
+                    onValueChange={(v) => {
+                      setSelectedSpecialty(v);
+                      setSelectedSpecialtyKit("");
+                    }}
+                    placeholder="Selecione uma especialidade (CBO)"
+                    options={specialties.map((s) => ({ value: s, label: s }))}
+                  />
+                  <SelectField
+                    label="Procedimento"
+                    labelClassName="text-xs font-medium text-muted-foreground"
+                    value={selectedSpecialtyKit}
+                    onValueChange={(v) => {
+                      setSelectedSpecialtyKit(v);
+                      const kit = specialtyKitOptions.find((k) => k.id === v);
+                      if (kit) applyKit(kit);
+                    }}
+                    disabled={!selectedSpecialty}
+                    placeholder={
+                      selectedSpecialty
+                        ? "Selecione um kit"
+                        : "Escolha a especialidade primeiro"
+                    }
+                    options={specialtyKitOptions.map((k) => ({ value: k.id, label: k.name }))}
+                  />
+
                 </Grid>
               </Section>
 
