@@ -23,6 +23,8 @@ import {
   CheckCircle2,
   Loader2,
   ChevronRight,
+  Star,
+  ShieldAlert,
 } from "lucide-react";
 
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
