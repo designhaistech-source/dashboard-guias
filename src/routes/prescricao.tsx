@@ -1592,52 +1592,76 @@ function PrescricaoForm() {
                 </div>
               </div>
 
-              <div
-                className={`rounded-xl border ${especial ? "border-amber-500/40 bg-amber-500/5" : "border-border/70 bg-background/40"} px-4 py-3 space-y-3`}
-              >
-                <label className="flex items-start gap-2.5 cursor-pointer select-none">
-                  <input
-                    type="checkbox"
-                    checked={especial}
-                    onChange={(e) => setEspecial(e.target.checked)}
-                    className="h-4 w-4 mt-0.5 rounded border-border accent-primary"
-                  />
-                  <span className="flex-1">
-                    <span className="flex items-center gap-2">
-                      <span className="text-sm font-medium">
-                        Receituário de controle especial
-                      </span>
-                      {especial && (
-                        <span className="inline-flex items-center gap-1 rounded-full border border-amber-500/40 bg-amber-500/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-amber-700 dark:text-amber-400">
-                          Receita controlada
-                        </span>
+              {/* Detecção automática do tipo de receituário */}
+              {itens.length > 0 && (
+                <div
+                  className={`rounded-xl border px-4 py-3 ${
+                    hasControlado
+                      ? "border-amber-500/40 bg-amber-500/5"
+                      : "border-emerald-500/30 bg-emerald-500/5"
+                  }`}
+                >
+                  <div className="flex items-start gap-2.5">
+                    <span
+                      className={`mt-0.5 inline-block h-2 w-2 rounded-full ${
+                        hasControlado ? "bg-amber-500" : "bg-emerald-500"
+                      }`}
+                    />
+                    <div className="flex-1 min-w-0">
+                      <div className="text-sm font-medium">
+                        {hasControlado && hasComum
+                          ? "Serão gerados 2 documentos separados"
+                          : hasControlado
+                            ? "Receituário de controle especial"
+                            : "Receita simples"}
+                      </div>
+                      <ul className="mt-1.5 space-y-1 text-xs text-muted-foreground">
+                        {hasComum && (
+                          <li className="flex items-center gap-1.5">
+                            <span className="inline-block h-1.5 w-1.5 rounded-full bg-emerald-500" />
+                            Receita simples — {itensComuns.length}{" "}
+                            {itensComuns.length === 1 ? "item" : "itens"} (
+                            {itensComuns.map((it) => it.med.nome.split(" ")[0]).join(", ")})
+                          </li>
+                        )}
+                        {hasControlado && (
+                          <li className="flex items-center gap-1.5">
+                            <span className="inline-block h-1.5 w-1.5 rounded-full bg-amber-500" />
+                            Controle especial — {itensControlados.length}{" "}
+                            {itensControlados.length === 1 ? "item" : "itens"} (
+                            {itensControlados.map((it) => it.med.nome.split(" ")[0]).join(", ")})
+                          </li>
+                        )}
+                      </ul>
+                      {hasControlado && (
+                        <p className="mt-2 text-[11px] text-amber-700 dark:text-amber-400">
+                          Substâncias sob controle especial exigem CPF e endereço completo do paciente.
+                        </p>
                       )}
-                    </span>
-                    <span className="block text-xs text-muted-foreground">
-                      Para substâncias controladas — exige CPF e endereço completo do paciente.
-                    </span>
-                  </span>
-                </label>
+                    </div>
+                  </div>
+                </div>
+              )}
 
-                {especial && (
-                  <div className="space-y-3 pt-1">
-                    <div className="grid gap-3 md:grid-cols-[minmax(0,220px)_minmax(0,200px)_minmax(0,1fr)]">
-                      {/* CPF */}
-                      <div className="space-y-1">
-                        <label className="text-xs text-muted-foreground">CPF</label>
-                        <div className="relative">
-                          <input
-                            ref={cpfRef}
-                            value={formatCpf(cpfDigits)}
-                            onChange={(e) =>
-                              setCpfDigits(e.target.value.replace(/\D/g, "").slice(0, 11))
-                            }
-                            onPaste={(e) => {
-                              e.preventDefault();
-                              const text = e.clipboardData
-                                .getData("text")
-                                .replace(/\D/g, "")
-                                .slice(0, 11);
+              {hasControlado && (
+                <div className="space-y-3 pt-1">
+                  <div className="grid gap-3 md:grid-cols-[minmax(0,220px)_minmax(0,200px)_minmax(0,1fr)]">
+                    {/* CPF */}
+                    <div className="space-y-1">
+                      <label className="text-xs text-muted-foreground">CPF</label>
+                      <div className="relative">
+                        <input
+                          ref={cpfRef}
+                          value={formatCpf(cpfDigits)}
+                          onChange={(e) =>
+                            setCpfDigits(e.target.value.replace(/\D/g, "").slice(0, 11))
+                          }
+                          onPaste={(e) => {
+                            e.preventDefault();
+                            const text = e.clipboardData
+                              .getData("text")
+                              .replace(/\D/g, "")
+                              .slice(0, 11);
                               setCpfDigits(text);
                             }}
                             autoComplete="off"
