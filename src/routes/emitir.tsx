@@ -796,16 +796,15 @@ function EmitirPage() {
                   description="Caráter da internação e motivo."
                 >
                   <Grid cols={2}>
-                    <Field label="Caráter da internação" required>
-                      <Select value={aihCaraterEntry} onValueChange={setAihCaraterEntry}>
-                        <SelectTrigger><SelectValue /></SelectTrigger>
-                        <SelectContent>
-                          {["Eletivo", "Urgência"].map((o) => (
-                            <SelectItem key={o} value={o}>{o}</SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </Field>
+                    <SelectField
+                      label="Caráter da internação"
+                      required
+                      labelClassName="text-xs font-medium text-muted-foreground"
+                      value={aihCaraterEntry}
+                      onValueChange={setAihCaraterEntry}
+                      options={["Eletivo", "Urgência"].map((o) => ({ value: o, label: o }))}
+                    />
+
                     <Field label="Motivo da internação" required>
                       <Input
                         value={aihMotivo}
