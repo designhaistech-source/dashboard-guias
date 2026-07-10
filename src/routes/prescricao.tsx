@@ -732,8 +732,12 @@ function PrescricaoForm() {
       }
       if (!enderecoValido) {
         toast.error(
-          "Informe o endereço completo do paciente (rua, número, bairro, cidade/UF).",
+          "Informe o endereço completo do paciente (rua, bairro, cidade/UF).",
         );
+        return false;
+      }
+      if (!numeroValido) {
+        toast.error("Informe o número do endereço.");
         return false;
       }
     }
