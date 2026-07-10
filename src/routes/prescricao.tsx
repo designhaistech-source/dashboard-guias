@@ -1207,7 +1207,7 @@ function PrescricaoForm() {
           </div>
 
           <div
-            className={`rounded-xl border ${especial ? "border-destructive/40 bg-destructive/5" : "border-border/70 bg-background/40"} px-4 py-3 space-y-3`}
+            className={`rounded-xl border ${especial ? "border-amber-500/40 bg-amber-500/5" : "border-border/70 bg-background/40"} px-4 py-3 space-y-3`}
           >
             <label className="flex items-start gap-2.5 cursor-pointer select-none">
               <input
@@ -1216,9 +1216,16 @@ function PrescricaoForm() {
                 onChange={(e) => setEspecial(e.target.checked)}
                 className="h-4 w-4 mt-0.5 rounded border-border accent-primary"
               />
-              <span>
-                <span className="block text-sm font-medium">
-                  Receituário de controle especial
+              <span className="flex-1">
+                <span className="flex items-center gap-2">
+                  <span className="text-sm font-medium">
+                    Receituário de controle especial
+                  </span>
+                  {especial && (
+                    <span className="inline-flex items-center gap-1 rounded-full border border-amber-500/40 bg-amber-500/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-amber-700 dark:text-amber-400">
+                      Receita controlada
+                    </span>
+                  )}
                 </span>
                 <span className="block text-xs text-muted-foreground">
                   Para substâncias controladas — exige CPF e endereço completo do paciente.
