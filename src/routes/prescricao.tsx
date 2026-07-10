@@ -1795,24 +1795,6 @@ function PrescricaoForm() {
                         )}
                       </div>
 
-                      <div className="flex flex-col gap-1 shrink-0">
-                        <button
-                          onClick={() => moveItem(i, i - 1)}
-                          disabled={i === 0}
-                          className="grid place-items-center h-6 w-6 rounded border border-border text-muted-foreground hover:text-foreground disabled:opacity-30 disabled:cursor-not-allowed"
-                          aria-label="Mover para cima"
-                        >
-                          <ArrowUp className="h-3 w-3" />
-                        </button>
-                        <button
-                          onClick={() => moveItem(i, i + 1)}
-                          disabled={i === itens.length - 1}
-                          className="grid place-items-center h-6 w-6 rounded border border-border text-muted-foreground hover:text-foreground disabled:opacity-30 disabled:cursor-not-allowed"
-                          aria-label="Mover para baixo"
-                        >
-                          <ArrowDown className="h-3 w-3" />
-                        </button>
-                      </div>
                       <button
                         onClick={() => removeItem(i)}
                         className="grid place-items-center h-6 w-6 rounded border border-border text-muted-foreground hover:text-destructive hover:border-destructive/60 shrink-0"
