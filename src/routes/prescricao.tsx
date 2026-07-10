@@ -477,7 +477,10 @@ function PrescricaoForm() {
   const [cpfDigits, setCpfDigits] = useState("");
   const [cepDigits, setCepDigits] = useState("");
   const [cepLoading, setCepLoading] = useState(false);
+  const [cepError, setCepError] = useState<string | null>(null);
   const [endereco, setEndereco] = useState("");
+  const [numero, setNumero] = useState("");
+  const [complemento, setComplemento] = useState("");
   const [query, setQuery] = useState("");
   const [tipos, setTipos] = useState<Set<MedType>>(
     new Set(["Genérico", "Referência", "Específico"]),
