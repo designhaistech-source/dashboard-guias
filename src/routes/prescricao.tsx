@@ -2053,7 +2053,7 @@ function PrescricaoForm() {
                       baixarPdf({ emitir: true });
                     }}
 
-                    icon={<ChevronRight className="h-4 w-4" />}
+                    icon={<Printer className="h-4 w-4" />}
                     variant="primary"
                     disabled={!podeEmitir}
                     disabledReason={
