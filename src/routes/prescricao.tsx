@@ -1804,30 +1804,23 @@ function PrescricaoForm() {
                 </p>
               </div>
 
-              <div className="space-y-2">
-                <label className="text-sm text-muted-foreground" htmlFor="paciente-input">
-                  Nome do paciente
-                </label>
-                <div className="relative">
-                  <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                  <input
-                    id="paciente-input"
-                    ref={pacienteRef}
-                    type="text"
-                    list="pacientes-recentes"
-                    value={paciente}
-                    onChange={(e) => setPaciente(e.target.value)}
-                    placeholder="Digite o nome do beneficiário..."
-                    autoComplete="off"
-                    className="w-full rounded-xl border border-border bg-background/40 pl-10 pr-3 py-3 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/40"
-                  />
-                  <datalist id="pacientes-recentes">
-                    {pacientesRecentes.map((n) => (
-                      <option key={n} value={n} />
-                    ))}
-                  </datalist>
-                </div>
-              </div>
+              <Field id="paciente-input" label="Nome do paciente">
+                <SearchInput
+                  ref={pacienteRef}
+                  leftIcon={<User className="h-4 w-4" />}
+                  list="pacientes-recentes"
+                  value={paciente}
+                  onChange={(e) => setPaciente(e.target.value)}
+                  placeholder="Digite o nome do beneficiário..."
+                  autoComplete="off"
+                />
+                <datalist id="pacientes-recentes">
+                  {pacientesRecentes.map((n) => (
+                    <option key={n} value={n} />
+                  ))}
+                </datalist>
+              </Field>
+
 
               {/* Detecção automática do tipo de receituário */}
               {itens.length > 0 && (
