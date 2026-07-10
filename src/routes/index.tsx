@@ -849,7 +849,7 @@ function DashboardPage() {
               id="dashboard-filters-panel"
               role="region"
               aria-label="Filtros do dashboard"
-              className="rounded-2xl border border-border bg-card p-6 space-y-5"
+              className="rounded-2xl border border-border bg-card shadow-xs p-6 space-y-5"
             >
               <div className="flex items-start justify-between gap-4">
                 <div>
@@ -1216,7 +1216,7 @@ function Kpi({
   }[tone];
 
   return (
-    <div className="group relative overflow-hidden rounded-2xl border border-border bg-card p-5 transition-shadow hover:shadow-sm">
+    <div className="group relative overflow-hidden rounded-2xl border border-border bg-card shadow-xs p-5 transition-shadow hover:shadow-sm">
       <div className="flex items-center justify-between">
         <span className="text-sm text-muted-foreground">{label}</span>
         <span className={`grid place-items-center h-8 w-8 rounded-lg ${toneClass}`}>
