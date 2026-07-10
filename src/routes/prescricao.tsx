@@ -1822,9 +1822,8 @@ function PrescricaoForm() {
                     <span>Adicione medicamentos para emitir</span>
                   )}
                 </div>
-
-                </div>
                 <div className="flex flex-wrap items-center gap-2">
+
                   <ActionBtn
                     onClick={abrirSalvarKit}
                     icon={<Save className="h-4 w-4" />}
