@@ -1286,17 +1286,14 @@ function PrescricaoForm() {
   return (
     <div className="space-y-5 pb-8">
       {/* Header unificado */}
-      <div className="rounded-2xl border border-border bg-card px-5 py-4 flex flex-wrap items-center justify-between gap-3">
-        <div className="flex items-center gap-3 min-w-0">
-          <div className="grid place-items-center h-11 w-11 rounded-xl bg-primary/15 text-primary shrink-0">
-            <Pill className="h-5 w-5" />
-          </div>
-          <div className="min-w-0">
-            <h1 className="text-xl font-semibold leading-tight tracking-tight">Emitir prescrição</h1>
-            <p className="text-xs text-muted-foreground">
-              Adicione os medicamentos e finalize informando o paciente na revisão.
-            </p>
-          </div>
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div className="min-w-0">
+          <h1 className="font-display text-2xl font-semibold tracking-tight text-foreground">
+            Emitir prescrição
+          </h1>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Adicione os medicamentos e finalize informando o paciente na revisão.
+          </p>
         </div>
         <div className="flex items-center gap-2 shrink-0">
           {savedAt && (
