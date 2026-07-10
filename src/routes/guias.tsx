@@ -893,8 +893,6 @@ function RequiredFieldsModal() {
       [guideType]: [...prev[guideType], ...pickerSelection.filter((f) => !prev[guideType].includes(f))],
     }));
     setPickerSelection([]);
-    setFieldSearch("");
-    setFieldOpen(false);
   };
 
   const togglePick = (f: string) => {
