@@ -998,8 +998,13 @@ function PrescricaoForm() {
       pendencias.push({ msg: "CPF inválido — confira o dígito verificador", focus: focusCpf });
     if (!enderecoValido)
       pendencias.push({
-        msg: "Endereço completo do paciente (rua, número, bairro, cidade/UF)",
+        msg: "Endereço do paciente (rua, bairro, cidade/UF)",
         focus: () => focusEl(enderecoRef.current),
+      });
+    if (!numeroValido)
+      pendencias.push({
+        msg: "Número do endereço",
+        focus: () => focusEl(numeroRef.current),
       });
   }
   posologiasInvalidas.forEach(({ i, med, check }) => {
