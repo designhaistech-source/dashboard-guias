@@ -829,8 +829,10 @@ function PrescricaoForm() {
 
 
 
-  const baixarPdf = () => {
+  const baixarPdf = (opts: { emitir?: boolean } = {}) => {
+    const { emitir = false } = opts;
     if (!validarEmissao()) return;
+
 
     const slugPaciente = paciente
       .trim()
@@ -1070,19 +1072,34 @@ function PrescricaoForm() {
       });
 
       const nome = `${isEspecial ? "receita-especial" : "prescricao"}-${slugPaciente || "paciente"}.pdf`;
-      doc.save(nome);
+      if (emitir) {
+        doc.autoPrint();
+        const url = doc.output("bloburl");
+        window.open(url, "_blank");
+      } else {
+        doc.save(nome);
+      }
     });
 
 
     pushRecente(LS_PACIENTES, paciente);
     setPacientesRecentes(loadRecentes(LS_PACIENTES));
-    registrarHistorico("pdf");
-    toast.success(
-      grupos.length > 1
-        ? `${grupos.length} documentos gerados (comum + controle especial).`
-        : "PDF gerado.",
-    );
+    registrarHistorico(emitir ? "imprimir" : "pdf");
+    if (emitir) {
+      toast.success(
+        grupos.length > 1
+          ? `${grupos.length} receitas emitidas. Janela de impressão aberta.`
+          : "Receita emitida. Janela de impressão aberta.",
+      );
+    } else {
+      toast.success(
+        grupos.length > 1
+          ? `${grupos.length} PDFs baixados (comum + controle especial).`
+          : "PDF baixado.",
+      );
+    }
   };
+
 
 
   const [kitDialogOpen, setKitDialogOpen] = useState(false);
@@ -2006,9 +2023,9 @@ function PrescricaoForm() {
                           ?.scrollIntoView({ behavior: "smooth", block: "start" });
                         return;
                       }
-                      baixarPdf();
-                      toast.success("Receita emitida com sucesso.");
+                      baixarPdf({ emitir: true });
                     }}
+
                     icon={<ChevronRight className="h-4 w-4" />}
                     variant="primary"
                     disabled={!podeEmitir}
