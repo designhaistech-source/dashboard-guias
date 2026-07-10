@@ -2023,9 +2023,9 @@ function PrescricaoForm() {
                           ?.scrollIntoView({ behavior: "smooth", block: "start" });
                         return;
                       }
-                      baixarPdf();
-                      toast.success("Receita emitida com sucesso.");
+                      baixarPdf({ emitir: true });
                     }}
+
                     icon={<ChevronRight className="h-4 w-4" />}
                     variant="primary"
                     disabled={!podeEmitir}
