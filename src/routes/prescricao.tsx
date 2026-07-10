@@ -1389,6 +1389,40 @@ function PrescricaoForm() {
 
 
 
+
+      {/* Seletor de tipo — no topo, mesmo padrão da página Emitir Guias */}
+      <Tabs
+        value={tipoBusca ?? undefined}
+        onValueChange={(v) => {
+          setTipoBusca(v as "comum" | "controlado");
+          setQuery("");
+          setEditing(null);
+          setTimeout(() => searchRef.current?.focus(), 0);
+        }}
+      >
+        <TabsList className="w-full h-auto p-1 bg-muted border border-border shadow-inner grid grid-cols-2 gap-1 rounded-xl">
+          <TabsTrigger
+            value="comum"
+            className="flex items-center gap-2 py-2.5 rounded-lg text-muted-foreground transition-all data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:border data-[state=active]:border-border/60 data-[state=active]:shadow-md"
+          >
+            <Shield className="h-4 w-4" />
+            <span className="font-medium">Comum</span>
+          </TabsTrigger>
+          <TabsTrigger
+            value="controlado"
+            className="flex items-center gap-2 py-2.5 rounded-lg text-muted-foreground transition-all data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:border data-[state=active]:border-border/60 data-[state=active]:shadow-md"
+          >
+            <ShieldAlert className="h-4 w-4" />
+            <span className="font-medium">Controlado</span>
+          </TabsTrigger>
+        </TabsList>
+      </Tabs>
+      {tipoBusca === "controlado" && (
+        <p className="text-xs text-amber-700 dark:text-amber-400">
+          Medicamentos controlados exigem receituário especial (CPF e endereço do paciente).
+        </p>
+      )}
+
       {/* Seção 2 — Medicamentos */}
       <section id="sec-medicamentos" className="scroll-mt-4 space-y-5">
 
@@ -1396,47 +1430,9 @@ function PrescricaoForm() {
             <div>
               <h2 className="text-base font-semibold">Buscar e adicionar medicamentos</h2>
               <p className="text-xs text-muted-foreground">
-                Primeiro escolha o tipo de medicamento, depois busque pelo nome.
+                Busque pelo nome do medicamento para adicionar à prescrição.
               </p>
             </div>
-
-            <div>
-              <span className="block text-[11px] uppercase tracking-wide text-muted-foreground mb-2">
-                Tipo do medicamento
-              </span>
-              <Tabs
-                value={tipoBusca ?? undefined}
-                onValueChange={(v) => {
-                  setTipoBusca(v as "comum" | "controlado");
-                  setQuery("");
-                  setEditing(null);
-                  setTimeout(() => searchRef.current?.focus(), 0);
-                }}
-              >
-                <TabsList className="w-full h-auto p-1 bg-muted grid grid-cols-2 gap-1 rounded-xl border border-border/60 shadow-inner">
-                  <TabsTrigger
-                    value="comum"
-                    className="flex items-center gap-2 py-2.5 rounded-lg text-muted-foreground transition-all data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:border data-[state=active]:border-border/60 data-[state=active]:shadow-md"
-                  >
-                    <Shield className="h-4 w-4" />
-                    <span className="font-medium">Comum</span>
-                  </TabsTrigger>
-                  <TabsTrigger
-                    value="controlado"
-                    className="flex items-center gap-2 py-2.5 rounded-lg text-muted-foreground transition-all data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:border data-[state=active]:border-border/60 data-[state=active]:shadow-md"
-                  >
-                    <ShieldAlert className="h-4 w-4" />
-                    <span className="font-medium">Controlado</span>
-                  </TabsTrigger>
-                </TabsList>
-              </Tabs>
-              {tipoBusca === "controlado" && (
-                <p className="mt-2 text-xs text-amber-700 dark:text-amber-400">
-                  Medicamentos controlados exigem receituário especial (CPF e endereço do paciente).
-                </p>
-              )}
-            </div>
-
 
             {tipoBusca === null ? (
               <div className="rounded-xl border border-dashed border-border bg-background/30 p-6 text-sm text-muted-foreground text-center">
