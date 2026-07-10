@@ -2107,9 +2107,9 @@ function PosologiaPanel({
 
 
   return (
-    <div className="rounded-xl border border-primary/50 bg-primary/5 p-4 space-y-3">
+    <div className="rounded-xl border border-border bg-muted/30 p-4 space-y-3">
       <div>
-        <div className="text-sm font-semibold text-primary">Posologia (obrigatória)</div>
+        <div className="text-sm font-semibold text-foreground">Posologia (obrigatória)</div>
         <div className="text-xs text-muted-foreground mt-0.5">
           {med.nome.split(" ")[0]} - {med.nome.replace(/^\S+\s*/, "")} -{" "}
           {med.fabricante} - {med.forma}
