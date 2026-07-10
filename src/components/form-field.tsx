@@ -72,7 +72,16 @@ export function Field({
           )}
         </label>
       )}
-      {child}
+      {rightAdornment ? (
+        <div className="relative">
+          {child}
+          <span className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2">
+            {rightAdornment}
+          </span>
+        </div>
+      ) : (
+        child
+      )}
       {(error || hint) && (
         <p
           id={messageId}
