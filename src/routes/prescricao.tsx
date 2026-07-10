@@ -2215,18 +2215,6 @@ function MedRow({
     >
       <div className="min-w-0">
         <div className="flex items-center gap-2 min-w-0">
-          {m.favorito && (
-            <span className="text-amber-400 text-sm leading-none shrink-0" title="Favorito">
-              ★
-            </span>
-          )}
-          {m.alerta && (
-            <span
-              className="h-2 w-2 rounded-full bg-destructive shrink-0"
-              title="Alerta clínico"
-              aria-label="Alerta"
-            />
-          )}
           <span className="font-medium text-sm text-foreground truncate">{m.nome}</span>
           <span className="text-xs text-muted-foreground truncate hidden sm:inline">
             · {m.forma}
@@ -2236,12 +2224,32 @@ function MedRow({
           {m.principios}
         </div>
       </div>
-      <span
-        className="shrink-0 grid place-items-center h-7 w-7 rounded-md border border-border text-muted-foreground hover:text-primary hover:border-primary/60 transition-colors"
-        aria-label="Selecionar"
-      >
-        <Plus className="h-4 w-4" />
-      </span>
+      <div className="flex items-center gap-1.5 shrink-0">
+        {m.alerta && (
+          <span
+            className="grid place-items-center h-7 w-7 rounded-md text-amber-600 dark:text-amber-400"
+            title="Medicamento controlado"
+            aria-label="Controlado"
+          >
+            <ShieldAlert className="h-3.5 w-3.5" />
+          </span>
+        )}
+        {m.favorito && (
+          <span
+            className="grid place-items-center h-7 w-7 rounded-md text-amber-500"
+            title="Favorito"
+            aria-label="Favorito"
+          >
+            <Star className="h-3.5 w-3.5 fill-current" />
+          </span>
+        )}
+        <span
+          className="grid place-items-center h-7 w-7 rounded-md border border-border text-muted-foreground hover:text-primary hover:border-primary/60 transition-colors"
+          aria-label="Selecionar"
+        >
+          <Plus className="h-4 w-4" />
+        </span>
+      </div>
     </button>
   );
 }
