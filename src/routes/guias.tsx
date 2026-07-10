@@ -869,9 +869,6 @@ const DEFAULT_FIELDS: Record<GuideType, string[]> = {
 function RequiredFieldsModal() {
   const [open, setOpen] = useState(false);
   const [guideType, setGuideType] = useState<GuideType>("SADT");
-  const [typeOpen, setTypeOpen] = useState(false);
-  const [fieldOpen, setFieldOpen] = useState(false);
-  const [fieldSearch, setFieldSearch] = useState("");
   const [pickerSelection, setPickerSelection] = useState<string[]>([]);
   const [confirmDiscard, setConfirmDiscard] = useState(false);
 
@@ -882,9 +879,7 @@ function RequiredFieldsModal() {
 
   const current = draft[guideType];
   const remaining = AVAILABLE_FIELDS.filter((f) => !current.includes(f));
-  const visibleRemaining = remaining.filter((f) =>
-    f.toLowerCase().includes(fieldSearch.trim().toLowerCase()),
-  );
+
 
   const isDirty = (Object.keys(draft) as GuideType[]).some(
     (k) => draft[k].length !== saved[k].length || draft[k].some((f, i) => f !== saved[k][i]),
