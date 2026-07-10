@@ -4,7 +4,7 @@ import { cn } from "@/lib/utils";
 type Padding = "none" | "sm" | "md" | "lg";
 type Tone = "default" | "muted" | "dashed";
 
-interface SurfaceCardProps extends HTMLAttributes<HTMLDivElement> {
+interface SurfaceCardProps extends Omit<HTMLAttributes<HTMLDivElement>, "title"> {
   title?: ReactNode;
   description?: ReactNode;
   icon?: ReactNode;
