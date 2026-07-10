@@ -1563,7 +1563,7 @@ function PrescricaoForm() {
               <div>
                 <h4 className="text-sm font-semibold">Dados do paciente</h4>
                 <p className="text-xs text-muted-foreground">
-                  Preencha antes de emitir. Ative o receituário especial se for receita controlada.
+                  O tipo de receituário é identificado automaticamente pelos medicamentos adicionados.
                 </p>
               </div>
 
