@@ -1485,80 +1485,17 @@ function PrescricaoForm() {
                 </div>
               </div>
 
-              <Popover>
-                <PopoverTrigger asChild>
-                  <button
-                    type="button"
-                    className="w-full flex items-center justify-between gap-2 rounded-xl border border-border bg-background/40 px-3 py-3 text-sm hover:bg-accent/40 transition"
-                  >
-                    <span className="flex items-center gap-2 min-w-0">
-                      <Settings2 className="h-4 w-4 text-muted-foreground shrink-0" />
-                      <span className="truncate">
-                        {tipos.size === 0
-                          ? "Nenhum tipo"
-                          : tipos.size === TIPOS.length
-                            ? "Todos os tipos"
-                            : `${tipos.size} tipos`}
-                      </span>
-                    </span>
-                    <ChevronDown className="h-4 w-4 text-muted-foreground" />
-                  </button>
-                </PopoverTrigger>
-                <PopoverContent
-                  align="end"
-                  className="w-[--radix-popover-trigger-width] p-0"
-                >
-                  <div className="flex items-center justify-between px-3 py-2 border-b border-border">
-                    <span className="text-[11px] uppercase tracking-wide text-muted-foreground">
-                      Filtrar por tipo
-                    </span>
-                    <div className="flex items-center gap-1">
-                      <button
-                        type="button"
-                        onClick={() => setTipos(new Set(TIPOS))}
-                        className="text-[11px] px-2 py-1 rounded-md text-muted-foreground hover:text-foreground hover:bg-accent/40 transition"
-                      >
-                        Todos
-                      </button>
-                      <span className="text-muted-foreground/40 text-[11px]">·</span>
-                      <button
-                        type="button"
-                        onClick={() => setTipos(new Set())}
-                        className="text-[11px] px-2 py-1 rounded-md text-muted-foreground hover:text-foreground hover:bg-accent/40 transition"
-                      >
-                        Limpar
-                      </button>
-                    </div>
-                  </div>
-                  <div className="max-h-72 overflow-y-auto py-1">
-                    {TIPOS.map((t) => {
-                      const active = tipos.has(t);
-                      return (
-                        <button
-                          key={t}
-                          type="button"
-                          onClick={() => toggleTipo(t)}
-                          className="w-full flex items-center justify-between gap-2 px-3 py-2 text-sm text-left hover:bg-accent/40 transition"
-                        >
-                          <span className="flex items-center gap-2">
-                            <span
-                              className={`h-4 w-4 rounded border flex items-center justify-center transition ${
-                                active
-                                  ? "bg-primary border-primary text-primary-foreground"
-                                  : "border-border bg-background"
-                              }`}
-                            >
-                              {active && <Check className="h-3 w-3" />}
-                            </span>
-                            {t}
-                          </span>
-                          <TipoBadge tipo={t} />
-                        </button>
-                      );
-                    })}
-                  </div>
-                </PopoverContent>
-              </Popover>
+              <MultiSelect
+                options={TIPOS.map((t) => ({ value: t, label: t }))}
+                values={Array.from(tipos)}
+                onChange={(vs) => setTipos(new Set(vs as MedType[]))}
+                placeholder="Filtrar por tipo"
+                allLabel="Todos os tipos"
+                emptyLabel="Nenhum tipo"
+                searchPlaceholder="Buscar tipo..."
+                countLabel={(n) => `${n} tipos`}
+              />
+
             </div>
 
             {!editing && resultados.length > 0 && (
