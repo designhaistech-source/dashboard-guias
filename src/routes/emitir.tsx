@@ -851,18 +851,18 @@ function EmitirPage() {
                       onChange={(e) => setPacienteNascimento(e.target.value)}
                     />
                   </Field>
-                  <Field label="Sexo">
-                    <Select value={pacienteSexo} onValueChange={setPacienteSexo}>
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="F">Feminino</SelectItem>
-                        <SelectItem value="M">Masculino</SelectItem>
-                        <SelectItem value="O">Outro</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </Field>
+                  <SelectField
+                    label="Sexo"
+                    labelClassName="text-xs font-medium text-muted-foreground"
+                    value={pacienteSexo}
+                    onValueChange={setPacienteSexo}
+                    options={[
+                      { value: "F", label: "Feminino" },
+                      { value: "M", label: "Masculino" },
+                      { value: "O", label: "Outro" },
+                    ]}
+                  />
+
                 </Grid>
               </Section>
 
