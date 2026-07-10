@@ -37,6 +37,7 @@ import {
 import { AppSidebar } from "@/components/app-sidebar";
 import { SiteFooter } from "@/components/site-footer";
 import { PageHeader } from "@/components/page-header";
+import { SearchInput } from "@/components/form-field";
 
 export const Route = createFileRoute("/guias")({
   head: () => ({
@@ -1020,7 +1021,7 @@ function RequiredFieldsModal() {
                       <SearchInput
                         autoFocus
                         value={fieldSearch}
-                        onChange={(e) => setFieldSearch(e.target.value)}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFieldSearch(e.target.value)}
                         placeholder="Buscar campo…"
                         className="border-0 shadow-none focus-visible:ring-0"
                       />
