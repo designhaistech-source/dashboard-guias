@@ -71,6 +71,8 @@ type Medicamento = {
   classe: string;
   favorito?: boolean;
   alerta?: boolean;
+  /** Substância sob controle especial (Portaria 344/98). Exige receituário próprio com CPF e endereço. */
+  controlado?: boolean;
 };
 
 type ItemReceita = {
