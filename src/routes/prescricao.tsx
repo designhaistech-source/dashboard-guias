@@ -23,6 +23,7 @@ import {
   BookMarked,
   AlertCircle,
   CheckCircle2,
+  Loader2,
 } from "lucide-react";
 
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -327,6 +328,8 @@ type Rascunho = {
   cpfDigits: string;
   cepDigits: string;
   endereco: string;
+  numero?: string;
+  complemento?: string;
   itens: ItemReceita[];
   especial: boolean;
   tipos: MedType[];
@@ -341,6 +344,8 @@ type Historico = {
   cpfDigits: string;
   cepDigits: string;
   endereco: string;
+  numero?: string;
+  complemento?: string;
   itens: ItemReceita[];
   especial: boolean;
   tipos: MedType[];
@@ -397,7 +402,9 @@ function pushRecente(key: string, value: string, max = 8) {
   window.localStorage.setItem(key, JSON.stringify(cur.slice(0, max)));
 }
 
-async function buscarCep(cep: string): Promise<string | null> {
+type CepResult = { logradouro: string; bairro: string; cidade: string; uf: string };
+
+async function buscarCep(cep: string): Promise<CepResult | null> {
   const digits = cep.replace(/\D/g, "");
   if (digits.length !== 8) return null;
   try {
@@ -405,14 +412,31 @@ async function buscarCep(cep: string): Promise<string | null> {
     if (!r.ok) return null;
     const j = await r.json();
     if (j.erro) return null;
-    const partes = [j.logradouro, j.bairro, j.localidade && `${j.localidade}/${j.uf}`]
-      .filter(Boolean)
-      .join(", ");
-    return partes || null;
+    return {
+      logradouro: j.logradouro || "",
+      bairro: j.bairro || "",
+      cidade: j.localidade || "",
+      uf: j.uf || "",
+    };
   } catch {
     return null;
   }
 }
+
+function composeEnderecoBase(r: CepResult): string {
+  const cidadeUf = r.cidade && r.uf ? `${r.cidade}/${r.uf}` : r.cidade || r.uf;
+  return [r.logradouro, r.bairro, cidadeUf].filter(Boolean).join(", ");
+}
+
+function enderecoCompletoStr(base: string, numero: string, complemento: string): string {
+  const parts: string[] = [];
+  if (base.trim()) parts.push(base.trim());
+  if (numero.trim()) parts.push(`nº ${numero.trim()}`);
+  if (complemento.trim()) parts.push(complemento.trim());
+  return parts.join(", ");
+}
+
+
 
 
 function PrescricaoPage() {
@@ -453,7 +477,10 @@ function PrescricaoForm() {
   const [cpfDigits, setCpfDigits] = useState("");
   const [cepDigits, setCepDigits] = useState("");
   const [cepLoading, setCepLoading] = useState(false);
+  const [cepError, setCepError] = useState<string | null>(null);
   const [endereco, setEndereco] = useState("");
+  const [numero, setNumero] = useState("");
+  const [complemento, setComplemento] = useState("");
   const [query, setQuery] = useState("");
   const [tipos, setTipos] = useState<Set<MedType>>(
     new Set(["Genérico", "Referência", "Específico"]),
@@ -476,6 +503,7 @@ function PrescricaoForm() {
   const searchRef = useRef<HTMLInputElement>(null);
   const cpfRef = useRef<HTMLInputElement>(null);
   const enderecoRef = useRef<HTMLInputElement>(null);
+  const numeroRef = useRef<HTMLInputElement>(null);
   const receitaRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -494,6 +522,8 @@ function PrescricaoForm() {
         setCpfDigits(d.cpfDigits || "");
         setCepDigits(d.cepDigits || "");
         setEndereco(d.endereco || "");
+        setNumero(d.numero || "");
+        setComplemento(d.complemento || "");
         setItens(Array.isArray(d.itens) ? d.itens : []);
         setEspecial(!!d.especial);
         if (Array.isArray(d.tipos) && d.tipos.length > 0) setTipos(new Set(d.tipos));
@@ -523,7 +553,9 @@ function PrescricaoForm() {
         itens.length === 0 &&
         !cpfDigits &&
         !endereco.trim() &&
-        !cepDigits;
+        !cepDigits &&
+        !numero.trim() &&
+        !complemento.trim();
       if (vazio) {
         window.localStorage.removeItem(LS_DRAFT);
         setSavedAt(null);
@@ -534,6 +566,8 @@ function PrescricaoForm() {
         cpfDigits,
         cepDigits,
         endereco,
+        numero,
+        complemento,
         itens,
         especial,
         tipos: Array.from(tipos),
@@ -543,7 +577,7 @@ function PrescricaoForm() {
       setSavedAt(draft.savedAt);
     }, 400);
     return () => window.clearTimeout(id);
-  }, [paciente, cpfDigits, cepDigits, endereco, itens, especial, tipos]);
+  }, [paciente, cpfDigits, cepDigits, endereco, numero, complemento, itens, especial, tipos]);
 
   const descartarRascunho = () => {
     if (typeof window !== "undefined") window.localStorage.removeItem(LS_DRAFT);
@@ -551,6 +585,9 @@ function PrescricaoForm() {
     setCpfDigits("");
     setCepDigits("");
     setEndereco("");
+    setNumero("");
+    setComplemento("");
+    setCepError(null);
     setItens([]);
     setEspecial(false);
     setTipos(new Set(["Genérico", "Referência", "Específico"]));
@@ -658,8 +695,11 @@ function PrescricaoForm() {
 
   const cpfValido = isCpfValid(cpfDigits);
   const enderecoValido = isEnderecoCompleto(endereco);
+  const numeroValido = numero.trim().length > 0;
+  const enderecoFullValido = enderecoValido && numeroValido;
+  const enderecoCompleto = enderecoCompletoStr(endereco, numero, complemento);
   const especialInvalido =
-    especial && (!cpfValido || !enderecoValido);
+    especial && (!cpfValido || !enderecoFullValido);
   const posologiasInvalidas = itens
     .map((it, i) => ({ i, med: it.med, check: checkPosologia(it.posologia) }))
     .filter((x) => !x.check.ok);
@@ -692,8 +732,12 @@ function PrescricaoForm() {
       }
       if (!enderecoValido) {
         toast.error(
-          "Informe o endereço completo do paciente (rua, número, bairro, cidade/UF).",
+          "Informe o endereço completo do paciente (rua, bairro, cidade/UF).",
         );
+        return false;
+      }
+      if (!numeroValido) {
+        toast.error("Informe o número do endereço.");
         return false;
       }
     }
@@ -720,6 +764,8 @@ function PrescricaoForm() {
       cpfDigits,
       cepDigits,
       endereco,
+      numero,
+      complemento,
       itens,
       especial,
       tipos: Array.from(tipos),
@@ -734,6 +780,8 @@ function PrescricaoForm() {
     setCpfDigits(h.cpfDigits || "");
     setCepDigits(h.cepDigits || "");
     setEndereco(h.endereco || "");
+    setNumero(h.numero || "");
+    setComplemento(h.complemento || "");
     setItens(h.itens || []);
     setEspecial(!!h.especial);
     if (Array.isArray(h.tipos) && h.tipos.length > 0) setTipos(new Set(h.tipos));
@@ -813,7 +861,7 @@ function PrescricaoForm() {
       doc.setFont("helvetica", "bold");
       doc.text("Endereço:", margin, y);
       doc.setFont("helvetica", "normal");
-      const endLines = doc.splitTextToSize(endereco.trim(), maxW - 22);
+      const endLines = doc.splitTextToSize(enderecoCompleto.trim(), maxW - 22);
       doc.text(endLines, margin + 22, y);
       y += endLines.length * 5 + 2;
     }
@@ -950,8 +998,13 @@ function PrescricaoForm() {
       pendencias.push({ msg: "CPF inválido — confira o dígito verificador", focus: focusCpf });
     if (!enderecoValido)
       pendencias.push({
-        msg: "Endereço completo do paciente (rua, número, bairro, cidade/UF)",
+        msg: "Endereço do paciente (rua, bairro, cidade/UF)",
         focus: () => focusEl(enderecoRef.current),
+      });
+    if (!numeroValido)
+      pendencias.push({
+        msg: "Número do endereço",
+        focus: () => focusEl(numeroRef.current),
       });
   }
   posologiasInvalidas.forEach(({ i, med, check }) => {
@@ -990,23 +1043,23 @@ function PrescricaoForm() {
   const onCepChange = async (raw: string) => {
     const d = raw.replace(/\D/g, "").slice(0, 8);
     setCepDigits(d);
+    setCepError(null);
     if (d.length === 8) {
       setCepLoading(true);
-      const end = await buscarCep(d);
+      const res = await buscarCep(d);
       setCepLoading(false);
-      if (end) {
-        setEndereco((cur) => {
-          // Se o usuário já digitou número após a rua, preserva; senão substitui
-          if (!cur.trim() || cur.trim().length < end.length) return end + ", ";
-          return cur;
-        });
+      if (res) {
+        setEndereco(composeEnderecoBase(res));
         toast.success("Endereço preenchido pelo CEP.");
-        setTimeout(() => enderecoRef.current?.focus(), 50);
+        setTimeout(() => numeroRef.current?.focus(), 50);
       } else {
-        toast.error("CEP não encontrado.");
+        setCepError("CEP não encontrado. Preencha o endereço manualmente.");
       }
+    } else if (d.length > 0 && d.length < 8) {
+      setCepError(null);
     }
   };
+
 
   const fmtHora = (ts: number) =>
     new Date(ts).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
@@ -1175,34 +1228,44 @@ function PrescricaoForm() {
 
             {especial && (
               <div className="space-y-3 pt-1">
-                <div className="grid gap-3 md:grid-cols-[minmax(0,200px)_minmax(0,1fr)]">
+                <div className="grid gap-3 md:grid-cols-[minmax(0,220px)_minmax(0,200px)_minmax(0,1fr)]">
+                  {/* CPF */}
                   <div className="space-y-1">
                     <label className="text-xs text-muted-foreground">CPF</label>
-                    <input
-                      ref={cpfRef}
-                      value={formatCpf(cpfDigits)}
-                      onChange={(e) =>
-                        setCpfDigits(e.target.value.replace(/\D/g, "").slice(0, 11))
-                      }
-                      onPaste={(e) => {
-                        e.preventDefault();
-                        const text = e.clipboardData
-                          .getData("text")
-                          .replace(/\D/g, "")
-                          .slice(0, 11);
-                        setCpfDigits(text);
-                      }}
-                      autoComplete="off"
-                      inputMode="numeric"
-                      maxLength={14}
-                      placeholder="000.000.000-00"
-                      aria-invalid={!cpfValido}
-                      className={`w-full rounded-xl border bg-background/40 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 ${
-                        cpfValido
-                          ? "border-emerald-500/40 focus:ring-emerald-500/40"
-                          : "border-destructive/50 focus:ring-destructive/40"
-                      }`}
-                    />
+                    <div className="relative">
+                      <input
+                        ref={cpfRef}
+                        value={formatCpf(cpfDigits)}
+                        onChange={(e) =>
+                          setCpfDigits(e.target.value.replace(/\D/g, "").slice(0, 11))
+                        }
+                        onPaste={(e) => {
+                          e.preventDefault();
+                          const text = e.clipboardData
+                            .getData("text")
+                            .replace(/\D/g, "")
+                            .slice(0, 11);
+                          setCpfDigits(text);
+                        }}
+                        autoComplete="off"
+                        inputMode="numeric"
+                        maxLength={14}
+                        placeholder="000.000.000-00"
+                        aria-invalid={!cpfValido}
+                        className={`w-full rounded-xl border bg-background/40 px-3 py-2.5 pr-9 text-sm focus:outline-none focus:ring-2 ${
+                          cpfValido
+                            ? "border-emerald-500/40 focus:ring-emerald-500/40"
+                            : "border-destructive/50 focus:ring-destructive/40"
+                        }`}
+                      />
+                      <span className="absolute right-2.5 top-1/2 -translate-y-1/2">
+                        {cpfValido ? (
+                          <CheckCircle2 className="h-4 w-4 text-emerald-500" />
+                        ) : (
+                          <AlertCircle className="h-4 w-4 text-destructive/70" />
+                        )}
+                      </span>
+                    </div>
                     <p
                       className={`text-[11px] ${cpfValido ? "text-emerald-500" : "text-destructive"}`}
                     >
@@ -1215,49 +1278,133 @@ function PrescricaoForm() {
                             : "Dígito verificador inválido."}
                     </p>
                   </div>
+
+                  {/* CEP */}
                   <div className="space-y-1">
                     <label className="text-xs text-muted-foreground">
-                      CEP (preenche endereço automaticamente)
+                      CEP
                     </label>
-                    <div className="flex gap-2">
+                    <div className="relative">
                       <input
                         value={cepDigits.replace(/(\d{5})(\d)/, "$1-$2")}
                         onChange={(e) => onCepChange(e.target.value)}
                         inputMode="numeric"
                         maxLength={9}
                         placeholder="00000-000"
-                        className="w-32 rounded-xl border border-border bg-background/40 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring/40"
+                        aria-invalid={!!cepError}
+                        className={`w-full rounded-xl border bg-background/40 px-3 py-2.5 pr-9 text-sm focus:outline-none focus:ring-2 ${
+                          cepError
+                            ? "border-destructive/50 focus:ring-destructive/40"
+                            : cepDigits.length === 8 && !cepLoading
+                              ? "border-emerald-500/40 focus:ring-emerald-500/40"
+                              : "border-border focus:ring-ring/40"
+                        }`}
                       />
-                      {cepLoading && (
-                        <span className="text-xs text-muted-foreground self-center">
-                          Buscando…
-                        </span>
-                      )}
+                      <span className="absolute right-2.5 top-1/2 -translate-y-1/2">
+                        {cepLoading ? (
+                          <Loader2 className="h-4 w-4 text-muted-foreground animate-spin" />
+                        ) : cepError ? (
+                          <AlertCircle className="h-4 w-4 text-destructive/70" />
+                        ) : cepDigits.length === 8 ? (
+                          <CheckCircle2 className="h-4 w-4 text-emerald-500" />
+                        ) : null}
+                      </span>
                     </div>
+                    <p
+                      className={`text-[11px] ${
+                        cepError
+                          ? "text-destructive"
+                          : cepDigits.length === 8 && !cepLoading
+                            ? "text-emerald-500"
+                            : "text-muted-foreground"
+                      }`}
+                    >
+                      {cepLoading
+                        ? "Buscando endereço…"
+                        : cepError
+                          ? cepError
+                          : cepDigits.length === 8
+                            ? "Endereço preenchido."
+                            : "Preenche o endereço automaticamente."}
+                    </p>
+                  </div>
+
+                  {/* Número + Complemento */}
+                  <div className="space-y-1">
+                    <label className="text-xs text-muted-foreground">
+                      Número e complemento
+                    </label>
+                    <div className="flex gap-2">
+                      <input
+                        ref={numeroRef}
+                        value={numero}
+                        onChange={(e) => setNumero(e.target.value)}
+                        placeholder="Nº"
+                        inputMode="numeric"
+                        aria-invalid={!numeroValido}
+                        className={`w-20 rounded-xl border bg-background/40 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 ${
+                          numeroValido
+                            ? "border-emerald-500/40 focus:ring-emerald-500/40"
+                            : "border-destructive/50 focus:ring-destructive/40"
+                        }`}
+                      />
+                      <input
+                        value={complemento}
+                        onChange={(e) => setComplemento(e.target.value)}
+                        placeholder="Complemento (opcional) — apto, bloco…"
+                        className="flex-1 rounded-xl border border-border bg-background/40 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring/40"
+                      />
+                    </div>
+                    <p
+                      className={`text-[11px] ${numeroValido ? "text-emerald-500" : "text-destructive"}`}
+                    >
+                      {numeroValido ? "Número informado." : "Informe o número."}
+                    </p>
                   </div>
                 </div>
+
+                {/* Logradouro / bairro / cidade */}
                 <div className="space-y-1">
-                  <label className="text-xs text-muted-foreground">Endereço completo</label>
-                  <input
-                    ref={enderecoRef}
-                    value={endereco}
-                    onChange={(e) => setEndereco(e.target.value)}
-                    placeholder="Rua, número, bairro, cidade/UF"
-                    aria-invalid={!enderecoValido}
-                    className={`w-full rounded-xl border bg-background/40 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 ${
-                      enderecoValido
-                        ? "border-emerald-500/40 focus:ring-emerald-500/40"
-                        : "border-destructive/50 focus:ring-destructive/40"
-                    }`}
-                  />
+                  <label className="text-xs text-muted-foreground">
+                    Rua, bairro, cidade/UF
+                  </label>
+                  <div className="relative">
+                    <input
+                      ref={enderecoRef}
+                      value={endereco}
+                      onChange={(e) => setEndereco(e.target.value)}
+                      placeholder="Ex: Av. Paulista, Bela Vista, São Paulo/SP"
+                      aria-invalid={!enderecoValido}
+                      className={`w-full rounded-xl border bg-background/40 px-3 py-2.5 pr-9 text-sm focus:outline-none focus:ring-2 ${
+                        enderecoValido
+                          ? "border-emerald-500/40 focus:ring-emerald-500/40"
+                          : "border-destructive/50 focus:ring-destructive/40"
+                      }`}
+                    />
+                    <span className="absolute right-2.5 top-1/2 -translate-y-1/2">
+                      {enderecoValido ? (
+                        <CheckCircle2 className="h-4 w-4 text-emerald-500" />
+                      ) : (
+                        <AlertCircle className="h-4 w-4 text-destructive/70" />
+                      )}
+                    </span>
+                  </div>
                   <p
                     className={`text-[11px] ${enderecoValido ? "text-emerald-500" : "text-destructive"}`}
                   >
                     {enderecoValido
-                      ? "Endereço completo."
-                      : "Inclua rua, número, bairro e cidade/UF."}
+                      ? "Endereço válido."
+                      : "Inclua rua, bairro e cidade/UF (preenchido automaticamente pelo CEP)."}
                   </p>
                 </div>
+
+                {/* Preview do endereço completo */}
+                {enderecoFullValido && (
+                  <div className="rounded-lg border border-emerald-500/30 bg-emerald-500/5 px-3 py-2 text-xs text-emerald-700 dark:text-emerald-400">
+                    <span className="font-medium">Endereço completo: </span>
+                    {enderecoCompleto}
+                  </div>
+                )}
               </div>
             )}
           </div>
