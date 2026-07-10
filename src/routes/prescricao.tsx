@@ -1448,43 +1448,31 @@ function PrescricaoForm() {
 
 
             <div className="grid gap-3 md:grid-cols-[minmax(0,1fr)_220px]">
-              <div className="relative">
-                <SearchInput
-                  id="med-search"
-                  ref={searchRef}
-                  value={query}
-                  onChange={(e) => setQuery(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (editing) return;
-                    if (e.key === "ArrowDown") {
-                      e.preventDefault();
-                      setHighlight((h) => Math.min(h + 1, resultados.length - 1));
-                    } else if (e.key === "ArrowUp") {
-                      e.preventDefault();
-                      setHighlight((h) => Math.max(h - 1, 0));
-                    } else if (e.key === "Enter" && resultados[highlight]) {
-                      e.preventDefault();
-                      setEditing(resultados[highlight]);
-                    } else if (e.key === "Escape") {
-                      setQuery("");
-                    }
-                  }}
-                  placeholder='Nome comercial ou princípio ativo…  (tecle "/" para focar)'
-                  className="pr-16"
-                />
-                <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1">
-                  {!query && <Kbd>/</Kbd>}
-                  {query && (
-                    <button
-                      onClick={() => setQuery("")}
-                      aria-label="Limpar busca"
-                      className="text-muted-foreground hover:text-foreground p-1"
-                    >
-                      <X className="h-4 w-4" />
-                    </button>
-                  )}
-                </div>
-              </div>
+              <SearchInput
+                id="med-search"
+                ref={searchRef}
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                onKeyDown={(e) => {
+                  if (editing) return;
+                  if (e.key === "ArrowDown") {
+                    e.preventDefault();
+                    setHighlight((h) => Math.min(h + 1, resultados.length - 1));
+                  } else if (e.key === "ArrowUp") {
+                    e.preventDefault();
+                    setHighlight((h) => Math.max(h - 1, 0));
+                  } else if (e.key === "Enter" && resultados[highlight]) {
+                    e.preventDefault();
+                    setEditing(resultados[highlight]);
+                  } else if (e.key === "Escape") {
+                    setQuery("");
+                  }
+                }}
+                placeholder='Nome comercial ou princípio ativo…  (tecle "/" para focar)'
+                clearable
+                onClear={() => setQuery("")}
+                rightSlot={!query ? <Kbd>/</Kbd> : undefined}
+              />
 
               <MultiSelect
                 options={TIPOS.map((t) => ({ value: t, label: t }))}
@@ -1498,6 +1486,7 @@ function PrescricaoForm() {
               />
 
             </div>
+
 
             {!editing && resultados.length > 0 && (
               <div className="rounded-xl border border-border bg-background/40 divide-y divide-border max-h-[420px] overflow-y-auto">
