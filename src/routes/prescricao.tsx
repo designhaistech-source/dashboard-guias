@@ -1045,7 +1045,7 @@ function PrescricaoForm() {
         imprimir();
       } else if (meta && e.key.toLowerCase() === "s") {
         e.preventDefault();
-        salvarKit();
+        abrirSalvarKit();
       } else if (e.key === "/" && !digitando) {
         e.preventDefault();
         searchRef.current?.focus();
@@ -1704,7 +1704,7 @@ function PrescricaoForm() {
                   Baixar PDF
                 </ActionBtn>
                 <ActionBtn
-                  onClick={salvarKit}
+                  onClick={abrirSalvarKit}
                   icon={<Save className="h-4 w-4" />}
                   title="Ctrl+S"
                 >
