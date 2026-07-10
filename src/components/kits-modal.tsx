@@ -15,6 +15,13 @@ import {
 
 import { toast } from "sonner";
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
   type Kit,
   loadKits,
   deleteKit,
