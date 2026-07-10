@@ -1333,19 +1333,13 @@ function EmitirPage() {
                 Preenche automaticamente o campo <span className="font-medium">Estabelecimento</span> nas guias SUS.
               </p>
             </div>
-            <div className="space-y-1.5">
-              <Label>UF</Label>
-              <Select value={prefUf} onValueChange={setPrefUf}>
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {["AC","AL","AP","AM","BA","CE","DF","ES","GO","MA","MT","MS","MG","PA","PB","PR","PE","PI","RJ","RN","RS","RO","RR","SC","SP","SE","TO"].map((uf) => (
-                    <SelectItem key={uf} value={uf}>{uf}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+            <SelectField
+              label="UF"
+              value={prefUf}
+              onValueChange={setPrefUf}
+              options={["AC","AL","AP","AM","BA","CE","DF","ES","GO","MA","MT","MS","MG","PA","PB","PR","PE","PI","RJ","RN","RS","RO","RR","SC","SP","SE","TO"].map((uf) => ({ value: uf, label: uf }))}
+            />
+
             <div className="rounded-md border border-primary/30 bg-primary/5 text-primary text-xs px-3 py-2 flex gap-2">
               <Info className="h-4 w-4 shrink-0 mt-0.5" />
               <span>
