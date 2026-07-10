@@ -695,8 +695,11 @@ function PrescricaoForm() {
 
   const cpfValido = isCpfValid(cpfDigits);
   const enderecoValido = isEnderecoCompleto(endereco);
+  const numeroValido = numero.trim().length > 0;
+  const enderecoFullValido = enderecoValido && numeroValido;
+  const enderecoCompleto = enderecoCompletoStr(endereco, numero, complemento);
   const especialInvalido =
-    especial && (!cpfValido || !enderecoValido);
+    especial && (!cpfValido || !enderecoFullValido);
   const posologiasInvalidas = itens
     .map((it, i) => ({ i, med: it.med, check: checkPosologia(it.posologia) }))
     .filter((x) => !x.check.ok);
