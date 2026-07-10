@@ -105,45 +105,120 @@ export function Field({
 interface SearchInputProps
   extends Omit<React.ComponentProps<typeof Input>, "type"> {
   leftIcon?: React.ReactNode;
+  /** Ações renderizadas à direita (kbd hint, botão limpar custom, etc.). */
+  rightSlot?: React.ReactNode;
+  /** Mostra botão de limpar quando há valor. Chama onClear (ou dispara onChange com string vazia). */
+  clearable?: boolean;
+  onClear?: () => void;
+  /** Mostra spinner à direita. */
+  loading?: boolean;
 }
 
 /**
  * Input de busca padronizado com ícone à esquerda.
  * Usa <Input> por baixo, então herda todos os estados (focus, erro, disabled).
+ * Suporta `clearable`, `loading` e `rightSlot` para conteúdo customizado (ex.: Kbd).
  */
 export const SearchInput = React.forwardRef<HTMLInputElement, SearchInputProps>(
-  ({ className, leftIcon, ...props }, ref) => {
+  (
+    { className, leftIcon, rightSlot, clearable, onClear, loading, onChange, value, ...props },
+    ref,
+  ) => {
+    const hasValue = value !== undefined && value !== null && String(value).length > 0;
+    const showClear = clearable && hasValue && !loading;
+    const showRight = loading || showClear || rightSlot;
+
     return (
       <div className="relative w-full">
         <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
-          {leftIcon ?? <SearchIcon />}
+          {leftIcon ?? <SearchLucide className="h-4 w-4" aria-hidden />}
         </span>
         <Input
           ref={ref}
           type="search"
-          className={cn("pl-9", className)}
+          value={value}
+          onChange={onChange}
+          className={cn("pl-9", showRight && "pr-9", className)}
           {...props}
         />
+        {showRight && (
+          <div className="absolute right-1.5 top-1/2 -translate-y-1/2 flex items-center gap-1">
+            {loading && (
+              <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" aria-hidden />
+            )}
+            {showClear && (
+              <button
+                type="button"
+                onClick={() => {
+                  onClear?.();
+                  if (!onClear && onChange) {
+                    onChange({
+                      target: { value: "" },
+                      currentTarget: { value: "" },
+                    } as unknown as React.ChangeEvent<HTMLInputElement>);
+                  }
+                }}
+                aria-label="Limpar busca"
+                className="inline-flex h-6 w-6 items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              >
+                <X className="h-3.5 w-3.5" />
+              </button>
+            )}
+            {rightSlot}
+          </div>
+        )}
       </div>
     );
   },
 );
 SearchInput.displayName = "SearchInput";
 
-function SearchIcon() {
-  return (
-    <svg
-      className="h-4 w-4"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden
-    >
-      <circle cx="11" cy="11" r="7" />
-      <path d="m20 20-3.5-3.5" />
-    </svg>
-  );
+/* ---------------- SearchField ---------------- */
+
+interface SearchFieldProps extends SearchInputProps {
+  label?: React.ReactNode;
+  required?: boolean;
+  optional?: boolean;
+  hint?: React.ReactNode;
+  error?: React.ReactNode;
+  fieldClassName?: string;
+  labelClassName?: string;
 }
+
+/**
+ * Campo de busca unificado: label + SearchInput + hint/erro.
+ * Padroniza `SearchInput` em toda a aplicação com os mesmos estados que `Field`.
+ */
+export const SearchField = React.forwardRef<HTMLInputElement, SearchFieldProps>(
+  (
+    {
+      id,
+      label,
+      required,
+      optional,
+      hint,
+      error,
+      fieldClassName,
+      labelClassName,
+      ...inputProps
+    },
+    ref,
+  ) => {
+    return (
+      <Field
+        id={id}
+        label={label}
+        required={required}
+        optional={optional}
+        hint={hint}
+        error={error}
+        className={fieldClassName}
+        labelClassName={labelClassName}
+      >
+        <SearchInput ref={ref} id={id} {...inputProps} />
+      </Field>
+    );
+  },
+);
+SearchField.displayName = "SearchField";
+
