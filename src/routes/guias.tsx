@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useRef, useState } from "react";
+import { useRef, useState, type ChangeEvent } from "react";
 import {
   Upload,
   FileUp,
@@ -1021,7 +1021,7 @@ function RequiredFieldsModal() {
                       <SearchInput
                         autoFocus
                         value={fieldSearch}
-                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFieldSearch(e.target.value)}
+                        onChange={(e: ChangeEvent<HTMLInputElement>) => setFieldSearch(e.target.value)}
                         placeholder="Buscar campo…"
                         className="border-0 shadow-none focus-visible:ring-0"
                       />
