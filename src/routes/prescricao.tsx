@@ -1596,64 +1596,8 @@ function PrescricaoForm() {
             )}
           </div>
 
-          {/* Lista compacta de itens adicionados */}
-          {itens.length > 0 && (
-            <div className="rounded-2xl border border-border bg-card p-4">
-              <div className="flex items-center justify-between mb-3">
-                <div>
-                  <h2 className="text-base font-semibold">Resumo da receita</h2>
-                  <p className="text-xs text-muted-foreground mt-0.5">
-                    {itens.length}{" "}
-                    {itens.length > 1 ? "medicamentos adicionados" : "medicamento adicionado"}
-                  </p>
-                </div>
-                <div className="flex items-center gap-3">
-                  <button
-                    onClick={abrirSalvarKit}
-                    className="inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1.5 rounded-lg border border-border hover:bg-muted transition-colors"
-                    title="Salvar estes medicamentos como um kit reutilizável (Ctrl+S)"
-                  >
-                    <Save className="h-3.5 w-3.5" />
-                    Salvar como kit
-                  </button>
-                  <button
-                    onClick={() => setItens([])}
-                    className="text-xs text-destructive hover:underline"
-                  >
-                    Limpar
-                  </button>
-                </div>
-              </div>
 
-              <ul className="space-y-1.5">
-                {itens.map((it, i) => {
-                  const c = checkPosologia(it.posologia);
-                  return (
-                    <li
-                      key={i}
-                      className="flex items-center gap-2 text-sm py-1.5 border-t border-border/60 first:border-0"
-                    >
-                      <span className="text-muted-foreground w-4 text-right">
-                        {i + 1}.
-                      </span>
-                      <span
-                        className={`h-1.5 w-1.5 rounded-full shrink-0 ${c.ok ? "bg-emerald-500" : "bg-destructive"}`}
-                        title={c.ok ? "Posologia ok" : c.mensagem}
-                      />
-                      <span className="flex-1 truncate">{it.med.nome}</span>
-                      <button
-                        onClick={() => removeItem(i)}
-                        className="text-muted-foreground hover:text-destructive"
-                        aria-label="Remover"
-                      >
-                        <X className="h-3.5 w-3.5" />
-                      </button>
-                    </li>
-                  );
-                })}
-              </ul>
-            </div>
-          )}
+
 
       </section>
 
