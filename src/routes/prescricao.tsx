@@ -494,7 +494,8 @@ function PrescricaoForm() {
   const [complemento, setComplemento] = useState("");
   const [query, setQuery] = useState("");
   const [tipos, setTipos] = useState<Set<MedType>>(
-    new Set(["Genérico", "Referência", "Específico"]),
+    new Set(TIPOS),
+
   );
   const [itens, setItens] = useState<ItemReceita[]>([]);
   // Tipo de receituário deduzido automaticamente pelos itens (não é escolha do usuário).
