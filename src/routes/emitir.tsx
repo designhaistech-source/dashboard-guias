@@ -667,20 +667,15 @@ function EmitirPage() {
                         placeholder="000000"
                       />
                     </Field>
-                    <Field label="Caráter do atendimento" required>
-                      <Select value={character} onValueChange={setCharacter}>
-                        <SelectTrigger>
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {CHARACTER_OPTIONS.map((c) => (
-                            <SelectItem key={c} value={c}>
-                              {c}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </Field>
+                    <SelectField
+                      label="Caráter do atendimento"
+                      required
+                      labelClassName="text-xs font-medium text-muted-foreground"
+                      value={character}
+                      onValueChange={setCharacter}
+                      options={CHARACTER_OPTIONS.map((c) => ({ value: c, label: c }))}
+                    />
+
                     <Field label="Data da solicitação">
                       <Input
                         type="date"
