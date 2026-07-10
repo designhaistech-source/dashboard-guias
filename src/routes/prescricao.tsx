@@ -1350,11 +1350,13 @@ function PrescricaoForm() {
                         onChange={(e) => setNumero(e.target.value)}
                         placeholder="Nº"
                         inputMode="numeric"
-                        aria-invalid={!numeroValido}
+                        aria-invalid={numero.length > 0 && !numeroValido}
                         className={`w-20 rounded-xl border bg-background/40 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 ${
                           numeroValido
                             ? "border-emerald-500/40 focus:ring-emerald-500/40"
-                            : "border-destructive/50 focus:ring-destructive/40"
+                            : numero.length === 0
+                              ? "border-border focus:ring-ring/40"
+                              : "border-destructive/50 focus:ring-destructive/40"
                         }`}
                       />
                       <input
@@ -1365,7 +1367,7 @@ function PrescricaoForm() {
                       />
                     </div>
                     <p
-                      className={`text-[11px] ${numeroValido ? "text-emerald-500" : "text-destructive"}`}
+                      className={`text-[11px] ${numeroValido ? "text-emerald-500" : numero.length === 0 ? "text-muted-foreground" : "text-destructive"}`}
                     >
                       {numeroValido ? "Número informado." : "Informe o número."}
                     </p>
