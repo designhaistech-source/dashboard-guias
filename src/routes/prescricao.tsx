@@ -826,121 +826,6 @@ function PrescricaoForm() {
   const baixarPdf = () => {
     if (!validarEmissao()) return;
 
-
-
-    const doc = new jsPDF({ unit: "mm", format: "a4" });
-    const pageW = doc.internal.pageSize.getWidth();
-    const pageH = doc.internal.pageSize.getHeight();
-    const margin = 15;
-    const maxW = pageW - margin * 2;
-    let y = margin;
-
-    // Tarja vermelha para receita especial
-    if (especial) {
-      doc.setFillColor(220, 38, 38);
-      doc.rect(0, 0, pageW, 6, "F");
-      y = 14;
-    }
-
-    // Cabeçalho
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(14);
-    doc.setTextColor(20, 20, 20);
-    doc.text(
-      especial ? "RECEITUÁRIO DE CONTROLE ESPECIAL" : "PRESCRIÇÃO MÉDICA",
-      pageW / 2,
-      y,
-      { align: "center" },
-    );
-    y += 8;
-
-    doc.setDrawColor(200);
-    doc.line(margin, y, pageW - margin, y);
-    y += 6;
-
-    // Paciente
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(10);
-    doc.text("Paciente:", margin, y);
-    doc.setFont("helvetica", "normal");
-    doc.text(paciente.trim(), margin + 22, y);
-    y += 6;
-
-    if (especial) {
-      doc.setFont("helvetica", "bold");
-      doc.text("CPF:", margin, y);
-      doc.setFont("helvetica", "normal");
-      doc.text(formatCpf(cpfDigits), margin + 22, y);
-      y += 6;
-
-      doc.setFont("helvetica", "bold");
-      doc.text("Endereço:", margin, y);
-      doc.setFont("helvetica", "normal");
-      const endLines = doc.splitTextToSize(enderecoCompleto.trim(), maxW - 22);
-      doc.text(endLines, margin + 22, y);
-      y += endLines.length * 5 + 2;
-    }
-
-    y += 2;
-    doc.line(margin, y, pageW - margin, y);
-    y += 6;
-
-    // Itens
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(11);
-    doc.text("Medicamentos", margin, y);
-    y += 6;
-
-    itens.forEach((it, idx) => {
-      const bloco: string[] = [];
-      bloco.push(`${idx + 1}. ${it.med.nome}`);
-      if (it.med.forma) bloco.push(`   ${it.med.forma}`);
-      if (it.med.principios) bloco.push(`   Princípio ativo: ${it.med.principios}`);
-      const posLinhas = it.posologia.trim()
-        ? doc.splitTextToSize(`   Posologia: ${it.posologia.trim()}`, maxW)
-        : ["   Posologia: —"];
-
-      doc.setFont("helvetica", "bold");
-      doc.setFontSize(10);
-      const wrapped: string[] = [];
-      bloco.forEach((line) => {
-        wrapped.push(...doc.splitTextToSize(line, maxW));
-      });
-
-      // Estimativa de altura para nova página
-      const alturaEstim = (wrapped.length + posLinhas.length) * 5 + 4;
-      if (y + alturaEstim > pageH - margin - 30) {
-        doc.addPage();
-        y = margin;
-      }
-
-      doc.setFont("helvetica", "bold");
-      doc.text(wrapped[0], margin, y);
-      y += 5;
-      doc.setFont("helvetica", "normal");
-      for (let i = 1; i < wrapped.length; i++) {
-        doc.text(wrapped[i], margin, y);
-        y += 5;
-      }
-      doc.text(posLinhas, margin, y);
-      y += posLinhas.length * 5 + 3;
-    });
-
-    // Assinatura
-    const assY = Math.max(y + 20, pageH - margin - 25);
-    doc.setDrawColor(120);
-    doc.line(margin + 30, assY, pageW - margin - 30, assY);
-    doc.setFont("helvetica", "normal");
-    doc.setFontSize(9);
-    doc.text("Assinatura e carimbo do médico", pageW / 2, assY + 5, {
-      align: "center",
-    });
-
-    const dataEmissao = new Date().toLocaleDateString("pt-BR");
-    doc.text(`Emitido em ${dataEmissao}`, pageW - margin, pageH - margin, {
-      align: "right",
-    });
-
     const slugPaciente = paciente
       .trim()
       .toLowerCase()
@@ -948,13 +833,135 @@ function PrescricaoForm() {
       .replace(/[\u0300-\u036f]/g, "")
       .replace(/[^a-z0-9]+/g, "-")
       .replace(/(^-|-$)/g, "");
-    const nome = `${especial ? "receita-especial" : "prescricao"}-${slugPaciente || "paciente"}.pdf`;
-    doc.save(nome);
+
+    // Um documento por tipo detectado nos itens
+    const grupos: Array<{ tipo: "comum" | "especial"; itens: ItemReceita[] }> = [];
+    if (hasComum) grupos.push({ tipo: "comum", itens: itensComuns });
+    if (hasControlado) grupos.push({ tipo: "especial", itens: itensControlados });
+
+    grupos.forEach((grupo) => {
+      const isEspecial = grupo.tipo === "especial";
+      const doc = new jsPDF({ unit: "mm", format: "a4" });
+      const pageW = doc.internal.pageSize.getWidth();
+      const pageH = doc.internal.pageSize.getHeight();
+      const margin = 15;
+      const maxW = pageW - margin * 2;
+      let y = margin;
+
+      if (isEspecial) {
+        doc.setFillColor(220, 38, 38);
+        doc.rect(0, 0, pageW, 6, "F");
+        y = 14;
+      }
+
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(14);
+      doc.setTextColor(20, 20, 20);
+      doc.text(
+        isEspecial ? "RECEITUÁRIO DE CONTROLE ESPECIAL" : "PRESCRIÇÃO MÉDICA",
+        pageW / 2,
+        y,
+        { align: "center" },
+      );
+      y += 8;
+
+      doc.setDrawColor(200);
+      doc.line(margin, y, pageW - margin, y);
+      y += 6;
+
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(10);
+      doc.text("Paciente:", margin, y);
+      doc.setFont("helvetica", "normal");
+      doc.text(paciente.trim(), margin + 22, y);
+      y += 6;
+
+      if (isEspecial) {
+        doc.setFont("helvetica", "bold");
+        doc.text("CPF:", margin, y);
+        doc.setFont("helvetica", "normal");
+        doc.text(formatCpf(cpfDigits), margin + 22, y);
+        y += 6;
+
+        doc.setFont("helvetica", "bold");
+        doc.text("Endereço:", margin, y);
+        doc.setFont("helvetica", "normal");
+        const endLines = doc.splitTextToSize(enderecoCompleto.trim(), maxW - 22);
+        doc.text(endLines, margin + 22, y);
+        y += endLines.length * 5 + 2;
+      }
+
+      y += 2;
+      doc.line(margin, y, pageW - margin, y);
+      y += 6;
+
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(11);
+      doc.text("Medicamentos", margin, y);
+      y += 6;
+
+      grupo.itens.forEach((it, idx) => {
+        const bloco: string[] = [];
+        bloco.push(`${idx + 1}. ${it.med.nome}`);
+        if (it.med.forma) bloco.push(`   ${it.med.forma}`);
+        if (it.med.principios) bloco.push(`   Princípio ativo: ${it.med.principios}`);
+        const posLinhas = it.posologia.trim()
+          ? doc.splitTextToSize(`   Posologia: ${it.posologia.trim()}`, maxW)
+          : ["   Posologia: —"];
+
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(10);
+        const wrapped: string[] = [];
+        bloco.forEach((line) => {
+          wrapped.push(...doc.splitTextToSize(line, maxW));
+        });
+
+        const alturaEstim = (wrapped.length + posLinhas.length) * 5 + 4;
+        if (y + alturaEstim > pageH - margin - 30) {
+          doc.addPage();
+          y = margin;
+        }
+
+        doc.setFont("helvetica", "bold");
+        doc.text(wrapped[0], margin, y);
+        y += 5;
+        doc.setFont("helvetica", "normal");
+        for (let i = 1; i < wrapped.length; i++) {
+          doc.text(wrapped[i], margin, y);
+          y += 5;
+        }
+        doc.text(posLinhas, margin, y);
+        y += posLinhas.length * 5 + 3;
+      });
+
+      const assY = Math.max(y + 20, pageH - margin - 25);
+      doc.setDrawColor(120);
+      doc.line(margin + 30, assY, pageW - margin - 30, assY);
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(9);
+      doc.text("Assinatura e carimbo do médico", pageW / 2, assY + 5, {
+        align: "center",
+      });
+
+      const dataEmissao = new Date().toLocaleDateString("pt-BR");
+      doc.text(`Emitido em ${dataEmissao}`, pageW - margin, pageH - margin, {
+        align: "right",
+      });
+
+      const nome = `${isEspecial ? "receita-especial" : "prescricao"}-${slugPaciente || "paciente"}.pdf`;
+      doc.save(nome);
+    });
+
     pushRecente(LS_PACIENTES, paciente);
     setPacientesRecentes(loadRecentes(LS_PACIENTES));
     registrarHistorico("pdf");
-    toast.success("PDF gerado.");
+    toast.success(
+      grupos.length > 1
+        ? `${grupos.length} documentos gerados (comum + controle especial).`
+        : "PDF gerado.",
+    );
   };
+
 
   const [kitDialogOpen, setKitDialogOpen] = useState(false);
   const [kitNome, setKitNome] = useState("");
