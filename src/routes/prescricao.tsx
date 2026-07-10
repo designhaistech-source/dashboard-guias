@@ -472,7 +472,7 @@ function PrescricaoPage() {
 
 function Header() {
   return (
-    <div className="rounded-2xl border border-border bg-card px-6 py-5 flex items-center justify-between">
+    <div className="rounded-2xl border border-border bg-card shadow-xs px-6 py-5 flex items-center justify-between">
       <div className="flex items-center gap-4">
         <div className="grid place-items-center h-12 w-12 rounded-xl bg-primary/15 text-primary">
           <Pill className="h-6 w-6" />
@@ -1391,7 +1391,7 @@ function PrescricaoForm() {
       {/* Seção 2 — Medicamentos */}
       <section id="sec-medicamentos" className="scroll-mt-4 space-y-5">
 
-          <div className="rounded-2xl border border-border bg-card p-5 space-y-4">
+          <div className="rounded-2xl border border-border bg-card shadow-xs p-5 space-y-4">
             <div>
               <h2 className="text-base font-semibold">Buscar e adicionar medicamentos</h2>
               <p className="text-xs text-muted-foreground">
@@ -1606,7 +1606,7 @@ function PrescricaoForm() {
 
         <div
           ref={receitaRef}
-          className="rounded-2xl border border-border bg-card"
+          className="rounded-2xl border border-border bg-card shadow-xs"
         >
           <div className="p-5 space-y-4">
             <div className="flex flex-wrap items-start justify-between gap-3">
@@ -2511,7 +2511,7 @@ function HistoricoPanel({
       minute: "2-digit",
     });
   return (
-    <div className="rounded-2xl border border-border bg-card p-5 space-y-3">
+    <div className="rounded-2xl border border-border bg-card shadow-xs p-5 space-y-3">
       <div className="flex items-center justify-between gap-3">
         <div className="flex items-center gap-2">
           <History className="h-4 w-4 text-primary" />

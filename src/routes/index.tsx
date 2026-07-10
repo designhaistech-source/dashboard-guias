@@ -30,6 +30,7 @@ import {
 import { AppSidebar } from "@/components/app-sidebar";
 import { SiteFooter } from "@/components/site-footer";
 import { PageHeader } from "@/components/page-header";
+import { SurfaceCard } from "@/components/surface-card";
 import { Button } from "@/components/ui/button";
 import logoAsset from "@/assets/haisguias-logo.png.asset.json";
 import { toast } from "sonner";
@@ -848,7 +849,7 @@ function DashboardPage() {
               id="dashboard-filters-panel"
               role="region"
               aria-label="Filtros do dashboard"
-              className="rounded-2xl border border-border bg-card p-6 space-y-5"
+              className="rounded-2xl border border-border bg-card shadow-xs p-6 space-y-5"
             >
               <div className="flex items-start justify-between gap-4">
                 <div>
@@ -958,7 +959,7 @@ function DashboardPage() {
 
           {/* Charts row */}
           <div className="grid gap-4 grid-cols-1 lg:grid-cols-3">
-            <div className="lg:col-span-2 rounded-2xl border border-border bg-card p-6">
+            <SurfaceCard className="lg:col-span-2">
               <div className="mb-4 flex items-start justify-between gap-4">
                 <div>
                   <h3 className="font-semibold">Guias extraídas por dia</h3>
@@ -1001,9 +1002,10 @@ function DashboardPage() {
                   </AreaChart>
                 </ResponsiveContainer>
               </div>
-            </div>
+            </SurfaceCard>
 
-            <div className="rounded-2xl border border-border bg-card p-6">
+            <SurfaceCard>
+
               <div className="mb-4">
                 <h3 className="font-semibold">Por tipo de guia</h3>
                 <p className="text-xs text-muted-foreground">Distribuição no período</p>
@@ -1077,11 +1079,12 @@ function DashboardPage() {
                   })}
                 </ul>
               </div>
-            </div>
+            </SurfaceCard>
           </div>
 
           {/* Procedures */}
-          <div className="rounded-2xl border border-border bg-card p-6">
+          <SurfaceCard>
+
             <div className="flex items-center justify-between mb-4">
               <div>
                 <h3 className="font-semibold">Procedimentos mais realizados</h3>
@@ -1149,7 +1152,8 @@ function DashboardPage() {
                 </table>
               </div>
             </div>
-          </div>
+          </SurfaceCard>
+
         </div>
         <SiteFooter />
       </main>
@@ -1212,7 +1216,7 @@ function Kpi({
   }[tone];
 
   return (
-    <div className="group relative overflow-hidden rounded-2xl border border-border bg-card p-5 transition-shadow hover:shadow-sm">
+    <div className="group relative overflow-hidden rounded-2xl border border-border bg-card shadow-xs p-5 transition-shadow hover:shadow-sm">
       <div className="flex items-center justify-between">
         <span className="text-sm text-muted-foreground">{label}</span>
         <span className={`grid place-items-center h-8 w-8 rounded-lg ${toneClass}`}>
