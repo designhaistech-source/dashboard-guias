@@ -895,9 +895,6 @@ function RequiredFieldsModal() {
     setPickerSelection([]);
   };
 
-  const togglePick = (f: string) => {
-    setPickerSelection((prev) => (prev.includes(f) ? prev.filter((x) => x !== f) : [...prev, f]));
-  };
 
   const removeField = (f: string) => {
     setDraft((prev) => ({ ...prev, [guideType]: prev[guideType].filter((x) => x !== f) }));
