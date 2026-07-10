@@ -758,14 +758,6 @@ function Td({ children, className = "" }: { children: React.ReactNode; className
   return <td className={`px-6 py-4 align-middle ${className}`}>{children}</td>;
 }
 
-function FilterSelect({ label }: { label: string }) {
-  return (
-    <button className="inline-flex items-center justify-between gap-3 rounded-lg border border-border bg-card px-3 py-2 text-sm min-w-[160px]">
-      <span className="text-muted-foreground">{label}</span>
-      <ChevronDown className="h-4 w-4 text-muted-foreground" />
-    </button>
-  );
-}
 
 function DateField({ label }: { label: string }) {
   return (
