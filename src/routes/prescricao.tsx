@@ -861,7 +861,7 @@ function PrescricaoForm() {
       doc.setFont("helvetica", "bold");
       doc.text("Endereço:", margin, y);
       doc.setFont("helvetica", "normal");
-      const endLines = doc.splitTextToSize(endereco.trim(), maxW - 22);
+      const endLines = doc.splitTextToSize(enderecoCompleto.trim(), maxW - 22);
       doc.text(endLines, margin + 22, y);
       y += endLines.length * 5 + 2;
     }
