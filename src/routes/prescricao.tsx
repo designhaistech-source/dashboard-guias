@@ -585,6 +585,9 @@ function PrescricaoForm() {
     setCpfDigits("");
     setCepDigits("");
     setEndereco("");
+    setNumero("");
+    setComplemento("");
+    setCepError(null);
     setItens([]);
     setEspecial(false);
     setTipos(new Set(["Genérico", "Referência", "Específico"]));
