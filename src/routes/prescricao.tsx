@@ -328,6 +328,8 @@ type Rascunho = {
   cpfDigits: string;
   cepDigits: string;
   endereco: string;
+  numero?: string;
+  complemento?: string;
   itens: ItemReceita[];
   especial: boolean;
   tipos: MedType[];
@@ -342,6 +344,8 @@ type Historico = {
   cpfDigits: string;
   cepDigits: string;
   endereco: string;
+  numero?: string;
+  complemento?: string;
   itens: ItemReceita[];
   especial: boolean;
   tipos: MedType[];
