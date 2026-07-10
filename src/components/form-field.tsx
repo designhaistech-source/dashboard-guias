@@ -4,6 +4,14 @@ import { AlertCircle, Loader2, Search as SearchLucide, X } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+
 
 /* ---------------- Field ---------------- */
 
