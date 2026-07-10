@@ -1074,8 +1074,20 @@ function PrescricaoForm() {
       const nome = `${isEspecial ? "receita-especial" : "prescricao"}-${slugPaciente || "paciente"}.pdf`;
       if (emitir) {
         doc.autoPrint();
-        const url = doc.output("bloburl");
-        window.open(url, "_blank");
+        const blobUrl = doc.output("bloburl");
+        let iframe = document.getElementById("print-frame") as HTMLIFrameElement | null;
+        if (!iframe) {
+          iframe = document.createElement("iframe");
+          iframe.id = "print-frame";
+          iframe.style.position = "fixed";
+          iframe.style.right = "0";
+          iframe.style.bottom = "0";
+          iframe.style.width = "0";
+          iframe.style.height = "0";
+          iframe.style.border = "0";
+          document.body.appendChild(iframe);
+        }
+        iframe.src = blobUrl.toString();
       } else {
         doc.save(nome);
       }
