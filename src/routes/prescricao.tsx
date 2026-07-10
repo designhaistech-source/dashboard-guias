@@ -513,6 +513,7 @@ function PrescricaoForm() {
   const setEspecial = (_: boolean) => {}; // no-op: derivado dos itens
   const [editing, setEditing] = useState<Medicamento | null>(null);
   const [tipoBusca, setTipoBusca] = useState<"comum" | "controlado" | null>("comum");
+  const mostrarCamposEspeciais = hasControlado || tipoBusca === "controlado";
   const [highlight, setHighlight] = useState(0);
   const [pacientesRecentes, setPacientesRecentes] = useState<string[]>([]);
   const [medsRecentes, setMedsRecentes] = useState<string[]>([]);
@@ -1801,7 +1802,7 @@ function PrescricaoForm() {
                 </div>
               )}
 
-              {hasControlado && (
+              {mostrarCamposEspeciais && (
                 <div className="space-y-3 pt-1">
                   <div className="grid gap-3 md:grid-cols-[minmax(0,220px)_minmax(0,200px)_minmax(0,1fr)]">
                     {/* CPF */}
