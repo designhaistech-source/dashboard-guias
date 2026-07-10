@@ -503,6 +503,7 @@ function PrescricaoForm() {
   const searchRef = useRef<HTMLInputElement>(null);
   const cpfRef = useRef<HTMLInputElement>(null);
   const enderecoRef = useRef<HTMLInputElement>(null);
+  const numeroRef = useRef<HTMLInputElement>(null);
   const receitaRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
