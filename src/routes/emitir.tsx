@@ -45,7 +45,6 @@ import {
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { EmptyState } from "@/components/data-state";
-import { Package } from "lucide-react";
 import { Shield, Landmark, ArrowUp, Stethoscope as StethIcon, BedDouble, HeartPulse, Hospital, Check, ChevronRight } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
