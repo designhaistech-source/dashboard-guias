@@ -522,6 +522,8 @@ function PrescricaoForm() {
         setCpfDigits(d.cpfDigits || "");
         setCepDigits(d.cepDigits || "");
         setEndereco(d.endereco || "");
+        setNumero(d.numero || "");
+        setComplemento(d.complemento || "");
         setItens(Array.isArray(d.itens) ? d.itens : []);
         setEspecial(!!d.especial);
         if (Array.isArray(d.tipos) && d.tipos.length > 0) setTipos(new Set(d.tipos));
