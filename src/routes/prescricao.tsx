@@ -498,6 +498,7 @@ function PrescricaoForm() {
   const [kitsAberto, setKitsAberto] = useState(false);
   const hidratado = useRef(false);
   const [step, setStep] = useState<1 | 2 | 3>(1);
+  const [triedEmit, setTriedEmit] = useState(false);
 
   const pacienteRef = useRef<HTMLInputElement>(null);
   const searchRef = useRef<HTMLInputElement>(null);
