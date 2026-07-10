@@ -609,7 +609,7 @@ function PrescricaoForm() {
     setCepError(null);
     setItens([]);
     setEspecial(false);
-    setTipos(new Set(["Genérico", "Referência", "Específico"]));
+    setTipos(new Set(TIPOS));
     setRascunhoRestaurado(null);
     setSavedAt(null);
     toast.success("Rascunho descartado.");
