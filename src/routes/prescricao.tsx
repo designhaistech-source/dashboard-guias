@@ -1403,45 +1403,39 @@ function PrescricaoForm() {
               <span className="block text-[11px] uppercase tracking-wide text-muted-foreground mb-2">
                 Tipo do medicamento
               </span>
-              <div className="inline-flex rounded-xl border border-border bg-background/40 p-1">
-                {([
-                  { id: "comum", label: "Comum" },
-                  { id: "controlado", label: "Controlado" },
-                ] as const).map((opt) => {
-                  const active = tipoBusca === opt.id;
-                  return (
-                    <button
-                      key={opt.id}
-                      type="button"
-                      onClick={() => {
-                        setTipoBusca(opt.id);
-                        setQuery("");
-                        setEditing(null);
-                        setTimeout(() => searchRef.current?.focus(), 0);
-                      }}
-                      aria-pressed={active}
-                      className={`px-4 py-1.5 rounded-lg text-sm transition ${
-                        active
-                          ? opt.id === "controlado"
-                            ? "bg-amber-500/15 text-amber-700 dark:text-amber-300 font-medium"
-                            : "bg-primary text-primary-foreground font-medium"
-                          : "text-muted-foreground hover:text-foreground"
-                      }`}
-                    >
-                      {opt.id === "controlado" && (
-                        <ShieldAlert className="inline h-3.5 w-3.5 mr-1.5 -mt-0.5" />
-                      )}
-                      {opt.label}
-                    </button>
-                  );
-                })}
-              </div>
+              <Tabs
+                value={tipoBusca ?? undefined}
+                onValueChange={(v) => {
+                  setTipoBusca(v as "comum" | "controlado");
+                  setQuery("");
+                  setEditing(null);
+                  setTimeout(() => searchRef.current?.focus(), 0);
+                }}
+              >
+                <TabsList className="w-full h-auto p-1 bg-muted/60 grid grid-cols-2 gap-1">
+                  <TabsTrigger
+                    value="comum"
+                    className="flex items-center gap-2 py-2.5 data-[state=active]:bg-background data-[state=active]:shadow-sm"
+                  >
+                    <Shield className="h-4 w-4" />
+                    <span className="font-medium">Comum</span>
+                  </TabsTrigger>
+                  <TabsTrigger
+                    value="controlado"
+                    className="flex items-center gap-2 py-2.5 data-[state=active]:bg-background data-[state=active]:shadow-sm"
+                  >
+                    <ShieldAlert className="h-4 w-4" />
+                    <span className="font-medium">Controlado</span>
+                  </TabsTrigger>
+                </TabsList>
+              </Tabs>
               {tipoBusca === "controlado" && (
                 <p className="mt-2 text-xs text-amber-700 dark:text-amber-400">
                   Medicamentos controlados exigem receituário especial (CPF e endereço do paciente).
                 </p>
               )}
             </div>
+
 
             {tipoBusca === null ? (
               <div className="rounded-xl border border-dashed border-border bg-background/30 p-6 text-sm text-muted-foreground text-center">
