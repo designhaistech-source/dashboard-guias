@@ -1618,53 +1618,32 @@ function PrescricaoForm() {
                 <h3 className="text-sm font-semibold tracking-wide">
                   {especial
                     ? "RECEITUÁRIO CONTROLE ESPECIAL"
-                    : "Prescrição médica"}
+                    : "Revisão da receita"}
                 </h3>
                 <p className="text-xs text-muted-foreground mt-0.5">
-                  Paciente:{" "}
-                  <span className="font-medium text-foreground">
-                    {paciente || "—"}
-                  </span>
+                  {itens.length}{" "}
+                  {itens.length === 1 ? "medicamento" : "medicamentos"}
+                  {paciente && (
+                    <>
+                      {" · "}Paciente:{" "}
+                      <span className="font-medium text-foreground">
+                        {paciente}
+                      </span>
+                    </>
+                  )}
                   {especial && cpfDigits.length === 11 && (
                     <> · CPF {formatCpf(cpfDigits)}</>
                   )}
                 </p>
               </div>
-              <div className="flex flex-wrap items-center gap-2">
-                <ActionBtn
-                  onClick={imprimir}
-                  icon={<Printer className="h-4 w-4" />}
-                  disabled={!podeEmitir}
-                  title="Ctrl+P"
-                  disabledReason={
-                    pendencias.length > 0
-                      ? `Corrija ${pendencias.length} pendência${pendencias.length > 1 ? "s" : ""} antes de imprimir:\n• ${pendencias.map((p) => p.msg).join("\n• ")}`
-                      : undefined
-                  }
+              {itens.length > 0 && (
+                <button
+                  onClick={() => setItens([])}
+                  className="text-xs text-muted-foreground hover:text-destructive hover:underline"
                 >
-                  Imprimir
-                </ActionBtn>
-                <ActionBtn
-                  onClick={baixarPdf}
-                  icon={<Download className="h-4 w-4" />}
-                  disabled={!podeEmitir}
-                  variant="primary"
-                  disabledReason={
-                    pendencias.length > 0
-                      ? `Corrija ${pendencias.length} pendência${pendencias.length > 1 ? "s" : ""} antes de baixar:\n• ${pendencias.map((p) => p.msg).join("\n• ")}`
-                      : undefined
-                  }
-                >
-                  Baixar PDF
-                </ActionBtn>
-                <ActionBtn
-                  onClick={abrirSalvarKit}
-                  icon={<Save className="h-4 w-4" />}
-                  title="Ctrl+S"
-                >
-                  Salvar Kit
-                </ActionBtn>
-              </div>
+                  Limpar itens
+                </button>
+              )}
             </div>
 
             {pendencias.length > 0 && (
