@@ -1930,6 +1930,41 @@ function PrescricaoForm() {
         </div>
       </section>
 
+      <Dialog open={kitDialogOpen} onOpenChange={setKitDialogOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Salvar como kit</DialogTitle>
+            <DialogDescription>
+              Salve a receita atual como modelo reutilizável ({itens.length} {itens.length === 1 ? "item" : "itens"}).
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-2 py-2">
+            <Label htmlFor="kit-nome">Nome do kit</Label>
+            <Input
+              id="kit-nome"
+              value={kitNome}
+              onChange={(e) => setKitNome(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && kitNome.trim()) {
+                  e.preventDefault();
+                  confirmarSalvarKit();
+                }
+              }}
+              placeholder="Ex.: Kit pós-cirúrgico"
+              autoFocus
+            />
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setKitDialogOpen(false)}>
+              Cancelar
+            </Button>
+            <Button onClick={confirmarSalvarKit} disabled={!kitNome.trim()}>
+              Salvar kit
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
       <KitsModal
         open={kitsAberto}
         onClose={() => setKitsAberto(false)}
