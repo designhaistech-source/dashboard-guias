@@ -1802,7 +1802,7 @@ function PrescricaoForm() {
                 </div>
               )}
 
-              {hasControlado && (
+              {mostrarCamposEspeciais && (
                 <div className="space-y-3 pt-1">
                   <div className="grid gap-3 md:grid-cols-[minmax(0,220px)_minmax(0,200px)_minmax(0,1fr)]">
                     {/* CPF */}
