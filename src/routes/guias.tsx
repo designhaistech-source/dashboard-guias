@@ -38,7 +38,7 @@ import { AppSidebar } from "@/components/app-sidebar";
 import { SiteFooter } from "@/components/site-footer";
 import { PageHeader } from "@/components/page-header";
 import { SearchInput } from "@/components/form-field";
-import { Combobox } from "@/components/ui/combobox";
+import { Combobox, MultiSelect } from "@/components/ui/combobox";
 import { Badge } from "@/components/ui/badge";
 import { EmptyState } from "@/components/data-state";
 
@@ -869,9 +869,6 @@ const DEFAULT_FIELDS: Record<GuideType, string[]> = {
 function RequiredFieldsModal() {
   const [open, setOpen] = useState(false);
   const [guideType, setGuideType] = useState<GuideType>("SADT");
-  const [typeOpen, setTypeOpen] = useState(false);
-  const [fieldOpen, setFieldOpen] = useState(false);
-  const [fieldSearch, setFieldSearch] = useState("");
   const [pickerSelection, setPickerSelection] = useState<string[]>([]);
   const [confirmDiscard, setConfirmDiscard] = useState(false);
 
@@ -882,9 +879,7 @@ function RequiredFieldsModal() {
 
   const current = draft[guideType];
   const remaining = AVAILABLE_FIELDS.filter((f) => !current.includes(f));
-  const visibleRemaining = remaining.filter((f) =>
-    f.toLowerCase().includes(fieldSearch.trim().toLowerCase()),
-  );
+
 
   const isDirty = (Object.keys(draft) as GuideType[]).some(
     (k) => draft[k].length !== saved[k].length || draft[k].some((f, i) => f !== saved[k][i]),
@@ -898,13 +893,8 @@ function RequiredFieldsModal() {
       [guideType]: [...prev[guideType], ...pickerSelection.filter((f) => !prev[guideType].includes(f))],
     }));
     setPickerSelection([]);
-    setFieldSearch("");
-    setFieldOpen(false);
   };
 
-  const togglePick = (f: string) => {
-    setPickerSelection((prev) => (prev.includes(f) ? prev.filter((x) => x !== f) : [...prev, f]));
-  };
 
   const removeField = (f: string) => {
     setDraft((prev) => ({ ...prev, [guideType]: prev[guideType].filter((x) => x !== f) }));
@@ -921,7 +911,7 @@ function RequiredFieldsModal() {
   const discardChanges = () => {
     setDraft(saved);
     setPickerSelection([]);
-    setFieldSearch("");
+    
     setConfirmDiscard(false);
     setOpen(false);
   };
@@ -983,109 +973,38 @@ function RequiredFieldsModal() {
             {/* Tipo de guia */}
             <div className="space-y-1.5">
               <label className="text-sm font-medium">Tipo de guia</label>
-              <div className="relative">
-                <button
-                  onClick={() => {
-                    setTypeOpen((v) => !v);
-                    setFieldOpen(false);
+              <div className="w-full sm:w-72">
+                <Combobox
+                  value={guideType}
+                  onChange={(v) => {
+                    setGuideType(v as GuideType);
+                    setPickerSelection([]);
                   }}
-                  className="w-full sm:w-72 inline-flex items-center justify-between rounded-lg border border-border bg-card px-3 py-2.5 text-sm"
-                >
-                  <span>{guideType}</span>
-                  <ChevronDown className="h-4 w-4 text-muted-foreground" />
-                </button>
-                {typeOpen && (
-                  <div className="absolute z-20 mt-1 w-full sm:w-72 rounded-lg border border-border bg-popover shadow-lg overflow-hidden">
-                    {GUIDE_TYPES.map((t) => (
-                      <button
-                        key={t}
-                        onClick={() => {
-                          setGuideType(t);
-                          setTypeOpen(false);
-                          setPickerSelection([]);
-                          setFieldSearch("");
-                        }}
-                        className="w-full flex items-center gap-2 px-3 py-2 text-sm text-left hover:bg-muted"
-                      >
-                        <Check className={`h-4 w-4 ${t === guideType ? "opacity-100" : "opacity-0"}`} />
-                        {t}
-                      </button>
-                    ))}
-                  </div>
-                )}
+                  options={GUIDE_TYPES.map((t) => ({ value: t, label: t }))}
+                  placeholder="Selecione o tipo"
+                  searchPlaceholder="Buscar tipo..."
+                />
               </div>
             </div>
 
             {/* Selecionar campo */}
             <div className="flex flex-col sm:flex-row gap-2">
-              <div className="relative flex-1">
-                <button
-                  onClick={() => {
-                    setFieldOpen((v) => !v);
-                    setTypeOpen(false);
-                  }}
-                  className="w-full inline-flex items-center justify-between rounded-lg border border-border bg-card px-3 py-2.5 text-sm"
-                >
-                  <span className={pickerSelection.length ? "" : "text-muted-foreground"}>
-                    {pickerSelection.length
-                      ? `${pickerSelection.length} campo${pickerSelection.length > 1 ? "s" : ""} selecionado${pickerSelection.length > 1 ? "s" : ""}`
-                      : "Selecione um ou mais campos"}
-                  </span>
-                  <ChevronDown className="h-4 w-4 text-muted-foreground" />
-                </button>
-                {fieldOpen && (
-                  <div className="absolute z-20 mt-1 w-full rounded-lg border border-border bg-popover shadow-lg overflow-hidden">
-                    <div className="border-b border-border p-1">
-                      <SearchInput
-                        autoFocus
-                        value={fieldSearch}
-                        onChange={(e: ChangeEvent<HTMLInputElement>) => setFieldSearch(e.target.value)}
-                        placeholder="Buscar campo…"
-                        className="border-0 shadow-none focus-visible:ring-0"
-                      />
-                    </div>
-                    <div className="max-h-64 overflow-y-auto">
-                      {visibleRemaining.length === 0 ? (
-                        <EmptyState
-                          size="sm"
-                          title={
-                            remaining.length === 0
-                              ? "Todos os campos adicionados"
-                              : "Nenhum resultado"
-                          }
-                          description={
-                            remaining.length === 0
-                              ? "Não há mais campos disponíveis para incluir."
-                              : "Nenhum campo corresponde à busca."
-                          }
-                          icon={<Search className="h-8 w-8" />}
-                        />
-                      ) : (
-                        visibleRemaining.map((f) => {
-                          const picked = pickerSelection.includes(f);
-                          return (
-                            <button
-                              key={f}
-                              onClick={() => togglePick(f)}
-                              className="w-full flex items-center gap-2 px-3 py-2 text-sm text-left hover:bg-muted"
-                            >
-                              <span
-                                className={`grid place-items-center h-4 w-4 rounded border ${
-                                  picked
-                                    ? "bg-primary border-primary text-primary-foreground"
-                                    : "border-border bg-card"
-                                }`}
-                              >
-                                {picked && <Check className="h-3 w-3" />}
-                              </span>
-                              {f}
-                            </button>
-                          );
-                        })
-                      )}
-                    </div>
-                  </div>
-                )}
+              <div className="flex-1">
+                <MultiSelect
+                  values={pickerSelection}
+                  onChange={setPickerSelection}
+                  options={remaining.map((f) => ({ value: f, label: f }))}
+                  placeholder="Selecione um ou mais campos"
+                  emptyLabel="Selecione um ou mais campos"
+                  allLabel="Todos os campos"
+                  searchPlaceholder="Buscar campo…"
+                  emptyMessage={
+                    remaining.length === 0
+                      ? "Todos os campos já foram adicionados."
+                      : "Nenhum campo corresponde à busca."
+                  }
+                  countLabel={(n) => `${n} campo${n > 1 ? "s" : ""} selecionado${n > 1 ? "s" : ""}`}
+                />
               </div>
               <button
                 onClick={addSelected}
@@ -1097,6 +1016,7 @@ function RequiredFieldsModal() {
                 {pickerSelection.length > 0 && ` (${pickerSelection.length})`}
               </button>
             </div>
+
 
             {/* Lista de campos */}
             <div
