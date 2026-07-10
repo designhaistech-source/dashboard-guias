@@ -38,6 +38,8 @@ import { AppSidebar } from "@/components/app-sidebar";
 import { SiteFooter } from "@/components/site-footer";
 import { PageHeader } from "@/components/page-header";
 import { SearchInput } from "@/components/form-field";
+import { Badge } from "@/components/ui/badge";
+import { EmptyState } from "@/components/data-state";
 
 export const Route = createFileRoute("/guias")({
   head: () => ({
@@ -751,31 +753,31 @@ function DateField({ label }: { label: string }) {
 }
 
 function TypeBadge({ type }: { type: Row["type"] }) {
-  const styles =
+  const variant =
     type === "SADT"
-      ? "bg-info text-info-foreground"
+      ? "info"
       : type === "Não válido"
-      ? "bg-destructive text-destructive-foreground"
-      : "bg-purple text-purple-foreground";
+        ? "destructive"
+        : "purple";
   return (
-    <span className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold ${styles}`}>
+    <Badge variant={variant} size="sm">
       {type}
-    </span>
+    </Badge>
   );
 }
 
 function StatusBadge({ status }: { status: Row["status"] }) {
   if (status === "Concluído") {
     return (
-      <span className="inline-flex items-center gap-1.5 rounded-full bg-success text-success-foreground px-3 py-1 text-xs font-semibold">
+      <Badge variant="success" size="sm">
         <CheckCircle2 className="h-3.5 w-3.5" /> Concluído
-      </span>
+      </Badge>
     );
   }
   return (
-    <span className="inline-flex items-center gap-1.5 rounded-full bg-destructive text-destructive-foreground px-3 py-1 text-xs font-semibold">
+    <Badge variant="destructive" size="sm">
       <XCircle className="h-3.5 w-3.5" /> Erro
-    </span>
+    </Badge>
   );
 }
 
@@ -1028,11 +1030,20 @@ function RequiredFieldsModal() {
                     </div>
                     <div className="max-h-64 overflow-y-auto">
                       {visibleRemaining.length === 0 ? (
-                        <div className="px-3 py-3 text-sm text-muted-foreground">
-                          {remaining.length === 0
-                            ? "Todos os campos disponíveis já foram adicionados."
-                            : "Nenhum campo corresponde à busca."}
-                        </div>
+                        <EmptyState
+                          size="sm"
+                          title={
+                            remaining.length === 0
+                              ? "Todos os campos adicionados"
+                              : "Nenhum resultado"
+                          }
+                          description={
+                            remaining.length === 0
+                              ? "Não há mais campos disponíveis para incluir."
+                              : "Nenhum campo corresponde à busca."
+                          }
+                          icon={<Search className="h-8 w-8" />}
+                        />
                       ) : (
                         visibleRemaining.map((f) => {
                           const picked = pickerSelection.includes(f);

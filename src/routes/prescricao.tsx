@@ -33,6 +33,8 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Field, SearchInput } from "@/components/form-field";
+import { Badge } from "@/components/ui/badge";
+import { EmptyState } from "@/components/data-state";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { jsPDF } from "jspdf";
@@ -1573,9 +1575,12 @@ function PrescricaoForm() {
               </div>
             )}
             {query && !editing && resultados.length === 0 && (
-              <div className="rounded-xl border border-border bg-background/40 p-6 text-sm text-muted-foreground text-center">
-                Nenhum medicamento encontrado para os filtros atuais.
-              </div>
+              <EmptyState
+                size="sm"
+                title="Nenhum medicamento encontrado"
+                description="Ajuste os filtros ou tente outro termo de busca."
+                icon={<Search className="h-8 w-8" />}
+              />
             )}
 
             {editing && (
@@ -2461,21 +2466,26 @@ function Dot() {
 
 function TipoBadge({ tipo }: { tipo: MedType }) {
   const styles: Record<MedType, string> = {
-    Biológico: "bg-emerald-100 text-emerald-800 border-emerald-300 dark:bg-emerald-500/20 dark:text-emerald-100 dark:border-emerald-500/40",
-    Similar: "bg-sky-100 text-sky-800 border-sky-300 dark:bg-sky-500/20 dark:text-sky-100 dark:border-sky-500/40",
-    Genérico: "bg-fuchsia-100 text-fuchsia-800 border-fuchsia-300 dark:bg-fuchsia-500/20 dark:text-fuchsia-100 dark:border-fuchsia-500/40",
-    Referência: "bg-primary/15 text-primary border-primary/40 dark:text-primary",
-    Fitoterápico: "bg-lime-100 text-lime-800 border-lime-300 dark:bg-lime-500/20 dark:text-lime-100 dark:border-lime-500/40",
-    Oftalmológico: "bg-cyan-100 text-cyan-800 border-cyan-300 dark:bg-cyan-500/20 dark:text-cyan-100 dark:border-cyan-500/40",
-    Específico: "bg-orange-100 text-orange-800 border-orange-300 dark:bg-orange-500/20 dark:text-orange-100 dark:border-orange-500/40",
+    Biológico:
+      "bg-emerald-100 text-emerald-800 border-emerald-300 dark:bg-emerald-500/20 dark:text-emerald-100 dark:border-emerald-500/40",
+    Similar:
+      "bg-sky-100 text-sky-800 border-sky-300 dark:bg-sky-500/20 dark:text-sky-100 dark:border-sky-500/40",
+    Genérico:
+      "bg-fuchsia-100 text-fuchsia-800 border-fuchsia-300 dark:bg-fuchsia-500/20 dark:text-fuchsia-100 dark:border-fuchsia-500/40",
+    Referência:
+      "bg-primary/15 text-primary border-primary/40 dark:text-primary",
+    Fitoterápico:
+      "bg-lime-100 text-lime-800 border-lime-300 dark:bg-lime-500/20 dark:text-lime-100 dark:border-lime-500/40",
+    Oftalmológico:
+      "bg-cyan-100 text-cyan-800 border-cyan-300 dark:bg-cyan-500/20 dark:text-cyan-100 dark:border-cyan-500/40",
+    Específico:
+      "bg-orange-100 text-orange-800 border-orange-300 dark:bg-orange-500/20 dark:text-orange-100 dark:border-orange-500/40",
   };
 
   return (
-    <span
-      className={`inline-flex items-center rounded-md border px-2 py-0.5 text-[11px] font-medium ${styles[tipo]}`}
-    >
+    <Badge variant="outline" size="sm" className={styles[tipo]}>
       {tipo}
-    </span>
+    </Badge>
   );
 }
 

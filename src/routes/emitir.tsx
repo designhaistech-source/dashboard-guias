@@ -44,6 +44,7 @@ import {
 } from "@/components/ui/dialog";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
+import { EmptyState } from "@/components/data-state";
 import { Shield, Landmark, ArrowUp, Stethoscope as StethIcon, BedDouble, HeartPulse, Hospital, Check, ChevronRight } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -1154,9 +1155,12 @@ function EmitirPage() {
                 }
               >
                 {opmeItems.length === 0 ? (
-                  <p className="text-xs text-muted-foreground">
-                    Nenhum item OPME adicionado.
-                  </p>
+                  <EmptyState
+                    size="sm"
+                    title="Nenhum item OPME"
+                    description="Adicione materiais, órteses ou próteses solicitados."
+                    icon={<Package className="h-8 w-8" />}
+                  />
                 ) : (
                   <div className="space-y-2">
                     {opmeItems.map((o) => (
