@@ -1027,23 +1027,23 @@ function PrescricaoForm() {
   const onCepChange = async (raw: string) => {
     const d = raw.replace(/\D/g, "").slice(0, 8);
     setCepDigits(d);
+    setCepError(null);
     if (d.length === 8) {
       setCepLoading(true);
-      const end = await buscarCep(d);
+      const res = await buscarCep(d);
       setCepLoading(false);
-      if (end) {
-        setEndereco((cur) => {
-          // Se o usuário já digitou número após a rua, preserva; senão substitui
-          if (!cur.trim() || cur.trim().length < end.length) return end + ", ";
-          return cur;
-        });
+      if (res) {
+        setEndereco(composeEnderecoBase(res));
         toast.success("Endereço preenchido pelo CEP.");
-        setTimeout(() => enderecoRef.current?.focus(), 50);
+        setTimeout(() => numeroRef.current?.focus(), 50);
       } else {
-        toast.error("CEP não encontrado.");
+        setCepError("CEP não encontrado. Preencha o endereço manualmente.");
       }
+    } else if (d.length > 0 && d.length < 8) {
+      setCepError(null);
     }
   };
+
 
   const fmtHora = (ts: number) =>
     new Date(ts).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
