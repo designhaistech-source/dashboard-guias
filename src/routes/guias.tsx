@@ -36,6 +36,7 @@ import {
 } from "@/components/ui/dialog";
 import { AppSidebar } from "@/components/app-sidebar";
 import { SiteFooter } from "@/components/site-footer";
+import { PageHeader } from "@/components/page-header";
 
 export const Route = createFileRoute("/guias")({
   head: () => ({
@@ -164,10 +165,11 @@ function Upload_Section({ onProcessed }: { onProcessed: (row: Row) => void }) {
 
   return (
     <section className="space-y-4">
-      <div className="flex items-center justify-between gap-3 flex-wrap">
-        <h1 className="text-2xl font-bold tracking-tight">Processamento de guias</h1>
-        <RequiredFieldsModal />
-      </div>
+      <PageHeader
+        title="Processamento de guias"
+        description="Envie arquivos PDF ou imagens para extração automática dos dados."
+        actions={<RequiredFieldsModal />}
+      />
       <div
         className="rounded-2xl border-2 border-dashed border-border bg-card px-6 py-14 flex flex-col items-center justify-center text-center"
         onDragOver={(event) => event.preventDefault()}
@@ -271,7 +273,8 @@ function History_Section({ extraRows }: { extraRows: Row[] }) {
 
   return (
     <section className="space-y-4">
-      <h2 className="text-2xl font-bold tracking-tight">Histórico de processamento</h2>
+      <h2 className="font-display text-xl font-semibold tracking-tight">Histórico de processamento</h2>
+
 
       <div className="flex flex-wrap items-center gap-3">
         <div className="relative flex-1 min-w-[260px] max-w-md">

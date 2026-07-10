@@ -23,6 +23,7 @@ import {
 import { toast } from "sonner";
 import { AppSidebar } from "@/components/app-sidebar";
 import { SiteFooter } from "@/components/site-footer";
+import { PageHeader } from "@/components/page-header";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -478,21 +479,10 @@ function EmitirPage() {
 
       <main className="flex-1 overflow-x-hidden flex flex-col min-h-screen">
         <div className="w-full px-6 lg:px-10 py-8 space-y-6">
-          {/* Header do hub */}
-          <header className="flex items-start justify-between gap-4 flex-wrap">
-            <div className="flex items-start gap-3">
-              <div className="h-10 w-10 rounded-lg bg-primary/10 text-primary flex items-center justify-center">
-                <FileText className="h-5 w-5" />
-              </div>
-              <div>
-                <h1 className="text-2xl font-semibold tracking-tight">Emitir Guias</h1>
-                <p className="text-sm text-muted-foreground mt-1 max-w-2xl">
-                  Escolha entre guias de convênio (TISS) ou guias do SUS e selecione o tipo
-                  correspondente para começar.
-                </p>
-              </div>
-            </div>
-            <div className="flex items-center gap-2">
+          <PageHeader
+            title="Emitir Guias"
+            description="Escolha entre guias de convênio (TISS) ou guias do SUS e selecione o tipo correspondente para começar."
+            actions={
               <Button
                 type="button"
                 variant="outline"
@@ -502,8 +492,9 @@ function EmitirPage() {
                 <Settings2 className="h-4 w-4" />
                 Preferências
               </Button>
-            </div>
-          </header>
+            }
+          />
+
 
           {/* Hub: modo (TISS/SUS) via Tabs */}
           <Tabs

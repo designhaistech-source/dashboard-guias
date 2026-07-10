@@ -29,6 +29,8 @@ import {
 } from "recharts";
 import { AppSidebar } from "@/components/app-sidebar";
 import { SiteFooter } from "@/components/site-footer";
+import { PageHeader } from "@/components/page-header";
+import { Button } from "@/components/ui/button";
 import logoAsset from "@/assets/haisguias-logo.png.asset.json";
 import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
@@ -783,41 +785,33 @@ function DashboardPage() {
         <div className="w-full space-y-6 flex-1 px-8 pt-8 pb-16">
 
           {/* Header */}
-          <div className="flex flex-wrap items-center justify-between gap-4">
-            <div>
-              <h1 className="text-xl font-semibold tracking-tight text-foreground">Dashboard</h1>
-              <p className="text-sm text-muted-foreground mt-0.5">Visão geral das guias processadas</p>
-            </div>
-            <div className="flex items-center gap-2">
-              <button
-                onClick={() => (filtersOpen ? requestClose() : openFilters())}
-                aria-expanded={filtersOpen}
-                aria-controls="dashboard-filters-panel"
-                className={[
-                  "relative inline-flex items-center gap-2 rounded-lg border px-4 py-2 text-sm font-medium transition-colors",
-                  filtersOpen
-                    ? "border-primary bg-primary/5 text-primary"
-                    : "border-border bg-card text-foreground hover:bg-muted",
-                ].join(" ")}
-              >
-                <SlidersHorizontal className="h-4 w-4" />
-                Filtros
-                {activeFilters.length > 0 && (
-                  <span className="ml-1 inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-primary px-1.5 text-[11px] font-semibold text-primary-foreground">
-                    {activeFilters.length}
-                  </span>
-                )}
-              </button>
-
-              <button
-                onClick={() => generateReportPdf(range, dailyAvg, total)}
-                className="inline-flex items-center gap-2 rounded-lg border border-primary bg-card px-4 py-2 text-sm font-medium text-primary hover:bg-primary/5 transition-colors"
-              >
-                <Download className="h-4 w-4" />
-                Gerar relatório
-              </button>
-            </div>
-          </div>
+          <PageHeader
+            title="Dashboard"
+            description="Visão geral das guias processadas"
+            actions={
+              <>
+                <Button
+                  variant={filtersOpen ? "secondary" : "outline"}
+                  onClick={() => (filtersOpen ? requestClose() : openFilters())}
+                  aria-expanded={filtersOpen}
+                  aria-controls="dashboard-filters-panel"
+                  className="relative"
+                >
+                  <SlidersHorizontal className="h-4 w-4" />
+                  Filtros
+                  {activeFilters.length > 0 && (
+                    <span className="ml-1 inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-primary px-1.5 text-[11px] font-semibold text-primary-foreground">
+                      {activeFilters.length}
+                    </span>
+                  )}
+                </Button>
+                <Button onClick={() => generateReportPdf(range, dailyAvg, total)}>
+                  <Download className="h-4 w-4" />
+                  Gerar relatório
+                </Button>
+              </>
+            }
+          />
 
 
           {/* Chips de filtros ativos */}
