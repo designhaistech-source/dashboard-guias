@@ -2255,14 +2255,15 @@ function Dot() {
 
 function TipoBadge({ tipo }: { tipo: MedType }) {
   const styles: Record<MedType, string> = {
-    Biológico: "bg-emerald-500/15 text-emerald-300 border-emerald-500/30",
-    Similar: "bg-sky-500/15 text-sky-300 border-sky-500/30",
-    Genérico: "bg-fuchsia-500/15 text-fuchsia-300 border-fuchsia-500/30",
-    Referência: "bg-primary/15 text-primary border-primary/30",
-    Fitoterápico: "bg-lime-500/15 text-lime-300 border-lime-500/30",
-    Oftalmológico: "bg-cyan-500/15 text-cyan-300 border-cyan-500/30",
-    Específico: "bg-orange-500/15 text-orange-300 border-orange-500/30",
+    Biológico: "bg-emerald-100 text-emerald-800 border-emerald-300 dark:bg-emerald-500/20 dark:text-emerald-100 dark:border-emerald-500/40",
+    Similar: "bg-sky-100 text-sky-800 border-sky-300 dark:bg-sky-500/20 dark:text-sky-100 dark:border-sky-500/40",
+    Genérico: "bg-fuchsia-100 text-fuchsia-800 border-fuchsia-300 dark:bg-fuchsia-500/20 dark:text-fuchsia-100 dark:border-fuchsia-500/40",
+    Referência: "bg-primary/15 text-primary border-primary/40 dark:text-primary",
+    Fitoterápico: "bg-lime-100 text-lime-800 border-lime-300 dark:bg-lime-500/20 dark:text-lime-100 dark:border-lime-500/40",
+    Oftalmológico: "bg-cyan-100 text-cyan-800 border-cyan-300 dark:bg-cyan-500/20 dark:text-cyan-100 dark:border-cyan-500/40",
+    Específico: "bg-orange-100 text-orange-800 border-orange-300 dark:bg-orange-500/20 dark:text-orange-100 dark:border-orange-500/40",
   };
+
   return (
     <span
       className={`inline-flex items-center rounded-md border px-2 py-0.5 text-[11px] font-medium ${styles[tipo]}`}
