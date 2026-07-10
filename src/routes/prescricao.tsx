@@ -1414,7 +1414,7 @@ function PrescricaoForm() {
             className="flex items-center gap-2 py-2.5 rounded-lg text-muted-foreground transition-all data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:border data-[state=active]:border-border/60 data-[state=active]:shadow-md"
           >
             <ShieldAlert className="h-4 w-4" />
-            <span className="font-medium">Controlado</span>
+            <span className="font-medium">Especial</span>
           </TabsTrigger>
         </TabsList>
       </Tabs>
