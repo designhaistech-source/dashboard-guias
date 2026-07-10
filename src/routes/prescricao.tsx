@@ -828,10 +828,59 @@ function PrescricaoForm() {
     saveHistorico([]);
     toast.success("Histórico apagado.");
   };
+  const imprimirPdfNoIframe = (doc: jsPDF, nome: string) =>
+    new Promise<void>((resolve) => {
+      if (typeof document === "undefined") {
+        doc.save(nome);
+        resolve();
+        return;
+      }
 
+      const blob = doc.output("blob");
+      const blobUrl = URL.createObjectURL(blob);
+      const iframe = document.createElement("iframe");
+      let finished = false;
 
+      const cleanup = () => {
+        if (finished) return;
+        finished = true;
+        setTimeout(() => {
+          URL.revokeObjectURL(blobUrl);
+          iframe.remove();
+          resolve();
+        }, 300);
+      };
 
-  const baixarPdf = (opts: { emitir?: boolean } = {}) => {
+      iframe.style.position = "fixed";
+      iframe.style.right = "0";
+      iframe.style.bottom = "0";
+      iframe.style.width = "1px";
+      iframe.style.height = "1px";
+      iframe.style.opacity = "0";
+      iframe.style.border = "0";
+      iframe.style.pointerEvents = "none";
+      iframe.setAttribute("aria-hidden", "true");
+      iframe.onload = () => {
+        setTimeout(() => {
+          try {
+            const frameWindow = iframe.contentWindow;
+            if (!frameWindow) throw new Error("Visualizador de PDF indisponível.");
+            frameWindow.addEventListener("afterprint", cleanup, { once: true });
+            frameWindow.focus();
+            frameWindow.print();
+            setTimeout(cleanup, 1_000);
+          } catch (err) {
+            console.error("Falha ao abrir impressão:", err);
+            doc.save(nome);
+            cleanup();
+          }
+        }, 500);
+      };
+      iframe.src = blobUrl;
+      document.body.appendChild(iframe);
+    });
+
+  const baixarPdf = async (opts: { emitir?: boolean } = {}) => {
     const { emitir = false } = opts;
     if (!validarEmissao()) return;
 
@@ -862,9 +911,13 @@ function PrescricaoForm() {
     };
     const cidade = "São Paulo/SP";
 
-    grupos.forEach((grupo) => {
+    const docImpressao = emitir ? new jsPDF({ unit: "mm", format: "a4" }) : null;
+    const documentosParaBaixar: Array<{ doc: jsPDF; nome: string }> = [];
+
+    grupos.forEach((grupo, grupoIndex) => {
       const isEspecial = grupo.tipo === "especial";
-      const doc = new jsPDF({ unit: "mm", format: "a4" });
+      const doc = docImpressao ?? new jsPDF({ unit: "mm", format: "a4" });
+      if (docImpressao && grupoIndex > 0) doc.addPage();
       const pageW = doc.internal.pageSize.getWidth();
       const pageH = doc.internal.pageSize.getHeight();
       const margin = 18;
@@ -1074,41 +1127,17 @@ function PrescricaoForm() {
       });
 
       const nome = `${isEspecial ? "receita-especial" : "prescricao"}-${slugPaciente || "paciente"}.pdf`;
-      if (emitir) {
-        const blob = doc.output("blob");
-        const blobUrl = URL.createObjectURL(blob);
-        const iframe = document.createElement("iframe");
-        iframe.style.position = "fixed";
-        iframe.style.right = "0";
-        iframe.style.bottom = "0";
-        iframe.style.width = "0";
-        iframe.style.height = "0";
-        iframe.style.border = "0";
-        iframe.setAttribute("aria-hidden", "true");
-        iframe.onload = () => {
-          // Aguarda o visualizador de PDF do Chrome montar antes de imprimir
-          setTimeout(() => {
-            try {
-              iframe.contentWindow?.focus();
-              iframe.contentWindow?.print();
-            } catch (err) {
-              console.error("Falha ao abrir impressão:", err);
-              // fallback: baixa o arquivo
-              doc.save(nome);
-            }
-          }, 400);
-          // Limpa após a janela de impressão fechar (~1min)
-          setTimeout(() => {
-            URL.revokeObjectURL(blobUrl);
-            iframe.remove();
-          }, 60_000);
-        };
-        iframe.src = blobUrl;
-        document.body.appendChild(iframe);
-      } else {
-        doc.save(nome);
-      }
+      if (!emitir) documentosParaBaixar.push({ doc, nome });
     });
+
+    if (emitir && docImpressao) {
+      const nomeImpressao = grupos.length > 1
+        ? `receitas-${slugPaciente || "paciente"}.pdf`
+        : `${hasControlado ? "receita-especial" : "prescricao"}-${slugPaciente || "paciente"}.pdf`;
+      await imprimirPdfNoIframe(docImpressao, nomeImpressao);
+    } else {
+      documentosParaBaixar.forEach(({ doc, nome }) => doc.save(nome));
+    }
 
 
     pushRecente(LS_PACIENTES, paciente);
