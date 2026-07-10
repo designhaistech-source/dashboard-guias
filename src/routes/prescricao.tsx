@@ -1385,23 +1385,25 @@ function PrescricaoForm() {
                       value={endereco}
                       onChange={(e) => setEndereco(e.target.value)}
                       placeholder="Ex: Av. Paulista, Bela Vista, São Paulo/SP"
-                      aria-invalid={!enderecoValido}
+                      aria-invalid={endereco.length > 0 && !enderecoValido}
                       className={`w-full rounded-xl border bg-background/40 px-3 py-2.5 pr-9 text-sm focus:outline-none focus:ring-2 ${
                         enderecoValido
                           ? "border-emerald-500/40 focus:ring-emerald-500/40"
-                          : "border-destructive/50 focus:ring-destructive/40"
+                          : endereco.length === 0
+                            ? "border-border focus:ring-ring/40"
+                            : "border-destructive/50 focus:ring-destructive/40"
                       }`}
                     />
                     <span className="absolute right-2.5 top-1/2 -translate-y-1/2">
                       {enderecoValido ? (
                         <CheckCircle2 className="h-4 w-4 text-emerald-500" />
-                      ) : (
+                      ) : endereco.length > 0 ? (
                         <AlertCircle className="h-4 w-4 text-destructive/70" />
-                      )}
+                      ) : null}
                     </span>
                   </div>
                   <p
-                    className={`text-[11px] ${enderecoValido ? "text-emerald-500" : "text-destructive"}`}
+                    className={`text-[11px] ${enderecoValido ? "text-emerald-500" : endereco.length === 0 ? "text-muted-foreground" : "text-destructive"}`}
                   >
                     {enderecoValido
                       ? "Endereço válido."
