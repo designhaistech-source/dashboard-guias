@@ -29,6 +29,8 @@ import {
 } from "recharts";
 import { AppSidebar } from "@/components/app-sidebar";
 import { SiteFooter } from "@/components/site-footer";
+import { PageHeader } from "@/components/page-header";
+import { Button } from "@/components/ui/button";
 import logoAsset from "@/assets/haisguias-logo.png.asset.json";
 import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
