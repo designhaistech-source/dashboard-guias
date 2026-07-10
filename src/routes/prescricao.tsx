@@ -1094,7 +1094,7 @@ function PrescricaoForm() {
               salvo {fmtHora(savedAt)}
             </div>
           )}
-          {pendencias.length > 0 ? (
+          {triedEmit && pendencias.length > 0 ? (
             <button
               type="button"
               onClick={() =>
@@ -1102,13 +1102,13 @@ function PrescricaoForm() {
                   .getElementById("sec-revisar")
                   ?.scrollIntoView({ behavior: "smooth", block: "start" })
               }
-              className="inline-flex items-center gap-1.5 text-xs font-medium rounded-lg border border-destructive/40 bg-destructive/10 text-destructive px-2.5 py-1.5 hover:bg-destructive/15 transition-colors"
-              title="Ver pendências"
+              className="inline-flex items-center gap-1.5 text-xs font-medium rounded-lg border border-amber-500/40 bg-amber-500/10 text-amber-700 dark:text-amber-400 px-2.5 py-1.5 hover:bg-amber-500/15 transition-colors"
+              title="Ver o que falta"
             >
               <AlertCircle className="h-3.5 w-3.5" />
-              {pendencias.length} pendência{pendencias.length > 1 ? "s" : ""}
+              Faltam {pendencias.length} {pendencias.length > 1 ? "itens" : "item"}
             </button>
-          ) : (
+          ) : triedEmit && pendencias.length === 0 ? (
             <span
               className="inline-flex items-center gap-1.5 text-xs font-medium rounded-lg border border-emerald-500/40 bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 px-2.5 py-1.5"
               title="Todos os campos estão válidos"
@@ -1116,7 +1116,7 @@ function PrescricaoForm() {
               <CheckCircle2 className="h-3.5 w-3.5" />
               Pronto para emitir
             </span>
-          )}
+          ) : null}
           <ActionBtn
             onClick={() => setKitsAberto(true)}
             icon={<BookMarked className="h-3.5 w-3.5" />}
