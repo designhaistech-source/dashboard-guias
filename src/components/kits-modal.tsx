@@ -297,18 +297,20 @@ export function KitsModal({
                 </button>
               )}
             </div>
-            <select
+            <Select
               value={ordenacao}
-              onChange={(e) =>
-                setOrdenacao(e.target.value as typeof ordenacao)
-              }
-              className="text-xs rounded-lg border border-border bg-background px-2.5 py-2 focus:outline-none focus:ring-2 focus:ring-primary/50"
-              title="Ordenar por"
+              onValueChange={(v) => setOrdenacao(v as typeof ordenacao)}
             >
-              <option value="recentes">Mais recentes</option>
-              <option value="usados">Mais usados</option>
-              <option value="alfabetica">A – Z</option>
-            </select>
+              <SelectTrigger className="h-9 w-[160px] text-xs" title="Ordenar por">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="recentes">Mais recentes</SelectItem>
+                <SelectItem value="usados">Mais usados</SelectItem>
+                <SelectItem value="alfabetica">A – Z</SelectItem>
+              </SelectContent>
+            </Select>
+
           </div>
 
           <div className="flex gap-1.5 flex-wrap items-center">
