@@ -169,6 +169,7 @@ const MEDICAMENTOS: Medicamento[] = [
     principios: "ADALIMUMABE",
     classe: "IMUNOSSUPRESSORES SELETIVOS",
     alerta: true,
+    controlado: true,
   },
   {
     nome: "ENBREL 50mg",
