@@ -1607,12 +1607,22 @@ function PrescricaoForm() {
                     {itens.length > 1 ? "medicamentos adicionados" : "medicamento adicionado"}
                   </p>
                 </div>
-                <button
-                  onClick={() => setItens([])}
-                  className="text-xs text-destructive hover:underline"
-                >
-                  Limpar
-                </button>
+                <div className="flex items-center gap-3">
+                  <button
+                    onClick={abrirSalvarKit}
+                    className="inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1.5 rounded-lg border border-border hover:bg-muted transition-colors"
+                    title="Salvar estes medicamentos como um kit reutilizável (Ctrl+S)"
+                  >
+                    <Save className="h-3.5 w-3.5" />
+                    Salvar como kit
+                  </button>
+                  <button
+                    onClick={() => setItens([])}
+                    className="text-xs text-destructive hover:underline"
+                  >
+                    Limpar
+                  </button>
+                </div>
               </div>
 
               <ul className="space-y-1.5">
