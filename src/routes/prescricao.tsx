@@ -71,6 +71,8 @@ type Medicamento = {
   classe: string;
   favorito?: boolean;
   alerta?: boolean;
+  /** Substância sob controle especial (Portaria 344/98). Exige receituário próprio com CPF e endereço. */
+  controlado?: boolean;
 };
 
 type ItemReceita = {
@@ -156,6 +158,7 @@ const MEDICAMENTOS: Medicamento[] = [
     preco: 22.4,
     principios: "AMOXICILINA",
     classe: "ANTIBIÓTICOS BETA-LACTÂMICOS",
+    controlado: true,
   },
   {
     nome: "HUMIRA 40mg/0,8ml",
@@ -166,6 +169,7 @@ const MEDICAMENTOS: Medicamento[] = [
     principios: "ADALIMUMABE",
     classe: "IMUNOSSUPRESSORES SELETIVOS",
     alerta: true,
+    controlado: true,
   },
   {
     nome: "ENBREL 50mg",
@@ -489,7 +493,13 @@ function PrescricaoForm() {
     new Set(["Genérico", "Referência", "Específico"]),
   );
   const [itens, setItens] = useState<ItemReceita[]>([]);
-  const [especial, setEspecial] = useState(false);
+  // Tipo de receituário deduzido automaticamente pelos itens (não é escolha do usuário).
+  const itensControlados = itens.filter((it) => it.med.controlado);
+  const itensComuns = itens.filter((it) => !it.med.controlado);
+  const hasControlado = itensControlados.length > 0;
+  const hasComum = itensComuns.length > 0;
+  const especial = hasControlado; // compat com o restante do código
+  const setEspecial = (_: boolean) => {}; // no-op: derivado dos itens
   const [editing, setEditing] = useState<Medicamento | null>(null);
   const [highlight, setHighlight] = useState(0);
   const [pacientesRecentes, setPacientesRecentes] = useState<string[]>([]);
@@ -756,7 +766,11 @@ function PrescricaoForm() {
     setPacientesRecentes(loadRecentes(LS_PACIENTES));
     registrarHistorico("imprimir");
     toast.success(
-      especial ? "Receituário especial enviado para impressão." : "Receita enviada para impressão.",
+      hasControlado && hasComum
+        ? "Receitas (comum + controle especial) enviadas para impressão."
+        : hasControlado
+          ? "Receituário especial enviado para impressão."
+          : "Receita enviada para impressão.",
     );
   };
 
@@ -816,121 +830,6 @@ function PrescricaoForm() {
   const baixarPdf = () => {
     if (!validarEmissao()) return;
 
-
-
-    const doc = new jsPDF({ unit: "mm", format: "a4" });
-    const pageW = doc.internal.pageSize.getWidth();
-    const pageH = doc.internal.pageSize.getHeight();
-    const margin = 15;
-    const maxW = pageW - margin * 2;
-    let y = margin;
-
-    // Tarja vermelha para receita especial
-    if (especial) {
-      doc.setFillColor(220, 38, 38);
-      doc.rect(0, 0, pageW, 6, "F");
-      y = 14;
-    }
-
-    // Cabeçalho
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(14);
-    doc.setTextColor(20, 20, 20);
-    doc.text(
-      especial ? "RECEITUÁRIO DE CONTROLE ESPECIAL" : "PRESCRIÇÃO MÉDICA",
-      pageW / 2,
-      y,
-      { align: "center" },
-    );
-    y += 8;
-
-    doc.setDrawColor(200);
-    doc.line(margin, y, pageW - margin, y);
-    y += 6;
-
-    // Paciente
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(10);
-    doc.text("Paciente:", margin, y);
-    doc.setFont("helvetica", "normal");
-    doc.text(paciente.trim(), margin + 22, y);
-    y += 6;
-
-    if (especial) {
-      doc.setFont("helvetica", "bold");
-      doc.text("CPF:", margin, y);
-      doc.setFont("helvetica", "normal");
-      doc.text(formatCpf(cpfDigits), margin + 22, y);
-      y += 6;
-
-      doc.setFont("helvetica", "bold");
-      doc.text("Endereço:", margin, y);
-      doc.setFont("helvetica", "normal");
-      const endLines = doc.splitTextToSize(enderecoCompleto.trim(), maxW - 22);
-      doc.text(endLines, margin + 22, y);
-      y += endLines.length * 5 + 2;
-    }
-
-    y += 2;
-    doc.line(margin, y, pageW - margin, y);
-    y += 6;
-
-    // Itens
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(11);
-    doc.text("Medicamentos", margin, y);
-    y += 6;
-
-    itens.forEach((it, idx) => {
-      const bloco: string[] = [];
-      bloco.push(`${idx + 1}. ${it.med.nome}`);
-      if (it.med.forma) bloco.push(`   ${it.med.forma}`);
-      if (it.med.principios) bloco.push(`   Princípio ativo: ${it.med.principios}`);
-      const posLinhas = it.posologia.trim()
-        ? doc.splitTextToSize(`   Posologia: ${it.posologia.trim()}`, maxW)
-        : ["   Posologia: —"];
-
-      doc.setFont("helvetica", "bold");
-      doc.setFontSize(10);
-      const wrapped: string[] = [];
-      bloco.forEach((line) => {
-        wrapped.push(...doc.splitTextToSize(line, maxW));
-      });
-
-      // Estimativa de altura para nova página
-      const alturaEstim = (wrapped.length + posLinhas.length) * 5 + 4;
-      if (y + alturaEstim > pageH - margin - 30) {
-        doc.addPage();
-        y = margin;
-      }
-
-      doc.setFont("helvetica", "bold");
-      doc.text(wrapped[0], margin, y);
-      y += 5;
-      doc.setFont("helvetica", "normal");
-      for (let i = 1; i < wrapped.length; i++) {
-        doc.text(wrapped[i], margin, y);
-        y += 5;
-      }
-      doc.text(posLinhas, margin, y);
-      y += posLinhas.length * 5 + 3;
-    });
-
-    // Assinatura
-    const assY = Math.max(y + 20, pageH - margin - 25);
-    doc.setDrawColor(120);
-    doc.line(margin + 30, assY, pageW - margin - 30, assY);
-    doc.setFont("helvetica", "normal");
-    doc.setFontSize(9);
-    doc.text("Assinatura e carimbo do médico", pageW / 2, assY + 5, {
-      align: "center",
-    });
-
-    const dataEmissao = new Date().toLocaleDateString("pt-BR");
-    doc.text(`Emitido em ${dataEmissao}`, pageW - margin, pageH - margin, {
-      align: "right",
-    });
-
     const slugPaciente = paciente
       .trim()
       .toLowerCase()
@@ -938,13 +837,135 @@ function PrescricaoForm() {
       .replace(/[\u0300-\u036f]/g, "")
       .replace(/[^a-z0-9]+/g, "-")
       .replace(/(^-|-$)/g, "");
-    const nome = `${especial ? "receita-especial" : "prescricao"}-${slugPaciente || "paciente"}.pdf`;
-    doc.save(nome);
+
+    // Um documento por tipo detectado nos itens
+    const grupos: Array<{ tipo: "comum" | "especial"; itens: ItemReceita[] }> = [];
+    if (hasComum) grupos.push({ tipo: "comum", itens: itensComuns });
+    if (hasControlado) grupos.push({ tipo: "especial", itens: itensControlados });
+
+    grupos.forEach((grupo) => {
+      const isEspecial = grupo.tipo === "especial";
+      const doc = new jsPDF({ unit: "mm", format: "a4" });
+      const pageW = doc.internal.pageSize.getWidth();
+      const pageH = doc.internal.pageSize.getHeight();
+      const margin = 15;
+      const maxW = pageW - margin * 2;
+      let y = margin;
+
+      if (isEspecial) {
+        doc.setFillColor(220, 38, 38);
+        doc.rect(0, 0, pageW, 6, "F");
+        y = 14;
+      }
+
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(14);
+      doc.setTextColor(20, 20, 20);
+      doc.text(
+        isEspecial ? "RECEITUÁRIO DE CONTROLE ESPECIAL" : "PRESCRIÇÃO MÉDICA",
+        pageW / 2,
+        y,
+        { align: "center" },
+      );
+      y += 8;
+
+      doc.setDrawColor(200);
+      doc.line(margin, y, pageW - margin, y);
+      y += 6;
+
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(10);
+      doc.text("Paciente:", margin, y);
+      doc.setFont("helvetica", "normal");
+      doc.text(paciente.trim(), margin + 22, y);
+      y += 6;
+
+      if (isEspecial) {
+        doc.setFont("helvetica", "bold");
+        doc.text("CPF:", margin, y);
+        doc.setFont("helvetica", "normal");
+        doc.text(formatCpf(cpfDigits), margin + 22, y);
+        y += 6;
+
+        doc.setFont("helvetica", "bold");
+        doc.text("Endereço:", margin, y);
+        doc.setFont("helvetica", "normal");
+        const endLines = doc.splitTextToSize(enderecoCompleto.trim(), maxW - 22);
+        doc.text(endLines, margin + 22, y);
+        y += endLines.length * 5 + 2;
+      }
+
+      y += 2;
+      doc.line(margin, y, pageW - margin, y);
+      y += 6;
+
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(11);
+      doc.text("Medicamentos", margin, y);
+      y += 6;
+
+      grupo.itens.forEach((it, idx) => {
+        const bloco: string[] = [];
+        bloco.push(`${idx + 1}. ${it.med.nome}`);
+        if (it.med.forma) bloco.push(`   ${it.med.forma}`);
+        if (it.med.principios) bloco.push(`   Princípio ativo: ${it.med.principios}`);
+        const posLinhas = it.posologia.trim()
+          ? doc.splitTextToSize(`   Posologia: ${it.posologia.trim()}`, maxW)
+          : ["   Posologia: —"];
+
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(10);
+        const wrapped: string[] = [];
+        bloco.forEach((line) => {
+          wrapped.push(...doc.splitTextToSize(line, maxW));
+        });
+
+        const alturaEstim = (wrapped.length + posLinhas.length) * 5 + 4;
+        if (y + alturaEstim > pageH - margin - 30) {
+          doc.addPage();
+          y = margin;
+        }
+
+        doc.setFont("helvetica", "bold");
+        doc.text(wrapped[0], margin, y);
+        y += 5;
+        doc.setFont("helvetica", "normal");
+        for (let i = 1; i < wrapped.length; i++) {
+          doc.text(wrapped[i], margin, y);
+          y += 5;
+        }
+        doc.text(posLinhas, margin, y);
+        y += posLinhas.length * 5 + 3;
+      });
+
+      const assY = Math.max(y + 20, pageH - margin - 25);
+      doc.setDrawColor(120);
+      doc.line(margin + 30, assY, pageW - margin - 30, assY);
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(9);
+      doc.text("Assinatura e carimbo do médico", pageW / 2, assY + 5, {
+        align: "center",
+      });
+
+      const dataEmissao = new Date().toLocaleDateString("pt-BR");
+      doc.text(`Emitido em ${dataEmissao}`, pageW - margin, pageH - margin, {
+        align: "right",
+      });
+
+      const nome = `${isEspecial ? "receita-especial" : "prescricao"}-${slugPaciente || "paciente"}.pdf`;
+      doc.save(nome);
+    });
+
     pushRecente(LS_PACIENTES, paciente);
     setPacientesRecentes(loadRecentes(LS_PACIENTES));
     registrarHistorico("pdf");
-    toast.success("PDF gerado.");
+    toast.success(
+      grupos.length > 1
+        ? `${grupos.length} documentos gerados (comum + controle especial).`
+        : "PDF gerado.",
+    );
   };
+
 
   const [kitDialogOpen, setKitDialogOpen] = useState(false);
   const [kitNome, setKitNome] = useState("");
@@ -1363,10 +1384,10 @@ function PrescricaoForm() {
                   <h3 className="text-sm font-semibold tracking-wide">
                     Revisão da receita
                   </h3>
-                  {especial && (
+                  {hasControlado && (
                     <span className="inline-flex items-center gap-1 rounded-full border border-amber-500/40 bg-amber-500/10 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide text-amber-700 dark:text-amber-300">
                       <span className="inline-block h-1.5 w-1.5 rounded-full bg-amber-500" />
-                      Controlada
+                      {hasComum ? "Comum + Controlada" : "Controlada"}
                     </span>
                   )}
                 </div>
@@ -1553,7 +1574,7 @@ function PrescricaoForm() {
               <div>
                 <h4 className="text-sm font-semibold">Dados do paciente</h4>
                 <p className="text-xs text-muted-foreground">
-                  Preencha antes de emitir. Ative o receituário especial se for receita controlada.
+                  O tipo de receituário é identificado automaticamente pelos medicamentos adicionados.
                 </p>
               </div>
 
@@ -1582,52 +1603,76 @@ function PrescricaoForm() {
                 </div>
               </div>
 
-              <div
-                className={`rounded-xl border ${especial ? "border-amber-500/40 bg-amber-500/5" : "border-border/70 bg-background/40"} px-4 py-3 space-y-3`}
-              >
-                <label className="flex items-start gap-2.5 cursor-pointer select-none">
-                  <input
-                    type="checkbox"
-                    checked={especial}
-                    onChange={(e) => setEspecial(e.target.checked)}
-                    className="h-4 w-4 mt-0.5 rounded border-border accent-primary"
-                  />
-                  <span className="flex-1">
-                    <span className="flex items-center gap-2">
-                      <span className="text-sm font-medium">
-                        Receituário de controle especial
-                      </span>
-                      {especial && (
-                        <span className="inline-flex items-center gap-1 rounded-full border border-amber-500/40 bg-amber-500/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-amber-700 dark:text-amber-400">
-                          Receita controlada
-                        </span>
+              {/* Detecção automática do tipo de receituário */}
+              {itens.length > 0 && (
+                <div
+                  className={`rounded-xl border px-4 py-3 ${
+                    hasControlado
+                      ? "border-amber-500/40 bg-amber-500/5"
+                      : "border-emerald-500/30 bg-emerald-500/5"
+                  }`}
+                >
+                  <div className="flex items-start gap-2.5">
+                    <span
+                      className={`mt-0.5 inline-block h-2 w-2 rounded-full ${
+                        hasControlado ? "bg-amber-500" : "bg-emerald-500"
+                      }`}
+                    />
+                    <div className="flex-1 min-w-0">
+                      <div className="text-sm font-medium">
+                        {hasControlado && hasComum
+                          ? "Serão gerados 2 documentos separados"
+                          : hasControlado
+                            ? "Receituário de controle especial"
+                            : "Receita simples"}
+                      </div>
+                      <ul className="mt-1.5 space-y-1 text-xs text-muted-foreground">
+                        {hasComum && (
+                          <li className="flex items-center gap-1.5">
+                            <span className="inline-block h-1.5 w-1.5 rounded-full bg-emerald-500" />
+                            Receita simples — {itensComuns.length}{" "}
+                            {itensComuns.length === 1 ? "item" : "itens"} (
+                            {itensComuns.map((it) => it.med.nome.split(" ")[0]).join(", ")})
+                          </li>
+                        )}
+                        {hasControlado && (
+                          <li className="flex items-center gap-1.5">
+                            <span className="inline-block h-1.5 w-1.5 rounded-full bg-amber-500" />
+                            Controle especial — {itensControlados.length}{" "}
+                            {itensControlados.length === 1 ? "item" : "itens"} (
+                            {itensControlados.map((it) => it.med.nome.split(" ")[0]).join(", ")})
+                          </li>
+                        )}
+                      </ul>
+                      {hasControlado && (
+                        <p className="mt-2 text-[11px] text-amber-700 dark:text-amber-400">
+                          Substâncias sob controle especial exigem CPF e endereço completo do paciente.
+                        </p>
                       )}
-                    </span>
-                    <span className="block text-xs text-muted-foreground">
-                      Para substâncias controladas — exige CPF e endereço completo do paciente.
-                    </span>
-                  </span>
-                </label>
+                    </div>
+                  </div>
+                </div>
+              )}
 
-                {especial && (
-                  <div className="space-y-3 pt-1">
-                    <div className="grid gap-3 md:grid-cols-[minmax(0,220px)_minmax(0,200px)_minmax(0,1fr)]">
-                      {/* CPF */}
-                      <div className="space-y-1">
-                        <label className="text-xs text-muted-foreground">CPF</label>
-                        <div className="relative">
-                          <input
-                            ref={cpfRef}
-                            value={formatCpf(cpfDigits)}
-                            onChange={(e) =>
-                              setCpfDigits(e.target.value.replace(/\D/g, "").slice(0, 11))
-                            }
-                            onPaste={(e) => {
-                              e.preventDefault();
-                              const text = e.clipboardData
-                                .getData("text")
-                                .replace(/\D/g, "")
-                                .slice(0, 11);
+              {hasControlado && (
+                <div className="space-y-3 pt-1">
+                  <div className="grid gap-3 md:grid-cols-[minmax(0,220px)_minmax(0,200px)_minmax(0,1fr)]">
+                    {/* CPF */}
+                    <div className="space-y-1">
+                      <label className="text-xs text-muted-foreground">CPF</label>
+                      <div className="relative">
+                        <input
+                          ref={cpfRef}
+                          value={formatCpf(cpfDigits)}
+                          onChange={(e) =>
+                            setCpfDigits(e.target.value.replace(/\D/g, "").slice(0, 11))
+                          }
+                          onPaste={(e) => {
+                            e.preventDefault();
+                            const text = e.clipboardData
+                              .getData("text")
+                              .replace(/\D/g, "")
+                              .slice(0, 11);
                               setCpfDigits(text);
                             }}
                             autoComplete="off"
@@ -1793,8 +1838,8 @@ function PrescricaoForm() {
                     )}
                   </div>
                 )}
-              </div>
             </div>
+
 
             <div className="mt-2 pt-4 border-t border-border">
 
