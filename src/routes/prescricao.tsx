@@ -1413,17 +1413,17 @@ function PrescricaoForm() {
                   setTimeout(() => searchRef.current?.focus(), 0);
                 }}
               >
-                <TabsList className="w-full h-auto p-1 bg-muted/60 grid grid-cols-2 gap-1">
+                <TabsList className="w-full h-auto p-1 bg-muted grid grid-cols-2 gap-1 rounded-xl border border-border/60 shadow-inner">
                   <TabsTrigger
                     value="comum"
-                    className="flex items-center gap-2 py-2.5 data-[state=active]:bg-background data-[state=active]:shadow-sm"
+                    className="flex items-center gap-2 py-2.5 rounded-lg text-muted-foreground transition-all data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:border data-[state=active]:border-border/60 data-[state=active]:shadow-md"
                   >
                     <Shield className="h-4 w-4" />
                     <span className="font-medium">Comum</span>
                   </TabsTrigger>
                   <TabsTrigger
                     value="controlado"
-                    className="flex items-center gap-2 py-2.5 data-[state=active]:bg-background data-[state=active]:shadow-sm"
+                    className="flex items-center gap-2 py-2.5 rounded-lg text-muted-foreground transition-all data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:border data-[state=active]:border-border/60 data-[state=active]:shadow-md"
                   >
                     <ShieldAlert className="h-4 w-4" />
                     <span className="font-medium">Controlado</span>
