@@ -1228,34 +1228,44 @@ function PrescricaoForm() {
 
             {especial && (
               <div className="space-y-3 pt-1">
-                <div className="grid gap-3 md:grid-cols-[minmax(0,200px)_minmax(0,1fr)]">
+                <div className="grid gap-3 md:grid-cols-[minmax(0,220px)_minmax(0,200px)_minmax(0,1fr)]">
+                  {/* CPF */}
                   <div className="space-y-1">
                     <label className="text-xs text-muted-foreground">CPF</label>
-                    <input
-                      ref={cpfRef}
-                      value={formatCpf(cpfDigits)}
-                      onChange={(e) =>
-                        setCpfDigits(e.target.value.replace(/\D/g, "").slice(0, 11))
-                      }
-                      onPaste={(e) => {
-                        e.preventDefault();
-                        const text = e.clipboardData
-                          .getData("text")
-                          .replace(/\D/g, "")
-                          .slice(0, 11);
-                        setCpfDigits(text);
-                      }}
-                      autoComplete="off"
-                      inputMode="numeric"
-                      maxLength={14}
-                      placeholder="000.000.000-00"
-                      aria-invalid={!cpfValido}
-                      className={`w-full rounded-xl border bg-background/40 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 ${
-                        cpfValido
-                          ? "border-emerald-500/40 focus:ring-emerald-500/40"
-                          : "border-destructive/50 focus:ring-destructive/40"
-                      }`}
-                    />
+                    <div className="relative">
+                      <input
+                        ref={cpfRef}
+                        value={formatCpf(cpfDigits)}
+                        onChange={(e) =>
+                          setCpfDigits(e.target.value.replace(/\D/g, "").slice(0, 11))
+                        }
+                        onPaste={(e) => {
+                          e.preventDefault();
+                          const text = e.clipboardData
+                            .getData("text")
+                            .replace(/\D/g, "")
+                            .slice(0, 11);
+                          setCpfDigits(text);
+                        }}
+                        autoComplete="off"
+                        inputMode="numeric"
+                        maxLength={14}
+                        placeholder="000.000.000-00"
+                        aria-invalid={!cpfValido}
+                        className={`w-full rounded-xl border bg-background/40 px-3 py-2.5 pr-9 text-sm focus:outline-none focus:ring-2 ${
+                          cpfValido
+                            ? "border-emerald-500/40 focus:ring-emerald-500/40"
+                            : "border-destructive/50 focus:ring-destructive/40"
+                        }`}
+                      />
+                      <span className="absolute right-2.5 top-1/2 -translate-y-1/2">
+                        {cpfValido ? (
+                          <CheckCircle2 className="h-4 w-4 text-emerald-500" />
+                        ) : (
+                          <AlertCircle className="h-4 w-4 text-destructive/70" />
+                        )}
+                      </span>
+                    </div>
                     <p
                       className={`text-[11px] ${cpfValido ? "text-emerald-500" : "text-destructive"}`}
                     >
@@ -1268,49 +1278,133 @@ function PrescricaoForm() {
                             : "Dígito verificador inválido."}
                     </p>
                   </div>
+
+                  {/* CEP */}
                   <div className="space-y-1">
                     <label className="text-xs text-muted-foreground">
-                      CEP (preenche endereço automaticamente)
+                      CEP
                     </label>
-                    <div className="flex gap-2">
+                    <div className="relative">
                       <input
                         value={cepDigits.replace(/(\d{5})(\d)/, "$1-$2")}
                         onChange={(e) => onCepChange(e.target.value)}
                         inputMode="numeric"
                         maxLength={9}
                         placeholder="00000-000"
-                        className="w-32 rounded-xl border border-border bg-background/40 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring/40"
+                        aria-invalid={!!cepError}
+                        className={`w-full rounded-xl border bg-background/40 px-3 py-2.5 pr-9 text-sm focus:outline-none focus:ring-2 ${
+                          cepError
+                            ? "border-destructive/50 focus:ring-destructive/40"
+                            : cepDigits.length === 8 && !cepLoading
+                              ? "border-emerald-500/40 focus:ring-emerald-500/40"
+                              : "border-border focus:ring-ring/40"
+                        }`}
                       />
-                      {cepLoading && (
-                        <span className="text-xs text-muted-foreground self-center">
-                          Buscando…
-                        </span>
-                      )}
+                      <span className="absolute right-2.5 top-1/2 -translate-y-1/2">
+                        {cepLoading ? (
+                          <Loader2 className="h-4 w-4 text-muted-foreground animate-spin" />
+                        ) : cepError ? (
+                          <AlertCircle className="h-4 w-4 text-destructive/70" />
+                        ) : cepDigits.length === 8 ? (
+                          <CheckCircle2 className="h-4 w-4 text-emerald-500" />
+                        ) : null}
+                      </span>
                     </div>
+                    <p
+                      className={`text-[11px] ${
+                        cepError
+                          ? "text-destructive"
+                          : cepDigits.length === 8 && !cepLoading
+                            ? "text-emerald-500"
+                            : "text-muted-foreground"
+                      }`}
+                    >
+                      {cepLoading
+                        ? "Buscando endereço…"
+                        : cepError
+                          ? cepError
+                          : cepDigits.length === 8
+                            ? "Endereço preenchido."
+                            : "Preenche o endereço automaticamente."}
+                    </p>
+                  </div>
+
+                  {/* Número + Complemento */}
+                  <div className="space-y-1">
+                    <label className="text-xs text-muted-foreground">
+                      Número e complemento
+                    </label>
+                    <div className="flex gap-2">
+                      <input
+                        ref={numeroRef}
+                        value={numero}
+                        onChange={(e) => setNumero(e.target.value)}
+                        placeholder="Nº"
+                        inputMode="numeric"
+                        aria-invalid={!numeroValido}
+                        className={`w-20 rounded-xl border bg-background/40 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 ${
+                          numeroValido
+                            ? "border-emerald-500/40 focus:ring-emerald-500/40"
+                            : "border-destructive/50 focus:ring-destructive/40"
+                        }`}
+                      />
+                      <input
+                        value={complemento}
+                        onChange={(e) => setComplemento(e.target.value)}
+                        placeholder="Complemento (opcional) — apto, bloco…"
+                        className="flex-1 rounded-xl border border-border bg-background/40 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring/40"
+                      />
+                    </div>
+                    <p
+                      className={`text-[11px] ${numeroValido ? "text-emerald-500" : "text-destructive"}`}
+                    >
+                      {numeroValido ? "Número informado." : "Informe o número."}
+                    </p>
                   </div>
                 </div>
+
+                {/* Logradouro / bairro / cidade */}
                 <div className="space-y-1">
-                  <label className="text-xs text-muted-foreground">Endereço completo</label>
-                  <input
-                    ref={enderecoRef}
-                    value={endereco}
-                    onChange={(e) => setEndereco(e.target.value)}
-                    placeholder="Rua, número, bairro, cidade/UF"
-                    aria-invalid={!enderecoValido}
-                    className={`w-full rounded-xl border bg-background/40 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 ${
-                      enderecoValido
-                        ? "border-emerald-500/40 focus:ring-emerald-500/40"
-                        : "border-destructive/50 focus:ring-destructive/40"
-                    }`}
-                  />
+                  <label className="text-xs text-muted-foreground">
+                    Rua, bairro, cidade/UF
+                  </label>
+                  <div className="relative">
+                    <input
+                      ref={enderecoRef}
+                      value={endereco}
+                      onChange={(e) => setEndereco(e.target.value)}
+                      placeholder="Ex: Av. Paulista, Bela Vista, São Paulo/SP"
+                      aria-invalid={!enderecoValido}
+                      className={`w-full rounded-xl border bg-background/40 px-3 py-2.5 pr-9 text-sm focus:outline-none focus:ring-2 ${
+                        enderecoValido
+                          ? "border-emerald-500/40 focus:ring-emerald-500/40"
+                          : "border-destructive/50 focus:ring-destructive/40"
+                      }`}
+                    />
+                    <span className="absolute right-2.5 top-1/2 -translate-y-1/2">
+                      {enderecoValido ? (
+                        <CheckCircle2 className="h-4 w-4 text-emerald-500" />
+                      ) : (
+                        <AlertCircle className="h-4 w-4 text-destructive/70" />
+                      )}
+                    </span>
+                  </div>
                   <p
                     className={`text-[11px] ${enderecoValido ? "text-emerald-500" : "text-destructive"}`}
                   >
                     {enderecoValido
-                      ? "Endereço completo."
-                      : "Inclua rua, número, bairro e cidade/UF."}
+                      ? "Endereço válido."
+                      : "Inclua rua, bairro e cidade/UF (preenchido automaticamente pelo CEP)."}
                   </p>
                 </div>
+
+                {/* Preview do endereço completo */}
+                {enderecoFullValido && (
+                  <div className="rounded-lg border border-emerald-500/30 bg-emerald-500/5 px-3 py-2 text-xs text-emerald-700 dark:text-emerald-400">
+                    <span className="font-medium">Endereço completo: </span>
+                    {enderecoCompleto}
+                  </div>
+                )}
               </div>
             )}
           </div>
