@@ -711,6 +711,7 @@ function PrescricaoForm() {
     posologiasInvalidas.length === 0;
 
   const validarEmissao = (): boolean => {
+    setTriedEmit(true);
     if (!paciente.trim()) {
       toast.error("Informe o paciente.");
       return false;
