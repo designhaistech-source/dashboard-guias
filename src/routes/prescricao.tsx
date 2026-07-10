@@ -1438,7 +1438,7 @@ function PrescricaoForm() {
             {tipoBusca === null ? (
               <div className="rounded-xl border border-dashed border-border bg-background/30 p-6 text-sm text-muted-foreground text-center">
                 Selecione <strong className="text-foreground">Comum</strong> ou{" "}
-                <strong className="text-foreground">Controlado</strong> acima para buscar medicamentos.
+                <strong className="text-foreground">Especial</strong> acima para buscar medicamentos.
               </div>
             ) : (
               <>
