@@ -33,6 +33,7 @@ export function Field({
   error,
   className,
   labelClassName,
+  rightAdornment,
   children,
 }: FieldProps) {
   const messageId = id ? `${id}-msg` : undefined;
