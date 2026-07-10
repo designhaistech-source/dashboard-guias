@@ -402,10 +402,6 @@ function pushRecente(key: string, value: string, max = 8) {
   window.localStorage.setItem(key, JSON.stringify(cur.slice(0, max)));
 }
 
-async function buscarCep(cep: string): Promise<string | null> {
-  const digits = cep.replace(/\D/g, "");
-  if (digits.length !== 8) return null;
-  try {
 type CepResult = { logradouro: string; bairro: string; cidade: string; uf: string };
 
 async function buscarCep(cep: string): Promise<CepResult | null> {
