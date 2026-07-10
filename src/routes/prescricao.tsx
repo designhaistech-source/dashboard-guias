@@ -1606,11 +1606,15 @@ function PrescricaoForm() {
 
         <div
           ref={receitaRef}
-          className={`rounded-2xl border bg-card ${
-            especial ? "border-destructive/60" : "border-border"
-          }`}
+          className="rounded-2xl border border-border bg-card"
         >
-          {especial && <div className="h-1.5 rounded-t-2xl bg-destructive" />}
+          {especial && (
+            <div className="flex items-center gap-2 px-5 py-2 rounded-t-2xl border-b border-amber-500/30 bg-amber-500/10 text-amber-700 dark:text-amber-300 text-xs font-medium">
+              <span className="inline-block h-1.5 w-1.5 rounded-full bg-amber-500" />
+              Receita controlada
+            </div>
+          )}
+
           <div className="p-5 space-y-4">
             <div className="flex flex-wrap items-start justify-between gap-3">
               <div className="min-w-0">
