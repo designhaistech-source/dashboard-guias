@@ -13,8 +13,6 @@ import {
   Link2,
   Download,
   GripVertical,
-  ArrowUp,
-  ArrowDown,
   History,
   RefreshCw,
   Trash2,
@@ -1647,38 +1645,8 @@ function PrescricaoForm() {
               )}
             </div>
 
-            {pendencias.length > 0 && (
-              <div className="rounded-xl border border-border bg-muted/30 p-3 text-sm">
-                <div className="font-medium text-foreground/80 mb-1.5 text-xs uppercase tracking-wide">
-                  Para emitir, falta:
-                </div>
-                <ul className="space-y-1">
-                  {pendencias.map((p) => (
-                    <li key={p.msg} className="flex items-center gap-2">
-                      <span className="h-1.5 w-1.5 rounded-full border border-muted-foreground/50 shrink-0" />
-                      <button
-                        type="button"
-                        onClick={() => {
-                          const targetId =
-                            p.msg.startsWith("Nome") ||
-                            p.msg.includes("CPF") ||
-                            p.msg.includes("Endereço")
-                              ? "sec-paciente"
-                              : "sec-medicamentos";
-                          document
-                            .getElementById(targetId)
-                            ?.scrollIntoView({ behavior: "smooth", block: "start" });
-                          setTimeout(() => p.focus?.(), 300);
-                        }}
-                        className="text-left text-muted-foreground hover:text-foreground hover:underline underline-offset-2"
-                      >
-                        {p.msg}
-                      </button>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
+
+
 
             <ul className="space-y-3">
               {itens.map((it, i) => {
@@ -1825,24 +1793,6 @@ function PrescricaoForm() {
                         )}
                       </div>
 
-                      <div className="flex flex-col gap-1 shrink-0">
-                        <button
-                          onClick={() => moveItem(i, i - 1)}
-                          disabled={i === 0}
-                          className="grid place-items-center h-6 w-6 rounded border border-border text-muted-foreground hover:text-foreground disabled:opacity-30 disabled:cursor-not-allowed"
-                          aria-label="Mover para cima"
-                        >
-                          <ArrowUp className="h-3 w-3" />
-                        </button>
-                        <button
-                          onClick={() => moveItem(i, i + 1)}
-                          disabled={i === itens.length - 1}
-                          className="grid place-items-center h-6 w-6 rounded border border-border text-muted-foreground hover:text-foreground disabled:opacity-30 disabled:cursor-not-allowed"
-                          aria-label="Mover para baixo"
-                        >
-                          <ArrowDown className="h-3 w-3" />
-                        </button>
-                      </div>
                       <button
                         onClick={() => removeItem(i)}
                         className="grid place-items-center h-6 w-6 rounded border border-border text-muted-foreground hover:text-destructive hover:border-destructive/60 shrink-0"
