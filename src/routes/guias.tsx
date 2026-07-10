@@ -38,6 +38,7 @@ import { AppSidebar } from "@/components/app-sidebar";
 import { SiteFooter } from "@/components/site-footer";
 import { PageHeader } from "@/components/page-header";
 import { SearchInput } from "@/components/form-field";
+import { Combobox } from "@/components/ui/combobox";
 import { Badge } from "@/components/ui/badge";
 import { EmptyState } from "@/components/data-state";
 
@@ -283,8 +284,31 @@ function History_Section({ extraRows }: { extraRows: Row[] }) {
         <div className="flex-1 min-w-[260px] max-w-md">
           <SearchInput placeholder="Buscar por arquivo ou paciente" />
         </div>
-        <FilterSelect label="Todos" />
-        <FilterSelect label="Todos os tipos" />
+        <div className="w-[180px]">
+          <Combobox
+            options={[
+              { value: "sucesso", label: "Sucesso" },
+              { value: "erro", label: "Erro" },
+              { value: "processando", label: "Processando" },
+            ]}
+            placeholder="Todos os status"
+            searchPlaceholder="Buscar status..."
+            clearable
+          />
+        </div>
+        <div className="w-[200px]">
+          <Combobox
+            options={[
+              { value: "sadt", label: "SADT" },
+              { value: "consulta", label: "Consulta" },
+              { value: "internacao", label: "Internação" },
+              { value: "honorario", label: "Honorário" },
+            ]}
+            placeholder="Todos os tipos"
+            searchPlaceholder="Buscar tipo..."
+            clearable
+          />
+        </div>
         <DateField label="Data início" />
         <DateField label="Data fim" />
         <button className="text-sm font-medium text-foreground hover:text-primary">
@@ -734,14 +758,6 @@ function Td({ children, className = "" }: { children: React.ReactNode; className
   return <td className={`px-6 py-4 align-middle ${className}`}>{children}</td>;
 }
 
-function FilterSelect({ label }: { label: string }) {
-  return (
-    <button className="inline-flex items-center justify-between gap-3 rounded-lg border border-border bg-card px-3 py-2 text-sm min-w-[160px]">
-      <span className="text-muted-foreground">{label}</span>
-      <ChevronDown className="h-4 w-4 text-muted-foreground" />
-    </button>
-  );
-}
 
 function DateField({ label }: { label: string }) {
   return (
