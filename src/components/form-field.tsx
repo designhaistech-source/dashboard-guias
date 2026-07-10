@@ -4,6 +4,14 @@ import { AlertCircle, Loader2, Search as SearchLucide, X } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+
 
 /* ---------------- Field ---------------- */
 
@@ -221,4 +229,98 @@ export const SearchField = React.forwardRef<HTMLInputElement, SearchFieldProps>(
   },
 );
 SearchField.displayName = "SearchField";
+
+/* ---------------- SelectField ---------------- */
+
+export interface SelectOption {
+  value: string;
+  label: React.ReactNode;
+  disabled?: boolean;
+}
+
+interface SelectFieldProps {
+  id?: string;
+  label?: React.ReactNode;
+  required?: boolean;
+  optional?: boolean;
+  hint?: React.ReactNode;
+  error?: React.ReactNode;
+  className?: string;
+  labelClassName?: string;
+  triggerClassName?: string;
+  value?: string;
+  onValueChange?: (value: string) => void;
+  defaultValue?: string;
+  placeholder?: React.ReactNode;
+  disabled?: boolean;
+  name?: string;
+  /** Lista de opções. Alternativa: passar `children` (SelectItem...) diretamente. */
+  options?: SelectOption[];
+  children?: React.ReactNode;
+}
+
+/**
+ * Select padronizado com label + hint/erro.
+ * Herda os mesmos tokens (altura h-9, foco, aria-invalid) dos demais campos.
+ */
+export function SelectField({
+  id,
+  label,
+  required,
+  optional,
+  hint,
+  error,
+  className,
+  labelClassName,
+  triggerClassName,
+  value,
+  onValueChange,
+  defaultValue,
+  placeholder,
+  disabled,
+  name,
+  options,
+  children,
+}: SelectFieldProps) {
+  const messageId = id ? `${id}-msg` : undefined;
+  return (
+    <Field
+      id={id}
+      label={label}
+      required={required}
+      optional={optional}
+      hint={hint}
+      error={error}
+      className={className}
+      labelClassName={labelClassName}
+    >
+      <Select
+        value={value}
+        defaultValue={defaultValue}
+        onValueChange={onValueChange}
+        disabled={disabled}
+        name={name}
+      >
+        <SelectTrigger
+          id={id}
+          aria-invalid={Boolean(error) || undefined}
+          aria-describedby={messageId}
+          className={triggerClassName}
+        >
+          <SelectValue placeholder={placeholder} />
+        </SelectTrigger>
+        <SelectContent>
+          {options
+            ? options.map((o) => (
+                <SelectItem key={o.value} value={o.value} disabled={o.disabled}>
+                  {o.label}
+                </SelectItem>
+              ))
+            : children}
+        </SelectContent>
+      </Select>
+    </Field>
+  );
+}
+
 

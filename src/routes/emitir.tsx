@@ -35,6 +35,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { SelectField } from "@/components/form-field";
+
 import {
   Dialog,
   DialogContent,
@@ -665,20 +667,15 @@ function EmitirPage() {
                         placeholder="000000"
                       />
                     </Field>
-                    <Field label="Caráter do atendimento" required>
-                      <Select value={character} onValueChange={setCharacter}>
-                        <SelectTrigger>
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {CHARACTER_OPTIONS.map((c) => (
-                            <SelectItem key={c} value={c}>
-                              {c}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </Field>
+                    <SelectField
+                      label="Caráter do atendimento"
+                      required
+                      labelClassName="text-xs font-medium text-muted-foreground"
+                      value={character}
+                      onValueChange={setCharacter}
+                      options={CHARACTER_OPTIONS.map((c) => ({ value: c, label: c }))}
+                    />
+
                     <Field label="Data da solicitação">
                       <Input
                         type="date"
@@ -728,26 +725,21 @@ function EmitirPage() {
                   description="Regime, acomodação e previsão de permanência."
                 >
                   <Grid cols={2}>
-                    <Field label="Tipo de internação" required>
-                      <Select value={internacaoTipo} onValueChange={setInternacaoTipo}>
-                        <SelectTrigger><SelectValue /></SelectTrigger>
-                        <SelectContent>
-                          {["Clínica", "Cirúrgica", "Obstétrica", "Pediátrica", "Psiquiátrica"].map((o) => (
-                            <SelectItem key={o} value={o}>{o}</SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </Field>
-                    <Field label="Regime">
-                      <Select value={internacaoRegime} onValueChange={setInternacaoRegime}>
-                        <SelectTrigger><SelectValue /></SelectTrigger>
-                        <SelectContent>
-                          {["Hospitalar", "Hospital-dia", "Domiciliar"].map((o) => (
-                            <SelectItem key={o} value={o}>{o}</SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </Field>
+                    <SelectField
+                      label="Tipo de internação"
+                      required
+                      labelClassName="text-xs font-medium text-muted-foreground"
+                      value={internacaoTipo}
+                      onValueChange={setInternacaoTipo}
+                      options={["Clínica", "Cirúrgica", "Obstétrica", "Pediátrica", "Psiquiátrica"].map((o) => ({ value: o, label: o }))}
+                    />
+                    <SelectField
+                      label="Regime"
+                      labelClassName="text-xs font-medium text-muted-foreground"
+                      value={internacaoRegime}
+                      onValueChange={setInternacaoRegime}
+                      options={["Hospitalar", "Hospital-dia", "Domiciliar"].map((o) => ({ value: o, label: o }))}
+                    />
                     <Field label="Dias solicitados" required>
                       <Input
                         type="number"
@@ -758,16 +750,14 @@ function EmitirPage() {
                         }
                       />
                     </Field>
-                    <Field label="Acomodação">
-                      <Select value={internacaoAcomodacao} onValueChange={setInternacaoAcomodacao}>
-                        <SelectTrigger><SelectValue /></SelectTrigger>
-                        <SelectContent>
-                          {["Enfermaria", "Apartamento", "UTI"].map((o) => (
-                            <SelectItem key={o} value={o}>{o}</SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </Field>
+                    <SelectField
+                      label="Acomodação"
+                      labelClassName="text-xs font-medium text-muted-foreground"
+                      value={internacaoAcomodacao}
+                      onValueChange={setInternacaoAcomodacao}
+                      options={["Enfermaria", "Apartamento", "UTI"].map((o) => ({ value: o, label: o }))}
+                    />
+
                   </Grid>
                 </Section>
               )}
@@ -786,16 +776,15 @@ function EmitirPage() {
                         onChange={(e) => setApacCompetencia(e.target.value)}
                       />
                     </Field>
-                    <Field label="Tipo de APAC" required>
-                      <Select value={apacTipo} onValueChange={setApacTipo}>
-                        <SelectTrigger><SelectValue /></SelectTrigger>
-                        <SelectContent>
-                          {["Inicial", "Continuidade", "Única"].map((o) => (
-                            <SelectItem key={o} value={o}>{o}</SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </Field>
+                    <SelectField
+                      label="Tipo de APAC"
+                      required
+                      labelClassName="text-xs font-medium text-muted-foreground"
+                      value={apacTipo}
+                      onValueChange={setApacTipo}
+                      options={["Inicial", "Continuidade", "Única"].map((o) => ({ value: o, label: o }))}
+                    />
+
                   </Grid>
                 </Section>
               )}
@@ -807,16 +796,15 @@ function EmitirPage() {
                   description="Caráter da internação e motivo."
                 >
                   <Grid cols={2}>
-                    <Field label="Caráter da internação" required>
-                      <Select value={aihCaraterEntry} onValueChange={setAihCaraterEntry}>
-                        <SelectTrigger><SelectValue /></SelectTrigger>
-                        <SelectContent>
-                          {["Eletivo", "Urgência"].map((o) => (
-                            <SelectItem key={o} value={o}>{o}</SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </Field>
+                    <SelectField
+                      label="Caráter da internação"
+                      required
+                      labelClassName="text-xs font-medium text-muted-foreground"
+                      value={aihCaraterEntry}
+                      onValueChange={setAihCaraterEntry}
+                      options={["Eletivo", "Urgência"].map((o) => ({ value: o, label: o }))}
+                    />
+
                     <Field label="Motivo da internação" required>
                       <Input
                         value={aihMotivo}
@@ -863,18 +851,18 @@ function EmitirPage() {
                       onChange={(e) => setPacienteNascimento(e.target.value)}
                     />
                   </Field>
-                  <Field label="Sexo">
-                    <Select value={pacienteSexo} onValueChange={setPacienteSexo}>
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="F">Feminino</SelectItem>
-                        <SelectItem value="M">Masculino</SelectItem>
-                        <SelectItem value="O">Outro</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </Field>
+                  <SelectField
+                    label="Sexo"
+                    labelClassName="text-xs font-medium text-muted-foreground"
+                    value={pacienteSexo}
+                    onValueChange={setPacienteSexo}
+                    options={[
+                      { value: "F", label: "Feminino" },
+                      { value: "M", label: "Masculino" },
+                      { value: "O", label: "Outro" },
+                    ]}
+                  />
+
                 </Grid>
               </Section>
 
@@ -957,82 +945,56 @@ function EmitirPage() {
                   </Button>
                 }
               >
-                <Field label="Kits do usuário">
-                  <Select
-                    value={selectedUserKit}
+                <SelectField
+                  label="Kits do usuário"
+                  labelClassName="text-xs font-medium text-muted-foreground"
+                  value={selectedUserKit}
+                  onValueChange={(v) => {
+                    setSelectedUserKit(v);
+                    const kit = userKits.find((k) => k.id === v);
+                    if (kit) applyKit(kit);
+                  }}
+                  placeholder={
+                    userKits.length === 0
+                      ? "Nenhum kit cadastrado"
+                      : "Selecione um kit salvo"
+                  }
+                  options={userKits.map((k) => ({
+                    value: k.id,
+                    label: `${k.name} (${k.procedures.length})`,
+                  }))}
+                />
+
+                <Grid cols={2}>
+                  <SelectField
+                    label="Kits por Especialidade Médica"
+                    labelClassName="text-xs font-medium text-muted-foreground"
+                    value={selectedSpecialty}
                     onValueChange={(v) => {
-                      setSelectedUserKit(v);
-                      const kit = userKits.find((k) => k.id === v);
+                      setSelectedSpecialty(v);
+                      setSelectedSpecialtyKit("");
+                    }}
+                    placeholder="Selecione uma especialidade (CBO)"
+                    options={specialties.map((s) => ({ value: s, label: s }))}
+                  />
+                  <SelectField
+                    label="Procedimento"
+                    labelClassName="text-xs font-medium text-muted-foreground"
+                    value={selectedSpecialtyKit}
+                    onValueChange={(v) => {
+                      setSelectedSpecialtyKit(v);
+                      const kit = specialtyKitOptions.find((k) => k.id === v);
                       if (kit) applyKit(kit);
                     }}
-                  >
-                    <SelectTrigger>
-                      <SelectValue
-                        placeholder={
-                          userKits.length === 0
-                            ? "Nenhum kit cadastrado"
-                            : "Selecione um kit salvo"
-                        }
-                      />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {userKits.map((k) => (
-                        <SelectItem key={k.id} value={k.id}>
-                          {k.name} ({k.procedures.length})
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </Field>
-                <Grid cols={2}>
-                  <Field label="Kits por Especialidade Médica">
-                    <Select
-                      value={selectedSpecialty}
-                      onValueChange={(v) => {
-                        setSelectedSpecialty(v);
-                        setSelectedSpecialtyKit("");
-                      }}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Selecione uma especialidade (CBO)" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {specialties.map((s) => (
-                          <SelectItem key={s} value={s}>
-                            {s}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </Field>
-                  <Field label="Procedimento">
-                    <Select
-                      value={selectedSpecialtyKit}
-                      onValueChange={(v) => {
-                        setSelectedSpecialtyKit(v);
-                        const kit = specialtyKitOptions.find((k) => k.id === v);
-                        if (kit) applyKit(kit);
-                      }}
-                      disabled={!selectedSpecialty}
-                    >
-                      <SelectTrigger>
-                        <SelectValue
-                          placeholder={
-                            selectedSpecialty
-                              ? "Selecione um kit"
-                              : "Escolha a especialidade primeiro"
-                          }
-                        />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {specialtyKitOptions.map((k) => (
-                          <SelectItem key={k.id} value={k.id}>
-                            {k.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </Field>
+                    disabled={!selectedSpecialty}
+                    placeholder={
+                      selectedSpecialty
+                        ? "Selecione um kit"
+                        : "Escolha a especialidade primeiro"
+                    }
+                    options={specialtyKitOptions.map((k) => ({ value: k.id, label: k.name }))}
+                  />
+
                 </Grid>
               </Section>
 
@@ -1371,19 +1333,13 @@ function EmitirPage() {
                 Preenche automaticamente o campo <span className="font-medium">Estabelecimento</span> nas guias SUS.
               </p>
             </div>
-            <div className="space-y-1.5">
-              <Label>UF</Label>
-              <Select value={prefUf} onValueChange={setPrefUf}>
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {["AC","AL","AP","AM","BA","CE","DF","ES","GO","MA","MT","MS","MG","PA","PB","PR","PE","PI","RJ","RN","RS","RO","RR","SC","SP","SE","TO"].map((uf) => (
-                    <SelectItem key={uf} value={uf}>{uf}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+            <SelectField
+              label="UF"
+              value={prefUf}
+              onValueChange={setPrefUf}
+              options={["AC","AL","AP","AM","BA","CE","DF","ES","GO","MA","MT","MS","MG","PA","PB","PR","PE","PI","RJ","RN","RS","RO","RR","SC","SP","SE","TO"].map((uf) => ({ value: uf, label: uf }))}
+            />
+
             <div className="rounded-md border border-primary/30 bg-primary/5 text-primary text-xs px-3 py-2 flex gap-2">
               <Info className="h-4 w-4 shrink-0 mt-0.5" />
               <span>
