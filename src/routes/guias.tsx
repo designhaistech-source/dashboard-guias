@@ -914,7 +914,7 @@ function RequiredFieldsModal() {
   const discardChanges = () => {
     setDraft(saved);
     setPickerSelection([]);
-    setFieldSearch("");
+    
     setConfirmDiscard(false);
     setOpen(false);
   };
