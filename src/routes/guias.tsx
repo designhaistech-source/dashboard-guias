@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useRef, useState } from "react";
+import { useRef, useState, type ChangeEvent } from "react";
 import {
   Upload,
   FileUp,
@@ -37,6 +37,7 @@ import {
 import { AppSidebar } from "@/components/app-sidebar";
 import { SiteFooter } from "@/components/site-footer";
 import { PageHeader } from "@/components/page-header";
+import { SearchInput } from "@/components/form-field";
 
 export const Route = createFileRoute("/guias")({
   head: () => ({
@@ -277,13 +278,8 @@ function History_Section({ extraRows }: { extraRows: Row[] }) {
 
 
       <div className="flex flex-wrap items-center gap-3">
-        <div className="relative flex-1 min-w-[260px] max-w-md">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <input
-            type="text"
-            placeholder="Buscar por arquivo ou paciente"
-            className="w-full rounded-lg border border-border bg-card pl-9 pr-3 py-2 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/40"
-          />
+        <div className="flex-1 min-w-[260px] max-w-md">
+          <SearchInput placeholder="Buscar por arquivo ou paciente" />
         </div>
         <FilterSelect label="Todos" />
         <FilterSelect label="Todos os tipos" />
@@ -1021,15 +1017,13 @@ function RequiredFieldsModal() {
                 </button>
                 {fieldOpen && (
                   <div className="absolute z-20 mt-1 w-full rounded-lg border border-border bg-popover shadow-lg overflow-hidden">
-                    <div className="relative border-b border-border">
-                      <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                      <input
+                    <div className="border-b border-border p-1">
+                      <SearchInput
                         autoFocus
-                        type="text"
                         value={fieldSearch}
-                        onChange={(e) => setFieldSearch(e.target.value)}
+                        onChange={(e: ChangeEvent<HTMLInputElement>) => setFieldSearch(e.target.value)}
                         placeholder="Buscar campo…"
-                        className="w-full bg-transparent pl-9 pr-3 py-2 text-sm focus:outline-none"
+                        className="border-0 shadow-none focus-visible:ring-0"
                       />
                     </div>
                     <div className="max-h-64 overflow-y-auto">

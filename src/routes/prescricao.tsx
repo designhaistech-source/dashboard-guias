@@ -32,6 +32,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
+import { Field, SearchInput } from "@/components/form-field";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { jsPDF } from "jspdf";
@@ -1445,11 +1446,9 @@ function PrescricaoForm() {
 
             <div className="grid gap-3 md:grid-cols-[minmax(0,1fr)_220px]">
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <input
+                <SearchInput
                   id="med-search"
                   ref={searchRef}
-                  type="text"
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
                   onKeyDown={(e) => {
@@ -1468,7 +1467,7 @@ function PrescricaoForm() {
                     }
                   }}
                   placeholder='Nome comercial ou princípio ativo…  (tecle "/" para focar)'
-                  className="w-full rounded-xl border border-border bg-background/40 pl-10 pr-16 py-3 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/40"
+                  className="pr-16"
                 />
                 <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1">
                   {!query && <Kbd>/</Kbd>}
@@ -1805,30 +1804,23 @@ function PrescricaoForm() {
                 </p>
               </div>
 
-              <div className="space-y-2">
-                <label className="text-sm text-muted-foreground" htmlFor="paciente-input">
-                  Nome do paciente
-                </label>
-                <div className="relative">
-                  <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                  <input
-                    id="paciente-input"
-                    ref={pacienteRef}
-                    type="text"
-                    list="pacientes-recentes"
-                    value={paciente}
-                    onChange={(e) => setPaciente(e.target.value)}
-                    placeholder="Digite o nome do beneficiário..."
-                    autoComplete="off"
-                    className="w-full rounded-xl border border-border bg-background/40 pl-10 pr-3 py-3 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/40"
-                  />
-                  <datalist id="pacientes-recentes">
-                    {pacientesRecentes.map((n) => (
-                      <option key={n} value={n} />
-                    ))}
-                  </datalist>
-                </div>
-              </div>
+              <Field id="paciente-input" label="Nome do paciente">
+                <SearchInput
+                  ref={pacienteRef}
+                  leftIcon={<User className="h-4 w-4" />}
+                  list="pacientes-recentes"
+                  value={paciente}
+                  onChange={(e) => setPaciente(e.target.value)}
+                  placeholder="Digite o nome do beneficiário..."
+                  autoComplete="off"
+                />
+                <datalist id="pacientes-recentes">
+                  {pacientesRecentes.map((n) => (
+                    <option key={n} value={n} />
+                  ))}
+                </datalist>
+              </Field>
+
 
               {/* Detecção automática do tipo de receituário */}
               {itens.length > 0 && (
@@ -1885,186 +1877,145 @@ function PrescricaoForm() {
                 <div className="space-y-3 pt-1">
                   <div className="grid gap-3 md:grid-cols-[minmax(0,220px)_minmax(0,200px)_minmax(0,1fr)]">
                     {/* CPF */}
-                    <div className="space-y-1">
-                      <label className="text-xs text-muted-foreground">CPF</label>
-                      <div className="relative">
-                        <input
-                          ref={cpfRef}
-                          value={formatCpf(cpfDigits)}
-                          onChange={(e) =>
-                            setCpfDigits(e.target.value.replace(/\D/g, "").slice(0, 11))
-                          }
-                          onPaste={(e) => {
-                            e.preventDefault();
-                            const text = e.clipboardData
-                              .getData("text")
-                              .replace(/\D/g, "")
-                              .slice(0, 11);
-                              setCpfDigits(text);
-                            }}
-                            autoComplete="off"
-                            inputMode="numeric"
-                            maxLength={14}
-                            placeholder="000.000.000-00"
-                            aria-invalid={cpfDigits.length > 0 && !cpfValido}
-                            className={`w-full rounded-xl border bg-background/40 px-3 py-2.5 pr-9 text-sm focus:outline-none focus:ring-2 ${
-                              cpfValido
-                                ? "border-emerald-500/40 focus:ring-emerald-500/40"
-                                : cpfDigits.length === 0
-                                  ? "border-border focus:ring-ring/40"
-                                  : "border-destructive/50 focus:ring-destructive/40"
-                            }`}
-                          />
-                          <span className="absolute right-2.5 top-1/2 -translate-y-1/2">
-                            {cpfValido ? (
-                              <CheckCircle2 className="h-4 w-4 text-emerald-500" />
-                            ) : cpfDigits.length > 0 ? (
-                              <AlertCircle className="h-4 w-4 text-destructive/70" />
-                            ) : null}
-                          </span>
-                        </div>
-                        <p
-                          className={`text-[11px] ${cpfValido ? "text-emerald-500" : cpfDigits.length === 0 ? "text-muted-foreground" : "text-destructive"}`}
-                        >
-                          {cpfDigits.length === 0
-                            ? "Obrigatório."
-                            : cpfDigits.length < 11
-                              ? `Faltam ${11 - cpfDigits.length} dígito(s).`
-                              : cpfValido
-                                ? "CPF válido."
-                                : "Dígito verificador inválido."}
-                        </p>
-                      </div>
+                    <Field
+                      label="CPF"
+                      hint={
+                        cpfDigits.length === 0
+                          ? "Obrigatório."
+                          : cpfDigits.length < 11
+                            ? `Faltam ${11 - cpfDigits.length} dígito(s).`
+                            : cpfValido
+                              ? "CPF válido."
+                              : undefined
+                      }
+                      error={
+                        cpfDigits.length === 11 && !cpfValido
+                          ? "Dígito verificador inválido."
+                          : undefined
+                      }
+                      rightAdornment={
+                        cpfValido ? (
+                          <CheckCircle2 className="h-4 w-4 text-emerald-500" />
+                        ) : cpfDigits.length > 0 ? (
+                          <AlertCircle className="h-4 w-4 text-destructive/70" />
+                        ) : null
+                      }
+                    >
+                      <Input
+                        ref={cpfRef}
+                        value={formatCpf(cpfDigits)}
+                        onChange={(e) =>
+                          setCpfDigits(e.target.value.replace(/\D/g, "").slice(0, 11))
+                        }
+                        onPaste={(e) => {
+                          e.preventDefault();
+                          const text = e.clipboardData
+                            .getData("text")
+                            .replace(/\D/g, "")
+                            .slice(0, 11);
+                          setCpfDigits(text);
+                        }}
+                        autoComplete="off"
+                        inputMode="numeric"
+                        maxLength={14}
+                        placeholder="000.000.000-00"
+                        aria-invalid={cpfDigits.length > 0 && !cpfValido}
+                        className="pr-9"
+                      />
+                    </Field>
 
-                      {/* CEP */}
-                      <div className="space-y-1">
-                        <label className="text-xs text-muted-foreground">CEP</label>
-                        <div className="relative">
-                          <input
-                            value={cepDigits.replace(/(\d{5})(\d)/, "$1-$2")}
-                            onChange={(e) => onCepChange(e.target.value)}
-                            inputMode="numeric"
-                            maxLength={9}
-                            placeholder="00000-000"
-                            aria-invalid={!!cepError}
-                            className={`w-full rounded-xl border bg-background/40 px-3 py-2.5 pr-9 text-sm focus:outline-none focus:ring-2 ${
-                              cepError
-                                ? "border-destructive/50 focus:ring-destructive/40"
-                                : cepDigits.length === 8 && !cepLoading
-                                  ? "border-emerald-500/40 focus:ring-emerald-500/40"
-                                  : "border-border focus:ring-ring/40"
-                            }`}
-                          />
-                          <span className="absolute right-2.5 top-1/2 -translate-y-1/2">
-                            {cepLoading ? (
-                              <Loader2 className="h-4 w-4 text-muted-foreground animate-spin" />
-                            ) : cepError ? (
-                              <AlertCircle className="h-4 w-4 text-destructive/70" />
-                            ) : cepDigits.length === 8 ? (
-                              <CheckCircle2 className="h-4 w-4 text-emerald-500" />
-                            ) : null}
-                          </span>
-                        </div>
-                        <p
-                          className={`text-[11px] ${
-                            cepError
-                              ? "text-destructive"
-                              : cepDigits.length === 8 && !cepLoading
-                                ? "text-emerald-500"
-                                : "text-muted-foreground"
-                          }`}
-                        >
-                          {cepLoading
-                            ? "Buscando endereço…"
-                            : cepError
-                              ? cepError
-                              : cepDigits.length === 8
-                                ? "Endereço preenchido."
-                                : "Preenche o endereço automaticamente."}
-                        </p>
-                      </div>
+                    {/* CEP */}
+                    <Field
+                      label="CEP"
+                      hint={
+                        cepLoading
+                          ? "Buscando endereço…"
+                          : cepDigits.length === 8
+                            ? "Endereço preenchido."
+                            : "Preenche o endereço automaticamente."
+                      }
+                      error={cepError || undefined}
+                      rightAdornment={
+                        cepLoading ? (
+                          <Loader2 className="h-4 w-4 text-muted-foreground animate-spin" />
+                        ) : cepError ? (
+                          <AlertCircle className="h-4 w-4 text-destructive/70" />
+                        ) : cepDigits.length === 8 ? (
+                          <CheckCircle2 className="h-4 w-4 text-emerald-500" />
+                        ) : null
+                      }
+                    >
+                      <Input
+                        value={cepDigits.replace(/(\d{5})(\d)/, "$1-$2")}
+                        onChange={(e) => onCepChange(e.target.value)}
+                        inputMode="numeric"
+                        maxLength={9}
+                        placeholder="00000-000"
+                        aria-invalid={!!cepError}
+                        className="pr-9"
+                      />
+                    </Field>
 
-                      {/* Número + Complemento */}
-                      <div className="space-y-1">
-                        <label className="text-xs text-muted-foreground">
-                          Número e complemento
-                        </label>
-                        <div className="flex gap-2">
-                          <input
-                            ref={numeroRef}
-                            value={numero}
-                            onChange={(e) => setNumero(e.target.value)}
-                            placeholder="Nº"
-                            inputMode="numeric"
-                            aria-invalid={numero.length > 0 && !numeroValido}
-                            className={`w-20 rounded-xl border bg-background/40 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 ${
-                              numeroValido
-                                ? "border-emerald-500/40 focus:ring-emerald-500/40"
-                                : numero.length === 0
-                                  ? "border-border focus:ring-ring/40"
-                                  : "border-destructive/50 focus:ring-destructive/40"
-                            }`}
-                          />
-                          <input
-                            value={complemento}
-                            onChange={(e) => setComplemento(e.target.value)}
-                            placeholder="Complemento (opcional) — apto, bloco…"
-                            className="flex-1 rounded-xl border border-border bg-background/40 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring/40"
-                          />
-                        </div>
-                        <p
-                          className={`text-[11px] ${numeroValido ? "text-emerald-500" : numero.length === 0 ? "text-muted-foreground" : "text-destructive"}`}
-                        >
-                          {numeroValido ? "Número informado." : "Informe o número."}
-                        </p>
-                      </div>
-                    </div>
-
-                    {/* Logradouro / bairro / cidade */}
-                    <div className="space-y-1">
-                      <label className="text-xs text-muted-foreground">
-                        Rua, bairro, cidade/UF
-                      </label>
-                      <div className="relative">
-                        <input
-                          ref={enderecoRef}
-                          value={endereco}
-                          onChange={(e) => setEndereco(e.target.value)}
-                          placeholder="Ex: Av. Paulista, Bela Vista, São Paulo/SP"
-                          aria-invalid={endereco.length > 0 && !enderecoValido}
-                          className={`w-full rounded-xl border bg-background/40 px-3 py-2.5 pr-9 text-sm focus:outline-none focus:ring-2 ${
-                            enderecoValido
-                              ? "border-emerald-500/40 focus:ring-emerald-500/40"
-                              : endereco.length === 0
-                                ? "border-border focus:ring-ring/40"
-                                : "border-destructive/50 focus:ring-destructive/40"
-                          }`}
+                    {/* Número + Complemento */}
+                    <Field
+                      label="Número e complemento"
+                      hint={numeroValido ? "Número informado." : undefined}
+                      error={numero.length > 0 && !numeroValido ? "Informe o número." : numero.length === 0 ? "Informe o número." : undefined}
+                    >
+                      <div className="flex gap-2">
+                        <Input
+                          ref={numeroRef}
+                          value={numero}
+                          onChange={(e) => setNumero(e.target.value)}
+                          placeholder="Nº"
+                          inputMode="numeric"
+                          aria-invalid={numero.length > 0 && !numeroValido}
+                          className="w-20"
                         />
-                        <span className="absolute right-2.5 top-1/2 -translate-y-1/2">
-                          {enderecoValido ? (
-                            <CheckCircle2 className="h-4 w-4 text-emerald-500" />
-                          ) : endereco.length > 0 ? (
-                            <AlertCircle className="h-4 w-4 text-destructive/70" />
-                          ) : null}
-                        </span>
+                        <Input
+                          value={complemento}
+                          onChange={(e) => setComplemento(e.target.value)}
+                          placeholder="Complemento (opcional) — apto, bloco…"
+                          className="flex-1"
+                        />
                       </div>
-                      <p
-                        className={`text-[11px] ${enderecoValido ? "text-emerald-500" : endereco.length === 0 ? "text-muted-foreground" : "text-destructive"}`}
-                      >
-                        {enderecoValido
-                          ? "Endereço válido."
-                          : "Inclua rua, bairro e cidade/UF (preenchido automaticamente pelo CEP)."}
-                      </p>
-                    </div>
-
-                    {enderecoFullValido && (
-                      <div className="rounded-lg border border-emerald-500/30 bg-emerald-500/5 px-3 py-2 text-xs text-emerald-700 dark:text-emerald-400">
-                        <span className="font-medium">Endereço completo: </span>
-                        {enderecoCompleto}
-                      </div>
-                    )}
+                    </Field>
                   </div>
-                )}
+
+                  {/* Logradouro / bairro / cidade */}
+                  <Field
+                    label="Rua, bairro, cidade/UF"
+                    hint={
+                      enderecoValido
+                        ? "Endereço válido."
+                        : "Inclua rua, bairro e cidade/UF (preenchido automaticamente pelo CEP)."
+                    }
+                    rightAdornment={
+                      enderecoValido ? (
+                        <CheckCircle2 className="h-4 w-4 text-emerald-500" />
+                      ) : endereco.length > 0 ? (
+                        <AlertCircle className="h-4 w-4 text-destructive/70" />
+                      ) : null
+                    }
+                  >
+                    <Input
+                      ref={enderecoRef}
+                      value={endereco}
+                      onChange={(e) => setEndereco(e.target.value)}
+                      placeholder="Ex: Av. Paulista, Bela Vista, São Paulo/SP"
+                      aria-invalid={endereco.length > 0 && !enderecoValido}
+                      className="pr-9"
+                    />
+                  </Field>
+
+                  {enderecoFullValido && (
+                    <div className="rounded-lg border border-emerald-500/30 bg-emerald-500/5 px-3 py-2 text-xs text-emerald-700 dark:text-emerald-400">
+                      <span className="font-medium">Endereço completo: </span>
+                      {enderecoCompleto}
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
 
 
