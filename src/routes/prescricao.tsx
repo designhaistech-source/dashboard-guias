@@ -27,6 +27,10 @@ import {
 } from "lucide-react";
 
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
 import { jsPDF } from "jspdf";
 import { toast } from "sonner";
 import { AppSidebar } from "@/components/app-sidebar";
@@ -943,17 +947,25 @@ function PrescricaoForm() {
     toast.success("PDF gerado.");
   };
 
-  const salvarKit = () => {
+  const [kitDialogOpen, setKitDialogOpen] = useState(false);
+  const [kitNome, setKitNome] = useState("");
+
+  const abrirSalvarKit = () => {
     if (itens.length === 0)
       return toast.error("Adicione medicamentos para salvar um kit.");
     const nomeSugerido = paciente.trim()
       ? `Kit ${paciente.trim().split(" ")[0]}`
       : `Kit ${new Date().toLocaleDateString("pt-BR")}`;
-    const nome = window.prompt("Nome do kit:", nomeSugerido);
-    if (!nome || !nome.trim()) return;
+    setKitNome(nomeSugerido);
+    setKitDialogOpen(true);
+  };
+
+  const confirmarSalvarKit = () => {
+    const nome = kitNome.trim();
+    if (!nome) return;
     const kit: Kit = {
       id: `kit-${Date.now()}`,
-      nome: nome.trim(),
+      nome,
       descricao: `Modelo criado a partir da receita ${paciente.trim() ? `de ${paciente.trim()}` : "atual"}.`,
       categoria: "Meus kits",
       itens: itens.map((it) => ({ med: it.med, posologia: it.posologia })),
@@ -961,6 +973,7 @@ function PrescricaoForm() {
       usos: 0,
     };
     upsertKit(kit);
+    setKitDialogOpen(false);
     toast.success(`Kit "${kit.nome}" salvo.`, {
       action: {
         label: "Ver kits",
@@ -968,6 +981,7 @@ function PrescricaoForm() {
       },
     });
   };
+
 
 
   type Pend = { msg: string; focus?: () => void };
@@ -1031,7 +1045,7 @@ function PrescricaoForm() {
         imprimir();
       } else if (meta && e.key.toLowerCase() === "s") {
         e.preventDefault();
-        salvarKit();
+        abrirSalvarKit();
       } else if (e.key === "/" && !digitando) {
         e.preventDefault();
         searchRef.current?.focus();
@@ -1690,7 +1704,7 @@ function PrescricaoForm() {
                   Baixar PDF
                 </ActionBtn>
                 <ActionBtn
-                  onClick={salvarKit}
+                  onClick={abrirSalvarKit}
                   icon={<Save className="h-4 w-4" />}
                   title="Ctrl+S"
                 >
@@ -1915,6 +1929,41 @@ function PrescricaoForm() {
           </div>
         </div>
       </section>
+
+      <Dialog open={kitDialogOpen} onOpenChange={setKitDialogOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Salvar como kit</DialogTitle>
+            <DialogDescription>
+              Salve a receita atual como modelo reutilizável ({itens.length} {itens.length === 1 ? "item" : "itens"}).
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-2 py-2">
+            <Label htmlFor="kit-nome">Nome do kit</Label>
+            <Input
+              id="kit-nome"
+              value={kitNome}
+              onChange={(e) => setKitNome(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && kitNome.trim()) {
+                  e.preventDefault();
+                  confirmarSalvarKit();
+                }
+              }}
+              placeholder="Ex.: Kit pós-cirúrgico"
+              autoFocus
+            />
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setKitDialogOpen(false)}>
+              Cancelar
+            </Button>
+            <Button onClick={confirmarSalvarKit} disabled={!kitNome.trim()}>
+              Salvar kit
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       <KitsModal
         open={kitsAberto}
