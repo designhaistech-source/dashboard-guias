@@ -1827,8 +1827,8 @@ function PrescricaoForm() {
                     )}
                   </div>
                 )}
-              </div>
             </div>
+
 
             <div className="mt-2 pt-4 border-t border-border">
 
