@@ -15,6 +15,7 @@ interface FieldProps {
   error?: React.ReactNode;
   className?: string;
   labelClassName?: string;
+  rightAdornment?: React.ReactNode;
   children: React.ReactNode;
 }
 
