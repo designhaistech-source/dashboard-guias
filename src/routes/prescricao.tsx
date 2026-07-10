@@ -1446,11 +1446,9 @@ function PrescricaoForm() {
 
             <div className="grid gap-3 md:grid-cols-[minmax(0,1fr)_220px]">
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <input
+                <SearchInput
                   id="med-search"
                   ref={searchRef}
-                  type="text"
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
                   onKeyDown={(e) => {
@@ -1469,7 +1467,7 @@ function PrescricaoForm() {
                     }
                   }}
                   placeholder='Nome comercial ou princípio ativo…  (tecle "/" para focar)'
-                  className="w-full rounded-xl border border-border bg-background/40 pl-10 pr-16 py-3 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/40"
+                  className="pr-16"
                 />
                 <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1">
                   {!query && <Kbd>/</Kbd>}
