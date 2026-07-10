@@ -289,10 +289,12 @@ function formatCpf(digits: string): string {
 
 function isEnderecoCompleto(endereco: string): boolean {
   const s = endereco.trim();
-  if (s.length < 15) return false;
-  // exige um número e uma vírgula/traço separando partes
-  if (!/\d/.test(s)) return false;
-  if (!/[,\-]/.test(s)) return false;
+  if (s.length < 10) return false;
+  // exige pelo menos duas partes separadas por vírgula/traço (rua, bairro, cidade/UF)
+  const partes = s.split(/[,\-]/).map((p) => p.trim()).filter(Boolean);
+  if (partes.length < 2) return false;
+  // exige uma UF (2 letras) no final — indica "cidade/UF" preenchido
+  if (!/\/[A-Za-z]{2}\b/.test(s)) return false;
   return true;
 }
 
