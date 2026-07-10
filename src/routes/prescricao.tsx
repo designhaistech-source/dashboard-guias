@@ -829,8 +829,10 @@ function PrescricaoForm() {
 
 
 
-  const baixarPdf = () => {
+  const baixarPdf = (opts: { emitir?: boolean } = {}) => {
+    const { emitir = false } = opts;
     if (!validarEmissao()) return;
+
 
     const slugPaciente = paciente
       .trim()
