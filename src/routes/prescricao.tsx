@@ -158,6 +158,7 @@ const MEDICAMENTOS: Medicamento[] = [
     preco: 22.4,
     principios: "AMOXICILINA",
     classe: "ANTIBIÓTICOS BETA-LACTÂMICOS",
+    controlado: true,
   },
   {
     nome: "HUMIRA 40mg/0,8ml",
