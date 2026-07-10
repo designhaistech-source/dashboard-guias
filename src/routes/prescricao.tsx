@@ -1207,7 +1207,7 @@ function PrescricaoForm() {
           </div>
 
           <div
-            className={`rounded-xl border ${especial ? "border-destructive/40 bg-destructive/5" : "border-border/70 bg-background/40"} px-4 py-3 space-y-3`}
+            className={`rounded-xl border ${especial ? "border-amber-500/40 bg-amber-500/5" : "border-border/70 bg-background/40"} px-4 py-3 space-y-3`}
           >
             <label className="flex items-start gap-2.5 cursor-pointer select-none">
               <input
@@ -1216,9 +1216,16 @@ function PrescricaoForm() {
                 onChange={(e) => setEspecial(e.target.checked)}
                 className="h-4 w-4 mt-0.5 rounded border-border accent-primary"
               />
-              <span>
-                <span className="block text-sm font-medium">
-                  Receituário de controle especial
+              <span className="flex-1">
+                <span className="flex items-center gap-2">
+                  <span className="text-sm font-medium">
+                    Receituário de controle especial
+                  </span>
+                  {especial && (
+                    <span className="inline-flex items-center gap-1 rounded-full border border-amber-500/40 bg-amber-500/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-amber-700 dark:text-amber-400">
+                      Receita controlada
+                    </span>
+                  )}
                 </span>
                 <span className="block text-xs text-muted-foreground">
                   Para substâncias controladas — exige CPF e endereço completo do paciente.
@@ -1251,23 +1258,25 @@ function PrescricaoForm() {
                         inputMode="numeric"
                         maxLength={14}
                         placeholder="000.000.000-00"
-                        aria-invalid={!cpfValido}
-                        className={`w-full rounded-xl border bg-background/40 px-3 py-2.5 pr-9 text-sm focus:outline-none focus:ring-2 ${
+                      aria-invalid={cpfDigits.length > 0 && !cpfValido}
+                      className={`w-full rounded-xl border bg-background/40 px-3 py-2.5 pr-9 text-sm focus:outline-none focus:ring-2 ${
                           cpfValido
                             ? "border-emerald-500/40 focus:ring-emerald-500/40"
-                            : "border-destructive/50 focus:ring-destructive/40"
+                            : cpfDigits.length === 0
+                              ? "border-border focus:ring-ring/40"
+                              : "border-destructive/50 focus:ring-destructive/40"
                         }`}
                       />
                       <span className="absolute right-2.5 top-1/2 -translate-y-1/2">
                         {cpfValido ? (
                           <CheckCircle2 className="h-4 w-4 text-emerald-500" />
-                        ) : (
+                        ) : cpfDigits.length > 0 ? (
                           <AlertCircle className="h-4 w-4 text-destructive/70" />
-                        )}
+                        ) : null}
                       </span>
                     </div>
                     <p
-                      className={`text-[11px] ${cpfValido ? "text-emerald-500" : "text-destructive"}`}
+                      className={`text-[11px] ${cpfValido ? "text-emerald-500" : cpfDigits.length === 0 ? "text-muted-foreground" : "text-destructive"}`}
                     >
                       {cpfDigits.length === 0
                         ? "Obrigatório."
@@ -1341,11 +1350,13 @@ function PrescricaoForm() {
                         onChange={(e) => setNumero(e.target.value)}
                         placeholder="Nº"
                         inputMode="numeric"
-                        aria-invalid={!numeroValido}
+                        aria-invalid={numero.length > 0 && !numeroValido}
                         className={`w-20 rounded-xl border bg-background/40 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 ${
                           numeroValido
                             ? "border-emerald-500/40 focus:ring-emerald-500/40"
-                            : "border-destructive/50 focus:ring-destructive/40"
+                            : numero.length === 0
+                              ? "border-border focus:ring-ring/40"
+                              : "border-destructive/50 focus:ring-destructive/40"
                         }`}
                       />
                       <input
@@ -1356,7 +1367,7 @@ function PrescricaoForm() {
                       />
                     </div>
                     <p
-                      className={`text-[11px] ${numeroValido ? "text-emerald-500" : "text-destructive"}`}
+                      className={`text-[11px] ${numeroValido ? "text-emerald-500" : numero.length === 0 ? "text-muted-foreground" : "text-destructive"}`}
                     >
                       {numeroValido ? "Número informado." : "Informe o número."}
                     </p>
@@ -1374,23 +1385,25 @@ function PrescricaoForm() {
                       value={endereco}
                       onChange={(e) => setEndereco(e.target.value)}
                       placeholder="Ex: Av. Paulista, Bela Vista, São Paulo/SP"
-                      aria-invalid={!enderecoValido}
+                      aria-invalid={endereco.length > 0 && !enderecoValido}
                       className={`w-full rounded-xl border bg-background/40 px-3 py-2.5 pr-9 text-sm focus:outline-none focus:ring-2 ${
                         enderecoValido
                           ? "border-emerald-500/40 focus:ring-emerald-500/40"
-                          : "border-destructive/50 focus:ring-destructive/40"
+                          : endereco.length === 0
+                            ? "border-border focus:ring-ring/40"
+                            : "border-destructive/50 focus:ring-destructive/40"
                       }`}
                     />
                     <span className="absolute right-2.5 top-1/2 -translate-y-1/2">
                       {enderecoValido ? (
                         <CheckCircle2 className="h-4 w-4 text-emerald-500" />
-                      ) : (
+                      ) : endereco.length > 0 ? (
                         <AlertCircle className="h-4 w-4 text-destructive/70" />
-                      )}
+                      ) : null}
                     </span>
                   </div>
                   <p
-                    className={`text-[11px] ${enderecoValido ? "text-emerald-500" : "text-destructive"}`}
+                    className={`text-[11px] ${enderecoValido ? "text-emerald-500" : endereco.length === 0 ? "text-muted-foreground" : "text-destructive"}`}
                   >
                     {enderecoValido
                       ? "Endereço válido."
