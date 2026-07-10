@@ -766,7 +766,11 @@ function PrescricaoForm() {
     setPacientesRecentes(loadRecentes(LS_PACIENTES));
     registrarHistorico("imprimir");
     toast.success(
-      especial ? "Receituário especial enviado para impressão." : "Receita enviada para impressão.",
+      hasControlado && hasComum
+        ? "Receitas (comum + controle especial) enviadas para impressão."
+        : hasControlado
+          ? "Receituário especial enviado para impressão."
+          : "Receita enviada para impressão.",
     );
   };
 
