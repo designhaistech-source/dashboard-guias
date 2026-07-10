@@ -1700,13 +1700,14 @@ function PrescricaoForm() {
             </div>
 
             {pendencias.length > 0 && (
-              <div className="rounded-xl border border-destructive/40 bg-destructive/5 p-3 text-sm">
-                <div className="font-semibold text-destructive mb-1">
-                  Corrija antes de emitir:
+              <div className="rounded-xl border border-border bg-muted/30 p-3 text-sm">
+                <div className="font-medium text-foreground/80 mb-1.5 text-xs uppercase tracking-wide">
+                  Para emitir, falta:
                 </div>
-                <ul className="space-y-0.5 pl-1">
+                <ul className="space-y-1">
                   {pendencias.map((p) => (
-                    <li key={p.msg}>
+                    <li key={p.msg} className="flex items-center gap-2">
+                      <span className="h-1.5 w-1.5 rounded-full border border-muted-foreground/50 shrink-0" />
                       <button
                         type="button"
                         onClick={() => {
@@ -1721,10 +1722,9 @@ function PrescricaoForm() {
                             ?.scrollIntoView({ behavior: "smooth", block: "start" });
                           setTimeout(() => p.focus?.(), 300);
                         }}
-
-                        className="text-left underline-offset-2 hover:underline hover:text-destructive"
+                        className="text-left text-muted-foreground hover:text-foreground hover:underline underline-offset-2"
                       >
-                        → {p.msg}
+                        {p.msg}
                       </button>
                     </li>
                   ))}
