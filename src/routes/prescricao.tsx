@@ -493,7 +493,13 @@ function PrescricaoForm() {
     new Set(["Genérico", "Referência", "Específico"]),
   );
   const [itens, setItens] = useState<ItemReceita[]>([]);
-  const [especial, setEspecial] = useState(false);
+  // Tipo de receituário deduzido automaticamente pelos itens (não é escolha do usuário).
+  const itensControlados = itens.filter((it) => it.med.controlado);
+  const itensComuns = itens.filter((it) => !it.med.controlado);
+  const hasControlado = itensControlados.length > 0;
+  const hasComum = itensComuns.length > 0;
+  const especial = hasControlado; // compat com o restante do código
+  const setEspecial = (_: boolean) => {}; // no-op: derivado dos itens
   const [editing, setEditing] = useState<Medicamento | null>(null);
   const [highlight, setHighlight] = useState(0);
   const [pacientesRecentes, setPacientesRecentes] = useState<string[]>([]);
