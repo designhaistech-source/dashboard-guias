@@ -1093,7 +1093,7 @@ function PrescricaoForm() {
           <div className="min-w-0">
             <h1 className="text-xl font-semibold leading-tight tracking-tight">Emitir prescrição</h1>
             <p className="text-xs text-muted-foreground">
-              Preencha as seções em qualquer ordem — o botão libera com paciente e ao menos um medicamento.
+              Adicione os medicamentos e finalize informando o paciente na revisão.
             </p>
           </div>
         </div>
@@ -1184,260 +1184,8 @@ function PrescricaoForm() {
         />
       )}
 
-      {/* Seção 1 — Paciente */}
 
-      <section id="sec-paciente" className="scroll-mt-4">
 
-        <div className="rounded-2xl border border-border bg-card p-5 space-y-5">
-          <div>
-            <h2 className="text-base font-semibold">Dados do paciente</h2>
-            <p className="text-xs text-muted-foreground">
-              Comece pelo nome. Se for receita controlada, ative o receituário especial abaixo.
-            </p>
-          </div>
-
-          <div className="space-y-2">
-            <label className="text-sm text-muted-foreground" htmlFor="paciente-input">
-              Nome do paciente
-            </label>
-            <div className="relative">
-              <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <input
-                id="paciente-input"
-                ref={pacienteRef}
-                type="text"
-                list="pacientes-recentes"
-                value={paciente}
-                onChange={(e) => setPaciente(e.target.value)}
-                placeholder="Digite o nome do beneficiário..."
-                autoComplete="off"
-                className="w-full rounded-xl border border-border bg-background/40 pl-10 pr-3 py-3 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/40"
-              />
-              <datalist id="pacientes-recentes">
-                {pacientesRecentes.map((n) => (
-                  <option key={n} value={n} />
-                ))}
-              </datalist>
-            </div>
-          </div>
-
-          <div
-            className={`rounded-xl border ${especial ? "border-amber-500/40 bg-amber-500/5" : "border-border/70 bg-background/40"} px-4 py-3 space-y-3`}
-          >
-            <label className="flex items-start gap-2.5 cursor-pointer select-none">
-              <input
-                type="checkbox"
-                checked={especial}
-                onChange={(e) => setEspecial(e.target.checked)}
-                className="h-4 w-4 mt-0.5 rounded border-border accent-primary"
-              />
-              <span className="flex-1">
-                <span className="flex items-center gap-2">
-                  <span className="text-sm font-medium">
-                    Receituário de controle especial
-                  </span>
-                  {especial && (
-                    <span className="inline-flex items-center gap-1 rounded-full border border-amber-500/40 bg-amber-500/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-amber-700 dark:text-amber-400">
-                      Receita controlada
-                    </span>
-                  )}
-                </span>
-                <span className="block text-xs text-muted-foreground">
-                  Para substâncias controladas — exige CPF e endereço completo do paciente.
-                </span>
-              </span>
-            </label>
-
-            {especial && (
-              <div className="space-y-3 pt-1">
-                <div className="grid gap-3 md:grid-cols-[minmax(0,220px)_minmax(0,200px)_minmax(0,1fr)]">
-                  {/* CPF */}
-                  <div className="space-y-1">
-                    <label className="text-xs text-muted-foreground">CPF</label>
-                    <div className="relative">
-                      <input
-                        ref={cpfRef}
-                        value={formatCpf(cpfDigits)}
-                        onChange={(e) =>
-                          setCpfDigits(e.target.value.replace(/\D/g, "").slice(0, 11))
-                        }
-                        onPaste={(e) => {
-                          e.preventDefault();
-                          const text = e.clipboardData
-                            .getData("text")
-                            .replace(/\D/g, "")
-                            .slice(0, 11);
-                          setCpfDigits(text);
-                        }}
-                        autoComplete="off"
-                        inputMode="numeric"
-                        maxLength={14}
-                        placeholder="000.000.000-00"
-                      aria-invalid={cpfDigits.length > 0 && !cpfValido}
-                      className={`w-full rounded-xl border bg-background/40 px-3 py-2.5 pr-9 text-sm focus:outline-none focus:ring-2 ${
-                          cpfValido
-                            ? "border-emerald-500/40 focus:ring-emerald-500/40"
-                            : cpfDigits.length === 0
-                              ? "border-border focus:ring-ring/40"
-                              : "border-destructive/50 focus:ring-destructive/40"
-                        }`}
-                      />
-                      <span className="absolute right-2.5 top-1/2 -translate-y-1/2">
-                        {cpfValido ? (
-                          <CheckCircle2 className="h-4 w-4 text-emerald-500" />
-                        ) : cpfDigits.length > 0 ? (
-                          <AlertCircle className="h-4 w-4 text-destructive/70" />
-                        ) : null}
-                      </span>
-                    </div>
-                    <p
-                      className={`text-[11px] ${cpfValido ? "text-emerald-500" : cpfDigits.length === 0 ? "text-muted-foreground" : "text-destructive"}`}
-                    >
-                      {cpfDigits.length === 0
-                        ? "Obrigatório."
-                        : cpfDigits.length < 11
-                          ? `Faltam ${11 - cpfDigits.length} dígito(s).`
-                          : cpfValido
-                            ? "CPF válido."
-                            : "Dígito verificador inválido."}
-                    </p>
-                  </div>
-
-                  {/* CEP */}
-                  <div className="space-y-1">
-                    <label className="text-xs text-muted-foreground">
-                      CEP
-                    </label>
-                    <div className="relative">
-                      <input
-                        value={cepDigits.replace(/(\d{5})(\d)/, "$1-$2")}
-                        onChange={(e) => onCepChange(e.target.value)}
-                        inputMode="numeric"
-                        maxLength={9}
-                        placeholder="00000-000"
-                        aria-invalid={!!cepError}
-                        className={`w-full rounded-xl border bg-background/40 px-3 py-2.5 pr-9 text-sm focus:outline-none focus:ring-2 ${
-                          cepError
-                            ? "border-destructive/50 focus:ring-destructive/40"
-                            : cepDigits.length === 8 && !cepLoading
-                              ? "border-emerald-500/40 focus:ring-emerald-500/40"
-                              : "border-border focus:ring-ring/40"
-                        }`}
-                      />
-                      <span className="absolute right-2.5 top-1/2 -translate-y-1/2">
-                        {cepLoading ? (
-                          <Loader2 className="h-4 w-4 text-muted-foreground animate-spin" />
-                        ) : cepError ? (
-                          <AlertCircle className="h-4 w-4 text-destructive/70" />
-                        ) : cepDigits.length === 8 ? (
-                          <CheckCircle2 className="h-4 w-4 text-emerald-500" />
-                        ) : null}
-                      </span>
-                    </div>
-                    <p
-                      className={`text-[11px] ${
-                        cepError
-                          ? "text-destructive"
-                          : cepDigits.length === 8 && !cepLoading
-                            ? "text-emerald-500"
-                            : "text-muted-foreground"
-                      }`}
-                    >
-                      {cepLoading
-                        ? "Buscando endereço…"
-                        : cepError
-                          ? cepError
-                          : cepDigits.length === 8
-                            ? "Endereço preenchido."
-                            : "Preenche o endereço automaticamente."}
-                    </p>
-                  </div>
-
-                  {/* Número + Complemento */}
-                  <div className="space-y-1">
-                    <label className="text-xs text-muted-foreground">
-                      Número e complemento
-                    </label>
-                    <div className="flex gap-2">
-                      <input
-                        ref={numeroRef}
-                        value={numero}
-                        onChange={(e) => setNumero(e.target.value)}
-                        placeholder="Nº"
-                        inputMode="numeric"
-                        aria-invalid={numero.length > 0 && !numeroValido}
-                        className={`w-20 rounded-xl border bg-background/40 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 ${
-                          numeroValido
-                            ? "border-emerald-500/40 focus:ring-emerald-500/40"
-                            : numero.length === 0
-                              ? "border-border focus:ring-ring/40"
-                              : "border-destructive/50 focus:ring-destructive/40"
-                        }`}
-                      />
-                      <input
-                        value={complemento}
-                        onChange={(e) => setComplemento(e.target.value)}
-                        placeholder="Complemento (opcional) — apto, bloco…"
-                        className="flex-1 rounded-xl border border-border bg-background/40 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring/40"
-                      />
-                    </div>
-                    <p
-                      className={`text-[11px] ${numeroValido ? "text-emerald-500" : numero.length === 0 ? "text-muted-foreground" : "text-destructive"}`}
-                    >
-                      {numeroValido ? "Número informado." : "Informe o número."}
-                    </p>
-                  </div>
-                </div>
-
-                {/* Logradouro / bairro / cidade */}
-                <div className="space-y-1">
-                  <label className="text-xs text-muted-foreground">
-                    Rua, bairro, cidade/UF
-                  </label>
-                  <div className="relative">
-                    <input
-                      ref={enderecoRef}
-                      value={endereco}
-                      onChange={(e) => setEndereco(e.target.value)}
-                      placeholder="Ex: Av. Paulista, Bela Vista, São Paulo/SP"
-                      aria-invalid={endereco.length > 0 && !enderecoValido}
-                      className={`w-full rounded-xl border bg-background/40 px-3 py-2.5 pr-9 text-sm focus:outline-none focus:ring-2 ${
-                        enderecoValido
-                          ? "border-emerald-500/40 focus:ring-emerald-500/40"
-                          : endereco.length === 0
-                            ? "border-border focus:ring-ring/40"
-                            : "border-destructive/50 focus:ring-destructive/40"
-                      }`}
-                    />
-                    <span className="absolute right-2.5 top-1/2 -translate-y-1/2">
-                      {enderecoValido ? (
-                        <CheckCircle2 className="h-4 w-4 text-emerald-500" />
-                      ) : endereco.length > 0 ? (
-                        <AlertCircle className="h-4 w-4 text-destructive/70" />
-                      ) : null}
-                    </span>
-                  </div>
-                  <p
-                    className={`text-[11px] ${enderecoValido ? "text-emerald-500" : endereco.length === 0 ? "text-muted-foreground" : "text-destructive"}`}
-                  >
-                    {enderecoValido
-                      ? "Endereço válido."
-                      : "Inclua rua, bairro e cidade/UF (preenchido automaticamente pelo CEP)."}
-                  </p>
-                </div>
-
-                {/* Preview do endereço completo */}
-                {enderecoFullValido && (
-                  <div className="rounded-lg border border-emerald-500/30 bg-emerald-500/5 px-3 py-2 text-xs text-emerald-700 dark:text-emerald-400">
-                    <span className="font-medium">Endereço completo: </span>
-                    {enderecoCompleto}
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
-        </div>
-      </section>
 
       {/* Seção 2 — Medicamentos */}
       <section id="sec-medicamentos" className="scroll-mt-4 space-y-5">
@@ -1626,18 +1374,8 @@ function PrescricaoForm() {
                 <p className="text-xs text-muted-foreground mt-0.5">
                   {itens.length}{" "}
                   {itens.length === 1 ? "medicamento" : "medicamentos"}
-                  {paciente && (
-                    <>
-                      {" · "}Paciente:{" "}
-                      <span className="font-medium text-foreground">
-                        {paciente}
-                      </span>
-                    </>
-                  )}
-                  {especial && cpfDigits.length === 11 && (
-                    <> · CPF {formatCpf(cpfDigits)}</>
-                  )}
                 </p>
+
               </div>
               {itens.length > 0 && (
                 <button
@@ -1810,7 +1548,256 @@ function PrescricaoForm() {
               })}
             </ul>
 
+            {/* Dados do paciente — movidos para o fim, junto às ações */}
+            <div className="rounded-xl border border-border/70 bg-background/30 p-4 space-y-4">
+              <div>
+                <h4 className="text-sm font-semibold">Dados do paciente</h4>
+                <p className="text-xs text-muted-foreground">
+                  Preencha antes de emitir. Ative o receituário especial se for receita controlada.
+                </p>
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-sm text-muted-foreground" htmlFor="paciente-input">
+                  Nome do paciente
+                </label>
+                <div className="relative">
+                  <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <input
+                    id="paciente-input"
+                    ref={pacienteRef}
+                    type="text"
+                    list="pacientes-recentes"
+                    value={paciente}
+                    onChange={(e) => setPaciente(e.target.value)}
+                    placeholder="Digite o nome do beneficiário..."
+                    autoComplete="off"
+                    className="w-full rounded-xl border border-border bg-background/40 pl-10 pr-3 py-3 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/40"
+                  />
+                  <datalist id="pacientes-recentes">
+                    {pacientesRecentes.map((n) => (
+                      <option key={n} value={n} />
+                    ))}
+                  </datalist>
+                </div>
+              </div>
+
+              <div
+                className={`rounded-xl border ${especial ? "border-amber-500/40 bg-amber-500/5" : "border-border/70 bg-background/40"} px-4 py-3 space-y-3`}
+              >
+                <label className="flex items-start gap-2.5 cursor-pointer select-none">
+                  <input
+                    type="checkbox"
+                    checked={especial}
+                    onChange={(e) => setEspecial(e.target.checked)}
+                    className="h-4 w-4 mt-0.5 rounded border-border accent-primary"
+                  />
+                  <span className="flex-1">
+                    <span className="flex items-center gap-2">
+                      <span className="text-sm font-medium">
+                        Receituário de controle especial
+                      </span>
+                      {especial && (
+                        <span className="inline-flex items-center gap-1 rounded-full border border-amber-500/40 bg-amber-500/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-amber-700 dark:text-amber-400">
+                          Receita controlada
+                        </span>
+                      )}
+                    </span>
+                    <span className="block text-xs text-muted-foreground">
+                      Para substâncias controladas — exige CPF e endereço completo do paciente.
+                    </span>
+                  </span>
+                </label>
+
+                {especial && (
+                  <div className="space-y-3 pt-1">
+                    <div className="grid gap-3 md:grid-cols-[minmax(0,220px)_minmax(0,200px)_minmax(0,1fr)]">
+                      {/* CPF */}
+                      <div className="space-y-1">
+                        <label className="text-xs text-muted-foreground">CPF</label>
+                        <div className="relative">
+                          <input
+                            ref={cpfRef}
+                            value={formatCpf(cpfDigits)}
+                            onChange={(e) =>
+                              setCpfDigits(e.target.value.replace(/\D/g, "").slice(0, 11))
+                            }
+                            onPaste={(e) => {
+                              e.preventDefault();
+                              const text = e.clipboardData
+                                .getData("text")
+                                .replace(/\D/g, "")
+                                .slice(0, 11);
+                              setCpfDigits(text);
+                            }}
+                            autoComplete="off"
+                            inputMode="numeric"
+                            maxLength={14}
+                            placeholder="000.000.000-00"
+                            aria-invalid={cpfDigits.length > 0 && !cpfValido}
+                            className={`w-full rounded-xl border bg-background/40 px-3 py-2.5 pr-9 text-sm focus:outline-none focus:ring-2 ${
+                              cpfValido
+                                ? "border-emerald-500/40 focus:ring-emerald-500/40"
+                                : cpfDigits.length === 0
+                                  ? "border-border focus:ring-ring/40"
+                                  : "border-destructive/50 focus:ring-destructive/40"
+                            }`}
+                          />
+                          <span className="absolute right-2.5 top-1/2 -translate-y-1/2">
+                            {cpfValido ? (
+                              <CheckCircle2 className="h-4 w-4 text-emerald-500" />
+                            ) : cpfDigits.length > 0 ? (
+                              <AlertCircle className="h-4 w-4 text-destructive/70" />
+                            ) : null}
+                          </span>
+                        </div>
+                        <p
+                          className={`text-[11px] ${cpfValido ? "text-emerald-500" : cpfDigits.length === 0 ? "text-muted-foreground" : "text-destructive"}`}
+                        >
+                          {cpfDigits.length === 0
+                            ? "Obrigatório."
+                            : cpfDigits.length < 11
+                              ? `Faltam ${11 - cpfDigits.length} dígito(s).`
+                              : cpfValido
+                                ? "CPF válido."
+                                : "Dígito verificador inválido."}
+                        </p>
+                      </div>
+
+                      {/* CEP */}
+                      <div className="space-y-1">
+                        <label className="text-xs text-muted-foreground">CEP</label>
+                        <div className="relative">
+                          <input
+                            value={cepDigits.replace(/(\d{5})(\d)/, "$1-$2")}
+                            onChange={(e) => onCepChange(e.target.value)}
+                            inputMode="numeric"
+                            maxLength={9}
+                            placeholder="00000-000"
+                            aria-invalid={!!cepError}
+                            className={`w-full rounded-xl border bg-background/40 px-3 py-2.5 pr-9 text-sm focus:outline-none focus:ring-2 ${
+                              cepError
+                                ? "border-destructive/50 focus:ring-destructive/40"
+                                : cepDigits.length === 8 && !cepLoading
+                                  ? "border-emerald-500/40 focus:ring-emerald-500/40"
+                                  : "border-border focus:ring-ring/40"
+                            }`}
+                          />
+                          <span className="absolute right-2.5 top-1/2 -translate-y-1/2">
+                            {cepLoading ? (
+                              <Loader2 className="h-4 w-4 text-muted-foreground animate-spin" />
+                            ) : cepError ? (
+                              <AlertCircle className="h-4 w-4 text-destructive/70" />
+                            ) : cepDigits.length === 8 ? (
+                              <CheckCircle2 className="h-4 w-4 text-emerald-500" />
+                            ) : null}
+                          </span>
+                        </div>
+                        <p
+                          className={`text-[11px] ${
+                            cepError
+                              ? "text-destructive"
+                              : cepDigits.length === 8 && !cepLoading
+                                ? "text-emerald-500"
+                                : "text-muted-foreground"
+                          }`}
+                        >
+                          {cepLoading
+                            ? "Buscando endereço…"
+                            : cepError
+                              ? cepError
+                              : cepDigits.length === 8
+                                ? "Endereço preenchido."
+                                : "Preenche o endereço automaticamente."}
+                        </p>
+                      </div>
+
+                      {/* Número + Complemento */}
+                      <div className="space-y-1">
+                        <label className="text-xs text-muted-foreground">
+                          Número e complemento
+                        </label>
+                        <div className="flex gap-2">
+                          <input
+                            ref={numeroRef}
+                            value={numero}
+                            onChange={(e) => setNumero(e.target.value)}
+                            placeholder="Nº"
+                            inputMode="numeric"
+                            aria-invalid={numero.length > 0 && !numeroValido}
+                            className={`w-20 rounded-xl border bg-background/40 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 ${
+                              numeroValido
+                                ? "border-emerald-500/40 focus:ring-emerald-500/40"
+                                : numero.length === 0
+                                  ? "border-border focus:ring-ring/40"
+                                  : "border-destructive/50 focus:ring-destructive/40"
+                            }`}
+                          />
+                          <input
+                            value={complemento}
+                            onChange={(e) => setComplemento(e.target.value)}
+                            placeholder="Complemento (opcional) — apto, bloco…"
+                            className="flex-1 rounded-xl border border-border bg-background/40 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring/40"
+                          />
+                        </div>
+                        <p
+                          className={`text-[11px] ${numeroValido ? "text-emerald-500" : numero.length === 0 ? "text-muted-foreground" : "text-destructive"}`}
+                        >
+                          {numeroValido ? "Número informado." : "Informe o número."}
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Logradouro / bairro / cidade */}
+                    <div className="space-y-1">
+                      <label className="text-xs text-muted-foreground">
+                        Rua, bairro, cidade/UF
+                      </label>
+                      <div className="relative">
+                        <input
+                          ref={enderecoRef}
+                          value={endereco}
+                          onChange={(e) => setEndereco(e.target.value)}
+                          placeholder="Ex: Av. Paulista, Bela Vista, São Paulo/SP"
+                          aria-invalid={endereco.length > 0 && !enderecoValido}
+                          className={`w-full rounded-xl border bg-background/40 px-3 py-2.5 pr-9 text-sm focus:outline-none focus:ring-2 ${
+                            enderecoValido
+                              ? "border-emerald-500/40 focus:ring-emerald-500/40"
+                              : endereco.length === 0
+                                ? "border-border focus:ring-ring/40"
+                                : "border-destructive/50 focus:ring-destructive/40"
+                          }`}
+                        />
+                        <span className="absolute right-2.5 top-1/2 -translate-y-1/2">
+                          {enderecoValido ? (
+                            <CheckCircle2 className="h-4 w-4 text-emerald-500" />
+                          ) : endereco.length > 0 ? (
+                            <AlertCircle className="h-4 w-4 text-destructive/70" />
+                          ) : null}
+                        </span>
+                      </div>
+                      <p
+                        className={`text-[11px] ${enderecoValido ? "text-emerald-500" : endereco.length === 0 ? "text-muted-foreground" : "text-destructive"}`}
+                      >
+                        {enderecoValido
+                          ? "Endereço válido."
+                          : "Inclua rua, bairro e cidade/UF (preenchido automaticamente pelo CEP)."}
+                      </p>
+                    </div>
+
+                    {enderecoFullValido && (
+                      <div className="rounded-lg border border-emerald-500/30 bg-emerald-500/5 px-3 py-2 text-xs text-emerald-700 dark:text-emerald-400">
+                        <span className="font-medium">Endereço completo: </span>
+                        {enderecoCompleto}
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            </div>
+
             <div className="mt-2 pt-4 border-t border-border">
+
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <div className="text-xs text-muted-foreground">
                   {podeEmitir ? (
