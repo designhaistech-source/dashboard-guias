@@ -958,7 +958,7 @@ function DashboardPage() {
 
           {/* Charts row */}
           <div className="grid gap-4 grid-cols-1 lg:grid-cols-3">
-            <div className="lg:col-span-2 rounded-2xl border border-border bg-card p-6">
+            <SurfaceCard className="lg:col-span-2">
               <div className="mb-4 flex items-start justify-between gap-4">
                 <div>
                   <h3 className="font-semibold">Guias extraídas por dia</h3>
