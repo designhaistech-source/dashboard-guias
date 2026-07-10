@@ -406,18 +406,41 @@ async function buscarCep(cep: string): Promise<string | null> {
   const digits = cep.replace(/\D/g, "");
   if (digits.length !== 8) return null;
   try {
+type CepResult = { logradouro: string; bairro: string; cidade: string; uf: string };
+
+async function buscarCep(cep: string): Promise<CepResult | null> {
+  const digits = cep.replace(/\D/g, "");
+  if (digits.length !== 8) return null;
+  try {
     const r = await fetch(`https://viacep.com.br/ws/${digits}/json/`);
     if (!r.ok) return null;
     const j = await r.json();
     if (j.erro) return null;
-    const partes = [j.logradouro, j.bairro, j.localidade && `${j.localidade}/${j.uf}`]
-      .filter(Boolean)
-      .join(", ");
-    return partes || null;
+    return {
+      logradouro: j.logradouro || "",
+      bairro: j.bairro || "",
+      cidade: j.localidade || "",
+      uf: j.uf || "",
+    };
   } catch {
     return null;
   }
 }
+
+function composeEnderecoBase(r: CepResult): string {
+  const cidadeUf = r.cidade && r.uf ? `${r.cidade}/${r.uf}` : r.cidade || r.uf;
+  return [r.logradouro, r.bairro, cidadeUf].filter(Boolean).join(", ");
+}
+
+function enderecoCompletoStr(base: string, numero: string, complemento: string): string {
+  const parts: string[] = [];
+  if (base.trim()) parts.push(base.trim());
+  if (numero.trim()) parts.push(`nº ${numero.trim()}`);
+  if (complemento.trim()) parts.push(complemento.trim());
+  return parts.join(", ");
+}
+
+
 
 
 function PrescricaoPage() {
