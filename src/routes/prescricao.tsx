@@ -2030,18 +2030,6 @@ function PrescricaoForm() {
                     Salvar como kit
                   </ActionBtn>
                   <ActionBtn
-                    onClick={baixarPdf}
-                    icon={<Download className="h-4 w-4" />}
-                    disabled={!podeEmitir}
-                    disabledReason={
-                      pendencias.length > 0
-                        ? `Corrija ${pendencias.length} pendência${pendencias.length > 1 ? "s" : ""} antes de baixar:\n• ${pendencias.map((p) => p.msg).join("\n• ")}`
-                        : undefined
-                    }
-                  >
-                    Baixar PDF
-                  </ActionBtn>
-                  <ActionBtn
                     onClick={() => {
                       setTriedEmit(true);
                       if (!podeEmitir) {
