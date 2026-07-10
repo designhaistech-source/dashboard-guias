@@ -764,6 +764,8 @@ function PrescricaoForm() {
       cpfDigits,
       cepDigits,
       endereco,
+      numero,
+      complemento,
       itens,
       especial,
       tipos: Array.from(tipos),
@@ -778,6 +780,8 @@ function PrescricaoForm() {
     setCpfDigits(h.cpfDigits || "");
     setCepDigits(h.cepDigits || "");
     setEndereco(h.endereco || "");
+    setNumero(h.numero || "");
+    setComplemento(h.complemento || "");
     setItens(h.itens || []);
     setEspecial(!!h.especial);
     if (Array.isArray(h.tipos) && h.tipos.length > 0) setTipos(new Set(h.tipos));
