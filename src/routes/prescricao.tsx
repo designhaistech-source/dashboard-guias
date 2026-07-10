@@ -24,6 +24,7 @@ import {
   AlertCircle,
   CheckCircle2,
   Loader2,
+  ChevronRight,
 } from "lucide-react";
 
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
