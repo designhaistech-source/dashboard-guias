@@ -776,16 +776,15 @@ function EmitirPage() {
                         onChange={(e) => setApacCompetencia(e.target.value)}
                       />
                     </Field>
-                    <Field label="Tipo de APAC" required>
-                      <Select value={apacTipo} onValueChange={setApacTipo}>
-                        <SelectTrigger><SelectValue /></SelectTrigger>
-                        <SelectContent>
-                          {["Inicial", "Continuidade", "Única"].map((o) => (
-                            <SelectItem key={o} value={o}>{o}</SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </Field>
+                    <SelectField
+                      label="Tipo de APAC"
+                      required
+                      labelClassName="text-xs font-medium text-muted-foreground"
+                      value={apacTipo}
+                      onValueChange={setApacTipo}
+                      options={["Inicial", "Continuidade", "Única"].map((o) => ({ value: o, label: o }))}
+                    />
+
                   </Grid>
                 </Section>
               )}
