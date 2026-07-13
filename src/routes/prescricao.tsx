@@ -1266,13 +1266,8 @@ function PrescricaoForm() {
     });
   });
 
-  // Status para o stepper vertical
-  const stepPacienteOk =
-    paciente.trim().length > 0 &&
-    (!especial || (cpfDigits.length === 11 && cpfValido && enderecoValido && numeroValido));
-  const stepMedicamentosOk = itens.length > 0 && posologiasInvalidas.length === 0;
-  const stepRevisarOk = itens.length > 0 && pendencias.length === 0;
-  const currentStep: 1 | 2 | 3 = !stepPacienteOk ? 1 : !stepMedicamentosOk ? 2 : 3;
+
+
 
 
 
