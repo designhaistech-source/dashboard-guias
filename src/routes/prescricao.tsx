@@ -39,6 +39,7 @@ import { Badge } from "@/components/ui/badge";
 import { EmptyState } from "@/components/data-state";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import { jsPDF } from "jspdf";
 import { toast } from "sonner";
 import { AppSidebar } from "@/components/app-sidebar";
@@ -510,10 +511,11 @@ function PrescricaoForm() {
   const itensComuns = itens.filter((it) => !it.med.controlado);
   const hasControlado = itensControlados.length > 0;
   const hasComum = itensComuns.length > 0;
-  const especial = hasControlado; // compat com o restante do código
-  const setEspecial = (_: boolean) => {}; // no-op: derivado dos itens
+  const [especialManual, setEspecialManual] = useState(false);
+  const especial = hasControlado || especialManual;
+  const setEspecial = (v: boolean) => setEspecialManual(v);
   const [editing, setEditing] = useState<Medicamento | null>(null);
-  const mostrarCamposEspeciais = hasControlado;
+  const mostrarCamposEspeciais = especial;
   const [highlight, setHighlight] = useState(0);
   const [pacientesRecentes, setPacientesRecentes] = useState<string[]>([]);
   const [medsRecentes, setMedsRecentes] = useState<string[]>([]);
@@ -1389,12 +1391,33 @@ function PrescricaoForm() {
       {/* Seção 1 — Dados do paciente */}
       <section id="sec-paciente" className="scroll-mt-4">
         <div className="rounded-2xl border border-border bg-card shadow-xs p-5 space-y-4">
-          <div>
-            <h2 className="text-base font-semibold">Dados do paciente</h2>
-            <p className="text-xs text-muted-foreground">
-              Identifique o paciente. Campos adicionais (CPF e endereço) aparecem automaticamente
-              ao adicionar medicamentos controlados.
-            </p>
+          <div className="flex flex-wrap items-start justify-between gap-3">
+            <div>
+              <h2 className="text-base font-semibold">Dados do paciente</h2>
+              <p className="text-xs text-muted-foreground">
+                Identifique o paciente. Campos de CPF e endereço aparecem para receita especial.
+              </p>
+            </div>
+            <label
+              className={`inline-flex items-center gap-2 rounded-lg border px-3 py-2 text-sm cursor-pointer select-none transition-colors ${
+                especial
+                  ? "border-amber-500/50 bg-amber-500/5 text-amber-700 dark:text-amber-400"
+                  : "border-border hover:bg-muted/50"
+              } ${hasControlado ? "opacity-90 cursor-not-allowed" : ""}`}
+              title={
+                hasControlado
+                  ? "Ativado automaticamente por conter medicamento controlado"
+                  : undefined
+              }
+            >
+              <Checkbox
+                checked={especial}
+                disabled={hasControlado}
+                onCheckedChange={(v) => setEspecial(v === true)}
+              />
+              <ShieldAlert className="h-4 w-4" />
+              <span className="font-medium">Receita especial</span>
+            </label>
           </div>
 
           <Field id="paciente-input" label="Nome do paciente" required>
@@ -1413,6 +1436,7 @@ function PrescricaoForm() {
               ))}
             </datalist>
           </Field>
+
 
           {mostrarCamposEspeciais && (
             <div className="space-y-4 pt-2 border-t border-border/60">
