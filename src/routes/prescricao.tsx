@@ -639,12 +639,7 @@ function PrescricaoForm() {
 
   const resultados = useMemo(() => {
     const q = query.trim().toLowerCase();
-    const base = MEDICAMENTOS.filter(
-      (m) =>
-        tipos.has(m.tipo) &&
-        (tipoBusca === null ||
-          (tipoBusca === "controlado" ? !!m.controlado : !m.controlado)),
-    );
+    const base = MEDICAMENTOS.filter((m) => tipos.has(m.tipo));
     if (!q) {
       // Sem busca: favoritos + recentes primeiro, depois os demais do tipo
       const favs = base.filter((m) => m.favorito);
