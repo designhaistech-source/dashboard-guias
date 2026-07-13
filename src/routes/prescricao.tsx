@@ -524,6 +524,8 @@ function PrescricaoForm() {
   const [historico, setHistorico] = useState<Historico[]>([]);
   const [historicoAberto, setHistoricoAberto] = useState(false);
   const [kitsAberto, setKitsAberto] = useState(false);
+  const [pacienteCollapsed, setPacienteCollapsed] = useState(false);
+  const [buscaCollapsed, setBuscaCollapsed] = useState(false);
   const hidratado = useRef(false);
   const [step, setStep] = useState<1 | 2 | 3>(1);
   const [triedEmit, setTriedEmit] = useState(false);
@@ -1392,12 +1394,24 @@ function PrescricaoForm() {
       <section id="sec-paciente" className="scroll-mt-4">
         <div className="rounded-2xl border border-border bg-card shadow-xs p-5 space-y-4">
           <div className="flex flex-wrap items-start justify-between gap-3">
-            <div>
-              <h2 className="text-base font-semibold">Dados do paciente</h2>
-              <p className="text-xs text-muted-foreground">
-                Identifique o paciente. Campos de CPF e endereço aparecem para receita especial.
-              </p>
-            </div>
+            <button
+              type="button"
+              onClick={() => setPacienteCollapsed((v) => !v)}
+              className="flex items-start gap-2 text-left group min-w-0"
+              aria-expanded={!pacienteCollapsed}
+            >
+              <ChevronDown
+                className={`h-4 w-4 mt-1 text-muted-foreground transition-transform ${pacienteCollapsed ? "-rotate-90" : ""}`}
+              />
+              <div className="min-w-0">
+                <h2 className="text-base font-semibold group-hover:text-foreground">Dados do paciente</h2>
+                <p className="text-xs text-muted-foreground">
+                  {pacienteCollapsed && paciente
+                    ? paciente + (especial ? " · Receita especial" : "")
+                    : "Identifique o paciente. Campos de CPF e endereço aparecem para receita especial."}
+                </p>
+              </div>
+            </button>
             <label
               className={`inline-flex items-center gap-2 rounded-lg border px-3 py-2 text-sm cursor-pointer select-none transition-colors ${
                 especial
@@ -1420,6 +1434,7 @@ function PrescricaoForm() {
             </label>
           </div>
 
+          {!pacienteCollapsed && (<>
           <Field id="paciente-input" label="Nome do paciente" required>
             <SearchInput
               ref={pacienteRef}
@@ -1595,6 +1610,7 @@ function PrescricaoForm() {
               </div>
             </div>
           )}
+          </>)}
         </div>
       </section>
 
@@ -1602,17 +1618,26 @@ function PrescricaoForm() {
       <section id="sec-medicamentos" className="scroll-mt-4 space-y-5">
 
           <div className="rounded-2xl border border-border bg-card shadow-xs p-5 space-y-4">
-            <div>
-              <h2 className="text-base font-semibold">Buscar e adicionar medicamentos</h2>
-              <p className="text-xs text-muted-foreground">
-                Busque pelo nome do medicamento para adicionar à prescrição. Medicamentos controlados
-                são identificados automaticamente e geram receituário especial.
-              </p>
-            </div>
+            <button
+              type="button"
+              onClick={() => setBuscaCollapsed((v) => !v)}
+              className="flex items-start gap-2 text-left w-full group"
+              aria-expanded={!buscaCollapsed}
+            >
+              <ChevronDown
+                className={`h-4 w-4 mt-1 text-muted-foreground transition-transform ${buscaCollapsed ? "-rotate-90" : ""}`}
+              />
+              <div className="min-w-0">
+                <h2 className="text-base font-semibold group-hover:text-foreground">Buscar e adicionar medicamentos</h2>
+                <p className="text-xs text-muted-foreground">
+                  {buscaCollapsed
+                    ? `${itens.length} ${itens.length === 1 ? "medicamento adicionado" : "medicamentos adicionados"}`
+                    : "Busque pelo nome do medicamento para adicionar à prescrição. Medicamentos controlados são identificados automaticamente e geram receituário especial."}
+                </p>
+              </div>
+            </button>
 
-
-
-
+            {!buscaCollapsed && (<>
             <div className="grid gap-3 md:grid-cols-[minmax(0,1fr)_220px]">
               <SearchInput
                 id="med-search"
@@ -1683,6 +1708,7 @@ function PrescricaoForm() {
                 onAdd={(pos) => addItem(editing, pos)}
               />
             )}
+            </>)}
           </div>
 
 
