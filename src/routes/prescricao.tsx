@@ -1386,34 +1386,6 @@ function PrescricaoForm() {
 
 
 
-      {/* Seletor de tipo — checkbox para receita especial */}
-      <div className="rounded-2xl border border-border bg-card shadow-xs p-4 flex items-start gap-3">
-        <Checkbox
-          id="receita-especial"
-          checked={tipoBusca === "controlado"}
-          onCheckedChange={(checked: boolean | "indeterminate") => {
-            setTipoBusca(checked ? "controlado" : "comum");
-            setQuery("");
-            setEditing(null);
-            setTimeout(() => searchRef.current?.focus(), 0);
-          }}
-          className="mt-0.5"
-        />
-        <div className="space-y-1">
-          <label
-            htmlFor="receita-especial"
-            className="flex items-center gap-2 text-sm font-medium text-foreground cursor-pointer"
-          >
-            <ShieldAlert className="h-4 w-4 text-amber-600" />
-            Receita especial
-          </label>
-          <p className="text-xs text-muted-foreground">
-            Marque para prescrever medicamentos controlados. Serão exigidos CPF e endereço do paciente.
-          </p>
-        </div>
-      </div>
-
-
       {/* Seção 2 — Medicamentos */}
       <section id="sec-medicamentos" className="scroll-mt-4 space-y-5">
 
@@ -1421,17 +1393,12 @@ function PrescricaoForm() {
             <div>
               <h2 className="text-base font-semibold">Buscar e adicionar medicamentos</h2>
               <p className="text-xs text-muted-foreground">
-                Busque pelo nome do medicamento para adicionar à prescrição.
+                Busque pelo nome do medicamento para adicionar à prescrição. Medicamentos controlados
+                são identificados automaticamente e geram receituário especial.
               </p>
             </div>
 
-            {tipoBusca === null ? (
-              <div className="rounded-xl border border-dashed border-border bg-background/30 p-6 text-sm text-muted-foreground text-center">
-                Selecione <strong className="text-foreground">Comum</strong> ou{" "}
-                <strong className="text-foreground">Especial</strong> acima para buscar medicamentos.
-              </div>
-            ) : (
-              <>
+
 
 
             <div className="grid gap-3 md:grid-cols-[minmax(0,1fr)_220px]">
