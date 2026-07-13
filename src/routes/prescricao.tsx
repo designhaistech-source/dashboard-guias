@@ -1807,7 +1807,7 @@ function PrescricaoForm() {
               <div className="min-w-0">
                 <div className="flex items-center gap-2 flex-wrap">
                   <h3 className="text-sm font-semibold tracking-wide">
-                    Revisão da receita
+                    3. Revisão da receita
                   </h3>
                   {hasControlado && (
                     <span className="inline-flex items-center gap-1 rounded-full border border-amber-500/40 bg-amber-500/10 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide text-amber-700 dark:text-amber-300">
