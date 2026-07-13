@@ -654,6 +654,7 @@ function PrescricaoForm() {
     setSavedAt(null);
     toast.success("Rascunho descartado.");
   };
+  descartarRascunhoRef.current = descartarRascunho;
 
 
 
