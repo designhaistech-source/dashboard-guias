@@ -1476,6 +1476,25 @@ function PrescricaoForm() {
             ]}
           />
 
+          {hasControlado && (
+            <div
+              role="status"
+              className="flex items-start gap-2 rounded-lg border border-amber-300/70 bg-amber-50 px-3 py-2 text-xs text-amber-900 dark:border-amber-500/40 dark:bg-amber-500/10 dark:text-amber-100"
+            >
+              <ShieldAlert className="h-4 w-4 shrink-0 mt-0.5 text-amber-600 dark:text-amber-400" />
+              <div className="min-w-0">
+                <p className="font-medium">
+                  Receita marcada como Especial — CPF e endereço obrigatórios
+                </p>
+                <p className="mt-0.5 text-amber-800/90 dark:text-amber-100/80">
+                  {itensControlados.length === 1
+                    ? `Motivo: “${itensControlados[0].med.nome}” é medicamento controlado (Portaria 344/98).`
+                    : `Motivo: ${itensControlados.length} medicamentos controlados na lista (Portaria 344/98).`}
+                </p>
+              </div>
+            </div>
+          )}
+
 
 
 
