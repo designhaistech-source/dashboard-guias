@@ -252,7 +252,7 @@ function OpmePage() {
       return;
     }
     toast.success(
-      `Solicitação de OPME enviada via PedeGuia (${materiaisValidos.length} ${materiaisValidos.length === 1 ? "item" : "itens"}).`,
+      `Solicitação de OPME enviada (${materiaisValidos.length} ${materiaisValidos.length === 1 ? "item" : "itens"}).`,
     );
   }
 
