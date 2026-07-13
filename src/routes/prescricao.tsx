@@ -1397,7 +1397,7 @@ function PrescricaoForm() {
         <Checkbox
           id="receita-especial"
           checked={tipoBusca === "controlado"}
-          onCheckedChange={(checked) => {
+          onCheckedChange={(checked: boolean | "indeterminate") => {
             setTipoBusca(checked ? "controlado" : "comum");
             setQuery("");
             setEditing(null);
