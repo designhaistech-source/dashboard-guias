@@ -1391,38 +1391,33 @@ function PrescricaoForm() {
 
 
 
-      {/* Seletor de tipo — no topo, mesmo padrão da página Emitir Guias */}
-      <Tabs
-        value={tipoBusca ?? undefined}
-        onValueChange={(v) => {
-          setTipoBusca(v as "comum" | "controlado");
-          setQuery("");
-          setEditing(null);
-          setTimeout(() => searchRef.current?.focus(), 0);
-        }}
-      >
-        <TabsList className="w-full h-auto p-1 bg-muted border border-border shadow-inner grid grid-cols-2 gap-1 rounded-xl">
-          <TabsTrigger
-            value="comum"
-            className="flex items-center gap-2 py-2.5 rounded-lg text-muted-foreground transition-all data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:border data-[state=active]:border-border/60 data-[state=active]:shadow-md"
+      {/* Seletor de tipo — checkbox para receita especial */}
+      <div className="rounded-2xl border border-border bg-card shadow-xs p-4 flex items-start gap-3">
+        <Checkbox
+          id="receita-especial"
+          checked={tipoBusca === "controlado"}
+          onCheckedChange={(checked) => {
+            setTipoBusca(checked ? "controlado" : "comum");
+            setQuery("");
+            setEditing(null);
+            setTimeout(() => searchRef.current?.focus(), 0);
+          }}
+          className="mt-0.5"
+        />
+        <div className="space-y-1">
+          <label
+            htmlFor="receita-especial"
+            className="flex items-center gap-2 text-sm font-medium text-foreground cursor-pointer"
           >
-            <Shield className="h-4 w-4" />
-            <span className="font-medium">Comum</span>
-          </TabsTrigger>
-          <TabsTrigger
-            value="controlado"
-            className="flex items-center gap-2 py-2.5 rounded-lg text-muted-foreground transition-all data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:border data-[state=active]:border-border/60 data-[state=active]:shadow-md"
-          >
-            <ShieldAlert className="h-4 w-4" />
-            <span className="font-medium">Especial</span>
-          </TabsTrigger>
-        </TabsList>
-      </Tabs>
-      {tipoBusca === "controlado" && (
-        <p className="text-xs text-amber-700 dark:text-amber-400">
-          Medicamentos controlados exigem receituário especial (CPF e endereço do paciente).
-        </p>
-      )}
+            <ShieldAlert className="h-4 w-4 text-amber-600" />
+            Receita especial
+          </label>
+          <p className="text-xs text-muted-foreground">
+            Marque para prescrever medicamentos controlados. Serão exigidos CPF e endereço do paciente.
+          </p>
+        </div>
+      </div>
+
 
       {/* Seção 2 — Medicamentos */}
       <section id="sec-medicamentos" className="scroll-mt-4 space-y-5">
