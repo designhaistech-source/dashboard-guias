@@ -1294,7 +1294,7 @@ function PrescricaoForm() {
             Emitir prescrição
           </h1>
           <p className="mt-1 text-sm text-muted-foreground">
-            Adicione os medicamentos e finalize informando o paciente na revisão.
+            Informe o paciente, adicione os medicamentos e revise antes de emitir.
           </p>
         </div>
         <div className="flex items-center gap-2 shrink-0">
