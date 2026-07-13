@@ -1261,6 +1261,16 @@ function PrescricaoForm() {
     });
   });
 
+  // Status para o stepper vertical
+  const stepPacienteOk =
+    paciente.trim().length > 0 &&
+    (!especial || (cpfDigits.length === 11 && cpfValido && enderecoValido && numeroValido));
+  const stepMedicamentosOk = itens.length > 0 && posologiasInvalidas.length === 0;
+  const stepRevisarOk = itens.length > 0 && pendencias.length === 0;
+  const currentStep: 1 | 2 | 3 = !stepPacienteOk ? 1 : !stepMedicamentosOk ? 2 : 3;
+
+
+
 
   // Atalhos globais: Ctrl/Cmd+P imprimir, Ctrl/Cmd+S salvar kit, "/" foca busca
   useEffect(() => {
@@ -1412,6 +1422,70 @@ function PrescricaoForm() {
 
 
 
+
+
+      <div className="grid gap-6 lg:grid-cols-[220px_minmax(0,1fr)] items-start">
+        {/* Stepper vertical */}
+        <aside className="hidden lg:block">
+          <nav className="sticky top-6" aria-label="Progresso da prescrição">
+            <ol className="relative space-y-1">
+              {[
+                { n: 1 as const, id: "sec-paciente", label: "Paciente", hint: paciente.trim() || "Identificação", done: stepPacienteOk },
+                { n: 2 as const, id: "sec-medicamentos", label: "Medicamentos", hint: itens.length > 0 ? `${itens.length} ${itens.length === 1 ? "item" : "itens"}` : "Nenhum item", done: stepMedicamentosOk },
+                { n: 3 as const, id: "sec-revisar", label: "Revisão", hint: pendencias.length === 0 && itens.length > 0 ? "Pronto para emitir" : `${pendencias.length} pendência${pendencias.length === 1 ? "" : "s"}`, done: stepRevisarOk },
+              ].map((s, idx, arr) => {
+                const active = currentStep === s.n;
+                const isLast = idx === arr.length - 1;
+                return (
+                  <li key={s.n} className="relative">
+                    {!isLast && (
+                      <span
+                        aria-hidden
+                        className={`absolute left-[15px] top-8 bottom-[-4px] w-px ${s.done ? "bg-emerald-500/60" : "bg-border"}`}
+                      />
+                    )}
+                    <button
+                      type="button"
+                      onClick={() =>
+                        document
+                          .getElementById(s.id)
+                          ?.scrollIntoView({ behavior: "smooth", block: "start" })
+                      }
+                      className={`relative flex w-full items-start gap-3 rounded-lg px-2 py-2 text-left transition-colors ${
+                        active ? "bg-primary/5" : "hover:bg-muted/40"
+                      }`}
+                      aria-current={active ? "step" : undefined}
+                    >
+                      <span
+                        className={`grid place-items-center h-8 w-8 shrink-0 rounded-full border text-xs font-semibold transition-colors ${
+                          s.done
+                            ? "bg-emerald-500 border-emerald-500 text-white"
+                            : active
+                              ? "bg-primary text-primary-foreground border-primary"
+                              : "bg-background border-border text-muted-foreground"
+                        }`}
+                      >
+                        {s.done ? <Check className="h-4 w-4" /> : s.n}
+                      </span>
+                      <span className="min-w-0 pt-0.5">
+                        <span
+                          className={`block text-sm font-medium ${active ? "text-foreground" : s.done ? "text-foreground" : "text-muted-foreground"}`}
+                        >
+                          {s.label}
+                        </span>
+                        <span className="block text-[11px] text-muted-foreground truncate">
+                          {s.hint}
+                        </span>
+                      </span>
+                    </button>
+                  </li>
+                );
+              })}
+            </ol>
+          </nav>
+        </aside>
+
+        <div className="space-y-5 min-w-0">
 
 
       {/* Seção 1 — Dados do paciente */}
@@ -2070,6 +2144,11 @@ function PrescricaoForm() {
           </div>
         </div>
       </section>
+
+
+        </div>
+      </div>
+
 
 
 
