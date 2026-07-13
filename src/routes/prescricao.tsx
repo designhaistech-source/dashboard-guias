@@ -658,7 +658,7 @@ function PrescricaoForm() {
         m.fabricante.toLowerCase().includes(q) ||
         m.classe.toLowerCase().includes(q),
     );
-  }, [query, tipos, tipoBusca, medsRecentes]);
+  }, [query, tipos, medsRecentes]);
 
 
   useEffect(() => {
