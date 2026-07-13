@@ -560,6 +560,7 @@ function PrescricaoForm() {
   const enderecoRef = useRef<HTMLInputElement>(null);
   const numeroRef = useRef<HTMLInputElement>(null);
   const receitaRef = useRef<HTMLDivElement>(null);
+  const descartarRascunhoRef = useRef<(() => void) | null>(null);
 
   useEffect(() => {
     setPacientesRecentes(loadRecentes(LS_PACIENTES));
