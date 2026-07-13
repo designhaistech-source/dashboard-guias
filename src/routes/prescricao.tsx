@@ -1404,7 +1404,7 @@ function PrescricaoForm() {
 
 
   return (
-    <div className="space-y-5 pb-8">
+    <div className="space-y-5 pb-28">
       {/* Header unificado */}
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div className="min-w-0">
@@ -2246,17 +2246,92 @@ function PrescricaoForm() {
         }}
       />
 
+      {/* Barra de ação sticky */}
+      <div className="fixed bottom-0 inset-x-0 z-30 border-t border-border bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/80 shadow-[0_-4px_20px_-8px_rgba(0,0,0,0.18)]">
+        <div className="w-full px-6 lg:px-10 py-3 flex flex-wrap items-center justify-between gap-3">
+          <div className="flex flex-wrap items-center gap-2 text-xs">
+            <span
+              className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 font-medium ${
+                paciente.trim()
+                  ? "border-emerald-500/40 bg-emerald-500/10 text-emerald-700 dark:text-emerald-400"
+                  : "border-border bg-muted/50 text-muted-foreground"
+              }`}
+            >
+              {paciente.trim() ? <Check className="h-3.5 w-3.5" /> : <span className="h-1.5 w-1.5 rounded-full bg-muted-foreground/60" />}
+              {paciente.trim() ? `Paciente: ${paciente.trim().split(/\s+/)[0]}` : "Paciente"}
+            </span>
+            <span
+              className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 font-medium ${
+                itens.length > 0
+                  ? "border-emerald-500/40 bg-emerald-500/10 text-emerald-700 dark:text-emerald-400"
+                  : "border-border bg-muted/50 text-muted-foreground"
+              }`}
+            >
+              {itens.length > 0 ? <Check className="h-3.5 w-3.5" /> : <span className="h-1.5 w-1.5 rounded-full bg-muted-foreground/60" />}
+              {itens.length > 0 ? `${itens.length} ${itens.length === 1 ? "item" : "itens"}` : "Sem itens"}
+            </span>
+            {hasControlado && (
+              <span className="inline-flex items-center gap-1.5 rounded-full border border-amber-500/40 bg-amber-500/10 text-amber-700 dark:text-amber-400 px-2.5 py-1 font-medium">
+                <ShieldAlert className="h-3.5 w-3.5" /> Controle especial
+              </span>
+            )}
+            {podeEmitir ? (
+              <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/40 bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 px-2.5 py-1 font-medium">
+                <Check className="h-3.5 w-3.5" /> Pronto para emitir
+              </span>
+            ) : pendencias.length > 0 ? (
+              <span className="inline-flex items-center gap-1.5 rounded-full border border-amber-500/40 bg-amber-500/10 text-amber-700 dark:text-amber-400 px-2.5 py-1 font-medium">
+                <AlertCircle className="h-3.5 w-3.5" /> {pendencias.length} pendência{pendencias.length > 1 ? "s" : ""}
+              </span>
+            ) : null}
+          </div>
+          <div className="flex items-center gap-2">
+            <ActionBtn
+              onClick={abrirSalvarKit}
+              icon={<Save className="h-4 w-4" />}
+              disabled={itens.length === 0}
+              title="Ctrl+S"
+            >
+              Salvar como kit
+            </ActionBtn>
+            <ActionBtn
+              onClick={() => {
+                setTriedEmit(true);
+                if (!podeEmitir) {
+                  document
+                    .getElementById("sec-revisar")
+                    ?.scrollIntoView({ behavior: "smooth", block: "start" });
+                  return;
+                }
+                baixarPdf({ emitir: true });
+              }}
+              icon={<Printer className="h-4 w-4" />}
+              variant="primary"
+              disabled={!podeEmitir}
+              disabledReason={
+                pendencias.length > 0
+                  ? `Corrija ${pendencias.length} pendência${pendencias.length > 1 ? "s" : ""} antes de emitir:\n• ${pendencias.map((p) => p.msg).join("\n• ")}`
+                  : undefined
+              }
+            >
+              Emitir receita
+            </ActionBtn>
+          </div>
+        </div>
+      </div>
+
       <button
         type="button"
         onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
         aria-label="Voltar ao topo"
         title="Voltar ao topo"
-        className={`fixed bottom-6 right-6 z-40 h-10 w-10 rounded-full border border-border bg-card/90 backdrop-blur text-muted-foreground shadow-md hover:text-foreground hover:bg-card transition-all duration-200 flex items-center justify-center ${
+        className={`fixed bottom-24 right-6 z-40 h-10 w-10 rounded-full border border-border bg-card/90 backdrop-blur text-muted-foreground shadow-md hover:text-foreground hover:bg-card transition-all duration-200 flex items-center justify-center ${
           showTopBtn ? "opacity-100 translate-y-0 pointer-events-auto" : "opacity-0 translate-y-2 pointer-events-none"
         }`}
       >
         <ArrowUp className="h-4 w-4" />
       </button>
+
     </div>
   );
 }
