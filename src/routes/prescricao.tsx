@@ -2180,6 +2180,49 @@ function PrescricaoForm() {
         </div>
       </section>
 
+      {/* Barra de ação fixa */}
+      <div className="sticky bottom-4 z-30">
+        <div className="rounded-xl border bg-card/95 backdrop-blur shadow-md px-4 py-3 flex flex-wrap items-center justify-between gap-3">
+          <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+            <StatusPill done={paciente.trim().length > 0} label="Paciente" />
+            <StatusPill done={itens.length > 0} label="Medicamentos" />
+            {especial && (
+              <StatusPill done={!especialInvalido} label="Receita especial" />
+            )}
+          </div>
+          <div className="flex flex-wrap items-center gap-2">
+            <button
+              type="button"
+              onClick={abrirSalvarKit}
+              disabled={itens.length === 0}
+              className="inline-flex items-center gap-2 rounded-lg border border-border bg-background px-3 py-2 text-sm font-medium hover:bg-muted transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <Save className="h-4 w-4" />
+              Salvar como kit
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setTriedEmit(true);
+                if (!podeEmitir) {
+                  document
+                    .getElementById("sec-revisar")
+                    ?.scrollIntoView({ behavior: "smooth", block: "start" });
+                  return;
+                }
+                baixarPdf({ emitir: true });
+              }}
+              disabled={!podeEmitir}
+              className="inline-flex items-center gap-2 rounded-lg bg-primary text-primary-foreground px-4 py-2 text-sm font-medium hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-sm"
+            >
+              <Printer className="h-4 w-4" />
+              Emitir receita
+            </button>
+          </div>
+        </div>
+      </div>
+
+
 
 
 
