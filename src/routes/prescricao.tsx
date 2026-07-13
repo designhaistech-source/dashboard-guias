@@ -510,10 +510,11 @@ function PrescricaoForm() {
   const itensComuns = itens.filter((it) => !it.med.controlado);
   const hasControlado = itensControlados.length > 0;
   const hasComum = itensComuns.length > 0;
-  const especial = hasControlado; // compat com o restante do código
-  const setEspecial = (_: boolean) => {}; // no-op: derivado dos itens
+  const [especialManual, setEspecialManual] = useState(false);
+  const especial = hasControlado || especialManual;
+  const setEspecial = (v: boolean) => setEspecialManual(v);
   const [editing, setEditing] = useState<Medicamento | null>(null);
-  const mostrarCamposEspeciais = hasControlado;
+  const mostrarCamposEspeciais = especial;
   const [highlight, setHighlight] = useState(0);
   const [pacientesRecentes, setPacientesRecentes] = useState<string[]>([]);
   const [medsRecentes, setMedsRecentes] = useState<string[]>([]);
