@@ -554,6 +554,13 @@ function PrescricaoForm() {
   const hidratado = useRef(false);
   const [step, setStep] = useState<1 | 2 | 3>(1);
   const [triedEmit, setTriedEmit] = useState(false);
+  const [showTopBtn, setShowTopBtn] = useState(false);
+  useEffect(() => {
+    const onScroll = () => setShowTopBtn(window.scrollY > 400);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   const pacienteRef = useRef<HTMLInputElement>(null);
   const searchRef = useRef<HTMLInputElement>(null);
