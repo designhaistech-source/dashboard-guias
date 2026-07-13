@@ -1675,7 +1675,7 @@ function PrescricaoForm() {
                 className={`h-4 w-4 mt-1 text-muted-foreground transition-transform ${buscaCollapsed ? "-rotate-90" : ""}`}
               />
               <div className="min-w-0">
-                <h2 className="text-base font-semibold group-hover:text-foreground">Buscar e adicionar medicamentos</h2>
+                <h2 className="text-base font-semibold group-hover:text-foreground">2. Buscar e adicionar medicamentos</h2>
                 <p className="text-xs text-muted-foreground">
                   {buscaCollapsed
                     ? `${itens.length} ${itens.length === 1 ? "medicamento adicionado" : "medicamentos adicionados"}`
