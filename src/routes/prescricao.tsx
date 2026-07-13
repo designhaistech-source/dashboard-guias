@@ -886,18 +886,34 @@ function PrescricaoForm() {
     try {
       doc.autoPrint();
     } catch {
-      /* jsPDF sempre suporta, mas garantimos */
+      /* noop */
     }
     const blob = doc.output("blob");
     const blobUrl = URL.createObjectURL(blob);
-    const win = window.open(blobUrl, "_blank");
-    if (!win) {
-      // Popup bloqueado — cai no download para o usuário não ficar sem nada
-      URL.revokeObjectURL(blobUrl);
-      doc.save(nome);
-      return false;
-    }
-    setTimeout(() => URL.revokeObjectURL(blobUrl), 60_000);
+
+    // Chrome bloqueia navegação para blob: em nova aba (ERR_BLOCKED_BY_CLIENT).
+    // Usamos um iframe oculto para acionar o diálogo de impressão sem abrir aba.
+    const iframe = document.createElement("iframe");
+    iframe.style.position = "fixed";
+    iframe.style.right = "0";
+    iframe.style.bottom = "0";
+    iframe.style.width = "0";
+    iframe.style.height = "0";
+    iframe.style.border = "0";
+    iframe.src = blobUrl;
+    iframe.onload = () => {
+      try {
+        iframe.contentWindow?.focus();
+        iframe.contentWindow?.print();
+      } catch {
+        doc.save(nome);
+      }
+      setTimeout(() => {
+        URL.revokeObjectURL(blobUrl);
+        iframe.remove();
+      }, 60_000);
+    };
+    document.body.appendChild(iframe);
     return true;
   };
 
