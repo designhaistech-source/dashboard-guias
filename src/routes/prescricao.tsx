@@ -2126,8 +2126,9 @@ function PrescricaoForm() {
         </div>
       </section>
 
-      {/* Barra de ação fixa — pills de status + ações */}
-      <div className="sticky bottom-4 z-30">
+      {/* Barra de ação — pills de status + ações */}
+      <div>
+
         <div className="rounded-xl border bg-card/95 backdrop-blur shadow-md px-4 py-3 flex flex-wrap items-center justify-between gap-3">
           <div className="flex flex-wrap items-center gap-2">
             <StatusPill
