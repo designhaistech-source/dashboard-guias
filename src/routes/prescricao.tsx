@@ -560,6 +560,7 @@ function PrescricaoForm() {
   const enderecoRef = useRef<HTMLInputElement>(null);
   const numeroRef = useRef<HTMLInputElement>(null);
   const receitaRef = useRef<HTMLDivElement>(null);
+  const descartarRascunhoRef = useRef<(() => void) | null>(null);
 
   useEffect(() => {
     setPacientesRecentes(loadRecentes(LS_PACIENTES));
@@ -582,8 +583,11 @@ function PrescricaoForm() {
         setItens(Array.isArray(d.itens) ? d.itens : []);
         setEspecial(!!d.especial);
         if (Array.isArray(d.tipos) && d.tipos.length > 0) setTipos(new Set(d.tipos));
-        setRascunhoRestaurado(d.savedAt || Date.now());
-        setSavedAt(d.savedAt || Date.now());
+        const ts = d.savedAt || Date.now();
+        setSavedAt(ts);
+        toast(`Rascunho recuperado de ${fmtHora(ts)}`, {
+          action: { label: "Descartar", onClick: () => descartarRascunhoRef.current?.() },
+        });
       }
     }
     hidratado.current = true;
@@ -650,6 +654,7 @@ function PrescricaoForm() {
     setSavedAt(null);
     toast.success("Rascunho descartado.");
   };
+  descartarRascunhoRef.current = descartarRascunho;
 
 
 
@@ -1385,27 +1390,8 @@ function PrescricaoForm() {
         </div>
       </div>
 
-      {rascunhoRestaurado && (
-        <div className="rounded-xl border border-border bg-card px-4 py-2 flex items-center justify-between gap-2 text-xs">
-          <span className="text-muted-foreground">
-            Rascunho recuperado de {fmtHora(rascunhoRestaurado)}.
-          </span>
-          <div className="flex items-center gap-3">
-            <button
-              onClick={() => setRascunhoRestaurado(null)}
-              className="text-muted-foreground hover:text-foreground"
-            >
-              Ocultar
-            </button>
-            <button
-              onClick={descartarRascunho}
-              className="text-destructive hover:underline"
-            >
-              Descartar
-            </button>
-          </div>
-        </div>
-      )}
+
+
 
 
 
