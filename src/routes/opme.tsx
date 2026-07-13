@@ -13,6 +13,10 @@ import {
   Eraser,
   Send,
   Stethoscope,
+  ChevronDown,
+  ArrowUp,
+  CheckCircle2,
+  CircleDashed,
 } from "lucide-react";
 import { toast } from "sonner";
 import { AppSidebar } from "@/components/app-sidebar";
@@ -130,12 +134,13 @@ function uid() {
 function OpmePage() {
   // Convênio
   const [operadora, setOperadora] = useState<string>("Humanas");
-  const [registroAns, setRegistroAns] = useState<string>("357511");
   const [caraterAtendimento, setCarater] = useState<string>("Eletivo");
 
-  // Paciente / clínico
+  // Paciente
   const [paciente, setPaciente] = useState("");
   const [cartaoBenef, setCartaoBenef] = useState("");
+
+  // Clínico
   const [justificativa, setJustificativa] = useState("");
   const [especificacao, setEspecificacao] = useState("");
 
@@ -155,6 +160,13 @@ function OpmePage() {
   const [carregarOpen, setCarregarOpen] = useState(false);
   const [salvarOpen, setSalvarOpen] = useState(false);
   const [novoKitNome, setNovoKitNome] = useState("");
+
+  // Collapse state
+  const [convenioCollapsed, setConvenioCollapsed] = useState(false);
+  const [clinicoCollapsed, setClinicoCollapsed] = useState(false);
+  const [materiaisCollapsed, setMateriaisCollapsed] = useState(false);
+  const [profCollapsed, setProfCollapsed] = useState(false);
+  const [showTopBtn, setShowTopBtn] = useState(false);
 
   useEffect(() => {
     try {
@@ -176,16 +188,27 @@ function OpmePage() {
     }
   }, [kits]);
 
+  useEffect(() => {
+    const onScroll = () => setShowTopBtn(window.scrollY > 400);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
   const totalMateriais = useMemo(
     () => materiais.reduce((acc, m) => acc + (m.nome ? m.qtd || 0 : 0), 0),
     [materiais],
   );
   const materiaisValidos = materiais.filter((m) => m.nome.trim());
 
-  const canSubmit =
-    !!operadora && !!paciente.trim() && !!justificativa.trim() && materiaisValidos.length > 0;
-
   const operadoraSel = OPERADORAS.find((o) => o.value === operadora);
+  const registroAns = operadoraSel?.ans ?? "";
+
+  const convenioOk = !!operadora && !!paciente.trim();
+  const clinicoOk = !!justificativa.trim();
+  const materiaisOk = materiaisValidos.length > 0;
+  const profOk = !!profissional.trim() && !!numeroConselho.trim();
+
+  const canSubmit = convenioOk && clinicoOk && materiaisOk && profOk;
 
   function addMaterial() {
     setMateriais((prev) => [...prev, { id: uid(), tiss: "", nome: "", enq: "", qtd: 1 }]);
@@ -207,11 +230,10 @@ function OpmePage() {
     }
   }
 
-  function limpar() {
+  function limparMateriais() {
     setMateriais([{ id: uid(), tiss: "", nome: "", enq: "", qtd: 1 }]);
-    setJustificativa("");
     setEspecificacao("");
-    toast.success("Formulário limpo.");
+    toast.success("Materiais e especificação limpos.");
   }
 
   function carregarKit(kit: Kit) {
@@ -219,7 +241,14 @@ function OpmePage() {
     setEspecificacao(kit.especificacao);
     setMateriais(kit.materiais.map((m) => ({ ...m, id: uid() })));
     setCarregarOpen(false);
+    setClinicoCollapsed(false);
+    setMateriaisCollapsed(false);
     toast.success(`Kit "${kit.nome}" carregado.`);
+    setTimeout(() => {
+      document
+        .getElementById("sec-materiais")
+        ?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 100);
   }
 
   function salvarKit() {
@@ -245,7 +274,7 @@ function OpmePage() {
     toast.success("Kit removido.");
   }
 
-  function enviarPedeGuia(e: React.FormEvent) {
+  function enviarSolicitacao(e: React.FormEvent) {
     e.preventDefault();
     if (!canSubmit) {
       toast.error("Preencha operadora, paciente, justificativa e ao menos um material.");
@@ -261,71 +290,76 @@ function OpmePage() {
       <AppSidebar activeKey="opme" />
 
       <main className="flex-1 flex flex-col min-h-screen overflow-x-hidden">
-        <div className="w-full px-6 lg:px-10 py-8 space-y-6 flex-1 pb-16">
+        <div className="w-full px-6 lg:px-10 py-8 space-y-6 flex-1 pb-24">
           <PageHeader
             title="Solicitar OPME"
-            description="Solicitação de Órteses, Próteses e Materiais Especiais: operadora, paciente, dados clínicos/justificativa técnica e especificação do material."
+            description="Convênio e paciente, justificativa clínica, materiais e profissional solicitante — nesta ordem."
           />
 
-          <form onSubmit={enviarPedeGuia} className="space-y-6">
-            <section className="rounded-xl border bg-card shadow-sm overflow-hidden">
-              <div className="flex items-start gap-3 px-5 py-4 border-b bg-muted/30">
-                <div className="h-9 w-9 rounded-md bg-primary/10 text-primary flex items-center justify-center">
-                  <Wrench className="h-4 w-4" />
-                </div>
-                <div className="min-w-0 flex-1">
-                  <h2 className="text-sm font-semibold">
-                    Emitir guias de solicitação de OPME
-                  </h2>
-                  <p className="text-xs text-muted-foreground mt-0.5">
-                    Órteses, Próteses e Materiais Especiais
-                  </p>
-                </div>
-              </div>
+          <form onSubmit={enviarSolicitacao} className="space-y-5">
+            {/* 1. Convênio & Paciente */}
+            <SectionCard
+              id="sec-convenio"
+              icon={<Building2 className="h-4 w-4" />}
+              number={1}
+              title="Convênio e paciente"
+              collapsed={convenioCollapsed}
+              onToggle={() => setConvenioCollapsed((v) => !v)}
+              done={convenioOk}
+              summary={
+                convenioCollapsed && convenioOk
+                  ? `${operadoraSel?.label ?? operadora} · ${paciente} · ${caraterAtendimento}`
+                  : "Selecione a operadora, informe o paciente e o caráter do atendimento."
+              }
+            >
+              <div className="space-y-4">
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <Field label="Convênio / Operadora" required>
+                    <Select value={operadora} onValueChange={setOperadora}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Selecione o convênio" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {OPERADORAS.map((o) => (
+                          <SelectItem key={o.value} value={o.value}>
+                            {o.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    {operadoraSel && (
+                      <div className="mt-2 flex items-center gap-3 rounded-md border bg-muted/30 px-3 py-2">
+                        <img
+                          src={operadoraSel.logo}
+                          alt={operadoraSel.label}
+                          className="h-6 w-auto object-contain"
+                          loading="lazy"
+                        />
+                        <span className="text-xs text-muted-foreground">
+                          ANS <span className="font-mono text-foreground">{registroAns}</span>
+                        </span>
+                      </div>
+                    )}
+                  </Field>
 
-              <div className="p-5 sm:p-6 space-y-6">
-                {/* Convênio */}
-                <div className="space-y-2">
-                  <div className="flex items-center gap-2 text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                    <Building2 className="h-3.5 w-3.5" />
-                    Convênio / Operadora de saúde
-                  </div>
-                  <Select
-                    value={operadora}
-                    onValueChange={(v) => {
-                      setOperadora(v);
-                      const op = OPERADORAS.find((o) => o.value === v);
-                      if (op) setRegistroAns(op.ans);
-                    }}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Selecione o convênio" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {OPERADORAS.map((o) => (
-                        <SelectItem key={o.value} value={o.value}>
-                          {o.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  {operadoraSel && (
-                    <div className="flex items-center gap-3 pt-1">
-                      <img
-                        src={operadoraSel.logo}
-                        alt={operadoraSel.label}
-                        className="h-8 w-auto object-contain"
-                        loading="lazy"
-                      />
-                      <span className="text-xs text-muted-foreground">
-                        ANS {operadoraSel.ans}
-                      </span>
-                    </div>
-                  )}
+                  <Field label="Caráter do atendimento" required>
+                    <Select value={caraterAtendimento} onValueChange={setCarater}>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {["Eletivo", "Urgência", "Emergência"].map((c) => (
+                          <SelectItem key={c} value={c}>
+                            {c}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </Field>
                 </div>
 
                 <div className="grid gap-4 sm:grid-cols-2">
-                  <Field label="Nome do Paciente" required>
+                  <Field label="Nome do paciente" required>
                     <div className="relative">
                       <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                       <Input
@@ -343,49 +377,188 @@ function OpmePage() {
                       onChange={(e) => setCartaoBenef(e.target.value)}
                     />
                   </Field>
-                  <Field label="Caráter do atendimento">
-                    <Select value={caraterAtendimento} onValueChange={setCarater}>
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {["Eletivo", "Urgência", "Emergência"].map((c) => (
-                          <SelectItem key={c} value={c}>
-                            {c}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </Field>
-                  <Field label="Registro ANS">
-                    <Input
-                      value={registroAns}
-                      onChange={(e) => setRegistroAns(e.target.value)}
-                    />
-                  </Field>
                 </div>
+              </div>
+            </SectionCard>
 
-                <Field label="Dados Clínicos / Justificativa técnica" required>
-                  <div className="relative">
-                    <Textarea
-                      rows={6}
-                      maxLength={1500}
-                      placeholder="Descreva o quadro clínico, achados diagnósticos e a justificativa técnica para os materiais solicitados..."
-                      value={justificativa}
-                      onChange={(e) => setJustificativa(e.target.value)}
-                    />
-                    <span className="absolute right-3 bottom-2 text-[11px] text-muted-foreground tabular-nums">
-                      {justificativa.length}/1500
+            {/* 2. Justificativa técnica */}
+            <SectionCard
+              id="sec-clinico"
+              icon={<ClipboardList className="h-4 w-4" />}
+              number={2}
+              title="Justificativa clínica"
+              collapsed={clinicoCollapsed}
+              onToggle={() => setClinicoCollapsed((v) => !v)}
+              done={clinicoOk}
+              summary={
+                clinicoCollapsed && clinicoOk
+                  ? `${justificativa.length} caracteres · ${justificativa.slice(0, 80)}${
+                      justificativa.length > 80 ? "…" : ""
+                    }`
+                  : "Descreva o quadro clínico e a indicação técnica dos materiais."
+              }
+            >
+              <Field label="Dados clínicos / justificativa técnica" required>
+                <div className="relative">
+                  <Textarea
+                    rows={6}
+                    maxLength={1500}
+                    placeholder="Descreva o quadro clínico, achados diagnósticos e a justificativa técnica para os materiais solicitados..."
+                    value={justificativa}
+                    onChange={(e) => setJustificativa(e.target.value)}
+                  />
+                  <span className="absolute right-3 bottom-2 text-[11px] text-muted-foreground tabular-nums">
+                    {justificativa.length}/1500
+                  </span>
+                </div>
+              </Field>
+            </SectionCard>
+
+            {/* 3. Materiais OPME */}
+            <SectionCard
+              id="sec-materiais"
+              icon={<Package className="h-4 w-4" />}
+              number={3}
+              title="Materiais OPME"
+              collapsed={materiaisCollapsed}
+              onToggle={() => setMateriaisCollapsed((v) => !v)}
+              done={materiaisOk}
+              summary={
+                materiaisCollapsed && materiaisOk
+                  ? `${materiaisValidos.length} ${
+                      materiaisValidos.length === 1 ? "item" : "itens"
+                    } · ${totalMateriais} un.`
+                  : "Liste os materiais, quantidade e enquadramento técnico. Use kits para reaproveitar combinações."
+              }
+              headerRight={
+                <div className="flex flex-wrap items-center gap-2">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setCarregarOpen(true);
+                    }}
+                  >
+                    <FolderOpen className="h-4 w-4" />
+                    Carregar kit
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setSalvarOpen(true);
+                    }}
+                    disabled={materiaisValidos.length === 0}
+                  >
+                    <Save className="h-4 w-4" />
+                    Salvar kit
+                  </Button>
+                </div>
+              }
+            >
+              <div className="space-y-3">
+                {materiaisValidos.length > 0 && (
+                  <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                    <span className="inline-flex items-center gap-1 rounded-full bg-primary/10 text-primary px-2 py-0.5 text-[11px] font-semibold">
+                      {materiaisValidos.length}{" "}
+                      {materiaisValidos.length === 1 ? "item" : "itens"} · {totalMateriais} un.
                     </span>
                   </div>
-                </Field>
+                )}
 
-                <Field label="Especificação do material">
+                <div className="rounded-lg border overflow-hidden">
+                  <div className="hidden md:grid grid-cols-[120px_1fr_180px_90px_44px] gap-2 px-3 py-2 bg-muted/40 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+                    <div>TISS</div>
+                    <div>Nome comercial</div>
+                    <div>Enquadramento técnico</div>
+                    <div className="text-right">Qtd.</div>
+                    <div />
+                  </div>
+                  <div className="divide-y">
+                    {materiais.map((m, idx) => (
+                      <div
+                        key={m.id}
+                        className="grid grid-cols-1 md:grid-cols-[120px_1fr_180px_90px_44px] gap-2 px-3 py-2.5 items-center"
+                      >
+                        <Input
+                          className="h-9 font-mono text-xs"
+                          placeholder="TISS"
+                          value={m.tiss}
+                          onChange={(e) => updateMaterial(m.id, { tiss: e.target.value })}
+                        />
+                        <Input
+                          className="h-9"
+                          placeholder="Digite TISS, nome comercial ou técnico..."
+                          value={m.nome}
+                          onChange={(e) => autoFillFromCatalogo(m.id, e.target.value)}
+                          list={`opme-nome-${idx}`}
+                        />
+                        <datalist id={`opme-nome-${idx}`}>
+                          {CATALOGO_OPME.map((c) => (
+                            <option key={c.tiss} value={c.nome} />
+                          ))}
+                        </datalist>
+                        <Select
+                          value={m.enq || undefined}
+                          onValueChange={(v) => updateMaterial(m.id, { enq: v })}
+                        >
+                          <SelectTrigger className="h-9">
+                            <SelectValue placeholder="—" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {ENQUADRAMENTOS.map((e) => (
+                              <SelectItem key={e} value={e}>
+                                {e}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <Input
+                          type="number"
+                          min={1}
+                          className="h-9 text-right"
+                          value={m.qtd}
+                          onChange={(e) =>
+                            updateMaterial(m.id, {
+                              qtd: Math.max(1, parseInt(e.target.value) || 1),
+                            })
+                          }
+                        />
+                        <button
+                          type="button"
+                          aria-label="Remover material"
+                          onClick={() => removeMaterial(m.id)}
+                          disabled={materiais.length === 1}
+                          className="h-9 w-9 rounded-md flex items-center justify-center text-destructive hover:bg-destructive/10 disabled:opacity-30 disabled:hover:bg-transparent"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <Button type="button" variant="outline" size="sm" onClick={limparMateriais}>
+                    <Eraser className="h-4 w-4" />
+                    Limpar materiais
+                  </Button>
+                  <Button type="button" size="sm" onClick={addMaterial}>
+                    <Plus className="h-4 w-4" />
+                    Adicionar material
+                  </Button>
+                </div>
+
+                <Field label="Especificação do material (opcional)">
                   <div className="relative">
                     <Textarea
                       rows={3}
                       maxLength={500}
-                      placeholder="Inclua informações adicionais sobre os materiais e/ou dados dos fabricantes/distribuidores se desejar"
+                      placeholder="Informações adicionais sobre os materiais e/ou dados dos fabricantes/distribuidores"
                       value={especificacao}
                       onChange={(e) => setEspecificacao(e.target.value)}
                     />
@@ -394,175 +567,80 @@ function OpmePage() {
                     </span>
                   </div>
                 </Field>
-
-                {/* Materiais */}
-                <div className="space-y-3">
-                  <div className="flex flex-wrap items-center justify-between gap-2">
-                    <div className="flex items-center gap-2 text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                      <Package className="h-3.5 w-3.5" />
-                      Materiais OPME
-                      {materiaisValidos.length > 0 && (
-                        <span className="ml-1 inline-flex items-center gap-1 rounded-full bg-primary/10 text-primary px-2 py-0.5 text-[11px] font-semibold normal-case tracking-normal">
-                          {materiaisValidos.length}{" "}
-                          {materiaisValidos.length === 1 ? "item" : "itens"} · {totalMateriais}{" "}
-                          un.
-                        </span>
-                      )}
-                    </div>
-                    <div className="flex flex-wrap items-center gap-2">
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="sm"
-                        onClick={() => setCarregarOpen(true)}
-                      >
-                        <FolderOpen className="h-4 w-4" />
-                        Carregar Kit
-                      </Button>
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="sm"
-                        onClick={() => setSalvarOpen(true)}
-                        disabled={materiaisValidos.length === 0}
-                      >
-                        <Save className="h-4 w-4" />
-                        Salvar como Kit
-                      </Button>
-                      <Button type="button" variant="outline" size="sm" onClick={limpar}>
-                        <Eraser className="h-4 w-4" />
-                        Limpar
-                      </Button>
-                      <Button type="button" size="sm" onClick={addMaterial}>
-                        <Plus className="h-4 w-4" />
-                        Adicionar
-                      </Button>
-                    </div>
-                  </div>
-
-                  <div className="rounded-lg border overflow-hidden">
-                    <div className="hidden md:grid grid-cols-[120px_1fr_180px_90px_44px] gap-2 px-3 py-2 bg-muted/40 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
-                      <div>TISS</div>
-                      <div>Nome comercial</div>
-                      <div>Enquadramento técnico</div>
-                      <div className="text-right">Quantidade</div>
-                      <div />
-                    </div>
-                    <div className="divide-y">
-                      {materiais.map((m, idx) => (
-                        <div
-                          key={m.id}
-                          className="grid grid-cols-1 md:grid-cols-[120px_1fr_180px_90px_44px] gap-2 px-3 py-2.5 items-center"
-                        >
-                          <Input
-                            className="h-9 font-mono text-xs"
-                            placeholder="TISS"
-                            value={m.tiss}
-                            onChange={(e) => updateMaterial(m.id, { tiss: e.target.value })}
-                            list={`opme-tiss-${idx}`}
-                          />
-                          <Input
-                            className="h-9"
-                            placeholder="Digite TISS, nome comercial ou técnico..."
-                            value={m.nome}
-                            onChange={(e) => autoFillFromCatalogo(m.id, e.target.value)}
-                            list={`opme-nome-${idx}`}
-                          />
-                          <datalist id={`opme-nome-${idx}`}>
-                            {CATALOGO_OPME.map((c) => (
-                              <option key={c.tiss} value={c.nome} />
-                            ))}
-                          </datalist>
-                          <Select
-                            value={m.enq || undefined}
-                            onValueChange={(v) => updateMaterial(m.id, { enq: v })}
-                          >
-                            <SelectTrigger className="h-9">
-                              <SelectValue placeholder="—" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              {ENQUADRAMENTOS.map((e) => (
-                                <SelectItem key={e} value={e}>
-                                  {e}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                          <Input
-                            type="number"
-                            min={1}
-                            className="h-9 text-right"
-                            value={m.qtd}
-                            onChange={(e) =>
-                              updateMaterial(m.id, {
-                                qtd: Math.max(1, parseInt(e.target.value) || 1),
-                              })
-                            }
-                          />
-                          <button
-                            type="button"
-                            aria-label="Remover material"
-                            onClick={() => removeMaterial(m.id)}
-                            disabled={materiais.length === 1}
-                            className="h-9 w-9 rounded-md flex items-center justify-center text-destructive hover:bg-destructive/10 disabled:opacity-30 disabled:hover:bg-transparent"
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </button>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-
-                {/* Profissional solicitante */}
-                <div className="grid gap-4 sm:grid-cols-[1fr_140px_160px_180px] pt-2 border-t">
-                  <Field label="Nome do Profissional Solicitante" required>
-                    <div className="relative">
-                      <Stethoscope className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                      <Input
-                        className="pl-9 uppercase"
-                        value={profissional}
-                        onChange={(e) => setProfissional(e.target.value)}
-                      />
-                    </div>
-                  </Field>
-                  <Field label="Conselho Profissional">
-                    <Select value={conselho} onValueChange={setConselho}>
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {["CRM", "CRO", "CREFITO", "COREN"].map((c) => (
-                          <SelectItem key={c} value={c}>
-                            {c}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </Field>
-                  <Field label="Número do Conselho">
-                    <Input
-                      value={numeroConselho}
-                      onChange={(e) => setNumeroConselho(e.target.value)}
-                    />
-                  </Field>
-                  <Field label="Data">
-                    <Input
-                      type="date"
-                      value={data}
-                      onChange={(e) => setData(e.target.value)}
-                    />
-                  </Field>
-                </div>
-
-                <div className="flex justify-end pt-2">
-                  <Button type="submit" size="lg" disabled={!canSubmit}>
-                    <Send className="h-4 w-4" />
-                    Enviar solicitação
-                  </Button>
-                </div>
               </div>
-            </section>
+            </SectionCard>
+
+            {/* 4. Profissional solicitante */}
+            <SectionCard
+              id="sec-profissional"
+              icon={<Stethoscope className="h-4 w-4" />}
+              number={4}
+              title="Profissional solicitante"
+              collapsed={profCollapsed}
+              onToggle={() => setProfCollapsed((v) => !v)}
+              done={profOk}
+              summary={
+                profCollapsed && profOk
+                  ? `${profissional} · ${conselho} ${numeroConselho}`
+                  : "Identificação profissional responsável pela solicitação."
+              }
+            >
+              <div className="grid gap-4 sm:grid-cols-[1fr_140px_160px_180px]">
+                <Field label="Nome do profissional" required>
+                  <div className="relative">
+                    <Stethoscope className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                    <Input
+                      className="pl-9 uppercase"
+                      value={profissional}
+                      onChange={(e) => setProfissional(e.target.value)}
+                    />
+                  </div>
+                </Field>
+                <Field label="Conselho">
+                  <Select value={conselho} onValueChange={setConselho}>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {["CRM", "CRO", "CREFITO", "COREN"].map((c) => (
+                        <SelectItem key={c} value={c}>
+                          {c}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </Field>
+                <Field label="Número do conselho" required>
+                  <Input
+                    value={numeroConselho}
+                    onChange={(e) => setNumeroConselho(e.target.value)}
+                  />
+                </Field>
+                <Field label="Data">
+                  <Input
+                    type="date"
+                    value={data}
+                    onChange={(e) => setData(e.target.value)}
+                  />
+                </Field>
+              </div>
+            </SectionCard>
+
+            {/* Ação final */}
+            <div className="sticky bottom-4 z-30">
+              <div className="rounded-xl border bg-card/95 backdrop-blur shadow-md px-4 py-3 flex flex-wrap items-center justify-between gap-3">
+                <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+                  <StatusPill done={convenioOk} label="Convênio" />
+                  <StatusPill done={clinicoOk} label="Justificativa" />
+                  <StatusPill done={materiaisOk} label="Materiais" />
+                  <StatusPill done={profOk} label="Profissional" />
+                </div>
+                <Button type="submit" size="lg" disabled={!canSubmit}>
+                  <Send className="h-4 w-4" />
+                  Enviar solicitação
+                </Button>
+              </div>
+            </div>
           </form>
         </div>
 
@@ -660,7 +738,101 @@ function OpmePage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <button
+        type="button"
+        onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+        aria-label="Voltar ao topo"
+        title="Voltar ao topo"
+        className={`fixed bottom-6 right-6 z-40 h-10 w-10 rounded-full border border-border bg-card/90 backdrop-blur text-muted-foreground shadow-md hover:text-foreground hover:bg-card transition-all duration-200 flex items-center justify-center ${
+          showTopBtn
+            ? "opacity-100 translate-y-0 pointer-events-auto"
+            : "opacity-0 translate-y-2 pointer-events-none"
+        }`}
+      >
+        <ArrowUp className="h-4 w-4" />
+      </button>
     </div>
+  );
+}
+
+function SectionCard({
+  id,
+  icon,
+  number,
+  title,
+  summary,
+  collapsed,
+  onToggle,
+  done,
+  headerRight,
+  children,
+}: {
+  id: string;
+  icon: React.ReactNode;
+  number: number;
+  title: string;
+  summary: string;
+  collapsed: boolean;
+  onToggle: () => void;
+  done: boolean;
+  headerRight?: React.ReactNode;
+  children: React.ReactNode;
+}) {
+  return (
+    <section id={id} className="scroll-mt-4">
+      <div className="rounded-2xl border border-border bg-card shadow-xs overflow-hidden">
+        <div className="flex flex-wrap items-start gap-3 px-5 py-4 border-b bg-muted/30">
+          <button
+            type="button"
+            onClick={onToggle}
+            className="flex items-start gap-3 text-left flex-1 min-w-0 group"
+            aria-expanded={!collapsed}
+          >
+            <ChevronDown
+              className={`h-4 w-4 mt-1 text-muted-foreground transition-transform ${
+                collapsed ? "-rotate-90" : ""
+              }`}
+            />
+            <div
+              className={`h-9 w-9 rounded-md flex items-center justify-center shrink-0 ${
+                done
+                  ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
+                  : "bg-primary/10 text-primary"
+              }`}
+            >
+              {done ? <CheckCircle2 className="h-4 w-4" /> : icon}
+            </div>
+            <div className="min-w-0 flex-1">
+              <h2 className="text-sm font-semibold group-hover:text-foreground flex items-center gap-2">
+                <span className="text-muted-foreground tabular-nums">{number}.</span>
+                {title}
+              </h2>
+              <p className="text-xs text-muted-foreground mt-0.5 truncate">{summary}</p>
+            </div>
+          </button>
+          {headerRight && !collapsed && (
+            <div onClick={(e) => e.stopPropagation()}>{headerRight}</div>
+          )}
+        </div>
+        {!collapsed && <div className="p-5 sm:p-6">{children}</div>}
+      </div>
+    </section>
+  );
+}
+
+function StatusPill({ done, label }: { done: boolean; label: string }) {
+  return (
+    <span
+      className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-medium ${
+        done
+          ? "bg-emerald-500/10 text-emerald-700 dark:text-emerald-300"
+          : "bg-muted text-muted-foreground"
+      }`}
+    >
+      {done ? <CheckCircle2 className="h-3 w-3" /> : <CircleDashed className="h-3 w-3" />}
+      {label}
+    </span>
   );
 }
 
