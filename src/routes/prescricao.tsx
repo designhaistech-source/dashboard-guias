@@ -27,6 +27,7 @@ import {
   ShieldAlert,
   Shield,
   ArrowUp,
+  CircleDashed,
 } from "lucide-react";
 
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
