@@ -1868,6 +1868,52 @@ function PrescricaoForm() {
               })}
             </ul>
 
+            {/* Detecção automática do tipo de receituário */}
+            {itens.length > 0 && (
+              <div
+                className={`rounded-xl border px-4 py-3 ${
+                  hasControlado
+                    ? "border-amber-500/40 bg-amber-500/5"
+                    : "border-emerald-500/30 bg-emerald-500/5"
+                }`}
+              >
+                <div className="flex items-start gap-2.5">
+                  <span
+                    className={`mt-0.5 inline-block h-2 w-2 rounded-full ${
+                      hasControlado ? "bg-amber-500" : "bg-emerald-500"
+                    }`}
+                  />
+                  <div className="flex-1 min-w-0">
+                    <div className="text-sm font-medium">
+                      {hasControlado && hasComum
+                        ? "Serão gerados 2 documentos separados"
+                        : hasControlado
+                          ? "Receituário de controle especial"
+                          : "Receita simples"}
+                    </div>
+                    <ul className="mt-1.5 space-y-1 text-xs text-muted-foreground">
+                      {hasComum && (
+                        <li className="flex items-center gap-1.5">
+                          <span className="inline-block h-1.5 w-1.5 rounded-full bg-emerald-500" />
+                          Receita simples — {itensComuns.length}{" "}
+                          {itensComuns.length === 1 ? "item" : "itens"}
+                        </li>
+                      )}
+                      {hasControlado && (
+                        <li className="flex items-center gap-1.5">
+                          <span className="inline-block h-1.5 w-1.5 rounded-full bg-amber-500" />
+                          Controle especial — {itensControlados.length}{" "}
+                          {itensControlados.length === 1 ? "item" : "itens"}
+                        </li>
+                      )}
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            )}
+
+
+
 
 
 
