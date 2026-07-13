@@ -1335,7 +1335,7 @@ function PrescricaoForm() {
 
 
   return (
-    <div className="space-y-5 pb-8">
+    <div className="space-y-5 pb-32">
       {/* Header unificado */}
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div className="min-w-0">
