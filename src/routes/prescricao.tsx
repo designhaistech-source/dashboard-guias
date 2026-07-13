@@ -34,7 +34,7 @@ import { MultiSelect } from "@/components/ui/combobox";
 
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { Field, SearchInput } from "@/components/form-field";
+import { Field, SearchInput, SelectField } from "@/components/form-field";
 import { Badge } from "@/components/ui/badge";
 import { EmptyState } from "@/components/data-state";
 import { Label } from "@/components/ui/label";
