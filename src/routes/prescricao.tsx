@@ -34,7 +34,7 @@ import { MultiSelect } from "@/components/ui/combobox";
 
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { Field, SearchInput } from "@/components/form-field";
+import { Field, SearchInput, SelectField } from "@/components/form-field";
 import { Badge } from "@/components/ui/badge";
 import { EmptyState } from "@/components/data-state";
 import { Label } from "@/components/ui/label";
@@ -1412,26 +1412,6 @@ function PrescricaoForm() {
                 </p>
               </div>
             </button>
-            <label
-              className={`inline-flex items-center gap-2 rounded-lg border px-3 py-2 text-sm cursor-pointer select-none transition-colors ${
-                especial
-                  ? "border-amber-500/50 bg-amber-500/5 text-amber-700 dark:text-amber-400"
-                  : "border-border hover:bg-muted/50"
-              } ${hasControlado ? "opacity-90 cursor-not-allowed" : ""}`}
-              title={
-                hasControlado
-                  ? "Ativado automaticamente por conter medicamento controlado"
-                  : undefined
-              }
-            >
-              <Checkbox
-                checked={especial}
-                disabled={hasControlado}
-                onCheckedChange={(v) => setEspecial(v === true)}
-              />
-              <ShieldAlert className="h-4 w-4" />
-              <span className="font-medium">Receita especial</span>
-            </label>
           </div>
 
           {!pacienteCollapsed && (<>
@@ -1451,6 +1431,30 @@ function PrescricaoForm() {
               ))}
             </datalist>
           </Field>
+
+          {paciente.trim().length > 0 && (
+            <SelectField
+              label="Tipo de receita"
+              required
+              className="max-w-xs"
+              value={especial ? "especial" : "comum"}
+              onValueChange={(v) => setEspecial(v === "especial")}
+              disabled={hasControlado}
+              hint={
+                hasControlado
+                  ? "Definido como especial automaticamente por conter medicamento controlado."
+                  : especial
+                    ? "Exige CPF e endereço completo do paciente."
+                    : undefined
+              }
+              options={[
+                { value: "comum", label: "Comum" },
+                { value: "especial", label: "Especial" },
+              ]}
+            />
+          )}
+
+
 
 
           {mostrarCamposEspeciais && (
