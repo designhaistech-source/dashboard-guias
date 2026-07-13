@@ -1428,7 +1428,7 @@ function PrescricaoForm() {
                 className={`h-4 w-4 mt-1 text-muted-foreground transition-transform ${pacienteCollapsed ? "-rotate-90" : ""}`}
               />
               <div className="min-w-0">
-                <h2 className="text-base font-semibold group-hover:text-foreground">Dados do paciente</h2>
+                <h2 className="text-base font-semibold group-hover:text-foreground">1. Dados do paciente</h2>
                 <p className="text-xs text-muted-foreground">
                   {pacienteCollapsed && paciente
                     ? paciente + (especial ? " · Receita especial" : "")
