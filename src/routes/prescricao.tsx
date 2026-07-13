@@ -1610,6 +1610,7 @@ function PrescricaoForm() {
               </div>
             </div>
           )}
+          </>)}
         </div>
       </section>
 
