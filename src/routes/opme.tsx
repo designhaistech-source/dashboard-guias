@@ -116,7 +116,7 @@ export const Route = createFileRoute("/opme")({
       {
         name: "description",
         content:
-          "Solicite Órteses, Próteses e Materiais Especiais com justificativa técnica, especificação e envio direto para PedeGuia.",
+          "Solicite Órteses, Próteses e Materiais Especiais com justificativa técnica, especificação e envio direto à operadora.",
       },
     ],
   }),
