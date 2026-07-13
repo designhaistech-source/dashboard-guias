@@ -1375,6 +1375,108 @@ function PrescricaoForm() {
         </div>
       </div>
 
+      {/* Stepper de progresso */}
+      {(() => {
+        const pacienteOk =
+          !!paciente.trim() && (!especial || (cpfValido && enderecoFullValido));
+        const medsOk = itens.length > 0;
+        const revisaoOk = pacienteOk && medsOk && posologiasInvalidas.length === 0;
+
+        const steps = [
+          {
+            id: "sec-paciente",
+            label: "Paciente",
+            hint: paciente.trim() ? paciente.trim().split(" ")[0] : "identificação",
+            done: pacienteOk,
+            onClick: () => {
+              setPacienteCollapsed(false);
+              document.getElementById("sec-paciente")?.scrollIntoView({ behavior: "smooth", block: "start" });
+            },
+          },
+          {
+            id: "sec-medicamentos",
+            label: "Medicamentos",
+            hint: itens.length > 0 ? `${itens.length} ${itens.length === 1 ? "item" : "itens"}` : "buscar e adicionar",
+            done: medsOk,
+            onClick: () => {
+              setBuscaCollapsed(false);
+              document.getElementById("sec-medicamentos")?.scrollIntoView({ behavior: "smooth", block: "start" });
+            },
+          },
+          {
+            id: "sec-revisar",
+            label: "Revisão",
+            hint: revisaoOk ? "pronto para emitir" : "conferir e emitir",
+            done: revisaoOk,
+            onClick: () =>
+              document.getElementById("sec-revisar")?.scrollIntoView({ behavior: "smooth", block: "start" }),
+          },
+        ];
+
+        // Etapa "atual" = primeira ainda não concluída (ou a última se tudo ok)
+        const currentIdx = steps.findIndex((s) => !s.done);
+        const activeIdx = currentIdx === -1 ? steps.length - 1 : currentIdx;
+
+        return (
+          <nav
+            aria-label="Progresso da prescrição"
+            className="rounded-2xl border border-border bg-card shadow-xs px-3 py-2.5"
+          >
+            <ol className="flex items-center gap-1 sm:gap-2 overflow-x-auto">
+              {steps.map((s, i) => {
+                const isActive = i === activeIdx;
+                return (
+                  <li key={s.id} className="flex items-center gap-1 sm:gap-2 min-w-0">
+                    <button
+                      type="button"
+                      onClick={s.onClick}
+                      className={[
+                        "flex items-center gap-2 rounded-xl px-2.5 py-1.5 text-left transition-colors min-w-0",
+                        isActive
+                          ? "bg-primary/10 border border-primary/30"
+                          : "hover:bg-muted/60 border border-transparent",
+                      ].join(" ")}
+                      aria-current={isActive ? "step" : undefined}
+                    >
+                      <span
+                        className={[
+                          "inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-[11px] font-semibold",
+                          s.done
+                            ? "bg-emerald-500 text-white"
+                            : isActive
+                              ? "bg-primary text-primary-foreground"
+                              : "bg-muted text-muted-foreground",
+                        ].join(" ")}
+                      >
+                        {s.done ? <Check className="h-3.5 w-3.5" /> : i + 1}
+                      </span>
+                      <span className="min-w-0">
+                        <span
+                          className={[
+                            "block text-xs font-medium leading-tight truncate",
+                            isActive ? "text-foreground" : s.done ? "text-foreground" : "text-muted-foreground",
+                          ].join(" ")}
+                        >
+                          {s.label}
+                        </span>
+                        <span className="hidden sm:block text-[10px] text-muted-foreground leading-tight truncate">
+                          {s.hint}
+                        </span>
+                      </span>
+                    </button>
+                    {i < steps.length - 1 && (
+                      <ChevronRight className="h-3.5 w-3.5 text-muted-foreground/60 shrink-0" />
+                    )}
+                  </li>
+                );
+              })}
+            </ol>
+          </nav>
+        );
+      })()}
+
+
+
       {rascunhoRestaurado && (
         <div className="rounded-xl border border-border bg-card px-4 py-2 flex items-center justify-between gap-2 text-xs">
           <span className="text-muted-foreground">
