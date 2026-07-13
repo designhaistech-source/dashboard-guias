@@ -1456,27 +1456,26 @@ function PrescricaoForm() {
             </datalist>
           </Field>
 
-          {paciente.trim().length > 0 && (
-            <SelectField
-              label="Tipo de receita"
-              required
-              className="max-w-xs"
-              value={especial ? "especial" : "comum"}
-              onValueChange={(v) => setEspecial(v === "especial")}
-              disabled={hasControlado}
-              hint={
-                hasControlado
-                  ? "Definido como especial automaticamente por conter medicamento controlado."
-                  : especial
-                    ? "Exige CPF e endereço completo do paciente."
-                    : undefined
-              }
-              options={[
-                { value: "comum", label: "Comum" },
-                { value: "especial", label: "Especial" },
-              ]}
-            />
-          )}
+          <SelectField
+            label="Tipo de receita"
+            required
+            className="max-w-xs"
+            value={especial ? "especial" : "comum"}
+            onValueChange={(v) => setEspecial(v === "especial")}
+            disabled={hasControlado}
+            hint={
+              hasControlado
+                ? "Definido como especial automaticamente por conter medicamento controlado."
+                : especial
+                  ? "Exige CPF e endereço completo do paciente."
+                  : undefined
+            }
+            options={[
+              { value: "comum", label: "Comum" },
+              { value: "especial", label: "Especial" },
+            ]}
+          />
+
 
 
 
