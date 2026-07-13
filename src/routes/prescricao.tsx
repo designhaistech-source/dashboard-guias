@@ -1410,64 +1410,8 @@ function PrescricaoForm() {
 
 
 
-      <div className="grid gap-6 lg:grid-cols-[220px_minmax(0,1fr)] items-start">
-        {/* Stepper vertical */}
-        <aside className="hidden lg:block">
-          <nav className="sticky top-6" aria-label="Progresso da prescrição">
-            <ol className="relative space-y-1">
-              {[
-                { n: 1 as const, id: "sec-paciente", label: "Paciente", done: stepPacienteOk },
-                { n: 2 as const, id: "sec-medicamentos", label: itens.length > 0 ? `Medicamentos (${itens.length})` : "Medicamentos", done: stepMedicamentosOk },
-                { n: 3 as const, id: "sec-revisar", label: pendencias.length > 0 ? `Revisão (${pendencias.length})` : "Revisão", done: stepRevisarOk },
-              ].map((s, idx, arr) => {
-                const active = currentStep === s.n;
-                const isLast = idx === arr.length - 1;
-                return (
-                  <li key={s.n} className="relative">
-                    {!isLast && (
-                      <span
-                        aria-hidden
-                        className={`absolute left-[15px] top-8 bottom-[-4px] w-px ${s.done ? "bg-emerald-500/60" : "bg-border"}`}
-                      />
-                    )}
-                    <button
-                      type="button"
-                      onClick={() =>
-                        document
-                          .getElementById(s.id)
-                          ?.scrollIntoView({ behavior: "smooth", block: "start" })
-                      }
-                      className={`relative flex w-full items-center gap-3 rounded-lg px-2 py-2 text-left transition-colors ${
-                        active ? "bg-primary/5" : "hover:bg-muted/40"
-                      }`}
-                      aria-current={active ? "step" : undefined}
-                    >
-                      <span
-                        className={`grid place-items-center h-8 w-8 shrink-0 rounded-full border text-xs font-semibold transition-colors ${
-                          s.done
-                            ? "bg-emerald-500 border-emerald-500 text-white"
-                            : active
-                              ? "bg-primary text-primary-foreground border-primary"
-                              : "bg-background border-border text-muted-foreground"
-                        }`}
-                      >
-                        {s.done ? <Check className="h-4 w-4" /> : s.n}
-                      </span>
-                      <span
-                        className={`block text-sm font-medium truncate ${active ? "text-foreground" : s.done ? "text-foreground" : "text-muted-foreground"}`}
-                      >
-                        {s.label}
-                      </span>
 
-                    </button>
-                  </li>
-                );
-              })}
-            </ol>
-          </nav>
-        </aside>
 
-        <div className="space-y-5 min-w-0">
 
 
       {/* Seção 1 — Dados do paciente */}
@@ -1484,7 +1428,7 @@ function PrescricaoForm() {
                 className={`h-4 w-4 mt-1 text-muted-foreground transition-transform ${pacienteCollapsed ? "-rotate-90" : ""}`}
               />
               <div className="min-w-0">
-                <h2 className="text-base font-semibold group-hover:text-foreground">Dados do paciente</h2>
+                <h2 className="text-base font-semibold group-hover:text-foreground">1. Dados do paciente</h2>
                 <p className="text-xs text-muted-foreground">
                   {pacienteCollapsed && paciente
                     ? paciente + (especial ? " · Receita especial" : "")
@@ -1731,7 +1675,7 @@ function PrescricaoForm() {
                 className={`h-4 w-4 mt-1 text-muted-foreground transition-transform ${buscaCollapsed ? "-rotate-90" : ""}`}
               />
               <div className="min-w-0">
-                <h2 className="text-base font-semibold group-hover:text-foreground">Buscar e adicionar medicamentos</h2>
+                <h2 className="text-base font-semibold group-hover:text-foreground">2. Buscar e adicionar medicamentos</h2>
                 <p className="text-xs text-muted-foreground">
                   {buscaCollapsed
                     ? `${itens.length} ${itens.length === 1 ? "medicamento adicionado" : "medicamentos adicionados"}`
@@ -1863,7 +1807,7 @@ function PrescricaoForm() {
               <div className="min-w-0">
                 <div className="flex items-center gap-2 flex-wrap">
                   <h3 className="text-sm font-semibold tracking-wide">
-                    Revisão da receita
+                    3. Revisão da receita
                   </h3>
                   {hasControlado && (
                     <span className="inline-flex items-center gap-1 rounded-full border border-amber-500/40 bg-amber-500/10 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide text-amber-700 dark:text-amber-300">
@@ -2158,8 +2102,7 @@ function PrescricaoForm() {
       </section>
 
 
-        </div>
-      </div>
+
 
 
 
