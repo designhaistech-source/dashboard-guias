@@ -582,8 +582,11 @@ function PrescricaoForm() {
         setItens(Array.isArray(d.itens) ? d.itens : []);
         setEspecial(!!d.especial);
         if (Array.isArray(d.tipos) && d.tipos.length > 0) setTipos(new Set(d.tipos));
-        setRascunhoRestaurado(d.savedAt || Date.now());
-        setSavedAt(d.savedAt || Date.now());
+        const ts = d.savedAt || Date.now();
+        setSavedAt(ts);
+        toast(`Rascunho recuperado de ${fmtHora(ts)}`, {
+          action: { label: "Descartar", onClick: () => descartarRascunhoRef.current?.() },
+        });
       }
     }
     hidratado.current = true;
