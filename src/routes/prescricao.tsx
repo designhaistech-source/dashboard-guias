@@ -1394,12 +1394,24 @@ function PrescricaoForm() {
       <section id="sec-paciente" className="scroll-mt-4">
         <div className="rounded-2xl border border-border bg-card shadow-xs p-5 space-y-4">
           <div className="flex flex-wrap items-start justify-between gap-3">
-            <div>
-              <h2 className="text-base font-semibold">Dados do paciente</h2>
-              <p className="text-xs text-muted-foreground">
-                Identifique o paciente. Campos de CPF e endereço aparecem para receita especial.
-              </p>
-            </div>
+            <button
+              type="button"
+              onClick={() => setPacienteCollapsed((v) => !v)}
+              className="flex items-start gap-2 text-left group min-w-0"
+              aria-expanded={!pacienteCollapsed}
+            >
+              <ChevronDown
+                className={`h-4 w-4 mt-1 text-muted-foreground transition-transform ${pacienteCollapsed ? "-rotate-90" : ""}`}
+              />
+              <div className="min-w-0">
+                <h2 className="text-base font-semibold group-hover:text-foreground">Dados do paciente</h2>
+                <p className="text-xs text-muted-foreground">
+                  {pacienteCollapsed && paciente
+                    ? paciente + (especial ? " · Receita especial" : "")
+                    : "Identifique o paciente. Campos de CPF e endereço aparecem para receita especial."}
+                </p>
+              </div>
+            </button>
             <label
               className={`inline-flex items-center gap-2 rounded-lg border px-3 py-2 text-sm cursor-pointer select-none transition-colors ${
                 especial
