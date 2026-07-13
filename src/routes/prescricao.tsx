@@ -755,21 +755,6 @@ function PrescricaoForm() {
   const enderecoCompleto = enderecoCompletoStr(endereco, numero, complemento);
   const especialInvalido =
     especial && (!cpfValido || !enderecoFullValido);
-  const pacienteCompleto =
-    paciente.trim().length > 0 && (!especial || (cpfValido && enderecoFullValido));
-
-  // Auto-colapsa a seção do paciente ao concluir o preenchimento, focando na busca de medicamentos.
-  const pacienteCompletoPrev = useRef(false);
-  useEffect(() => {
-    if (!hidratado.current) return;
-    if (pacienteCompleto && !pacienteCompletoPrev.current) {
-      setPacienteCollapsed(true);
-      setBuscaCollapsed(false);
-      // devolve foco à busca para agilizar a próxima etapa
-      requestAnimationFrame(() => searchRef.current?.focus());
-    }
-    pacienteCompletoPrev.current = pacienteCompleto;
-  }, [pacienteCompleto]);
   const posologiasInvalidas = itens
     .map((it, i) => ({ i, med: it.med, check: checkPosologia(it.posologia) }))
     .filter((x) => !x.check.ok);
