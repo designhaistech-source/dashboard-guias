@@ -1207,17 +1207,17 @@ function PrescricaoForm() {
         footerY + 3 + 12,
       );
 
-      // Linha inferior de validador
-      doc.setFont("helvetica", "italic");
-      doc.setFontSize(7.5);
-      doc.setTextColor(140, 140, 140);
-      doc.text(
-        isEspecial
-          ? "Receituário de controle especial · 2 vias (paciente / farmácia) · Portaria SVS/MS nº 344/98"
-          : "*Para validar a assinatura deste documento, acesse https://validador.haisguias.com.br",
-        margin,
-        pageH - margin + 2,
-      );
+      if (isEspecial) {
+        doc.setFont("helvetica", "italic");
+        doc.setFontSize(7.5);
+        doc.setTextColor(140, 140, 140);
+        doc.text(
+          "Receituário de controle especial · 2 vias (paciente / farmácia) · Portaria SVS/MS nº 344/98",
+          margin,
+          pageH - margin + 2,
+        );
+      }
+
 
       const slug = slugPaciente || "paciente";
       const nome = `${isEspecial ? "receita-especial" : "prescricao"}-${slug}.pdf`;
