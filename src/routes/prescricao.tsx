@@ -513,8 +513,7 @@ function PrescricaoForm() {
   const especial = hasControlado; // compat com o restante do código
   const setEspecial = (_: boolean) => {}; // no-op: derivado dos itens
   const [editing, setEditing] = useState<Medicamento | null>(null);
-  const [tipoBusca, setTipoBusca] = useState<"comum" | "controlado" | null>("comum");
-  const mostrarCamposEspeciais = hasControlado || tipoBusca === "controlado";
+  const mostrarCamposEspeciais = hasControlado;
   const [highlight, setHighlight] = useState(0);
   const [pacientesRecentes, setPacientesRecentes] = useState<string[]>([]);
   const [medsRecentes, setMedsRecentes] = useState<string[]>([]);
