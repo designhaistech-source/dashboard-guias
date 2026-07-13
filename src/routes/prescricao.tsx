@@ -47,6 +47,25 @@ import { AppSidebar } from "@/components/app-sidebar";
 import { SiteFooter } from "@/components/site-footer";
 import { KitsModal } from "@/components/kits-modal";
 import { consumirKitParaAplicar, upsertKit, type Kit } from "@/lib/kits";
+import logoAsset from "@/assets/haisguias-logo.png.asset.json";
+
+async function loadImageDataUrl(url: string): Promise<{ dataUrl: string; w: number; h: number }> {
+  const res = await fetch(url);
+  const blob = await res.blob();
+  const dataUrl = await new Promise<string>((resolve, reject) => {
+    const r = new FileReader();
+    r.onload = () => resolve(r.result as string);
+    r.onerror = reject;
+    r.readAsDataURL(blob);
+  });
+  const dims = await new Promise<{ w: number; h: number }>((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => resolve({ w: img.naturalWidth, h: img.naturalHeight });
+    img.onerror = reject;
+    img.src = dataUrl;
+  });
+  return { dataUrl, ...dims };
+}
 
 
 export const Route = createFileRoute("/prescricao")({
@@ -952,221 +971,260 @@ function PrescricaoForm() {
     const docImpressao = emitir ? new jsPDF({ unit: "mm", format: "a4" }) : null;
     const documentosParaBaixar: Array<{ doc: jsPDF; nome: string }> = [];
 
-    grupos.forEach((grupo, grupoIndex) => {
+    // Carrega a logo (best-effort — se falhar, cai no texto)
+    let logoImg: { dataUrl: string; w: number; h: number } | null = null;
+    try {
+      logoImg = await loadImageDataUrl(logoAsset.url);
+    } catch {
+      logoImg = null;
+    }
+
+    for (let grupoIndex = 0; grupoIndex < grupos.length; grupoIndex++) {
+      const grupo = grupos[grupoIndex];
       const isEspecial = grupo.tipo === "especial";
       const doc = docImpressao ?? new jsPDF({ unit: "mm", format: "a4" });
       if (docImpressao && grupoIndex > 0) doc.addPage();
       const pageW = doc.internal.pageSize.getWidth();
       const pageH = doc.internal.pageSize.getHeight();
-      const margin = 18;
+      const margin = 20;
       const maxW = pageW - margin * 2;
       let y = margin;
 
-      // Faixa superior (âmbar para especial, cinza para comum)
-      if (isEspecial) {
-        doc.setFillColor(180, 83, 9); // amber-700
-        doc.rect(0, 0, pageW, 4, "F");
+      // Logo HaisGuias centralizada no topo
+      if (logoImg) {
+        const logoH = 14;
+        const logoW = (logoImg.w / logoImg.h) * logoH;
+        doc.addImage(
+          logoImg.dataUrl,
+          "PNG",
+          (pageW - logoW) / 2,
+          y,
+          logoW,
+          logoH,
+        );
+        y += logoH + 8;
       } else {
-        doc.setFillColor(30, 41, 59); // slate-800
-        doc.rect(0, 0, pageW, 4, "F");
-      }
-      y = margin;
-
-      // Cabeçalho: clínica à esquerda, tipo de receita à direita
-      doc.setFont("helvetica", "bold");
-      doc.setFontSize(13);
-      doc.setTextColor(15, 23, 42);
-      doc.text(clinica.nome, margin, y);
-
-      doc.setFont("helvetica", "normal");
-      doc.setFontSize(8.5);
-      doc.setTextColor(90, 90, 90);
-      doc.text(clinica.endereco, margin, y + 4.5);
-      doc.text(clinica.contato, margin, y + 8.5);
-
-      // Selo do tipo de receita (direita)
-      const seloLabel = isEspecial ? "RECEITUÁRIO DE CONTROLE ESPECIAL" : "RECEITUÁRIO";
-      doc.setFont("helvetica", "bold");
-      doc.setFontSize(8);
-      doc.setTextColor(isEspecial ? 180 : 30, isEspecial ? 83 : 41, isEspecial ? 9 : 59);
-      const seloW = doc.getTextWidth(seloLabel) + 6;
-      doc.setDrawColor(isEspecial ? 180 : 30, isEspecial ? 83 : 41, isEspecial ? 9 : 59);
-      doc.setLineWidth(0.4);
-      doc.roundedRect(pageW - margin - seloW, y - 3.5, seloW, 6, 1, 1);
-      doc.text(seloLabel, pageW - margin - seloW / 2, y + 0.6, { align: "center" });
-      doc.setLineWidth(0.2);
-
-      y += 13;
-      doc.setDrawColor(210);
-      doc.line(margin, y, pageW - margin, y);
-      y += 6;
-
-      // Bloco do médico
-      doc.setFont("times", "bold");
-      doc.setFontSize(11);
-      doc.setTextColor(15, 23, 42);
-      doc.text(medico.nome, margin, y);
-      doc.setFont("times", "italic");
-      doc.setFontSize(9.5);
-      doc.setTextColor(80, 80, 80);
-      doc.text(`${medico.especialidade}  ·  ${medico.crm}`, margin, y + 4.5);
-      y += 12;
-
-      // Box do paciente
-      const pacienteLinhas: Array<[string, string]> = [
-        ["Paciente", paciente.trim() || "—"],
-      ];
-      if (isEspecial) {
-        pacienteLinhas.push(["CPF", formatCpf(cpfDigits) || "—"]);
-        pacienteLinhas.push(["Endereço", enderecoCompleto.trim() || "—"]);
-      }
-
-      doc.setDrawColor(220);
-      doc.setFillColor(249, 250, 251);
-      const boxStartY = y;
-      let boxH = 6;
-      pacienteLinhas.forEach(([, val]) => {
-        const lines = doc.splitTextToSize(val, maxW - 32);
-        boxH += lines.length * 4.8;
-      });
-      doc.roundedRect(margin, boxStartY, maxW, boxH, 1.5, 1.5, "FD");
-      let py = boxStartY + 5;
-      pacienteLinhas.forEach(([label, val]) => {
         doc.setFont("helvetica", "bold");
-        doc.setFontSize(8);
-        doc.setTextColor(110, 110, 110);
-        doc.text(label.toUpperCase(), margin + 3, py);
-        doc.setFont("times", "normal");
-        doc.setFontSize(10);
-        doc.setTextColor(15, 23, 42);
-        const lines = doc.splitTextToSize(val, maxW - 32);
-        doc.text(lines, margin + 26, py);
-        py += lines.length * 4.8;
-      });
-      y = boxStartY + boxH + 8;
-
-      // Itens com símbolo ℞
-      grupo.itens.forEach((it, idx) => {
-        const nomeLinha = `${idx + 1}.  ${it.med.nome}`;
-        const formaLinha = it.med.forma ? it.med.forma : "";
-        const principioLinha = it.med.principios
-          ? `Princípio ativo: ${it.med.principios}`
-          : "";
-        const posText = it.posologia.trim() || "—";
-
-        doc.setFont("times", "bold");
-        doc.setFontSize(11);
-        const nomeWrapped = doc.splitTextToSize(nomeLinha, maxW - 8);
-
-        doc.setFont("times", "italic");
-        doc.setFontSize(9.5);
-        const formaWrapped = formaLinha
-          ? doc.splitTextToSize(formaLinha, maxW - 8)
-          : [];
-        const principioWrapped = principioLinha
-          ? doc.splitTextToSize(principioLinha, maxW - 8)
-          : [];
-
-        doc.setFont("times", "normal");
-        doc.setFontSize(10.5);
-        const posWrapped = doc.splitTextToSize(`Uso: ${posText}`, maxW - 8);
-
-        const totalLinhas =
-          nomeWrapped.length +
-          formaWrapped.length +
-          principioWrapped.length +
-          posWrapped.length;
-        const alturaEstim = totalLinhas * 5 + 6;
-
-        if (y + alturaEstim > pageH - margin - 40) {
-          doc.addPage();
-          y = margin;
-        }
-
-        // ℞ symbol
-        doc.setFont("times", "bolditalic");
         doc.setFontSize(14);
-        doc.setTextColor(30, 41, 59);
-        doc.text("Rx", margin, y + 1);
-
-        // Nome
-        doc.setFont("times", "bold");
-        doc.setFontSize(11);
         doc.setTextColor(15, 23, 42);
-        doc.text(nomeWrapped, margin + 8, y);
-        y += nomeWrapped.length * 5;
+        doc.text("HaisGuias", pageW / 2, y + 6, { align: "center" });
+        y += 14;
+      }
 
-        // Forma + princípio
-        if (formaWrapped.length || principioWrapped.length) {
-          doc.setFont("times", "italic");
-          doc.setFontSize(9.5);
-          doc.setTextColor(90, 90, 90);
-          if (formaWrapped.length) {
-            doc.text(formaWrapped, margin + 8, y);
-            y += formaWrapped.length * 4.5;
-          }
-          if (principioWrapped.length) {
-            doc.text(principioWrapped, margin + 8, y);
-            y += principioWrapped.length * 4.5;
-          }
-        }
-
-        // Posologia
-        doc.setFont("times", "normal");
-        doc.setFontSize(10.5);
-        doc.setTextColor(30, 30, 30);
-        doc.text(posWrapped, margin + 8, y + 1);
-        y += posWrapped.length * 5 + 6;
-      });
-
-      // Rodapé: cidade/data + assinatura
-      const dataEmissao = new Date().toLocaleDateString("pt-BR");
-      const assY = Math.max(y + 20, pageH - margin - 32);
-
-      doc.setFont("times", "italic");
-      doc.setFontSize(10);
-      doc.setTextColor(60, 60, 60);
-      doc.text(`${cidade}, ${dataEmissao}`, pageW - margin, assY - 8, {
-        align: "right",
-      });
-
-      doc.setDrawColor(60);
-      doc.setLineWidth(0.3);
-      doc.line(pageW / 2 - 45, assY, pageW / 2 + 45, assY);
-
-      doc.setFont("times", "bold");
-      doc.setFontSize(10);
+      // Nome do médico (grande, serifa itálico centralizado)
+      doc.setFont("times", "bolditalic");
+      doc.setFontSize(22);
       doc.setTextColor(15, 23, 42);
-      doc.text(medico.nome, pageW / 2, assY + 4.5, { align: "center" });
+      doc.text(medico.nome, pageW / 2, y + 6, { align: "center" });
+      y += 10;
 
-      doc.setFont("times", "normal");
-      doc.setFontSize(9);
-      doc.setTextColor(90, 90, 90);
-      doc.text(`${medico.especialidade}  ·  ${medico.crm}`, pageW / 2, assY + 8.5, {
+      // CRM / especialidade
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(10.5);
+      doc.setTextColor(70, 70, 70);
+      doc.text(`${medico.crm} · ${medico.especialidade}`, pageW / 2, y + 4, {
+        align: "center",
+      });
+      y += 14;
+
+      // Selo do tipo de receita (discreto, à direita)
+      const seloLabel = isEspecial
+        ? "RECEITUÁRIO DE CONTROLE ESPECIAL"
+        : "RECEITUÁRIO";
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(7.5);
+      const seloColor: [number, number, number] = isEspecial
+        ? [180, 83, 9]
+        : [71, 85, 105];
+      doc.setTextColor(...seloColor);
+      const seloW = doc.getTextWidth(seloLabel) + 6;
+      doc.setDrawColor(...seloColor);
+      doc.setLineWidth(0.3);
+      doc.roundedRect(pageW - margin - seloW, y - 4, seloW, 5.5, 1, 1);
+      doc.text(seloLabel, pageW - margin - seloW / 2, y - 0.3, {
         align: "center",
       });
 
-      // Faixa inferior discreta
+      // Linha do paciente (Nome à esquerda, CPF + Data à direita como no modelo)
+      const dataHora = new Date().toLocaleString("pt-BR", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+      });
+
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(10.5);
+      doc.setTextColor(15, 23, 42);
+      doc.text("Nome:", margin, y);
+      doc.setFont("helvetica", "normal");
+      const nomePaciente = (paciente.trim() || "—").toUpperCase();
+      doc.text(nomePaciente, margin + doc.getTextWidth("Nome: ") + 1, y);
+
+      y += 6;
+
+      if (isEspecial) {
+        doc.setFont("helvetica", "bold");
+        doc.text("CPF:", margin, y);
+        doc.setFont("helvetica", "normal");
+        doc.text(
+          formatCpf(cpfDigits) || "—",
+          margin + doc.getTextWidth("CPF: ") + 1,
+          y,
+        );
+      }
+      // Data e hora sempre à direita
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(10.5);
+      const dataLabel = "Data e hora: ";
+      const dataLabelW = doc.getTextWidth(dataLabel);
+      const dataValW = doc.getTextWidth(dataHora);
+      const dataStartX = pageW - margin - dataLabelW - dataValW;
+      doc.text(dataLabel, dataStartX, y);
+      doc.setFont("helvetica", "normal");
+      doc.text(dataHora, dataStartX + dataLabelW, y);
+      y += 6;
+
+      if (isEspecial && enderecoCompleto.trim()) {
+        doc.setFont("helvetica", "bold");
+        doc.text("Endereço:", margin, y);
+        doc.setFont("helvetica", "normal");
+        const endLines = doc.splitTextToSize(
+          enderecoCompleto.trim(),
+          maxW - doc.getTextWidth("Endereço: ") - 2,
+        );
+        doc.text(endLines, margin + doc.getTextWidth("Endereço: ") + 1, y);
+        y += endLines.length * 5;
+      }
+
+      y += 8;
+
+      // Itens numerados (modelo CEN)
+      grupo.itens.forEach((it, idx) => {
+        const numero = `${idx + 1}.`;
+        const nomeMed = it.med.nome;
+        const forma = it.med.forma || "";
+        const principio = it.med.principios || "";
+        const posText = it.posologia.trim() || "—";
+        const usoTag = "uso contínuo";
+
+        // Título do item (nome em negrito + forma + tag "uso contínuo" à direita)
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(11);
+        doc.setTextColor(15, 23, 42);
+        const numeroW = doc.getTextWidth(numero + " ");
+        const nomeW = doc.getTextWidth(nomeMed);
+        doc.text(numero, margin, y);
+        doc.text(nomeMed, margin + numeroW, y);
+
+        doc.setFont("helvetica", "normal");
+        const formaTxt = forma ? `, ${forma}` : "";
+        const formaWrapped = doc.splitTextToSize(
+          formaTxt,
+          maxW - numeroW - nomeW - 40,
+        );
+        if (formaTxt) {
+          doc.text(formaWrapped[0], margin + numeroW + nomeW, y);
+        }
+
+        // Tag "uso contínuo" à direita
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(10);
+        doc.setTextColor(70, 70, 70);
+        doc.text(usoTag, pageW - margin, y, { align: "right" });
+
+        y += 5;
+
+        // Princípio ativo (cinza pequeno)
+        if (principio) {
+          doc.setFont("helvetica", "normal");
+          doc.setFontSize(9);
+          doc.setTextColor(110, 110, 110);
+          const pWrap = doc.splitTextToSize(principio, maxW - numeroW);
+          doc.text(pWrap, margin + numeroW, y);
+          y += pWrap.length * 4.2;
+        }
+
+        y += 1.5;
+
+        // Posologia
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(10.5);
+        doc.setTextColor(30, 30, 30);
+        const posWrap = doc.splitTextToSize(posText, maxW - numeroW);
+        // Quebra de página se necessário
+        if (y + posWrap.length * 5 > pageH - margin - 45) {
+          doc.addPage();
+          y = margin;
+        }
+        doc.text(posWrap, margin + numeroW, y);
+        y += posWrap.length * 5 + 6;
+      });
+
+      // Rodapé: bloco de validação (inspirado no MEMED)
+      const footerY = pageH - margin - 26;
+
       doc.setDrawColor(220);
       doc.setLineWidth(0.2);
-      doc.line(margin, pageH - margin - 6, pageW - margin, pageH - margin - 6);
+      doc.line(margin, footerY - 4, pageW - margin, footerY - 4);
+
+      // "QR" simulado (quadrado sólido pequeno) à esquerda
+      doc.setFillColor(15, 23, 42);
+      doc.rect(margin, footerY, 16, 16, "F");
+      doc.setFillColor(255, 255, 255);
+      // pequenos quadrados internos para lembrar QR
+      for (let i = 0; i < 4; i++) {
+        for (let j = 0; j < 4; j++) {
+          if ((i + j) % 2 === 0) {
+            doc.rect(margin + 2 + i * 3, footerY + 2 + j * 3, 2, 2, "F");
+          }
+        }
+      }
+
+      // Texto de validação ao lado do QR
+      const txtX = margin + 20;
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(9);
+      doc.setTextColor(15, 23, 42);
+      doc.text("HaisGuias", txtX, footerY + 3);
       doc.setFont("helvetica", "normal");
+      doc.setFontSize(8.5);
+      doc.setTextColor(70, 70, 70);
+      doc.text("Acesso à sua receita digital via QR Code", txtX, footerY + 3 + 4);
+      doc.text(clinica.endereco, txtX, footerY + 3 + 8);
+
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(8.5);
+      doc.setTextColor(15, 23, 42);
+      const assinadoLabel = "Assinado digitalmente por ";
+      const assinadoNome = `${medico.nome} · ${medico.crm}`;
+      doc.text(assinadoLabel, txtX, footerY + 3 + 12);
+      doc.setFont("helvetica", "bold");
+      doc.text(
+        assinadoNome,
+        txtX + doc.getTextWidth(assinadoLabel),
+        footerY + 3 + 12,
+      );
+
+      // Linha inferior de validador
+      doc.setFont("helvetica", "italic");
       doc.setFontSize(7.5);
       doc.setTextColor(140, 140, 140);
       doc.text(
         isEspecial
           ? "Receituário de controle especial · 2 vias (paciente / farmácia) · Portaria SVS/MS nº 344/98"
-          : "Documento emitido eletronicamente pela plataforma HaisGuias",
+          : "*Para validar a assinatura deste documento, acesse https://validador.haisguias.com.br",
         margin,
-        pageH - margin - 2,
+        pageH - margin + 2,
       );
-      doc.text(`Emitido em ${dataEmissao}`, pageW - margin, pageH - margin - 2, {
-        align: "right",
-      });
 
-      const nome = `${isEspecial ? "receita-especial" : "prescricao"}-${slugPaciente || "paciente"}.pdf`;
+      const slug = slugPaciente || "paciente";
+      const nome = `${isEspecial ? "receita-especial" : "prescricao"}-${slug}.pdf`;
       if (!emitir) documentosParaBaixar.push({ doc, nome });
-    });
+    }
+
+
 
     let abriuImpressao = false;
     if (emitir && docImpressao) {
