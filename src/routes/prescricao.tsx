@@ -1424,662 +1424,77 @@ function PrescricaoForm() {
 
 
 
-      {/* Seção 1 — Dados do paciente */}
-      <section id="sec-paciente" className="scroll-mt-4">
-        <div className="rounded-2xl border border-border bg-card shadow-xs p-5 space-y-4">
-          <div className="flex flex-wrap items-start justify-between gap-3">
-            <button
-              type="button"
-              onClick={() => setPacienteCollapsed((v) => !v)}
-              className="flex items-start gap-2 text-left group min-w-0"
-              aria-expanded={!pacienteCollapsed}
-            >
-              <ChevronDown
-                className={`h-4 w-4 mt-1 text-muted-foreground transition-transform ${pacienteCollapsed ? "-rotate-90" : ""}`}
-              />
-              <div className="min-w-0">
-                <h2 className="text-base font-semibold group-hover:text-foreground">Dados do paciente</h2>
-                <p className="text-xs text-muted-foreground">
-                  {pacienteCollapsed && paciente
-                    ? paciente + (especial ? " · Receita especial" : "")
-                    : "Identifique o paciente. Campos de CPF e endereço aparecem para receita especial."}
-                </p>
-              </div>
-            </button>
-          </div>
-
-          {!pacienteCollapsed && (<>
-          <Field id="paciente-input" label="Nome do paciente" required>
-            <SearchInput
-              ref={pacienteRef}
-              leftIcon={<User className="h-4 w-4" />}
-              list="pacientes-recentes"
-              value={paciente}
-              onChange={(e) => setPaciente(e.target.value)}
-              placeholder="Digite o nome do beneficiário..."
-              autoComplete="off"
-            />
-            <datalist id="pacientes-recentes">
-              {pacientesRecentes.map((n) => (
-                <option key={n} value={n} />
-              ))}
-            </datalist>
-          </Field>
-
-          <SelectField
-            label="Tipo de receita"
-            required
-            className="max-w-xs"
-            value={especial ? "especial" : "comum"}
-            onValueChange={(v) => setEspecial(v === "especial")}
-            disabled={hasControlado}
-            hint={
-              hasControlado
-                ? "Definido como especial automaticamente por conter medicamento controlado."
-                : especial
-                  ? "Exige CPF e endereço completo do paciente."
-                  : undefined
-            }
-            options={[
-              { value: "comum", label: "Comum" },
-              { value: "especial", label: "Especial" },
-            ]}
-          />
-
-          {hasControlado && (
-            <div
-              role="status"
-              className="flex items-start gap-2 rounded-lg border border-amber-300/70 bg-amber-50 px-3 py-2 text-xs text-amber-900 dark:border-amber-500/40 dark:bg-amber-500/10 dark:text-amber-100"
-            >
-              <ShieldAlert className="h-4 w-4 shrink-0 mt-0.5 text-amber-600 dark:text-amber-400" />
-              <div className="min-w-0">
-                <p className="font-medium">
-                  Receita marcada como Especial — CPF e endereço obrigatórios
-                </p>
-                <p className="mt-0.5 text-amber-800/90 dark:text-amber-100/80">
-                  {itensControlados.length === 1
-                    ? `Motivo: “${itensControlados[0].med.nome}” é medicamento controlado (Portaria 344/98).`
-                    : `Motivo: ${itensControlados.length} medicamentos controlados na lista (Portaria 344/98).`}
-                </p>
-              </div>
-            </div>
-          )}
-
-
-
-
-
-          {mostrarCamposEspeciais && (
-            <div className="space-y-4 pt-2 border-t border-border/60">
-              <div>
-                <h3 className="text-sm font-semibold flex items-center gap-1.5">
-                  <ShieldAlert className="h-4 w-4 text-amber-600" />
-                  Dados exigidos para receituário especial
-                </h3>
-                <p className="text-xs text-muted-foreground mt-0.5">
-                  Substâncias controladas exigem CPF e endereço completo do paciente.
-                </p>
-              </div>
-
-              {/* Documento */}
-              <Field
-                label="CPF"
-                required
-                hint={
-                  cpfDigits.length === 0
-                    ? undefined
-                    : cpfDigits.length < 11
-                      ? `Faltam ${11 - cpfDigits.length} dígito(s).`
-                      : cpfValido
-                        ? "CPF válido."
-                        : undefined
-                }
-                error={
-                  cpfDigits.length === 11 && !cpfValido
-                    ? "Dígito verificador inválido."
-                    : undefined
-                }
-                rightAdornment={
-                  cpfValido ? (
-                    <CheckCircle2 className="h-4 w-4 text-emerald-500" />
-                  ) : cpfDigits.length > 0 ? (
-                    <AlertCircle className="h-4 w-4 text-destructive/70" />
-                  ) : null
-                }
-                className="max-w-xs"
-              >
-                <Input
-                  ref={cpfRef}
-                  value={formatCpf(cpfDigits)}
-                  onChange={(e) =>
-                    setCpfDigits(e.target.value.replace(/\D/g, "").slice(0, 11))
-                  }
-                  onPaste={(e) => {
-                    e.preventDefault();
-                    const text = e.clipboardData
-                      .getData("text")
-                      .replace(/\D/g, "")
-                      .slice(0, 11);
-                    setCpfDigits(text);
-                  }}
-                  autoComplete="off"
-                  inputMode="numeric"
-                  maxLength={14}
-                  placeholder="000.000.000-00"
-                  aria-invalid={cpfDigits.length > 0 && !cpfValido}
-                  className="pr-9"
-                />
-              </Field>
-
-              {/* Endereço */}
-              <div className="space-y-3">
-                <div className="grid gap-3 md:grid-cols-[minmax(0,200px)_minmax(0,1fr)]">
-                  <Field
-                    label="CEP"
-                    required
-                    hint={
-                      cepLoading
-                        ? "Buscando endereço…"
-                        : cepDigits.length === 8
-                          ? "Endereço preenchido."
-                          : "Preenche o endereço automaticamente."
-                    }
-                    error={cepError || undefined}
-                    rightAdornment={
-                      cepLoading ? (
-                        <Loader2 className="h-4 w-4 text-muted-foreground animate-spin" />
-                      ) : cepError ? (
-                        <AlertCircle className="h-4 w-4 text-destructive/70" />
-                      ) : cepDigits.length === 8 ? (
-                        <CheckCircle2 className="h-4 w-4 text-emerald-500" />
-                      ) : null
-                    }
-                  >
-                    <Input
-                      value={cepDigits.replace(/(\d{5})(\d)/, "$1-$2")}
-                      onChange={(e) => onCepChange(e.target.value)}
-                      inputMode="numeric"
-                      maxLength={9}
-                      placeholder="00000-000"
-                      aria-invalid={!!cepError}
-                      className="pr-9"
-                    />
-                  </Field>
-
-                  <Field
-                    label="Rua, bairro, cidade/UF"
-                    required
-                    hint={
-                      enderecoValido
-                        ? "Endereço válido."
-                        : "Preenchido automaticamente pelo CEP."
-                    }
-                    rightAdornment={
-                      enderecoValido ? (
-                        <CheckCircle2 className="h-4 w-4 text-emerald-500" />
-                      ) : endereco.length > 0 ? (
-                        <AlertCircle className="h-4 w-4 text-destructive/70" />
-                      ) : null
-                    }
-                  >
-                    <Input
-                      ref={enderecoRef}
-                      value={endereco}
-                      onChange={(e) => setEndereco(e.target.value)}
-                      placeholder="Ex: Av. Paulista, Bela Vista, São Paulo/SP"
-                      aria-invalid={endereco.length > 0 && !enderecoValido}
-                      className="pr-9"
-                    />
-                  </Field>
-                </div>
-
-                <Field
-                  label="Número e complemento"
-                  required
-                  error={numero.length === 0 ? "Informe o número." : undefined}
-                >
-                  <div className="flex gap-2">
-                    <Input
-                      ref={numeroRef}
-                      value={numero}
-                      onChange={(e) => setNumero(e.target.value)}
-                      placeholder="Nº"
-                      inputMode="numeric"
-                      aria-invalid={numero.length === 0}
-                      className="w-24"
-                    />
-                    <Input
-                      value={complemento}
-                      onChange={(e) => setComplemento(e.target.value)}
-                      placeholder="Complemento (opcional) — apto, bloco…"
-                      className="flex-1"
-                    />
-                  </div>
-                </Field>
-
-                {enderecoFullValido && (
-                  <div className="rounded-lg border border-emerald-500/30 bg-emerald-500/5 px-3 py-2 text-xs text-emerald-700 dark:text-emerald-400">
-                    <span className="font-medium">Endereço completo: </span>
-                    {enderecoCompleto}
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
-          </>)}
-        </div>
-      </section>
-
-      {/* Seção 2 — Medicamentos */}
-      <section id="sec-medicamentos" className="scroll-mt-4 space-y-5">
-
-          <div className="rounded-2xl border border-border bg-card shadow-xs p-5 space-y-4">
-            <button
-              type="button"
-              onClick={() => setBuscaCollapsed((v) => !v)}
-              className="flex items-start gap-2 text-left w-full group"
-              aria-expanded={!buscaCollapsed}
-            >
-              <ChevronDown
-                className={`h-4 w-4 mt-1 text-muted-foreground transition-transform ${buscaCollapsed ? "-rotate-90" : ""}`}
-              />
-              <div className="min-w-0">
-                <h2 className="text-base font-semibold group-hover:text-foreground">Buscar e adicionar medicamentos</h2>
-                <p className="text-xs text-muted-foreground">
-                  {buscaCollapsed
-                    ? `${itens.length} ${itens.length === 1 ? "medicamento adicionado" : "medicamentos adicionados"}`
-                    : "Busque pelo nome do medicamento para adicionar à prescrição. Medicamentos controlados são identificados automaticamente e geram receituário especial."}
-                </p>
-              </div>
-            </button>
-
-            {!buscaCollapsed && (<>
-            <div className="grid gap-3 md:grid-cols-[minmax(0,1fr)_220px]">
-              <SearchInput
-                id="med-search"
-                ref={searchRef}
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                onKeyDown={(e) => {
-                  if (editing) return;
-                  if (e.key === "ArrowDown") {
-                    e.preventDefault();
-                    setHighlight((h) => Math.min(h + 1, resultados.length - 1));
-                  } else if (e.key === "ArrowUp") {
-                    e.preventDefault();
-                    setHighlight((h) => Math.max(h - 1, 0));
-                  } else if (e.key === "Enter" && resultados[highlight]) {
-                    e.preventDefault();
-                    setEditing(resultados[highlight]);
-                  } else if (e.key === "Escape") {
-                    setQuery("");
-                  }
-                }}
-                placeholder='Nome comercial ou princípio ativo…  (tecle "/" para focar)'
-                clearable
-                onClear={() => setQuery("")}
-                rightSlot={!query ? <Kbd>/</Kbd> : undefined}
-              />
-
-              <MultiSelect
-                options={TIPOS.map((t) => ({ value: t, label: t }))}
-                values={Array.from(tipos)}
-                onChange={(vs) => setTipos(new Set(vs as MedType[]))}
-                placeholder="Filtrar por tipo"
-                allLabel="Todos os tipos"
-                emptyLabel="Nenhum tipo"
-                searchPlaceholder="Buscar tipo..."
-                countLabel={(n) => `${n} tipos`}
-              />
-
-            </div>
-
-
-            {!editing && resultados.length > 0 && (
-              <div className="rounded-xl border border-border bg-background/40 divide-y divide-border max-h-[420px] overflow-y-auto">
-                {resultados.map((m, i) => (
-                  <MedRow
-                    key={m.nome}
-                    m={m}
-                    highlighted={i === highlight}
-                    onHover={() => setHighlight(i)}
-                    onPick={() => setEditing(m)}
-                  />
-                ))}
-              </div>
-            )}
-            {query && !editing && resultados.length === 0 && (
-              <EmptyState
-                size="sm"
-                title="Nenhum medicamento encontrado"
-                description="Ajuste os filtros ou tente outro termo de busca."
-                icon={<Search className="h-8 w-8" />}
-              />
-            )}
-
-            {editing && (
-              <PosologiaPanel
-                med={editing}
-                onCancel={() => setEditing(null)}
-                onAdd={(pos) => addItem(editing, pos)}
-              />
-            )}
-            </>)}
-          </div>
-
-
-
-
-
-
-      </section>
-
-
-      {/* Seção 3 — Revisar e emitir */}
-      <section id="sec-revisar" className="scroll-mt-4">
-
-        <div
-          ref={receitaRef}
-          className="rounded-2xl border border-border bg-card shadow-xs"
-        >
-          <div className="p-5 space-y-4">
-            <div className="flex flex-wrap items-start justify-between gap-3">
-              <div className="min-w-0">
-                <div className="flex items-center gap-2 flex-wrap">
-                  <h3 className="text-sm font-semibold tracking-wide">
-                    Revisão da receita
-                  </h3>
-                  {hasControlado && (
-                    <span className="inline-flex items-center gap-1 rounded-full border border-amber-500/40 bg-amber-500/10 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide text-amber-700 dark:text-amber-300">
-                      <span className="inline-block h-1.5 w-1.5 rounded-full bg-amber-500" />
-                      {hasComum ? "Comum + Controlada" : "Controlada"}
-                    </span>
-                  )}
-                </div>
-
-                <p className="text-xs text-muted-foreground mt-0.5">
-                  {itens.length}{" "}
-                  {itens.length === 1 ? "medicamento" : "medicamentos"}
-                </p>
-
-              </div>
-              {itens.length > 0 && (
-                <button
-                  onClick={() => setItens([])}
-                  className="text-xs text-muted-foreground hover:text-destructive hover:underline"
-                >
-                  Limpar itens
-                </button>
-              )}
-            </div>
-
-
-
-
-            <ul className="space-y-3">
-              {itens.map((it, i) => {
-                const isDragging = dragIndex === i;
-                const isOver =
-                  overIndex === i && dragIndex !== null && dragIndex !== i;
-                const posCheck = checkPosologia(it.posologia);
-                const isEditing = editingPosIdx === i;
-                const editCheck = isEditing
-                  ? checkPosologia(editingPosValue)
-                  : null;
+      <div className="grid gap-6 lg:grid-cols-[220px_minmax(0,1fr)] items-start">
+        {/* Stepper vertical */}
+        <aside className="hidden lg:block">
+          <nav className="sticky top-6" aria-label="Progresso da prescrição">
+            <ol className="relative space-y-1">
+              {[
+                { n: 1 as const, id: "sec-paciente", label: "Paciente", hint: paciente.trim() || "Identificação", done: stepPacienteOk },
+                { n: 2 as const, id: "sec-medicamentos", label: "Medicamentos", hint: itens.length > 0 ? `${itens.length} ${itens.length === 1 ? "item" : "itens"}` : "Nenhum item", done: stepMedicamentosOk },
+                { n: 3 as const, id: "sec-revisar", label: "Revisão", hint: pendencias.length === 0 && itens.length > 0 ? "Pronto para emitir" : `${pendencias.length} pendência${pendencias.length === 1 ? "" : "s"}`, done: stepRevisarOk },
+              ].map((s, idx, arr) => {
+                const active = currentStep === s.n;
+                const isLast = idx === arr.length - 1;
                 return (
-                  <li
-                    id={`item-receita-${i}`}
-                    key={i}
-                    draggable={!isEditing}
-                    onDragStart={(e) => {
-                      setDragIndex(i);
-                      e.dataTransfer.effectAllowed = "move";
-                      e.dataTransfer.setData("text/plain", String(i));
-                    }}
-                    onDragOver={(e) => {
-                      e.preventDefault();
-                      e.dataTransfer.dropEffect = "move";
-                      if (overIndex !== i) setOverIndex(i);
-                    }}
-                    onDragLeave={() => {
-                      if (overIndex === i) setOverIndex(null);
-                    }}
-                    onDrop={(e) => {
-                      e.preventDefault();
-                      if (dragIndex !== null && dragIndex !== i)
-                        moveItem(dragIndex, i);
-                      setDragIndex(null);
-                      setOverIndex(null);
-                    }}
-                    onDragEnd={() => {
-                      setDragIndex(null);
-                      setOverIndex(null);
-                    }}
-                    className={`rounded-xl border bg-background/40 p-4 transition-all ${
-                      isDragging ? "opacity-40 border-primary/60" : ""
-                    } ${
-                      isOver
-                        ? "ring-2 ring-primary/60 border-primary/60"
-                        : posCheck.ok
-                          ? "border-border/70"
-                          : "border-destructive/60 bg-destructive/5"
-                    }`}
-                  >
-                    <div className="flex items-start gap-2">
-                      <button
-                        type="button"
-                        aria-label="Arrastar para reordenar"
-                        title="Arraste para reordenar"
-                        className="grid place-items-center h-6 w-6 mt-0.5 rounded text-muted-foreground hover:text-foreground cursor-grab active:cursor-grabbing shrink-0"
-                        onMouseDown={(e) => e.stopPropagation()}
+                  <li key={s.n} className="relative">
+                    {!isLast && (
+                      <span
+                        aria-hidden
+                        className={`absolute left-[15px] top-8 bottom-[-4px] w-px ${s.done ? "bg-emerald-500/60" : "bg-border"}`}
+                      />
+                    )}
+                    <button
+                      type="button"
+                      onClick={() =>
+                        document
+                          .getElementById(s.id)
+                          ?.scrollIntoView({ behavior: "smooth", block: "start" })
+                      }
+                      className={`relative flex w-full items-start gap-3 rounded-lg px-2 py-2 text-left transition-colors ${
+                        active ? "bg-primary/5" : "hover:bg-muted/40"
+                      }`}
+                      aria-current={active ? "step" : undefined}
+                    >
+                      <span
+                        className={`grid place-items-center h-8 w-8 shrink-0 rounded-full border text-xs font-semibold transition-colors ${
+                          s.done
+                            ? "bg-emerald-500 border-emerald-500 text-white"
+                            : active
+                              ? "bg-primary text-primary-foreground border-primary"
+                              : "bg-background border-border text-muted-foreground"
+                        }`}
                       >
-                        <GripVertical className="h-4 w-4" />
-                      </button>
-                      <div className="min-w-0 space-y-1 flex-1">
-                        <div className="text-sm font-semibold">
-                          <span className="text-muted-foreground mr-1">
-                            {i + 1}.
-                          </span>
-                          {it.med.nome}, {it.med.forma}
-                        </div>
-                        <div className="text-xs text-muted-foreground">
-                          {it.med.principios} | {it.med.fabricante} |{" "}
-                          {it.med.forma} | {it.med.tipo}
-                        </div>
-                        {isEditing ? (
-                          <div className="mt-2 space-y-1.5">
-                            <textarea
-                              value={editingPosValue}
-                              onChange={(e) =>
-                                setEditingPosValue(e.target.value)
-                              }
-                              rows={2}
-                              autoFocus
-                              className={`w-full rounded-lg border bg-background px-2.5 py-2 text-sm focus:outline-none focus:ring-2 ${
-                                editCheck?.ok
-                                  ? "border-emerald-500/40 focus:ring-emerald-500/40"
-                                  : "border-destructive/50 focus:ring-destructive/40"
-                              }`}
-                            />
-                            {editCheck && !editCheck.ok && (
-                              <div className="text-[11px] text-destructive">
-                                ⚠ {editCheck.mensagem}
-                              </div>
-                            )}
-                            <div className="flex items-center gap-2">
-                              <button
-                                onClick={saveEditPos}
-                                disabled={!editCheck?.ok}
-                                className="rounded-lg bg-primary text-primary-foreground px-3 py-1 text-xs font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
-                              >
-                                Salvar
-                              </button>
-                              <button
-                                onClick={cancelEditPos}
-                                className="rounded-lg border border-border px-3 py-1 text-xs hover:bg-muted"
-                              >
-                                Cancelar
-                              </button>
-                            </div>
-                          </div>
-                        ) : (
-                          <>
-                            <div className="mt-1 flex items-start gap-2 text-sm text-foreground/90">
-                              <Link2
-                                className={`h-3.5 w-3.5 mt-0.5 shrink-0 ${
-                                  posCheck.ok ? "text-primary" : "text-destructive"
-                                }`}
-                              />
-                              <span>
-                                {it.posologia || (
-                                  <em className="text-muted-foreground">
-                                    sem posologia
-                                  </em>
-                                )}
-                              </span>
-                            </div>
-                            {!posCheck.ok && (
-                              <div className="text-[11px] text-destructive flex items-center gap-2">
-                                <span>⚠ {posCheck.mensagem}</span>
-                                <button
-                                  onClick={() => startEditPos(i)}
-                                  className="underline hover:no-underline font-medium"
-                                >
-                                  Editar posologia
-                                </button>
-                              </div>
-                            )}
-                            {posCheck.ok && (
-                              <button
-                                onClick={() => startEditPos(i)}
-                                className="text-[11px] text-muted-foreground hover:text-primary hover:underline"
-                              >
-                                Editar posologia
-                              </button>
-                            )}
-                          </>
-                        )}
-                      </div>
-
-                      <button
-                        onClick={() => removeItem(i)}
-                        className="grid place-items-center h-6 w-6 rounded border border-border text-muted-foreground hover:text-destructive hover:border-destructive/60 shrink-0"
-                        aria-label="Remover item"
-                      >
-                        <X className="h-3.5 w-3.5" />
-                      </button>
-                    </div>
+                        {s.done ? <Check className="h-4 w-4" /> : s.n}
+                      </span>
+                      <span className="min-w-0 pt-0.5">
+                        <span
+                          className={`block text-sm font-medium ${active ? "text-foreground" : s.done ? "text-foreground" : "text-muted-foreground"}`}
+                        >
+                          {s.label}
+                        </span>
+                        <span className="block text-[11px] text-muted-foreground truncate">
+                          {s.hint}
+                        </span>
+                      </span>
+                    </button>
                   </li>
                 );
               })}
-            </ul>
+            </ol>
+          </nav>
+        </aside>
 
-            {/* Detecção automática do tipo de receituário */}
-            {itens.length > 0 && (
-              <div
-                className={`rounded-xl border px-4 py-3 ${
-                  hasControlado
-                    ? "border-amber-500/40 bg-amber-500/5"
-                    : "border-emerald-500/30 bg-emerald-500/5"
-                }`}
-              >
-                <div className="flex items-start gap-2.5">
-                  <span
-                    className={`mt-0.5 inline-block h-2 w-2 rounded-full ${
-                      hasControlado ? "bg-amber-500" : "bg-emerald-500"
-                    }`}
-                  />
-                  <div className="flex-1 min-w-0">
-                    <div className="text-sm font-medium">
-                      {hasControlado && hasComum
-                        ? "Serão gerados 2 documentos separados"
-                        : hasControlado
-                          ? "Receituário de controle especial"
-                          : "Receita simples"}
-                    </div>
-                    <ul className="mt-1.5 space-y-1 text-xs text-muted-foreground">
-                      {hasComum && (
-                        <li className="flex items-center gap-1.5">
-                          <span className="inline-block h-1.5 w-1.5 rounded-full bg-emerald-500" />
-                          Receita simples — {itensComuns.length}{" "}
-                          {itensComuns.length === 1 ? "item" : "itens"}
-                        </li>
-                      )}
-                      {hasControlado && (
-                        <li className="flex items-center gap-1.5">
-                          <span className="inline-block h-1.5 w-1.5 rounded-full bg-amber-500" />
-                          Controle especial — {itensControlados.length}{" "}
-                          {itensControlados.length === 1 ? "item" : "itens"}
-                        </li>
-                      )}
-                    </ul>
-                  </div>
-                </div>
-              </div>
-            )}
-
-
-
-
-
-
-
-            <div className="mt-2 pt-4 border-t border-border">
-
-              <div className="flex flex-wrap items-center justify-between gap-3">
-                <div className="text-xs text-muted-foreground">
-                  {podeEmitir ? (
-                    <span className="inline-flex items-center gap-1.5 text-emerald-600 dark:text-emerald-400 font-medium">
-                      <Check className="h-3.5 w-3.5" /> Pronto para emitir
-                    </span>
-                  ) : pendencias.length > 0 ? (
-                    <span>
-                      Falta {pendencias.length}{" "}
-                      {pendencias.length === 1 ? "item" : "itens"} para emitir
-                    </span>
-                  ) : (
-                    <span>Adicione medicamentos para emitir</span>
-                  )}
-                </div>
-                <div className="flex flex-wrap items-center gap-2">
-
-                  <ActionBtn
-                    onClick={abrirSalvarKit}
-                    icon={<Save className="h-4 w-4" />}
-                    title="Ctrl+S"
-                  >
-                    Salvar como kit
-                  </ActionBtn>
-                  <ActionBtn
-                    onClick={() => {
-                      setTriedEmit(true);
-                      if (!podeEmitir) {
-                        document
-                          .getElementById("sec-revisar")
-                          ?.scrollIntoView({ behavior: "smooth", block: "start" });
-                        return;
-                      }
-                      baixarPdf({ emitir: true });
-                    }}
-
-                    icon={<Printer className="h-4 w-4" />}
-                    variant="primary"
-                    disabled={!podeEmitir}
-                    disabledReason={
-                      pendencias.length > 0
-                        ? `Corrija ${pendencias.length} pendência${pendencias.length > 1 ? "s" : ""} antes de emitir:\n• ${pendencias.map((p) => p.msg).join("\n• ")}`
-                        : undefined
-                    }
-                  >
-                    Emitir receita
-                  </ActionBtn>
-                </div>
-              </div>
-            </div>
-
-          </div>
-        </div>
+        <div className="space-y-5 min-w-0">
+      {/* Seção 1 — Dados do paciente */}
+      <section id="sec-paciente" className="scroll-mt-4">
+...
       </section>
+
+
+        </div>
+      </div>
+
 
 
 
