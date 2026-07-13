@@ -26,7 +26,9 @@ import {
   Star,
   ShieldAlert,
   Shield,
+  ArrowUp,
 } from "lucide-react";
+
 
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { MultiSelect } from "@/components/ui/combobox";
@@ -1293,6 +1295,17 @@ function PrescricaoForm() {
     return () => window.removeEventListener("keydown", handler);
   });
 
+  // Botão "voltar ao topo": aparece após rolar
+  const [showTopBtn, setShowTopBtn] = useState(false);
+  useEffect(() => {
+    const onScroll = () => setShowTopBtn(window.scrollY > 320);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+  const scrollToTop = () => window.scrollTo({ top: 0, behavior: "smooth" });
+
+
   // Auto-preenchimento de endereço por CEP
   const onCepChange = async (raw: string) => {
     const d = raw.replace(/\D/g, "").slice(0, 8);
@@ -1322,7 +1335,7 @@ function PrescricaoForm() {
 
 
   return (
-    <div className="space-y-5 pb-8">
+    <div className="space-y-5 pb-32">
       {/* Header unificado */}
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div className="min-w-0">
@@ -2164,7 +2177,71 @@ function PrescricaoForm() {
         }}
       />
 
+      {/* Botão flutuante: voltar ao topo */}
+      <button
+        type="button"
+        onClick={scrollToTop}
+        aria-label="Voltar ao topo"
+        title="Voltar ao topo"
+        className={`fixed right-5 bottom-24 z-40 h-10 w-10 grid place-items-center rounded-full border border-border bg-card/95 backdrop-blur text-muted-foreground shadow-md hover:text-foreground hover:bg-muted transition-all ${
+          showTopBtn ? "opacity-100 translate-y-0 pointer-events-auto" : "opacity-0 translate-y-2 pointer-events-none"
+        }`}
+      >
+        <ArrowUp className="h-4 w-4" />
+      </button>
+
+      {/* Barra de ação fixa */}
+      <div className="fixed inset-x-0 bottom-0 z-30 border-t border-border bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/80">
+        <div className="mx-auto flex max-w-[1400px] items-center justify-between gap-3 px-6 lg:px-10 py-3">
+          <div className="min-w-0 text-xs text-muted-foreground">
+            {itens.length === 0 ? (
+              <span>Adicione medicamentos para emitir</span>
+            ) : pendencias.length > 0 ? (
+              <span className="text-amber-700 dark:text-amber-400">
+                Falta {pendencias.length} {pendencias.length === 1 ? "item" : "itens"} para emitir
+              </span>
+            ) : (
+              <span className="text-emerald-700 dark:text-emerald-400">
+                Pronto para emitir · {itens.length} {itens.length === 1 ? "medicamento" : "medicamentos"}
+              </span>
+            )}
+          </div>
+          <div className="flex items-center gap-2">
+            <ActionBtn
+              onClick={() => baixarPdf({ emitir: false })}
+              icon={<Download className="h-4 w-4" />}
+              disabled={!podeEmitir}
+            >
+              Baixar PDF
+            </ActionBtn>
+            <ActionBtn
+              onClick={() => {
+                setTriedEmit(true);
+                if (!podeEmitir) {
+                  document
+                    .getElementById("sec-revisar")
+                    ?.scrollIntoView({ behavior: "smooth", block: "start" });
+                  return;
+                }
+                baixarPdf({ emitir: true });
+              }}
+              icon={<Printer className="h-4 w-4" />}
+              variant="primary"
+              disabled={!podeEmitir}
+              disabledReason={
+                pendencias.length > 0
+                  ? `Corrija ${pendencias.length} pendência${pendencias.length > 1 ? "s" : ""} antes de emitir:\n• ${pendencias.map((p) => p.msg).join("\n• ")}`
+                  : undefined
+              }
+            >
+              Emitir receita
+            </ActionBtn>
+          </div>
+        </div>
+      </div>
+
     </div>
+
   );
 }
 
