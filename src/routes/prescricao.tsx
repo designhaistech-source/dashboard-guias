@@ -1738,10 +1738,11 @@ function PrescricaoForm() {
       <section id="sec-medicamentos" className="scroll-mt-4 space-y-5">
 
           <div className="rounded-2xl border border-border bg-card shadow-xs p-5 space-y-4">
+            <div className="flex items-start justify-between gap-3">
             <button
               type="button"
               onClick={() => setBuscaCollapsed((v) => !v)}
-              className="flex items-start gap-2 text-left w-full group"
+              className="flex items-start gap-2 text-left group min-w-0 flex-1"
               aria-expanded={!buscaCollapsed}
             >
               <ChevronDown
@@ -1756,6 +1757,35 @@ function PrescricaoForm() {
                 </p>
               </div>
             </button>
+            {itens.length > 0 && (
+              <button
+                type="button"
+                onClick={() =>
+                  document
+                    .getElementById("sec-revisar")
+                    ?.scrollIntoView({ behavior: "smooth", block: "start" })
+                }
+                className="shrink-0 inline-flex items-center gap-2 rounded-full border border-border bg-background/60 px-3 py-1 text-[11px] font-medium text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
+                title="Ir para a revisão"
+              >
+                <Pill className="h-3 w-3" />
+                <span>
+                  {itens.length} {itens.length === 1 ? "item" : "itens"}
+                </span>
+                {itensControlados.length > 0 && (
+                  <>
+                    <span className="text-border">·</span>
+                    <span className="inline-flex items-center gap-1 text-amber-700 dark:text-amber-400">
+                      <ShieldAlert className="h-3 w-3" />
+                      {itensControlados.length} controlado{itensControlados.length > 1 ? "s" : ""}
+                    </span>
+                  </>
+                )}
+                <ChevronRight className="h-3 w-3" />
+              </button>
+            )}
+            </div>
+
 
             {!buscaCollapsed && (<>
             <div className="grid gap-3 md:grid-cols-[minmax(0,1fr)_220px]">
