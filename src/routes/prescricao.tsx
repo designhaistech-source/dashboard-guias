@@ -1410,64 +1410,8 @@ function PrescricaoForm() {
 
 
 
-      <div className="grid gap-6 lg:grid-cols-[220px_minmax(0,1fr)] items-start">
-        {/* Stepper vertical */}
-        <aside className="hidden lg:block">
-          <nav className="sticky top-6" aria-label="Progresso da prescrição">
-            <ol className="relative space-y-1">
-              {[
-                { n: 1 as const, id: "sec-paciente", label: "Paciente", done: stepPacienteOk },
-                { n: 2 as const, id: "sec-medicamentos", label: itens.length > 0 ? `Medicamentos (${itens.length})` : "Medicamentos", done: stepMedicamentosOk },
-                { n: 3 as const, id: "sec-revisar", label: pendencias.length > 0 ? `Revisão (${pendencias.length})` : "Revisão", done: stepRevisarOk },
-              ].map((s, idx, arr) => {
-                const active = currentStep === s.n;
-                const isLast = idx === arr.length - 1;
-                return (
-                  <li key={s.n} className="relative">
-                    {!isLast && (
-                      <span
-                        aria-hidden
-                        className={`absolute left-[15px] top-8 bottom-[-4px] w-px ${s.done ? "bg-emerald-500/60" : "bg-border"}`}
-                      />
-                    )}
-                    <button
-                      type="button"
-                      onClick={() =>
-                        document
-                          .getElementById(s.id)
-                          ?.scrollIntoView({ behavior: "smooth", block: "start" })
-                      }
-                      className={`relative flex w-full items-center gap-3 rounded-lg px-2 py-2 text-left transition-colors ${
-                        active ? "bg-primary/5" : "hover:bg-muted/40"
-                      }`}
-                      aria-current={active ? "step" : undefined}
-                    >
-                      <span
-                        className={`grid place-items-center h-8 w-8 shrink-0 rounded-full border text-xs font-semibold transition-colors ${
-                          s.done
-                            ? "bg-emerald-500 border-emerald-500 text-white"
-                            : active
-                              ? "bg-primary text-primary-foreground border-primary"
-                              : "bg-background border-border text-muted-foreground"
-                        }`}
-                      >
-                        {s.done ? <Check className="h-4 w-4" /> : s.n}
-                      </span>
-                      <span
-                        className={`block text-sm font-medium truncate ${active ? "text-foreground" : s.done ? "text-foreground" : "text-muted-foreground"}`}
-                      >
-                        {s.label}
-                      </span>
 
-                    </button>
-                  </li>
-                );
-              })}
-            </ol>
-          </nav>
-        </aside>
 
-        <div className="space-y-5 min-w-0">
 
 
       {/* Seção 1 — Dados do paciente */}
