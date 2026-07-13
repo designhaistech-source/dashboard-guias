@@ -1416,9 +1416,9 @@ function PrescricaoForm() {
           <nav className="sticky top-6" aria-label="Progresso da prescrição">
             <ol className="relative space-y-1">
               {[
-                { n: 1 as const, id: "sec-paciente", label: "Paciente", hint: paciente.trim() || "Identificação", done: stepPacienteOk },
-                { n: 2 as const, id: "sec-medicamentos", label: "Medicamentos", hint: itens.length > 0 ? `${itens.length} ${itens.length === 1 ? "item" : "itens"}` : "Nenhum item", done: stepMedicamentosOk },
-                { n: 3 as const, id: "sec-revisar", label: "Revisão", hint: pendencias.length === 0 && itens.length > 0 ? "Pronto para emitir" : `${pendencias.length} pendência${pendencias.length === 1 ? "" : "s"}`, done: stepRevisarOk },
+                { n: 1 as const, id: "sec-paciente", label: "Paciente", done: stepPacienteOk },
+                { n: 2 as const, id: "sec-medicamentos", label: itens.length > 0 ? `Medicamentos (${itens.length})` : "Medicamentos", done: stepMedicamentosOk },
+                { n: 3 as const, id: "sec-revisar", label: pendencias.length > 0 ? `Revisão (${pendencias.length})` : "Revisão", done: stepRevisarOk },
               ].map((s, idx, arr) => {
                 const active = currentStep === s.n;
                 const isLast = idx === arr.length - 1;
@@ -1437,7 +1437,7 @@ function PrescricaoForm() {
                           .getElementById(s.id)
                           ?.scrollIntoView({ behavior: "smooth", block: "start" })
                       }
-                      className={`relative flex w-full items-start gap-3 rounded-lg px-2 py-2 text-left transition-colors ${
+                      className={`relative flex w-full items-center gap-3 rounded-lg px-2 py-2 text-left transition-colors ${
                         active ? "bg-primary/5" : "hover:bg-muted/40"
                       }`}
                       aria-current={active ? "step" : undefined}
@@ -1453,16 +1453,12 @@ function PrescricaoForm() {
                       >
                         {s.done ? <Check className="h-4 w-4" /> : s.n}
                       </span>
-                      <span className="min-w-0 pt-0.5">
-                        <span
-                          className={`block text-sm font-medium ${active ? "text-foreground" : s.done ? "text-foreground" : "text-muted-foreground"}`}
-                        >
-                          {s.label}
-                        </span>
-                        <span className="block text-[11px] text-muted-foreground truncate">
-                          {s.hint}
-                        </span>
+                      <span
+                        className={`block text-sm font-medium truncate ${active ? "text-foreground" : s.done ? "text-foreground" : "text-muted-foreground"}`}
+                      >
+                        {s.label}
                       </span>
+
                     </button>
                   </li>
                 );
