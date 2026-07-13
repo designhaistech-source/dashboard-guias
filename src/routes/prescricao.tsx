@@ -1618,17 +1618,26 @@ function PrescricaoForm() {
       <section id="sec-medicamentos" className="scroll-mt-4 space-y-5">
 
           <div className="rounded-2xl border border-border bg-card shadow-xs p-5 space-y-4">
-            <div>
-              <h2 className="text-base font-semibold">Buscar e adicionar medicamentos</h2>
-              <p className="text-xs text-muted-foreground">
-                Busque pelo nome do medicamento para adicionar à prescrição. Medicamentos controlados
-                são identificados automaticamente e geram receituário especial.
-              </p>
-            </div>
+            <button
+              type="button"
+              onClick={() => setBuscaCollapsed((v) => !v)}
+              className="flex items-start gap-2 text-left w-full group"
+              aria-expanded={!buscaCollapsed}
+            >
+              <ChevronDown
+                className={`h-4 w-4 mt-1 text-muted-foreground transition-transform ${buscaCollapsed ? "-rotate-90" : ""}`}
+              />
+              <div className="min-w-0">
+                <h2 className="text-base font-semibold group-hover:text-foreground">Buscar e adicionar medicamentos</h2>
+                <p className="text-xs text-muted-foreground">
+                  {buscaCollapsed
+                    ? `${itens.length} ${itens.length === 1 ? "medicamento adicionado" : "medicamentos adicionados"}`
+                    : "Busque pelo nome do medicamento para adicionar à prescrição. Medicamentos controlados são identificados automaticamente e geram receituário especial."}
+                </p>
+              </div>
+            </button>
 
-
-
-
+            {!buscaCollapsed && (<>
             <div className="grid gap-3 md:grid-cols-[minmax(0,1fr)_220px]">
               <SearchInput
                 id="med-search"
@@ -1699,6 +1708,7 @@ function PrescricaoForm() {
                 onAdd={(pos) => addItem(editing, pos)}
               />
             )}
+            </>)}
           </div>
 
 
