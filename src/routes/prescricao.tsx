@@ -30,8 +30,8 @@ import {
 
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { MultiSelect } from "@/components/ui/combobox";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Checkbox } from "@/components/ui/checkbox";
+
+
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Field, SearchInput } from "@/components/form-field";
@@ -513,8 +513,7 @@ function PrescricaoForm() {
   const especial = hasControlado; // compat com o restante do código
   const setEspecial = (_: boolean) => {}; // no-op: derivado dos itens
   const [editing, setEditing] = useState<Medicamento | null>(null);
-  const [tipoBusca, setTipoBusca] = useState<"comum" | "controlado" | null>("comum");
-  const mostrarCamposEspeciais = hasControlado || tipoBusca === "controlado";
+  const mostrarCamposEspeciais = hasControlado;
   const [highlight, setHighlight] = useState(0);
   const [pacientesRecentes, setPacientesRecentes] = useState<string[]>([]);
   const [medsRecentes, setMedsRecentes] = useState<string[]>([]);
@@ -640,12 +639,7 @@ function PrescricaoForm() {
 
   const resultados = useMemo(() => {
     const q = query.trim().toLowerCase();
-    const base = MEDICAMENTOS.filter(
-      (m) =>
-        tipos.has(m.tipo) &&
-        (tipoBusca === null ||
-          (tipoBusca === "controlado" ? !!m.controlado : !m.controlado)),
-    );
+    const base = MEDICAMENTOS.filter((m) => tipos.has(m.tipo));
     if (!q) {
       // Sem busca: favoritos + recentes primeiro, depois os demais do tipo
       const favs = base.filter((m) => m.favorito);
@@ -664,7 +658,7 @@ function PrescricaoForm() {
         m.fabricante.toLowerCase().includes(q) ||
         m.classe.toLowerCase().includes(q),
     );
-  }, [query, tipos, tipoBusca, medsRecentes]);
+  }, [query, tipos, medsRecentes]);
 
 
   useEffect(() => {
@@ -1392,33 +1386,193 @@ function PrescricaoForm() {
 
 
 
-      {/* Seletor de tipo — checkbox para receita especial */}
-      <div className="rounded-2xl border border-border bg-card shadow-xs p-4 flex items-start gap-3">
-        <Checkbox
-          id="receita-especial"
-          checked={tipoBusca === "controlado"}
-          onCheckedChange={(checked: boolean | "indeterminate") => {
-            setTipoBusca(checked ? "controlado" : "comum");
-            setQuery("");
-            setEditing(null);
-            setTimeout(() => searchRef.current?.focus(), 0);
-          }}
-          className="mt-0.5"
-        />
-        <div className="space-y-1">
-          <label
-            htmlFor="receita-especial"
-            className="flex items-center gap-2 text-sm font-medium text-foreground cursor-pointer"
-          >
-            <ShieldAlert className="h-4 w-4 text-amber-600" />
-            Receita especial
-          </label>
-          <p className="text-xs text-muted-foreground">
-            Marque para prescrever medicamentos controlados. Serão exigidos CPF e endereço do paciente.
-          </p>
-        </div>
-      </div>
+      {/* Seção 1 — Dados do paciente */}
+      <section id="sec-paciente" className="scroll-mt-4">
+        <div className="rounded-2xl border border-border bg-card shadow-xs p-5 space-y-4">
+          <div>
+            <h2 className="text-base font-semibold">Dados do paciente</h2>
+            <p className="text-xs text-muted-foreground">
+              Identifique o paciente. Campos adicionais (CPF e endereço) aparecem automaticamente
+              ao adicionar medicamentos controlados.
+            </p>
+          </div>
 
+          <Field id="paciente-input" label="Nome do paciente" required>
+            <SearchInput
+              ref={pacienteRef}
+              leftIcon={<User className="h-4 w-4" />}
+              list="pacientes-recentes"
+              value={paciente}
+              onChange={(e) => setPaciente(e.target.value)}
+              placeholder="Digite o nome do beneficiário..."
+              autoComplete="off"
+            />
+            <datalist id="pacientes-recentes">
+              {pacientesRecentes.map((n) => (
+                <option key={n} value={n} />
+              ))}
+            </datalist>
+          </Field>
+
+          {mostrarCamposEspeciais && (
+            <div className="space-y-4 pt-2 border-t border-border/60">
+              <div>
+                <h3 className="text-sm font-semibold flex items-center gap-1.5">
+                  <ShieldAlert className="h-4 w-4 text-amber-600" />
+                  Dados exigidos para receituário especial
+                </h3>
+                <p className="text-xs text-muted-foreground mt-0.5">
+                  Substâncias controladas exigem CPF e endereço completo do paciente.
+                </p>
+              </div>
+
+              {/* Documento */}
+              <Field
+                label="CPF"
+                required
+                hint={
+                  cpfDigits.length === 0
+                    ? undefined
+                    : cpfDigits.length < 11
+                      ? `Faltam ${11 - cpfDigits.length} dígito(s).`
+                      : cpfValido
+                        ? "CPF válido."
+                        : undefined
+                }
+                error={
+                  cpfDigits.length === 11 && !cpfValido
+                    ? "Dígito verificador inválido."
+                    : undefined
+                }
+                rightAdornment={
+                  cpfValido ? (
+                    <CheckCircle2 className="h-4 w-4 text-emerald-500" />
+                  ) : cpfDigits.length > 0 ? (
+                    <AlertCircle className="h-4 w-4 text-destructive/70" />
+                  ) : null
+                }
+                className="max-w-xs"
+              >
+                <Input
+                  ref={cpfRef}
+                  value={formatCpf(cpfDigits)}
+                  onChange={(e) =>
+                    setCpfDigits(e.target.value.replace(/\D/g, "").slice(0, 11))
+                  }
+                  onPaste={(e) => {
+                    e.preventDefault();
+                    const text = e.clipboardData
+                      .getData("text")
+                      .replace(/\D/g, "")
+                      .slice(0, 11);
+                    setCpfDigits(text);
+                  }}
+                  autoComplete="off"
+                  inputMode="numeric"
+                  maxLength={14}
+                  placeholder="000.000.000-00"
+                  aria-invalid={cpfDigits.length > 0 && !cpfValido}
+                  className="pr-9"
+                />
+              </Field>
+
+              {/* Endereço */}
+              <div className="space-y-3">
+                <div className="grid gap-3 md:grid-cols-[minmax(0,200px)_minmax(0,1fr)]">
+                  <Field
+                    label="CEP"
+                    required
+                    hint={
+                      cepLoading
+                        ? "Buscando endereço…"
+                        : cepDigits.length === 8
+                          ? "Endereço preenchido."
+                          : "Preenche o endereço automaticamente."
+                    }
+                    error={cepError || undefined}
+                    rightAdornment={
+                      cepLoading ? (
+                        <Loader2 className="h-4 w-4 text-muted-foreground animate-spin" />
+                      ) : cepError ? (
+                        <AlertCircle className="h-4 w-4 text-destructive/70" />
+                      ) : cepDigits.length === 8 ? (
+                        <CheckCircle2 className="h-4 w-4 text-emerald-500" />
+                      ) : null
+                    }
+                  >
+                    <Input
+                      value={cepDigits.replace(/(\d{5})(\d)/, "$1-$2")}
+                      onChange={(e) => onCepChange(e.target.value)}
+                      inputMode="numeric"
+                      maxLength={9}
+                      placeholder="00000-000"
+                      aria-invalid={!!cepError}
+                      className="pr-9"
+                    />
+                  </Field>
+
+                  <Field
+                    label="Rua, bairro, cidade/UF"
+                    required
+                    hint={
+                      enderecoValido
+                        ? "Endereço válido."
+                        : "Preenchido automaticamente pelo CEP."
+                    }
+                    rightAdornment={
+                      enderecoValido ? (
+                        <CheckCircle2 className="h-4 w-4 text-emerald-500" />
+                      ) : endereco.length > 0 ? (
+                        <AlertCircle className="h-4 w-4 text-destructive/70" />
+                      ) : null
+                    }
+                  >
+                    <Input
+                      ref={enderecoRef}
+                      value={endereco}
+                      onChange={(e) => setEndereco(e.target.value)}
+                      placeholder="Ex: Av. Paulista, Bela Vista, São Paulo/SP"
+                      aria-invalid={endereco.length > 0 && !enderecoValido}
+                      className="pr-9"
+                    />
+                  </Field>
+                </div>
+
+                <Field
+                  label="Número e complemento"
+                  required
+                  error={numero.length === 0 ? "Informe o número." : undefined}
+                >
+                  <div className="flex gap-2">
+                    <Input
+                      ref={numeroRef}
+                      value={numero}
+                      onChange={(e) => setNumero(e.target.value)}
+                      placeholder="Nº"
+                      inputMode="numeric"
+                      aria-invalid={numero.length === 0}
+                      className="w-24"
+                    />
+                    <Input
+                      value={complemento}
+                      onChange={(e) => setComplemento(e.target.value)}
+                      placeholder="Complemento (opcional) — apto, bloco…"
+                      className="flex-1"
+                    />
+                  </div>
+                </Field>
+
+                {enderecoFullValido && (
+                  <div className="rounded-lg border border-emerald-500/30 bg-emerald-500/5 px-3 py-2 text-xs text-emerald-700 dark:text-emerald-400">
+                    <span className="font-medium">Endereço completo: </span>
+                    {enderecoCompleto}
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+        </div>
+      </section>
 
       {/* Seção 2 — Medicamentos */}
       <section id="sec-medicamentos" className="scroll-mt-4 space-y-5">
@@ -1427,17 +1581,12 @@ function PrescricaoForm() {
             <div>
               <h2 className="text-base font-semibold">Buscar e adicionar medicamentos</h2>
               <p className="text-xs text-muted-foreground">
-                Busque pelo nome do medicamento para adicionar à prescrição.
+                Busque pelo nome do medicamento para adicionar à prescrição. Medicamentos controlados
+                são identificados automaticamente e geram receituário especial.
               </p>
             </div>
 
-            {tipoBusca === null ? (
-              <div className="rounded-xl border border-dashed border-border bg-background/30 p-6 text-sm text-muted-foreground text-center">
-                Selecione <strong className="text-foreground">Comum</strong> ou{" "}
-                <strong className="text-foreground">Especial</strong> acima para buscar medicamentos.
-              </div>
-            ) : (
-              <>
+
 
 
             <div className="grid gap-3 md:grid-cols-[minmax(0,1fr)_220px]">
@@ -1510,9 +1659,8 @@ function PrescricaoForm() {
                 onAdd={(pos) => addItem(editing, pos)}
               />
             )}
-              </>
-            )}
           </div>
+
 
 
 
@@ -1720,228 +1868,54 @@ function PrescricaoForm() {
               })}
             </ul>
 
-            {/* Dados do paciente — movidos para o fim, junto às ações */}
-            <div className="rounded-xl border border-border/70 bg-background/30 p-4 space-y-4">
-              <div>
-                <h4 className="text-sm font-semibold">Dados do paciente</h4>
-                <p className="text-xs text-muted-foreground">
-                  O tipo de receituário é identificado automaticamente pelos medicamentos adicionados.
-                </p>
-              </div>
-
-              <Field id="paciente-input" label="Nome do paciente">
-                <SearchInput
-                  ref={pacienteRef}
-                  leftIcon={<User className="h-4 w-4" />}
-                  list="pacientes-recentes"
-                  value={paciente}
-                  onChange={(e) => setPaciente(e.target.value)}
-                  placeholder="Digite o nome do beneficiário..."
-                  autoComplete="off"
-                />
-                <datalist id="pacientes-recentes">
-                  {pacientesRecentes.map((n) => (
-                    <option key={n} value={n} />
-                  ))}
-                </datalist>
-              </Field>
-
-
-              {/* Detecção automática do tipo de receituário */}
-              {itens.length > 0 && (
-                <div
-                  className={`rounded-xl border px-4 py-3 ${
-                    hasControlado
-                      ? "border-amber-500/40 bg-amber-500/5"
-                      : "border-emerald-500/30 bg-emerald-500/5"
-                  }`}
-                >
-                  <div className="flex items-start gap-2.5">
-                    <span
-                      className={`mt-0.5 inline-block h-2 w-2 rounded-full ${
-                        hasControlado ? "bg-amber-500" : "bg-emerald-500"
-                      }`}
-                    />
-                    <div className="flex-1 min-w-0">
-                      <div className="text-sm font-medium">
-                        {hasControlado && hasComum
-                          ? "Serão gerados 2 documentos separados"
-                          : hasControlado
-                            ? "Receituário de controle especial"
-                            : "Receita simples"}
-                      </div>
-                      <ul className="mt-1.5 space-y-1 text-xs text-muted-foreground">
-                        {hasComum && (
-                          <li className="flex items-center gap-1.5">
-                            <span className="inline-block h-1.5 w-1.5 rounded-full bg-emerald-500" />
-                            Receita simples — {itensComuns.length}{" "}
-                            {itensComuns.length === 1 ? "item" : "itens"} (
-                            {itensComuns.map((it) => it.med.nome.split(" ")[0]).join(", ")})
-                          </li>
-                        )}
-                        {hasControlado && (
-                          <li className="flex items-center gap-1.5">
-                            <span className="inline-block h-1.5 w-1.5 rounded-full bg-amber-500" />
-                            Controle especial — {itensControlados.length}{" "}
-                            {itensControlados.length === 1 ? "item" : "itens"} (
-                            {itensControlados.map((it) => it.med.nome.split(" ")[0]).join(", ")})
-                          </li>
-                        )}
-                      </ul>
-                      {hasControlado && (
-                        <p className="mt-2 text-[11px] text-amber-700 dark:text-amber-400">
-                          Substâncias sob controle especial exigem CPF e endereço completo do paciente.
-                        </p>
+            {/* Detecção automática do tipo de receituário */}
+            {itens.length > 0 && (
+              <div
+                className={`rounded-xl border px-4 py-3 ${
+                  hasControlado
+                    ? "border-amber-500/40 bg-amber-500/5"
+                    : "border-emerald-500/30 bg-emerald-500/5"
+                }`}
+              >
+                <div className="flex items-start gap-2.5">
+                  <span
+                    className={`mt-0.5 inline-block h-2 w-2 rounded-full ${
+                      hasControlado ? "bg-amber-500" : "bg-emerald-500"
+                    }`}
+                  />
+                  <div className="flex-1 min-w-0">
+                    <div className="text-sm font-medium">
+                      {hasControlado && hasComum
+                        ? "Serão gerados 2 documentos separados"
+                        : hasControlado
+                          ? "Receituário de controle especial"
+                          : "Receita simples"}
+                    </div>
+                    <ul className="mt-1.5 space-y-1 text-xs text-muted-foreground">
+                      {hasComum && (
+                        <li className="flex items-center gap-1.5">
+                          <span className="inline-block h-1.5 w-1.5 rounded-full bg-emerald-500" />
+                          Receita simples — {itensComuns.length}{" "}
+                          {itensComuns.length === 1 ? "item" : "itens"}
+                        </li>
                       )}
-                    </div>
+                      {hasControlado && (
+                        <li className="flex items-center gap-1.5">
+                          <span className="inline-block h-1.5 w-1.5 rounded-full bg-amber-500" />
+                          Controle especial — {itensControlados.length}{" "}
+                          {itensControlados.length === 1 ? "item" : "itens"}
+                        </li>
+                      )}
+                    </ul>
                   </div>
                 </div>
-              )}
+              </div>
+            )}
 
-              {mostrarCamposEspeciais && (
-                <div className="space-y-3 pt-1">
-                  <div className="grid gap-3 md:grid-cols-[minmax(0,220px)_minmax(0,200px)_minmax(0,1fr)]">
-                    {/* CPF */}
-                    <Field
-                      label="CPF"
-                      hint={
-                        cpfDigits.length === 0
-                          ? "Obrigatório."
-                          : cpfDigits.length < 11
-                            ? `Faltam ${11 - cpfDigits.length} dígito(s).`
-                            : cpfValido
-                              ? "CPF válido."
-                              : undefined
-                      }
-                      error={
-                        cpfDigits.length === 11 && !cpfValido
-                          ? "Dígito verificador inválido."
-                          : undefined
-                      }
-                      rightAdornment={
-                        cpfValido ? (
-                          <CheckCircle2 className="h-4 w-4 text-emerald-500" />
-                        ) : cpfDigits.length > 0 ? (
-                          <AlertCircle className="h-4 w-4 text-destructive/70" />
-                        ) : null
-                      }
-                    >
-                      <Input
-                        ref={cpfRef}
-                        value={formatCpf(cpfDigits)}
-                        onChange={(e) =>
-                          setCpfDigits(e.target.value.replace(/\D/g, "").slice(0, 11))
-                        }
-                        onPaste={(e) => {
-                          e.preventDefault();
-                          const text = e.clipboardData
-                            .getData("text")
-                            .replace(/\D/g, "")
-                            .slice(0, 11);
-                          setCpfDigits(text);
-                        }}
-                        autoComplete="off"
-                        inputMode="numeric"
-                        maxLength={14}
-                        placeholder="000.000.000-00"
-                        aria-invalid={cpfDigits.length > 0 && !cpfValido}
-                        className="pr-9"
-                      />
-                    </Field>
 
-                    {/* CEP */}
-                    <Field
-                      label="CEP"
-                      hint={
-                        cepLoading
-                          ? "Buscando endereço…"
-                          : cepDigits.length === 8
-                            ? "Endereço preenchido."
-                            : "Preenche o endereço automaticamente."
-                      }
-                      error={cepError || undefined}
-                      rightAdornment={
-                        cepLoading ? (
-                          <Loader2 className="h-4 w-4 text-muted-foreground animate-spin" />
-                        ) : cepError ? (
-                          <AlertCircle className="h-4 w-4 text-destructive/70" />
-                        ) : cepDigits.length === 8 ? (
-                          <CheckCircle2 className="h-4 w-4 text-emerald-500" />
-                        ) : null
-                      }
-                    >
-                      <Input
-                        value={cepDigits.replace(/(\d{5})(\d)/, "$1-$2")}
-                        onChange={(e) => onCepChange(e.target.value)}
-                        inputMode="numeric"
-                        maxLength={9}
-                        placeholder="00000-000"
-                        aria-invalid={!!cepError}
-                        className="pr-9"
-                      />
-                    </Field>
 
-                    {/* Número + Complemento */}
-                    <Field
-                      label="Número e complemento"
-                      hint={numeroValido ? "Número informado." : undefined}
-                      error={numero.length > 0 && !numeroValido ? "Informe o número." : numero.length === 0 ? "Informe o número." : undefined}
-                    >
-                      <div className="flex gap-2">
-                        <Input
-                          ref={numeroRef}
-                          value={numero}
-                          onChange={(e) => setNumero(e.target.value)}
-                          placeholder="Nº"
-                          inputMode="numeric"
-                          aria-invalid={numero.length > 0 && !numeroValido}
-                          className="w-20"
-                        />
-                        <Input
-                          value={complemento}
-                          onChange={(e) => setComplemento(e.target.value)}
-                          placeholder="Complemento (opcional) — apto, bloco…"
-                          className="flex-1"
-                        />
-                      </div>
-                    </Field>
-                  </div>
 
-                  {/* Logradouro / bairro / cidade */}
-                  <Field
-                    label="Rua, bairro, cidade/UF"
-                    hint={
-                      enderecoValido
-                        ? "Endereço válido."
-                        : "Inclua rua, bairro e cidade/UF (preenchido automaticamente pelo CEP)."
-                    }
-                    rightAdornment={
-                      enderecoValido ? (
-                        <CheckCircle2 className="h-4 w-4 text-emerald-500" />
-                      ) : endereco.length > 0 ? (
-                        <AlertCircle className="h-4 w-4 text-destructive/70" />
-                      ) : null
-                    }
-                  >
-                    <Input
-                      ref={enderecoRef}
-                      value={endereco}
-                      onChange={(e) => setEndereco(e.target.value)}
-                      placeholder="Ex: Av. Paulista, Bela Vista, São Paulo/SP"
-                      aria-invalid={endereco.length > 0 && !enderecoValido}
-                      className="pr-9"
-                    />
-                  </Field>
 
-                  {enderecoFullValido && (
-                    <div className="rounded-lg border border-emerald-500/30 bg-emerald-500/5 px-3 py-2 text-xs text-emerald-700 dark:text-emerald-400">
-                      <span className="font-medium">Endereço completo: </span>
-                      {enderecoCompleto}
-                    </div>
-                  )}
-                </div>
-              )}
-            </div>
 
 
             <div className="mt-2 pt-4 border-t border-border">
