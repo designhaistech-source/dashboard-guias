@@ -1434,6 +1434,7 @@ function PrescricaoForm() {
             </label>
           </div>
 
+          {!pacienteCollapsed && (<>
           <Field id="paciente-input" label="Nome do paciente" required>
             <SearchInput
               ref={pacienteRef}
