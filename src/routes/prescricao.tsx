@@ -1295,6 +1295,17 @@ function PrescricaoForm() {
     return () => window.removeEventListener("keydown", handler);
   });
 
+  // Botão "voltar ao topo": aparece após rolar
+  const [showTopBtn, setShowTopBtn] = useState(false);
+  useEffect(() => {
+    const onScroll = () => setShowTopBtn(window.scrollY > 320);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+  const scrollToTop = () => window.scrollTo({ top: 0, behavior: "smooth" });
+
+
   // Auto-preenchimento de endereço por CEP
   const onCepChange = async (raw: string) => {
     const d = raw.replace(/\D/g, "").slice(0, 8);
