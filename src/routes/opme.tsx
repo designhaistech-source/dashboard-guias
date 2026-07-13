@@ -558,7 +558,7 @@ function OpmePage() {
                 <div className="flex justify-end pt-2">
                   <Button type="submit" size="lg" disabled={!canSubmit}>
                     <Send className="h-4 w-4" />
-                    PedeGuia
+                    Enviar solicitação
                   </Button>
                 </div>
               </div>
