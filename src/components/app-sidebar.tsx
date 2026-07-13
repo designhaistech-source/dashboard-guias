@@ -138,10 +138,12 @@ export function AppSidebar({ activeKey }: { activeKey: ItemKey }) {
             <SidebarItem
               icon={Wrench}
               label="Solicitar OPME"
+              to="/opme"
               active={activeKey === "opme"}
               hint="Solicite Órteses, Próteses e Materiais Especiais para procedimentos."
               collapsed={collapsed}
             />
+
             <SidebarItem
               icon={FileSpreadsheet}
               label="Relatórios e documentos"
