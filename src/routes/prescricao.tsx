@@ -1412,26 +1412,6 @@ function PrescricaoForm() {
                 </p>
               </div>
             </button>
-            <label
-              className={`inline-flex items-center gap-2 rounded-lg border px-3 py-2 text-sm cursor-pointer select-none transition-colors ${
-                especial
-                  ? "border-amber-500/50 bg-amber-500/5 text-amber-700 dark:text-amber-400"
-                  : "border-border hover:bg-muted/50"
-              } ${hasControlado ? "opacity-90 cursor-not-allowed" : ""}`}
-              title={
-                hasControlado
-                  ? "Ativado automaticamente por conter medicamento controlado"
-                  : undefined
-              }
-            >
-              <Checkbox
-                checked={especial}
-                disabled={hasControlado}
-                onCheckedChange={(v) => setEspecial(v === true)}
-              />
-              <ShieldAlert className="h-4 w-4" />
-              <span className="font-medium">Receita especial</span>
-            </label>
           </div>
 
           {!pacienteCollapsed && (<>
