@@ -524,6 +524,8 @@ function PrescricaoForm() {
   const [historico, setHistorico] = useState<Historico[]>([]);
   const [historicoAberto, setHistoricoAberto] = useState(false);
   const [kitsAberto, setKitsAberto] = useState(false);
+  const [pacienteCollapsed, setPacienteCollapsed] = useState(false);
+  const [buscaCollapsed, setBuscaCollapsed] = useState(false);
   const hidratado = useRef(false);
   const [step, setStep] = useState<1 | 2 | 3>(1);
   const [triedEmit, setTriedEmit] = useState(false);
