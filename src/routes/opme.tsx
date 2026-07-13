@@ -116,7 +116,7 @@ export const Route = createFileRoute("/opme")({
       {
         name: "description",
         content:
-          "Solicite Órteses, Próteses e Materiais Especiais com justificativa técnica, especificação e envio direto para PedeGuia.",
+          "Solicite Órteses, Próteses e Materiais Especiais com justificativa técnica, especificação e envio direto à operadora.",
       },
     ],
   }),
@@ -252,7 +252,7 @@ function OpmePage() {
       return;
     }
     toast.success(
-      `Solicitação de OPME enviada via PedeGuia (${materiaisValidos.length} ${materiaisValidos.length === 1 ? "item" : "itens"}).`,
+      `Solicitação de OPME enviada (${materiaisValidos.length} ${materiaisValidos.length === 1 ? "item" : "itens"}).`,
     );
   }
 
@@ -558,7 +558,7 @@ function OpmePage() {
                 <div className="flex justify-end pt-2">
                   <Button type="submit" size="lg" disabled={!canSubmit}>
                     <Send className="h-4 w-4" />
-                    PedeGuia
+                    Enviar solicitação
                   </Button>
                 </div>
               </div>
