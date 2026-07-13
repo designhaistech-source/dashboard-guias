@@ -1386,6 +1386,194 @@ function PrescricaoForm() {
 
 
 
+      {/* Seção 1 — Dados do paciente */}
+      <section id="sec-paciente" className="scroll-mt-4">
+        <div className="rounded-2xl border border-border bg-card shadow-xs p-5 space-y-4">
+          <div>
+            <h2 className="text-base font-semibold">Dados do paciente</h2>
+            <p className="text-xs text-muted-foreground">
+              Identifique o paciente. Campos adicionais (CPF e endereço) aparecem automaticamente
+              ao adicionar medicamentos controlados.
+            </p>
+          </div>
+
+          <Field id="paciente-input" label="Nome do paciente" required>
+            <SearchInput
+              ref={pacienteRef}
+              leftIcon={<User className="h-4 w-4" />}
+              list="pacientes-recentes"
+              value={paciente}
+              onChange={(e) => setPaciente(e.target.value)}
+              placeholder="Digite o nome do beneficiário..."
+              autoComplete="off"
+            />
+            <datalist id="pacientes-recentes">
+              {pacientesRecentes.map((n) => (
+                <option key={n} value={n} />
+              ))}
+            </datalist>
+          </Field>
+
+          {mostrarCamposEspeciais && (
+            <div className="space-y-4 pt-2 border-t border-border/60">
+              <div>
+                <h3 className="text-sm font-semibold flex items-center gap-1.5">
+                  <ShieldAlert className="h-4 w-4 text-amber-600" />
+                  Dados exigidos para receituário especial
+                </h3>
+                <p className="text-xs text-muted-foreground mt-0.5">
+                  Substâncias controladas exigem CPF e endereço completo do paciente.
+                </p>
+              </div>
+
+              {/* Documento */}
+              <Field
+                label="CPF"
+                required
+                hint={
+                  cpfDigits.length === 0
+                    ? undefined
+                    : cpfDigits.length < 11
+                      ? `Faltam ${11 - cpfDigits.length} dígito(s).`
+                      : cpfValido
+                        ? "CPF válido."
+                        : undefined
+                }
+                error={
+                  cpfDigits.length === 11 && !cpfValido
+                    ? "Dígito verificador inválido."
+                    : undefined
+                }
+                rightAdornment={
+                  cpfValido ? (
+                    <CheckCircle2 className="h-4 w-4 text-emerald-500" />
+                  ) : cpfDigits.length > 0 ? (
+                    <AlertCircle className="h-4 w-4 text-destructive/70" />
+                  ) : null
+                }
+                className="max-w-xs"
+              >
+                <Input
+                  ref={cpfRef}
+                  value={formatCpf(cpfDigits)}
+                  onChange={(e) =>
+                    setCpfDigits(e.target.value.replace(/\D/g, "").slice(0, 11))
+                  }
+                  onPaste={(e) => {
+                    e.preventDefault();
+                    const text = e.clipboardData
+                      .getData("text")
+                      .replace(/\D/g, "")
+                      .slice(0, 11);
+                    setCpfDigits(text);
+                  }}
+                  autoComplete="off"
+                  inputMode="numeric"
+                  maxLength={14}
+                  placeholder="000.000.000-00"
+                  aria-invalid={cpfDigits.length > 0 && !cpfValido}
+                  className="pr-9"
+                />
+              </Field>
+
+              {/* Endereço */}
+              <div className="space-y-3">
+                <div className="grid gap-3 md:grid-cols-[minmax(0,200px)_minmax(0,1fr)]">
+                  <Field
+                    label="CEP"
+                    required
+                    hint={
+                      cepLoading
+                        ? "Buscando endereço…"
+                        : cepDigits.length === 8
+                          ? "Endereço preenchido."
+                          : "Preenche o endereço automaticamente."
+                    }
+                    error={cepError || undefined}
+                    rightAdornment={
+                      cepLoading ? (
+                        <Loader2 className="h-4 w-4 text-muted-foreground animate-spin" />
+                      ) : cepError ? (
+                        <AlertCircle className="h-4 w-4 text-destructive/70" />
+                      ) : cepDigits.length === 8 ? (
+                        <CheckCircle2 className="h-4 w-4 text-emerald-500" />
+                      ) : null
+                    }
+                  >
+                    <Input
+                      value={cepDigits.replace(/(\d{5})(\d)/, "$1-$2")}
+                      onChange={(e) => onCepChange(e.target.value)}
+                      inputMode="numeric"
+                      maxLength={9}
+                      placeholder="00000-000"
+                      aria-invalid={!!cepError}
+                      className="pr-9"
+                    />
+                  </Field>
+
+                  <Field
+                    label="Rua, bairro, cidade/UF"
+                    required
+                    hint={
+                      enderecoValido
+                        ? "Endereço válido."
+                        : "Preenchido automaticamente pelo CEP."
+                    }
+                    rightAdornment={
+                      enderecoValido ? (
+                        <CheckCircle2 className="h-4 w-4 text-emerald-500" />
+                      ) : endereco.length > 0 ? (
+                        <AlertCircle className="h-4 w-4 text-destructive/70" />
+                      ) : null
+                    }
+                  >
+                    <Input
+                      ref={enderecoRef}
+                      value={endereco}
+                      onChange={(e) => setEndereco(e.target.value)}
+                      placeholder="Ex: Av. Paulista, Bela Vista, São Paulo/SP"
+                      aria-invalid={endereco.length > 0 && !enderecoValido}
+                      className="pr-9"
+                    />
+                  </Field>
+                </div>
+
+                <Field
+                  label="Número e complemento"
+                  required
+                  error={numero.length === 0 ? "Informe o número." : undefined}
+                >
+                  <div className="flex gap-2">
+                    <Input
+                      ref={numeroRef}
+                      value={numero}
+                      onChange={(e) => setNumero(e.target.value)}
+                      placeholder="Nº"
+                      inputMode="numeric"
+                      aria-invalid={numero.length === 0}
+                      className="w-24"
+                    />
+                    <Input
+                      value={complemento}
+                      onChange={(e) => setComplemento(e.target.value)}
+                      placeholder="Complemento (opcional) — apto, bloco…"
+                      className="flex-1"
+                    />
+                  </div>
+                </Field>
+
+                {enderecoFullValido && (
+                  <div className="rounded-lg border border-emerald-500/30 bg-emerald-500/5 px-3 py-2 text-xs text-emerald-700 dark:text-emerald-400">
+                    <span className="font-medium">Endereço completo: </span>
+                    {enderecoCompleto}
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+        </div>
+      </section>
+
       {/* Seção 2 — Medicamentos */}
       <section id="sec-medicamentos" className="scroll-mt-4 space-y-5">
 
