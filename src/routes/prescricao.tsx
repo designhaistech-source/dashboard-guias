@@ -26,6 +26,7 @@ import {
   Star,
   ShieldAlert,
   Shield,
+  ArrowUp,
 } from "lucide-react";
 
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -553,6 +554,13 @@ function PrescricaoForm() {
   const hidratado = useRef(false);
   const [step, setStep] = useState<1 | 2 | 3>(1);
   const [triedEmit, setTriedEmit] = useState(false);
+  const [showTopBtn, setShowTopBtn] = useState(false);
+  useEffect(() => {
+    const onScroll = () => setShowTopBtn(window.scrollY > 400);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   const pacienteRef = useRef<HTMLInputElement>(null);
   const searchRef = useRef<HTMLInputElement>(null);
@@ -2164,6 +2172,17 @@ function PrescricaoForm() {
         }}
       />
 
+      <button
+        type="button"
+        onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+        aria-label="Voltar ao topo"
+        title="Voltar ao topo"
+        className={`fixed bottom-6 right-6 z-40 h-10 w-10 rounded-full border border-border bg-card/90 backdrop-blur text-muted-foreground shadow-md hover:text-foreground hover:bg-card transition-all duration-200 flex items-center justify-center ${
+          showTopBtn ? "opacity-100 translate-y-0 pointer-events-auto" : "opacity-0 translate-y-2 pointer-events-none"
+        }`}
+      >
+        <ArrowUp className="h-4 w-4" />
+      </button>
     </div>
   );
 }
