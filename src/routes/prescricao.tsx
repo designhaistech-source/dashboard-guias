@@ -1471,9 +1471,8 @@ function PrescricaoForm() {
                 onAdd={(pos) => addItem(editing, pos)}
               />
             )}
-              </>
-            )}
           </div>
+
 
 
 
