@@ -514,6 +514,30 @@ function PrescricaoForm() {
   const [especialManual, setEspecialManual] = useState(false);
   const especial = hasControlado || especialManual;
   const setEspecial = (v: boolean) => setEspecialManual(v);
+
+  // Sincroniza automaticamente o tipo de receita conforme itens controlados entram/saem da lista.
+  const prevHasControladoRef = useRef(hasControlado);
+  useEffect(() => {
+    const prev = prevHasControladoRef.current;
+    if (prev === hasControlado) return;
+    prevHasControladoRef.current = hasControlado;
+    if (hasControlado) {
+      // Passou a existir controlado: força Especial e limpa a preferência manual anterior.
+      if (especialManual) setEspecialManual(false);
+      toast.info("Tipo de receita alterado para Especial", {
+        description: "A lista contém medicamento controlado.",
+      });
+    } else {
+      // Último controlado removido: volta para Comum (a menos que o usuário tenha marcado Especial manualmente).
+      if (!especialManual) {
+        toast.info("Tipo de receita alterado para Comum", {
+          description: "Nenhum medicamento controlado na lista.",
+        });
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hasControlado]);
+
   const [editing, setEditing] = useState<Medicamento | null>(null);
   const mostrarCamposEspeciais = especial;
   const [highlight, setHighlight] = useState(0);
