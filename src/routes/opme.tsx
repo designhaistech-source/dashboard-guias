@@ -487,7 +487,7 @@ function OpmePage() {
                 )}
 
                 <div className="rounded-lg border overflow-hidden">
-                  <div className="hidden md:grid grid-cols-[120px_1fr_180px_90px_44px] gap-2 px-3 py-2 bg-muted/40 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+                  <div className="hidden lg:grid grid-cols-[120px_1fr_180px_90px_44px] gap-2 px-3 py-2 bg-muted/40 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
                     <div>TISS</div>
                     <div>Nome comercial</div>
                     <div>Enquadramento técnico</div>
