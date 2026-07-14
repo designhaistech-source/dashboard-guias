@@ -24,7 +24,7 @@ export function PageHeader({ title, description, actions, className }: PageHeade
           {title}
         </h1>
         {description && (
-          <p className="mt-1 text-sm text-muted-foreground max-w-2xl">
+          <p className="mt-1 text-sm text-muted-foreground max-w-4xl">
             {description}
           </p>
         )}
