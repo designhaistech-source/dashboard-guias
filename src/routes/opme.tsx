@@ -293,7 +293,7 @@ function OpmePage() {
         <div className="w-full px-6 lg:px-10 py-8 space-y-6 flex-1 pb-24">
           <PageHeader
             title="Solicitar OPME"
-            description="Convênio e paciente, justificativa clínica, materiais e profissional solicitante — nesta ordem."
+            description="Solicite autorização de órteses, próteses e materiais especiais junto à operadora, com justificativa clínica e lista de materiais."
           />
 
           <form onSubmit={enviarSolicitacao} className="space-y-5">
