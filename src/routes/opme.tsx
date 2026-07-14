@@ -647,8 +647,8 @@ function OpmePage() {
                   <StatusPill done={materiaisOk} label="Materiais" />
                   <StatusPill done={profOk} label="Profissional" />
                 </div>
-                <Button type="submit" size="lg" disabled={!canSubmit}>
-                  <Send className="h-4 w-4" />
+                <Button type="submit" size="sm" disabled={!canSubmit}>
+                  <Send />
                   Enviar solicitação
                 </Button>
               </div>
