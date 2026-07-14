@@ -165,7 +165,7 @@ function OpmePage() {
   const [convenioCollapsed, setConvenioCollapsed] = useState(false);
   const [clinicoCollapsed, setClinicoCollapsed] = useState(false);
   const [materiaisCollapsed, setMateriaisCollapsed] = useState(false);
-  const [profCollapsed, setProfCollapsed] = useState(false);
+  const [profCollapsed, setProfCollapsed] = useState(true);
   const [showTopBtn, setShowTopBtn] = useState(false);
 
   useEffect(() => {
@@ -301,17 +301,44 @@ function OpmePage() {
             <SectionCard
               id="sec-convenio"
               number={1}
-              title="Convênio e paciente"
+              title="Paciente e convênio"
               collapsed={convenioCollapsed}
               onToggle={() => setConvenioCollapsed((v) => !v)}
               done={convenioOk}
               summary={
                 convenioCollapsed && convenioOk
-                  ? `${operadoraSel?.label ?? operadora} · ${paciente} · ${caraterAtendimento}`
-                  : "Selecione a operadora, informe o paciente e o caráter do atendimento."
+                  ? `${paciente} · ${operadoraSel?.label ?? operadora} · ${caraterAtendimento}`
+                  : "Informe o paciente, o convênio e o caráter do atendimento."
               }
             >
               <div className="space-y-4">
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <Field label="Nome do paciente" required>
+                    <div className="relative">
+                      <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                      <Input
+                        className="pl-9"
+                        placeholder="Digite o nome do beneficiário..."
+                        value={paciente}
+                        onChange={(e) => setPaciente(e.target.value)}
+                      />
+                    </div>
+                  </Field>
+                  <Field label="Cartão do beneficiário">
+                    <Input
+                      inputMode="numeric"
+                      placeholder="0000 0000 0000 0000"
+                      value={cartaoBenef}
+                      maxLength={19}
+                      onChange={(e) => {
+                        const digits = e.target.value.replace(/\D/g, "").slice(0, 16);
+                        const masked = digits.replace(/(\d{4})(?=\d)/g, "$1 ");
+                        setCartaoBenef(masked);
+                      }}
+                    />
+                  </Field>
+                </div>
+
                 <div className="grid gap-4 sm:grid-cols-2">
                   <Field label="Convênio / Operadora" required>
                     <Select value={operadora} onValueChange={setOperadora}>
@@ -354,27 +381,6 @@ function OpmePage() {
                         ))}
                       </SelectContent>
                     </Select>
-                  </Field>
-                </div>
-
-                <div className="grid gap-4 sm:grid-cols-2">
-                  <Field label="Nome do paciente" required>
-                    <div className="relative">
-                      <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                      <Input
-                        className="pl-9"
-                        placeholder="Digite o nome do beneficiário..."
-                        value={paciente}
-                        onChange={(e) => setPaciente(e.target.value)}
-                      />
-                    </div>
-                  </Field>
-                  <Field label="Cartão do beneficiário">
-                    <Input
-                      placeholder="0000 0000 0000 0000"
-                      value={cartaoBenef}
-                      onChange={(e) => setCartaoBenef(e.target.value)}
-                    />
                   </Field>
                 </div>
               </div>
@@ -453,6 +459,20 @@ function OpmePage() {
                   >
                     <Save className="h-4 w-4" />
                     Salvar kit
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      limparMateriais();
+                    }}
+                    disabled={materiaisValidos.length === 0 && !especificacao}
+                    className="text-muted-foreground hover:text-destructive"
+                  >
+                    <Eraser className="h-4 w-4" />
+                    Limpar
                   </Button>
                 </div>
               }
@@ -539,16 +559,13 @@ function OpmePage() {
                   </div>
                 </div>
 
-                <div className="flex flex-wrap items-center justify-between gap-2">
-                  <Button type="button" variant="outline" size="sm" onClick={limparMateriais}>
-                    <Eraser className="h-4 w-4" />
-                    Limpar materiais
-                  </Button>
+                <div className="flex justify-end">
                   <Button type="button" size="sm" onClick={addMaterial}>
                     <Plus className="h-4 w-4" />
                     Adicionar material
                   </Button>
                 </div>
+
 
                 <Field label="Especificação do material (opcional)">
                   <div className="relative">
@@ -623,7 +640,7 @@ function OpmePage() {
             </SectionCard>
 
             {/* Ação final */}
-            <div className="sticky bottom-4 z-30">
+            <div>
               <div className="rounded-xl border bg-card/95 backdrop-blur shadow-md px-4 py-3 flex flex-wrap items-center justify-between gap-3">
                 <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
                   <StatusPill done={convenioOk} label="Convênio" />
