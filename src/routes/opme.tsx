@@ -817,7 +817,7 @@ function SectionCard({
             </div>
           </button>
           {headerRight && !collapsed && (
-            <div className="w-full md:w-auto" onClick={(e) => e.stopPropagation()}>{headerRight}</div>
+            <div className="w-full lg:w-auto" onClick={(e) => e.stopPropagation()}>{headerRight}</div>
           )}
         </div>
         {!collapsed && <div className="pt-1">{children}</div>}
