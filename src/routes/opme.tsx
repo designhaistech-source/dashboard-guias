@@ -813,7 +813,7 @@ function SectionCard({
                   <CheckCircle2 className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
                 )}
               </h2>
-              <p className="text-xs text-muted-foreground mt-0.5 truncate">{summary}</p>
+              <p className={`text-xs text-muted-foreground mt-0.5 ${collapsed ? "truncate" : ""}`}>{summary}</p>
             </div>
           </button>
           {headerRight && !collapsed && (
