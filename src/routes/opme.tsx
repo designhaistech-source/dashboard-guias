@@ -559,16 +559,13 @@ function OpmePage() {
                   </div>
                 </div>
 
-                <div className="flex flex-wrap items-center justify-between gap-2">
-                  <Button type="button" variant="outline" size="sm" onClick={limparMateriais}>
-                    <Eraser className="h-4 w-4" />
-                    Limpar materiais
-                  </Button>
+                <div className="flex justify-end">
                   <Button type="button" size="sm" onClick={addMaterial}>
                     <Plus className="h-4 w-4" />
                     Adicionar material
                   </Button>
                 </div>
+
 
                 <Field label="Especificação do material (opcional)">
                   <div className="relative">
