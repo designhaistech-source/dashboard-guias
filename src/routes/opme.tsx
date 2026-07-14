@@ -460,6 +460,20 @@ function OpmePage() {
                     <Save className="h-4 w-4" />
                     Salvar kit
                   </Button>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      limparMateriais();
+                    }}
+                    disabled={materiaisValidos.length === 0 && !especificacao}
+                    className="text-muted-foreground hover:text-destructive"
+                  >
+                    <Eraser className="h-4 w-4" />
+                    Limpar
+                  </Button>
                 </div>
               }
             >
