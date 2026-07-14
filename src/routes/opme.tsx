@@ -498,7 +498,7 @@ function OpmePage() {
                     {materiais.map((m, idx) => (
                       <div
                         key={m.id}
-                        className="grid grid-cols-1 md:grid-cols-[120px_1fr_180px_90px_44px] gap-2 px-3 py-2.5 items-center"
+                        className="grid grid-cols-1 lg:grid-cols-[120px_1fr_180px_90px_44px] gap-2 px-3 py-2.5 items-center"
                       >
                         <Input
                           className="h-9 font-mono text-xs"
