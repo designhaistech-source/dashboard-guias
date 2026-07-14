@@ -805,7 +805,7 @@ function SectionCard({
               }`}
             />
             <div className="min-w-0 flex-1">
-              <h2 className="text-base font-semibold group-hover:text-foreground flex items-center gap-2">
+              <h2 className="text-base font-semibold group-hover:text-foreground flex items-center gap-2 whitespace-nowrap">
                 <span>
                   {number}. {title}
                 </span>
