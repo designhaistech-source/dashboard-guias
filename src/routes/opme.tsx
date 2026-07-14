@@ -640,7 +640,7 @@ function OpmePage() {
             </SectionCard>
 
             {/* Ação final */}
-            <div className="sticky bottom-4 z-30">
+            <div>
               <div className="rounded-xl border bg-card/95 backdrop-blur shadow-md px-4 py-3 flex flex-wrap items-center justify-between gap-3">
                 <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
                   <StatusPill done={convenioOk} label="Convênio" />
