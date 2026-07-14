@@ -754,7 +754,6 @@ function OpmePage() {
 
 function SectionCard({
   id,
-  icon,
   number,
   title,
   summary,
@@ -765,7 +764,6 @@ function SectionCard({
   children,
 }: {
   id: string;
-  icon: React.ReactNode;
   number: number;
   title: string;
   summary: string;
@@ -790,19 +788,11 @@ function SectionCard({
                 collapsed ? "-rotate-90" : ""
               }`}
             />
-            <div
-              className={`h-9 w-9 rounded-md flex items-center justify-center shrink-0 ${
-                done
-                  ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
-                  : "bg-primary/10 text-primary"
-              }`}
-            >
-              {done ? <CheckCircle2 className="h-4 w-4" /> : icon}
-            </div>
             <div className="min-w-0 flex-1">
               <h2 className="text-sm font-semibold group-hover:text-foreground flex items-center gap-2">
                 <span className="text-muted-foreground tabular-nums">{number}.</span>
                 {title}
+                {done && <CheckCircle2 className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />}
               </h2>
               <p className="text-xs text-muted-foreground mt-0.5 truncate">{summary}</p>
             </div>
