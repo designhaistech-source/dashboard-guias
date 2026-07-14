@@ -300,7 +300,6 @@ function OpmePage() {
             {/* 1. Convênio & Paciente */}
             <SectionCard
               id="sec-convenio"
-              icon={<Building2 className="h-4 w-4" />}
               number={1}
               title="Convênio e paciente"
               collapsed={convenioCollapsed}
@@ -384,7 +383,6 @@ function OpmePage() {
             {/* 2. Justificativa técnica */}
             <SectionCard
               id="sec-clinico"
-              icon={<ClipboardList className="h-4 w-4" />}
               number={2}
               title="Justificativa clínica"
               collapsed={clinicoCollapsed}
@@ -417,7 +415,6 @@ function OpmePage() {
             {/* 3. Materiais OPME */}
             <SectionCard
               id="sec-materiais"
-              icon={<Package className="h-4 w-4" />}
               number={3}
               title="Materiais OPME"
               collapsed={materiaisCollapsed}
@@ -573,7 +570,6 @@ function OpmePage() {
             {/* 4. Profissional solicitante */}
             <SectionCard
               id="sec-profissional"
-              icon={<Stethoscope className="h-4 w-4" />}
               number={4}
               title="Profissional solicitante"
               collapsed={profCollapsed}
