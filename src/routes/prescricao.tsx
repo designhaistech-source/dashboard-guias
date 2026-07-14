@@ -1413,7 +1413,7 @@ function PrescricaoForm() {
             Emitir prescrição
           </h1>
           <p className="mt-1 text-sm text-muted-foreground">
-            Informe o paciente, adicione os medicamentos e revise antes de emitir.
+            Gere receitas médicas digitais, comuns ou especiais, prontas para impressão ou download em PDF.
           </p>
         </div>
         <div className="flex items-center gap-2 shrink-0">
