@@ -1,8 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import {
-  Wrench,
-  Building2,
   User,
   ClipboardList,
   Package,
@@ -22,9 +20,10 @@ import { toast } from "sonner";
 import { AppSidebar } from "@/components/app-sidebar";
 import { SiteFooter } from "@/components/site-footer";
 import { PageHeader } from "@/components/page-header";
+import { Field } from "@/components/form-field";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+
 import { Textarea } from "@/components/ui/textarea";
 import {
   Select,
@@ -792,12 +791,12 @@ function SectionCard({
 }) {
   return (
     <section id={id} className="scroll-mt-4">
-      <div className="rounded-2xl border border-border bg-card shadow-xs overflow-hidden">
-        <div className="flex flex-wrap items-start gap-3 px-5 py-4 border-b bg-muted/30">
+      <div className="rounded-2xl border border-border bg-card shadow-xs p-5 space-y-4">
+        <div className="flex flex-wrap items-start justify-between gap-3">
           <button
             type="button"
             onClick={onToggle}
-            className="flex items-start gap-3 text-left flex-1 min-w-0 group"
+            className="flex items-start gap-2 text-left group min-w-0 flex-1"
             aria-expanded={!collapsed}
           >
             <ChevronDown
@@ -806,10 +805,13 @@ function SectionCard({
               }`}
             />
             <div className="min-w-0 flex-1">
-              <h2 className="text-sm font-semibold group-hover:text-foreground flex items-center gap-2">
-                <span className="text-muted-foreground tabular-nums">{number}.</span>
-                {title}
-                {done && <CheckCircle2 className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />}
+              <h2 className="text-base font-semibold group-hover:text-foreground flex items-center gap-2">
+                <span>
+                  {number}. {title}
+                </span>
+                {done && (
+                  <CheckCircle2 className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
+                )}
               </h2>
               <p className="text-xs text-muted-foreground mt-0.5 truncate">{summary}</p>
             </div>
@@ -818,7 +820,7 @@ function SectionCard({
             <div onClick={(e) => e.stopPropagation()}>{headerRight}</div>
           )}
         </div>
-        {!collapsed && <div className="p-5 sm:p-6">{children}</div>}
+        {!collapsed && <div className="pt-1">{children}</div>}
       </div>
     </section>
   );
@@ -839,21 +841,3 @@ function StatusPill({ done, label }: { done: boolean; label: string }) {
   );
 }
 
-function Field({
-  label,
-  required,
-  children,
-}: {
-  label: string;
-  required?: boolean;
-  children: React.ReactNode;
-}) {
-  return (
-    <div className="space-y-1.5">
-      <Label className="text-xs font-medium text-muted-foreground">
-        {label} {required && <span className="text-destructive">*</span>}
-      </Label>
-      {children}
-    </div>
-  );
-}
