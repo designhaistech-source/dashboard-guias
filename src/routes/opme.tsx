@@ -487,7 +487,7 @@ function OpmePage() {
                 )}
 
                 <div className="rounded-lg border overflow-hidden">
-                  <div className="hidden md:grid grid-cols-[120px_1fr_180px_90px_44px] gap-2 px-3 py-2 bg-muted/40 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+                  <div className="hidden lg:grid grid-cols-[120px_1fr_180px_90px_44px] gap-2 px-3 py-2 bg-muted/40 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
                     <div>TISS</div>
                     <div>Nome comercial</div>
                     <div>Enquadramento técnico</div>
@@ -498,7 +498,7 @@ function OpmePage() {
                     {materiais.map((m, idx) => (
                       <div
                         key={m.id}
-                        className="grid grid-cols-1 md:grid-cols-[120px_1fr_180px_90px_44px] gap-2 px-3 py-2.5 items-center"
+                        className="grid grid-cols-1 lg:grid-cols-[120px_1fr_180px_90px_44px] gap-2 px-3 py-2.5 items-center"
                       >
                         <Input
                           className="h-9 font-mono text-xs"
@@ -597,7 +597,7 @@ function OpmePage() {
                   : "Identificação profissional responsável pela solicitação."
               }
             >
-              <div className="grid gap-4 sm:grid-cols-[1fr_140px_160px_180px]">
+              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-[1fr_140px_160px_180px]">
                 <Field label="Nome do profissional" required>
                   <div className="relative">
                     <Stethoscope className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -805,7 +805,7 @@ function SectionCard({
               }`}
             />
             <div className="min-w-0 flex-1">
-              <h2 className="text-base font-semibold group-hover:text-foreground flex items-center gap-2">
+              <h2 className="text-base font-semibold group-hover:text-foreground flex items-center gap-2 whitespace-nowrap">
                 <span>
                   {number}. {title}
                 </span>
@@ -813,11 +813,11 @@ function SectionCard({
                   <CheckCircle2 className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
                 )}
               </h2>
-              <p className="text-xs text-muted-foreground mt-0.5 truncate">{summary}</p>
+              <p className={`text-xs text-muted-foreground mt-0.5 ${collapsed ? "truncate" : ""}`}>{summary}</p>
             </div>
           </button>
           {headerRight && !collapsed && (
-            <div onClick={(e) => e.stopPropagation()}>{headerRight}</div>
+            <div className="w-full lg:w-auto" onClick={(e) => e.stopPropagation()}>{headerRight}</div>
           )}
         </div>
         {!collapsed && <div className="pt-1">{children}</div>}
