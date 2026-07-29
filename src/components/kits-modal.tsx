@@ -62,82 +62,15 @@ export function KitsModal({
   >("recentes");
   const [expanded, setExpanded] = useState<Set<string>>(new Set());
   const [pendente, setPendente] = useState<Kit | null>(null);
-  const dialogRef = useRef<HTMLDivElement>(null);
-  const confirmRef = useRef<HTMLDivElement>(null);
-  const previouslyFocused = useRef<HTMLElement | null>(null);
+  // Foco inicial no campo de busca; trava de rolagem, focus trap, Esc e
+  // restauração de foco são responsabilidade do Dialog do design system.
+  const buscaRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (open) setKits(loadKits());
   }, [open]);
 
-  // Salva/restaura foco + trava rolagem do body
-  useEffect(() => {
-    if (!open) return;
-    previouslyFocused.current = document.activeElement as HTMLElement | null;
-    const prevOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    return () => {
-      document.body.style.overflow = prevOverflow;
-      previouslyFocused.current?.focus?.();
-    };
-  }, [open]);
 
-  // ESC + focus trap (Tab cíclico dentro do diálogo ativo)
-  useEffect(() => {
-    if (!open) return;
-    const getFocusables = (root: HTMLElement | null): HTMLElement[] => {
-      if (!root) return [];
-      return Array.from(
-        root.querySelectorAll<HTMLElement>(
-          'a[href], area[href], button:not([disabled]), input:not([disabled]):not([type="hidden"]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])',
-        ),
-      ).filter(
-        (el) =>
-          !el.hasAttribute("aria-hidden") &&
-          el.offsetParent !== null,
-      );
-    };
-
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
-        e.stopPropagation();
-        if (pendente) setPendente(null);
-        else onClose();
-        return;
-      }
-      if (e.key !== "Tab") return;
-      const root = pendente ? confirmRef.current : dialogRef.current;
-      const focusables = getFocusables(root);
-      if (focusables.length === 0) {
-        e.preventDefault();
-        root?.focus();
-        return;
-      }
-      const first = focusables[0];
-      const last = focusables[focusables.length - 1];
-      const active = document.activeElement as HTMLElement | null;
-      if (e.shiftKey && (active === first || !root?.contains(active))) {
-        e.preventDefault();
-        last.focus();
-      } else if (!e.shiftKey && (active === last || !root?.contains(active))) {
-        e.preventDefault();
-        first.focus();
-      }
-    };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [open, onClose, pendente]);
-
-  // Move o foco inicial ao abrir cada camada
-  useEffect(() => {
-    if (!open) return;
-    const root = pendente ? confirmRef.current : dialogRef.current;
-    if (!root) return;
-    const focusable = root.querySelector<HTMLElement>(
-      'input, button, [tabindex]:not([tabindex="-1"])',
-    );
-    focusable?.focus();
-  }, [open, pendente]);
 
 
   const categorias = useMemo(() => {
