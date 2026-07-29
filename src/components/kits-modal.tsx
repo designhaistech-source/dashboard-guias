@@ -321,14 +321,10 @@ export function KitsModal({
           </div>
 
           <div className="flex gap-1.5 flex-wrap items-center">
-            <button
-              type="button"
+            <Chip
+              variant={soFavoritos ? "warning" : "default"}
               onClick={() => setSoFavoritos((v) => !v)}
-              className={`inline-flex items-center gap-1 text-xs px-3 py-1.5 rounded-full border transition-colors ${
-                soFavoritos
-                  ? "bg-warning/15 border-warning/60 text-warning-strong"
-                  : "bg-background border-border text-muted-foreground hover:text-foreground"
-              }`}
+              className="py-1.5"
             >
               <Star
                 className={`h-3 w-3 ${
@@ -336,20 +332,16 @@ export function KitsModal({
                 }`}
               />
               Favoritos
-            </button>
+            </Chip>
             {categorias.map((c) => (
-              <button
+              <Chip
                 key={c}
-                type="button"
+                variant={categoria === c ? "selected" : "default"}
                 onClick={() => setCategoria(c)}
-                className={`text-xs px-3 py-1.5 rounded-full border transition-colors ${
-                  categoria === c
-                    ? "bg-primary text-primary-foreground border-primary"
-                    : "bg-background border-border text-muted-foreground hover:text-foreground"
-                }`}
+                className="py-1.5"
               >
                 {c}
-              </button>
+              </Chip>
             ))}
           </div>
 

@@ -38,6 +38,8 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Input } from "@/components/ui/input";
 import { Field, SearchInput, SelectField } from "@/components/form-field";
 import { Badge } from "@/components/ui/badge";
+import { Chip } from "@/components/ui/chip";
+import { StatusPill } from "@/components/status-pill";
 import { EmptyState } from "@/components/data-state";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
@@ -1762,14 +1764,14 @@ function PrescricaoForm() {
               </div>
             </button>
             {itens.length > 0 && (
-              <button
-                type="button"
+              <Chip
+                size="sm"
                 onClick={() =>
                   document
                     .getElementById("sec-revisar")
                     ?.scrollIntoView({ behavior: "smooth", block: "start" })
                 }
-                className="shrink-0 inline-flex items-center gap-2 rounded-full border border-border bg-background/60 px-3 py-1 text-[11px] font-medium text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
+                className="shrink-0"
                 title="Ir para a revisão"
               >
                 <Pill className="h-3 w-3" />
@@ -1786,7 +1788,7 @@ function PrescricaoForm() {
                   </>
                 )}
                 <ChevronRight className="h-3 w-3" />
-              </button>
+              </Chip>
             )}
             </div>
 
@@ -1889,10 +1891,10 @@ function PrescricaoForm() {
                   </h2>
 
                   {hasControlado && (
-                    <span className="inline-flex items-center gap-1 rounded-full border border-warning/40 bg-warning/10 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide text-warning-strong">
-                      <span className="inline-block h-1.5 w-1.5 rounded-full bg-warning/100" />
+                    <Badge variant="warning-soft" size="sm" className="uppercase tracking-wide">
+                      <span className="inline-block h-1.5 w-1.5 rounded-full bg-warning" />
                       {hasComum ? "Comum + Controlada" : "Controlada"}
-                    </span>
+                    </Badge>
                   )}
                 </div>
 
@@ -2552,21 +2554,16 @@ function TipoChip({
     Específico: "bg-cat-6/15 text-cat-6-fg border-cat-6/50 ring-cat-6/30",
   };
   return (
-    <button
-      type="button"
+    <Chip
       onClick={onClick}
       aria-pressed={active}
-      className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[12px] font-medium transition ${
-        active
-          ? `${activeStyles[tipo]} shadow-sm`
-          : "border-border/60 bg-background/30 text-muted-foreground hover:text-foreground hover:border-border hover:bg-accent/40"
-      }`}
+      className={active ? `${activeStyles[tipo]} shadow-sm` : undefined}
     >
       <span
         className={`h-1.5 w-1.5 rounded-full ${active ? "bg-current" : "bg-muted-foreground/40"}`}
       />
       {tipo}
-    </button>
+    </Chip>
   );
 }
 
@@ -2708,18 +2705,4 @@ function HistoricoPanel({
 
 void Check;
 
-function StatusPill({ done, label }: { done: boolean; label: string }) {
-  return (
-    <span
-      className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-medium ${
-        done
-          ? "bg-success/10 text-success-strong"
-          : "bg-muted text-muted-foreground"
-      }`}
-    >
-      {done ? <CheckCircle2 className="h-3 w-3" /> : <CircleDashed className="h-3 w-3" />}
-      {label}
-    </span>
-  );
-}
 

@@ -479,10 +479,10 @@ function OpmePage() {
               <div className="space-y-3">
                 {materiaisValidos.length > 0 && (
                   <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                    <span className="inline-flex items-center gap-1 rounded-full bg-primary/10 text-primary px-2 py-0.5 text-[11px] font-semibold">
+                    <Badge variant="primary-soft" size="sm">
                       {materiaisValidos.length}{" "}
                       {materiaisValidos.length === 1 ? "item" : "itens"} · {totalMateriais} un.
-                    </span>
+                    </Badge>
                   </div>
                 )}
 
@@ -826,18 +826,4 @@ function SectionCard({
   );
 }
 
-function StatusPill({ done, label }: { done: boolean; label: string }) {
-  return (
-    <span
-      className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-medium ${
-        done
-          ? "bg-success/10 text-success-strong"
-          : "bg-muted text-muted-foreground"
-      }`}
-    >
-      {done ? <CheckCircle2 className="h-3 w-3" /> : <CircleDashed className="h-3 w-3" />}
-      {label}
-    </span>
-  );
-}
 
