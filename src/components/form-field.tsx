@@ -84,7 +84,7 @@ export function Field({
       {rightAdornment ? (
         <div className="relative">
           {child}
-          <span className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2">
+          <span className="icon-optical pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2">
             {rightAdornment}
           </span>
         </div>
@@ -138,7 +138,7 @@ export const SearchInput = React.forwardRef<HTMLInputElement, SearchInputProps>(
 
     return (
       <div className="relative w-full">
-        <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
+        <span className="icon-optical pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
           {leftIcon ?? <SearchLucide className="h-4 w-4" aria-hidden />}
         </span>
         <Input
@@ -150,7 +150,7 @@ export const SearchInput = React.forwardRef<HTMLInputElement, SearchInputProps>(
           {...props}
         />
         {showRight && (
-          <div className="absolute right-1.5 top-1/2 -translate-y-1/2 flex items-center gap-1">
+          <div className="icon-optical absolute right-1.5 top-1/2 -translate-y-1/2 flex items-center gap-1">
             {loading && (
               <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" aria-hidden />
             )}
