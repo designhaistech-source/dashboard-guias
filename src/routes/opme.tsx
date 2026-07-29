@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   User,
   ClipboardList,
@@ -162,6 +162,7 @@ function OpmePage() {
   const [kits, setKits] = useState<Kit[]>(DEFAULT_KITS);
   const [carregarOpen, setCarregarOpen] = useState(false);
   const [salvarOpen, setSalvarOpen] = useState(false);
+  const nomeKitRef = useRef<HTMLInputElement>(null);
   const [novoKitNome, setNovoKitNome] = useState("");
 
   // Collapse state
