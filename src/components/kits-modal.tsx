@@ -287,7 +287,7 @@ export function KitsModal({
                     key={kit.id}
                     className="rounded-xl border border-border bg-background overflow-hidden"
                   >
-                    <div className="p-3 flex items-start gap-2.5">
+                    <div className="p-3 flex flex-wrap items-start gap-2.5">
                       <button
                         type="button"
                         onClick={() => favoritar(kit)}
@@ -305,12 +305,12 @@ export function KitsModal({
                         />
                       </button>
 
-                      <div className="flex-1 min-w-0">
+                      <div className="min-w-0 flex-1 basis-[calc(100%-3rem)] sm:basis-auto">
                         <div className="flex items-center gap-2 flex-wrap">
                           <h3 className="text-sm font-semibold truncate">
                             {kit.nome}
                           </h3>
-                          <span className="text-[11px] px-2 py-0.5 rounded-full bg-muted text-muted-foreground">
+                          <span className="shrink-0 text-[11px] px-2 py-0.5 rounded-full bg-muted text-muted-foreground">
                             {kit.categoria}
                           </span>
                         </div>
@@ -318,21 +318,22 @@ export function KitsModal({
                           {kit.descricao}
                         </p>
                         <div className="mt-1.5 flex items-center gap-2 text-[11px] text-muted-foreground flex-wrap">
-                          <span className="inline-flex items-center gap-1">
-                            <Pill className="h-3 w-3" />
+                          <span className="inline-flex items-center gap-1 whitespace-nowrap">
+                            <Pill className="h-3 w-3 shrink-0" />
                             {kit.itens.length}{" "}
                             {kit.itens.length === 1
                               ? "medicamento"
                               : "medicamentos"}
                           </span>
-                          <span>•</span>
-                          <span>{kit.usos} usos</span>
-                          <span>•</span>
-                          <span>{formatarRelativo(kit.atualizadoEm)}</span>
+                          <span aria-hidden>•</span>
+                          <span className="whitespace-nowrap">{kit.usos} usos</span>
+                          <span aria-hidden>•</span>
+                          <span className="whitespace-nowrap">{formatarRelativo(kit.atualizadoEm)}</span>
                         </div>
                       </div>
 
-                      <div className="flex items-center gap-1 shrink-0">
+                      <div className="flex w-full items-center justify-end gap-1 shrink-0 sm:w-auto">
+
                         <button
                           type="button"
                           onClick={() => aplicar(kit)}
