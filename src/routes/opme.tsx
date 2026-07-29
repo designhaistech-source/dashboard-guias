@@ -664,14 +664,14 @@ function OpmePage() {
 
       {/* Carregar Kit */}
       <Dialog open={carregarOpen} onOpenChange={setCarregarOpen}>
-        <DialogContent className="max-w-lg">
+        <DialogContent size="md">
           <DialogHeader>
             <DialogTitle>Carregar kit de OPME</DialogTitle>
             <DialogDescription>
               Selecione um kit salvo para pré-preencher justificativa, especificação e materiais.
             </DialogDescription>
           </DialogHeader>
-          <div className="space-y-2 max-h-[60vh] overflow-y-auto">
+          <DialogBody className="space-y-2">
             {kits.length === 0 && (
               <div className="text-sm text-muted-foreground text-center py-8">
                 Nenhum kit salvo ainda.
