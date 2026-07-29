@@ -417,6 +417,7 @@ function OpmePage() {
                   <Textarea
                     rows={6}
                     maxLength={1500}
+                    className="pb-7"
                     placeholder="Ex.: paciente com lesão do LCA confirmada por RM, indicado enxerto e sistema de fixação femoral..."
                     value={justificativa}
                     onChange={(e) => setJustificativa(e.target.value)}
