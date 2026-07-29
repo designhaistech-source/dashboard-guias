@@ -1,0 +1,15 @@
+{
+  "baseUrl": "http://localhost:8080",
+  "viewports": [
+    { "name": "desktop", "width": 1280, "height": 1600 },
+    { "name": "mobile", "width": 390, "height": 1400 }
+  ],
+  "targets": [
+    { "name": "dashboard", "path": "/" },
+    { "name": "guias", "path": "/guias" },
+    { "name": "emitir", "path": "/emitir" },
+    { "name": "prescricao", "path": "/prescricao" },
+    { "name": "opme", "path": "/opme" },
+    { "name": "design-system", "path": "/design-system" }
+  ]
+}
