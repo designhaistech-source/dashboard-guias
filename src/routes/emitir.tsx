@@ -64,6 +64,22 @@ const OPERADORAS = [
   { value: "CAURN", label: "CAURN", logo: convenioCaurnLogo, ans: "31425-1" },
 ] as const;
 
+interface Medico {
+  id: string;
+  nome: string;
+  crm: string;
+  especialidade: string;
+}
+
+const MEDICOS: Medico[] = [
+  { id: "m1", nome: "Dra. Ana Beatriz Lima", crm: "CRM 1234/RN", especialidade: "Cardiologia" },
+  { id: "m2", nome: "Dr. Carlos Eduardo Rocha", crm: "CRM 4521/RN", especialidade: "Ortopedia" },
+  { id: "m3", nome: "Dra. Mariana Torres", crm: "CRM 7788/RN", especialidade: "Clínica médica" },
+  { id: "m4", nome: "Dr. Rafael Nogueira", crm: "CRM 9012/PB", especialidade: "Neurologia" },
+];
+
+
+
 export const Route = createFileRoute("/emitir")({
   head: () => ({
     meta: [
