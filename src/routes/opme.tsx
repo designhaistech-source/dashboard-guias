@@ -315,8 +315,8 @@ function OpmePage() {
                   : "Informe o paciente, o convênio e o caráter do atendimento."
               }
             >
-              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                <Field label="Nome do paciente" required className="lg:col-span-2">
+              <div className="grid gap-4 sm:grid-cols-2">
+                <Field label="Nome do paciente" required>
                   <div className="relative">
                     <User className="icon-optical absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                     <Input
@@ -342,21 +342,7 @@ function OpmePage() {
                   />
                 </Field>
 
-                <Field
-                  label={
-                    <span className="flex w-full items-center justify-between gap-2">
-                      <span>Convênio / Operadora</span>
-                      {operadoraSel && (
-                        <span className="text-xs/none font-normal text-muted-foreground">
-                          ANS <span className="font-mono text-foreground">{registroAns}</span>
-                        </span>
-                      )}
-                    </span>
-                  }
-                  required
-                  labelClassName="w-full"
-                  className="lg:col-span-2"
-                >
+                <Field label="Convênio / Operadora" required>
                   <Select value={operadora} onValueChange={setOperadora}>
                     <SelectTrigger>
                       <SelectValue placeholder="Selecione o convênio" />
@@ -379,6 +365,18 @@ function OpmePage() {
                     </SelectContent>
                   </Select>
                 </Field>
+
+                <Field label="Registro ANS">
+                  <Input
+                    readOnly
+                    className="font-mono bg-muted/50 text-muted-foreground"
+                    value={operadoraSel ? registroAns : ""}
+                    placeholder="—"
+                    tabIndex={-1}
+                  />
+                </Field>
+
+
 
                 <Field label="Caráter do atendimento" required>
                   <Select value={caraterAtendimento} onValueChange={setCarater}>
