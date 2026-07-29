@@ -4,7 +4,7 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
 const chipVariants = cva(
-  "inline-flex items-center gap-1.5 rounded-full border font-medium leading-none whitespace-nowrap transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:size-3 [&_svg]:shrink-0 icon-optical",
+  "inline-flex items-center gap-1.5 rounded-full border font-medium leading-none whitespace-nowrap transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:shrink-0 icon-optical",
   {
     variants: {
       variant: {
@@ -16,8 +16,8 @@ const chipVariants = cva(
         outline: "border-border bg-card text-foreground",
       },
       size: {
-        sm: "px-2.5 py-0.5 text-[11px]",
-        md: "px-3 py-1 text-xs",
+        sm: "px-2.5 py-0.5 text-xs/none [&_svg]:size-3",
+        md: "px-3 py-1 text-xs/none [&_svg]:size-3.5",
       },
     },
     defaultVariants: { variant: "default", size: "md" },

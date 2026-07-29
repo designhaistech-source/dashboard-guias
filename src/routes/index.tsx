@@ -912,7 +912,7 @@ function DashboardPage() {
                 <button
                   onClick={clearAllAndApply}
                   disabled={activeFilters.length === 0}
-                  className="inline-flex items-center gap-1.5 rounded-md border border-border px-3 py-2 text-sm text-foreground hover:bg-muted transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="inline-flex items-center icon-optical gap-1.5 rounded-md border border-border px-3 py-2 text-sm/none text-foreground hover:bg-muted transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   Limpar filtros
                 </button>
@@ -920,7 +920,7 @@ function DashboardPage() {
                   <button
                     onClick={cancelEdits}
                     disabled={!isDirty}
-                    className="inline-flex items-center gap-1.5 rounded-md border border-border px-3 py-2 text-sm text-foreground hover:bg-muted transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="inline-flex items-center icon-optical gap-1.5 rounded-md border border-border px-3 py-2 text-sm/none text-foreground hover:bg-muted transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     Cancelar
                   </button>
@@ -928,7 +928,7 @@ function DashboardPage() {
                     onClick={applyFilters}
                     disabled={hasErrors}
                     title={hasErrors ? "Corrija os campos destacados para aplicar" : undefined}
-                    className="inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="inline-flex items-center icon-optical gap-2 rounded-md bg-primary px-4 py-2 text-sm/none font-medium text-primary-foreground hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     Aplicar filtros{previewCount !== null && ` (${previewCount} ${previewCount === 1 ? "guia" : "guias"})`}
                   </button>
@@ -1159,7 +1159,7 @@ function DashboardPage() {
 
 function LegendDot({ color, label, dashed }: { color: string; label: string; dashed?: boolean }) {
   return (
-    <span className="inline-flex items-center gap-1.5 text-muted-foreground">
+    <span className="inline-flex items-center icon-optical gap-1.5 text-muted-foreground">
       {dashed ? (
         <span
           className="inline-block h-0 w-4 border-t-2"
