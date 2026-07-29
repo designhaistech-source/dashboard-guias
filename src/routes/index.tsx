@@ -36,6 +36,7 @@ import logoAsset from "@/assets/haisguias-logo.png.asset.json";
 import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
 import { Combobox } from "@/components/ui/combobox";
+import { Chip } from "@/components/ui/chip";
 
 
 
@@ -810,10 +811,7 @@ function DashboardPage() {
           {activeFilters.length > 0 && (
             <div className="flex flex-wrap items-center gap-2">
               {activeFilters.map(([k, v]) => (
-                <span
-                  key={k}
-                  className="inline-flex items-center gap-1.5 rounded-full border border-border bg-card px-3 py-1 text-xs text-foreground"
-                >
+                <Chip key={k} asSpan variant="outline">
                   <span className="text-muted-foreground">{filterLabels[k]}:</span>
                   <span className="font-medium">{v}</span>
                   <button
@@ -823,7 +821,7 @@ function DashboardPage() {
                   >
                     <X className="h-3 w-3" />
                   </button>
-                </span>
+                </Chip>
               ))}
               <button
                 onClick={() => setFilters(emptyFilters)}
@@ -868,13 +866,13 @@ function DashboardPage() {
                     { id: "30d", label: "Últimos 30 dias" },
                     { id: "valorAlto", label: "Valor > R$ 1.000" },
                   ].map((p) => (
-                    <button
+                    <Chip
                       key={p.id}
                       onClick={() => applyPreset(p.id as any)}
-                      className="inline-flex items-center rounded-full border border-border bg-background px-3 py-1 text-xs font-medium text-foreground hover:border-primary hover:bg-primary/5 hover:text-primary transition-colors"
+                      className="text-foreground hover:border-primary hover:bg-primary/5 hover:text-primary"
                     >
                       {p.label}
-                    </button>
+                    </Chip>
                   ))}
                 </div>
               </div>

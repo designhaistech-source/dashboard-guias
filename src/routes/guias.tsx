@@ -41,6 +41,7 @@ import { SearchInput } from "@/components/form-field";
 import { Combobox, MultiSelect } from "@/components/ui/combobox";
 import { Badge } from "@/components/ui/badge";
 import { EmptyState } from "@/components/data-state";
+import { Chip } from "@/components/ui/chip";
 
 export const Route = createFileRoute("/guias")({
   head: () => ({
@@ -225,20 +226,14 @@ function Upload_Section({ onProcessed }: { onProcessed: (row: Row) => void }) {
                   <p className="text-sm font-medium truncate">{item.name}</p>
                   <p className="text-xs text-muted-foreground">ID: {item.id.toString().slice(-3)}</p>
                 </div>
-                <span
-                  className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium ${
-                    item.done
-                      ? "bg-success/10 text-success"
-                      : "bg-primary/10 text-primary"
-                  }`}
-                >
+                <Badge variant={item.done ? "success-soft" : "primary-soft"} size="lg">
                   {item.done ? (
                     <CheckCircle2 className="h-3.5 w-3.5" />
                   ) : (
                     <Loader2 className="h-3.5 w-3.5 animate-spin" />
                   )}
                   {item.done ? "Concluído" : "Processando Dados"}
-                </span>
+                </Badge>
                 <button
                   onClick={() => removeItem(item.id)}
                   className="p-1 rounded hover:bg-muted text-muted-foreground"
@@ -953,10 +948,10 @@ function RequiredFieldsModal() {
             <div className="flex items-start justify-between gap-3 pr-6">
               <DialogTitle className="text-xl">Campos obrigatórios por tipo de guia</DialogTitle>
               {isDirty && (
-                <span className="shrink-0 inline-flex items-center gap-1.5 rounded-full bg-warning/15 text-warning px-2.5 py-1 text-xs font-medium">
+                <Badge variant="warning-soft" size="lg" className="shrink-0">
                   <span className="h-1.5 w-1.5 rounded-full bg-warning" />
                   Alterações não salvas
-                </span>
+                </Badge>
               )}
             </div>
             <div className="mt-2 flex items-start gap-2 rounded-lg bg-muted/60 border border-border px-3 py-2 text-xs text-muted-foreground">

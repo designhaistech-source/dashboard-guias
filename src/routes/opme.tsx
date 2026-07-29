@@ -43,6 +43,9 @@ import {
 import convenioHumanasAsset from "@/assets/convenio-humanas-real.png.asset.json";
 import convenioUnimedAsset from "@/assets/convenio-unimed-real.png.asset.json";
 import convenioCaurnAsset from "@/assets/convenio-caurn-real.png.asset.json";
+import { Chip } from "@/components/ui/chip";
+import { StatusPill } from "@/components/status-pill";
+import { Badge } from "@/components/ui/badge";
 
 const OPERADORAS = [
   { value: "Humanas", label: "Humanas", logo: convenioHumanasAsset.url, ans: "357511" },
@@ -479,10 +482,10 @@ function OpmePage() {
               <div className="space-y-3">
                 {materiaisValidos.length > 0 && (
                   <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                    <span className="inline-flex items-center gap-1 rounded-full bg-primary/10 text-primary px-2 py-0.5 text-[11px] font-semibold">
+                    <Badge variant="primary-soft" size="sm">
                       {materiaisValidos.length}{" "}
                       {materiaisValidos.length === 1 ? "item" : "itens"} · {totalMateriais} un.
-                    </span>
+                    </Badge>
                   </div>
                 )}
 
@@ -826,18 +829,4 @@ function SectionCard({
   );
 }
 
-function StatusPill({ done, label }: { done: boolean; label: string }) {
-  return (
-    <span
-      className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-medium ${
-        done
-          ? "bg-success/10 text-success-strong"
-          : "bg-muted text-muted-foreground"
-      }`}
-    >
-      {done ? <CheckCircle2 className="h-3 w-3" /> : <CircleDashed className="h-3 w-3" />}
-      {label}
-    </span>
-  );
-}
 
