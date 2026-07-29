@@ -229,7 +229,7 @@ export function KitsModal({
 
   return (
     <div
-      className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4"
+      className="fixed inset-0 z-50 bg-foreground/40 backdrop-blur-sm flex items-center justify-center p-4"
       onClick={onClose}
     >
       <div
@@ -326,13 +326,13 @@ export function KitsModal({
               onClick={() => setSoFavoritos((v) => !v)}
               className={`inline-flex items-center gap-1 text-xs px-3 py-1.5 rounded-full border transition-colors ${
                 soFavoritos
-                  ? "bg-amber-400/15 border-amber-400/60 text-amber-600 dark:text-amber-300"
+                  ? "bg-warning/15 border-amber-400/60 text-warning-strong"
                   : "bg-background border-border text-muted-foreground hover:text-foreground"
               }`}
             >
               <Star
                 className={`h-3 w-3 ${
-                  soFavoritos ? "fill-amber-400 text-amber-400" : ""
+                  soFavoritos ? "fill-warning text-warning" : ""
                 }`}
               />
               Favoritos
@@ -403,7 +403,7 @@ export function KitsModal({
                         <Star
                           className={`h-4 w-4 ${
                             kit.favorito
-                              ? "fill-amber-400 text-amber-400"
+                              ? "fill-warning text-warning"
                               : "text-muted-foreground"
                           }`}
                         />
@@ -517,7 +517,7 @@ export function KitsModal({
               tabIndex={-1}
             >
               <div className="flex items-start gap-3">
-                <div className="grid place-items-center h-9 w-9 rounded-lg bg-amber-400/15 text-amber-600 dark:text-amber-300 shrink-0">
+                <div className="grid place-items-center h-9 w-9 rounded-lg bg-warning/15 text-warning-strong shrink-0">
                   <AlertTriangle className="h-4.5 w-4.5" />
                 </div>
                 <div className="min-w-0">

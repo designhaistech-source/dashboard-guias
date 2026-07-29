@@ -810,7 +810,7 @@ function SectionCard({
                   {number}. {title}
                 </span>
                 {done && (
-                  <CheckCircle2 className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
+                  <CheckCircle2 className="h-4 w-4 text-success-strong" />
                 )}
               </h2>
               <p className={`text-xs text-muted-foreground mt-0.5 ${collapsed ? "truncate" : ""}`}>{summary}</p>
@@ -831,7 +831,7 @@ function StatusPill({ done, label }: { done: boolean; label: string }) {
     <span
       className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-medium ${
         done
-          ? "bg-emerald-500/10 text-emerald-700 dark:text-emerald-300"
+          ? "bg-success/10 text-success-strong"
           : "bg-muted text-muted-foreground"
       }`}
     >
