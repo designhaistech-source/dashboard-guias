@@ -432,6 +432,7 @@ export function KitsModal({
       </DialogContent>
     </Dialog>
     </>
+  );
 }
 
 
