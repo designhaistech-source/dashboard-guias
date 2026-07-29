@@ -342,21 +342,8 @@ function OpmePage() {
                   />
                 </Field>
 
-                <Field
-                  label={
-                    <span className="flex w-full items-center justify-between gap-2">
-                      <span>Convênio / Operadora</span>
-                      {operadoraSel && (
-                        <span className="text-xs/none font-normal text-muted-foreground">
-                          ANS <span className="font-mono text-foreground">{registroAns}</span>
-                        </span>
-                      )}
-                    </span>
-                  }
-                  required
-                  labelClassName="w-full"
-                  className="lg:col-span-2"
-                >
+                <Field label="Convênio / Operadora" required>
+
                   <Select value={operadora} onValueChange={setOperadora}>
                     <SelectTrigger>
                       <SelectValue placeholder="Selecione o convênio" />
