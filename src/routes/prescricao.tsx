@@ -34,7 +34,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { MultiSelect } from "@/components/ui/combobox";
 
 
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogBody, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Field, SearchInput, SelectField } from "@/components/form-field";
 import { Badge } from "@/components/ui/badge";
@@ -1267,6 +1267,7 @@ function PrescricaoForm() {
 
   const [kitDialogOpen, setKitDialogOpen] = useState(false);
   const [kitNome, setKitNome] = useState("");
+  const kitNomeRef = useRef<HTMLInputElement>(null);
 
   const abrirSalvarKit = () => {
     if (itens.length === 0)
