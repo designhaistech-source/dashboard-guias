@@ -344,7 +344,18 @@ function OpmePage() {
                 </div>
 
                 <div className="grid gap-4 sm:grid-cols-2">
-                  <Field label="Convênio / Operadora" required>
+                  <Field
+                    label="Convênio / Operadora"
+                    required
+                    hint={
+                      operadoraSel ? (
+                        <>
+                          Registro ANS{" "}
+                          <span className="font-mono text-foreground">{registroAns}</span>
+                        </>
+                      ) : undefined
+                    }
+                  >
                     <Select value={operadora} onValueChange={setOperadora}>
                       <SelectTrigger>
                         <SelectValue placeholder="Selecione o convênio" />
@@ -352,25 +363,22 @@ function OpmePage() {
                       <SelectContent>
                         {OPERADORAS.map((o) => (
                           <SelectItem key={o.value} value={o.value}>
-                            {o.label}
+                            <span className="flex min-w-0 items-center gap-2">
+                              <img
+                                src={o.logo}
+                                alt=""
+                                aria-hidden
+                                className="h-4 w-8 shrink-0 object-contain"
+                                loading="lazy"
+                              />
+                              <span className="truncate">{o.label}</span>
+                            </span>
                           </SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
-                    {operadoraSel && (
-                      <div className="mt-2 flex items-center gap-3 rounded-md border bg-muted/30 px-3 py-2">
-                        <img
-                          src={operadoraSel.logo}
-                          alt={operadoraSel.label}
-                          className="h-6 w-auto object-contain"
-                          loading="lazy"
-                        />
-                        <span className="text-xs text-muted-foreground">
-                          ANS <span className="font-mono text-foreground">{registroAns}</span>
-                        </span>
-                      </div>
-                    )}
                   </Field>
+
 
                   <Field label="Caráter do atendimento" required>
                     <Select value={caraterAtendimento} onValueChange={setCarater}>
