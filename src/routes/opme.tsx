@@ -12,7 +12,6 @@ import {
   Send,
   Stethoscope,
   ChevronDown,
-  FileText,
   ArrowUp,
   CheckCircle2,
   CircleDashed,
@@ -144,7 +143,6 @@ function OpmePage() {
 
   // Clínico
   const [justificativa, setJustificativa] = useState("");
-  const [specAberto, setSpecAberto] = useState<Record<string, boolean>>({});
 
   // Materiais
   const [materiais, setMateriais] = useState<Material[]>([
