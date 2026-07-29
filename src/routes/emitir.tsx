@@ -64,6 +64,22 @@ const OPERADORAS = [
   { value: "CAURN", label: "CAURN", logo: convenioCaurnLogo, ans: "31425-1" },
 ] as const;
 
+interface Medico {
+  id: string;
+  nome: string;
+  crm: string;
+  especialidade: string;
+}
+
+const MEDICOS: Medico[] = [
+  { id: "m1", nome: "Dra. Ana Beatriz Lima", crm: "CRM 1234/RN", especialidade: "Cardiologia" },
+  { id: "m2", nome: "Dr. Carlos Eduardo Rocha", crm: "CRM 4521/RN", especialidade: "Ortopedia" },
+  { id: "m3", nome: "Dra. Mariana Torres", crm: "CRM 7788/RN", especialidade: "Clínica médica" },
+  { id: "m4", nome: "Dr. Rafael Nogueira", crm: "CRM 9012/PB", especialidade: "Neurologia" },
+];
+
+
+
 export const Route = createFileRoute("/emitir")({
   head: () => ({
     meta: [
@@ -282,9 +298,10 @@ function EmitirPage() {
   const [pacienteNascimento, setPacienteNascimento] = useState("");
   const [pacienteSexo, setPacienteSexo] = useState("F");
 
-  const [medicoNome, setMedicoNome] = useState("Dr. Fulano");
-  const [medicoCrm, setMedicoCrm] = useState("1234/RN");
-  const [medicoEspecialidade, setMedicoEspecialidade] = useState("");
+  const [medicoSelecionado, setMedicoSelecionado] = useState(MEDICOS[0].id);
+  const [medicoNome, setMedicoNome] = useState(MEDICOS[0].nome);
+  const [medicoCrm, setMedicoCrm] = useState(MEDICOS[0].crm);
+  const [medicoEspecialidade, setMedicoEspecialidade] = useState(MEDICOS[0].especialidade);
 
   const [cidPrincipal, setCidPrincipal] = useState("");
   const [indicacaoClinica, setIndicacaoClinica] = useState("");
@@ -874,27 +891,60 @@ function EmitirPage() {
                 description="Médico responsável pela emissão."
               >
                 <Grid cols={2}>
+                  <SelectField
+                    label="Selecionar profissional"
+                    placeholder="Escolha o médico"
+                    value={medicoSelecionado}
+                    onValueChange={(v) => {
+                      setMedicoSelecionado(v);
+                      const m = MEDICOS.find((x) => x.id === v);
+                      if (m) {
+                        setMedicoNome(m.nome);
+                        setMedicoCrm(m.crm);
+                        setMedicoEspecialidade(m.especialidade);
+                      } else {
+                        setMedicoNome("");
+                        setMedicoCrm("");
+                        setMedicoEspecialidade("");
+                      }
+                    }}
+                    options={[
+                      ...MEDICOS.map((m) => ({ value: m.id, label: `${m.nome} — ${m.crm}` })),
+                      { value: "outro", label: "Outro (informar manualmente)" },
+                    ]}
+                    hint="Troque o médico responsável a qualquer momento."
+                  />
                   <Field label="Nome do profissional" required>
                     <Input
                       value={medicoNome}
-                      onChange={(e) => setMedicoNome(e.target.value)}
+                      onChange={(e) => {
+                        setMedicoNome(e.target.value);
+                        setMedicoSelecionado("outro");
+                      }}
                     />
                   </Field>
                   <Field label="Conselho / Nº" required>
                     <Input
                       value={medicoCrm}
-                      onChange={(e) => setMedicoCrm(e.target.value)}
+                      onChange={(e) => {
+                        setMedicoCrm(e.target.value);
+                        setMedicoSelecionado("outro");
+                      }}
                       placeholder="CRM 0000/UF"
                     />
                   </Field>
                   <Field label="Especialidade">
                     <Input
                       value={medicoEspecialidade}
-                      onChange={(e) => setMedicoEspecialidade(e.target.value)}
+                      onChange={(e) => {
+                        setMedicoEspecialidade(e.target.value);
+                        setMedicoSelecionado("outro");
+                      }}
                       placeholder="Cardiologia, Ortopedia..."
                     />
                   </Field>
                 </Grid>
+
               </Section>
 
               {/* Clínico */}
