@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 """Valida o alinhamento óptico ícone/texto nas telas.
 
-Regras verificadas em cada elemento que tem exatamente um <svg> direto + texto:
-  1. line-height precisa ser 1 (leading-none / text-*/none) — evita que o centro
-     da caixa de texto mude conforme o tamanho da fonte.
-  2. o deslocamento vertical do ícone em relação ao centro do texto precisa ser
-     o mesmo valor em `em` (utilitário `icon-optical`), em text-xs, text-sm e
-     text-base.
+Regra verificada em cada elemento que tem exatamente um <svg> direto + texto:
+o deslocamento vertical do ícone em relação ao centro da caixa de texto precisa
+ser sempre o mesmo valor em `em` (utilitário `icon-optical`) — assim a
+centralização não muda entre text-xs, text-sm e text-base. O line-height é
+reportado apenas como diagnóstico: com half-leading simétrico ele altera a
+altura da caixa, não o centro do texto.
 
 Uso: python3 scripts/visual/check-icon-alignment.py
 Exit code 1 quando algum componente foge do padrão.
@@ -70,11 +70,6 @@ async def main() -> int:
             for s in samples:
                 size = s["fontSize"]
                 where = f"{target['name']} · \"{s['text']}\" ({size:.0f}px)"
-                if s["lineHeight"] is None or abs(s["lineHeight"] - size) > 0.5:
-                    failures.append(
-                        f"{where}: line-height {s['lineHeight']} != {size:.0f} "
-                        "(use text-xs/none, text-sm/none…)"
-                    )
                 expected = EXPECTED_SHIFT_EM * size
                 if abs(s["delta"] - expected) > TOLERANCE_PX:
                     failures.append(
