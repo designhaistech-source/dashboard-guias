@@ -705,20 +705,25 @@ function OpmePage() {
                 </button>
               </div>
             ))}
-          </div>
+          </DialogBody>
+          <DialogFooter>
+            <Button type="button" variant="outline" onClick={() => setCarregarOpen(false)}>
+              Fechar
+            </Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
 
       {/* Salvar como Kit */}
       <Dialog open={salvarOpen} onOpenChange={setSalvarOpen}>
-        <DialogContent className="max-w-md">
+        <DialogContent size="sm" initialFocusRef={nomeKitRef}>
           <DialogHeader>
             <DialogTitle>Salvar como Kit</DialogTitle>
             <DialogDescription>
               Salve a combinação atual de justificativa e materiais para reutilizar depois.
             </DialogDescription>
           </DialogHeader>
-          <div className="space-y-3">
+          <DialogBody className="space-y-3">
             <Field label="Nome do kit" required>
               <Input
                 autoFocus
