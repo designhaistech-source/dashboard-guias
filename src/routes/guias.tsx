@@ -41,6 +41,7 @@ import { SearchInput } from "@/components/form-field";
 import { Combobox, MultiSelect } from "@/components/ui/combobox";
 import { Badge } from "@/components/ui/badge";
 import { EmptyState } from "@/components/data-state";
+import { Chip } from "@/components/ui/chip";
 
 export const Route = createFileRoute("/guias")({
   head: () => ({

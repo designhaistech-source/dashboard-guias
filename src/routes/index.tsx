@@ -36,6 +36,7 @@ import logoAsset from "@/assets/haisguias-logo.png.asset.json";
 import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
 import { Combobox } from "@/components/ui/combobox";
+import { Chip } from "@/components/ui/chip";
 
 
 

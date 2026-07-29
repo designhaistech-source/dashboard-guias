@@ -22,6 +22,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import {
+import { Chip } from "@/components/ui/chip";
   type Kit,
   loadKits,
   deleteKit,
