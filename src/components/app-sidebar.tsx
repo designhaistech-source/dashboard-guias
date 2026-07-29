@@ -254,7 +254,7 @@ function UserMenu({ collapsed }: { collapsed: boolean }) {
                 }`}
               >
                 <span
-                  className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                  className={`inline-block h-4 w-4 transform rounded-full bg-surface transition-transform ${
                     dark ? "translate-x-4" : "translate-x-0.5"
                   }`}
                 />

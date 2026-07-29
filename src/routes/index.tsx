@@ -847,7 +847,7 @@ function DashboardPage() {
                   <h3 className="font-semibold">Filtros</h3>
                   <p className="text-xs text-muted-foreground">
                     Refine as guias exibidas no dashboard.
-                    {isDirty && <span className="ml-2 text-amber-600 dark:text-amber-500">• alterações não aplicadas</span>}
+                    {isDirty && <span className="ml-2 text-warning-strong">• alterações não aplicadas</span>}
                   </p>
                 </div>
                 <button

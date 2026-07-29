@@ -1025,7 +1025,7 @@ function EmitirPage() {
                       type="button"
                       size="sm"
                       onClick={saveAsKit}
-                      className="bg-emerald-600 hover:bg-emerald-700 text-white"
+                      className="bg-success text-success-foreground hover:bg-success/90"
                     >
                       <Plus className="h-4 w-4" /> Salvar como kit
                     </Button>
@@ -1503,7 +1503,7 @@ function GuiaLivePreview(props: {
         </div>
       )}
 
-      <div className={fullSize ? "bg-slate-100 p-4 overflow-auto" : "bg-slate-100 p-2 overflow-hidden"}>
+      <div className={fullSize ? "bg-muted p-4 overflow-auto" : "bg-muted p-2 overflow-hidden"}>
         <div
           className="origin-top-left"
           style={
@@ -1513,14 +1513,14 @@ function GuiaLivePreview(props: {
           }
         >
 
-          <div className="w-[1100px] bg-white text-black font-sans text-[9px] leading-tight border border-black">
+          <div className="w-[1100px] bg-surface text-foreground font-sans text-[9px] leading-tight border border-foreground">
             {/* Header */}
-            <div className="grid grid-cols-[140px_1fr_260px] border-b border-black">
-              <div className="flex items-center justify-center border-r border-black px-2 py-2">
+            <div className="grid grid-cols-[140px_1fr_260px] border-b border-foreground">
+              <div className="flex items-center justify-center border-r border-foreground px-2 py-2">
                 {operadoraLogo ? (
                   <img src={operadoraLogo} alt={operadora} className="max-h-10 max-w-[120px] object-contain" />
                 ) : (
-                  <span className="text-[9px] text-slate-500 italic">Logo da Empresa</span>
+                  <span className="text-[9px] text-muted-foreground italic">Logo da Empresa</span>
                 )}
               </div>
               <div className="flex items-center justify-center px-2 py-2 text-center">
@@ -1528,7 +1528,7 @@ function GuiaLivePreview(props: {
                   Guia de Serviço Profissional / Serviço Auxiliar de<br />Diagnóstico e Terapia — SP/SADT
                 </div>
               </div>
-              <div className="border-l border-black px-2 py-1 flex flex-col justify-center">
+              <div className="border-l border-foreground px-2 py-1 flex flex-col justify-center">
                 <div className="text-[8px] font-bold">2 - Nº Guia no Prestador</div>
                 <div className="font-mono font-bold text-[11px] mt-0.5">{numeroGuia !== "—" ? numeroGuia : "\u00A0"}</div>
               </div>
@@ -1576,22 +1576,22 @@ function GuiaLivePreview(props: {
               <FieldBox n="23" label="Indicação Clínica" value={`${cidPrincipal ? cidPrincipal + " · " : ""}${indicacaoClinica}`} grow />
             </FieldRow>
 
-            <div className="border-b border-black">
-              <div className="grid grid-cols-[38px_60px_140px_1fr_60px_60px] text-[8px] font-bold border-b border-black bg-slate-50">
-                <div className="px-1 py-0.5 border-r border-black">&nbsp;</div>
-                <div className="px-1 py-0.5 border-r border-black">24-Tab</div>
-                <div className="px-1 py-0.5 border-r border-black">25-Código</div>
-                <div className="px-1 py-0.5 border-r border-black">26-Descrição</div>
-                <div className="px-1 py-0.5 border-r border-black text-center">27-Qtd.Sol</div>
+            <div className="border-b border-foreground">
+              <div className="grid grid-cols-[38px_60px_140px_1fr_60px_60px] text-[8px] font-bold border-b border-foreground bg-surface-subtle">
+                <div className="px-1 py-0.5 border-r border-foreground">&nbsp;</div>
+                <div className="px-1 py-0.5 border-r border-foreground">24-Tab</div>
+                <div className="px-1 py-0.5 border-r border-foreground">25-Código</div>
+                <div className="px-1 py-0.5 border-r border-foreground">26-Descrição</div>
+                <div className="px-1 py-0.5 border-r border-foreground text-center">27-Qtd.Sol</div>
                 <div className="px-1 py-0.5 text-center">28-Qtd.Aut</div>
               </div>
               {rows.map((p, i) => (
-                <div key={i} className="grid grid-cols-[38px_60px_140px_1fr_60px_60px] text-[10px] border-b last:border-b-0 border-slate-300 min-h-[16px]">
-                  <div className="px-1 py-0.5 border-r border-slate-300 font-mono">{i + 1} -</div>
-                  <div className="px-1 py-0.5 border-r border-slate-300 font-mono">{p ? "22" : ""}</div>
-                  <div className="px-1 py-0.5 border-r border-slate-300 font-mono">{p?.code ?? ""}</div>
-                  <div className="px-1 py-0.5 border-r border-slate-300 truncate">{p?.description ?? ""}</div>
-                  <div className="px-1 py-0.5 border-r border-slate-300 text-center font-mono">{p?.quantity ?? ""}</div>
+                <div key={i} className="grid grid-cols-[38px_60px_140px_1fr_60px_60px] text-[10px] border-b last:border-b-0 border-border min-h-[16px]">
+                  <div className="px-1 py-0.5 border-r border-border font-mono">{i + 1} -</div>
+                  <div className="px-1 py-0.5 border-r border-border font-mono">{p ? "22" : ""}</div>
+                  <div className="px-1 py-0.5 border-r border-border font-mono">{p?.code ?? ""}</div>
+                  <div className="px-1 py-0.5 border-r border-border truncate">{p?.description ?? ""}</div>
+                  <div className="px-1 py-0.5 border-r border-border text-center font-mono">{p?.quantity ?? ""}</div>
                   <div className="px-1 py-0.5 text-center font-mono">{p?.quantity ?? ""}</div>
                 </div>
               ))}
@@ -1613,68 +1613,68 @@ function GuiaLivePreview(props: {
             </FieldRow>
 
             <SectionBar>Dados da Execução / Procedimentos e Exames Realizados</SectionBar>
-            <div className="border-b border-black">
-              <div className="grid grid-cols-[24px_80px_100px_50px_70px_1fr_40px_40px_40px_60px_70px_70px] text-[8px] font-bold border-b border-black bg-slate-50">
-                <div className="px-1 py-0.5 border-r border-black">&nbsp;</div>
-                <div className="px-1 py-0.5 border-r border-black">36-Data</div>
-                <div className="px-1 py-0.5 border-r border-black">37/38-Hora</div>
-                <div className="px-1 py-0.5 border-r border-black text-center">39-Tab</div>
-                <div className="px-1 py-0.5 border-r border-black">40-Código</div>
-                <div className="px-1 py-0.5 border-r border-black">41-Descrição</div>
-                <div className="px-1 py-0.5 border-r border-black text-center">42-Qtd</div>
-                <div className="px-1 py-0.5 border-r border-black text-center">43-Via</div>
-                <div className="px-1 py-0.5 border-r border-black text-center">44-Tec</div>
-                <div className="px-1 py-0.5 border-r border-black text-center">45-Red/Acr</div>
-                <div className="px-1 py-0.5 border-r border-black text-center">46-Vl Unit</div>
+            <div className="border-b border-foreground">
+              <div className="grid grid-cols-[24px_80px_100px_50px_70px_1fr_40px_40px_40px_60px_70px_70px] text-[8px] font-bold border-b border-foreground bg-surface-subtle">
+                <div className="px-1 py-0.5 border-r border-foreground">&nbsp;</div>
+                <div className="px-1 py-0.5 border-r border-foreground">36-Data</div>
+                <div className="px-1 py-0.5 border-r border-foreground">37/38-Hora</div>
+                <div className="px-1 py-0.5 border-r border-foreground text-center">39-Tab</div>
+                <div className="px-1 py-0.5 border-r border-foreground">40-Código</div>
+                <div className="px-1 py-0.5 border-r border-foreground">41-Descrição</div>
+                <div className="px-1 py-0.5 border-r border-foreground text-center">42-Qtd</div>
+                <div className="px-1 py-0.5 border-r border-foreground text-center">43-Via</div>
+                <div className="px-1 py-0.5 border-r border-foreground text-center">44-Tec</div>
+                <div className="px-1 py-0.5 border-r border-foreground text-center">45-Red/Acr</div>
+                <div className="px-1 py-0.5 border-r border-foreground text-center">46-Vl Unit</div>
                 <div className="px-1 py-0.5 text-center">47-Vl Total</div>
               </div>
               {execRows.map((p, i) => (
-                <div key={i} className="grid grid-cols-[24px_80px_100px_50px_70px_1fr_40px_40px_40px_60px_70px_70px] text-[10px] border-b last:border-b-0 border-slate-300 min-h-[16px]">
-                  <div className="px-1 py-0.5 border-r border-slate-300 font-mono">{i + 1}-</div>
-                  <div className="px-1 py-0.5 border-r border-slate-300 font-mono">{p ? fmtDate(dataSolicitacao) : ""}</div>
-                  <div className="px-1 py-0.5 border-r border-slate-300"></div>
-                  <div className="px-1 py-0.5 border-r border-slate-300 text-center font-mono">{p ? "22" : ""}</div>
-                  <div className="px-1 py-0.5 border-r border-slate-300 font-mono truncate">{p?.code ?? ""}</div>
-                  <div className="px-1 py-0.5 border-r border-slate-300 truncate">{p?.description ?? ""}</div>
-                  <div className="px-1 py-0.5 border-r border-slate-300 text-center font-mono">{p?.quantity ?? ""}</div>
-                  <div className="px-1 py-0.5 border-r border-slate-300"></div>
-                  <div className="px-1 py-0.5 border-r border-slate-300"></div>
-                  <div className="px-1 py-0.5 border-r border-slate-300"></div>
-                  <div className="px-1 py-0.5 border-r border-slate-300"></div>
+                <div key={i} className="grid grid-cols-[24px_80px_100px_50px_70px_1fr_40px_40px_40px_60px_70px_70px] text-[10px] border-b last:border-b-0 border-border min-h-[16px]">
+                  <div className="px-1 py-0.5 border-r border-border font-mono">{i + 1}-</div>
+                  <div className="px-1 py-0.5 border-r border-border font-mono">{p ? fmtDate(dataSolicitacao) : ""}</div>
+                  <div className="px-1 py-0.5 border-r border-border"></div>
+                  <div className="px-1 py-0.5 border-r border-border text-center font-mono">{p ? "22" : ""}</div>
+                  <div className="px-1 py-0.5 border-r border-border font-mono truncate">{p?.code ?? ""}</div>
+                  <div className="px-1 py-0.5 border-r border-border truncate">{p?.description ?? ""}</div>
+                  <div className="px-1 py-0.5 border-r border-border text-center font-mono">{p?.quantity ?? ""}</div>
+                  <div className="px-1 py-0.5 border-r border-border"></div>
+                  <div className="px-1 py-0.5 border-r border-border"></div>
+                  <div className="px-1 py-0.5 border-r border-border"></div>
+                  <div className="px-1 py-0.5 border-r border-border"></div>
                   <div className="px-1 py-0.5"></div>
                 </div>
               ))}
             </div>
 
             <SectionBar>Identificação do(s) Profissional(is) Executante(s)</SectionBar>
-            <div className="border-b border-black">
-              <div className="grid grid-cols-[50px_60px_110px_1fr_90px_90px_40px_80px] text-[8px] font-bold border-b border-black bg-slate-50">
-                <div className="px-1 py-0.5 border-r border-black">48-Seq</div>
-                <div className="px-1 py-0.5 border-r border-black">49-Grau</div>
-                <div className="px-1 py-0.5 border-r border-black">50-Cód/CPF</div>
-                <div className="px-1 py-0.5 border-r border-black">51-Nome</div>
-                <div className="px-1 py-0.5 border-r border-black">52-Conselho</div>
-                <div className="px-1 py-0.5 border-r border-black">53-Nº</div>
-                <div className="px-1 py-0.5 border-r border-black">54-UF</div>
+            <div className="border-b border-foreground">
+              <div className="grid grid-cols-[50px_60px_110px_1fr_90px_90px_40px_80px] text-[8px] font-bold border-b border-foreground bg-surface-subtle">
+                <div className="px-1 py-0.5 border-r border-foreground">48-Seq</div>
+                <div className="px-1 py-0.5 border-r border-foreground">49-Grau</div>
+                <div className="px-1 py-0.5 border-r border-foreground">50-Cód/CPF</div>
+                <div className="px-1 py-0.5 border-r border-foreground">51-Nome</div>
+                <div className="px-1 py-0.5 border-r border-foreground">52-Conselho</div>
+                <div className="px-1 py-0.5 border-r border-foreground">53-Nº</div>
+                <div className="px-1 py-0.5 border-r border-foreground">54-UF</div>
                 <div className="px-1 py-0.5">55-CBO</div>
               </div>
               {profRows.map((_, i) => (
-                <div key={i} className="grid grid-cols-[50px_60px_110px_1fr_90px_90px_40px_80px] text-[10px] border-b last:border-b-0 border-slate-300 min-h-[16px]">
-                  <div className="px-1 py-0.5 border-r border-slate-300"></div>
-                  <div className="px-1 py-0.5 border-r border-slate-300"></div>
-                  <div className="px-1 py-0.5 border-r border-slate-300"></div>
-                  <div className="px-1 py-0.5 border-r border-slate-300 truncate">{i === 0 ? medicoNome : ""}</div>
-                  <div className="px-1 py-0.5 border-r border-slate-300">{i === 0 && medicoCrm ? "CRM" : ""}</div>
-                  <div className="px-1 py-0.5 border-r border-slate-300 font-mono">{i === 0 ? medicoCrm : ""}</div>
-                  <div className="px-1 py-0.5 border-r border-slate-300"></div>
+                <div key={i} className="grid grid-cols-[50px_60px_110px_1fr_90px_90px_40px_80px] text-[10px] border-b last:border-b-0 border-border min-h-[16px]">
+                  <div className="px-1 py-0.5 border-r border-border"></div>
+                  <div className="px-1 py-0.5 border-r border-border"></div>
+                  <div className="px-1 py-0.5 border-r border-border"></div>
+                  <div className="px-1 py-0.5 border-r border-border truncate">{i === 0 ? medicoNome : ""}</div>
+                  <div className="px-1 py-0.5 border-r border-border">{i === 0 && medicoCrm ? "CRM" : ""}</div>
+                  <div className="px-1 py-0.5 border-r border-border font-mono">{i === 0 ? medicoCrm : ""}</div>
+                  <div className="px-1 py-0.5 border-r border-border"></div>
                   <div className="px-1 py-0.5"></div>
                 </div>
               ))}
             </div>
 
-            <div className="grid grid-cols-[1fr_260px] border-b border-black">
-              <div className="border-r border-black">
-                <div className="px-1 py-0.5 text-[8px] font-bold bg-slate-50 border-b border-slate-300">
+            <div className="grid grid-cols-[1fr_260px] border-b border-foreground">
+              <div className="border-r border-foreground">
+                <div className="px-1 py-0.5 text-[8px] font-bold bg-surface-subtle border-b border-border">
                   56 - Data de Realização de Procedimentos em Série
                 </div>
                 <div className="px-1 py-1 grid grid-cols-5 gap-1 text-[9px] font-mono">
@@ -1684,19 +1684,19 @@ function GuiaLivePreview(props: {
                 </div>
               </div>
               <div>
-                <div className="px-1 py-0.5 text-[8px] font-bold bg-slate-50 border-b border-slate-300">
+                <div className="px-1 py-0.5 text-[8px] font-bold bg-surface-subtle border-b border-border">
                   57 - Assinatura do Beneficiário
                 </div>
                 <div className="h-10"></div>
               </div>
             </div>
 
-            <div className="border-b border-black">
-              <div className="px-1 py-0.5 text-[8px] font-bold bg-slate-200">58 - Observação / Justificativa</div>
+            <div className="border-b border-foreground">
+              <div className="px-1 py-0.5 text-[8px] font-bold bg-secondary">58 - Observação / Justificativa</div>
               <div className="px-1 py-1 min-h-[24px] text-[10px] whitespace-pre-wrap">{observacoes}</div>
             </div>
 
-            <div className="grid grid-cols-7 border-b border-black text-[9px]">
+            <div className="grid grid-cols-7 border-b border-foreground text-[9px]">
               {[
                 ["59", "Total Procedimentos"],
                 ["60", "Total Taxas/Aluguéis"],
@@ -1706,7 +1706,7 @@ function GuiaLivePreview(props: {
                 ["64", "Total Gases Med."],
                 ["65", "Total Geral (R$)"],
               ].map(([n, l]) => (
-                <div key={n} className="border-r last:border-r-0 border-slate-400 px-1 py-0.5">
+                <div key={n} className="border-r last:border-r-0 border-border-strong px-1 py-0.5">
                   <div className="text-[8px] font-bold">{n} - {l}</div>
                   <div className="font-mono text-right min-h-[12px]">{opmeItems.length > 0 && n === "62" ? "" : ""}</div>
                 </div>
@@ -1719,7 +1719,7 @@ function GuiaLivePreview(props: {
                 "67 - Assinatura Beneficiário",
                 "68 - Assinatura do Contratado",
               ].map((l) => (
-                <div key={l} className="border-r last:border-r-0 border-slate-400 px-1 py-1">
+                <div key={l} className="border-r last:border-r-0 border-border-strong px-1 py-1">
                   <div className="text-[8px] font-bold">{l}</div>
                   <div className="h-8"></div>
                 </div>
@@ -1734,14 +1734,14 @@ function GuiaLivePreview(props: {
 
 function SectionBar({ children }: { children: React.ReactNode }) {
   return (
-    <div className="px-2 py-0.5 bg-slate-200 border-y border-black text-[9px] font-bold">
+    <div className="px-2 py-0.5 bg-secondary border-y border-foreground text-[9px] font-bold">
       {children}
     </div>
   );
 }
 
 function FieldRow({ children }: { children: React.ReactNode }) {
-  return <div className="flex border-b border-black">{children}</div>;
+  return <div className="flex border-b border-foreground">{children}</div>;
 }
 
 function FieldBox({
@@ -1759,7 +1759,7 @@ function FieldBox({
 }) {
   return (
     <div
-      className="border-r last:border-r-0 border-black px-1 py-0.5"
+      className="border-r last:border-r-0 border-foreground px-1 py-0.5"
       style={{ width: grow ? undefined : width, flex: grow ? 1 : undefined, minWidth: 0 }}
     >
       <div className="text-[8px] font-bold">{n} - {label}</div>
@@ -1784,7 +1784,7 @@ function FieldBoxDate({
   width?: number;
 }) {
   return (
-    <div className="border-r border-black px-1 py-0.5" style={{ width }}>
+    <div className="border-r border-foreground px-1 py-0.5" style={{ width }}>
       <div className="text-[8px] font-bold">{n} - {label}</div>
       <div className="text-[10px] font-mono min-h-[12px]">{d || "__"}/{m || "__"}/{y || "____"}</div>
     </div>

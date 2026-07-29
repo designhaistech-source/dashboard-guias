@@ -1434,7 +1434,7 @@ function PrescricaoForm() {
                   .getElementById("sec-revisar")
                   ?.scrollIntoView({ behavior: "smooth", block: "start" })
               }
-              className="inline-flex items-center gap-1.5 text-xs font-medium rounded-lg border border-amber-500/40 bg-amber-500/10 text-amber-700 dark:text-amber-400 px-2.5 py-1.5 hover:bg-amber-500/15 transition-colors"
+              className="inline-flex items-center gap-1.5 text-xs font-medium rounded-lg border border-warning/40 bg-warning/10 text-warning-strong px-2.5 py-1.5 hover:bg-warning/15 transition-colors"
               title="Ver o que falta"
             >
               <AlertCircle className="h-3.5 w-3.5" />
@@ -1442,7 +1442,7 @@ function PrescricaoForm() {
             </button>
           ) : triedEmit && pendencias.length === 0 ? (
             <span
-              className="inline-flex items-center gap-1.5 text-xs font-medium rounded-lg border border-emerald-500/40 bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 px-2.5 py-1.5"
+              className="inline-flex items-center gap-1.5 text-xs font-medium rounded-lg border border-success/40 bg-success/10 text-success-strong px-2.5 py-1.5"
               title="Todos os campos estão válidos"
             >
               <CheckCircle2 className="h-3.5 w-3.5" />
@@ -1557,14 +1557,14 @@ function PrescricaoForm() {
           {hasControlado && (
             <div
               role="status"
-              className="flex items-start gap-2 rounded-lg border border-amber-300/70 bg-amber-50 px-3 py-2 text-xs text-amber-900 dark:border-amber-500/40 dark:bg-amber-500/10 dark:text-amber-100"
+              className="flex items-start gap-2 rounded-lg border border-warning/40 bg-warning/10 px-3 py-2 text-xs text-warning-strong"
             >
-              <ShieldAlert className="h-4 w-4 shrink-0 mt-0.5 text-amber-600 dark:text-amber-400" />
+              <ShieldAlert className="h-4 w-4 shrink-0 mt-0.5 text-warning-strong" />
               <div className="min-w-0">
                 <p className="font-medium">
                   Receita marcada como Especial — CPF e endereço obrigatórios
                 </p>
-                <p className="mt-0.5 text-amber-800/90 dark:text-amber-100/80">
+                <p className="mt-0.5 text-warning-strong/90">
                   {itensControlados.length === 1
                     ? `Motivo: “${itensControlados[0].med.nome}” é medicamento controlado (Portaria 344/98).`
                     : `Motivo: ${itensControlados.length} medicamentos controlados na lista (Portaria 344/98).`}
@@ -1581,7 +1581,7 @@ function PrescricaoForm() {
             <div className="space-y-4 pt-2 border-t border-border/60">
               <div>
                 <h3 className="text-sm font-semibold flex items-center gap-1.5">
-                  <ShieldAlert className="h-4 w-4 text-amber-600" />
+                  <ShieldAlert className="h-4 w-4 text-warning-strong" />
                   Dados exigidos para receituário especial
                 </h3>
                 <p className="text-xs text-muted-foreground mt-0.5">
@@ -1609,7 +1609,7 @@ function PrescricaoForm() {
                 }
                 rightAdornment={
                   cpfValido ? (
-                    <CheckCircle2 className="h-4 w-4 text-emerald-500" />
+                    <CheckCircle2 className="h-4 w-4 text-success" />
                   ) : cpfDigits.length > 0 ? (
                     <AlertCircle className="h-4 w-4 text-destructive/70" />
                   ) : null
@@ -1659,7 +1659,7 @@ function PrescricaoForm() {
                       ) : cepError ? (
                         <AlertCircle className="h-4 w-4 text-destructive/70" />
                       ) : cepDigits.length === 8 ? (
-                        <CheckCircle2 className="h-4 w-4 text-emerald-500" />
+                        <CheckCircle2 className="h-4 w-4 text-success" />
                       ) : null
                     }
                   >
@@ -1684,7 +1684,7 @@ function PrescricaoForm() {
                     }
                     rightAdornment={
                       enderecoValido ? (
-                        <CheckCircle2 className="h-4 w-4 text-emerald-500" />
+                        <CheckCircle2 className="h-4 w-4 text-success" />
                       ) : endereco.length > 0 ? (
                         <AlertCircle className="h-4 w-4 text-destructive/70" />
                       ) : null
@@ -1726,7 +1726,7 @@ function PrescricaoForm() {
                 </Field>
 
                 {enderecoFullValido && (
-                  <div className="rounded-lg border border-emerald-500/30 bg-emerald-500/5 px-3 py-2 text-xs text-emerald-700 dark:text-emerald-400">
+                  <div className="rounded-lg border border-success/30 bg-success/5 px-3 py-2 text-xs text-success-strong">
                     <span className="font-medium">Endereço completo: </span>
                     {enderecoCompleto}
                   </div>
@@ -1779,7 +1779,7 @@ function PrescricaoForm() {
                 {itensControlados.length > 0 && (
                   <>
                     <span className="text-border">·</span>
-                    <span className="inline-flex items-center gap-1 text-amber-700 dark:text-amber-400">
+                    <span className="inline-flex items-center gap-1 text-warning-strong">
                       <ShieldAlert className="h-3 w-3" />
                       {itensControlados.length} controlado{itensControlados.length > 1 ? "s" : ""}
                     </span>
@@ -1889,8 +1889,8 @@ function PrescricaoForm() {
                   </h2>
 
                   {hasControlado && (
-                    <span className="inline-flex items-center gap-1 rounded-full border border-amber-500/40 bg-amber-500/10 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide text-amber-700 dark:text-amber-300">
-                      <span className="inline-block h-1.5 w-1.5 rounded-full bg-amber-500" />
+                    <span className="inline-flex items-center gap-1 rounded-full border border-warning/40 bg-warning/10 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide text-warning-strong">
+                      <span className="inline-block h-1.5 w-1.5 rounded-full bg-warning/100" />
                       {hasComum ? "Comum + Controlada" : "Controlada"}
                     </span>
                   )}
@@ -1996,7 +1996,7 @@ function PrescricaoForm() {
                               autoFocus
                               className={`w-full rounded-lg border bg-background px-2.5 py-2 text-sm focus:outline-none focus:ring-2 ${
                                 editCheck?.ok
-                                  ? "border-emerald-500/40 focus:ring-emerald-500/40"
+                                  ? "border-success/40 focus:ring-success/40"
                                   : "border-destructive/50 focus:ring-destructive/40"
                               }`}
                             />
@@ -2078,14 +2078,14 @@ function PrescricaoForm() {
               <div
                 className={`rounded-xl border px-4 py-3 ${
                   hasControlado
-                    ? "border-amber-500/40 bg-amber-500/5"
-                    : "border-emerald-500/30 bg-emerald-500/5"
+                    ? "border-warning/40 bg-warning/5"
+                    : "border-success/30 bg-success/5"
                 }`}
               >
                 <div className="flex items-start gap-2.5">
                   <span
                     className={`mt-0.5 inline-block h-2 w-2 rounded-full ${
-                      hasControlado ? "bg-amber-500" : "bg-emerald-500"
+                      hasControlado ? "bg-warning/100" : "bg-success"
                     }`}
                   />
                   <div className="flex-1 min-w-0">
@@ -2099,14 +2099,14 @@ function PrescricaoForm() {
                     <ul className="mt-1.5 space-y-1 text-xs text-muted-foreground">
                       {hasComum && (
                         <li className="flex items-center gap-1.5">
-                          <span className="inline-block h-1.5 w-1.5 rounded-full bg-emerald-500" />
+                          <span className="inline-block h-1.5 w-1.5 rounded-full bg-success" />
                           Receita simples — {itensComuns.length}{" "}
                           {itensComuns.length === 1 ? "item" : "itens"}
                         </li>
                       )}
                       {hasControlado && (
                         <li className="flex items-center gap-1.5">
-                          <span className="inline-block h-1.5 w-1.5 rounded-full bg-amber-500" />
+                          <span className="inline-block h-1.5 w-1.5 rounded-full bg-warning/100" />
                           Controle especial — {itensControlados.length}{" "}
                           {itensControlados.length === 1 ? "item" : "itens"}
                         </li>
@@ -2506,7 +2506,7 @@ function MedRow({
       <div className="flex items-center gap-1.5 shrink-0">
         {m.alerta && (
           <span
-            className="grid place-items-center h-7 w-7 rounded-md text-amber-600 dark:text-amber-400"
+            className="grid place-items-center h-7 w-7 rounded-md text-warning-strong"
             title="Medicamento controlado"
             aria-label="Controlado"
           >
@@ -2515,7 +2515,7 @@ function MedRow({
         )}
         {m.favorito && (
           <span
-            className="grid place-items-center h-7 w-7 rounded-md text-amber-500"
+            className="grid place-items-center h-7 w-7 rounded-md text-warning"
             title="Favorito"
             aria-label="Favorito"
           >
@@ -2543,13 +2543,13 @@ function TipoChip({
   onClick: () => void;
 }) {
   const activeStyles: Record<MedType, string> = {
-    Biológico: "bg-emerald-500/15 text-emerald-700 dark:text-emerald-200 border-emerald-500/50 ring-emerald-500/30",
-    Similar: "bg-sky-500/15 text-sky-700 dark:text-sky-200 border-sky-500/50 ring-sky-500/30",
-    Genérico: "bg-fuchsia-500/15 text-fuchsia-700 dark:text-fuchsia-200 border-fuchsia-500/50 ring-fuchsia-500/30",
+    Biológico: "bg-cat-1/15 text-cat-1-fg border-cat-1/50 ring-cat-1/30",
+    Similar: "bg-cat-2/15 text-cat-2-fg border-cat-2/50 ring-cat-2/30",
+    Genérico: "bg-cat-3/15 text-cat-3-fg border-cat-3/50 ring-cat-3/30",
     Referência: "bg-primary/15 text-primary border-primary/50 ring-primary/30",
-    Fitoterápico: "bg-lime-500/15 text-lime-700 dark:text-lime-200 border-lime-500/50 ring-lime-500/30",
-    Oftalmológico: "bg-cyan-500/15 text-cyan-700 dark:text-cyan-200 border-cyan-500/50 ring-cyan-500/30",
-    Específico: "bg-orange-500/15 text-orange-700 dark:text-orange-200 border-orange-500/50 ring-orange-500/30",
+    Fitoterápico: "bg-cat-4/15 text-cat-4-fg border-cat-4/50 ring-cat-4/30",
+    Oftalmológico: "bg-cat-5/15 text-cat-5-fg border-cat-5/50 ring-cat-5/30",
+    Específico: "bg-cat-6/15 text-cat-6-fg border-cat-6/50 ring-cat-6/30",
   };
   return (
     <button
@@ -2576,20 +2576,13 @@ function Dot() {
 
 function TipoBadge({ tipo }: { tipo: MedType }) {
   const styles: Record<MedType, string> = {
-    Biológico:
-      "bg-emerald-100 text-emerald-800 border-emerald-300 dark:bg-emerald-500/20 dark:text-emerald-100 dark:border-emerald-500/40",
-    Similar:
-      "bg-sky-100 text-sky-800 border-sky-300 dark:bg-sky-500/20 dark:text-sky-100 dark:border-sky-500/40",
-    Genérico:
-      "bg-fuchsia-100 text-fuchsia-800 border-fuchsia-300 dark:bg-fuchsia-500/20 dark:text-fuchsia-100 dark:border-fuchsia-500/40",
-    Referência:
-      "bg-primary/15 text-primary border-primary/40 dark:text-primary",
-    Fitoterápico:
-      "bg-lime-100 text-lime-800 border-lime-300 dark:bg-lime-500/20 dark:text-lime-100 dark:border-lime-500/40",
-    Oftalmológico:
-      "bg-cyan-100 text-cyan-800 border-cyan-300 dark:bg-cyan-500/20 dark:text-cyan-100 dark:border-cyan-500/40",
-    Específico:
-      "bg-orange-100 text-orange-800 border-orange-300 dark:bg-orange-500/20 dark:text-orange-100 dark:border-orange-500/40",
+    Biológico: "bg-cat-1/15 text-cat-1-fg border-cat-1/40",
+    Similar: "bg-cat-2/15 text-cat-2-fg border-cat-2/40",
+    Genérico: "bg-cat-3/15 text-cat-3-fg border-cat-3/40",
+    Referência: "bg-primary/15 text-primary border-primary/40",
+    Fitoterápico: "bg-cat-4/15 text-cat-4-fg border-cat-4/40",
+    Oftalmológico: "bg-cat-5/15 text-cat-5-fg border-cat-5/40",
+    Específico: "bg-cat-6/15 text-cat-6-fg border-cat-6/40",
   };
 
   return (
@@ -2720,7 +2713,7 @@ function StatusPill({ done, label }: { done: boolean; label: string }) {
     <span
       className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-medium ${
         done
-          ? "bg-emerald-500/10 text-emerald-700 dark:text-emerald-300"
+          ? "bg-success/10 text-success-strong"
           : "bg-muted text-muted-foreground"
       }`}
     >
