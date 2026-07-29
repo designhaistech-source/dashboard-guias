@@ -589,7 +589,7 @@ function OpmePage() {
                       value={especificacao}
                       onChange={(e) => setEspecificacao(e.target.value)}
                     />
-                    <span className="absolute right-3 bottom-2 text-[11px] text-muted-foreground tabular-nums">
+                    <span className="pointer-events-none absolute right-3 bottom-2.5 text-[11px] text-muted-foreground tabular-nums">
                       {especificacao.length}/500
                     </span>
                   </div>
