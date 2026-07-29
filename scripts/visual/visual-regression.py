@@ -43,7 +43,12 @@ async def capture(page, target, viewport, dest: Path) -> None:
     )
     await page.wait_for_timeout(500)
     dest.parent.mkdir(parents=True, exist_ok=True)
-    await page.screenshot(path=str(dest))
+    # `selector` recorta o screenshot num elemento: usado por fixtures de
+    # componente, onde só a matriz importa (e não a altura da viewport).
+    if target.get("selector"):
+        await page.locator(target["selector"]).screenshot(path=str(dest))
+    else:
+        await page.screenshot(path=str(dest))
 
 
 def compare(baseline: Path, current: Path, diff_path: Path) -> tuple[float, str]:
