@@ -520,7 +520,7 @@ function GuideDetailsModal({ row, onClose }: { row: Row | null; onClose: () => v
                 </div>
               </SectionCard>
             </div>
-          </div>
+          </DialogBody>
         )}
       </DialogContent>
     </Dialog>
