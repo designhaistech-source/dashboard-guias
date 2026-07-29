@@ -39,14 +39,33 @@
   --color-success: var(--success);
   --color-success-foreground: var(--success-foreground);
   --color-success-muted: var(--success-muted);
+  --color-success-strong: var(--success-strong);
   --color-warning: var(--warning);
   --color-warning-foreground: var(--warning-foreground);
   --color-warning-muted: var(--warning-muted);
+  --color-warning-strong: var(--warning-strong);
   --color-info: var(--info);
   --color-info-foreground: var(--info-foreground);
   --color-info-muted: var(--info-muted);
+  --color-info-strong: var(--info-strong);
+  --color-destructive-strong: var(--destructive-strong);
   --color-purple: var(--purple);
   --color-purple-foreground: var(--purple-foreground);
+
+  /* Categorical palette (chips, badges, charts) */
+  --color-cat-1: var(--cat-1);
+  --color-cat-1-fg: var(--cat-1-fg);
+  --color-cat-2: var(--cat-2);
+  --color-cat-2-fg: var(--cat-2-fg);
+  --color-cat-3: var(--cat-3);
+  --color-cat-3-fg: var(--cat-3-fg);
+  --color-cat-4: var(--cat-4);
+  --color-cat-4-fg: var(--cat-4-fg);
+  --color-cat-5: var(--cat-5);
+  --color-cat-5-fg: var(--cat-5-fg);
+  --color-cat-6: var(--cat-6);
+  --color-cat-6-fg: var(--cat-6-fg);
+
 
   /* Surfaces (layered backgrounds) */
   --color-surface: var(--surface);
