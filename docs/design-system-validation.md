@@ -77,3 +77,18 @@ Regras do design system:
   altura — não reduza o line-height de botões só para "centralizar".
 
 O script roda como etapa 3 de `scripts/visual/validate.sh`.
+
+### Fixture de regressão visual dos ícones
+
+A rota `/design-system-icones` (`IconAlignmentMatrix`) renderiza uma matriz
+estática de `Button`, `Badge` e `Chip` com ícone à esquerda, à direita, sozinho
+e sem ícone, em todos os tamanhos, além de linhas dentro de contêineres
+`text-xs`/`text-sm`/`text-base`.
+
+- É um alvo de `visual-regression.py` (`icon-alignment`) nos breakpoints desktop
+  (1280px) e mobile (390px). O alvo usa `selector`, então o screenshot é
+  recortado na matriz — mudanças de altura de página não geram falso positivo.
+- O `check-icon-alignment.py` também percorre a rota e mede os 35 pares
+  ícone/texto.
+- Ao alterar tamanhos, padding ou tipografia desses componentes, revise o diff em
+  `scripts/visual/output/icon-alignment__*.diff.png` antes de rodar `--update`.
