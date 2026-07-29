@@ -443,26 +443,26 @@ function GuideDetailsModal({ row, onClose }: { row: Row | null; onClose: () => v
 
   return (
     <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
-      <DialogContent className="max-w-6xl p-0 gap-0 max-h-[92vh] overflow-hidden flex flex-col">
-        <DialogHeader className="px-8 pt-6 pb-5 border-b border-border shrink-0">
+      <DialogContent size="xl">
+        <DialogHeader>
           <div className="flex items-center gap-2">
             <FileUp className="h-5 w-5 text-primary" />
-            <DialogTitle className="text-xl">Detalhes da guia</DialogTitle>
+            <DialogTitle>Detalhes da guia</DialogTitle>
           </div>
           {row && (
-            <div className="mt-1 text-sm text-muted-foreground">
+            <DialogDescription>
               {row.file} • ID: {row.id}
-            </div>
+            </DialogDescription>
           )}
           {row && (
-            <div className="mt-3">
+            <div className="mt-2">
               <TypeBadge type={row.type} />
             </div>
           )}
         </DialogHeader>
 
         {row && details && (
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 p-6 bg-muted/30 overflow-y-auto flex-1">
+          <DialogBody className="grid grid-cols-1 lg:grid-cols-2 gap-6 bg-muted/30">
             <div className="lg:sticky lg:top-0 lg:self-start lg:h-[calc(92vh-3rem)] rounded-xl border border-border bg-card p-6 flex flex-col gap-4 min-h-0">
               <div className="text-sm font-medium truncate">Arquivo enviado: {row.file}</div>
               <div className="flex-1 min-h-0">
