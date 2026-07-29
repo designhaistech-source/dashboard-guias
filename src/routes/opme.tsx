@@ -46,7 +46,7 @@ import convenioUnimedAsset from "@/assets/convenio-unimed-real.png.asset.json";
 import convenioCaurnAsset from "@/assets/convenio-caurn-real.png.asset.json";
 import { Chip } from "@/components/ui/chip";
 import { StatusPill } from "@/components/status-pill";
-import { Badge } from "@/components/ui/badge";
+
 
 const OPERADORAS = [
   { value: "Humanas", label: "Humanas", logo: convenioHumanasAsset.url, ans: "357511" },
