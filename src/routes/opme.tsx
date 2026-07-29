@@ -12,6 +12,7 @@ import {
   Send,
   Stethoscope,
   ChevronDown,
+  FileText,
   ArrowUp,
   CheckCircle2,
   CircleDashed,
@@ -79,13 +80,13 @@ type Material = {
   nome: string;
   enq: string;
   qtd: number;
+  spec?: string;
 };
 
 type Kit = {
   id: string;
   nome: string;
   justificativa: string;
-  especificacao: string;
   materiais: Material[];
 };
 
