@@ -1,0 +1,24 @@
+import { createFileRoute } from "@tanstack/react-router";
+import { DesignSystemPage } from "@/features/design-system";
+
+export const Route = createFileRoute("/design-system")({
+  head: () => ({
+    meta: [
+      { title: "Design System | HaisGuias" },
+      {
+        name: "description",
+        content:
+          "Guia visual do HaisGuias: tokens de cor, tipografia, componentes e padrões de interface usados em todo o sistema.",
+      },
+      { property: "og:title", content: "Design System | HaisGuias" },
+      {
+        property: "og:description",
+        content:
+          "Fundamentos visuais, componentes e padrões de interface do sistema HaisGuias.",
+      },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
+    ],
+  }),
+  component: DesignSystemPage,
+});
