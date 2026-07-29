@@ -9,7 +9,11 @@
     "build:dev": "vite build --mode development",
     "preview": "vite preview",
     "lint": "eslint .",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "ds:tokens": "node scripts/visual/check-design-tokens.mjs",
+    "ds:visual": "python3 scripts/visual/visual-regression.py",
+    "ds:visual:update": "python3 scripts/visual/visual-regression.py --update",
+    "ds:validate": "bash scripts/visual/validate.sh"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
