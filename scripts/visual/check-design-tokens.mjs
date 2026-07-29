@@ -14,7 +14,7 @@ const SRC = join(ROOT, "src");
 /** Arquivos onde valores literais de cor são legítimos. */
 const ALLOWLIST = [
   "src/styles.css",
-  "src/features/design-system/data",
+  "src/features/design-system", // documentação: mostra a escala neutra e exemplos de "evite"
   "src/routes/emitir.tsx", // fac-símile de documento impresso (PDF/A4)
 ];
 
