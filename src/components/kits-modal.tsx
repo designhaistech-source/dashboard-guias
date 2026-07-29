@@ -335,16 +335,16 @@ export function KitsModal({
                       </div>
 
                       <div className="flex w-full items-center justify-end gap-1 shrink-0 sm:w-auto">
-
-                        <button
+                        <Button
                           type="button"
+                          size="sm"
                           onClick={() => aplicar(kit)}
-                          className="inline-flex items-center gap-1.5 rounded-lg bg-primary text-primary-foreground text-xs font-medium px-3 py-1.5 hover:bg-primary/90 transition-colors"
                           title="Aplicar na receita atual"
                         >
-                          <Send className="h-3.5 w-3.5" />
+                          <Send />
                           Aplicar
-                        </button>
+                        </Button>
+
                         <IconAction
                           onClick={() => duplicar(kit)}
                           label="Duplicar"
