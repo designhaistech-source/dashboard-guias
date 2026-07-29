@@ -726,7 +726,7 @@ function OpmePage() {
           <DialogBody className="space-y-3">
             <Field label="Nome do kit" required>
               <Input
-                autoFocus
+                ref={nomeKitRef}
                 placeholder="Ex.: Artroplastia total de joelho"
                 value={novoKitNome}
                 onChange={(e) => setNovoKitNome(e.target.value)}
@@ -746,7 +746,7 @@ function OpmePage() {
                 </div>
               )}
             </div>
-          </div>
+          </DialogBody>
           <DialogFooter>
             <Button type="button" variant="outline" onClick={() => setSalvarOpen(false)}>
               Cancelar
