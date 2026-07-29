@@ -315,87 +315,87 @@ function OpmePage() {
                   : "Informe o paciente, o convênio e o caráter do atendimento."
               }
             >
-              <div className="space-y-4">
-                <div className="grid gap-4 sm:grid-cols-2">
-                  <Field label="Nome do paciente" required>
-                    <div className="relative">
-                      <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                      <Input
-                        className="pl-9"
-                        placeholder="Digite o nome do beneficiário..."
-                        value={paciente}
-                        onChange={(e) => setPaciente(e.target.value)}
-                      />
-                    </div>
-                  </Field>
-                  <Field label="Cartão do beneficiário">
+              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                <Field label="Nome do paciente" required className="lg:col-span-2">
+                  <div className="relative">
+                    <User className="icon-optical absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                     <Input
-                      inputMode="numeric"
-                      placeholder="0000 0000 0000 0000"
-                      value={cartaoBenef}
-                      maxLength={19}
-                      onChange={(e) => {
-                        const digits = e.target.value.replace(/\D/g, "").slice(0, 16);
-                        const masked = digits.replace(/(\d{4})(?=\d)/g, "$1 ");
-                        setCartaoBenef(masked);
-                      }}
+                      className="pl-9"
+                      placeholder="Digite o nome do beneficiário..."
+                      value={paciente}
+                      onChange={(e) => setPaciente(e.target.value)}
                     />
-                  </Field>
-                </div>
+                  </div>
+                </Field>
 
-                <div className="grid gap-4 sm:grid-cols-2">
-                  <Field
-                    label="Convênio / Operadora"
-                    required
-                    hint={
-                      operadoraSel ? (
-                        <>
-                          Registro ANS{" "}
-                          <span className="font-mono text-foreground">{registroAns}</span>
-                        </>
-                      ) : undefined
-                    }
-                  >
-                    <Select value={operadora} onValueChange={setOperadora}>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Selecione o convênio" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {OPERADORAS.map((o) => (
-                          <SelectItem key={o.value} value={o.value}>
-                            <span className="flex min-w-0 items-center gap-2">
-                              <img
-                                src={o.logo}
-                                alt=""
-                                aria-hidden
-                                className="h-4 w-8 shrink-0 object-contain"
-                                loading="lazy"
-                              />
-                              <span className="truncate">{o.label}</span>
-                            </span>
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </Field>
+                <Field label="Cartão do beneficiário">
+                  <Input
+                    inputMode="numeric"
+                    placeholder="0000 0000 0000 0000"
+                    value={cartaoBenef}
+                    maxLength={19}
+                    onChange={(e) => {
+                      const digits = e.target.value.replace(/\D/g, "").slice(0, 16);
+                      const masked = digits.replace(/(\d{4})(?=\d)/g, "$1 ");
+                      setCartaoBenef(masked);
+                    }}
+                  />
+                </Field>
 
+                <Field
+                  label={
+                    <span className="flex w-full items-center justify-between gap-2">
+                      <span>Convênio / Operadora</span>
+                      {operadoraSel && (
+                        <span className="text-xs/none font-normal text-muted-foreground">
+                          ANS <span className="font-mono text-foreground">{registroAns}</span>
+                        </span>
+                      )}
+                    </span>
+                  }
+                  required
+                  labelClassName="w-full"
+                  className="lg:col-span-2"
+                >
+                  <Select value={operadora} onValueChange={setOperadora}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Selecione o convênio" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {OPERADORAS.map((o) => (
+                        <SelectItem key={o.value} value={o.value}>
+                          <span className="flex min-w-0 items-center gap-2">
+                            <img
+                              src={o.logo}
+                              alt=""
+                              aria-hidden
+                              className="h-4 w-8 shrink-0 object-contain"
+                              loading="lazy"
+                            />
+                            <span className="truncate">{o.label}</span>
+                          </span>
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </Field>
 
-                  <Field label="Caráter do atendimento" required>
-                    <Select value={caraterAtendimento} onValueChange={setCarater}>
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {["Eletivo", "Urgência", "Emergência"].map((c) => (
-                          <SelectItem key={c} value={c}>
-                            {c}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </Field>
-                </div>
+                <Field label="Caráter do atendimento" required>
+                  <Select value={caraterAtendimento} onValueChange={setCarater}>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {["Eletivo", "Urgência", "Emergência"].map((c) => (
+                        <SelectItem key={c} value={c}>
+                          {c}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </Field>
               </div>
+
             </SectionCard>
 
             {/* 2. Justificativa técnica */}
