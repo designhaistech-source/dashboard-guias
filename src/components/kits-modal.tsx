@@ -312,7 +312,7 @@ export function KitsModal({
                           <h3 className="text-sm font-semibold truncate">
                             {kit.nome}
                           </h3>
-                          <span className="shrink-0 text-[11px] px-2 py-0.5 rounded-full bg-muted text-muted-foreground">
+                          <span className="shrink-0 text-xs px-2 py-0.5 rounded-full bg-muted text-muted-foreground">
                             {kit.categoria}
                           </span>
                         </div>
