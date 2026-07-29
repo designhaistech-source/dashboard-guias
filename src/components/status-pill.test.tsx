@@ -30,7 +30,8 @@ describe("StatusPill", () => {
     const { container: feito } = render(<StatusPill done label="Pronto" />);
     const { container: pendente } = render(<StatusPill done={false} label="Pronto" />);
 
-    expect(feito.querySelector("svg.lucide-circle-check-big")).toBeInTheDocument();
+    expect(feito.querySelector("svg.lucide-circle-check")).toBeInTheDocument();
+    expect(feito.querySelector("svg.lucide-circle-dashed")).not.toBeInTheDocument();
     expect(pendente.querySelector("svg.lucide-circle-dashed")).toBeInTheDocument();
   });
 
