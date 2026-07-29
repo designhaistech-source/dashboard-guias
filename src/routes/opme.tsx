@@ -447,31 +447,6 @@ function OpmePage() {
                 <div className="flex flex-wrap items-center gap-2">
                   <Button
                     type="button"
-                    variant="outline"
-                    size="sm"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setCarregarOpen(true);
-                    }}
-                  >
-                    <FolderOpen className="h-4 w-4" />
-                    Carregar kit
-                  </Button>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setSalvarOpen(true);
-                    }}
-                    disabled={materiaisValidos.length === 0}
-                  >
-                    <Save className="h-4 w-4" />
-                    Salvar kit
-                  </Button>
-                  <Button
-                    type="button"
                     variant="ghost"
                     size="sm"
                     onClick={(e) => {
@@ -484,8 +459,34 @@ function OpmePage() {
                     <Eraser className="h-4 w-4" />
                     Limpar
                   </Button>
+                  <div className="hidden sm:block h-6 w-px bg-border mx-1" />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setCarregarOpen(true);
+                    }}
+                  >
+                    <FolderOpen className="h-4 w-4" />
+                    Carregar kit
+                  </Button>
+                  <Button
+                    type="button"
+                    size="sm"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setSalvarOpen(true);
+                    }}
+                    disabled={materiaisValidos.length === 0}
+                  >
+                    <Save className="h-4 w-4" />
+                    Salvar kit
+                  </Button>
                 </div>
               }
+
             >
               <div className="space-y-3">
                 {materiaisValidos.length > 0 && (
