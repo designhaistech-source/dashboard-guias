@@ -1080,34 +1080,46 @@ function RequiredFieldsModal() {
                   </>
                 )}
               </button>
-            </div>
-          </div>
+          </DialogBody>
+
+          <DialogFooter>
+            <Button variant="outline" onClick={() => attemptClose(false)} disabled={saving}>
+              Cancelar
+            </Button>
+            <Button onClick={handleSave} disabled={saving || isEmpty || !isDirty}>
+              {saving ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  Salvando…
+                </>
+              ) : (
+                <>
+                  <Save className="h-4 w-4" />
+                  Salvar alterações
+                </>
+              )}
+            </Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
 
       {/* Confirmação de descarte */}
       <Dialog open={confirmDiscard} onOpenChange={setConfirmDiscard}>
-        <DialogContent className="max-w-md">
+        <DialogContent size="sm">
           <DialogHeader>
             <DialogTitle>Descartar alterações?</DialogTitle>
+            <DialogDescription>
+              Você tem alterações não salvas. Se sair agora, elas serão perdidas.
+            </DialogDescription>
           </DialogHeader>
-          <p className="text-sm text-muted-foreground">
-            Você tem alterações não salvas. Se sair agora, elas serão perdidas.
-          </p>
-          <div className="flex flex-col-reverse sm:flex-row sm:justify-end gap-2 pt-2">
-            <button
-              onClick={() => setConfirmDiscard(false)}
-              className="inline-flex items-center justify-center rounded-lg border border-border bg-card px-4 py-2.5 text-sm font-medium hover:bg-muted"
-            >
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setConfirmDiscard(false)}>
               Continuar editando
-            </button>
-            <button
-              onClick={discardChanges}
-              className="inline-flex items-center justify-center rounded-lg bg-destructive text-destructive-foreground px-4 py-2.5 text-sm font-medium hover:bg-destructive/90"
-            >
+            </Button>
+            <Button variant="destructive" onClick={discardChanges}>
               Descartar
-            </button>
-          </div>
+            </Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
     </>
