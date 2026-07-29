@@ -362,7 +362,7 @@ export function KitsModal({
                     <button
                       type="button"
                       onClick={() => toggleExpand(kit.id)}
-                      className="w-full flex items-center justify-center gap-1 py-1 text-[11px] text-muted-foreground hover:bg-muted transition-colors border-t border-border"
+                      className="w-full flex items-center justify-center gap-1 py-1.5 text-xs text-muted-foreground hover:bg-muted transition-colors border-t border-border"
                     >
                       {aberto ? (
                         <>
