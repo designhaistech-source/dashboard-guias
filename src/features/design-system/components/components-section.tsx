@@ -1,6 +1,9 @@
 import { Plus, Send, Trash2, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Chip } from "@/components/ui/chip";
+import { StatusPill } from "@/components/status-pill";
+
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
