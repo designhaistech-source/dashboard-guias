@@ -249,7 +249,7 @@ export function KitsModal({
             ))}
           </div>
 
-          <div className="flex items-center justify-between text-[11px] text-muted-foreground pt-0.5">
+          <div className="flex items-center justify-between text-xs text-muted-foreground pt-0.5">
             <span>
               {filtrados.length}{" "}
               {filtrados.length === 1 ? "kit encontrado" : "kits encontrados"}
@@ -265,7 +265,8 @@ export function KitsModal({
               </button>
             )}
           </div>
-        </div>
+        </DialogToolbar>
+
 
 
         {/* Lista */}
