@@ -52,5 +52,5 @@ python3 scripts/visual/visual-regression.py --only opme --viewport desktop
 ## Exceções ao lint de cor
 
 Permitidas apenas onde o valor literal é parte do conteúdo (documentos A4/PDF em
-`src/routes/emitir.tsx`, amostras de token em `src/features/design-system/data`) ou com o
+`src/routes/emitir.tsx`, documentação em `src/features/design-system`) ou com o
 comentário `// ds-allow-color` na linha.
