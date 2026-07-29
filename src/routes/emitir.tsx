@@ -282,9 +282,10 @@ function EmitirPage() {
   const [pacienteNascimento, setPacienteNascimento] = useState("");
   const [pacienteSexo, setPacienteSexo] = useState("F");
 
-  const [medicoNome, setMedicoNome] = useState("Dr. Fulano");
-  const [medicoCrm, setMedicoCrm] = useState("1234/RN");
-  const [medicoEspecialidade, setMedicoEspecialidade] = useState("");
+  const [medicoSelecionado, setMedicoSelecionado] = useState(MEDICOS[0].id);
+  const [medicoNome, setMedicoNome] = useState(MEDICOS[0].nome);
+  const [medicoCrm, setMedicoCrm] = useState(MEDICOS[0].crm);
+  const [medicoEspecialidade, setMedicoEspecialidade] = useState(MEDICOS[0].especialidade);
 
   const [cidPrincipal, setCidPrincipal] = useState("");
   const [indicacaoClinica, setIndicacaoClinica] = useState("");
