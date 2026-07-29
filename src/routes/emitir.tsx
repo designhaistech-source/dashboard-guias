@@ -955,10 +955,14 @@ function EmitirPage() {
               >
                 <Grid cols={2}>
                   <Field label="CID principal">
-                    <Input
+                    <Combobox
                       value={cidPrincipal}
-                      onChange={(e) => setCidPrincipal(e.target.value)}
-                      placeholder="Ex.: I10"
+                      onChange={setCidPrincipal}
+                      options={CID_OPTIONS}
+                      placeholder="Buscar CID-10 (ex.: I10)"
+                      searchPlaceholder="Digite o código ou a descrição..."
+                      emptyMessage="Nenhum CID encontrado."
+                      clearable
                     />
                   </Field>
                 </Grid>
