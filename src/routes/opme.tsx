@@ -417,11 +417,12 @@ function OpmePage() {
                   <Textarea
                     rows={6}
                     maxLength={1500}
+                    className="pb-7"
                     placeholder="Ex.: paciente com lesão do LCA confirmada por RM, indicado enxerto e sistema de fixação femoral..."
                     value={justificativa}
                     onChange={(e) => setJustificativa(e.target.value)}
                   />
-                  <span className="absolute right-3 bottom-2 text-[11px] text-muted-foreground tabular-nums">
+                  <span className="pointer-events-none absolute right-3 bottom-2.5 text-[11px] text-muted-foreground tabular-nums">
                     {justificativa.length}/1500
                   </span>
                 </div>
@@ -444,7 +445,7 @@ function OpmePage() {
                   : "Liste os materiais, quantidade e enquadramento técnico. Use kits para reaproveitar combinações."
               }
               headerRight={
-                <div className="flex flex-wrap items-center gap-2">
+                <div className="flex flex-wrap items-center gap-1.5">
                   <Button
                     type="button"
                     variant="ghost"
@@ -459,7 +460,7 @@ function OpmePage() {
                     <Eraser className="h-4 w-4" />
                     Limpar
                   </Button>
-                  <div className="hidden sm:block h-6 w-px bg-border mx-1" />
+                  <div className="hidden sm:block h-5 w-px bg-border mx-0.5" />
                   <Button
                     type="button"
                     variant="outline"
@@ -487,9 +488,9 @@ function OpmePage() {
                 </div>
               }
             >
-              <div className="space-y-5">
+              <div className="space-y-4">
                 <div className="rounded-lg border overflow-hidden">
-                  <div className="hidden lg:grid grid-cols-[120px_1fr_180px_90px_44px] gap-3 px-4 py-2.5 bg-muted/50 border-b text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+                  <div className="hidden lg:grid grid-cols-[120px_minmax(0,1fr)_180px_88px_36px] gap-x-3 px-4 py-2 bg-muted/50 border-b text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
                     <div>TISS</div>
                     <div>Nome comercial</div>
                     <div>Enquadramento técnico</div>
@@ -500,7 +501,7 @@ function OpmePage() {
                     {materiais.map((m, idx) => (
                       <div
                         key={m.id}
-                        className="grid grid-cols-1 lg:grid-cols-[120px_1fr_180px_90px_44px] gap-3 px-4 py-3 items-center transition-colors hover:bg-muted/30"
+                        className="grid grid-cols-1 lg:grid-cols-[120px_minmax(0,1fr)_180px_88px_36px] gap-x-3 gap-y-2 px-4 py-2.5 items-center transition-colors hover:bg-muted/30"
                       >
                         <Input
                           className="h-9 font-mono text-xs"
@@ -551,7 +552,7 @@ function OpmePage() {
                           aria-label="Remover material"
                           onClick={() => removeMaterial(m.id)}
                           disabled={materiais.length === 1}
-                          className="h-9 w-9 justify-self-end rounded-md flex items-center justify-center text-muted-foreground hover:text-destructive hover:bg-destructive/10 disabled:opacity-30 disabled:hover:bg-transparent"
+                          className="h-9 w-9 lg:h-8 lg:w-8 justify-self-start lg:justify-self-center rounded-md flex items-center justify-center shrink-0 text-muted-foreground hover:text-destructive hover:bg-destructive/10 disabled:opacity-30 disabled:hover:bg-transparent"
                         >
                           <Trash2 className="h-4 w-4" />
                         </button>
@@ -559,13 +560,13 @@ function OpmePage() {
                     ))}
                   </div>
 
-                  <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 border-t bg-muted/30 px-4 py-2.5">
+                  <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 border-t bg-muted/30 px-4 py-2">
                     <Button
                       type="button"
                       variant="ghost"
                       size="sm"
                       onClick={addMaterial}
-                      className="justify-self-start text-primary hover:text-primary"
+                      className="-ml-2 justify-self-start text-primary hover:text-primary"
                     >
                       <Plus className="h-4 w-4" />
                       Adicionar material
@@ -584,12 +585,12 @@ function OpmePage() {
                     <Textarea
                       rows={3}
                       maxLength={500}
-                      className="bg-muted/30 focus:bg-background"
+                      className="bg-muted/30 pb-7 focus:bg-background"
                       placeholder="Informações adicionais sobre os materiais e/ou dados dos fabricantes/distribuidores"
                       value={especificacao}
                       onChange={(e) => setEspecificacao(e.target.value)}
                     />
-                    <span className="absolute right-3 bottom-2 text-[11px] text-muted-foreground tabular-nums">
+                    <span className="pointer-events-none absolute right-3 bottom-2.5 text-[11px] text-muted-foreground tabular-nums">
                       {especificacao.length}/500
                     </span>
                   </div>
