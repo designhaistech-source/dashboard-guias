@@ -113,7 +113,7 @@ DialogContent.displayName = DialogPrimitive.Content.displayName;
 const DialogHeader = ({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) => (
   <div
     className={cn(
-      "flex shrink-0 flex-col gap-1 border-b border-border px-6 py-5 pr-14 text-left",
+      "flex shrink-0 flex-col gap-1 border-b border-border px-4 py-4 pr-14 text-left sm:px-6 sm:py-5",
       className,
     )}
     {...props}
@@ -123,21 +123,37 @@ DialogHeader.displayName = "DialogHeader";
 
 /** Corpo rolável do modal. Todo conteúdo principal deve ficar aqui. */
 const DialogBody = ({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) => (
-  <div className={cn("min-h-0 flex-1 overflow-y-auto px-6 py-5", className)} {...props} />
+  <div
+    className={cn("min-h-0 flex-1 overflow-y-auto px-4 py-4 sm:px-6 sm:py-5", className)}
+    {...props}
+  />
 );
 DialogBody.displayName = "DialogBody";
+
+/** Faixa fixa auxiliar (filtros, busca) entre cabeçalho e corpo. */
+const DialogToolbar = ({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) => (
+  <div
+    className={cn(
+      "shrink-0 border-b border-border bg-surface-subtle px-4 py-3 sm:px-6",
+      className,
+    )}
+    {...props}
+  />
+);
+DialogToolbar.displayName = "DialogToolbar";
 
 /** Rodapé fixo: ação secundária à esquerda da primária, empilhadas no mobile. */
 const DialogFooter = ({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) => (
   <div
     className={cn(
-      "flex shrink-0 flex-col-reverse gap-2 border-t border-border bg-surface-subtle px-6 py-4 sm:flex-row sm:items-center sm:justify-end",
+      "flex shrink-0 flex-col-reverse gap-2 border-t border-border bg-surface-subtle px-4 py-4 sm:flex-row sm:items-center sm:justify-end sm:px-6",
       className,
     )}
     {...props}
   />
 );
 DialogFooter.displayName = "DialogFooter";
+
 
 const DialogTitle = React.forwardRef<
   React.ElementRef<typeof DialogPrimitive.Title>,
@@ -172,6 +188,7 @@ export {
   DialogContent,
   DialogHeader,
   DialogBody,
+  DialogToolbar,
   DialogFooter,
   DialogTitle,
   DialogDescription,

@@ -24,6 +24,7 @@ import {
 import {
   Dialog,
   DialogBody,
+  DialogToolbar,
   DialogContent,
   DialogDescription,
   DialogFooter,
@@ -185,7 +186,7 @@ export function KitsModal({
         </DialogHeader>
 
         {/* Filtros */}
-        <div className="px-6 py-3 border-b border-border space-y-2.5 bg-background/40 shrink-0">
+        <DialogToolbar className="space-y-2.5">
           <div className="flex gap-2">
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -249,7 +250,7 @@ export function KitsModal({
             ))}
           </div>
 
-          <div className="flex items-center justify-between text-[11px] text-muted-foreground pt-0.5">
+          <div className="flex items-center justify-between text-xs text-muted-foreground pt-0.5">
             <span>
               {filtrados.length}{" "}
               {filtrados.length === 1 ? "kit encontrado" : "kits encontrados"}
@@ -265,11 +266,12 @@ export function KitsModal({
               </button>
             )}
           </div>
-        </div>
+        </DialogToolbar>
+
 
 
         {/* Lista */}
-        <DialogBody className="px-6 py-4">
+        <DialogBody>
           {filtrados.length === 0 ? (
             <div className="rounded-xl border border-dashed border-border bg-card px-6 py-12 text-center">
               <BookMarked className="h-8 w-8 mx-auto text-muted-foreground/60" />
@@ -287,7 +289,7 @@ export function KitsModal({
                     key={kit.id}
                     className="rounded-xl border border-border bg-background overflow-hidden"
                   >
-                    <div className="p-3 flex flex-wrap items-start gap-2.5">
+                    <div className="p-3 sm:p-4 flex flex-wrap items-start gap-2.5">
                       <button
                         type="button"
                         onClick={() => favoritar(kit)}
@@ -310,14 +312,14 @@ export function KitsModal({
                           <h3 className="text-sm font-semibold truncate">
                             {kit.nome}
                           </h3>
-                          <span className="shrink-0 text-[11px] px-2 py-0.5 rounded-full bg-muted text-muted-foreground">
+                          <span className="shrink-0 text-xs px-2 py-0.5 rounded-full bg-muted text-muted-foreground">
                             {kit.categoria}
                           </span>
                         </div>
                         <p className="text-xs text-muted-foreground mt-0.5 line-clamp-2">
                           {kit.descricao}
                         </p>
-                        <div className="mt-1.5 flex items-center gap-2 text-[11px] text-muted-foreground flex-wrap">
+                        <div className="mt-1.5 flex items-center gap-2 text-xs text-muted-foreground flex-wrap">
                           <span className="inline-flex items-center gap-1 whitespace-nowrap">
                             <Pill className="h-3 w-3 shrink-0" />
                             {kit.itens.length}{" "}
@@ -333,16 +335,16 @@ export function KitsModal({
                       </div>
 
                       <div className="flex w-full items-center justify-end gap-1 shrink-0 sm:w-auto">
-
-                        <button
+                        <Button
                           type="button"
+                          size="sm"
                           onClick={() => aplicar(kit)}
-                          className="inline-flex items-center gap-1.5 rounded-lg bg-primary text-primary-foreground text-xs font-medium px-3 py-1.5 hover:bg-primary/90 transition-colors"
                           title="Aplicar na receita atual"
                         >
-                          <Send className="h-3.5 w-3.5" />
+                          <Send />
                           Aplicar
-                        </button>
+                        </Button>
+
                         <IconAction
                           onClick={() => duplicar(kit)}
                           label="Duplicar"
@@ -360,7 +362,7 @@ export function KitsModal({
                     <button
                       type="button"
                       onClick={() => toggleExpand(kit.id)}
-                      className="w-full flex items-center justify-center gap-1 py-1 text-[11px] text-muted-foreground hover:bg-muted transition-colors border-t border-border"
+                      className="w-full flex items-center justify-center gap-1 py-1.5 text-xs text-muted-foreground hover:bg-muted transition-colors border-t border-border"
                     >
                       {aberto ? (
                         <>
