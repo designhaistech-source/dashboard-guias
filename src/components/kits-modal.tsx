@@ -21,6 +21,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Dialog,
+  DialogBody,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
 import { Chip } from "@/components/ui/chip";
 import {
   type Kit,
@@ -52,82 +62,15 @@ export function KitsModal({
   >("recentes");
   const [expanded, setExpanded] = useState<Set<string>>(new Set());
   const [pendente, setPendente] = useState<Kit | null>(null);
-  const dialogRef = useRef<HTMLDivElement>(null);
-  const confirmRef = useRef<HTMLDivElement>(null);
-  const previouslyFocused = useRef<HTMLElement | null>(null);
+  // Foco inicial no campo de busca; trava de rolagem, focus trap, Esc e
+  // restauração de foco são responsabilidade do Dialog do design system.
+  const buscaRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (open) setKits(loadKits());
   }, [open]);
 
-  // Salva/restaura foco + trava rolagem do body
-  useEffect(() => {
-    if (!open) return;
-    previouslyFocused.current = document.activeElement as HTMLElement | null;
-    const prevOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    return () => {
-      document.body.style.overflow = prevOverflow;
-      previouslyFocused.current?.focus?.();
-    };
-  }, [open]);
 
-  // ESC + focus trap (Tab cíclico dentro do diálogo ativo)
-  useEffect(() => {
-    if (!open) return;
-    const getFocusables = (root: HTMLElement | null): HTMLElement[] => {
-      if (!root) return [];
-      return Array.from(
-        root.querySelectorAll<HTMLElement>(
-          'a[href], area[href], button:not([disabled]), input:not([disabled]):not([type="hidden"]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])',
-        ),
-      ).filter(
-        (el) =>
-          !el.hasAttribute("aria-hidden") &&
-          el.offsetParent !== null,
-      );
-    };
-
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
-        e.stopPropagation();
-        if (pendente) setPendente(null);
-        else onClose();
-        return;
-      }
-      if (e.key !== "Tab") return;
-      const root = pendente ? confirmRef.current : dialogRef.current;
-      const focusables = getFocusables(root);
-      if (focusables.length === 0) {
-        e.preventDefault();
-        root?.focus();
-        return;
-      }
-      const first = focusables[0];
-      const last = focusables[focusables.length - 1];
-      const active = document.activeElement as HTMLElement | null;
-      if (e.shiftKey && (active === first || !root?.contains(active))) {
-        e.preventDefault();
-        last.focus();
-      } else if (!e.shiftKey && (active === last || !root?.contains(active))) {
-        e.preventDefault();
-        first.focus();
-      }
-    };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [open, onClose, pendente]);
-
-  // Move o foco inicial ao abrir cada camada
-  useEffect(() => {
-    if (!open) return;
-    const root = pendente ? confirmRef.current : dialogRef.current;
-    if (!root) return;
-    const focusable = root.querySelector<HTMLElement>(
-      'input, button, [tabindex]:not([tabindex="-1"])',
-    );
-    focusable?.focus();
-  }, [open, pendente]);
 
 
   const categorias = useMemo(() => {
@@ -227,73 +170,32 @@ export function KitsModal({
     });
   };
 
-  if (!open) return null;
-
   return (
-    <div
-      className="fixed inset-0 z-50 bg-foreground/40 backdrop-blur-sm flex items-center justify-center p-4"
-      onClick={onClose}
-    >
-      <div
-        ref={dialogRef}
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="kits-modal-title"
-        aria-describedby="kits-modal-desc"
-        tabIndex={-1}
-        onClick={(e) => e.stopPropagation()}
-        className="relative w-full max-w-3xl max-h-[90vh] rounded-2xl border border-border bg-card shadow-xl flex flex-col overflow-hidden focus:outline-none"
-      >
-
-        <div
-          className="flex flex-col flex-1 min-h-0"
-          {...(pendente ? { inert: "" as unknown as boolean } : {})}
-          aria-hidden={pendente ? true : undefined}
-        >
-        {/* Header */}
-        <div className="px-5 py-4 border-b border-border flex items-center justify-between gap-3">
-          <div className="flex items-center gap-3 min-w-0">
-            <div className="grid place-items-center h-9 w-9 rounded-lg bg-primary/15 text-primary shrink-0">
-              <BookMarked className="h-4.5 w-4.5" />
-            </div>
-            <div className="min-w-0">
-              <h2
-                id="kits-modal-title"
-                className="text-base font-semibold leading-tight"
-              >
-                Kits salvos
-              </h2>
-              <p
-                id="kits-modal-desc"
-                className="text-xs text-muted-foreground truncate"
-              >
-                Modelos reutilizáveis — aplique com um clique.
-              </p>
-            </div>
-
-          </div>
-          <button
-            type="button"
-            onClick={onClose}
-            aria-label="Fechar"
-            className="h-8 w-8 grid place-items-center rounded-lg hover:bg-muted transition-colors text-muted-foreground"
-          >
-            <X className="h-4 w-4" />
-          </button>
-        </div>
+    <>
+    <Dialog open={open} onOpenChange={(v) => { if (!v) onClose(); }}>
+      <DialogContent size="lg" initialFocusRef={buscaRef}>
+        <DialogHeader>
+          <DialogTitle className="flex items-center gap-2">
+            <BookMarked className="size-4 text-primary" />
+            Kits salvos
+          </DialogTitle>
+          <DialogDescription>
+            Modelos reutilizáveis — aplique com um clique.
+          </DialogDescription>
+        </DialogHeader>
 
         {/* Filtros */}
-        <div className="px-5 py-3 border-b border-border space-y-2.5 bg-background/40">
+        <div className="px-6 py-3 border-b border-border space-y-2.5 bg-background/40 shrink-0">
           <div className="flex gap-2">
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <input
+                ref={buscaRef}
                 type="text"
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder="Buscar por nome, categoria ou medicamento…"
                 className="w-full pl-9 pr-8 py-2 rounded-lg border border-border bg-background text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50"
-
               />
               {query && (
                 <button
@@ -367,7 +269,7 @@ export function KitsModal({
 
 
         {/* Lista */}
-        <div className="flex-1 overflow-y-auto px-5 py-4">
+        <DialogBody className="px-6 py-4">
           {filtrados.length === 0 ? (
             <div className="rounded-xl border border-dashed border-border bg-card px-6 py-12 text-center">
               <BookMarked className="h-8 w-8 mx-auto text-muted-foreground/60" />
@@ -490,80 +392,46 @@ export function KitsModal({
               })}
             </div>
           )}
-        </div>
-        </div>
+        </DialogBody>
+      </DialogContent>
+    </Dialog>
 
-
-
-        {pendente && (
-          <div
-            className="absolute inset-0 z-10 bg-background/85 flex items-center justify-center p-4"
-            onClick={() => setPendente(null)}
-          >
-            <div
-              ref={confirmRef}
-              onClick={(e) => e.stopPropagation()}
-              className="w-full max-w-md rounded-2xl border border-border bg-card shadow-xl p-5 focus:outline-none"
-              role="alertdialog"
-              aria-modal="true"
-              aria-labelledby="kits-confirm-title"
-              aria-describedby="kits-confirm-desc"
-              tabIndex={-1}
-            >
-              <div className="flex items-start gap-3">
-                <div className="grid place-items-center h-9 w-9 rounded-lg bg-warning/15 text-warning-strong shrink-0">
-                  <AlertTriangle className="h-4.5 w-4.5" />
-                </div>
-                <div className="min-w-0">
-                  <h3 id="kits-confirm-title" className="text-sm font-semibold">
-                    Aplicar kit à receita?
-                  </h3>
-
-                  <p id="kits-confirm-desc" className="text-xs text-muted-foreground mt-1">
-                    A receita atual já contém{" "}
-                    <strong className="text-foreground">
-                      {currentCount}{" "}
-                      {currentCount === 1 ? "medicamento" : "medicamentos"}
-                    </strong>
-                    . O kit{" "}
-                    <strong className="text-foreground">
-                      "{pendente.nome}"
-                    </strong>{" "}
-                    tem {pendente.itens.length}{" "}
-                    {pendente.itens.length === 1 ? "item" : "itens"}. Como deseja
-                    prosseguir?
-                  </p>
-                </div>
-              </div>
-
-              <div className="mt-5 flex flex-col-reverse sm:flex-row sm:justify-end gap-2">
-                <button
-                  type="button"
-                  onClick={() => setPendente(null)}
-                  className="text-xs font-medium px-3 py-2 rounded-lg border border-border hover:bg-muted transition-colors"
-                >
-                  Cancelar
-                </button>
-                <button
-                  type="button"
-                  onClick={() => confirmar("append")}
-                  className="text-xs font-medium px-3 py-2 rounded-lg border border-border hover:bg-muted transition-colors"
-                >
-                  Adicionar aos existentes
-                </button>
-                <button
-                  type="button"
-                  onClick={() => confirmar("replace")}
-                  className="text-xs font-medium px-3 py-2 rounded-lg bg-destructive text-destructive-foreground hover:bg-destructive/90 transition-colors"
-                >
-                  Substituir tudo
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
-      </div>
-    </div>
+    <Dialog open={!!pendente} onOpenChange={(v) => { if (!v) setPendente(null); }}>
+      <DialogContent size="sm" role="alertdialog">
+        <DialogHeader>
+          <DialogTitle className="flex items-center gap-2">
+            <AlertTriangle className="size-4 text-warning-strong" />
+            Aplicar kit à receita?
+          </DialogTitle>
+          <DialogDescription>
+            A receita atual já contém{" "}
+            <strong className="text-foreground">
+              {currentCount} {currentCount === 1 ? "medicamento" : "medicamentos"}
+            </strong>
+            {pendente && (
+              <>
+                . O kit <strong className="text-foreground">"{pendente.nome}"</strong> tem{" "}
+                {pendente.itens.length}{" "}
+                {pendente.itens.length === 1 ? "item" : "itens"}
+              </>
+            )}
+            . Como deseja prosseguir?
+          </DialogDescription>
+        </DialogHeader>
+        <DialogFooter>
+          <Button variant="outline" size="sm" onClick={() => setPendente(null)}>
+            Cancelar
+          </Button>
+          <Button variant="secondary" size="sm" onClick={() => confirmar("append")}>
+            Adicionar aos existentes
+          </Button>
+          <Button variant="destructive" size="sm" onClick={() => confirmar("replace")}>
+            Substituir tudo
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+    </>
   );
 }
 

@@ -34,7 +34,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { MultiSelect } from "@/components/ui/combobox";
 
 
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogBody, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Field, SearchInput, SelectField } from "@/components/form-field";
 import { Badge } from "@/components/ui/badge";
@@ -1267,6 +1267,7 @@ function PrescricaoForm() {
 
   const [kitDialogOpen, setKitDialogOpen] = useState(false);
   const [kitNome, setKitNome] = useState("");
+  const kitNomeRef = useRef<HTMLInputElement>(null);
 
   const abrirSalvarKit = () => {
     if (itens.length === 0)
@@ -2186,17 +2187,18 @@ function PrescricaoForm() {
 
 
       <Dialog open={kitDialogOpen} onOpenChange={setKitDialogOpen}>
-        <DialogContent className="sm:max-w-md">
+        <DialogContent size="sm" initialFocusRef={kitNomeRef}>
           <DialogHeader>
             <DialogTitle>Salvar como kit</DialogTitle>
             <DialogDescription>
               Salve a receita atual como modelo reutilizável ({itens.length} {itens.length === 1 ? "item" : "itens"}).
             </DialogDescription>
           </DialogHeader>
-          <div className="grid gap-2 py-2">
+          <DialogBody className="grid gap-2">
             <Label htmlFor="kit-nome">Nome do kit</Label>
             <Input
               id="kit-nome"
+              ref={kitNomeRef}
               value={kitNome}
               onChange={(e) => setKitNome(e.target.value)}
               onKeyDown={(e) => {
@@ -2206,9 +2208,8 @@ function PrescricaoForm() {
                 }
               }}
               placeholder="Ex.: Kit pós-cirúrgico"
-              autoFocus
             />
-          </div>
+          </DialogBody>
           <DialogFooter>
             <Button variant="outline" onClick={() => setKitDialogOpen(false)}>
               Cancelar

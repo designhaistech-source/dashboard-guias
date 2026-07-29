@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   User,
   ClipboardList,
@@ -36,6 +36,7 @@ import {
   Dialog,
   DialogContent,
   DialogHeader,
+  DialogBody,
   DialogTitle,
   DialogFooter,
   DialogDescription,
@@ -161,6 +162,7 @@ function OpmePage() {
   const [kits, setKits] = useState<Kit[]>(DEFAULT_KITS);
   const [carregarOpen, setCarregarOpen] = useState(false);
   const [salvarOpen, setSalvarOpen] = useState(false);
+  const nomeKitRef = useRef<HTMLInputElement>(null);
   const [novoKitNome, setNovoKitNome] = useState("");
 
   // Collapse state
@@ -664,14 +666,14 @@ function OpmePage() {
 
       {/* Carregar Kit */}
       <Dialog open={carregarOpen} onOpenChange={setCarregarOpen}>
-        <DialogContent className="max-w-lg">
+        <DialogContent size="md">
           <DialogHeader>
             <DialogTitle>Carregar kit de OPME</DialogTitle>
             <DialogDescription>
               Selecione um kit salvo para pré-preencher justificativa, especificação e materiais.
             </DialogDescription>
           </DialogHeader>
-          <div className="space-y-2 max-h-[60vh] overflow-y-auto">
+          <DialogBody className="space-y-2">
             {kits.length === 0 && (
               <div className="text-sm text-muted-foreground text-center py-8">
                 Nenhum kit salvo ainda.
@@ -705,23 +707,28 @@ function OpmePage() {
                 </button>
               </div>
             ))}
-          </div>
+          </DialogBody>
+          <DialogFooter>
+            <Button type="button" variant="outline" onClick={() => setCarregarOpen(false)}>
+              Fechar
+            </Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
 
       {/* Salvar como Kit */}
       <Dialog open={salvarOpen} onOpenChange={setSalvarOpen}>
-        <DialogContent className="max-w-md">
+        <DialogContent size="sm" initialFocusRef={nomeKitRef}>
           <DialogHeader>
             <DialogTitle>Salvar como Kit</DialogTitle>
             <DialogDescription>
               Salve a combinação atual de justificativa e materiais para reutilizar depois.
             </DialogDescription>
           </DialogHeader>
-          <div className="space-y-3">
+          <DialogBody className="space-y-3">
             <Field label="Nome do kit" required>
               <Input
-                autoFocus
+                ref={nomeKitRef}
                 placeholder="Ex.: Artroplastia total de joelho"
                 value={novoKitNome}
                 onChange={(e) => setNovoKitNome(e.target.value)}
@@ -741,7 +748,7 @@ function OpmePage() {
                 </div>
               )}
             </div>
-          </div>
+          </DialogBody>
           <DialogFooter>
             <Button type="button" variant="outline" onClick={() => setSalvarOpen(false)}>
               Cancelar

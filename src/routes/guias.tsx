@@ -32,8 +32,12 @@ import {
   Dialog,
   DialogContent,
   DialogHeader,
+  DialogBody,
+  DialogFooter,
   DialogTitle,
+  DialogDescription,
 } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
 import { AppSidebar } from "@/components/app-sidebar";
 import { SiteFooter } from "@/components/site-footer";
 import { PageHeader } from "@/components/page-header";
@@ -443,26 +447,26 @@ function GuideDetailsModal({ row, onClose }: { row: Row | null; onClose: () => v
 
   return (
     <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
-      <DialogContent className="max-w-6xl p-0 gap-0 max-h-[92vh] overflow-hidden flex flex-col">
-        <DialogHeader className="px-8 pt-6 pb-5 border-b border-border shrink-0">
+      <DialogContent size="xl">
+        <DialogHeader>
           <div className="flex items-center gap-2">
             <FileUp className="h-5 w-5 text-primary" />
-            <DialogTitle className="text-xl">Detalhes da guia</DialogTitle>
+            <DialogTitle>Detalhes da guia</DialogTitle>
           </div>
           {row && (
-            <div className="mt-1 text-sm text-muted-foreground">
+            <DialogDescription>
               {row.file} • ID: {row.id}
-            </div>
+            </DialogDescription>
           )}
           {row && (
-            <div className="mt-3">
+            <div className="mt-2">
               <TypeBadge type={row.type} />
             </div>
           )}
         </DialogHeader>
 
         {row && details && (
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 p-6 bg-muted/30 overflow-y-auto flex-1">
+          <DialogBody className="grid grid-cols-1 lg:grid-cols-2 gap-6 bg-muted/30">
             <div className="lg:sticky lg:top-0 lg:self-start lg:h-[calc(92vh-3rem)] rounded-xl border border-border bg-card p-6 flex flex-col gap-4 min-h-0">
               <div className="text-sm font-medium truncate">Arquivo enviado: {row.file}</div>
               <div className="flex-1 min-h-0">
@@ -520,7 +524,7 @@ function GuideDetailsModal({ row, onClose }: { row: Row | null; onClose: () => v
                 </div>
               </SectionCard>
             </div>
-          </div>
+          </DialogBody>
         )}
       </DialogContent>
     </Dialog>
@@ -943,10 +947,10 @@ function RequiredFieldsModal() {
       </button>
 
       <Dialog open={open} onOpenChange={attemptClose}>
-        <DialogContent className="max-w-3xl">
+        <DialogContent size="lg">
           <DialogHeader>
-            <div className="flex items-start justify-between gap-3 pr-6">
-              <DialogTitle className="text-xl">Campos obrigatórios por tipo de guia</DialogTitle>
+            <div className="flex items-start justify-between gap-3">
+              <DialogTitle>Campos obrigatórios por tipo de guia</DialogTitle>
               {isDirty && (
                 <Badge variant="warning-soft" size="lg" className="shrink-0">
                   <span className="h-1.5 w-1.5 rounded-full bg-warning" />
@@ -954,17 +958,14 @@ function RequiredFieldsModal() {
                 </Badge>
               )}
             </div>
-            <div className="mt-2 flex items-start gap-2 rounded-lg bg-muted/60 border border-border px-3 py-2 text-xs text-muted-foreground">
-              <Info className="h-4 w-4 mt-0.5 shrink-0 text-info" />
-              <p>
-                Defina quais campos a guia precisa conter para ser processada automaticamente.
-                Ao enviar um arquivo, se algum desses campos estiver ausente, a guia será
-                marcada com aviso e exigirá revisão manual antes de seguir no fluxo.
-              </p>
-            </div>
+            <DialogDescription>
+              Defina quais campos a guia precisa conter para ser processada automaticamente. Se
+              algum estiver ausente no arquivo enviado, a guia será marcada com aviso e exigirá
+              revisão manual antes de seguir no fluxo.
+            </DialogDescription>
           </DialogHeader>
 
-          <div className="space-y-4">
+          <DialogBody className="space-y-4">
             {/* Tipo de guia */}
             <div className="space-y-1.5">
               <label className="text-sm font-medium">Tipo de guia</label>
@@ -1053,60 +1054,46 @@ function RequiredFieldsModal() {
                 </>
               )}
             </div>
+          </DialogBody>
 
-            <div className="flex flex-col-reverse sm:flex-row sm:justify-end gap-2 pt-2">
-              <button
-                onClick={() => attemptClose(false)}
-                disabled={saving}
-                className="inline-flex items-center justify-center rounded-lg border border-border bg-card px-4 py-2.5 text-sm font-medium hover:bg-muted disabled:opacity-50"
-              >
-                Cancelar
-              </button>
-              <button
-                onClick={handleSave}
-                disabled={saving || isEmpty || !isDirty}
-                className="inline-flex items-center justify-center gap-2 rounded-lg bg-primary text-primary-foreground px-4 py-2.5 text-sm font-medium hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {saving ? (
-                  <>
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                    Salvando…
-                  </>
-                ) : (
-                  <>
-                    <Save className="h-4 w-4" />
-                    Salvar alterações
-                  </>
-                )}
-              </button>
-            </div>
-          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => attemptClose(false)} disabled={saving}>
+              Cancelar
+            </Button>
+            <Button onClick={handleSave} disabled={saving || isEmpty || !isDirty}>
+              {saving ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  Salvando…
+                </>
+              ) : (
+                <>
+                  <Save className="h-4 w-4" />
+                  Salvar alterações
+                </>
+              )}
+            </Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
 
       {/* Confirmação de descarte */}
       <Dialog open={confirmDiscard} onOpenChange={setConfirmDiscard}>
-        <DialogContent className="max-w-md">
+        <DialogContent size="sm">
           <DialogHeader>
             <DialogTitle>Descartar alterações?</DialogTitle>
+            <DialogDescription>
+              Você tem alterações não salvas. Se sair agora, elas serão perdidas.
+            </DialogDescription>
           </DialogHeader>
-          <p className="text-sm text-muted-foreground">
-            Você tem alterações não salvas. Se sair agora, elas serão perdidas.
-          </p>
-          <div className="flex flex-col-reverse sm:flex-row sm:justify-end gap-2 pt-2">
-            <button
-              onClick={() => setConfirmDiscard(false)}
-              className="inline-flex items-center justify-center rounded-lg border border-border bg-card px-4 py-2.5 text-sm font-medium hover:bg-muted"
-            >
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setConfirmDiscard(false)}>
               Continuar editando
-            </button>
-            <button
-              onClick={discardChanges}
-              className="inline-flex items-center justify-center rounded-lg bg-destructive text-destructive-foreground px-4 py-2.5 text-sm font-medium hover:bg-destructive/90"
-            >
+            </Button>
+            <Button variant="destructive" onClick={discardChanges}>
               Descartar
-            </button>
-          </div>
+            </Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
     </>
