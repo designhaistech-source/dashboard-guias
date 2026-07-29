@@ -170,72 +170,28 @@ export function KitsModal({
     });
   };
 
-  if (!open) return null;
-
   return (
-    <div
-      className="fixed inset-0 z-50 bg-foreground/40 backdrop-blur-sm flex items-center justify-center p-4"
-      onClick={onClose}
-    >
-      <div
-        ref={dialogRef}
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="kits-modal-title"
-        aria-describedby="kits-modal-desc"
-        tabIndex={-1}
-        onClick={(e) => e.stopPropagation()}
-        className="relative w-full max-w-3xl max-h-[90vh] rounded-2xl border border-border bg-card shadow-xl flex flex-col overflow-hidden focus:outline-none"
-      >
-
-        <div
-          className="flex flex-col flex-1 min-h-0"
-          {...(pendente ? { inert: "" as unknown as boolean } : {})}
-          aria-hidden={pendente ? true : undefined}
-        >
-        {/* Header */}
-        <div className="px-5 py-4 border-b border-border flex items-center justify-between gap-3">
-          <div className="flex items-center gap-3 min-w-0">
-            <div className="grid place-items-center h-9 w-9 rounded-lg bg-primary/15 text-primary shrink-0">
-              <BookMarked className="h-4.5 w-4.5" />
-            </div>
-            <div className="min-w-0">
-              <h2
-                id="kits-modal-title"
-                className="text-base font-semibold leading-tight"
-              >
-                Kits salvos
-              </h2>
-              <p
-                id="kits-modal-desc"
-                className="text-xs text-muted-foreground truncate"
-              >
-                Modelos reutilizáveis — aplique com um clique.
-              </p>
-            </div>
-
-          </div>
-          <button
-            type="button"
-            onClick={onClose}
-            aria-label="Fechar"
-            className="h-8 w-8 grid place-items-center rounded-lg hover:bg-muted transition-colors text-muted-foreground"
-          >
-            <X className="h-4 w-4" />
-          </button>
-        </div>
+    <>
+    <Dialog open={open} onOpenChange={(v) => { if (!v) onClose(); }}>
+      <DialogContent size="lg" initialFocusRef={buscaRef}>
+        <DialogHeader>
+          <DialogTitle className="flex items-center gap-2">
+            <BookMarked className="size-4 text-primary" />
+            Kits salvos
+          </DialogTitle>
+          <DialogDescription>
+            Modelos reutilizáveis — aplique com um clique.
+          </DialogDescription>
+        </DialogHeader>
 
         {/* Filtros */}
-        <div className="px-5 py-3 border-b border-border space-y-2.5 bg-background/40">
+        <div className="px-6 py-3 border-b border-border space-y-2.5 bg-background/40 shrink-0">
           <div className="flex gap-2">
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <input
+                ref={buscaRef}
                 type="text"
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                placeholder="Buscar por nome, categoria ou medicamento…"
-                className="w-full pl-9 pr-8 py-2 rounded-lg border border-border bg-background text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50"
 
               />
               {query && (
