@@ -188,6 +188,7 @@ export {
   DialogContent,
   DialogHeader,
   DialogBody,
+  DialogToolbar,
   DialogFooter,
   DialogTitle,
   DialogDescription,
