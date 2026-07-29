@@ -48,7 +48,7 @@ export function AppSidebar({ activeKey }: { activeKey: ItemKey }) {
   return (
     <TooltipProvider delayDuration={150}>
       <aside
-        className={`hidden md:flex shrink-0 flex-col border-r border-sidebar-border bg-sidebar text-sidebar-foreground transition-[width] duration-200 ${
+        className={`hidden md:flex shrink-0 flex-col sticky top-0 h-screen max-h-screen self-start border-r border-sidebar-border bg-sidebar text-sidebar-foreground transition-[width] duration-200 ${
           collapsed ? "w-16" : "w-72"
         }`}
       >
