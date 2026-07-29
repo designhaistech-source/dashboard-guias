@@ -874,27 +874,60 @@ function EmitirPage() {
                 description="Médico responsável pela emissão."
               >
                 <Grid cols={2}>
+                  <SelectField
+                    label="Selecionar profissional"
+                    placeholder="Escolha o médico"
+                    value={medicoSelecionado}
+                    onValueChange={(v) => {
+                      setMedicoSelecionado(v);
+                      const m = MEDICOS.find((x) => x.id === v);
+                      if (m) {
+                        setMedicoNome(m.nome);
+                        setMedicoCrm(m.crm);
+                        setMedicoEspecialidade(m.especialidade);
+                      } else {
+                        setMedicoNome("");
+                        setMedicoCrm("");
+                        setMedicoEspecialidade("");
+                      }
+                    }}
+                    options={[
+                      ...MEDICOS.map((m) => ({ value: m.id, label: `${m.nome} — ${m.crm}` })),
+                      { value: "outro", label: "Outro (informar manualmente)" },
+                    ]}
+                    hint="Troque o médico responsável a qualquer momento."
+                  />
                   <Field label="Nome do profissional" required>
                     <Input
                       value={medicoNome}
-                      onChange={(e) => setMedicoNome(e.target.value)}
+                      onChange={(e) => {
+                        setMedicoNome(e.target.value);
+                        setMedicoSelecionado("outro");
+                      }}
                     />
                   </Field>
                   <Field label="Conselho / Nº" required>
                     <Input
                       value={medicoCrm}
-                      onChange={(e) => setMedicoCrm(e.target.value)}
+                      onChange={(e) => {
+                        setMedicoCrm(e.target.value);
+                        setMedicoSelecionado("outro");
+                      }}
                       placeholder="CRM 0000/UF"
                     />
                   </Field>
                   <Field label="Especialidade">
                     <Input
                       value={medicoEspecialidade}
-                      onChange={(e) => setMedicoEspecialidade(e.target.value)}
+                      onChange={(e) => {
+                        setMedicoEspecialidade(e.target.value);
+                        setMedicoSelecionado("outro");
+                      }}
                       placeholder="Cardiologia, Ortopedia..."
                     />
                   </Field>
                 </Grid>
+
               </Section>
 
               {/* Clínico */}
