@@ -243,9 +243,6 @@ function OpmePage() {
     setJustificativa(kit.justificativa);
     const novos = kit.materiais.map((m) => ({ ...m, id: uid() }));
     setMateriais(novos);
-    setSpecAberto(
-      Object.fromEntries(novos.filter((m) => m.spec?.trim()).map((m) => [m.id, true])),
-    );
     setCarregarOpen(false);
     setClinicoCollapsed(false);
     setMateriaisCollapsed(false);
