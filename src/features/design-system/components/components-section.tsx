@@ -54,12 +54,32 @@ export function ComponentsSection() {
           <Badge variant="destructive">Glosada</Badge>
           <Badge variant="info">Enviada</Badge>
           <Badge variant="purple">Controlada</Badge>
+          <Badge variant="primary-soft">Em processamento</Badge>
           <Badge variant="success-soft">Processada</Badge>
           <Badge variant="warning-soft">Pendente</Badge>
           <Badge variant="destructive-soft">Erro</Badge>
           <Badge variant="outline">Rascunho</Badge>
         </DsSpecimen>
       </div>
+
+      <div className="space-y-3">
+        <DsSubhead
+          title="Chips e pills de progresso"
+          hint="Chip para filtros e atalhos selecionáveis; StatusPill para etapas da barra de ação."
+        />
+        <DsSpecimen>
+          <Chip>Últimos 7 dias</Chip>
+          <Chip variant="selected">Ortopedia</Chip>
+          <Chip variant="soft">3 itens</Chip>
+          <Chip variant="warning">Favoritos</Chip>
+          <Chip asSpan variant="outline">
+            Competência: 07/2026
+          </Chip>
+          <StatusPill done label="Paciente" />
+          <StatusPill done={false} label="Medicamentos" />
+        </DsSpecimen>
+      </div>
+
 
       <div className="space-y-3">
         <DsSubhead
