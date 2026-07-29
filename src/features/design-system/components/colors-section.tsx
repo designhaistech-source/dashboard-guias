@@ -1,5 +1,19 @@
-import { colorGroups, neutralScale } from "../data/tokens";
 import { DsSubhead } from "./ds-section";
+
+const NEUTRALS: { step: string; className: string }[] = [
+  { step: "50", className: "bg-neutral-50" },
+  { step: "100", className: "bg-neutral-100" },
+  { step: "200", className: "bg-neutral-200" },
+  { step: "300", className: "bg-neutral-300" },
+  { step: "400", className: "bg-neutral-400" },
+  { step: "500", className: "bg-neutral-500" },
+  { step: "600", className: "bg-neutral-600" },
+  { step: "700", className: "bg-neutral-700" },
+  { step: "800", className: "bg-neutral-800" },
+  { step: "900", className: "bg-neutral-900" },
+];
+
+import { colorGroups } from "../data/tokens";
 
 export function ColorsSection() {
   return (
@@ -33,14 +47,14 @@ export function ColorsSection() {
           hint="Base para superfícies, bordas e texto. Não use cinzas fora desta escala."
         />
         <div className="grid grid-cols-5 gap-2 sm:grid-cols-10">
-          {neutralScale.map((step) => (
-            <div key={step} className="min-w-0">
+          {NEUTRALS.map((tone) => (
+            <div key={tone.step} className="min-w-0">
               <div
-                className={`h-12 rounded-lg border border-border bg-neutral-${step}`}
+                className={`h-12 rounded-lg border border-border ${tone.className}`}
                 aria-hidden
               />
               <p className="mt-1 text-center font-mono text-[11px] text-muted-foreground">
-                {step}
+                {tone.step}
               </p>
             </div>
           ))}
