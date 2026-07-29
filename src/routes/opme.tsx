@@ -98,9 +98,8 @@ const DEFAULT_KITS: Kit[] = [
     nome: "Artroplastia total de quadril",
     justificativa:
       "Paciente com coxartrose avançada, dor incapacitante refratária ao tratamento conservador. Indicada artroplastia total de quadril não cimentada.",
-    especificacao: "Preferência por implantes da linha padrão hospitalar quando disponíveis.",
     materiais: [
-      { id: "1", tiss: "70560840", nome: "Prótese total de quadril não cimentada", enq: "Prótese", qtd: 1 },
+      { id: "1", tiss: "70560840", nome: "Prótese total de quadril não cimentada", enq: "Prótese", qtd: 1, spec: "Preferência por implantes da linha padrão hospitalar quando disponíveis." },
       { id: "2", tiss: "70560999", nome: "Cimento ósseo com antibiótico 40g", enq: "Material Especial", qtd: 1 },
     ],
   },
@@ -109,7 +108,6 @@ const DEFAULT_KITS: Kit[] = [
     nome: "Osteossíntese úmero proximal",
     justificativa:
       "Fratura desviada de úmero proximal com indicação cirúrgica. Necessária osteossíntese com placa bloqueada.",
-    especificacao: "",
     materiais: [
       { id: "1", tiss: "70560416", nome: "Placa bloqueada úmero proximal 3 furos", enq: "Órtese", qtd: 1 },
       { id: "2", tiss: "70560319", nome: "Parafuso cortical 3.5mm x 30mm", enq: "Material Especial", qtd: 6 },
@@ -146,7 +144,7 @@ function OpmePage() {
 
   // Clínico
   const [justificativa, setJustificativa] = useState("");
-  const [especificacao, setEspecificacao] = useState("");
+  const [specAberto, setSpecAberto] = useState<Record<string, boolean>>({});
 
   // Materiais
   const [materiais, setMateriais] = useState<Material[]>([
@@ -237,14 +235,17 @@ function OpmePage() {
 
   function limparMateriais() {
     setMateriais([{ id: uid(), tiss: "", nome: "", enq: "", qtd: 1 }]);
-    setEspecificacao("");
-    toast.success("Materiais e especificação limpos.");
+    setSpecAberto({});
+    toast.success("Materiais limpos.");
   }
 
   function carregarKit(kit: Kit) {
     setJustificativa(kit.justificativa);
-    setEspecificacao(kit.especificacao);
-    setMateriais(kit.materiais.map((m) => ({ ...m, id: uid() })));
+    const novos = kit.materiais.map((m) => ({ ...m, id: uid() }));
+    setMateriais(novos);
+    setSpecAberto(
+      Object.fromEntries(novos.filter((m) => m.spec?.trim()).map((m) => [m.id, true])),
+    );
     setCarregarOpen(false);
     setClinicoCollapsed(false);
     setMateriaisCollapsed(false);
@@ -265,7 +266,6 @@ function OpmePage() {
       id: uid(),
       nome: novoKitNome.trim(),
       justificativa,
-      especificacao,
       materiais: materiaisValidos.map((m) => ({ ...m })),
     };
     setKits((prev) => [novo, ...prev]);
@@ -455,7 +455,7 @@ function OpmePage() {
                       e.stopPropagation();
                       limparMateriais();
                     }}
-                    disabled={materiaisValidos.length === 0 && !especificacao}
+                    disabled={materiaisValidos.length === 0}
                     className="text-muted-foreground hover:text-destructive"
                   >
                     <Eraser className="h-4 w-4" />
