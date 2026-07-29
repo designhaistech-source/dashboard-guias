@@ -233,7 +233,7 @@ function OpmePage() {
 
   function limparMateriais() {
     setMateriais([{ id: uid(), tiss: "", nome: "", enq: "", qtd: 1 }]);
-    setSpecAberto({});
+    
     toast.success("Materiais limpos.");
   }
 
@@ -553,7 +553,7 @@ function OpmePage() {
                           <Trash2 className="h-4 w-4" />
                         </button>
                         </div>
-                        <div className="px-4 pb-3 pt-2 lg:pl-[132px] lg:pr-[76px]">
+                        <div className="px-4 pb-3 pt-2">
                           <div className="relative">
                             <label
                               htmlFor={`spec-${m.id}`}
