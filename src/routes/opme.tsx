@@ -417,7 +417,7 @@ function OpmePage() {
                   <Textarea
                     rows={6}
                     maxLength={1500}
-                    placeholder="Descreva o quadro clínico, achados diagnósticos e a justificativa técnica para os materiais solicitados..."
+                    placeholder="Ex.: paciente com lesão do LCA confirmada por RM, indicado enxerto e sistema de fixação femoral..."
                     value={justificativa}
                     onChange={(e) => setJustificativa(e.target.value)}
                   />
