@@ -367,6 +367,18 @@ function OpmePage() {
                   </Select>
                 </Field>
 
+                <Field label="Registro ANS">
+                  <Input
+                    readOnly
+                    className="font-mono bg-muted/50 text-muted-foreground"
+                    value={operadoraSel ? registroAns : ""}
+                    placeholder="—"
+                    tabIndex={-1}
+                  />
+                </Field>
+
+
+
                 <Field label="Caráter do atendimento" required>
                   <Select value={caraterAtendimento} onValueChange={setCarater}>
                     <SelectTrigger>
