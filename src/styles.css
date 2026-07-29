@@ -321,3 +321,11 @@
     font-family: var(--font-mono);
   }
 }
+
+/* Ajuste óptico: compensa as métricas assimétricas da Vazirmatn para que
+   ícones SVG fiquem centralizados com o texto ao lado. */
+@utility icon-optical {
+  & svg {
+    transform: translateY(-0.075em);
+  }
+}
