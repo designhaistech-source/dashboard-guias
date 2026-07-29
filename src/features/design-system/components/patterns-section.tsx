@@ -31,10 +31,10 @@ export function PatternsSection() {
         <SurfaceCard padding="md">
           <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-4 sm:flex sm:flex-wrap sm:justify-between">
             <div className="flex min-w-0 flex-wrap items-center gap-2">
-              <span className="inline-flex items-center gap-1.5 rounded-full border border-success/30 bg-success-muted/50 px-2.5 py-1 text-xs font-medium text-success">
+              <span className="inline-flex items-center icon-optical gap-1.5 rounded-full border border-success/30 bg-success-muted/50 px-2.5 py-1 text-xs font-medium text-success">
                 <CheckCircle2 className="size-3.5" /> Paciente
               </span>
-              <span className="inline-flex items-center gap-1.5 rounded-full border border-border bg-muted px-2.5 py-1 text-xs font-medium text-muted-foreground">
+              <span className="inline-flex items-center icon-optical gap-1.5 rounded-full border border-border bg-muted px-2.5 py-1 text-xs font-medium text-muted-foreground">
                 <CircleDashed className="size-3.5" /> Materiais
               </span>
             </div>

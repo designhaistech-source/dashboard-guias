@@ -207,7 +207,7 @@ function Upload_Section({ onProcessed }: { onProcessed: (row: Row) => void }) {
         />
         <label
           htmlFor="guide-file-upload"
-          className="mt-6 inline-flex items-center gap-2 rounded-lg border border-border bg-card px-4 py-2 text-sm font-medium shadow-sm hover:bg-muted transition-colors cursor-pointer"
+          className="mt-6 inline-flex items-center icon-optical gap-2 rounded-lg border border-border bg-card px-4 py-2 text-sm font-medium shadow-sm hover:bg-muted transition-colors cursor-pointer"
         >
           <FileUp className="h-4 w-4" />
           Selecionar arquivos
@@ -348,7 +348,7 @@ function History_Section({ extraRows }: { extraRows: Row[] }) {
                   <StatusBadge status={r.status} />
                 </Td>
                 <Td className="text-right pr-6">
-                  <div className="inline-flex items-center gap-3 text-muted-foreground">
+                  <div className="inline-flex items-center icon-optical gap-3 text-muted-foreground">
                     <button
                       aria-label="Visualizar"
                       onClick={() => setDetailRow(r)}
@@ -377,7 +377,7 @@ function History_Section({ extraRows }: { extraRows: Row[] }) {
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
               Itens por página
-              <button className="inline-flex items-center gap-1 rounded-md border border-border bg-card px-2 py-1 text-foreground">
+              <button className="inline-flex items-center icon-optical gap-1 rounded-md border border-border bg-card px-2 py-1 text-sm text-foreground">
                 10 <ChevronDown className="h-3.5 w-3.5" />
               </button>
             </div>
@@ -473,7 +473,7 @@ function GuideDetailsModal({ row, onClose }: { row: Row | null; onClose: () => v
                 <GuidePreview src={guiaMock.url} alt={row.file} />
               </div>
               <div className="flex justify-end">
-                <button className="inline-flex items-center gap-2 rounded-lg bg-primary text-primary-foreground px-4 py-2 text-sm font-medium hover:bg-primary/90 transition-colors">
+                <button className="inline-flex items-center icon-optical gap-2 rounded-lg bg-primary text-primary-foreground px-4 py-2 text-sm font-medium hover:bg-primary/90 transition-colors">
                   <FileUp className="h-4 w-4" />
                   Baixar arquivo
                 </button>
@@ -760,7 +760,7 @@ function Td({ children, className = "" }: { children: React.ReactNode; className
 
 function DateField({ label }: { label: string }) {
   return (
-    <button className="inline-flex items-center gap-2 rounded-lg border border-border bg-card px-3 py-2 text-sm min-w-[150px]">
+    <button className="inline-flex items-center icon-optical gap-2 rounded-lg border border-border bg-card px-3 py-2 text-sm min-w-[150px]">
       <Calendar className="h-4 w-4 text-muted-foreground" />
       <span className="text-muted-foreground">{label}</span>
     </button>
@@ -940,7 +940,7 @@ function RequiredFieldsModal() {
     <>
       <button
         onClick={() => setOpen(true)}
-        className="inline-flex items-center gap-2 rounded-lg bg-secondary text-secondary-foreground border border-border px-4 py-2 text-sm font-medium hover:bg-muted transition-colors"
+        className="inline-flex items-center icon-optical gap-2 rounded-lg bg-secondary text-secondary-foreground border border-border px-4 py-2 text-sm font-medium hover:bg-muted transition-colors"
       >
         <ListChecks className="h-4 w-4" />
         Campos obrigatórios
@@ -1005,7 +1005,7 @@ function RequiredFieldsModal() {
               <button
                 onClick={addSelected}
                 disabled={pickerSelection.length === 0}
-                className="inline-flex items-center justify-center gap-2 rounded-lg bg-primary text-primary-foreground px-4 py-2.5 text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed hover:bg-primary/90"
+                className="inline-flex items-center icon-optical justify-center gap-2 rounded-lg bg-primary text-primary-foreground px-4 py-2.5 text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed hover:bg-primary/90"
               >
                 <Plus className="h-4 w-4" />
                 Adicionar
@@ -1038,7 +1038,7 @@ function RequiredFieldsModal() {
                     {current.map((f) => (
                       <span
                         key={f}
-                        className="inline-flex items-center gap-2 rounded-full bg-muted px-3 py-1.5 text-sm"
+                        className="inline-flex items-center icon-optical gap-2 rounded-full bg-muted px-3 py-1.5 text-sm"
                       >
                         {f}
                         <button

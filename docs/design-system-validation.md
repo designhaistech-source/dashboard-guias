@@ -54,3 +54,26 @@ python3 scripts/visual/visual-regression.py --only opme --viewport desktop
 Permitidas apenas onde o valor literal é parte do conteúdo (documentos A4/PDF em
 `src/routes/emitir.tsx`, documentação em `src/features/design-system`) ou com o
 comentário `// ds-allow-color` na linha.
+
+## Alinhamento ícone/texto
+
+```bash
+python3 scripts/visual/check-icon-alignment.py
+```
+
+Regras do design system:
+
+- Ícones ao lado de texto recebem o utilitário `icon-optical` (`src/styles.css`),
+  que aplica `translateY(-0.075em)` — como o valor é em `em`, o alinhamento é o
+  mesmo em `text-xs`, `text-sm` e `text-base`.
+- O tamanho do ícone acompanha a escala tipográfica: `size-3` em `text-xs`
+  compacto, `size-3.5` em `text-xs`/`text-sm` padrão e `size-4` em `text-base`.
+- Componentes com ícone (`Button`, `Badge`, `Chip`, `Tabs`, `Toggle`,
+  `SelectTrigger`, itens de `DropdownMenu`/`Command`) usam `text-*/none`, para que
+  line-height e tamanho de fonte sejam definidos numa única utilidade e não
+  dependam da ordem das classes.
+- O half-leading é simétrico: mudar o line-height altera a altura da caixa, não o
+  centro do texto. Por isso o validador checa o deslocamento em `em`, e não a
+  altura — não reduza o line-height de botões só para "centralizar".
+
+O script roda como etapa 3 de `scripts/visual/validate.sh`.

@@ -320,7 +320,7 @@ export function KitsModal({
                           {kit.descricao}
                         </p>
                         <div className="mt-1.5 flex items-center gap-2 text-xs text-muted-foreground flex-wrap">
-                          <span className="inline-flex items-center gap-1 whitespace-nowrap">
+                          <span className="inline-flex items-center icon-optical gap-1 whitespace-nowrap">
                             <Pill className="h-3 w-3 shrink-0" />
                             {kit.itens.length}{" "}
                             {kit.itens.length === 1
