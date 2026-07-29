@@ -343,7 +343,6 @@ function OpmePage() {
                 </Field>
 
                 <Field label="Convênio / Operadora" required>
-
                   <Select value={operadora} onValueChange={setOperadora}>
                     <SelectTrigger>
                       <SelectValue placeholder="Selecione o convênio" />
