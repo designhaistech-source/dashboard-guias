@@ -233,7 +233,7 @@ function OpmePage() {
 
   function limparMateriais() {
     setMateriais([{ id: uid(), tiss: "", nome: "", enq: "", qtd: 1 }]);
-    setSpecAberto({});
+    
     toast.success("Materiais limpos.");
   }
 
