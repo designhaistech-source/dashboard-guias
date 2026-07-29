@@ -287,7 +287,7 @@ export function KitsModal({
                     key={kit.id}
                     className="rounded-xl border border-border bg-background overflow-hidden"
                   >
-                    <div className="p-3 flex items-start gap-2.5">
+                    <div className="p-3 flex flex-wrap items-start gap-2.5">
                       <button
                         type="button"
                         onClick={() => favoritar(kit)}
