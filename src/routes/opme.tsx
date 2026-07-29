@@ -12,7 +12,6 @@ import {
   Send,
   Stethoscope,
   ChevronDown,
-  FileText,
   ArrowUp,
   CheckCircle2,
   CircleDashed,
@@ -144,7 +143,6 @@ function OpmePage() {
 
   // Clínico
   const [justificativa, setJustificativa] = useState("");
-  const [specAberto, setSpecAberto] = useState<Record<string, boolean>>({});
 
   // Materiais
   const [materiais, setMateriais] = useState<Material[]>([
@@ -243,9 +241,6 @@ function OpmePage() {
     setJustificativa(kit.justificativa);
     const novos = kit.materiais.map((m) => ({ ...m, id: uid() }));
     setMateriais(novos);
-    setSpecAberto(
-      Object.fromEntries(novos.filter((m) => m.spec?.trim()).map((m) => [m.id, true])),
-    );
     setCarregarOpen(false);
     setClinicoCollapsed(false);
     setMateriaisCollapsed(false);
@@ -491,21 +486,19 @@ function OpmePage() {
             >
               <div className="space-y-4">
                 <div className="rounded-lg border overflow-hidden">
-                  <div className="hidden lg:grid grid-cols-[120px_minmax(0,1fr)_180px_88px_36px_36px] gap-x-3 px-4 py-2 bg-muted/50 border-b text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+                  <div className="hidden lg:grid grid-cols-[120px_minmax(0,1fr)_180px_88px_36px] gap-x-3 px-4 py-2 bg-muted/50 border-b text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
                     <div>TISS</div>
                     <div>Nome comercial</div>
                     <div>Enquadramento técnico</div>
                     <div className="text-center">Qtd.</div>
                     <div />
-                    <div />
                   </div>
                   <div className="divide-y">
                     {materiais.map((m, idx) => {
-                      const aberto = !!specAberto[m.id];
                       const spec = m.spec ?? "";
                       return (
                       <div key={m.id} className="transition-colors hover:bg-muted/30">
-                        <div className="grid grid-cols-1 lg:grid-cols-[120px_minmax(0,1fr)_180px_88px_36px_36px] gap-x-3 gap-y-2 px-4 py-2.5 items-center">
+                        <div className="grid grid-cols-1 lg:grid-cols-[120px_minmax(0,1fr)_180px_88px_36px] gap-x-3 gap-y-2 px-4 pt-2.5 items-center">
                         <Input
                           className="h-9 font-mono text-xs"
                           placeholder="TISS"
@@ -552,27 +545,6 @@ function OpmePage() {
                         />
                         <button
                           type="button"
-                          aria-label={
-                            aberto ? "Ocultar especificação" : "Especificação do material"
-                          }
-                          aria-expanded={aberto}
-                          title="Especificação deste material"
-                          onClick={() =>
-                            setSpecAberto((prev) => ({ ...prev, [m.id]: !prev[m.id] }))
-                          }
-                          className={`relative h-9 w-9 lg:h-8 lg:w-8 justify-self-start lg:justify-self-center rounded-md flex items-center justify-center shrink-0 hover:bg-muted ${
-                            aberto || spec.trim()
-                              ? "text-primary"
-                              : "text-muted-foreground hover:text-foreground"
-                          }`}
-                        >
-                          <FileText className="h-4 w-4" />
-                          {!aberto && spec.trim() && (
-                            <span className="absolute right-1 top-1 h-1.5 w-1.5 rounded-full bg-primary" />
-                          )}
-                        </button>
-                        <button
-                          type="button"
                           aria-label="Remover material"
                           onClick={() => removeMaterial(m.id)}
                           disabled={materiais.length === 1}
@@ -581,36 +553,34 @@ function OpmePage() {
                           <Trash2 className="h-4 w-4" />
                         </button>
                         </div>
-                        {aberto && (
-                          <div className="px-4 pb-3 lg:pl-[132px] lg:pr-[76px]">
-                            <div className="relative">
-                              <label
-                                htmlFor={`spec-${m.id}`}
-                                className="mb-1 block text-xs font-medium text-muted-foreground"
-                              >
-                                Especificação de{" "}
-                                {m.nome.trim() || `material ${idx + 1}`} (opcional)
-                              </label>
-                              <Textarea
-                                id={`spec-${m.id}`}
-                                rows={2}
-                                maxLength={300}
-                                autoFocus
-                                className="bg-muted/30 pb-7 focus:bg-background"
-                                placeholder="Ex.: fabricante/distribuidor, modelo, dimensões ou marca de referência"
-                                value={spec}
-                                onChange={(e) => updateMaterial(m.id, { spec: e.target.value })}
-                              />
-                              <span className="pointer-events-none absolute right-3 bottom-2.5 text-[11px] text-muted-foreground tabular-nums">
-                                {spec.length}/300
-                              </span>
-                            </div>
+                        <div className="px-4 pb-3 pt-2 lg:pl-[132px] lg:pr-[76px]">
+                          <div className="relative">
+                            <label
+                              htmlFor={`spec-${m.id}`}
+                              className="mb-1 block text-xs font-medium text-muted-foreground"
+                            >
+                              Especificação de{" "}
+                              {m.nome.trim() || `material ${idx + 1}`} (opcional)
+                            </label>
+                            <Textarea
+                              id={`spec-${m.id}`}
+                              rows={2}
+                              maxLength={300}
+                              className="bg-muted/30 pb-7 focus:bg-background"
+                              placeholder="Ex.: fabricante/distribuidor, modelo, dimensões ou marca de referência"
+                              value={spec}
+                              onChange={(e) => updateMaterial(m.id, { spec: e.target.value })}
+                            />
+                            <span className="pointer-events-none absolute right-3 bottom-2.5 text-[11px] text-muted-foreground tabular-nums">
+                              {spec.length}/300
+                            </span>
                           </div>
-                        )}
+                        </div>
                       </div>
                       );
                     })}
                   </div>
+
 
                   <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 border-t bg-muted/30 px-4 py-2">
                     <Button
