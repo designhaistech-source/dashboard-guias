@@ -1104,20 +1104,32 @@ function EmitirPage() {
                       <div className="col-span-1 flex items-center justify-center pb-2 cursor-grab active:cursor-grabbing text-muted-foreground">
                         <GripVertical className="h-4 w-4" />
                       </div>
-                      <div className="col-span-2">
+                      <div className="col-span-3">
                         <Input
                           value={p.code}
                           onChange={(e) => updateProcedure(p.id, { code: e.target.value })}
-                          placeholder="Código"
+                          placeholder="Código TUSS"
                         />
                       </div>
-                      <div className="col-span-7">
-                        <Input
-                          value={p.description}
-                          onChange={(e) =>
-                            updateProcedure(p.id, { description: e.target.value })
+                      <div className="col-span-6">
+                        <Combobox
+                          value={
+                            TUSS.some((t) => t.descricao === p.description)
+                              ? TUSS.find((t) => t.descricao === p.description)!.codigo
+                              : ""
                           }
-                          placeholder="Descrição do procedimento"
+                          onChange={(codigo) => {
+                            const item = TUSS.find((t) => t.codigo === codigo);
+                            updateProcedure(p.id, {
+                              code: item ? item.codigo : "",
+                              description: item ? item.descricao : "",
+                            });
+                          }}
+                          options={TUSS_OPTIONS}
+                          placeholder={p.description || "Buscar procedimento (TUSS)"}
+                          searchPlaceholder="Digite o código ou a descrição..."
+                          emptyMessage="Nenhum procedimento encontrado."
+                          clearable
                         />
                       </div>
                       <div className="col-span-1">
