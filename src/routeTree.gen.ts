@@ -13,6 +13,7 @@ import { Route as PrescricaoRouteImport } from './routes/prescricao'
 import { Route as OpmeRouteImport } from './routes/opme'
 import { Route as GuiasRouteImport } from './routes/guias'
 import { Route as EmitirRouteImport } from './routes/emitir'
+import { Route as DesignSystemRouteImport } from './routes/design-system'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as IndexRouteImport } from './routes/index'
 
@@ -36,6 +37,11 @@ const EmitirRoute = EmitirRouteImport.update({
   path: '/emitir',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DesignSystemRoute = DesignSystemRouteImport.update({
+  id: '/design-system',
+  path: '/design-system',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const DashboardRoute = DashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
@@ -50,6 +56,7 @@ const IndexRoute = IndexRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/dashboard': typeof DashboardRoute
+  '/design-system': typeof DesignSystemRoute
   '/emitir': typeof EmitirRoute
   '/guias': typeof GuiasRoute
   '/opme': typeof OpmeRoute
@@ -58,6 +65,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/dashboard': typeof DashboardRoute
+  '/design-system': typeof DesignSystemRoute
   '/emitir': typeof EmitirRoute
   '/guias': typeof GuiasRoute
   '/opme': typeof OpmeRoute
@@ -67,6 +75,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/dashboard': typeof DashboardRoute
+  '/design-system': typeof DesignSystemRoute
   '/emitir': typeof EmitirRoute
   '/guias': typeof GuiasRoute
   '/opme': typeof OpmeRoute
@@ -74,13 +83,28 @@ export interface FileRoutesById {
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/dashboard' | '/emitir' | '/guias' | '/opme' | '/prescricao'
+  fullPaths:
+    | '/'
+    | '/dashboard'
+    | '/design-system'
+    | '/emitir'
+    | '/guias'
+    | '/opme'
+    | '/prescricao'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/dashboard' | '/emitir' | '/guias' | '/opme' | '/prescricao'
+  to:
+    | '/'
+    | '/dashboard'
+    | '/design-system'
+    | '/emitir'
+    | '/guias'
+    | '/opme'
+    | '/prescricao'
   id:
     | '__root__'
     | '/'
     | '/dashboard'
+    | '/design-system'
     | '/emitir'
     | '/guias'
     | '/opme'
@@ -90,6 +114,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   DashboardRoute: typeof DashboardRoute
+  DesignSystemRoute: typeof DesignSystemRoute
   EmitirRoute: typeof EmitirRoute
   GuiasRoute: typeof GuiasRoute
   OpmeRoute: typeof OpmeRoute
@@ -126,6 +151,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof EmitirRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/design-system': {
+      id: '/design-system'
+      path: '/design-system'
+      fullPath: '/design-system'
+      preLoaderRoute: typeof DesignSystemRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/dashboard': {
       id: '/dashboard'
       path: '/dashboard'
@@ -146,6 +178,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   DashboardRoute: DashboardRoute,
+  DesignSystemRoute: DesignSystemRoute,
   EmitirRoute: EmitirRoute,
   GuiasRoute: GuiasRoute,
   OpmeRoute: OpmeRoute,
@@ -154,3 +187,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
