@@ -51,6 +51,8 @@ import { Shield, Landmark, ArrowUp, Stethoscope as StethIcon, BedDouble, HeartPu
 import type { LucideIcon } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { cn } from "@/lib/utils";
+import { Combobox } from "@/components/ui/combobox";
+import { CID_OPTIONS } from "@/lib/cid";
 import convenioHumanasAsset from "@/assets/convenio-humanas-real.png.asset.json";
 import convenioUnimedAsset from "@/assets/convenio-unimed-real.png.asset.json";
 import convenioCaurnAsset from "@/assets/convenio-caurn-real.png.asset.json";
@@ -955,10 +957,14 @@ function EmitirPage() {
               >
                 <Grid cols={2}>
                   <Field label="CID principal">
-                    <Input
+                    <Combobox
                       value={cidPrincipal}
-                      onChange={(e) => setCidPrincipal(e.target.value)}
-                      placeholder="Ex.: I10"
+                      onChange={setCidPrincipal}
+                      options={CID_OPTIONS}
+                      placeholder="Buscar CID-10 (ex.: I10)"
+                      searchPlaceholder="Digite o código ou a descrição..."
+                      emptyMessage="Nenhum CID encontrado."
+                      clearable
                     />
                   </Field>
                 </Grid>
