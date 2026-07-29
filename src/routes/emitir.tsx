@@ -1513,7 +1513,7 @@ function GuiaLivePreview(props: {
           }
         >
 
-          <div className="w-[1100px] bg-white text-black font-sans text-[9px] leading-tight border border-foreground">
+          <div className="w-[1100px] bg-surface text-foreground font-sans text-[9px] leading-tight border border-foreground">
             {/* Header */}
             <div className="grid grid-cols-[140px_1fr_260px] border-b border-foreground">
               <div className="flex items-center justify-center border-r border-foreground px-2 py-2">

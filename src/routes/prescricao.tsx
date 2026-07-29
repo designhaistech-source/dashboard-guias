@@ -1557,7 +1557,7 @@ function PrescricaoForm() {
           {hasControlado && (
             <div
               role="status"
-              className="flex items-start gap-2 rounded-lg border border-warning/40 bg-warning/10 px-3 py-2 text-xs text-amber-900 dark:border-warning/40 dark:bg-warning/10 dark:text-amber-100"
+              className="flex items-start gap-2 rounded-lg border border-warning/40 bg-warning/10 px-3 py-2 text-xs text-warning-strong"
             >
               <ShieldAlert className="h-4 w-4 shrink-0 mt-0.5 text-warning-strong" />
               <div className="min-w-0">
@@ -2543,13 +2543,13 @@ function TipoChip({
   onClick: () => void;
 }) {
   const activeStyles: Record<MedType, string> = {
-    Biológico: "bg-success/15 text-emerald-700 dark:text-emerald-200 border-emerald-500/50 ring-emerald-500/30",
-    Similar: "bg-sky-500/15 text-sky-700 dark:text-sky-200 border-sky-500/50 ring-sky-500/30",
-    Genérico: "bg-fuchsia-500/15 text-fuchsia-700 dark:text-fuchsia-200 border-fuchsia-500/50 ring-fuchsia-500/30",
+    Biológico: "bg-cat-1/15 text-cat-1-fg border-cat-1/50 ring-cat-1/30",
+    Similar: "bg-cat-2/15 text-cat-2-fg border-cat-2/50 ring-cat-2/30",
+    Genérico: "bg-cat-3/15 text-cat-3-fg border-cat-3/50 ring-cat-3/30",
     Referência: "bg-primary/15 text-primary border-primary/50 ring-primary/30",
-    Fitoterápico: "bg-lime-500/15 text-lime-700 dark:text-lime-200 border-lime-500/50 ring-lime-500/30",
-    Oftalmológico: "bg-cyan-500/15 text-cyan-700 dark:text-cyan-200 border-cyan-500/50 ring-cyan-500/30",
-    Específico: "bg-orange-500/15 text-orange-700 dark:text-orange-200 border-orange-500/50 ring-orange-500/30",
+    Fitoterápico: "bg-cat-4/15 text-cat-4-fg border-cat-4/50 ring-cat-4/30",
+    Oftalmológico: "bg-cat-5/15 text-cat-5-fg border-cat-5/50 ring-cat-5/30",
+    Específico: "bg-cat-6/15 text-cat-6-fg border-cat-6/50 ring-cat-6/30",
   };
   return (
     <button

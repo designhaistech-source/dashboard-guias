@@ -326,7 +326,7 @@ export function KitsModal({
               onClick={() => setSoFavoritos((v) => !v)}
               className={`inline-flex items-center gap-1 text-xs px-3 py-1.5 rounded-full border transition-colors ${
                 soFavoritos
-                  ? "bg-warning/15 border-amber-400/60 text-warning-strong"
+                  ? "bg-warning/15 border-warning/60 text-warning-strong"
                   : "bg-background border-border text-muted-foreground hover:text-foreground"
               }`}
             >
