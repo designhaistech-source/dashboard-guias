@@ -271,7 +271,7 @@ export function KitsModal({
 
 
         {/* Lista */}
-        <DialogBody className="px-6 py-4">
+        <DialogBody>
           {filtrados.length === 0 ? (
             <div className="rounded-xl border border-dashed border-border bg-card px-6 py-12 text-center">
               <BookMarked className="h-8 w-8 mx-auto text-muted-foreground/60" />
