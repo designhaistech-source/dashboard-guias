@@ -392,81 +392,46 @@ export function KitsModal({
               })}
             </div>
           )}
-        </div>
-        </div>
+        </DialogBody>
+      </DialogContent>
+    </Dialog>
 
-
-
-        {pendente && (
-          <div
-            className="absolute inset-0 z-10 bg-background/85 flex items-center justify-center p-4"
-            onClick={() => setPendente(null)}
-          >
-            <div
-              ref={confirmRef}
-              onClick={(e) => e.stopPropagation()}
-              className="w-full max-w-md rounded-2xl border border-border bg-card shadow-xl p-5 focus:outline-none"
-              role="alertdialog"
-              aria-modal="true"
-              aria-labelledby="kits-confirm-title"
-              aria-describedby="kits-confirm-desc"
-              tabIndex={-1}
-            >
-              <div className="flex items-start gap-3">
-                <div className="grid place-items-center h-9 w-9 rounded-lg bg-warning/15 text-warning-strong shrink-0">
-                  <AlertTriangle className="h-4.5 w-4.5" />
-                </div>
-                <div className="min-w-0">
-                  <h3 id="kits-confirm-title" className="text-sm font-semibold">
-                    Aplicar kit à receita?
-                  </h3>
-
-                  <p id="kits-confirm-desc" className="text-xs text-muted-foreground mt-1">
-                    A receita atual já contém{" "}
-                    <strong className="text-foreground">
-                      {currentCount}{" "}
-                      {currentCount === 1 ? "medicamento" : "medicamentos"}
-                    </strong>
-                    . O kit{" "}
-                    <strong className="text-foreground">
-                      "{pendente.nome}"
-                    </strong>{" "}
-                    tem {pendente.itens.length}{" "}
-                    {pendente.itens.length === 1 ? "item" : "itens"}. Como deseja
-                    prosseguir?
-                  </p>
-                </div>
-              </div>
-
-              <div className="mt-5 flex flex-col-reverse sm:flex-row sm:justify-end gap-2">
-                <button
-                  type="button"
-                  onClick={() => setPendente(null)}
-                  className="text-xs font-medium px-3 py-2 rounded-lg border border-border hover:bg-muted transition-colors"
-                >
-                  Cancelar
-                </button>
-                <button
-                  type="button"
-                  onClick={() => confirmar("append")}
-                  className="text-xs font-medium px-3 py-2 rounded-lg border border-border hover:bg-muted transition-colors"
-                >
-                  Adicionar aos existentes
-                </button>
-                <button
-                  type="button"
-                  onClick={() => confirmar("replace")}
-                  className="text-xs font-medium px-3 py-2 rounded-lg bg-destructive text-destructive-foreground hover:bg-destructive/90 transition-colors"
-                >
-                  Substituir tudo
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
-      </div>
-    </div>
-  );
+    <Dialog open={!!pendente} onOpenChange={(v) => { if (!v) setPendente(null); }}>
+      <DialogContent size="sm" role="alertdialog">
+        <DialogHeader>
+          <DialogTitle className="flex items-center gap-2">
+            <AlertTriangle className="size-4 text-warning-strong" />
+            Aplicar kit à receita?
+          </DialogTitle>
+          <DialogDescription>
+            A receita atual já contém{" "}
+            <strong className="text-foreground">
+              {currentCount} {currentCount === 1 ? "medicamento" : "medicamentos"}
+            </strong>
+            {pendente && (
+              <>
+                . O kit <strong className="text-foreground">"{pendente.nome}"</strong> tem{" "}
+                {pendente.itens.length}{" "}
+                {pendente.itens.length === 1 ? "item" : "itens"}
+              </>
+            )}
+            . Como deseja prosseguir?
+          </DialogDescription>
+        </DialogHeader>
+        <DialogFooter>
+          <Button variant="outline" size="sm" onClick={() => setPendente(null)}>
+            Cancelar
+          </Button>
+          <Button variant="secondary" size="sm" onClick={() => confirmar("append")}>
+            Adicionar aos existentes
+          </Button>
+          <Button variant="destructive" size="sm" onClick={() => confirmar("replace")}>
+            Substituir tudo
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+    </>
 }
 
 
