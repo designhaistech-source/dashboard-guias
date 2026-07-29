@@ -947,10 +947,10 @@ function RequiredFieldsModal() {
       </button>
 
       <Dialog open={open} onOpenChange={attemptClose}>
-        <DialogContent className="max-w-3xl">
+        <DialogContent size="lg">
           <DialogHeader>
-            <div className="flex items-start justify-between gap-3 pr-6">
-              <DialogTitle className="text-xl">Campos obrigatórios por tipo de guia</DialogTitle>
+            <div className="flex items-start justify-between gap-3">
+              <DialogTitle>Campos obrigatórios por tipo de guia</DialogTitle>
               {isDirty && (
                 <Badge variant="warning-soft" size="lg" className="shrink-0">
                   <span className="h-1.5 w-1.5 rounded-full bg-warning" />
@@ -958,17 +958,14 @@ function RequiredFieldsModal() {
                 </Badge>
               )}
             </div>
-            <div className="mt-2 flex items-start gap-2 rounded-lg bg-muted/60 border border-border px-3 py-2 text-xs text-muted-foreground">
-              <Info className="h-4 w-4 mt-0.5 shrink-0 text-info" />
-              <p>
-                Defina quais campos a guia precisa conter para ser processada automaticamente.
-                Ao enviar um arquivo, se algum desses campos estiver ausente, a guia será
-                marcada com aviso e exigirá revisão manual antes de seguir no fluxo.
-              </p>
-            </div>
+            <DialogDescription>
+              Defina quais campos a guia precisa conter para ser processada automaticamente. Se
+              algum estiver ausente no arquivo enviado, a guia será marcada com aviso e exigirá
+              revisão manual antes de seguir no fluxo.
+            </DialogDescription>
           </DialogHeader>
 
-          <div className="space-y-4">
+          <DialogBody className="space-y-4">
             {/* Tipo de guia */}
             <div className="space-y-1.5">
               <label className="text-sm font-medium">Tipo de guia</label>
