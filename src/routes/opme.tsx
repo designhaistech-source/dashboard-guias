@@ -486,31 +486,21 @@ function OpmePage() {
                   </Button>
                 </div>
               }
-
             >
-              <div className="space-y-3">
-                {materiaisValidos.length > 0 && (
-                  <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                    <Badge variant="primary-soft" size="sm">
-                      {materiaisValidos.length}{" "}
-                      {materiaisValidos.length === 1 ? "item" : "itens"} · {totalMateriais} un.
-                    </Badge>
-                  </div>
-                )}
-
+              <div className="space-y-5">
                 <div className="rounded-lg border overflow-hidden">
-                  <div className="hidden lg:grid grid-cols-[120px_1fr_180px_90px_44px] gap-2 px-3 py-2 bg-muted/40 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+                  <div className="hidden lg:grid grid-cols-[120px_1fr_180px_90px_44px] gap-3 px-4 py-2.5 bg-muted/50 border-b text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
                     <div>TISS</div>
                     <div>Nome comercial</div>
                     <div>Enquadramento técnico</div>
-                    <div className="text-right">Qtd.</div>
+                    <div className="text-center">Qtd.</div>
                     <div />
                   </div>
                   <div className="divide-y">
                     {materiais.map((m, idx) => (
                       <div
                         key={m.id}
-                        className="grid grid-cols-1 lg:grid-cols-[120px_1fr_180px_90px_44px] gap-2 px-3 py-2.5 items-center"
+                        className="grid grid-cols-1 lg:grid-cols-[120px_1fr_180px_90px_44px] gap-3 px-4 py-3 items-center transition-colors hover:bg-muted/30"
                       >
                         <Input
                           className="h-9 font-mono text-xs"
@@ -548,7 +538,7 @@ function OpmePage() {
                         <Input
                           type="number"
                           min={1}
-                          className="h-9 text-right"
+                          className="h-9 text-center font-mono"
                           value={m.qtd}
                           onChange={(e) =>
                             updateMaterial(m.id, {
@@ -561,28 +551,40 @@ function OpmePage() {
                           aria-label="Remover material"
                           onClick={() => removeMaterial(m.id)}
                           disabled={materiais.length === 1}
-                          className="h-9 w-9 rounded-md flex items-center justify-center text-destructive hover:bg-destructive/10 disabled:opacity-30 disabled:hover:bg-transparent"
+                          className="h-9 w-9 justify-self-end rounded-md flex items-center justify-center text-muted-foreground hover:text-destructive hover:bg-destructive/10 disabled:opacity-30 disabled:hover:bg-transparent"
                         >
                           <Trash2 className="h-4 w-4" />
                         </button>
                       </div>
                     ))}
                   </div>
-                </div>
 
-                <div className="flex justify-end">
-                  <Button type="button" size="sm" onClick={addMaterial}>
-                    <Plus className="h-4 w-4" />
-                    Adicionar material
-                  </Button>
+                  <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 border-t bg-muted/30 px-4 py-2.5">
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      onClick={addMaterial}
+                      className="justify-self-start text-primary hover:text-primary"
+                    >
+                      <Plus className="h-4 w-4" />
+                      Adicionar material
+                    </Button>
+                    {materiaisValidos.length > 0 && (
+                      <span className="text-xs text-muted-foreground tabular-nums">
+                        {materiaisValidos.length}{" "}
+                        {materiaisValidos.length === 1 ? "item" : "itens"} · {totalMateriais} un.
+                      </span>
+                    )}
+                  </div>
                 </div>
-
 
                 <Field label="Especificação do material (opcional)">
                   <div className="relative">
                     <Textarea
                       rows={3}
                       maxLength={500}
+                      className="bg-muted/30 focus:bg-background"
                       placeholder="Informações adicionais sobre os materiais e/ou dados dos fabricantes/distribuidores"
                       value={especificacao}
                       onChange={(e) => setEspecificacao(e.target.value)}
@@ -593,6 +595,7 @@ function OpmePage() {
                   </div>
                 </Field>
               </div>
+
             </SectionCard>
 
             {/* 4. Profissional solicitante */}
