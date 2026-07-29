@@ -185,7 +185,7 @@ export function KitsModal({
         </DialogHeader>
 
         {/* Filtros */}
-        <div className="px-6 py-3 border-b border-border space-y-2.5 bg-background/40 shrink-0">
+        <DialogToolbar className="space-y-2.5">
           <div className="flex gap-2">
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
