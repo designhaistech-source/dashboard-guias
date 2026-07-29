@@ -1437,7 +1437,7 @@ function PrescricaoForm() {
                   .getElementById("sec-revisar")
                   ?.scrollIntoView({ behavior: "smooth", block: "start" })
               }
-              className="inline-flex items-center icon-optical gap-1.5 text-xs/none font-medium rounded-lg border border-warning/40 bg-warning/10 text-warning-strong px-2.5 py-1.5 hover:bg-warning/15 transition-colors"
+              className="inline-flex items-center icon-optical gap-1.5 text-xs font-medium rounded-lg border border-warning/40 bg-warning/10 text-warning-strong px-2.5 py-1.5 hover:bg-warning/15 transition-colors"
               title="Ver o que falta"
             >
               <AlertCircle className="h-3.5 w-3.5" />
@@ -1445,7 +1445,7 @@ function PrescricaoForm() {
             </button>
           ) : triedEmit && pendencias.length === 0 ? (
             <span
-              className="inline-flex items-center icon-optical gap-1.5 text-xs/none font-medium rounded-lg border border-success/40 bg-success/10 text-success-strong px-2.5 py-1.5"
+              className="inline-flex items-center icon-optical gap-1.5 text-xs font-medium rounded-lg border border-success/40 bg-success/10 text-success-strong px-2.5 py-1.5"
               title="Todos os campos estão válidos"
             >
               <CheckCircle2 className="h-3.5 w-3.5" />
@@ -2289,7 +2289,7 @@ function ActionBtn({
         ? "border-primary bg-primary/10 text-primary hover:bg-primary/15 ring-1 ring-primary/40"
         : "border-border text-foreground hover:bg-muted";
   const sizeCls =
-    size === "sm" ? "px-2.5 py-1.5 text-xs/none gap-1.5" : "px-3 py-1.5 text-sm/none gap-1.5";
+    size === "sm" ? "px-2.5 py-1.5 text-xs gap-1.5" : "px-3 py-1.5 text-sm gap-1.5";
   const effectiveTitle = disabled && disabledReason ? disabledReason : title;
   return (
     <button
@@ -2426,7 +2426,7 @@ function PosologiaPanel({
         <button
           onClick={submit}
           disabled={!check.ok}
-          className="inline-flex items-center icon-optical gap-1.5 rounded-lg bg-primary px-4 py-2 text-sm/none font-semibold text-primary-foreground hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="inline-flex items-center icon-optical gap-1.5 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed"
           title={!check.ok ? check.mensagem : undefined}
         >
           <Plus className="h-4 w-4" />
@@ -2680,7 +2680,7 @@ function HistoricoPanel({
                 <div className="flex flex-col gap-1 shrink-0">
                   <button
                     onClick={() => onReutilizar(h)}
-                    className="inline-flex items-center icon-optical gap-1.5 rounded-lg border border-primary/50 text-primary px-2.5 py-1.5 text-xs/none font-medium hover:bg-primary/10"
+                    className="inline-flex items-center icon-optical gap-1.5 rounded-lg border border-primary/50 text-primary px-2.5 py-1.5 text-xs font-medium hover:bg-primary/10"
                     title="Carregar esta prescrição no formulário como base"
                   >
                     <RefreshCw className="h-3.5 w-3.5" />
@@ -2688,7 +2688,7 @@ function HistoricoPanel({
                   </button>
                   <button
                     onClick={() => onRemover(h.id)}
-                    className="inline-flex items-center icon-optical gap-1.5 rounded-lg border border-border text-muted-foreground px-2.5 py-1.5 text-xs/none hover:text-destructive hover:border-destructive/60"
+                    className="inline-flex items-center icon-optical gap-1.5 rounded-lg border border-border text-muted-foreground px-2.5 py-1.5 text-xs hover:text-destructive hover:border-destructive/60"
                     title="Remover do histórico"
                   >
                     <Trash2 className="h-3.5 w-3.5" />
