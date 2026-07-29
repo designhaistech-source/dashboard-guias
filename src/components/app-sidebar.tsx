@@ -4,7 +4,7 @@ import {
   LayoutGrid,
   FileText,
   FileCheck2,
-  Files,
+  
   ScanSearch,
   Pill,
   ScanLine,
@@ -104,13 +104,6 @@ export function AppSidebar({ activeKey }: { activeKey: ItemKey }) {
               to="/guias"
               active={activeKey === "extrair"}
               hint="Extraia automaticamente os dados de uma guia por meio de IA."
-              collapsed={collapsed}
-            />
-            <SidebarItem
-              icon={Files}
-              label="Histórico de guias"
-              active={activeKey === "guias"}
-              hint="Consulte o histórico e acompanhe o status das guias processadas."
               collapsed={collapsed}
             />
 
