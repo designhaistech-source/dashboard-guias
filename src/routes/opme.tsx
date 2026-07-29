@@ -491,11 +491,12 @@ function OpmePage() {
             >
               <div className="space-y-4">
                 <div className="rounded-lg border overflow-hidden">
-                  <div className="hidden lg:grid grid-cols-[120px_minmax(0,1fr)_180px_88px_36px] gap-x-3 px-4 py-2 bg-muted/50 border-b text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+                  <div className="hidden lg:grid grid-cols-[120px_minmax(0,1fr)_180px_88px_36px_36px] gap-x-3 px-4 py-2 bg-muted/50 border-b text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
                     <div>TISS</div>
                     <div>Nome comercial</div>
                     <div>Enquadramento técnico</div>
                     <div className="text-center">Qtd.</div>
+                    <div />
                     <div />
                   </div>
                   <div className="divide-y">
