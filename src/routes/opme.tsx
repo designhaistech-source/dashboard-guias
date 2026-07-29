@@ -718,7 +718,7 @@ function OpmePage() {
           <DialogHeader>
             <DialogTitle>Carregar kit de OPME</DialogTitle>
             <DialogDescription>
-              Selecione um kit salvo para pré-preencher justificativa, especificação e materiais.
+              Selecione um kit salvo para pré-preencher justificativa e materiais.
             </DialogDescription>
           </DialogHeader>
           <DialogBody className="space-y-2">
