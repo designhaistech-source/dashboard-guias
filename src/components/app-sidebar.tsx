@@ -27,6 +27,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import logoAsset from "@/assets/haisguias-logo.png.asset.json";
+import { RenderProfiler } from "@/lib/render-profiler";
 
 type ItemKey =
   | "dashboard"
@@ -46,6 +47,7 @@ export function AppSidebar({ activeKey }: { activeKey: ItemKey }) {
   const [collapsed, setCollapsed] = useState(false);
 
   return (
+    <RenderProfiler id="AppSidebar">
     <TooltipProvider delayDuration={150}>
       <aside
         className={`hidden md:flex shrink-0 flex-col sticky top-0 h-screen max-h-screen self-start border-r border-sidebar-border bg-sidebar text-sidebar-foreground transition-[width] duration-200 ${
@@ -160,6 +162,7 @@ export function AppSidebar({ activeKey }: { activeKey: ItemKey }) {
         <UserMenu collapsed={collapsed} />
       </aside>
     </TooltipProvider>
+    </RenderProfiler>
   );
 }
 
