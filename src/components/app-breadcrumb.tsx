@@ -65,7 +65,10 @@ export function AppBreadcrumb({ className }: { className?: string }) {
       <BreadcrumbList>
         <BreadcrumbItem>
           <BreadcrumbLink asChild>
-            <Link to="/" className="inline-flex items-center gap-1.5">
+            <Link
+              to="/"
+              className="inline-flex items-center gap-1.5 transition-colors hover:text-foreground"
+            >
               <Home aria-hidden="true" className="size-3.5 icon-optical" />
               <span>Início</span>
             </Link>
@@ -75,15 +78,29 @@ export function AppBreadcrumb({ className }: { className?: string }) {
           <>
             <BreadcrumbSeparator />
             <BreadcrumbItem>
-              <span className="text-muted-foreground">{meta.group}</span>
+              {GROUP_HREF[meta.group] ? (
+                <BreadcrumbLink asChild>
+                  <Link
+                    to={GROUP_HREF[meta.group]}
+                    className="transition-colors hover:text-foreground"
+                  >
+                    {meta.group}
+                  </Link>
+                </BreadcrumbLink>
+              ) : (
+                <span className="text-muted-foreground">{meta.group}</span>
+              )}
             </BreadcrumbItem>
           </>
         )}
         <BreadcrumbSeparator />
         <BreadcrumbItem>
-          <BreadcrumbPage>{meta.label}</BreadcrumbPage>
+          <BreadcrumbPage className="font-semibold text-foreground">
+            {meta.label}
+          </BreadcrumbPage>
         </BreadcrumbItem>
       </BreadcrumbList>
     </Breadcrumb>
   );
 }
+
