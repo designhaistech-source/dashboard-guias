@@ -326,6 +326,13 @@ function ReportsTab() {
 function CertificateTab() {
   const [paciente, setPaciente] = useState("");
   const [cid, setCid] = useState("");
+  const [diagnosticoSelecionado, setDiagnosticoSelecionado] = useState("");
+
+  function handleCid(codigo: string, descricao: string) {
+    setCid(codigo);
+    setDiagnosticoSelecionado(descricao);
+  }
+
   const [dias, setDias] = useState("1");
   const [data, setData] = useState(todayIso());
   const [cidade, setCidade] = useState("");
