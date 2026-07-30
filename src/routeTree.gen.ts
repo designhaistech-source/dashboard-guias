@@ -20,6 +20,7 @@ import { Route as DesignSystemRouteImport } from './routes/design-system'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as CidRouteImport } from './routes/cid'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ApiCidRouteImport } from './routes/api/cid'
 
 const ProcedimentosRoute = ProcedimentosRouteImport.update({
   id: '/procedimentos',
@@ -76,6 +77,11 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiCidRoute = ApiCidRouteImport.update({
+  id: '/api/cid',
+  path: '/api/cid',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -89,6 +95,7 @@ export interface FileRoutesByFullPath {
   '/opme': typeof OpmeRoute
   '/prescricao': typeof PrescricaoRoute
   '/procedimentos': typeof ProcedimentosRoute
+  '/api/cid': typeof ApiCidRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -102,6 +109,7 @@ export interface FileRoutesByTo {
   '/opme': typeof OpmeRoute
   '/prescricao': typeof PrescricaoRoute
   '/procedimentos': typeof ProcedimentosRoute
+  '/api/cid': typeof ApiCidRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -116,6 +124,7 @@ export interface FileRoutesById {
   '/opme': typeof OpmeRoute
   '/prescricao': typeof PrescricaoRoute
   '/procedimentos': typeof ProcedimentosRoute
+  '/api/cid': typeof ApiCidRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -131,6 +140,7 @@ export interface FileRouteTypes {
     | '/opme'
     | '/prescricao'
     | '/procedimentos'
+    | '/api/cid'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -144,6 +154,7 @@ export interface FileRouteTypes {
     | '/opme'
     | '/prescricao'
     | '/procedimentos'
+    | '/api/cid'
   id:
     | '__root__'
     | '/'
@@ -157,6 +168,7 @@ export interface FileRouteTypes {
     | '/opme'
     | '/prescricao'
     | '/procedimentos'
+    | '/api/cid'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -171,6 +183,7 @@ export interface RootRouteChildren {
   OpmeRoute: typeof OpmeRoute
   PrescricaoRoute: typeof PrescricaoRoute
   ProcedimentosRoute: typeof ProcedimentosRoute
+  ApiCidRoute: typeof ApiCidRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -252,6 +265,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/cid': {
+      id: '/api/cid'
+      path: '/api/cid'
+      fullPath: '/api/cid'
+      preLoaderRoute: typeof ApiCidRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -267,6 +287,7 @@ const rootRouteChildren: RootRouteChildren = {
   OpmeRoute: OpmeRoute,
   PrescricaoRoute: PrescricaoRoute,
   ProcedimentosRoute: ProcedimentosRoute,
+  ApiCidRoute: ApiCidRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

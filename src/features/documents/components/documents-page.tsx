@@ -20,10 +20,10 @@ import { SurfaceCard } from "@/components/surface-card";
 import { Field, SelectField } from "@/components/form-field";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Combobox } from "@/components/ui/combobox";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { CID10 } from "@/lib/cid";
 
+import { CidAutocomplete } from "./cid-autocomplete";
 import { RichTextEditor } from "./rich-text-editor";
 import {
   DOCUMENT_VARIABLES,
@@ -35,12 +35,6 @@ import {
   printHtml,
   todayIso,
 } from "../data/documents";
-
-const CID_OPTIONS = CID10.map((c) => ({
-  value: c.codigo,
-  label: `${c.codigo} — ${c.descricao}`,
-  description: c.descricao,
-}));
 
 /** Página de documentos clínicos: relatórios, atestados e declarações. */
 export function DocumentsPage() {
@@ -179,10 +173,12 @@ function PatientField({
 
 function CidFields({
   cid,
-  onCid,
+  descricao,
+  onChange,
 }: {
   cid: string;
-  onCid: (v: string) => void;
+  descricao: string;
+  onChange: (codigo: string, descricao: string) => void;
 }) {
   return (
     <div className="grid gap-4 sm:grid-cols-[10rem_minmax(0,1fr)]">
@@ -192,19 +188,19 @@ function CidFields({
           className="font-mono"
           placeholder="CID"
           value={cid}
-          onChange={(e) => onCid(e.target.value.toUpperCase())}
+          onChange={(e) => onChange(e.target.value.toUpperCase(), "")}
         />
       </Field>
-      <Field id="cid-diagnostico" label="Diagnóstico">
-        <Combobox
+      <Field
+        id="cid-diagnostico"
+        label="Diagnóstico"
+        hint="A busca consulta a base CID-10 e preenche o código automaticamente."
+      >
+        <CidAutocomplete
           id="cid-diagnostico"
           value={cid}
-          onChange={onCid}
-          options={CID_OPTIONS}
-          placeholder="Busque por CID ou descrição..."
-          searchPlaceholder="Digite o código ou a descrição..."
-          emptyMessage="Nenhum CID encontrado."
-          clearable
+          description={descricao}
+          onSelect={(item) => onChange(item?.codigo ?? "", item?.descricao ?? "")}
         />
       </Field>
     </div>
@@ -216,11 +212,19 @@ function CidFields({
 function ReportsTab() {
   const [paciente, setPaciente] = useState("");
   const [cid, setCid] = useState("");
+  const [diagnosticoSelecionado, setDiagnosticoSelecionado] = useState("");
   const [modelo, setModelo] = useState("");
   const [html, setHtml] = useState("");
 
   const diagnostico =
-    CID10.find((c) => c.codigo === cid)?.descricao ?? "";
+    diagnosticoSelecionado ||
+    (CID10.find((c) => c.codigo === cid)?.descricao ?? "");
+
+  function handleCid(codigo: string, descricao: string) {
+    setCid(codigo);
+    setDiagnosticoSelecionado(descricao);
+  }
+
 
   function applyTemplate(value: string) {
     setModelo(value);
@@ -258,7 +262,7 @@ function ReportsTab() {
             options={REPORT_TEMPLATES.map((t) => ({ value: t.value, label: t.label }))}
             hint="Use “Salvar como modelo” após redigir o texto para reaproveitá-lo depois."
           />
-          <CidFields cid={cid} onCid={setCid} />
+          <CidFields cid={cid} descricao={diagnosticoSelecionado} onChange={handleCid} />
           <p className="text-xs text-muted-foreground">
             Variáveis que podem ser utilizadas no texto:{" "}
             {DOCUMENT_VARIABLES.map((v) => (
@@ -315,6 +319,13 @@ function ReportsTab() {
 function CertificateTab() {
   const [paciente, setPaciente] = useState("");
   const [cid, setCid] = useState("");
+  const [diagnosticoSelecionado, setDiagnosticoSelecionado] = useState("");
+
+  function handleCid(codigo: string, descricao: string) {
+    setCid(codigo);
+    setDiagnosticoSelecionado(descricao);
+  }
+
   const [dias, setDias] = useState("1");
   const [data, setData] = useState(todayIso());
   const [cidade, setCidade] = useState("");
@@ -336,7 +347,7 @@ function CertificateTab() {
       >
         <div className="space-y-4">
           <PatientField id="atestado-paciente" value={paciente} onChange={setPaciente} />
-          <CidFields cid={cid} onCid={setCid} />
+          <CidFields cid={cid} descricao={diagnosticoSelecionado} onChange={handleCid} />
           <div className="grid gap-4 sm:grid-cols-3">
             <SelectField
               id="atestado-dias"
