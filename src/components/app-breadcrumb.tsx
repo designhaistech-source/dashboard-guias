@@ -9,6 +9,7 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
+import { cn } from "@/lib/utils";
 
 interface RouteMeta {
   /** Grupo de navegação exibido como nível intermediário. */
@@ -61,46 +62,54 @@ export function AppBreadcrumb({ className }: { className?: string }) {
   if (!meta || normalized === "/") return null;
 
   return (
-    <Breadcrumb className={className}>
-      <BreadcrumbList>
-        <BreadcrumbItem>
+    <Breadcrumb className={cn("w-full min-w-0", className)}>
+      <BreadcrumbList className="flex-nowrap gap-1 sm:flex-wrap sm:gap-1.5">
+        <BreadcrumbItem className="shrink-0">
           <BreadcrumbLink asChild>
             <Link
               to="/"
               className="inline-flex items-center gap-1.5 transition-colors hover:text-foreground"
             >
-              <Home aria-hidden="true" className="size-3.5 icon-optical" />
-              <span>Início</span>
+              <Home aria-hidden="true" className="size-3.5 shrink-0 icon-optical" />
+              {/* Em telas estreitas o ícone já comunica "Início". */}
+              <span className="hidden sm:inline">Início</span>
+              <span className="sr-only sm:hidden">Início</span>
             </Link>
           </BreadcrumbLink>
         </BreadcrumbItem>
         {meta.group && (
           <>
-            <BreadcrumbSeparator />
-            <BreadcrumbItem>
+            <BreadcrumbSeparator className="shrink-0" />
+            <BreadcrumbItem className="min-w-0 max-w-[8rem] shrink sm:max-w-none">
               {GROUP_HREF[meta.group] ? (
                 <BreadcrumbLink asChild>
                   <Link
                     to={GROUP_HREF[meta.group]}
-                    className="transition-colors hover:text-foreground"
+                    className="block truncate transition-colors hover:text-foreground sm:whitespace-normal"
                   >
                     {meta.group}
                   </Link>
                 </BreadcrumbLink>
               ) : (
-                <span className="text-muted-foreground">{meta.group}</span>
+                <span className="block truncate text-muted-foreground">
+                  {meta.group}
+                </span>
               )}
             </BreadcrumbItem>
           </>
         )}
-        <BreadcrumbSeparator />
-        <BreadcrumbItem>
-          <BreadcrumbPage className="font-semibold text-foreground">
+        <BreadcrumbSeparator className="shrink-0" />
+        <BreadcrumbItem className="min-w-0 flex-1">
+          <BreadcrumbPage
+            title={meta.label}
+            className="block truncate font-semibold text-foreground sm:whitespace-normal"
+          >
             {meta.label}
           </BreadcrumbPage>
         </BreadcrumbItem>
       </BreadcrumbList>
     </Breadcrumb>
   );
+
 }
 
