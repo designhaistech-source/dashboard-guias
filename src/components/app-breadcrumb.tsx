@@ -12,36 +12,24 @@ import {
 import { cn } from "@/lib/utils";
 
 interface RouteMeta {
-  /** Grupo de navegação exibido como nível intermediário. */
-  group?: string;
   label: string;
 }
 
-/** Rota inicial de cada grupo, usada para tornar o nível intermediário navegável. */
-const GROUP_HREF: Record<string, string> = {
-  "Início": "/dashboard",
-  "Guias": "/emitir",
-  "Atendimento clínico": "/prescricao",
-  "Design system": "/design-system",
-};
-
-
-/** Mapa de rotas para rótulos de trilha, alinhado aos grupos da sidebar. */
+/** Mapa de rotas para rótulos de trilha, alinhado aos itens da sidebar. */
 const ROUTE_META: Record<string, RouteMeta> = {
   "/": { label: "Dashboard" },
-  "/dashboard": { group: "Início", label: "Dashboard" },
-  "/emitir": { group: "Guias", label: "Emitir guia" },
-  "/guias": { group: "Guias", label: "Extrair dados da guia" },
-  "/procedimentos": { group: "Guias", label: "Buscar procedimento" },
-  "/prescricao": { group: "Atendimento clínico", label: "Emitir prescrição" },
-  "/opme": { group: "Atendimento clínico", label: "Solicitar OPME" },
+  "/dashboard": { label: "Dashboard" },
+  "/emitir": { label: "Emitir guia" },
+  "/guias": { label: "Extrair dados da guia" },
+  "/procedimentos": { label: "Buscar procedimento" },
+  "/prescricao": { label: "Emitir prescrição" },
+  "/opme": { label: "Solicitar OPME" },
   "/documentos": {
-    group: "Atendimento clínico",
     label: "Relatórios e documentos",
   },
-  "/cid": { group: "Atendimento clínico", label: "Busca CID-10" },
-  "/design-system": { group: "Design system", label: "Fundamentos" },
-  "/design-system-icones": { group: "Design system", label: "Ícones" },
+  "/cid": { label: "Busca CID-10" },
+  "/design-system": { label: "Fundamentos" },
+  "/design-system-icones": { label: "Ícones" },
 };
 
 /**
@@ -77,28 +65,7 @@ export function AppBreadcrumb({ className }: { className?: string }) {
             </Link>
           </BreadcrumbLink>
         </BreadcrumbItem>
-        {meta.group && (
-          <>
-            <BreadcrumbSeparator className="shrink-0" />
-            <BreadcrumbItem className="min-w-0 max-w-[8rem] shrink sm:max-w-none">
-              {GROUP_HREF[meta.group] ? (
-                <BreadcrumbLink asChild>
-                  <Link
-                    to={GROUP_HREF[meta.group]}
-                    className="block truncate transition-colors hover:text-foreground sm:whitespace-normal"
-                  >
-                    {meta.group}
-                  </Link>
-                </BreadcrumbLink>
-              ) : (
-                <span className="block truncate text-muted-foreground">
-                  {meta.group}
-                </span>
-              )}
-            </BreadcrumbItem>
-          </>
-        )}
-        <BreadcrumbSeparator className="shrink-0" />
+                <BreadcrumbSeparator className="shrink-0" />
         <BreadcrumbItem className="min-w-0 flex-1">
           <BreadcrumbPage
             title={meta.label}
