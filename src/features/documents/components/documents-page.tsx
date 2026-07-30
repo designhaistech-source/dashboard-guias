@@ -179,10 +179,12 @@ function PatientField({
 
 function CidFields({
   cid,
-  onCid,
+  descricao,
+  onChange,
 }: {
   cid: string;
-  onCid: (v: string) => void;
+  descricao: string;
+  onChange: (codigo: string, descricao: string) => void;
 }) {
   return (
     <div className="grid gap-4 sm:grid-cols-[10rem_minmax(0,1fr)]">
@@ -192,19 +194,19 @@ function CidFields({
           className="font-mono"
           placeholder="CID"
           value={cid}
-          onChange={(e) => onCid(e.target.value.toUpperCase())}
+          onChange={(e) => onChange(e.target.value.toUpperCase(), "")}
         />
       </Field>
-      <Field id="cid-diagnostico" label="Diagnóstico">
-        <Combobox
+      <Field
+        id="cid-diagnostico"
+        label="Diagnóstico"
+        hint="A busca consulta a base CID-10 e preenche o código automaticamente."
+      >
+        <CidAutocomplete
           id="cid-diagnostico"
           value={cid}
-          onChange={onCid}
-          options={CID_OPTIONS}
-          placeholder="Busque por CID ou descrição..."
-          searchPlaceholder="Digite o código ou a descrição..."
-          emptyMessage="Nenhum CID encontrado."
-          clearable
+          description={descricao}
+          onSelect={(item) => onChange(item?.codigo ?? "", item?.descricao ?? "")}
         />
       </Field>
     </div>
@@ -216,11 +218,19 @@ function CidFields({
 function ReportsTab() {
   const [paciente, setPaciente] = useState("");
   const [cid, setCid] = useState("");
+  const [diagnosticoSelecionado, setDiagnosticoSelecionado] = useState("");
   const [modelo, setModelo] = useState("");
   const [html, setHtml] = useState("");
 
   const diagnostico =
-    CID10.find((c) => c.codigo === cid)?.descricao ?? "";
+    diagnosticoSelecionado ||
+    (CID10.find((c) => c.codigo === cid)?.descricao ?? "");
+
+  function handleCid(codigo: string, descricao: string) {
+    setCid(codigo);
+    setDiagnosticoSelecionado(descricao);
+  }
+
 
   function applyTemplate(value: string) {
     setModelo(value);
