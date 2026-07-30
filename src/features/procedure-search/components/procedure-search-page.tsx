@@ -198,9 +198,6 @@ export function ProcedureSearchPage() {
                           <DataTableHead className="w-28">
                             Referência
                           </DataTableHead>
-                          <DataTableHead className="w-16 text-right">
-                            <span className="sr-only">Ações</span>
-                          </DataTableHead>
                         </tr>
                       </DataTableHeader>
                       <DataTableBody>
