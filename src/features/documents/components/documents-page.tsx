@@ -24,6 +24,7 @@ import { Combobox } from "@/components/ui/combobox";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { CID10 } from "@/lib/cid";
 
+import { CidAutocomplete } from "./cid-autocomplete";
 import { RichTextEditor } from "./rich-text-editor";
 import {
   DOCUMENT_VARIABLES,
@@ -268,7 +269,7 @@ function ReportsTab() {
             options={REPORT_TEMPLATES.map((t) => ({ value: t.value, label: t.label }))}
             hint="Use “Salvar como modelo” após redigir o texto para reaproveitá-lo depois."
           />
-          <CidFields cid={cid} onCid={setCid} />
+          <CidFields cid={cid} descricao={diagnosticoSelecionado} onChange={handleCid} />
           <p className="text-xs text-muted-foreground">
             Variáveis que podem ser utilizadas no texto:{" "}
             {DOCUMENT_VARIABLES.map((v) => (
@@ -346,7 +347,7 @@ function CertificateTab() {
       >
         <div className="space-y-4">
           <PatientField id="atestado-paciente" value={paciente} onChange={setPaciente} />
-          <CidFields cid={cid} onCid={setCid} />
+          <CidFields cid={cid} descricao={diagnosticoSelecionado} onChange={handleCid} />
           <div className="grid gap-4 sm:grid-cols-3">
             <SelectField
               id="atestado-dias"
