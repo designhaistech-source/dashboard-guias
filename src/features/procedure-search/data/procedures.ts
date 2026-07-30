@@ -37,7 +37,7 @@ export const PROCEDURES: Procedure[] = TUSS.map((item, index) => ({
 
 export const REFERENCE_OPTIONS = [
   { value: "todas", label: "Todas" },
-  ...REFERENCIAS.map((r) => ({ value: r, label: r })),
+  ...REFERENCIAS.map((r) => ({ value: r, label: REFERENCE_LABELS[r] })),
 ];
 
 function normalize(value: string) {
