@@ -88,7 +88,7 @@ export function buildAtestado({
   cidade,
   cid,
 }: AtestadoInput): string {
-  const nome = paciente.trim() || "Sr.(a)";
+  const nome = paciente.trim() || "____________________";
   const plural = Number(dias) > 1 ? "dias" : "dia";
   const local = cidade.trim() ? `${cidade.trim()}, ` : "";
   const cidTexto = cid.trim() ? ` CID: ${cid.trim()}.` : "";
@@ -117,7 +117,7 @@ export function buildComparecimento({
   entrada,
   saida,
 }: ComparecimentoInput): string {
-  const nome = paciente.trim() || "Sr.(a)";
+  const nome = paciente.trim() || "____________________";
   const estabelecimento = local.trim() || "este estabelecimento";
   const periodo =
     entrada && saida ? `das ${entrada} às ${saida}` : "no horário do atendimento";
