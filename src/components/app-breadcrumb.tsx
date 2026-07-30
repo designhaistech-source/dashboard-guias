@@ -25,6 +25,10 @@ const ROUTE_META: Record<string, RouteMeta> = {
   "/procedimentos": { group: "Guias", label: "Buscar procedimento" },
   "/prescricao": { group: "Atendimento clínico", label: "Emitir prescrição" },
   "/opme": { group: "Atendimento clínico", label: "Solicitar OPME" },
+  "/documentos": {
+    group: "Atendimento clínico",
+    label: "Relatórios e documentos",
+  },
   "/design-system": { group: "Design system", label: "Fundamentos" },
   "/design-system-icones": { group: "Design system", label: "Ícones" },
 };

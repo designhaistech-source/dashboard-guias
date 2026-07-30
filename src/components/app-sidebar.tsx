@@ -141,6 +141,7 @@ export function AppSidebar({ activeKey }: { activeKey: ItemKey }) {
             <SidebarItem
               icon={FileSpreadsheet}
               label="Relatórios e documentos"
+              to="/documentos"
               active={activeKey === "relatorios"}
               hint="Gere e gerencie relatórios, atestados e documentos clínicos."
               collapsed={collapsed}
