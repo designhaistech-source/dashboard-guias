@@ -9,7 +9,7 @@ export const Route = createFileRoute("/procedimentos")({
       {
         name: "description",
         content:
-          "Consulte códigos e descrições de procedimentos TUSS, CBHPM, AMB e SUS.",
+          "Consulte códigos e descrições de procedimentos Tuss e Sigtap.",
       },
       { property: "og:title", content: "HaisGuias — Busca de procedimentos" },
       {

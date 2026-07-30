@@ -51,7 +51,7 @@ export function ProcedureSearchPage() {
         <div className="w-full px-6 lg:px-10 py-8 space-y-6 flex-1 pb-24">
           <PageHeader
             title="Busca de procedimentos"
-            description="Consulte códigos e descrições de procedimentos por referência (TUSS, CBHPM, AMB e SUS) para usar em guias e solicitações."
+            description="Consulte códigos e descrições de procedimentos por referência (Tuss e Sigtap) para usar em guias e solicitações."
           />
 
           <form
