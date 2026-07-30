@@ -29,6 +29,7 @@ const ROUTE_META: Record<string, RouteMeta> = {
     group: "Atendimento clínico",
     label: "Relatórios e documentos",
   },
+  "/cid": { group: "Atendimento clínico", label: "Busca CID-10" },
   "/design-system": { group: "Design system", label: "Fundamentos" },
   "/design-system-icones": { group: "Design system", label: "Ícones" },
 };

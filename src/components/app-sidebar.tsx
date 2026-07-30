@@ -149,6 +149,7 @@ export function AppSidebar({ activeKey }: { activeKey: ItemKey }) {
             <SidebarItem
               icon={ScanLine}
               label="Buscar CID-10"
+              to="/cid"
               active={activeKey === "cid"}
               hint="Pesquise códigos da Classificação Internacional de Doenças (CID-10)."
               collapsed={collapsed}
