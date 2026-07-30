@@ -6,6 +6,8 @@ import { ColorsSection } from "./colors-section";
 import { TypographySection, FoundationsSection } from "./foundations-section";
 import { ComponentsSection } from "./components-section";
 import { PatternsSection } from "./patterns-section";
+import { NavigationSection } from "./navigation-section";
+import { FeedbackSection } from "./feedback-section";
 
 /** Guia vivo do design system HaisGuias. */
 export function DesignSystemPage() {
