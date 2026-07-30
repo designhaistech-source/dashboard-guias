@@ -110,6 +110,7 @@ export function AppSidebar({ activeKey }: { activeKey: ItemKey }) {
             <SidebarItem
               icon={ScanSearch}
               label="Buscar procedimento"
+              to="/procedimentos"
               active={activeKey === "procedimento"}
               hint="Consulte códigos e descrições de procedimentos (TUSS / tabelas)."
               collapsed={collapsed}
