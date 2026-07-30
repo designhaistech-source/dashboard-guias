@@ -118,21 +118,63 @@ export function ProcedureSearchPage() {
                 size="lg"
                 icon={<ScanSearch className="h-12 w-12" />}
                 title="Nenhum procedimento encontrado"
-                description="Revise o termo buscado ou selecione outra referência."
+                description={
+                  lastQuery
+                    ? `Não encontramos resultados para “${lastQuery}”${
+                        referencia !== "todas"
+                          ? ` na referência ${REFERENCE_OPTIONS.find((o) => o.value === referencia)?.label}`
+                          : ""
+                      }. Verifique a grafia, use termos mais curtos ou tente uma das sugestões abaixo.`
+                    : "Verifique a grafia, use termos mais curtos ou tente uma das sugestões abaixo."
+                }
                 action={
-                  <Button
-                    variant="secondary"
-                    size="sm"
-                    onClick={() => {
-                      setTerm("");
-                      setReferencia("todas");
-                      setResults(null);
-                    }}
-                  >
-                    Limpar busca
-                  </Button>
+                  <div className="flex flex-col items-center gap-4">
+                    <div className="flex flex-wrap items-center justify-center gap-2">
+                      <span className="text-xs text-muted-foreground">
+                        Sugestões:
+                      </span>
+                      {SUGGESTED_TERMS.map((sugestao) => (
+                        <Button
+                          key={sugestao}
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={() => runSearch(sugestao, "todas")}
+                        >
+                          <Lightbulb />
+                          {sugestao}
+                        </Button>
+                      ))}
+                    </div>
+                    <div className="flex flex-wrap items-center justify-center gap-2">
+                      {referencia !== "todas" && (
+                        <Button
+                          type="button"
+                          variant="secondary"
+                          size="sm"
+                          onClick={() => runSearch(term, "todas")}
+                        >
+                          Buscar em todas as referências
+                        </Button>
+                      )}
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => {
+                          setTerm("");
+                          setReferencia("todas");
+                          setLastQuery("");
+                          setResults(null);
+                        }}
+                      >
+                        Limpar busca
+                      </Button>
+                    </div>
+                  </div>
                 }
               />
+
             ) : (
               <>
                 <div className="flex items-center justify-between px-6 py-3 border-b border-border">
