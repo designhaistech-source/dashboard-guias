@@ -25,14 +25,31 @@ import {
   type ProcedureMatch,
 } from "../data/procedures";
 
+/** Termos sugeridos quando a busca não retorna resultados. */
+const SUGGESTED_TERMS = [
+  "consulta",
+  "hemograma",
+  "ressonância",
+  "ultrassonografia",
+  "biópsia",
+];
+
 export function ProcedureSearchPage() {
   const [term, setTerm] = useState("");
   const [referencia, setReferencia] = useState("todas");
   const [results, setResults] = useState<ProcedureMatch[] | null>(null);
+  const [lastQuery, setLastQuery] = useState("");
+
+  function runSearch(nextTerm: string, nextReferencia: string) {
+    setTerm(nextTerm);
+    setReferencia(nextReferencia);
+    setLastQuery(nextTerm.trim());
+    setResults(searchProcedures(nextTerm, nextReferencia));
+  }
 
   function handleSearch(event?: React.FormEvent) {
     event?.preventDefault();
-    setResults(searchProcedures(term, referencia));
+    runSearch(term, referencia);
   }
 
   async function copiar(codigo: string) {
@@ -43,6 +60,7 @@ export function ProcedureSearchPage() {
       toast.error("Não foi possível copiar o código");
     }
   }
+
 
   return (
     <div className="flex min-h-screen w-full bg-background text-foreground">
