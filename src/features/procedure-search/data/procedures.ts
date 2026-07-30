@@ -10,6 +10,12 @@ export interface Procedure {
   porte?: string;
 }
 
+/** Procedimento com o percentual de aderência ao termo buscado. */
+export interface ProcedureMatch extends Procedure {
+  similaridade: number;
+}
+
+
 const GRUPOS: Record<string, string> = {
   "1": "Consultas e atendimentos",
   "2": "Procedimentos diagnósticos e terapêuticos",
