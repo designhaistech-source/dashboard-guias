@@ -1,6 +1,5 @@
 import { useState } from "react";
-import { Search, ClipboardCopy, Filter, ScanSearch, Lightbulb } from "lucide-react";
-import { toast } from "sonner";
+import { Search, Filter, ScanSearch, Lightbulb } from "lucide-react";
 
 import { AppSidebar } from "@/components/app-sidebar";
 import { SiteFooter } from "@/components/site-footer";
@@ -52,14 +51,6 @@ export function ProcedureSearchPage() {
     runSearch(term, referencia);
   }
 
-  async function copiar(codigo: string) {
-    try {
-      await navigator.clipboard.writeText(codigo);
-      toast.success(`Código ${codigo} copiado`);
-    } catch {
-      toast.error("Não foi possível copiar o código");
-    }
-  }
 
 
   return (
