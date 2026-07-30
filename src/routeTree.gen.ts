@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as ProcedimentosRouteImport } from './routes/procedimentos'
 import { Route as PrescricaoRouteImport } from './routes/prescricao'
 import { Route as OpmeRouteImport } from './routes/opme'
 import { Route as GuiasRouteImport } from './routes/guias'
@@ -18,6 +19,11 @@ import { Route as DesignSystemRouteImport } from './routes/design-system'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as IndexRouteImport } from './routes/index'
 
+const ProcedimentosRoute = ProcedimentosRouteImport.update({
+  id: '/procedimentos',
+  path: '/procedimentos',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PrescricaoRoute = PrescricaoRouteImport.update({
   id: '/prescricao',
   path: '/prescricao',
@@ -68,6 +74,7 @@ export interface FileRoutesByFullPath {
   '/guias': typeof GuiasRoute
   '/opme': typeof OpmeRoute
   '/prescricao': typeof PrescricaoRoute
+  '/procedimentos': typeof ProcedimentosRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -78,6 +85,7 @@ export interface FileRoutesByTo {
   '/guias': typeof GuiasRoute
   '/opme': typeof OpmeRoute
   '/prescricao': typeof PrescricaoRoute
+  '/procedimentos': typeof ProcedimentosRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -89,6 +97,7 @@ export interface FileRoutesById {
   '/guias': typeof GuiasRoute
   '/opme': typeof OpmeRoute
   '/prescricao': typeof PrescricaoRoute
+  '/procedimentos': typeof ProcedimentosRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -101,6 +110,7 @@ export interface FileRouteTypes {
     | '/guias'
     | '/opme'
     | '/prescricao'
+    | '/procedimentos'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -111,6 +121,7 @@ export interface FileRouteTypes {
     | '/guias'
     | '/opme'
     | '/prescricao'
+    | '/procedimentos'
   id:
     | '__root__'
     | '/'
@@ -121,6 +132,7 @@ export interface FileRouteTypes {
     | '/guias'
     | '/opme'
     | '/prescricao'
+    | '/procedimentos'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -132,10 +144,18 @@ export interface RootRouteChildren {
   GuiasRoute: typeof GuiasRoute
   OpmeRoute: typeof OpmeRoute
   PrescricaoRoute: typeof PrescricaoRoute
+  ProcedimentosRoute: typeof ProcedimentosRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/procedimentos': {
+      id: '/procedimentos'
+      path: '/procedimentos'
+      fullPath: '/procedimentos'
+      preLoaderRoute: typeof ProcedimentosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/prescricao': {
       id: '/prescricao'
       path: '/prescricao'
@@ -204,17 +224,8 @@ const rootRouteChildren: RootRouteChildren = {
   GuiasRoute: GuiasRoute,
   OpmeRoute: OpmeRoute,
   PrescricaoRoute: PrescricaoRoute,
+  ProcedimentosRoute: ProcedimentosRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
