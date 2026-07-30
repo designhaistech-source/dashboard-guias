@@ -6,6 +6,8 @@ import { ColorsSection } from "./colors-section";
 import { TypographySection, FoundationsSection } from "./foundations-section";
 import { ComponentsSection } from "./components-section";
 import { PatternsSection } from "./patterns-section";
+import { NavigationSection } from "./navigation-section";
+import { FeedbackSection } from "./feedback-section";
 
 /** Guia vivo do design system HaisGuias. */
 export function DesignSystemPage() {
@@ -57,6 +59,22 @@ export function DesignSystemPage() {
             description="Composições recorrentes: cabeçalho, cards de seção, barra de ação, tabelas e estados de dados."
           >
             <PatternsSection />
+          </DsSection>
+
+          <DsSection
+            id="navegacao"
+            title="6. Navegação, seleção e sobreposições"
+            description="Tabs, combobox, multiseleção, accordion, modal, menu de ações e tooltip — sempre a partir destes componentes."
+          >
+            <NavigationSection />
+          </DsSection>
+
+          <DsSection
+            id="feedback"
+            title="7. Feedback e estados"
+            description="Alertas, toasts, progresso, skeletons e os estados obrigatórios de carregando, vazio e erro."
+          >
+            <FeedbackSection />
           </DsSection>
         </main>
         <SiteFooter />
