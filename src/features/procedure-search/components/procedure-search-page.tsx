@@ -7,7 +7,7 @@ import { SiteFooter } from "@/components/site-footer";
 import { PageHeader } from "@/components/page-header";
 import { SearchInput, SelectField } from "@/components/form-field";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
+
 import { EmptyState } from "@/components/data-state";
 import {
   DataTable,
@@ -21,13 +21,14 @@ import {
 import {
   REFERENCE_OPTIONS,
   searchProcedures,
-  type Procedure,
+  REFERENCE_LABELS,
+  type ProcedureMatch,
 } from "../data/procedures";
 
 export function ProcedureSearchPage() {
   const [term, setTerm] = useState("");
   const [referencia, setReferencia] = useState("todas");
-  const [results, setResults] = useState<Procedure[] | null>(null);
+  const [results, setResults] = useState<ProcedureMatch[] | null>(null);
 
   function handleSearch(event?: React.FormEvent) {
     event?.preventDefault();

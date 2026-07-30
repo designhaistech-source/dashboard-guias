@@ -27,7 +27,7 @@ const GRUPOS: Record<string, string> = {
 
 const REFERENCIAS: ProcedureReference[] = ["TUSS", "SIGTAP"];
 
-const REFERENCE_LABELS: Record<ProcedureReference, string> = {
+export const REFERENCE_LABELS: Record<ProcedureReference, string> = {
   TUSS: "Tuss",
   SIGTAP: "Sigtap",
 };
