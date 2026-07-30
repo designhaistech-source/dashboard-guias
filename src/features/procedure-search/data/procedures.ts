@@ -54,7 +54,28 @@ function normalize(value: string) {
     .trim();
 }
 
-export function searchProcedures(term: string, referencia: string): Procedure[] {
+/** Similaridade determinística (0-100) entre o termo e o procedimento. */
+function similarityScore(term: string, procedure: Procedure): number {
+  if (term.length === 0) return 100;
+  const descricao = normalize(procedure.descricao);
+  if (procedure.codigo.includes(term)) return 100;
+
+  const words = descricao.split(/\s+/);
+  const exactWord = words.includes(term);
+  const startsWith = descricao.startsWith(term);
+  const ratio = term.length / Math.max(descricao.length, 1);
+
+  let score = ratio * 100;
+  if (exactWord) score += 25;
+  if (startsWith) score += 15;
+
+  return Math.max(1, Math.min(100, Math.round(score * 100) / 100));
+}
+
+export function searchProcedures(
+  term: string,
+  referencia: string,
+): ProcedureMatch[] {
   const q = normalize(term);
   return PROCEDURES.filter((p) => {
     const matchRef = referencia === "todas" || p.referencia === referencia;
@@ -64,5 +85,8 @@ export function searchProcedures(term: string, referencia: string): Procedure[] 
       normalize(p.descricao).includes(q) ||
       normalize(p.grupo).includes(q);
     return matchRef && matchTerm;
-  });
+  })
+    .map((p) => ({ ...p, similaridade: similarityScore(q, p) }))
+    .sort((a, b) => b.similaridade - a.similaridade);
 }
+
