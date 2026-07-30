@@ -162,6 +162,7 @@ export function AppSidebar({ activeKey }: { activeKey: ItemKey }) {
         <UserMenu collapsed={collapsed} />
       </aside>
     </TooltipProvider>
+    </RenderProfiler>
   );
 }
 
