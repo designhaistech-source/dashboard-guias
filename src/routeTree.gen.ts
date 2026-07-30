@@ -14,6 +14,7 @@ import { Route as PrescricaoRouteImport } from './routes/prescricao'
 import { Route as OpmeRouteImport } from './routes/opme'
 import { Route as GuiasRouteImport } from './routes/guias'
 import { Route as EmitirRouteImport } from './routes/emitir'
+import { Route as DocumentosRouteImport } from './routes/documentos'
 import { Route as DesignSystemIconesRouteImport } from './routes/design-system-icones'
 import { Route as DesignSystemRouteImport } from './routes/design-system'
 import { Route as DashboardRouteImport } from './routes/dashboard'
@@ -44,6 +45,11 @@ const EmitirRoute = EmitirRouteImport.update({
   path: '/emitir',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DocumentosRoute = DocumentosRouteImport.update({
+  id: '/documentos',
+  path: '/documentos',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const DesignSystemIconesRoute = DesignSystemIconesRouteImport.update({
   id: '/design-system-icones',
   path: '/design-system-icones',
@@ -70,6 +76,7 @@ export interface FileRoutesByFullPath {
   '/dashboard': typeof DashboardRoute
   '/design-system': typeof DesignSystemRoute
   '/design-system-icones': typeof DesignSystemIconesRoute
+  '/documentos': typeof DocumentosRoute
   '/emitir': typeof EmitirRoute
   '/guias': typeof GuiasRoute
   '/opme': typeof OpmeRoute
@@ -81,6 +88,7 @@ export interface FileRoutesByTo {
   '/dashboard': typeof DashboardRoute
   '/design-system': typeof DesignSystemRoute
   '/design-system-icones': typeof DesignSystemIconesRoute
+  '/documentos': typeof DocumentosRoute
   '/emitir': typeof EmitirRoute
   '/guias': typeof GuiasRoute
   '/opme': typeof OpmeRoute
@@ -93,6 +101,7 @@ export interface FileRoutesById {
   '/dashboard': typeof DashboardRoute
   '/design-system': typeof DesignSystemRoute
   '/design-system-icones': typeof DesignSystemIconesRoute
+  '/documentos': typeof DocumentosRoute
   '/emitir': typeof EmitirRoute
   '/guias': typeof GuiasRoute
   '/opme': typeof OpmeRoute
@@ -106,6 +115,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/design-system'
     | '/design-system-icones'
+    | '/documentos'
     | '/emitir'
     | '/guias'
     | '/opme'
@@ -117,6 +127,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/design-system'
     | '/design-system-icones'
+    | '/documentos'
     | '/emitir'
     | '/guias'
     | '/opme'
@@ -128,6 +139,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/design-system'
     | '/design-system-icones'
+    | '/documentos'
     | '/emitir'
     | '/guias'
     | '/opme'
@@ -140,6 +152,7 @@ export interface RootRouteChildren {
   DashboardRoute: typeof DashboardRoute
   DesignSystemRoute: typeof DesignSystemRoute
   DesignSystemIconesRoute: typeof DesignSystemIconesRoute
+  DocumentosRoute: typeof DocumentosRoute
   EmitirRoute: typeof EmitirRoute
   GuiasRoute: typeof GuiasRoute
   OpmeRoute: typeof OpmeRoute
@@ -184,6 +197,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof EmitirRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/documentos': {
+      id: '/documentos'
+      path: '/documentos'
+      fullPath: '/documentos'
+      preLoaderRoute: typeof DocumentosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/design-system-icones': {
       id: '/design-system-icones'
       path: '/design-system-icones'
@@ -220,6 +240,7 @@ const rootRouteChildren: RootRouteChildren = {
   DashboardRoute: DashboardRoute,
   DesignSystemRoute: DesignSystemRoute,
   DesignSystemIconesRoute: DesignSystemIconesRoute,
+  DocumentosRoute: DocumentosRoute,
   EmitirRoute: EmitirRoute,
   GuiasRoute: GuiasRoute,
   OpmeRoute: OpmeRoute,
