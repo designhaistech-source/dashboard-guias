@@ -21,6 +21,7 @@ import {
   Eye,
 } from "lucide-react";
 import { toast } from "sonner";
+import { AppBreadcrumb } from "@/components/app-breadcrumb";
 import { AppSidebar } from "@/components/app-sidebar";
 import { SiteFooter } from "@/components/site-footer";
 import { PageHeader } from "@/components/page-header";
@@ -502,6 +503,7 @@ function EmitirPage() {
 
       <main className="flex-1 overflow-x-hidden flex flex-col min-h-screen">
         <div className="w-full flex-1 space-y-6 px-6 py-8 pb-16 lg:px-10">
+          <AppBreadcrumb />
           <PageHeader
             title="Emitir Guias"
             description="Escolha entre guias de convênio (TISS) ou guias do SUS e selecione o tipo correspondente para começar."

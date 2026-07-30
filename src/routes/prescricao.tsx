@@ -46,6 +46,7 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { jsPDF } from "jspdf";
 import { toast } from "sonner";
+import { AppBreadcrumb } from "@/components/app-breadcrumb";
 import { AppSidebar } from "@/components/app-sidebar";
 import { SiteFooter } from "@/components/site-footer";
 import { KitsModal } from "@/components/kits-modal";
@@ -487,6 +488,7 @@ function PrescricaoPage() {
       <AppSidebar activeKey="prescricao" />
       <main className="flex-1 flex flex-col min-h-screen">
         <div className="w-full flex-1 space-y-6 px-6 py-8 pb-16 lg:px-10">
+          <AppBreadcrumb />
           <PrescricaoForm />
         </div>
         <SiteFooter />
