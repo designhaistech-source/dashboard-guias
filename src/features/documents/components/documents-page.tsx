@@ -20,7 +20,6 @@ import { SurfaceCard } from "@/components/surface-card";
 import { Field, SelectField } from "@/components/form-field";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Combobox } from "@/components/ui/combobox";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { CID10 } from "@/lib/cid";
 
@@ -36,12 +35,6 @@ import {
   printHtml,
   todayIso,
 } from "../data/documents";
-
-const CID_OPTIONS = CID10.map((c) => ({
-  value: c.codigo,
-  label: `${c.codigo} — ${c.descricao}`,
-  description: c.descricao,
-}));
 
 /** Página de documentos clínicos: relatórios, atestados e declarações. */
 export function DocumentsPage() {
