@@ -1,0 +1,516 @@
+import { useMemo, useState } from "react";
+import {
+  FileText,
+  Stethoscope,
+  CalendarCheck,
+  Printer,
+  Download,
+  BookmarkPlus,
+  ShieldCheck,
+  Sparkles,
+  User,
+} from "lucide-react";
+import { toast } from "sonner";
+
+import { AppBreadcrumb } from "@/components/app-breadcrumb";
+import { AppSidebar } from "@/components/app-sidebar";
+import { SiteFooter } from "@/components/site-footer";
+import { PageHeader } from "@/components/page-header";
+import { SurfaceCard } from "@/components/surface-card";
+import { Field, SelectField } from "@/components/form-field";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Combobox } from "@/components/ui/combobox";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { CID10 } from "@/lib/cid";
+
+import { RichTextEditor } from "./rich-text-editor";
+import {
+  DOCUMENT_VARIABLES,
+  REPORT_TEMPLATES,
+  AFASTAMENTO_OPTIONS,
+  buildAtestado,
+  buildComparecimento,
+  formatDateLong,
+  printHtml,
+  todayIso,
+} from "../data/documents";
+
+const CID_OPTIONS = CID10.map((c) => ({
+  value: c.codigo,
+  label: `${c.codigo} — ${c.descricao}`,
+  description: c.descricao,
+}));
+
+/** Página de documentos clínicos: relatórios, atestados e declarações. */
+export function DocumentsPage() {
+  return (
+    <div className="flex min-h-screen w-full bg-background text-foreground">
+      <AppSidebar activeKey="relatorios" />
+
+      <main className="flex min-h-screen flex-1 flex-col overflow-x-hidden">
+        <div className="w-full flex-1 space-y-6 px-6 py-8 pb-16 lg:px-10">
+          <AppBreadcrumb />
+          <PageHeader
+            title="Relatórios e documentos"
+            description="Emita relatórios médicos, atestados e declarações de comparecimento com dados do paciente, CID e texto gerado automaticamente."
+          />
+
+          <Tabs defaultValue="relatorios" className="space-y-6">
+            <TabsList className="w-full max-w-xl">
+              <TabsTrigger value="relatorios" className="flex-1">
+                <FileText className="icon-optical mr-2 h-4 w-4" aria-hidden />
+                Relatórios
+              </TabsTrigger>
+              <TabsTrigger value="atestados" className="flex-1">
+                <Stethoscope className="icon-optical mr-2 h-4 w-4" aria-hidden />
+                Atestados
+              </TabsTrigger>
+              <TabsTrigger value="comparecimento" className="flex-1">
+                <CalendarCheck className="icon-optical mr-2 h-4 w-4" aria-hidden />
+                Comparecimento
+              </TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="relatorios" className="space-y-6">
+              <ReportsTab />
+            </TabsContent>
+            <TabsContent value="atestados" className="space-y-6">
+              <CertificateTab />
+            </TabsContent>
+            <TabsContent value="comparecimento" className="space-y-6">
+              <AttendanceTab />
+            </TabsContent>
+          </Tabs>
+        </div>
+        <SiteFooter />
+      </main>
+    </div>
+  );
+}
+
+/* ---------------- Ações comuns ---------------- */
+
+function DocumentActions({
+  title,
+  html,
+  paciente,
+  onSaveTemplate,
+  signable,
+}: {
+  title: string;
+  html: string;
+  paciente: string;
+  onSaveTemplate?: () => void;
+  signable?: boolean;
+}) {
+  const disabled = !paciente.trim();
+
+  function handlePrint() {
+    if (disabled) {
+      toast.error("Informe o paciente antes de imprimir.");
+      return;
+    }
+    printHtml(title, paciente, html);
+  }
+
+  return (
+    <div className="flex flex-wrap items-center gap-2">
+      {onSaveTemplate && (
+        <Button type="button" variant="outline" onClick={onSaveTemplate}>
+          <BookmarkPlus className="icon-optical mr-2 h-4 w-4" aria-hidden />
+          Salvar como modelo
+        </Button>
+      )}
+      <Button
+        type="button"
+        variant="outline"
+        onClick={() => toast.success("Documento baixado em PDF (simulação).")}
+      >
+        <Download className="icon-optical mr-2 h-4 w-4" aria-hidden />
+        Baixar PDF
+      </Button>
+      <Button type="button" variant="secondary" onClick={handlePrint}>
+        <Printer className="icon-optical mr-2 h-4 w-4" aria-hidden />
+        Imprimir
+      </Button>
+      {signable && (
+        <Button
+          type="button"
+          onClick={() =>
+            toast.success("Solicitação de assinatura enviada ao VIDaaS (simulação).")
+          }
+        >
+          <ShieldCheck className="icon-optical mr-2 h-4 w-4" aria-hidden />
+          Assinar com VIDaaS
+        </Button>
+      )}
+    </div>
+  );
+}
+
+function PatientField({
+  id,
+  value,
+  onChange,
+}: {
+  id: string;
+  value: string;
+  onChange: (v: string) => void;
+}) {
+  return (
+    <Field id={id} label="Paciente" required>
+      <div className="relative">
+        <User
+          className="icon-optical pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground"
+          aria-hidden
+        />
+        <Input
+          id={id}
+          className="pl-9"
+          placeholder="Digite o nome do beneficiário..."
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+        />
+      </div>
+    </Field>
+  );
+}
+
+function CidFields({
+  cid,
+  onCid,
+}: {
+  cid: string;
+  onCid: (v: string) => void;
+}) {
+  return (
+    <div className="grid gap-4 sm:grid-cols-[10rem_minmax(0,1fr)]">
+      <Field id="cid-codigo" label="CID">
+        <Input
+          id="cid-codigo"
+          className="font-mono"
+          placeholder="CID"
+          value={cid}
+          onChange={(e) => onCid(e.target.value.toUpperCase())}
+        />
+      </Field>
+      <Field id="cid-diagnostico" label="Diagnóstico">
+        <Combobox
+          id="cid-diagnostico"
+          value={cid}
+          onChange={onCid}
+          options={CID_OPTIONS}
+          placeholder="Busque por CID ou descrição..."
+          searchPlaceholder="Digite o código ou a descrição..."
+          emptyMessage="Nenhum CID encontrado."
+          clearable
+        />
+      </Field>
+    </div>
+  );
+}
+
+/* ---------------- Relatórios ---------------- */
+
+function ReportsTab() {
+  const [paciente, setPaciente] = useState("");
+  const [cid, setCid] = useState("");
+  const [modelo, setModelo] = useState("");
+  const [html, setHtml] = useState("");
+
+  const diagnostico =
+    CID10.find((c) => c.codigo === cid)?.descricao ?? "";
+
+  function applyTemplate(value: string) {
+    setModelo(value);
+    const template = REPORT_TEMPLATES.find((t) => t.value === value);
+    if (template) setHtml(template.content);
+  }
+
+  function improveWithAi() {
+    const plain = html.replace(/<[^>]+>/g, "").trim();
+    if (!plain) {
+      toast.error("Escreva o relatório antes de melhorar o texto.");
+      return;
+    }
+    setHtml(
+      `<p>${plain}</p><p>Conduta e orientações foram discutidas com o paciente, que demonstrou compreensão do plano terapêutico proposto. Recomenda-se reavaliação clínica conforme evolução.</p>`,
+    );
+    toast.success("Texto revisado com IA (simulação).");
+  }
+
+  return (
+    <>
+      <SurfaceCard
+        title="Dados do relatório"
+        description="Identifique o paciente e o diagnóstico que será impresso no documento."
+        padding="lg"
+      >
+        <div className="space-y-4">
+          <PatientField id="relatorio-paciente" value={paciente} onChange={setPaciente} />
+          <SelectField
+            id="relatorio-modelo"
+            label="Modelos disponíveis"
+            placeholder="Selecione um modelo salvo"
+            value={modelo}
+            onValueChange={applyTemplate}
+            options={REPORT_TEMPLATES.map((t) => ({ value: t.value, label: t.label }))}
+            hint="Use “Salvar como modelo” após redigir o texto para reaproveitá-lo depois."
+          />
+          <CidFields cid={cid} onCid={setCid} />
+          <p className="text-xs text-muted-foreground">
+            Variáveis que podem ser utilizadas no texto:{" "}
+            {DOCUMENT_VARIABLES.map((v) => (
+              <code
+                key={v}
+                className="mr-1 rounded bg-muted px-1 py-0.5 font-mono text-[11px]"
+              >
+                {v}
+              </code>
+            ))}
+          </p>
+        </div>
+      </SurfaceCard>
+
+      <RichTextEditor
+        ariaLabel="Texto do relatório médico"
+        value={html}
+        onChange={setHtml}
+        placeholder="Redija o relatório médico..."
+        header={
+          <>
+            <div className="min-w-0">
+              <p className="font-display text-sm font-semibold uppercase tracking-wide text-foreground">
+                Relatório médico
+              </p>
+              <p className="mt-0.5 text-xs text-muted-foreground">
+                Paciente: {paciente || "—"}
+                {diagnostico && ` · ${cid} — ${diagnostico}`}
+              </p>
+            </div>
+            <Button type="button" variant="ghost" size="sm" onClick={improveWithAi}>
+              <Sparkles className="icon-optical mr-2 h-4 w-4" aria-hidden />
+              Melhorar texto com IA
+            </Button>
+          </>
+        }
+      />
+
+      <DocumentActions
+        title="Relatório médico"
+        html={html}
+        paciente={paciente}
+        signable
+        onSaveTemplate={() =>
+          toast.success("Modelo salvo e disponível na lista (simulação).")
+        }
+      />
+    </>
+  );
+}
+
+/* ---------------- Atestados ---------------- */
+
+function CertificateTab() {
+  const [paciente, setPaciente] = useState("");
+  const [cid, setCid] = useState("");
+  const [dias, setDias] = useState("1");
+  const [data, setData] = useState(todayIso());
+  const [cidade, setCidade] = useState("");
+  const [html, setHtml] = useState("");
+
+  const gerado = useMemo(
+    () => buildAtestado({ paciente, dias, data, cidade, cid }),
+    [paciente, dias, data, cidade, cid],
+  );
+
+  const conteudo = html || gerado;
+
+  return (
+    <>
+      <SurfaceCard
+        title="Dados do atestado"
+        description="O texto padrão é gerado automaticamente a partir destes campos."
+        padding="lg"
+      >
+        <div className="space-y-4">
+          <PatientField id="atestado-paciente" value={paciente} onChange={setPaciente} />
+          <CidFields cid={cid} onCid={setCid} />
+          <div className="grid gap-4 sm:grid-cols-3">
+            <SelectField
+              id="atestado-dias"
+              label="Dias de afastamento"
+              value={dias}
+              onValueChange={setDias}
+              options={AFASTAMENTO_OPTIONS}
+            />
+            <Field id="atestado-data" label="Data do documento">
+              <Input
+                id="atestado-data"
+                type="date"
+                value={data}
+                onChange={(e) => setData(e.target.value)}
+              />
+            </Field>
+            <Field id="atestado-cidade" label="Cidade" optional>
+              <Input
+                id="atestado-cidade"
+                placeholder="opcional"
+                value={cidade}
+                onChange={(e) => setCidade(e.target.value)}
+              />
+            </Field>
+          </div>
+        </div>
+      </SurfaceCard>
+
+      <RichTextEditor
+        ariaLabel="Texto do atestado"
+        value={conteudo}
+        onChange={setHtml}
+        header={
+          <>
+            <div className="min-w-0">
+              <p className="font-display text-sm font-semibold uppercase tracking-wide text-foreground">
+                Atestado médico
+              </p>
+              <p className="mt-0.5 text-xs text-muted-foreground">
+                Paciente: {paciente || "—"} · {formatDateLong(data)}
+              </p>
+            </div>
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              onClick={() => {
+                setHtml("");
+                toast.success("Texto padrão restaurado.");
+              }}
+            >
+              Restaurar texto padrão
+            </Button>
+          </>
+        }
+      />
+
+      <DocumentActions
+        title="Atestado médico"
+        html={conteudo}
+        paciente={paciente}
+        signable
+      />
+    </>
+  );
+}
+
+/* ---------------- Comparecimento ---------------- */
+
+function AttendanceTab() {
+  const [paciente, setPaciente] = useState("");
+  const [local, setLocal] = useState("");
+  const [cidade, setCidade] = useState("");
+  const [data, setData] = useState(todayIso());
+  const [entrada, setEntrada] = useState("");
+  const [saida, setSaida] = useState("");
+  const [html, setHtml] = useState("");
+
+  const gerado = useMemo(
+    () => buildComparecimento({ paciente, local, cidade, data, entrada, saida }),
+    [paciente, local, cidade, data, entrada, saida],
+  );
+
+  const conteudo = html || gerado;
+
+  return (
+    <>
+      <SurfaceCard
+        title="Dados da declaração"
+        description="Informe o local e os horários de permanência do paciente no atendimento."
+        padding="lg"
+      >
+        <div className="space-y-4">
+          <PatientField id="comp-paciente" value={paciente} onChange={setPaciente} />
+          <Field id="comp-local" label="Local de atendimento">
+            <Input
+              id="comp-local"
+              placeholder="Clínica, hospital ou consultório"
+              value={local}
+              onChange={(e) => setLocal(e.target.value)}
+            />
+          </Field>
+          <div className="grid gap-4 sm:grid-cols-4">
+            <Field id="comp-cidade" label="Cidade" optional>
+              <Input
+                id="comp-cidade"
+                placeholder="opcional"
+                value={cidade}
+                onChange={(e) => setCidade(e.target.value)}
+              />
+            </Field>
+            <Field id="comp-data" label="Data do comparecimento">
+              <Input
+                id="comp-data"
+                type="date"
+                value={data}
+                onChange={(e) => setData(e.target.value)}
+              />
+            </Field>
+            <Field id="comp-entrada" label="Horário de entrada">
+              <Input
+                id="comp-entrada"
+                type="time"
+                value={entrada}
+                onChange={(e) => setEntrada(e.target.value)}
+              />
+            </Field>
+            <Field id="comp-saida" label="Horário de saída">
+              <Input
+                id="comp-saida"
+                type="time"
+                value={saida}
+                onChange={(e) => setSaida(e.target.value)}
+              />
+            </Field>
+          </div>
+        </div>
+      </SurfaceCard>
+
+      <RichTextEditor
+        ariaLabel="Texto da declaração de comparecimento"
+        value={conteudo}
+        onChange={setHtml}
+        header={
+          <>
+            <div className="min-w-0">
+              <p className="font-display text-sm font-semibold uppercase tracking-wide text-foreground">
+                Declaração de comparecimento
+              </p>
+              <p className="mt-0.5 text-xs text-muted-foreground">
+                Paciente: {paciente || "—"} · {formatDateLong(data)}
+              </p>
+            </div>
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              onClick={() => {
+                setHtml("");
+                toast.success("Texto padrão restaurado.");
+              }}
+            >
+              Restaurar texto padrão
+            </Button>
+          </>
+        }
+      />
+
+      <DocumentActions
+        title="Declaração de comparecimento"
+        html={conteudo}
+        paciente={paciente}
+        signable
+      />
+    </>
+  );
+}
