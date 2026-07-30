@@ -1,8 +1,9 @@
 export function SiteFooter() {
   return (
-    <footer className="border-t bg-background mt-auto">
-      <div className="w-full px-6 lg:px-10 py-5 text-center text-xs text-muted-foreground">
-        © 2026 HaisGuias — Todos os direitos reservados. Uma iniciativa de HaisTech.
+    <footer className="mt-auto border-t border-border bg-background">
+      <div className="flex w-full flex-col items-center gap-1 px-6 py-6 text-center text-xs leading-relaxed text-muted-foreground sm:flex-row sm:justify-between sm:gap-4 sm:text-left lg:px-10">
+        <span>© 2026 HaisGuias — Todos os direitos reservados.</span>
+        <span>Uma iniciativa de HaisTech.</span>
       </div>
     </footer>
   );
