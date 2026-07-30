@@ -1,6 +1,6 @@
 import { TUSS } from "@/lib/tuss";
 
-export type ProcedureReference = "TUSS" | "CBHPM" | "AMB" | "SUS";
+export type ProcedureReference = "TUSS" | "SIGTAP";
 
 export interface Procedure {
   codigo: string;
@@ -19,7 +19,12 @@ const GRUPOS: Record<string, string> = {
   "6": "Diárias, taxas e gases medicinais",
 };
 
-const REFERENCIAS: ProcedureReference[] = ["TUSS", "CBHPM", "AMB", "SUS"];
+const REFERENCIAS: ProcedureReference[] = ["TUSS", "SIGTAP"];
+
+const REFERENCE_LABELS: Record<ProcedureReference, string> = {
+  TUSS: "Tuss",
+  SIGTAP: "Sigtap",
+};
 
 /** Base mockada de procedimentos derivada da amostra TUSS. */
 export const PROCEDURES: Procedure[] = TUSS.map((item, index) => ({
