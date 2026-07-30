@@ -501,7 +501,7 @@ function EmitirPage() {
       <AppSidebar activeKey="emitir" />
 
       <main className="flex-1 overflow-x-hidden flex flex-col min-h-screen">
-        <div className="w-full px-6 lg:px-10 py-8 space-y-6">
+        <div className="w-full flex-1 space-y-6 px-6 py-8 pb-16 lg:px-10">
           <PageHeader
             title="Emitir Guias"
             description="Escolha entre guias de convênio (TISS) ou guias do SUS e selecione o tipo correspondente para começar."
