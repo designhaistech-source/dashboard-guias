@@ -7,7 +7,7 @@ import { SiteFooter } from "@/components/site-footer";
 import { PageHeader } from "@/components/page-header";
 import { SearchInput, SelectField } from "@/components/form-field";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
+
 import { EmptyState } from "@/components/data-state";
 import {
   DataTable,
@@ -21,13 +21,14 @@ import {
 import {
   REFERENCE_OPTIONS,
   searchProcedures,
-  type Procedure,
+  REFERENCE_LABELS,
+  type ProcedureMatch,
 } from "../data/procedures";
 
 export function ProcedureSearchPage() {
   const [term, setTerm] = useState("");
   const [referencia, setReferencia] = useState("todas");
-  const [results, setResults] = useState<Procedure[] | null>(null);
+  const [results, setResults] = useState<ProcedureMatch[] | null>(null);
 
   function handleSearch(event?: React.FormEvent) {
     event?.preventDefault();
@@ -124,53 +125,59 @@ export function ProcedureSearchPage() {
                       : "procedimentos encontrados"}
                   </p>
                 </div>
-                <DataTable className="rounded-none border-0">
-                  <DataTableRoot>
-                    <DataTableHeader>
-                      <tr>
-                        <DataTableHead className="w-36">Código</DataTableHead>
-                        <DataTableHead>Descrição</DataTableHead>
-                        <DataTableHead className="w-28">Referência</DataTableHead>
-                        <DataTableHead className="w-20">Porte</DataTableHead>
-                        <DataTableHead className="w-16 text-right">Ações</DataTableHead>
-                      </tr>
-                    </DataTableHeader>
-                    <DataTableBody>
-                      {results.map((p) => (
-                        <DataTableRow key={`${p.referencia}-${p.codigo}`}>
-                          <DataTableCell className="font-mono text-xs">
-                            {p.codigo}
-                          </DataTableCell>
-                          <DataTableCell>
-                            <span className="font-medium">{p.descricao}</span>
-                            <span className="block text-xs text-muted-foreground">
-                              {p.grupo}
-                            </span>
-                          </DataTableCell>
-                          <DataTableCell>
-                            <Badge variant="secondary">{p.referencia}</Badge>
-                          </DataTableCell>
-                          <DataTableCell className="font-mono text-xs">
-                            {p.porte}
-                          </DataTableCell>
-                          <DataTableCell className="text-right">
-                            <Button
-                              type="button"
-                              variant="ghost"
-                              size="icon"
-                              aria-label={`Copiar código ${p.codigo}`}
-                              onClick={() => copiar(p.codigo)}
-                            >
-                              <ClipboardCopy />
-                            </Button>
-                          </DataTableCell>
-                        </DataTableRow>
-                      ))}
-                    </DataTableBody>
-                  </DataTableRoot>
-                </DataTable>
+                <div className="max-h-[32rem] overflow-y-auto">
+                  <DataTable className="rounded-none border-0">
+                    <DataTableRoot>
+                      <DataTableHeader className="sticky top-0 z-10 bg-card">
+                        <tr>
+                          <DataTableHead className="w-40">Código</DataTableHead>
+                          <DataTableHead>Procedimento</DataTableHead>
+                          <DataTableHead className="w-32">
+                            Similaridade
+                          </DataTableHead>
+                          <DataTableHead className="w-28">
+                            Referência
+                          </DataTableHead>
+                          <DataTableHead className="w-16 text-right">
+                            <span className="sr-only">Ações</span>
+                          </DataTableHead>
+                        </tr>
+                      </DataTableHeader>
+                      <DataTableBody>
+                        {results.map((p) => (
+                          <DataTableRow key={`${p.referencia}-${p.codigo}`}>
+                            <DataTableCell className="font-mono text-xs">
+                              {p.codigo}
+                            </DataTableCell>
+                            <DataTableCell className="lowercase">
+                              {p.descricao}
+                            </DataTableCell>
+                            <DataTableCell className="font-mono text-xs">
+                              {p.similaridade}%
+                            </DataTableCell>
+                            <DataTableCell className="text-muted-foreground">
+                              {REFERENCE_LABELS[p.referencia]}
+                            </DataTableCell>
+                            <DataTableCell className="text-right">
+                              <Button
+                                type="button"
+                                variant="ghost"
+                                size="icon"
+                                aria-label={`Copiar código ${p.codigo}`}
+                                onClick={() => copiar(p.codigo)}
+                              >
+                                <ClipboardCopy />
+                              </Button>
+                            </DataTableCell>
+                          </DataTableRow>
+                        ))}
+                      </DataTableBody>
+                    </DataTableRoot>
+                  </DataTable>
+                </div>
               </>
             )}
+
           </section>
         </div>
 

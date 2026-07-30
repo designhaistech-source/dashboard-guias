@@ -4,5 +4,6 @@ export {
   REFERENCE_OPTIONS,
   searchProcedures,
   type Procedure,
+  type ProcedureMatch,
   type ProcedureReference,
 } from "./data/procedures";
