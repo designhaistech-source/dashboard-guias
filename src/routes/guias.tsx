@@ -38,6 +38,7 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import { AppBreadcrumb } from "@/components/app-breadcrumb";
 import { AppSidebar } from "@/components/app-sidebar";
 import { SiteFooter } from "@/components/site-footer";
 import { PageHeader } from "@/components/page-header";
@@ -88,6 +89,7 @@ function Page() {
       <AppSidebar activeKey="extrair" />
       <main className="flex-1 flex flex-col min-h-screen">
         <div className="w-full flex-1 space-y-6 px-6 py-8 pb-16 lg:px-10">
+          <AppBreadcrumb />
           <Upload_Section onProcessed={(row) => setExtraRows((prev) => [row, ...prev])} />
           <History_Section extraRows={extraRows} />
         </div>
