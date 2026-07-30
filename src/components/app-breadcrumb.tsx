@@ -11,10 +11,19 @@ import {
 } from "@/components/ui/breadcrumb";
 
 interface RouteMeta {
-  /** Grupo de navegação exibido como nível intermediário (sem link). */
+  /** Grupo de navegação exibido como nível intermediário. */
   group?: string;
   label: string;
 }
+
+/** Rota inicial de cada grupo, usada para tornar o nível intermediário navegável. */
+const GROUP_HREF: Record<string, string> = {
+  "Início": "/dashboard",
+  "Guias": "/emitir",
+  "Atendimento clínico": "/prescricao",
+  "Design system": "/design-system",
+};
+
 
 /** Mapa de rotas para rótulos de trilha, alinhado aos grupos da sidebar. */
 const ROUTE_META: Record<string, RouteMeta> = {
