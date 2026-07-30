@@ -56,7 +56,7 @@ export function ProcedureSearchPage() {
 
           <form
             onSubmit={handleSearch}
-            className="rounded-xl border border-border bg-card p-4 flex flex-col gap-3 sm:flex-row sm:items-end"
+            className="rounded-xl border border-border bg-card p-4 flex flex-col gap-3 sm:flex-row sm:items-center"
           >
             <div className="flex-1 min-w-0">
               <SearchInput
@@ -73,14 +73,15 @@ export function ProcedureSearchPage() {
               value={referencia}
               onValueChange={setReferencia}
               options={REFERENCE_OPTIONS}
-              className="sm:w-44"
+              className="sm:w-44 space-y-0"
               triggerClassName="w-full"
             />
-            <Button type="submit" size="sm" className="sm:w-32">
+            <Button type="submit" className="sm:w-32">
               <Filter />
               Buscar
             </Button>
           </form>
+
 
           <section
             aria-label="Resultados da busca"
