@@ -48,7 +48,7 @@ export function ProcedureSearchPage() {
       <AppSidebar activeKey="procedimento" />
 
       <main className="flex-1 flex flex-col min-h-screen overflow-x-hidden">
-        <div className="w-full px-6 lg:px-10 py-8 space-y-6 flex-1 pb-24">
+        <div className="w-full flex-1 space-y-6 px-6 py-8 pb-16 lg:px-10">
           <PageHeader
             title="Busca de procedimentos"
             description="Consulte códigos e descrições de procedimentos por referência (Tuss e Sigtap) para usar em guias e solicitações."
