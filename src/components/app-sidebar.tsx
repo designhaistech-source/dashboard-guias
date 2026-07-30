@@ -47,6 +47,7 @@ export function AppSidebar({ activeKey }: { activeKey: ItemKey }) {
   const [collapsed, setCollapsed] = useState(false);
 
   return (
+    <RenderProfiler id="AppSidebar">
     <TooltipProvider delayDuration={150}>
       <aside
         className={`hidden md:flex shrink-0 flex-col sticky top-0 h-screen max-h-screen self-start border-r border-sidebar-border bg-sidebar text-sidebar-foreground transition-[width] duration-200 ${
