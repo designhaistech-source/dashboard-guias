@@ -181,12 +181,16 @@ export function ProcedureSearchPage() {
                     <DataTableRoot>
                       <DataTableHeader className="sticky top-0 z-10 bg-card">
                         <tr>
-                          <DataTableHead className="w-40">Código</DataTableHead>
-                          <DataTableHead>Procedimento</DataTableHead>
-                          <DataTableHead className="w-32">
+                          <DataTableHead className="w-36 whitespace-nowrap">
+                            Código
+                          </DataTableHead>
+                          <DataTableHead className="min-w-[16rem]">
+                            Procedimento
+                          </DataTableHead>
+                          <DataTableHead className="w-32 whitespace-nowrap text-right">
                             Similaridade
                           </DataTableHead>
-                          <DataTableHead className="w-28">
+                          <DataTableHead className="w-32 whitespace-nowrap text-right">
                             Referência
                           </DataTableHead>
                         </tr>
@@ -194,16 +198,16 @@ export function ProcedureSearchPage() {
                       <DataTableBody>
                         {results.map((p) => (
                           <DataTableRow key={`${p.referencia}-${p.codigo}`}>
-                            <DataTableCell className="font-mono text-xs">
+                            <DataTableCell className="whitespace-nowrap font-mono text-xs tabular-nums">
                               {p.codigo}
                             </DataTableCell>
                             <DataTableCell className="lowercase">
                               {p.descricao}
                             </DataTableCell>
-                            <DataTableCell className="font-mono text-xs">
+                            <DataTableCell className="whitespace-nowrap text-right font-mono text-xs tabular-nums">
                               {p.similaridade}%
                             </DataTableCell>
-                            <DataTableCell className="text-muted-foreground">
+                            <DataTableCell className="whitespace-nowrap text-right text-muted-foreground">
                               {REFERENCE_LABELS[p.referencia]}
                             </DataTableCell>
                           </DataTableRow>
