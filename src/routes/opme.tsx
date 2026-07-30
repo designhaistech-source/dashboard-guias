@@ -290,7 +290,7 @@ function OpmePage() {
       <AppSidebar activeKey="opme" />
 
       <main className="flex-1 flex flex-col min-h-screen overflow-x-hidden">
-        <div className="w-full px-6 lg:px-10 py-8 space-y-6 flex-1 pb-24">
+        <div className="w-full flex-1 space-y-6 px-6 py-8 pb-16 lg:px-10">
           <PageHeader
             title="Solicitar OPME"
             description="Solicite autorização de órteses, próteses e materiais especiais junto à operadora, com justificativa clínica e lista de materiais."
