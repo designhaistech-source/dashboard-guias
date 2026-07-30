@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Search, ClipboardCopy, Filter, ScanSearch } from "lucide-react";
+import { Search, ClipboardCopy, Filter, ScanSearch, Lightbulb } from "lucide-react";
 import { toast } from "sonner";
 
 import { AppSidebar } from "@/components/app-sidebar";
