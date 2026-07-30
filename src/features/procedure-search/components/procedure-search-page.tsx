@@ -1,6 +1,5 @@
 import { useState } from "react";
-import { Search, ClipboardCopy, Filter, ScanSearch, Lightbulb } from "lucide-react";
-import { toast } from "sonner";
+import { Search, Filter, ScanSearch, Lightbulb } from "lucide-react";
 
 import { AppSidebar } from "@/components/app-sidebar";
 import { SiteFooter } from "@/components/site-footer";
@@ -52,14 +51,6 @@ export function ProcedureSearchPage() {
     runSearch(term, referencia);
   }
 
-  async function copiar(codigo: string) {
-    try {
-      await navigator.clipboard.writeText(codigo);
-      toast.success(`Código ${codigo} copiado`);
-    } catch {
-      toast.error("Não foi possível copiar o código");
-    }
-  }
 
 
   return (
@@ -198,9 +189,6 @@ export function ProcedureSearchPage() {
                           <DataTableHead className="w-28">
                             Referência
                           </DataTableHead>
-                          <DataTableHead className="w-16 text-right">
-                            <span className="sr-only">Ações</span>
-                          </DataTableHead>
                         </tr>
                       </DataTableHeader>
                       <DataTableBody>
@@ -217,17 +205,6 @@ export function ProcedureSearchPage() {
                             </DataTableCell>
                             <DataTableCell className="text-muted-foreground">
                               {REFERENCE_LABELS[p.referencia]}
-                            </DataTableCell>
-                            <DataTableCell className="text-right">
-                              <Button
-                                type="button"
-                                variant="ghost"
-                                size="icon"
-                                aria-label={`Copiar código ${p.codigo}`}
-                                onClick={() => copiar(p.codigo)}
-                              >
-                                <ClipboardCopy />
-                              </Button>
                             </DataTableCell>
                           </DataTableRow>
                         ))}
