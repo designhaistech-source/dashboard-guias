@@ -60,6 +60,22 @@ export function DesignSystemPage() {
           >
             <PatternsSection />
           </DsSection>
+
+          <DsSection
+            id="navegacao"
+            title="6. Navegação, seleção e sobreposições"
+            description="Tabs, combobox, multiseleção, accordion, modal, menu de ações e tooltip — sempre a partir destes componentes."
+          >
+            <NavigationSection />
+          </DsSection>
+
+          <DsSection
+            id="feedback"
+            title="7. Feedback e estados"
+            description="Alertas, toasts, progresso, skeletons e os estados obrigatórios de carregando, vazio e erro."
+          >
+            <FeedbackSection />
+          </DsSection>
         </main>
         <SiteFooter />
       </div>
