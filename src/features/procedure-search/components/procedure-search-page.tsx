@@ -215,17 +215,6 @@ export function ProcedureSearchPage() {
                             <DataTableCell className="text-muted-foreground">
                               {REFERENCE_LABELS[p.referencia]}
                             </DataTableCell>
-                            <DataTableCell className="text-right">
-                              <Button
-                                type="button"
-                                variant="ghost"
-                                size="icon"
-                                aria-label={`Copiar código ${p.codigo}`}
-                                onClick={() => copiar(p.codigo)}
-                              >
-                                <ClipboardCopy />
-                              </Button>
-                            </DataTableCell>
                           </DataTableRow>
                         ))}
                       </DataTableBody>
