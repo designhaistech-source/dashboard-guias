@@ -65,7 +65,7 @@ export function AppBreadcrumb({ className }: { className?: string }) {
             </Link>
           </BreadcrumbLink>
         </BreadcrumbItem>
-                <BreadcrumbSeparator className="shrink-0" />
+        <BreadcrumbSeparator className="shrink-0" />
         <BreadcrumbItem className="min-w-0 flex-1">
           <BreadcrumbPage
             title={meta.label}
