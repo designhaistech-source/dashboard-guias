@@ -191,7 +191,7 @@ function CidFields({
   onChange: (codigo: string, descricao: string) => void;
 }) {
   return (
-    <div className="grid gap-4 sm:grid-cols-[10rem_minmax(0,1fr)]">
+    <div className="grid min-w-0 gap-4 sm:grid-cols-[minmax(0,10rem)_minmax(0,1fr)]">
       <Field id="cid-codigo" label="CID">
         <Input
           id="cid-codigo"
