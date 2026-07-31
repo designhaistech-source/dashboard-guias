@@ -169,7 +169,7 @@ export function ProcedureSearchPage() {
 
             ) : (
               <>
-                <div className="flex items-center justify-between px-6 py-3 border-b border-border">
+                <div className="flex items-center justify-between px-4 py-3 border-b border-border sm:px-6">
                   <p className="text-sm text-muted-foreground">
                     {results.length}{" "}
                     {results.length === 1
@@ -177,7 +177,36 @@ export function ProcedureSearchPage() {
                       : "procedimentos encontrados"}
                   </p>
                 </div>
-                <div className="max-h-[32rem] overflow-y-auto">
+
+                {/* Mobile: cartões empilhados evitam rolagem horizontal */}
+                <ul className="max-h-[32rem] divide-y divide-border overflow-y-auto md:hidden">
+                  {results.map((p) => (
+                    <li
+                      key={`${p.referencia}-${p.codigo}`}
+                      className="space-y-2 px-4 py-3"
+                    >
+                      <div className="flex items-start justify-between gap-3">
+                        <span className="font-mono text-xs tabular-nums">
+                          {p.codigo}
+                        </span>
+                        <span className="shrink-0 text-xs text-muted-foreground">
+                          {REFERENCE_LABELS[p.referencia]}
+                        </span>
+                      </div>
+                      <p className="text-sm lowercase break-words">
+                        {p.descricao}
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        Similaridade:{" "}
+                        <span className="font-mono tabular-nums">
+                          {p.similaridade}%
+                        </span>
+                      </p>
+                    </li>
+                  ))}
+                </ul>
+
+                <div className="hidden max-h-[32rem] overflow-y-auto md:block">
                   <DataTable className="rounded-none border-0">
                     <DataTableRoot className="table-fixed">
                       <DataTableHeader className="sticky top-0 z-10 bg-card">
@@ -217,6 +246,7 @@ export function ProcedureSearchPage() {
                     </DataTableRoot>
                   </DataTable>
                 </div>
+
               </>
             )}
 
