@@ -1048,7 +1048,7 @@ function DashboardPage() {
                         onMouseEnter={() => setActiveType(i)}
                         onMouseLeave={() => setActiveType(undefined)}
                         className={[
-                          "rounded-md px-2 py-1 -mx-2 cursor-default transition-colors",
+                          "min-w-0 rounded-md px-2 py-1 cursor-default transition-colors",
                           isActive ? "bg-muted/60" : "",
                         ].join(" ")}
                       >
@@ -1121,8 +1121,9 @@ function DashboardPage() {
                   </BarChart>
                 </ResponsiveContainer>
               </div>
-              <div className="overflow-hidden rounded-lg border border-border">
-                <table className="w-full text-sm">
+              <div className="overflow-x-auto rounded-lg border border-border">
+                <table className="w-full min-w-[18rem] text-sm">
+
                   <thead>
                     <tr className="text-left text-muted-foreground bg-muted/40">
                       <th className="px-4 py-2 font-medium">Código</th>

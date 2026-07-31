@@ -86,20 +86,30 @@ export function CidSearchPage() {
 
           <SurfaceCard>
             <Tabs defaultValue="buscar" className="space-y-5">
-              <TabsList>
-                <TabsTrigger value="buscar">
-                  <Search className="icon-optical mr-2 h-4 w-4" aria-hidden />
-                  Buscar
+              <TabsList className="flex w-full gap-1 h-auto rounded-xl border border-border bg-muted p-1 shadow-inner lg:grid lg:grid-cols-3">
+                <TabsTrigger
+                  value="buscar"
+                  className="flex flex-1 min-w-0 items-center justify-center gap-2 rounded-lg px-1.5 py-2.5 font-medium text-muted-foreground transition-all hover:text-foreground sm:px-3 sm:py-3 lg:px-6 data-[state=active]:border data-[state=active]:border-border/60 data-[state=active]:bg-background data-[state=active]:font-semibold data-[state=active]:text-foreground data-[state=active]:shadow-sm"
+                >
+                  <Search className="icon-optical hidden h-4 w-4 shrink-0 lg:block" aria-hidden />
+                  <span className="truncate whitespace-nowrap text-[11px] leading-tight tracking-tight sm:text-xs lg:text-sm">Buscar</span>
                 </TabsTrigger>
-                <TabsTrigger value="favoritos">
-                  <Star className="icon-optical mr-2 h-4 w-4" aria-hidden />
-                  Favoritos ({favorites.length})
+                <TabsTrigger
+                  value="favoritos"
+                  className="flex flex-1 min-w-0 items-center justify-center gap-2 rounded-lg px-1.5 py-2.5 font-medium text-muted-foreground transition-all hover:text-foreground sm:px-3 sm:py-3 lg:px-6 data-[state=active]:border data-[state=active]:border-border/60 data-[state=active]:bg-background data-[state=active]:font-semibold data-[state=active]:text-foreground data-[state=active]:shadow-sm"
+                >
+                  <Star className="icon-optical hidden h-4 w-4 shrink-0 lg:block" aria-hidden />
+                  <span className="truncate whitespace-nowrap text-[11px] leading-tight tracking-tight sm:text-xs lg:text-sm">Favoritos ({favorites.length})</span>
                 </TabsTrigger>
-                <TabsTrigger value="historico">
-                  <History className="icon-optical mr-2 h-4 w-4" aria-hidden />
-                  Histórico
+                <TabsTrigger
+                  value="historico"
+                  className="flex flex-1 min-w-0 items-center justify-center gap-2 rounded-lg px-1.5 py-2.5 font-medium text-muted-foreground transition-all hover:text-foreground sm:px-3 sm:py-3 lg:px-6 data-[state=active]:border data-[state=active]:border-border/60 data-[state=active]:bg-background data-[state=active]:font-semibold data-[state=active]:text-foreground data-[state=active]:shadow-sm"
+                >
+                  <History className="icon-optical hidden h-4 w-4 shrink-0 lg:block" aria-hidden />
+                  <span className="truncate whitespace-nowrap text-[11px] leading-tight tracking-tight sm:text-xs lg:text-sm">Histórico</span>
                 </TabsTrigger>
               </TabsList>
+
 
               <TabsContent value="buscar" className="space-y-4">
                 <div className="relative">
