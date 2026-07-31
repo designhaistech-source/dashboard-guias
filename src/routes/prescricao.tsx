@@ -2304,7 +2304,7 @@ function ActionBtn({
       aria-disabled={disabled}
       aria-pressed={active}
       title={effectiveTitle}
-      className={`inline-flex items-center rounded-lg border font-medium transition-colors icon-optical [&_svg]:shrink-0 ${sizeCls} ${variantCls} disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-transparent`}
+      className={`inline-flex items-center justify-center rounded-lg border font-medium transition-colors icon-optical [&_svg]:shrink-0 ${sizeCls} ${variantCls} disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-transparent`}
     >
       {icon}
       {children}
