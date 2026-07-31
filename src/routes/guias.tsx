@@ -296,6 +296,7 @@ function History_Section({ extraRows }: { extraRows: Row[] }) {
   const allRows = [...extraRows, ...rows];
 
   const [detailRow, setDetailRow] = useState<Row | null>(null);
+  const [codeRow, setCodeRow] = useState<Row | null>(null);
 
   const [filtersOpen, setFiltersOpen] = useState(false);
 
