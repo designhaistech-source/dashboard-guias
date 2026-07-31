@@ -516,6 +516,22 @@ function EmitirPage() {
   const removeOpme = (id: string) =>
     setOpmeItems((o) => o.filter((x) => x.id !== id));
 
+  // Drag & drop reorder (OPME)
+  const [dragOpmeId, setDragOpmeId] = useState<string | null>(null);
+  const onOpmeDrop = (targetId: string) => {
+    if (!dragOpmeId || dragOpmeId === targetId) return setDragOpmeId(null);
+    setOpmeItems((list) => {
+      const from = list.findIndex((x) => x.id === dragOpmeId);
+      const to = list.findIndex((x) => x.id === targetId);
+      if (from < 0 || to < 0) return list;
+      const next = [...list];
+      const [moved] = next.splice(from, 1);
+      next.splice(to, 0, moved);
+      return next;
+    });
+    setDragOpmeId(null);
+  };
+
   // Separar em guias
   const [splitInGuides, setSplitInGuides] = useState(false);
   const filledProceduresCount = procedures.filter((p) => p.code.trim() && p.description.trim()).length;
@@ -1290,7 +1306,7 @@ function EmitirPage() {
               <Section
                 icon={<Wrench className="h-4 w-4" />}
                 title="OPME — Órteses, Próteses e Materiais Especiais"
-                description="Adicione materiais/próteses solicitados (opcional)."
+                description="Arraste para reordenar. Adicione materiais/próteses solicitados (opcional)."
                 action={
                   <Button type="button" size="sm" onClick={addOpme}>
                     <Plus className="h-4 w-4" /> Adicionar OPME
@@ -1306,8 +1322,21 @@ function EmitirPage() {
                   />
                 ) : (
                   <div className="space-y-2">
-                    {opmeItems.map((o) => (
-                      <div key={o.id} className="grid grid-cols-12 gap-2 items-end">
+                    {opmeItems.map((o, idx) => (
+                      <div
+                        key={o.id}
+                        draggable
+                        onDragStart={() => setDragOpmeId(o.id)}
+                        onDragOver={onDragOver}
+                        onDrop={() => onOpmeDrop(o.id)}
+                        className={cn(
+                          "grid grid-cols-12 gap-2 items-end rounded-md",
+                          dragOpmeId === o.id && "opacity-50",
+                        )}
+                      >
+                        <div className="col-span-1 flex items-center justify-center pb-2 cursor-grab active:cursor-grabbing text-muted-foreground">
+                          <GripVertical className="h-4 w-4" />
+                        </div>
                         <div className="col-span-3">
                           <Input
                             value={o.code}
@@ -1315,7 +1344,7 @@ function EmitirPage() {
                             placeholder="Código"
                           />
                         </div>
-                        <div className="col-span-7">
+                        <div className="col-span-6">
                           <Input
                             value={o.description}
                             onChange={(e) =>
@@ -1342,7 +1371,7 @@ function EmitirPage() {
                             variant="ghost"
                             size="icon"
                             onClick={() => removeOpme(o.id)}
-                            aria-label="Remover OPME"
+                            aria-label={`Remover OPME ${idx + 1}`}
                           >
                             <Trash2 className="h-4 w-4 text-destructive" />
                           </Button>
