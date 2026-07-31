@@ -1387,7 +1387,7 @@ function EmitirPage() {
         <SiteFooter />
       </main>
 
-      <Dialog open={previewOpen} onOpenChange={setPreviewOpen}>
+      <Dialog open={previewOpen && canPreview} onOpenChange={setPreviewOpen}>
         <DialogContent className="max-w-[1200px] w-[95vw] max-h-[95vh] overflow-auto">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
