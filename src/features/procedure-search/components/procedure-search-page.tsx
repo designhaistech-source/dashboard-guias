@@ -62,7 +62,7 @@ export function ProcedureSearchPage() {
         <div className="w-full flex-1 space-y-6 px-6 py-8 pb-16 lg:px-10">
           <AppBreadcrumb />
           <PageHeader
-            title="Busca de procedimentos"
+            title="Buscar procedimento"
             description="Consulte códigos e descrições de procedimentos por referência (Tuss e Sigtap) para usar em guias e solicitações."
           />
 

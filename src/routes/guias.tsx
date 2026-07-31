@@ -177,7 +177,7 @@ function Upload_Section({ onProcessed }: { onProcessed: (row: Row) => void }) {
   return (
     <section className="space-y-4">
       <PageHeader
-        title="Processamento de guias"
+        title="Extrair dados da guia"
         description="Envie arquivos PDF ou imagens para extração automática dos dados."
         actions={<RequiredFieldsModal />}
       />
