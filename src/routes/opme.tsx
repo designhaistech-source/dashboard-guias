@@ -576,7 +576,7 @@ function OpmePage() {
                               id={`qtd-${m.id}`}
                               type="number"
                               min={1}
-                              className="h-9 text-center font-mono"
+                              className="h-9 w-full min-w-0 px-1.5 text-center font-mono text-base lg:text-sm"
                               value={m.qtd}
                               onChange={(e) =>
                                 updateMaterial(m.id, {
