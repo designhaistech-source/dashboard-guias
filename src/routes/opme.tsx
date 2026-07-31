@@ -549,7 +549,10 @@ function OpmePage() {
                             value={m.enq || undefined}
                             onValueChange={(v) => updateMaterial(m.id, { enq: v })}
                           >
-                            <SelectTrigger className="h-9" aria-label="Enquadramento técnico">
+                            <SelectTrigger
+                              className="h-9 w-full min-w-0 px-2.5 text-base [&>span]:truncate lg:text-sm"
+                              aria-label="Enquadramento técnico"
+                            >
                               <SelectValue placeholder="—" />
                             </SelectTrigger>
                             <SelectContent>
