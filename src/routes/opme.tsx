@@ -146,8 +146,9 @@ function OpmePage() {
   const [justificativa, setJustificativa] = useState("");
 
   // Materiais
+  // Stable initial id keeps SSR and client markup identical (no hydration mismatch).
   const [materiais, setMateriais] = useState<Material[]>([
-    { id: uid(), tiss: "", nome: "", enq: "", qtd: 1 },
+    { id: "material-1", tiss: "", nome: "", enq: "", qtd: 1 },
   ]);
 
   // Profissional
