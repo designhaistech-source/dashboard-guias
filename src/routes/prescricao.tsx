@@ -1752,7 +1752,7 @@ function PrescricaoForm() {
             <button
               type="button"
               onClick={() => setBuscaCollapsed((v) => !v)}
-              className="flex items-start gap-2 text-left group min-w-0 flex-1"
+              className="flex items-start gap-2 text-left group min-w-0 w-full sm:flex-1"
               aria-expanded={!buscaCollapsed}
             >
               <ChevronDown
