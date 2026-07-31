@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Search, Filter, ScanSearch, Lightbulb } from "lucide-react";
+import { Search, ScanSearch, Lightbulb } from "lucide-react";
 
 import { AppBreadcrumb } from "@/components/app-breadcrumb";
 import { AppSidebar } from "@/components/app-sidebar";
@@ -89,7 +89,6 @@ export function ProcedureSearchPage() {
               triggerClassName="w-full"
             />
             <Button type="submit" className="sm:w-32">
-              <Filter />
               Buscar
             </Button>
           </form>
