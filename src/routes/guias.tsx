@@ -131,10 +131,11 @@ function Upload_Section({ onProcessed }: { onProcessed: (row: Row) => void }) {
 
     setQueue((prev) => [...newItems, ...prev]);
     toast.success(
-      files.length === 1
-        ? `Arquivo selecionado: ${files[0].name}`
-        : `${files.length} arquivos selecionados`,
+      list.length === 1
+        ? `Arquivo selecionado: ${list[0].name}`
+        : `${list.length} arquivos selecionados`,
     );
+
 
     newItems.forEach((item) => {
       const interval = setInterval(() => {
