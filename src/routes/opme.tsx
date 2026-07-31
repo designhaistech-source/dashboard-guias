@@ -525,8 +525,8 @@ function OpmePage() {
                           </label>
                           <Input
                             id={`nome-${m.id}`}
-                            className="h-9"
-                            placeholder="Digite TISS, nome comercial ou técnico..."
+                            className="h-9 w-full min-w-0 text-sm text-ellipsis"
+                            placeholder="Buscar material..."
                             value={m.nome}
                             onChange={(e) => autoFillFromCatalogo(m.id, e.target.value)}
                             list={`opme-nome-${idx}`}
