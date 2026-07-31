@@ -49,6 +49,8 @@ import { Combobox, MultiSelect } from "@/components/ui/combobox";
 import { Badge } from "@/components/ui/badge";
 import { EmptyState } from "@/components/data-state";
 import { Chip } from "@/components/ui/chip";
+import { CameraCaptureDialog } from "@/components/camera-capture-dialog";
+
 
 export const Route = createFileRoute("/guias")({
   head: () => ({
