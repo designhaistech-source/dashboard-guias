@@ -296,12 +296,35 @@ function History_Section({ extraRows }: { extraRows: Row[] }) {
 
   const [detailRow, setDetailRow] = useState<Row | null>(null);
 
+  const [filtersOpen, setFiltersOpen] = useState(false);
+
   return (
     <section className="space-y-4">
-      <h2 className="font-display text-xl font-semibold tracking-tight">Histórico de processamento</h2>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <h2 className="font-display text-xl font-semibold tracking-tight">Histórico de processamento</h2>
+        {/* No mobile os filtros ficam recolhidos para que a lista continue visível. */}
+        <Button
+          variant="secondary"
+          size="sm"
+          className="lg:hidden"
+          aria-expanded={filtersOpen}
+          aria-controls="history-filters"
+          onClick={() => setFiltersOpen((v) => !v)}
+        >
+          <SlidersHorizontal className="h-4 w-4" aria-hidden="true" />
+          Filtros
+          <ChevronDown
+            className={`h-4 w-4 transition-transform ${filtersOpen ? "rotate-180" : ""}`}
+            aria-hidden="true"
+          />
+        </Button>
+      </div>
 
-
-      <div className="flex flex-col gap-3 sm:grid sm:grid-cols-2 sm:items-center lg:flex lg:flex-row lg:flex-wrap">
+      <div
+        id="history-filters"
+        hidden={!filtersOpen ? undefined : undefined}
+        className={`${filtersOpen ? "flex" : "hidden"} flex-col gap-3 rounded-xl border border-border bg-card p-4 sm:grid sm:grid-cols-2 sm:items-center lg:flex lg:flex-row lg:flex-wrap lg:border-0 lg:bg-transparent lg:p-0 ${filtersOpen ? "" : "lg:flex"}`}
+      >
         <div className="w-full min-w-0 sm:col-span-2 lg:w-auto lg:flex-1 lg:min-w-[240px] lg:max-w-md">
           <SearchInput placeholder="Buscar por arquivo ou paciente" />
         </div>
@@ -337,8 +360,53 @@ function History_Section({ extraRows }: { extraRows: Row[] }) {
         </button>
       </div>
 
+      {/* Mobile: cards tocáveis, sem scroll horizontal. */}
+      <ul className="space-y-3 lg:hidden">
+        {allRows.map((r, i) => (
+          <li key={i} className="rounded-xl border border-border bg-card p-4">
+            <div className="flex min-w-0 items-start justify-between gap-3">
+              <div className="min-w-0">
+                <div className="flex min-w-0 items-center gap-2">
+                  <span className="truncate text-sm font-medium">{r.file}</span>
+                  {r.warn && <AlertTriangle className="h-4 w-4 shrink-0 text-warning" aria-hidden="true" />}
+                </div>
+                <p className="mt-0.5 truncate text-sm text-muted-foreground">{r.patient}</p>
+              </div>
+              <StatusBadge status={r.status} />
+            </div>
+            <dl className="mt-3 grid grid-cols-2 gap-2 text-xs text-muted-foreground">
+              <div className="min-w-0">
+                <dt className="sr-only">ID da guia</dt>
+                <dd className="truncate">ID {r.id}</dd>
+              </div>
+              <div className="min-w-0">
+                <dt className="sr-only">Data de envio</dt>
+                <dd className="truncate">{r.date}</dd>
+              </div>
+            </dl>
+            <div className="mt-3 flex items-center justify-between gap-3">
+              <TypeBadge type={r.type} />
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  disabled={r.status === "Erro"}
+                  onClick={() => setDetailRow(r)}
+                >
+                  <Eye className="h-4 w-4" aria-hidden="true" />
+                  Ver
+                </Button>
+                <Button variant="ghost" size="sm" aria-label="Copiar dados" disabled={r.status === "Erro"}>
+                  <ClipboardCopy className="h-4 w-4" aria-hidden="true" />
+                </Button>
+              </div>
+            </div>
+          </li>
+        ))}
+      </ul>
+
       <div className="overflow-hidden rounded-xl border border-border bg-card">
-        <div className="w-full overflow-x-auto">
+        <div className="hidden w-full overflow-x-auto lg:block">
           <table className="w-full min-w-[880px] text-sm">
             <thead>
               <tr className="text-left text-muted-foreground bg-muted/40">
@@ -392,6 +460,7 @@ function History_Section({ extraRows }: { extraRows: Row[] }) {
             </tbody>
           </table>
         </div>
+
 
         <div className="flex flex-col gap-4 border-t border-border px-4 py-4 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between sm:px-6">
           <div className="text-sm text-muted-foreground">
