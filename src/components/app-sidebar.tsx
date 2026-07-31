@@ -42,7 +42,9 @@ type ItemKey =
   | "opme"
   | "relatorios"
   | "cid"
+  | "qa-responsividade"
   | "ajuda";
+
 
 
 export function AppSidebar({ activeKey }: { activeKey: ItemKey }) {
