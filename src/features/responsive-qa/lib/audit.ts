@@ -55,10 +55,13 @@ export function auditDocument(doc: Document): QaReport {
     if (!style || isHidden(el, style)) continue;
     if (style.position === "fixed") continue;
 
+    // Reticências são um corte intencional (truncate) e não contam como falha.
     const clipsText =
+      style.textOverflow !== "ellipsis" &&
       el.children.length === 0 &&
       (el.textContent ?? "").trim().length > 0 &&
       el.scrollWidth > el.clientWidth + 1;
+
 
     if (clipsText) {
       issues.push({
