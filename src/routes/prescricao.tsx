@@ -1747,7 +1747,8 @@ function PrescricaoForm() {
       <section id="sec-medicamentos" className="scroll-mt-4 space-y-5">
 
           <div className="rounded-2xl border border-border bg-card shadow-xs p-5 space-y-4">
-            <div className="flex items-start justify-between gap-3">
+            <div className="flex flex-col items-start gap-2 sm:flex-row sm:items-start sm:justify-between sm:gap-3">
+
             <button
               type="button"
               onClick={() => setBuscaCollapsed((v) => !v)}
