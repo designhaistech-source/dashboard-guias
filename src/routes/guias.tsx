@@ -493,6 +493,11 @@ function History_Section({ extraRows }: { extraRows: Row[] }) {
       </div>
 
       <GuideDetailsModal row={detailRow} onClose={() => setDetailRow(null)} />
+      <ProcedureCodeModal
+        open={codeRow !== null}
+        onOpenChange={(next) => !next && setCodeRow(null)}
+        term={codeRow?.patient ?? ""}
+      />
     </section>
   );
 }
