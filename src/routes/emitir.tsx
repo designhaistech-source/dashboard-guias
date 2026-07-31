@@ -1420,7 +1420,8 @@ function EmitirPage() {
                 nas guias, evitando retrabalho. Você pode editá-las a qualquer momento.
               </span>
             </div>
-          </div>
+          </DialogBody>
+
           <DialogFooter className="gap-2 sm:gap-2">
             <Button variant="outline" onClick={() => setPrefsOpen(false)}>Fechar</Button>
             <Button onClick={savePrefs}>
