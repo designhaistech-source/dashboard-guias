@@ -192,7 +192,7 @@ function CidFields({
   onChange: (codigo: string, descricao: string) => void;
 }) {
   return (
-    <div className="grid min-w-0 gap-4 sm:grid-cols-[minmax(0,10rem)_minmax(0,1fr)]">
+    <div className="grid min-w-0 gap-4 lg:grid-cols-[minmax(0,10rem)_minmax(0,1fr)]">
       <Field id="cid-codigo" label="CID">
         <Input
           id="cid-codigo"
@@ -359,7 +359,7 @@ function CertificateTab() {
         <div className="space-y-4">
           <PatientField id="atestado-paciente" value={paciente} onChange={setPaciente} />
           <CidFields cid={cid} descricao={diagnosticoSelecionado} onChange={handleCid} />
-          <div className="grid gap-4 sm:grid-cols-3">
+          <div className="grid min-w-0 gap-4 sm:grid-cols-2 lg:grid-cols-3">
             <SelectField
               id="atestado-dias"
               label="Dias de afastamento"
@@ -461,7 +461,7 @@ function AttendanceTab() {
               onChange={(e) => setLocal(e.target.value)}
             />
           </Field>
-          <div className="grid gap-4 sm:grid-cols-4">
+          <div className="grid min-w-0 gap-4 sm:grid-cols-2 lg:grid-cols-4">
             <Field id="comp-cidade" label="Cidade" optional>
               <Input
                 id="comp-cidade"
