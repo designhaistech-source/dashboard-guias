@@ -509,9 +509,12 @@ function OpmePage() {
                           >
                             Código TISS
                           </label>
+                          {/* text-base on mobile avoids iOS Safari's focus zoom (which shifts the layout). */}
                           <Input
                             id={`tiss-${m.id}`}
-                            className="h-9 font-mono text-xs"
+                            inputMode="numeric"
+                            maxLength={12}
+                            className="h-9 w-full min-w-0 px-2.5 font-mono text-base tracking-tight lg:text-xs"
                             placeholder="TISS"
                             value={m.tiss}
                             onChange={(e) => updateMaterial(m.id, { tiss: e.target.value })}
@@ -526,7 +529,7 @@ function OpmePage() {
                           </label>
                           <Input
                             id={`nome-${m.id}`}
-                            className="h-9 w-full min-w-0 text-sm text-ellipsis"
+                            className="h-9 w-full min-w-0 px-2.5 text-base text-ellipsis lg:text-sm"
                             placeholder="Buscar material..."
                             value={m.nome}
                             onChange={(e) => autoFillFromCatalogo(m.id, e.target.value)}
@@ -546,7 +549,10 @@ function OpmePage() {
                             value={m.enq || undefined}
                             onValueChange={(v) => updateMaterial(m.id, { enq: v })}
                           >
-                            <SelectTrigger className="h-9" aria-label="Enquadramento técnico">
+                            <SelectTrigger
+                              className="h-9 w-full min-w-0 px-2.5 text-base [&>span]:truncate lg:text-sm"
+                              aria-label="Enquadramento técnico"
+                            >
                               <SelectValue placeholder="—" />
                             </SelectTrigger>
                             <SelectContent>
@@ -570,7 +576,7 @@ function OpmePage() {
                               id={`qtd-${m.id}`}
                               type="number"
                               min={1}
-                              className="h-9 text-center font-mono"
+                              className="h-9 w-full min-w-0 px-1.5 text-center font-mono text-base lg:text-sm"
                               value={m.qtd}
                               onChange={(e) =>
                                 updateMaterial(m.id, {
@@ -604,7 +610,7 @@ function OpmePage() {
                           <div className="relative">
                             <label
                               htmlFor={`spec-${m.id}`}
-                              className="mb-1 block text-xs font-medium text-muted-foreground"
+                              className="mb-1 block truncate text-xs font-medium text-muted-foreground"
                             >
                               Especificação de{" "}
                               {m.nome.trim() || `material ${idx + 1}`} (opcional)
@@ -613,7 +619,7 @@ function OpmePage() {
                               id={`spec-${m.id}`}
                               rows={2}
                               maxLength={300}
-                              className="bg-muted/30 pb-7 focus:bg-background"
+                              className="bg-muted/30 pb-7 text-base focus:bg-background lg:text-sm"
                               placeholder="Ex.: fabricante/distribuidor, modelo, dimensões ou marca de referência"
                               value={spec}
                               onChange={(e) => updateMaterial(m.id, { spec: e.target.value })}
