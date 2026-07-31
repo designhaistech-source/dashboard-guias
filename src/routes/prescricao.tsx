@@ -2500,14 +2500,16 @@ function MedRow({
       <div className="min-w-0">
         <div className="flex items-center gap-2 min-w-0">
           <span className="font-medium text-sm text-foreground truncate">{m.nome}</span>
-          <span className="text-xs text-muted-foreground truncate hidden sm:inline">
+          <span className="text-xs text-muted-foreground truncate hidden xl:inline">
             · {m.forma}
           </span>
         </div>
         <div className="mt-0.5 text-[11px] text-muted-foreground truncate">
+          <span className="xl:hidden">{m.forma} · </span>
           {m.principios}
         </div>
       </div>
+
       <div className="flex items-center gap-1.5 shrink-0">
         {m.alerta && (
           <span
