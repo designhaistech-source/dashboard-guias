@@ -13,6 +13,7 @@ import {
   CheckCircle2,
   XCircle,
   ChevronDown,
+  SlidersHorizontal,
   ChevronLeft,
   ChevronRight,
   ListChecks,
@@ -296,12 +297,39 @@ function History_Section({ extraRows }: { extraRows: Row[] }) {
 
   const [detailRow, setDetailRow] = useState<Row | null>(null);
 
+  const [filtersOpen, setFiltersOpen] = useState(false);
+
   return (
     <section className="space-y-4">
-      <h2 className="font-display text-xl font-semibold tracking-tight">Histórico de processamento</h2>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <h2 className="font-display text-xl font-semibold tracking-tight">Histórico de processamento</h2>
+        {/* No mobile os filtros ficam recolhidos para que a lista continue visível. */}
+        <Button
+          variant="secondary"
+          size="sm"
+          className="lg:hidden"
+          aria-expanded={filtersOpen}
+          aria-controls="history-filters"
+          onClick={() => setFiltersOpen((v) => !v)}
+        >
+          <SlidersHorizontal className="h-4 w-4" aria-hidden="true" />
+          Filtros
+          <ChevronDown
+            className={`h-4 w-4 transition-transform ${filtersOpen ? "rotate-180" : ""}`}
+            aria-hidden="true"
+          />
+        </Button>
+      </div>
 
+      <div
+        id="history-filters"
+        className={
+          filtersOpen
+            ? "flex flex-col gap-3 rounded-xl border border-border bg-card p-4 sm:grid sm:grid-cols-2 sm:items-center lg:flex lg:flex-row lg:flex-wrap lg:border-0 lg:bg-transparent lg:p-0"
+            : "hidden gap-3 lg:flex lg:flex-row lg:flex-wrap lg:items-center"
+        }
+      >
 
-      <div className="flex flex-col gap-3 sm:grid sm:grid-cols-2 sm:items-center lg:flex lg:flex-row lg:flex-wrap">
         <div className="w-full min-w-0 sm:col-span-2 lg:w-auto lg:flex-1 lg:min-w-[240px] lg:max-w-md">
           <SearchInput placeholder="Buscar por arquivo ou paciente" />
         </div>
@@ -337,8 +365,53 @@ function History_Section({ extraRows }: { extraRows: Row[] }) {
         </button>
       </div>
 
+      {/* Mobile: cards tocáveis, sem scroll horizontal. */}
+      <ul className="space-y-3 lg:hidden">
+        {allRows.map((r, i) => (
+          <li key={i} className="rounded-xl border border-border bg-card p-4">
+            <div className="flex min-w-0 items-start justify-between gap-3">
+              <div className="min-w-0">
+                <div className="flex min-w-0 items-center gap-2">
+                  <span className="truncate text-sm font-medium">{r.file}</span>
+                  {r.warn && <AlertTriangle className="h-4 w-4 shrink-0 text-warning" aria-hidden="true" />}
+                </div>
+                <p className="mt-0.5 truncate text-sm text-muted-foreground">{r.patient}</p>
+              </div>
+              <StatusBadge status={r.status} />
+            </div>
+            <dl className="mt-3 grid grid-cols-2 gap-2 text-xs text-muted-foreground">
+              <div className="min-w-0">
+                <dt className="sr-only">ID da guia</dt>
+                <dd className="truncate">ID {r.id}</dd>
+              </div>
+              <div className="min-w-0">
+                <dt className="sr-only">Data de envio</dt>
+                <dd className="truncate">{r.date}</dd>
+              </div>
+            </dl>
+            <div className="mt-3 flex items-center justify-between gap-3">
+              <TypeBadge type={r.type} />
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  disabled={r.status === "Erro"}
+                  onClick={() => setDetailRow(r)}
+                >
+                  <Eye className="h-4 w-4" aria-hidden="true" />
+                  Ver
+                </Button>
+                <Button variant="ghost" size="sm" aria-label="Copiar dados" disabled={r.status === "Erro"}>
+                  <ClipboardCopy className="h-4 w-4" aria-hidden="true" />
+                </Button>
+              </div>
+            </div>
+          </li>
+        ))}
+      </ul>
+
       <div className="overflow-hidden rounded-xl border border-border bg-card">
-        <div className="w-full overflow-x-auto">
+        <div className="hidden w-full overflow-x-auto lg:block">
           <table className="w-full min-w-[880px] text-sm">
             <thead>
               <tr className="text-left text-muted-foreground bg-muted/40">
@@ -393,6 +466,7 @@ function History_Section({ extraRows }: { extraRows: Row[] }) {
           </table>
         </div>
 
+
         <div className="flex flex-col gap-4 border-t border-border px-4 py-4 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between sm:px-6">
           <div className="text-sm text-muted-foreground">
             Mostrando 1 a 10 de 130 resultados
@@ -416,6 +490,8 @@ function History_Section({ extraRows }: { extraRows: Row[] }) {
 
 function GuideDetailsModal({ row, onClose }: { row: Row | null; onClose: () => void }) {
   const open = row !== null;
+  // No mobile as duas colunas viram abas: a imagem não empurra mais os dados.
+  const [mobileTab, setMobileTab] = useState<"guia" | "dados">("dados");
   const details = row
     ? {
         header: [
@@ -469,7 +545,15 @@ function GuideDetailsModal({ row, onClose }: { row: Row | null; onClose: () => v
     : null;
 
   return (
-    <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
+    <Dialog
+      open={open}
+      onOpenChange={(v) => {
+        if (!v) {
+          setMobileTab("dados");
+          onClose();
+        }
+      }}
+    >
       <DialogContent size="xl">
         <DialogHeader>
           <div className="flex items-center gap-2">
@@ -486,11 +570,31 @@ function GuideDetailsModal({ row, onClose }: { row: Row | null; onClose: () => v
               <TypeBadge type={row.type} />
             </div>
           )}
+          {row && (
+            <div className="mt-4 grid grid-cols-2 gap-1 rounded-lg bg-muted p-1 lg:hidden" role="tablist">
+              {(["dados", "guia"] as const).map((tab) => (
+                <button
+                  key={tab}
+                  type="button"
+                  role="tab"
+                  aria-selected={mobileTab === tab}
+                  onClick={() => setMobileTab(tab)}
+                  className={`rounded-md px-3 py-2 text-sm font-medium transition-colors ${
+                    mobileTab === tab
+                      ? "bg-card text-foreground shadow-sm"
+                      : "text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  {tab === "dados" ? "Detalhamento" : "Imagem da guia"}
+                </button>
+              ))}
+            </div>
+          )}
         </DialogHeader>
 
         {row && details && (
           <DialogBody className="grid grid-cols-1 lg:grid-cols-2 gap-6 bg-muted/30">
-            <div className="lg:sticky lg:top-0 lg:self-start lg:h-[calc(92vh-3rem)] rounded-xl border border-border bg-card p-4 sm:p-6 flex flex-col gap-4 min-h-0">
+            <div className={`${mobileTab === "guia" ? "flex" : "hidden"} lg:!flex lg:sticky lg:top-0 lg:self-start h-[65vh] lg:h-[calc(92vh-3rem)] rounded-xl border border-border bg-card p-4 sm:p-6 flex-col gap-4 min-h-0`}>
               <div className="text-sm font-medium truncate">Arquivo enviado: {row.file}</div>
               <div className="flex-1 min-h-0">
                 <GuidePreview src={guiaMock.url} alt={row.file} />
@@ -505,7 +609,7 @@ function GuideDetailsModal({ row, onClose }: { row: Row | null; onClose: () => v
 
 
 
-            <div className="space-y-6 min-w-0">
+            <div className={`${mobileTab === "dados" ? "block" : "hidden"} space-y-6 min-w-0 lg:block`}>
               <DetailCard title="Cabeçalho" icon={<Info className="h-5 w-5 text-primary" />} items={details.header} />
               <DetailCard title="Beneficiário" icon={<Info className="h-5 w-5 text-primary" />} items={details.beneficiary} />
               <DetailCard title="Prestador solicitante" icon={<Info className="h-5 w-5 text-primary" />} items={details.solicitante} />
