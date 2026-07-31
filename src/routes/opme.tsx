@@ -505,7 +505,7 @@ function OpmePage() {
                         <div className="space-y-1 lg:space-y-0">
                           <label
                             htmlFor={`tiss-${m.id}`}
-                            className="block text-xs font-medium text-muted-foreground lg:hidden"
+                            className="block whitespace-nowrap text-xs font-medium text-muted-foreground lg:hidden"
                           >
                             Código TISS
                           </label>
@@ -520,7 +520,7 @@ function OpmePage() {
                         <div className="space-y-1 lg:space-y-0">
                           <label
                             htmlFor={`nome-${m.id}`}
-                            className="block text-xs font-medium text-muted-foreground lg:hidden"
+                            className="block whitespace-nowrap text-xs font-medium text-muted-foreground lg:hidden"
                           >
                             Nome comercial
                           </label>
@@ -539,7 +539,7 @@ function OpmePage() {
                           </datalist>
                         </div>
                         <div className="space-y-1 lg:space-y-0">
-                          <span className="block text-xs font-medium text-muted-foreground lg:hidden">
+                          <span className="block whitespace-nowrap text-xs font-medium text-muted-foreground lg:hidden">
                             Enquadramento técnico
                           </span>
                           <Select
@@ -562,7 +562,7 @@ function OpmePage() {
                           <div className="w-24 space-y-1 lg:w-auto lg:space-y-0">
                             <label
                               htmlFor={`qtd-${m.id}`}
-                              className="block text-xs font-medium text-muted-foreground lg:hidden"
+                              className="block whitespace-nowrap text-xs font-medium text-muted-foreground lg:hidden"
                             >
                               Qtd.
                             </label>
