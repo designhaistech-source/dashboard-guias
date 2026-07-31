@@ -77,7 +77,10 @@ export function DocumentsPage() {
                 className={appTabsTriggerClass}
               >
                 <CalendarCheck className={appTabsIconClass} aria-hidden />
-                <span className={appTabsLabelClass}>Comparecimento</span>
+                <span className={appTabsLabelClass}>
+                  <span className="xs:hidden">Compar.</span>
+                  <span className="hidden xs:inline">Comparecimento</span>
+                </span>
               </TabsTrigger>
             </TabsList>
 

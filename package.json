@@ -15,7 +15,8 @@
     "ds:tokens": "node scripts/visual/check-design-tokens.mjs",
     "ds:visual": "python3 scripts/visual/visual-regression.py",
     "ds:visual:update": "python3 scripts/visual/visual-regression.py --update",
-    "ds:validate": "bash scripts/visual/validate.sh"
+    "ds:validate": "bash scripts/visual/validate.sh",
+    "qa:tabs": "python3 scripts/check-comparecimento-tabs.py"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
