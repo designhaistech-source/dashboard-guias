@@ -21,6 +21,12 @@ import {
   Eye,
 } from "lucide-react";
 import { toast } from "sonner";
+import {
+  appTabsIconClass,
+  appTabsLabelClass,
+  appTabsListClass,
+  appTabsTriggerClass,
+} from "@/components/app-tabs";
 import { AppBreadcrumb } from "@/components/app-breadcrumb";
 import { AppSidebar } from "@/components/app-sidebar";
 import { SiteFooter } from "@/components/site-footer";
@@ -619,17 +625,17 @@ function EmitirPage() {
             value={convenioId}
             onValueChange={(v) => setConvenioId(v as ConvenioId)}
           >
-            <TabsList className="w-full h-auto p-1 bg-muted border border-border shadow-inner grid grid-cols-2 gap-1 rounded-xl">
+            <TabsList className={appTabsListClass}>
               {CONVENIOS.map((c) => {
                 const Icon = c.id === "tiss" ? Shield : Landmark;
                 return (
                   <TabsTrigger
                     key={c.id}
                     value={c.id}
-                    className="flex min-w-0 items-center justify-center gap-2 rounded-lg px-2 py-2.5 font-medium text-muted-foreground transition-all hover:text-foreground sm:gap-2.5 sm:px-3 sm:py-3 lg:px-6 data-[state=active]:border data-[state=active]:border-border/60 data-[state=active]:bg-background data-[state=active]:font-semibold data-[state=active]:text-foreground data-[state=active]:shadow-sm"
+                    className={appTabsTriggerClass}
                   >
-                    <Icon className="h-4 w-4 shrink-0" />
-                    <span className="min-w-0 truncate text-xs tracking-tight sm:text-sm">
+                    <Icon className={appTabsIconClass} />
+                    <span className={appTabsLabelClass}>
                       <span className="lg:hidden">{c.short}</span>
                       <span className="hidden lg:inline">{c.label}</span>
                     </span>

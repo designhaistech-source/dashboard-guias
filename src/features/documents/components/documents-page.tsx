@@ -12,6 +12,12 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 
+import {
+  appTabsIconClass,
+  appTabsLabelClass,
+  appTabsListClass,
+  appTabsTriggerClass,
+} from "@/components/app-tabs";
 import { AppBreadcrumb } from "@/components/app-breadcrumb";
 import { AppSidebar } from "@/components/app-sidebar";
 import { SiteFooter } from "@/components/site-footer";
@@ -51,27 +57,27 @@ export function DocumentsPage() {
           />
 
           <Tabs defaultValue="relatorios" className="space-y-6">
-            <TabsList className="flex w-full gap-1 h-auto rounded-xl border border-border bg-muted p-1 shadow-inner lg:grid lg:grid-cols-3">
+            <TabsList className={appTabsListClass}>
               <TabsTrigger
                 value="relatorios"
-                className="flex flex-1 min-w-0 flex-col items-center justify-center gap-1 rounded-lg px-1.5 py-2 font-medium text-muted-foreground transition-all hover:text-foreground lg:flex-row lg:gap-2.5 lg:px-6 lg:py-3 data-[state=active]:border data-[state=active]:border-border/60 data-[state=active]:bg-background data-[state=active]:font-semibold data-[state=active]:text-foreground data-[state=active]:shadow-sm"
+                className={appTabsTriggerClass}
               >
-                <FileText className="icon-optical h-4 w-4 shrink-0" aria-hidden />
-                <span className="max-w-full truncate whitespace-nowrap text-[11px] leading-tight tracking-tight sm:text-xs lg:text-sm">Relatórios</span>
+                <FileText className={appTabsIconClass} aria-hidden />
+                <span className={appTabsLabelClass}>Relatórios</span>
               </TabsTrigger>
               <TabsTrigger
                 value="atestados"
-                className="flex flex-1 min-w-0 flex-col items-center justify-center gap-1 rounded-lg px-1.5 py-2 font-medium text-muted-foreground transition-all hover:text-foreground lg:flex-row lg:gap-2.5 lg:px-6 lg:py-3 data-[state=active]:border data-[state=active]:border-border/60 data-[state=active]:bg-background data-[state=active]:font-semibold data-[state=active]:text-foreground data-[state=active]:shadow-sm"
+                className={appTabsTriggerClass}
               >
-                <Stethoscope className="icon-optical h-4 w-4 shrink-0" aria-hidden />
-                <span className="max-w-full truncate whitespace-nowrap text-[11px] leading-tight tracking-tight sm:text-xs lg:text-sm">Atestados</span>
+                <Stethoscope className={appTabsIconClass} aria-hidden />
+                <span className={appTabsLabelClass}>Atestados</span>
               </TabsTrigger>
               <TabsTrigger
                 value="comparecimento"
-                className="flex shrink-0 flex-col items-center justify-center gap-1 rounded-lg px-1.5 py-2 font-medium text-muted-foreground transition-all hover:text-foreground lg:flex-1 lg:flex-row lg:gap-2.5 lg:px-6 lg:py-3 data-[state=active]:border data-[state=active]:border-border/60 data-[state=active]:bg-background data-[state=active]:font-semibold data-[state=active]:text-foreground data-[state=active]:shadow-sm"
+                className={appTabsTriggerClass}
               >
-                <CalendarCheck className="icon-optical h-4 w-4 shrink-0" aria-hidden />
-                <span className="whitespace-nowrap text-[11px] leading-tight tracking-tight sm:text-xs lg:text-sm">Comparecimento</span>
+                <CalendarCheck className={appTabsIconClass} aria-hidden />
+                <span className={appTabsLabelClass}>Comparecimento</span>
               </TabsTrigger>
             </TabsList>
 
