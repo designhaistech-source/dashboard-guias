@@ -244,11 +244,11 @@ function Upload_Section({ onProcessed }: { onProcessed: (row: Row) => void }) {
               key={item.id}
               className="rounded-xl border border-border bg-card p-4 flex flex-col gap-2"
             >
-              <div className="flex items-center gap-3">
+              <div className="flex flex-wrap items-center gap-3">
                 <div className="h-10 w-10 rounded-lg bg-primary/10 grid place-items-center shrink-0">
                   <FileUp className="h-5 w-5 text-primary" />
                 </div>
-                <div className="flex-1 min-w-0">
+                <div className="min-w-0 flex-1 basis-40">
                   <p className="text-sm font-medium truncate">{item.name}</p>
                   <p className="text-xs text-muted-foreground">ID: {item.id.toString().slice(-3)}</p>
                 </div>
@@ -576,8 +576,8 @@ function SectionCard({
 
 function ProcedureTable({ columns, rows }: { columns: string[]; rows: string[][] }) {
   return (
-    <div className="overflow-x-auto">
-      <table className="w-full text-sm">
+    <div className="-mx-1 overflow-x-auto px-1">
+      <table className="w-full min-w-[420px] text-sm">
         <thead>
           <tr className="text-left text-muted-foreground">
             {columns.map((c) => (
