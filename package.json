@@ -16,7 +16,9 @@
     "ds:visual": "python3 scripts/visual/visual-regression.py",
     "ds:visual:update": "python3 scripts/visual/visual-regression.py --update",
     "ds:validate": "bash scripts/visual/validate.sh",
-    "qa:tabs": "python3 scripts/check-comparecimento-tabs.py"
+    "qa:tabs": "python3 scripts/check-comparecimento-tabs.py",
+    "qa:visual": "python3 scripts/visual/check-comparecimento-visual.py",
+    "qa:visual:update": "python3 scripts/visual/check-comparecimento-visual.py --update"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
