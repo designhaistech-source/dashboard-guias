@@ -490,6 +490,8 @@ function History_Section({ extraRows }: { extraRows: Row[] }) {
 
 function GuideDetailsModal({ row, onClose }: { row: Row | null; onClose: () => void }) {
   const open = row !== null;
+  // No mobile as duas colunas viram abas: a imagem não empurra mais os dados.
+  const [mobileTab, setMobileTab] = useState<"guia" | "dados">("dados");
   const details = row
     ? {
         header: [
@@ -560,11 +562,31 @@ function GuideDetailsModal({ row, onClose }: { row: Row | null; onClose: () => v
               <TypeBadge type={row.type} />
             </div>
           )}
+          {row && (
+            <div className="mt-4 grid grid-cols-2 gap-1 rounded-lg bg-muted p-1 lg:hidden" role="tablist">
+              {(["dados", "guia"] as const).map((tab) => (
+                <button
+                  key={tab}
+                  type="button"
+                  role="tab"
+                  aria-selected={mobileTab === tab}
+                  onClick={() => setMobileTab(tab)}
+                  className={`rounded-md px-3 py-2 text-sm font-medium transition-colors ${
+                    mobileTab === tab
+                      ? "bg-card text-foreground shadow-sm"
+                      : "text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  {tab === "dados" ? "Detalhamento" : "Imagem da guia"}
+                </button>
+              ))}
+            </div>
+          )}
         </DialogHeader>
 
         {row && details && (
           <DialogBody className="grid grid-cols-1 lg:grid-cols-2 gap-6 bg-muted/30">
-            <div className="lg:sticky lg:top-0 lg:self-start lg:h-[calc(92vh-3rem)] rounded-xl border border-border bg-card p-4 sm:p-6 flex flex-col gap-4 min-h-0">
+            <div className={`${mobileTab === "guia" ? "flex" : "hidden"} lg:!flex lg:sticky lg:top-0 lg:self-start lg:h-[calc(92vh-3rem)] rounded-xl border border-border bg-card p-4 sm:p-6 flex-col gap-4 min-h-0`}>
               <div className="text-sm font-medium truncate">Arquivo enviado: {row.file}</div>
               <div className="flex-1 min-h-0">
                 <GuidePreview src={guiaMock.url} alt={row.file} />
@@ -579,7 +601,7 @@ function GuideDetailsModal({ row, onClose }: { row: Row | null; onClose: () => v
 
 
 
-            <div className="space-y-6 min-w-0">
+            <div className={`${mobileTab === "dados" ? "block" : "hidden"} space-y-6 min-w-0 lg:block`}>
               <DetailCard title="Cabeçalho" icon={<Info className="h-5 w-5 text-primary" />} items={details.header} />
               <DetailCard title="Beneficiário" icon={<Info className="h-5 w-5 text-primary" />} items={details.beneficiary} />
               <DetailCard title="Prestador solicitante" icon={<Info className="h-5 w-5 text-primary" />} items={details.solicitante} />
