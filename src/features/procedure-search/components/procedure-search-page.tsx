@@ -203,7 +203,7 @@ export function ProcedureSearchPage() {
                             <DataTableCell className="whitespace-nowrap font-mono text-xs tabular-nums">
                               {p.codigo}
                             </DataTableCell>
-                            <DataTableCell className="lowercase">
+                            <DataTableCell className="truncate lowercase">
                               {p.descricao}
                             </DataTableCell>
                             <DataTableCell className="whitespace-nowrap text-right font-mono text-xs tabular-nums">
