@@ -545,7 +545,15 @@ function GuideDetailsModal({ row, onClose }: { row: Row | null; onClose: () => v
     : null;
 
   return (
-    <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
+    <Dialog
+      open={open}
+      onOpenChange={(v) => {
+        if (!v) {
+          setMobileTab("dados");
+          onClose();
+        }
+      }}
+    >
       <DialogContent size="xl">
         <DialogHeader>
           <div className="flex items-center gap-2">
@@ -586,7 +594,7 @@ function GuideDetailsModal({ row, onClose }: { row: Row | null; onClose: () => v
 
         {row && details && (
           <DialogBody className="grid grid-cols-1 lg:grid-cols-2 gap-6 bg-muted/30">
-            <div className={`${mobileTab === "guia" ? "flex" : "hidden"} lg:!flex lg:sticky lg:top-0 lg:self-start lg:h-[calc(92vh-3rem)] rounded-xl border border-border bg-card p-4 sm:p-6 flex-col gap-4 min-h-0`}>
+            <div className={`${mobileTab === "guia" ? "flex" : "hidden"} lg:!flex lg:sticky lg:top-0 lg:self-start lg:h-[calc(92vh-3rem)] h-[65vh] lg:h-auto rounded-xl border border-border bg-card p-4 sm:p-6 flex-col gap-4 min-h-0`}>
               <div className="text-sm font-medium truncate">Arquivo enviado: {row.file}</div>
               <div className="flex-1 min-h-0">
                 <GuidePreview src={guiaMock.url} alt={row.file} />
