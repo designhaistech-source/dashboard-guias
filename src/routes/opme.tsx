@@ -313,7 +313,7 @@ function OpmePage() {
                   : "Informe o paciente, o convênio e o caráter do atendimento."
               }
             >
-              <div className="grid gap-4 sm:grid-cols-2">
+              <div className="grid gap-4 lg:grid-cols-2">
                 <Field label="Nome do paciente" required>
                   <div className="relative">
                     <User className="icon-optical absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -500,61 +500,105 @@ function OpmePage() {
                       const spec = m.spec ?? "";
                       return (
                       <div key={m.id} className="transition-colors hover:bg-muted/30">
-                        <div className="grid grid-cols-1 lg:grid-cols-[120px_minmax(0,1fr)_180px_88px_36px] gap-x-3 gap-y-2 px-4 pt-2.5 items-center">
-                        <Input
-                          className="h-9 font-mono text-xs"
-                          placeholder="TISS"
-                          value={m.tiss}
-                          onChange={(e) => updateMaterial(m.id, { tiss: e.target.value })}
-                        />
-                        <Input
-                          className="h-9"
-                          placeholder="Digite TISS, nome comercial ou técnico..."
-                          value={m.nome}
-                          onChange={(e) => autoFillFromCatalogo(m.id, e.target.value)}
-                          list={`opme-nome-${idx}`}
-                        />
-                        <datalist id={`opme-nome-${idx}`}>
-                          {CATALOGO_OPME.map((c) => (
-                            <option key={c.tiss} value={c.nome} />
-                          ))}
-                        </datalist>
-                        <Select
-                          value={m.enq || undefined}
-                          onValueChange={(v) => updateMaterial(m.id, { enq: v })}
-                        >
-                          <SelectTrigger className="h-9">
-                            <SelectValue placeholder="—" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {ENQUADRAMENTOS.map((e) => (
-                              <SelectItem key={e} value={e}>
-                                {e}
-                              </SelectItem>
+                        <div className="grid grid-cols-1 lg:grid-cols-[120px_minmax(0,1fr)_180px_88px_36px] gap-x-3 gap-y-3 px-4 pt-3 lg:pt-2.5 lg:items-center">
+                        <div className="space-y-1 lg:space-y-0">
+                          <label
+                            htmlFor={`tiss-${m.id}`}
+                            className="block text-xs font-medium text-muted-foreground lg:hidden"
+                          >
+                            Código TISS
+                          </label>
+                          <Input
+                            id={`tiss-${m.id}`}
+                            className="h-9 font-mono text-xs"
+                            placeholder="TISS"
+                            value={m.tiss}
+                            onChange={(e) => updateMaterial(m.id, { tiss: e.target.value })}
+                          />
+                        </div>
+                        <div className="space-y-1 lg:space-y-0">
+                          <label
+                            htmlFor={`nome-${m.id}`}
+                            className="block text-xs font-medium text-muted-foreground lg:hidden"
+                          >
+                            Nome comercial
+                          </label>
+                          <Input
+                            id={`nome-${m.id}`}
+                            className="h-9"
+                            placeholder="Digite TISS, nome comercial ou técnico..."
+                            value={m.nome}
+                            onChange={(e) => autoFillFromCatalogo(m.id, e.target.value)}
+                            list={`opme-nome-${idx}`}
+                          />
+                          <datalist id={`opme-nome-${idx}`}>
+                            {CATALOGO_OPME.map((c) => (
+                              <option key={c.tiss} value={c.nome} />
                             ))}
-                          </SelectContent>
-                        </Select>
-                        <Input
-                          type="number"
-                          min={1}
-                          className="h-9 text-center font-mono"
-                          value={m.qtd}
-                          onChange={(e) =>
-                            updateMaterial(m.id, {
-                              qtd: Math.max(1, parseInt(e.target.value) || 1),
-                            })
-                          }
-                        />
+                          </datalist>
+                        </div>
+                        <div className="space-y-1 lg:space-y-0">
+                          <span className="block text-xs font-medium text-muted-foreground lg:hidden">
+                            Enquadramento técnico
+                          </span>
+                          <Select
+                            value={m.enq || undefined}
+                            onValueChange={(v) => updateMaterial(m.id, { enq: v })}
+                          >
+                            <SelectTrigger className="h-9" aria-label="Enquadramento técnico">
+                              <SelectValue placeholder="—" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {ENQUADRAMENTOS.map((e) => (
+                                <SelectItem key={e} value={e}>
+                                  {e}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div className="flex items-end gap-3 lg:block">
+                          <div className="w-24 space-y-1 lg:w-auto lg:space-y-0">
+                            <label
+                              htmlFor={`qtd-${m.id}`}
+                              className="block text-xs font-medium text-muted-foreground lg:hidden"
+                            >
+                              Qtd.
+                            </label>
+                            <Input
+                              id={`qtd-${m.id}`}
+                              type="number"
+                              min={1}
+                              className="h-9 text-center font-mono"
+                              value={m.qtd}
+                              onChange={(e) =>
+                                updateMaterial(m.id, {
+                                  qtd: Math.max(1, parseInt(e.target.value) || 1),
+                                })
+                              }
+                            />
+                          </div>
+                          <button
+                            type="button"
+                            aria-label="Remover material"
+                            onClick={() => removeMaterial(m.id)}
+                            disabled={materiais.length === 1}
+                            className="h-9 w-9 rounded-md flex items-center justify-center shrink-0 text-muted-foreground hover:text-destructive hover:bg-destructive/10 disabled:opacity-30 disabled:hover:bg-transparent lg:hidden"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </button>
+                        </div>
                         <button
                           type="button"
                           aria-label="Remover material"
                           onClick={() => removeMaterial(m.id)}
                           disabled={materiais.length === 1}
-                          className="h-9 w-9 lg:h-8 lg:w-8 justify-self-start lg:justify-self-center rounded-md flex items-center justify-center shrink-0 text-muted-foreground hover:text-destructive hover:bg-destructive/10 disabled:opacity-30 disabled:hover:bg-transparent"
+                          className="hidden lg:flex h-8 w-8 justify-self-center rounded-md items-center justify-center shrink-0 text-muted-foreground hover:text-destructive hover:bg-destructive/10 disabled:opacity-30 disabled:hover:bg-transparent"
                         >
                           <Trash2 className="h-4 w-4" />
                         </button>
                         </div>
+
                         <div className="px-4 pb-3 pt-2">
                           <div className="relative">
                             <label
@@ -622,7 +666,7 @@ function OpmePage() {
                   : "Identificação profissional responsável pela solicitação."
               }
             >
-              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-[1fr_140px_160px_180px]">
+              <div className="grid gap-4 lg:grid-cols-2 xl:grid-cols-[1fr_140px_160px_180px]">
                 <Field label="Nome do profissional" required>
                   <div className="relative">
                     <Stethoscope className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
