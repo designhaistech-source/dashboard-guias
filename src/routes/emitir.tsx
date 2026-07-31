@@ -36,7 +36,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { SelectField } from "@/components/form-field";
+import { Field as FormField, SelectField } from "@/components/form-field";
 
 import {
   Dialog,
@@ -1452,7 +1452,7 @@ function EmitirPage() {
             <DialogTitle>Preferências do Usuário</DialogTitle>
           </DialogHeader>
           <DialogBody className="space-y-5">
-            <Field
+            <FormField
               id="pref-prestador"
               label="Nome do Prestador"
               required
@@ -1465,8 +1465,8 @@ function EmitirPage() {
                 placeholder="Nome completo do prestador"
                 autoComplete="name"
               />
-            </Field>
-            <Field
+            </FormField>
+            <FormField
               id="pref-matricula"
               label="Matrícula / Conselho"
               required
@@ -1478,8 +1478,8 @@ function EmitirPage() {
                 onChange={(e) => { setPrefMatricula(e.target.value); clearPrefError("matricula"); }}
                 placeholder="CRM 0000/UF ou nº de matrícula"
               />
-            </Field>
-            <Field
+            </FormField>
+            <FormField
               id="pref-estabelecimento"
               label="Estabelecimento (Guia SUS)"
               optional
@@ -1491,7 +1491,7 @@ function EmitirPage() {
                 onChange={(e) => { setPrefEstabelecimento(e.target.value); clearPrefError("estabelecimento"); }}
                 placeholder="Ex: Hospital Municipal, UBS Centro..."
               />
-            </Field>
+            </FormField>
             <SelectField
               id="pref-uf"
               label="UF"
