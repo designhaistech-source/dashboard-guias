@@ -54,11 +54,11 @@ export function ProcedureCodeModal({ open, onOpenChange, term = "" }: ProcedureC
           </DialogDescription>
         </DialogHeader>
         <DialogBody className="space-y-4">
-          <fieldset className="rounded-xl border border-border bg-muted/30 p-4">
+          <fieldset className="rounded-xl border border-border bg-muted/30 p-3 sm:p-4">
             <legend className="px-1 text-sm font-semibold text-foreground">
               Selecione uma referência:
             </legend>
-            <div className="mt-2 flex flex-wrap items-center gap-x-6 gap-y-3">
+            <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-3 sm:gap-x-6">
               {REFERENCES.map((reference) => (
                 <label key={reference} className="flex cursor-pointer items-center gap-2 text-sm">
                   <Checkbox
@@ -78,7 +78,36 @@ export function ProcedureCodeModal({ open, onOpenChange, term = "" }: ProcedureC
             </div>
           </fieldset>
 
-          <div className="overflow-hidden rounded-xl border border-border">
+          {/* Mobile: lista em cartões para evitar rolagem horizontal da tabela. */}
+          <div className="max-h-[45vh] space-y-2 overflow-y-auto md:hidden">
+            {rows.length === 0 ? (
+              <p className="rounded-xl border border-border px-4 py-10 text-center text-sm text-muted-foreground">
+                {selected.length === 0
+                  ? "Selecione ao menos uma referência."
+                  : "Nenhum código encontrado."}
+              </p>
+            ) : (
+              rows.map((p) => (
+                <div
+                  key={`${p.referencia}-${p.codigo}`}
+                  className="rounded-xl border border-border p-3"
+                >
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="font-mono text-sm tabular-nums">{p.codigo}</span>
+                    <span className="text-xs text-muted-foreground">
+                      {REFERENCE_LABELS[p.referencia]}
+                    </span>
+                  </div>
+                  <p className="mt-1 text-sm text-foreground">{p.descricao}</p>
+                  <p className="mt-1 text-xs text-muted-foreground tabular-nums">
+                    Similaridade: {p.similaridade.toFixed(2)}%
+                  </p>
+                </div>
+              ))
+            )}
+          </div>
+
+          <div className="hidden overflow-hidden rounded-xl border border-border md:block">
             <div className="max-h-[45vh] overflow-y-auto">
               <table className="w-full table-fixed text-sm">
                 <thead className="sticky top-0 bg-muted/40 text-left text-muted-foreground">
