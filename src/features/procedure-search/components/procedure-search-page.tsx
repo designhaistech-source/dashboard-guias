@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Search, Filter, ScanSearch, Lightbulb } from "lucide-react";
+import { Search, ScanSearch, Lightbulb } from "lucide-react";
 
 import { AppBreadcrumb } from "@/components/app-breadcrumb";
 import { AppSidebar } from "@/components/app-sidebar";
