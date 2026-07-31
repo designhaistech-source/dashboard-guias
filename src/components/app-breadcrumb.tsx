@@ -59,9 +59,9 @@ export function AppBreadcrumb({ className }: { className?: string }) {
               className="inline-flex items-center gap-1.5 transition-colors hover:text-foreground"
             >
               <Home aria-hidden="true" className="size-3.5 shrink-0 icon-optical" />
-              {/* Em telas estreitas o ícone já comunica "Início". */}
-              <span className="hidden sm:inline">Início</span>
-              <span className="sr-only sm:hidden">Início</span>
+              {/* Em telas estreitas o ícone já comunica "Dashboard". */}
+              <span className="hidden sm:inline">Dashboard</span>
+              <span className="sr-only sm:hidden">Dashboard</span>
             </Link>
           </BreadcrumbLink>
         </BreadcrumbItem>
