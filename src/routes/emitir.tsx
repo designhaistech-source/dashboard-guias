@@ -752,37 +752,46 @@ function EmitirPage() {
                 >
                   <Grid cols={2}>
                     <Field label="Operadora / Convênio" required>
-                      <div className="space-y-2">
-                        <Select value={operadora} onValueChange={(v) => { setOperadora(v); const op = OPERADORAS.find((o) => o.value === v); if (op) setRegistroAns(op.ans); }}>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Selecione o convênio" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {OPERADORAS.map((o) => (
-                              <SelectItem key={o.value} value={o.value}>
-                                {o.label}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                        {(() => {
-                          const selected = OPERADORAS.find((o) => o.value === operadora);
-                          if (!selected) return null;
-                          return (
-                            <div className="flex items-center gap-2 pt-1">
-                              <img
-                                src={selected.logo}
-                                alt={`Logo ${selected.label}`}
-                                width={64}
-                                height={64}
-                                loading="lazy"
-                                className="h-10 w-auto object-contain"
-                              />
-                            </div>
-                          );
-                        })()}
-                      </div>
+                      <Select value={operadora} onValueChange={(v) => { setOperadora(v); const op = OPERADORAS.find((o) => o.value === v); if (op) setRegistroAns(op.ans); }}>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Selecione o convênio">
+                            {(() => {
+                              const selected = OPERADORAS.find((o) => o.value === operadora);
+                              if (!selected) return null;
+                              return (
+                                <span className="flex min-w-0 items-center gap-2">
+                                  <img
+                                    src={selected.logo}
+                                    alt=""
+                                    aria-hidden
+                                    loading="lazy"
+                                    className="h-4 w-auto max-w-[56px] shrink-0 object-contain"
+                                  />
+                                  <span className="truncate">{selected.label}</span>
+                                </span>
+                              );
+                            })()}
+                          </SelectValue>
+                        </SelectTrigger>
+                        <SelectContent>
+                          {OPERADORAS.map((o) => (
+                            <SelectItem key={o.value} value={o.value}>
+                              <span className="flex min-w-0 items-center gap-2">
+                                <img
+                                  src={o.logo}
+                                  alt=""
+                                  aria-hidden
+                                  loading="lazy"
+                                  className="h-4 w-auto max-w-[56px] shrink-0 object-contain"
+                                />
+                                <span className="truncate">{o.label}</span>
+                              </span>
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                     </Field>
+
                     <Field label="Registro ANS">
                       <Input
                         value={registroAns}
