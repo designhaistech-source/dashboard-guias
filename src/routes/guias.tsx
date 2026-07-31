@@ -114,12 +114,14 @@ type QueueItem = {
 
 function Upload_Section({ onProcessed }: { onProcessed: (row: Row) => void }) {
   const [queue, setQueue] = useState<QueueItem[]>([]);
+  const [cameraOpen, setCameraOpen] = useState(false);
 
+  const handleFiles = (files: FileList | File[] | null) => {
+    const list = files ? Array.from(files) : [];
+    if (!list.length) return;
 
-  const handleFiles = (files: FileList | null) => {
-    if (!files?.length) return;
+    const newItems: QueueItem[] = list.map((file, idx) => ({
 
-    const newItems: QueueItem[] = Array.from(files).map((file, idx) => ({
       id: Date.now() + idx,
       name: file.name,
       progress: 0,
