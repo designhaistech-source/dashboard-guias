@@ -55,13 +55,22 @@ export function auditDocument(doc: Document): QaReport {
     if (!style || isHidden(el, style)) continue;
     if (style.position === "fixed") continue;
 
-    // Reticências são um corte intencional (truncate) e não contam como falha.
+    let scrollableAncestor = false;
+    for (let parent = el.parentElement; parent; parent = parent.parentElement) {
+      const parentStyle = doc.defaultView?.getComputedStyle(parent);
+      if (parentStyle && ["auto", "scroll"].includes(parentStyle.overflowX)) {
+        scrollableAncestor = true;
+        break;
+      }
+    }
+
+    // Reticências (truncate) e conteúdo dentro de área rolável são cortes intencionais.
     const clipsText =
       style.textOverflow !== "ellipsis" &&
+      !scrollableAncestor &&
       el.children.length === 0 &&
       (el.textContent ?? "").trim().length > 0 &&
       el.scrollWidth > el.clientWidth + 1;
-
 
     if (clipsText) {
       issues.push({
@@ -74,15 +83,18 @@ export function auditDocument(doc: Document): QaReport {
       continue;
     }
 
-    let insideScroller = false;
-    for (let parent = el.parentElement; parent; parent = parent.parentElement) {
-      const parentStyle = doc.defaultView?.getComputedStyle(parent);
-      if (parentStyle && ["auto", "scroll", "hidden"].includes(parentStyle.overflowX)) {
-        insideScroller = true;
-        break;
+    let insideScroller = scrollableAncestor;
+    if (!insideScroller) {
+      for (let parent = el.parentElement; parent; parent = parent.parentElement) {
+        const parentStyle = doc.defaultView?.getComputedStyle(parent);
+        if (parentStyle && parentStyle.overflowX === "hidden") {
+          insideScroller = true;
+          break;
+        }
       }
     }
     if (insideScroller) continue;
+
 
     const rect = el.getBoundingClientRect();
     if (rect.right > viewportWidth + 1 || rect.left < -1) {
