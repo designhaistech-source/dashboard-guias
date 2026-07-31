@@ -1516,7 +1516,58 @@ function EmitirPage() {
   );
 }
 
+/** Campo de texto do modal de preferências com rótulo, dica e erro acessíveis. */
+function PrefTextField({
+  id,
+  label,
+  value,
+  onChange,
+  placeholder,
+  hint,
+  error,
+  autoComplete,
+}: {
+  id: string;
+  label: string;
+  value: string;
+  onChange: (value: string) => void;
+  placeholder?: string;
+  hint?: string;
+  error?: string;
+  autoComplete?: string;
+}) {
+  const hintId = `${id}-hint`;
+  const errorId = `${id}-error`;
+  const describedBy = [hint ? hintId : null, error ? errorId : null].filter(Boolean).join(" ");
+
+  return (
+    <div className="space-y-1.5">
+      <Label htmlFor={id}>{label}</Label>
+      <Input
+        id={id}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        placeholder={placeholder}
+        autoComplete={autoComplete}
+        aria-invalid={error ? true : undefined}
+        aria-describedby={describedBy || undefined}
+        className={cn(error && "border-destructive focus-visible:ring-destructive")}
+      />
+      {error ? (
+        <p id={errorId} role="alert" className="flex items-start gap-1.5 text-xs text-destructive">
+          <AlertCircle className="h-3.5 w-3.5 shrink-0 mt-px" aria-hidden="true" />
+          <span>{error}</span>
+        </p>
+      ) : null}
+      {hint ? (
+        <p id={hintId} className="text-xs text-muted-foreground">{hint}</p>
+      ) : null}
+    </div>
+  );
+}
+
 function Section({
+
   icon,
   title,
   description,
