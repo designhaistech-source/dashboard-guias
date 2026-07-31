@@ -180,19 +180,19 @@ export function ProcedureSearchPage() {
                 </div>
                 <div className="max-h-[32rem] overflow-y-auto">
                   <DataTable className="rounded-none border-0">
-                    <DataTableRoot>
+                    <DataTableRoot className="table-fixed">
                       <DataTableHeader className="sticky top-0 z-10 bg-card">
                         <tr>
-                          <DataTableHead className="w-36 whitespace-nowrap">
+                          <DataTableHead className="w-[16%] whitespace-nowrap">
                             Código
                           </DataTableHead>
-                          <DataTableHead className="min-w-[16rem]">
+                          <DataTableHead className="w-[52%]">
                             Procedimento
                           </DataTableHead>
-                          <DataTableHead className="w-32 whitespace-nowrap text-right">
+                          <DataTableHead className="w-[16%] whitespace-nowrap text-right">
                             Similaridade
                           </DataTableHead>
-                          <DataTableHead className="w-32 whitespace-nowrap text-right">
+                          <DataTableHead className="w-[16%] whitespace-nowrap text-right">
                             Referência
                           </DataTableHead>
                         </tr>
@@ -203,7 +203,7 @@ export function ProcedureSearchPage() {
                             <DataTableCell className="whitespace-nowrap font-mono text-xs tabular-nums">
                               {p.codigo}
                             </DataTableCell>
-                            <DataTableCell className="lowercase">
+                            <DataTableCell className="truncate lowercase">
                               {p.descricao}
                             </DataTableCell>
                             <DataTableCell className="whitespace-nowrap text-right font-mono text-xs tabular-nums">
