@@ -2146,7 +2146,7 @@ function PrescricaoForm() {
               done={itens.length > 0 && posologiasInvalidas.length === 0}
               label="Medicamentos"
             />
-            <StatusPill done={podeEmitir} label="Pronto para emitir" />
+          <div className="grid grid-cols-1 gap-2 sm:flex sm:flex-wrap sm:items-center">
           </div>
           <div className="flex flex-wrap items-center gap-2">
             <ActionBtn
