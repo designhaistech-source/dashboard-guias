@@ -91,8 +91,8 @@ function Page() {
   return (
     <div className="flex min-h-screen w-full bg-background text-foreground">
       <AppSidebar activeKey="extrair" />
-      <main className="flex-1 flex flex-col min-h-screen">
-        <div className="w-full flex-1 space-y-6 px-6 py-8 pb-16 lg:px-10">
+      <main className="flex min-h-screen min-w-0 flex-1 flex-col">
+        <div className="w-full min-w-0 flex-1 space-y-6 px-4 py-6 pb-16 sm:px-6 sm:py-8 lg:px-10">
           <AppBreadcrumb />
           <Upload_Section onProcessed={(row) => setExtraRows((prev) => [row, ...prev])} />
           <History_Section extraRows={extraRows} />
@@ -189,17 +189,17 @@ function Upload_Section({ onProcessed }: { onProcessed: (row: Row) => void }) {
         actions={<RequiredFieldsModal />}
       />
       <div
-        className="rounded-2xl border-2 border-dashed border-border bg-card px-6 py-14 flex flex-col items-center justify-center text-center"
+        className="rounded-2xl border-2 border-dashed border-border bg-card px-4 py-10 flex flex-col items-center justify-center text-center sm:px-6 sm:py-14"
         onDragOver={(event) => event.preventDefault()}
         onDrop={(event) => {
           event.preventDefault();
           handleFiles(event.dataTransfer.files);
         }}
       >
-        <div className="mb-5 grid place-items-center h-16 w-16 rounded-full bg-muted">
-          <Upload className="h-7 w-7 text-muted-foreground" />
+        <div className="mb-5 grid place-items-center h-14 w-14 rounded-full bg-muted sm:h-16 sm:w-16">
+          <Upload className="h-6 w-6 text-muted-foreground sm:h-7 sm:w-7" />
         </div>
-        <p className="text-lg font-semibold">Arraste suas guias médicas aqui</p>
+        <p className="text-base font-semibold sm:text-lg">Arraste suas guias médicas aqui</p>
         <p className="mt-1 text-sm text-muted-foreground">
           ou selecione um arquivo (PDF, imagem) ou tire uma foto da guia
         </p>
@@ -214,15 +214,15 @@ function Upload_Section({ onProcessed }: { onProcessed: (row: Row) => void }) {
             event.target.value = "";
           }}
         />
-        <div className="mt-6 flex flex-col items-center gap-3 sm:flex-row">
+        <div className="mt-6 flex w-full flex-col items-stretch gap-3 sm:w-auto sm:flex-row sm:items-center">
           <label
             htmlFor="guide-file-upload"
-            className="inline-flex items-center icon-optical gap-2 rounded-lg border border-border bg-card px-4 py-2 text-sm font-medium shadow-sm hover:bg-muted transition-colors cursor-pointer"
+            className="inline-flex items-center justify-center icon-optical gap-2 rounded-lg border border-border bg-card px-4 py-2 text-sm font-medium shadow-sm hover:bg-muted transition-colors cursor-pointer"
           >
             <FileUp className="h-4 w-4" />
             Selecionar arquivos
           </label>
-          <Button variant="secondary" onClick={() => setCameraOpen(true)}>
+          <Button variant="secondary" onClick={() => setCameraOpen(true)} className="justify-center">
             <Camera className="h-4 w-4" aria-hidden="true" />
             Tirar foto
           </Button>
@@ -244,11 +244,11 @@ function Upload_Section({ onProcessed }: { onProcessed: (row: Row) => void }) {
               key={item.id}
               className="rounded-xl border border-border bg-card p-4 flex flex-col gap-2"
             >
-              <div className="flex items-center gap-3">
+              <div className="flex flex-wrap items-center gap-3">
                 <div className="h-10 w-10 rounded-lg bg-primary/10 grid place-items-center shrink-0">
                   <FileUp className="h-5 w-5 text-primary" />
                 </div>
-                <div className="flex-1 min-w-0">
+                <div className="min-w-0 flex-1 basis-40">
                   <p className="text-sm font-medium truncate">{item.name}</p>
                   <p className="text-xs text-muted-foreground">ID: {item.id.toString().slice(-3)}</p>
                 </div>
@@ -301,11 +301,11 @@ function History_Section({ extraRows }: { extraRows: Row[] }) {
       <h2 className="font-display text-xl font-semibold tracking-tight">Histórico de processamento</h2>
 
 
-      <div className="flex flex-wrap items-center gap-3">
-        <div className="flex-1 min-w-[260px] max-w-md">
+      <div className="flex flex-col gap-3 sm:grid sm:grid-cols-2 sm:items-center lg:flex lg:flex-row lg:flex-wrap">
+        <div className="w-full min-w-0 sm:col-span-2 lg:w-auto lg:flex-1 lg:min-w-[240px] lg:max-w-md">
           <SearchInput placeholder="Buscar por arquivo ou paciente" />
         </div>
-        <div className="w-[180px]">
+        <div className="w-full min-w-0 lg:w-[180px]">
           <Combobox
             options={[
               { value: "sucesso", label: "Sucesso" },
@@ -317,7 +317,7 @@ function History_Section({ extraRows }: { extraRows: Row[] }) {
             clearable
           />
         </div>
-        <div className="w-[200px]">
+        <div className="w-full min-w-0 lg:w-[200px]">
           <Combobox
             options={[
               { value: "sadt", label: "SADT" },
@@ -332,71 +332,72 @@ function History_Section({ extraRows }: { extraRows: Row[] }) {
         </div>
         <DateField label="Data início" />
         <DateField label="Data fim" />
-        <button className="text-sm font-medium text-foreground hover:text-primary">
+        <button className="self-start text-sm font-medium text-foreground hover:text-primary sm:col-span-2 lg:col-span-1 lg:self-auto">
           Limpar filtros
         </button>
       </div>
 
-      <div className="rounded-xl border border-border bg-card overflow-hidden">
-        <table className="w-full text-sm">
-          <thead>
-            <tr className="text-left text-muted-foreground bg-muted/40">
-              <Th>Arquivo</Th>
-              <Th>ID da guia</Th>
-              <Th>Paciente</Th>
-              <Th>Tipo de guia</Th>
-              <Th>Data de envio</Th>
-              <Th>Status</Th>
-              <Th className="text-right pr-6">Ações</Th>
-            </tr>
-          </thead>
-          <tbody>
-            {allRows.map((r, i) => (
-
-              <tr key={i} className="border-t border-border hover:bg-muted/30">
-                <Td>
-                  <div className="flex items-center gap-2">
-                    <span className="truncate max-w-[260px]">{r.file}</span>
-                    {r.warn && <AlertTriangle className="h-4 w-4 text-warning" />}
-                  </div>
-                </Td>
-                <Td className="text-muted-foreground">{r.id}</Td>
-                <Td className="max-w-[260px] truncate">{r.patient}</Td>
-                <Td>
-                  <TypeBadge type={r.type} />
-                </Td>
-                <Td className="text-muted-foreground">{r.date}</Td>
-                <Td>
-                  <StatusBadge status={r.status} />
-                </Td>
-                <Td className="text-right pr-6">
-                  <div className="inline-flex items-center icon-optical gap-3 text-muted-foreground">
-                    <button
-                      aria-label="Visualizar"
-                      onClick={() => setDetailRow(r)}
-                      className={r.status === "Erro" ? "opacity-40 cursor-not-allowed" : "hover:text-foreground"}
-                      disabled={r.status === "Erro"}
-                    >
-                      <Eye className="h-4 w-4" />
-                    </button>
-                    <button
-                      aria-label="Copiar"
-                      className={r.status === "Erro" ? "opacity-40 cursor-not-allowed" : "hover:text-foreground"}
-                    >
-                      <ClipboardCopy className="h-4 w-4" />
-                    </button>
-                  </div>
-                </Td>
+      <div className="overflow-hidden rounded-xl border border-border bg-card">
+        <div className="w-full overflow-x-auto">
+          <table className="w-full min-w-[880px] text-sm">
+            <thead>
+              <tr className="text-left text-muted-foreground bg-muted/40">
+                <Th>Arquivo</Th>
+                <Th>ID da guia</Th>
+                <Th>Paciente</Th>
+                <Th>Tipo de guia</Th>
+                <Th>Data de envio</Th>
+                <Th>Status</Th>
+                <Th className="text-right pr-4 sm:pr-6">Ações</Th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {allRows.map((r, i) => (
+                <tr key={i} className="border-t border-border hover:bg-muted/30">
+                  <Td>
+                    <div className="flex items-center gap-2">
+                      <span className="block max-w-[200px] truncate sm:max-w-[260px]">{r.file}</span>
+                      {r.warn && <AlertTriangle className="h-4 w-4 shrink-0 text-warning" />}
+                    </div>
+                  </Td>
+                  <Td className="text-muted-foreground">{r.id}</Td>
+                  <Td className="max-w-[200px] truncate sm:max-w-[260px]">{r.patient}</Td>
+                  <Td>
+                    <TypeBadge type={r.type} />
+                  </Td>
+                  <Td className="whitespace-nowrap text-muted-foreground">{r.date}</Td>
+                  <Td>
+                    <StatusBadge status={r.status} />
+                  </Td>
+                  <Td className="text-right pr-4 sm:pr-6">
+                    <div className="inline-flex items-center icon-optical gap-3 text-muted-foreground">
+                      <button
+                        aria-label="Visualizar"
+                        onClick={() => setDetailRow(r)}
+                        className={r.status === "Erro" ? "opacity-40 cursor-not-allowed" : "hover:text-foreground"}
+                        disabled={r.status === "Erro"}
+                      >
+                        <Eye className="h-4 w-4" />
+                      </button>
+                      <button
+                        aria-label="Copiar"
+                        className={r.status === "Erro" ? "opacity-40 cursor-not-allowed" : "hover:text-foreground"}
+                      >
+                        <ClipboardCopy className="h-4 w-4" />
+                      </button>
+                    </div>
+                  </Td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
 
-        <div className="flex flex-wrap items-center justify-between gap-4 px-6 py-4 border-t border-border">
+        <div className="flex flex-col gap-4 border-t border-border px-4 py-4 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between sm:px-6">
           <div className="text-sm text-muted-foreground">
             Mostrando 1 a 10 de 130 resultados
           </div>
-          <div className="flex items-center gap-4">
+          <div className="flex flex-wrap items-center gap-3 sm:gap-4">
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
               Itens por página
               <button className="inline-flex items-center icon-optical gap-1 rounded-md border border-border bg-card px-2 py-1 text-sm text-foreground">
@@ -489,7 +490,7 @@ function GuideDetailsModal({ row, onClose }: { row: Row | null; onClose: () => v
 
         {row && details && (
           <DialogBody className="grid grid-cols-1 lg:grid-cols-2 gap-6 bg-muted/30">
-            <div className="lg:sticky lg:top-0 lg:self-start lg:h-[calc(92vh-3rem)] rounded-xl border border-border bg-card p-6 flex flex-col gap-4 min-h-0">
+            <div className="lg:sticky lg:top-0 lg:self-start lg:h-[calc(92vh-3rem)] rounded-xl border border-border bg-card p-4 sm:p-6 flex flex-col gap-4 min-h-0">
               <div className="text-sm font-medium truncate">Arquivo enviado: {row.file}</div>
               <div className="flex-1 min-h-0">
                 <GuidePreview src={guiaMock.url} alt={row.file} />
@@ -532,7 +533,7 @@ function GuideDetailsModal({ row, onClose }: { row: Row | null; onClose: () => v
               </SectionCard>
 
               <SectionCard title="Financeiro" icon={<span className="text-primary font-bold">$</span>}>
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                   {details.financeiro.map((f) => (
                     <div key={f.label} className="rounded-lg border border-border bg-muted/30 p-4 text-center">
                       <div className="text-xs text-muted-foreground">{f.label}</div>
@@ -563,10 +564,10 @@ function SectionCard({
   children: React.ReactNode;
 }) {
   return (
-    <div className="rounded-xl border border-border bg-card p-6">
+    <div className="rounded-xl border border-border bg-card p-4 sm:p-6">
       <div className="flex items-center gap-2 mb-4">
         {icon}
-        <h3 className="text-lg font-semibold">{title}</h3>
+        <h3 className="text-base font-semibold sm:text-lg">{title}</h3>
       </div>
       {children}
     </div>
@@ -575,8 +576,8 @@ function SectionCard({
 
 function ProcedureTable({ columns, rows }: { columns: string[]; rows: string[][] }) {
   return (
-    <div className="overflow-x-auto">
-      <table className="w-full text-sm">
+    <div className="-mx-1 overflow-x-auto px-1">
+      <table className="w-full min-w-[420px] text-sm">
         <thead>
           <tr className="text-left text-muted-foreground">
             {columns.map((c) => (
@@ -745,17 +746,17 @@ function DetailCard({
   items: { label: string; value: string }[];
 }) {
   return (
-    <div className="rounded-xl border border-border bg-card p-6">
+    <div className="rounded-xl border border-border bg-card p-4 sm:p-6">
       <div className="flex items-center gap-2 mb-4">
         {icon}
-        <h3 className="text-lg font-semibold">{title}</h3>
+        <h3 className="text-base font-semibold sm:text-lg">{title}</h3>
       </div>
       <dl className="divide-y divide-border">
         {items.map((it) => (
-          <div key={it.label} className="flex items-center justify-between gap-4 py-3">
+          <div key={it.label} className="flex flex-col gap-1 py-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
             <dt className="text-sm text-muted-foreground">{it.label}</dt>
-            <dd className="flex items-center gap-2 text-sm font-medium text-foreground text-right">
-              <span className="truncate max-w-[280px]">{it.value}</span>
+            <dd className="flex min-w-0 items-center gap-2 text-sm font-medium text-foreground sm:text-right">
+              <span className="min-w-0 truncate sm:max-w-[280px]">{it.value}</span>
               <button
                 aria-label={`Copiar ${it.label}`}
                 onClick={() => navigator.clipboard?.writeText(it.value)}
@@ -773,16 +774,16 @@ function DetailCard({
 
 
 function Th({ children, className = "" }: { children: React.ReactNode; className?: string }) {
-  return <th className={`px-6 py-3 font-medium ${className}`}>{children}</th>;
+  return <th className={`whitespace-nowrap px-4 py-3 font-medium sm:px-6 ${className}`}>{children}</th>;
 }
 function Td({ children, className = "" }: { children: React.ReactNode; className?: string }) {
-  return <td className={`px-6 py-4 align-middle ${className}`}>{children}</td>;
+  return <td className={`px-4 py-4 align-middle sm:px-6 ${className}`}>{children}</td>;
 }
 
 
 function DateField({ label }: { label: string }) {
   return (
-    <button className="inline-flex items-center icon-optical gap-2 rounded-lg border border-border bg-card px-3 py-2 text-sm min-w-[150px]">
+    <button className="inline-flex w-full items-center icon-optical gap-2 rounded-lg border border-border bg-card px-3 py-2 text-sm lg:w-auto lg:min-w-[150px]">
       <Calendar className="h-4 w-4 text-muted-foreground" />
       <span className="text-muted-foreground">{label}</span>
     </button>
