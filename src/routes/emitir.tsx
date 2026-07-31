@@ -1376,7 +1376,7 @@ function EmitirPage() {
           <DialogHeader>
             <DialogTitle>Preferências do Usuário</DialogTitle>
           </DialogHeader>
-          <div className="space-y-4">
+          <DialogBody className="space-y-5">
             <div className="space-y-1.5">
               <Label>Nome do Prestador</Label>
               <Input
