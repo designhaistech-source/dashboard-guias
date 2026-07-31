@@ -330,14 +330,20 @@
   }
 }
 
-/* Campos de data: move o indicador nativo de calendário para antes do texto.
-   Seletor de atributo duplicado para vencer as utilities de padding do input. */
+/* Campos de data/hora: o indicador nativo de calendário vem antes do valor,
+   com a mesma gutter horizontal dos outros inputs (0.75rem) em qualquer
+   viewport. Seletor de atributo duplicado para vencer as utilities de padding. */
 input[type="date"][type="date"],
 input[type="datetime-local"][type="datetime-local"],
 input[type="time"][type="time"],
 input[type="month"][type="month"] {
   position: relative;
+  /* 0.75rem de gutter + 1rem de ícone + 0.5rem de respiro antes do texto */
   padding-left: 2.25rem;
+  padding-right: 0.75rem;
+  /* evita que o valor "salte" verticalmente entre navegadores */
+  line-height: 1.25rem;
+  text-align: left;
 }
 
 input[type="date"]::-webkit-calendar-picker-indicator,
@@ -345,15 +351,39 @@ input[type="datetime-local"]::-webkit-calendar-picker-indicator,
 input[type="time"]::-webkit-calendar-picker-indicator,
 input[type="month"]::-webkit-calendar-picker-indicator {
   position: absolute;
-  left: 0.625rem;
+  left: 0.75rem;
   top: 50%;
   transform: translateY(-50%);
+  width: 1rem;
+  height: 1rem;
   margin: 0;
   padding: 0;
+  flex: none;
   cursor: pointer;
   opacity: 0.6;
+  transition: opacity 150ms ease;
 }
 
-input[type="date"]::-webkit-calendar-picker-indicator:hover {
+input[type="date"]::-webkit-datetime-edit,
+input[type="datetime-local"]::-webkit-datetime-edit,
+input[type="time"]::-webkit-datetime-edit,
+input[type="month"]::-webkit-datetime-edit {
+  /* alinha o texto ao centro óptico do campo, igual aos inputs de texto */
+  padding: 0;
+  line-height: 1.25rem;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator:hover,
+input[type="datetime-local"]::-webkit-calendar-picker-indicator:hover,
+input[type="time"]::-webkit-calendar-picker-indicator:hover,
+input[type="month"]::-webkit-calendar-picker-indicator:hover {
   opacity: 1;
 }
+
+input[type="date"]::-webkit-calendar-picker-indicator:focus-visible {
+  outline: 2px solid var(--color-ring);
+  outline-offset: 2px;
+  border-radius: 2px;
+  opacity: 1;
+}
+
