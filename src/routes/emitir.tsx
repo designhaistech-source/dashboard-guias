@@ -1609,12 +1609,12 @@ function Section({
 }) {
   return (
     <section className="rounded-xl border bg-card shadow-sm">
-      <div className="flex items-start justify-between gap-4 px-5 py-4 border-b">
-        <div className="flex items-start gap-3">
-          <div className="mt-0.5 h-8 w-8 rounded-md bg-primary/10 text-primary flex items-center justify-center">
+      <div className="flex flex-col gap-3 border-b px-4 py-4 sm:px-5 lg:flex-row lg:items-start lg:justify-between lg:gap-4">
+        <div className="flex min-w-0 items-start gap-3">
+          <div className="mt-0.5 h-8 w-8 shrink-0 rounded-md bg-primary/10 text-primary flex items-center justify-center">
             {icon}
           </div>
-          <div>
+          <div className="min-w-0">
             <h2 className="text-sm font-semibold">{title}</h2>
             {description && (
               <p className="text-xs text-muted-foreground mt-0.5">{description}</p>
@@ -1623,7 +1623,7 @@ function Section({
         </div>
         {action}
       </div>
-      <div className="p-5 space-y-4">{children}</div>
+      <div className="p-4 space-y-4 sm:p-5">{children}</div>
     </section>
   );
 }
@@ -1631,12 +1631,13 @@ function Section({
 function Grid({ cols, children }: { cols: 2 | 3; children: React.ReactNode }) {
   return (
     <div
-      className={`grid gap-4 ${cols === 2 ? "sm:grid-cols-2" : "sm:grid-cols-2 lg:grid-cols-3"}`}
+      className={`grid gap-4 ${cols === 2 ? "lg:grid-cols-2" : "lg:grid-cols-2 xl:grid-cols-3"}`}
     >
       {children}
     </div>
   );
 }
+
 
 function Field({
   label,
