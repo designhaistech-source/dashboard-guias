@@ -313,7 +313,7 @@ function OpmePage() {
                   : "Informe o paciente, o convênio e o caráter do atendimento."
               }
             >
-              <div className="grid gap-4 sm:grid-cols-2">
+              <div className="grid gap-4 lg:grid-cols-2">
                 <Field label="Nome do paciente" required>
                   <div className="relative">
                     <User className="icon-optical absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
