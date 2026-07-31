@@ -16,6 +16,8 @@ import {
   Settings,
   Mail,
   PanelLeft,
+  Menu,
+  X,
   Wrench,
   FileSpreadsheet,
   BookMarked,
@@ -45,10 +47,78 @@ type ItemKey =
 
 export function AppSidebar({ activeKey }: { activeKey: ItemKey }) {
   const [collapsed, setCollapsed] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
+
+  // Bloqueia o scroll do fundo enquanto o menu mobile estiver aberto.
+  useEffect(() => {
+    if (!mobileOpen) return;
+    const previous = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = previous;
+    };
+  }, [mobileOpen]);
+
+  useEffect(() => {
+    if (!mobileOpen) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setMobileOpen(false);
+    };
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [mobileOpen]);
 
   return (
     <RenderProfiler id="AppSidebar">
     <TooltipProvider delayDuration={150}>
+      {/* Mobile: barra fixa com o menu em gaveta. Os elementos são fixed, então
+          este wrapper não interfere no layout em flex das páginas. */}
+      <div className="md:hidden">
+        <header className="fixed inset-x-0 top-0 z-40 flex h-14 items-center gap-3 border-b border-sidebar-border bg-sidebar px-4 text-sidebar-foreground">
+          <button
+            type="button"
+            onClick={() => setMobileOpen(true)}
+            aria-label="Abrir menu"
+            aria-expanded={mobileOpen}
+            className="-ml-1 grid size-9 shrink-0 place-items-center rounded-md text-sidebar-muted transition-colors hover:bg-muted hover:text-foreground"
+          >
+            <Menu className="h-5 w-5" aria-hidden="true" />
+          </button>
+          <img src={logoAsset.url} alt="Guias+" className="h-7 w-auto object-contain" />
+        </header>
+
+        {mobileOpen && (
+          <div className="fixed inset-0 z-50">
+            <button
+              type="button"
+              aria-label="Fechar menu"
+              onClick={() => setMobileOpen(false)}
+              className="absolute inset-0 bg-foreground/50"
+            />
+            <div
+              role="dialog"
+              aria-modal="true"
+              aria-label="Menu principal"
+              className="absolute inset-y-0 left-0 flex w-[85%] max-w-xs flex-col border-r border-sidebar-border bg-sidebar text-sidebar-foreground shadow-xl"
+            >
+              <div className="flex items-center justify-between gap-2 border-b border-sidebar-border px-4 py-4">
+                <img src={logoAsset.url} alt="Guias+" className="h-8 w-auto object-contain" />
+                <button
+                  type="button"
+                  onClick={() => setMobileOpen(false)}
+                  aria-label="Fechar menu"
+                  className="grid size-9 shrink-0 place-items-center rounded-md text-sidebar-muted transition-colors hover:bg-muted hover:text-foreground"
+                >
+                  <X className="h-5 w-5" aria-hidden="true" />
+                </button>
+              </div>
+              <SidebarNav activeKey={activeKey} onNavigate={() => setMobileOpen(false)} />
+              <UserMenu collapsed={false} />
+            </div>
+          </div>
+        )}
+      </div>
+
       <aside
         className={`hidden md:flex shrink-0 flex-col sticky top-0 h-screen max-h-screen self-start border-r border-sidebar-border bg-sidebar text-sidebar-foreground transition-[width] duration-200 ${
           collapsed ? "w-16" : "w-72"
@@ -76,93 +146,107 @@ export function AppSidebar({ activeKey }: { activeKey: ItemKey }) {
           </button>
         </div>
 
-
-
-        <nav className="flex-1 overflow-y-auto px-3 py-4 space-y-6">
-          <SidebarGroup label="INÍCIO" collapsed={collapsed}>
-            <SidebarItem
-              icon={LayoutGrid}
-              label="Dashboard"
-              to="/"
-              active={activeKey === "dashboard"}
-              hint="Visão geral com indicadores e resumo das suas atividades recentes."
-              collapsed={collapsed}
-            />
-
-          </SidebarGroup>
-
-          <SidebarGroup label="GUIAS" collapsed={collapsed}>
-            <SidebarItem
-              icon={FileText}
-              label="Emitir guia"
-              to="/emitir"
-              active={activeKey === "emitir"}
-              hint="Preencha e gere novas guias médicas (SADT, consultas, encaminhamentos)."
-              collapsed={collapsed}
-            />
-            <SidebarItem
-              icon={FileCheck2}
-              label="Extrair dados da guia"
-              to="/guias"
-              active={activeKey === "extrair"}
-              hint="Extraia automaticamente os dados de uma guia por meio de IA."
-              collapsed={collapsed}
-            />
-
-            <SidebarItem
-              icon={ScanSearch}
-              label="Buscar procedimento"
-              to="/procedimentos"
-              active={activeKey === "procedimento"}
-              hint="Consulte códigos e descrições de procedimentos (TUSS / tabelas)."
-              collapsed={collapsed}
-            />
-          </SidebarGroup>
-
-          <SidebarGroup label="ATENDIMENTO CLÍNICO" collapsed={collapsed}>
-            <SidebarItem
-              icon={Pill}
-              label="Emitir prescrição"
-              to="/prescricao"
-              active={activeKey === "prescricao"}
-              hint="Emita prescrições médicas para os pacientes."
-              collapsed={collapsed}
-            />
-
-
-
-            <SidebarItem
-              icon={Wrench}
-              label="Solicitar OPME"
-              to="/opme"
-              active={activeKey === "opme"}
-              hint="Solicite Órteses, Próteses e Materiais Especiais para procedimentos."
-              collapsed={collapsed}
-            />
-
-            <SidebarItem
-              icon={FileSpreadsheet}
-              label="Relatórios e documentos"
-              to="/documentos"
-              active={activeKey === "relatorios"}
-              hint="Gere e gerencie relatórios, atestados e documentos clínicos."
-              collapsed={collapsed}
-            />
-            <SidebarItem
-              icon={ScanLine}
-              label="Buscar CID-10"
-              to="/cid"
-              active={activeKey === "cid"}
-              hint="Pesquise códigos da Classificação Internacional de Doenças (CID-10)."
-              collapsed={collapsed}
-            />
-          </SidebarGroup>
-        </nav>
+        <SidebarNav activeKey={activeKey} collapsed={collapsed} />
 
         <UserMenu collapsed={collapsed} />
       </aside>
     </TooltipProvider>
     </RenderProfiler>
+  );
+}
+
+function SidebarNav({
+  activeKey,
+  collapsed = false,
+  onNavigate,
+}: {
+  activeKey: ItemKey;
+  collapsed?: boolean;
+  onNavigate?: () => void;
+}) {
+  return (
+    <nav className="flex-1 overflow-y-auto px-3 py-4 space-y-6">
+      <SidebarGroup label="INÍCIO" collapsed={collapsed}>
+        <SidebarItem
+          icon={LayoutGrid}
+          label="Dashboard"
+          to="/"
+          active={activeKey === "dashboard"}
+          hint="Visão geral com indicadores e resumo das suas atividades recentes."
+          collapsed={collapsed}
+          onNavigate={onNavigate}
+        />
+      </SidebarGroup>
+
+      <SidebarGroup label="GUIAS" collapsed={collapsed}>
+        <SidebarItem
+          icon={FileText}
+          label="Emitir guia"
+          to="/emitir"
+          active={activeKey === "emitir"}
+          hint="Preencha e gere novas guias médicas (SADT, consultas, encaminhamentos)."
+          collapsed={collapsed}
+          onNavigate={onNavigate}
+        />
+        <SidebarItem
+          icon={FileCheck2}
+          label="Extrair dados da guia"
+          to="/guias"
+          active={activeKey === "extrair"}
+          hint="Extraia automaticamente os dados de uma guia por meio de IA."
+          collapsed={collapsed}
+          onNavigate={onNavigate}
+        />
+        <SidebarItem
+          icon={ScanSearch}
+          label="Buscar procedimento"
+          to="/procedimentos"
+          active={activeKey === "procedimento"}
+          hint="Consulte códigos e descrições de procedimentos (TUSS / tabelas)."
+          collapsed={collapsed}
+          onNavigate={onNavigate}
+        />
+      </SidebarGroup>
+
+      <SidebarGroup label="ATENDIMENTO CLÍNICO" collapsed={collapsed}>
+        <SidebarItem
+          icon={Pill}
+          label="Emitir prescrição"
+          to="/prescricao"
+          active={activeKey === "prescricao"}
+          hint="Emita prescrições médicas para os pacientes."
+          collapsed={collapsed}
+          onNavigate={onNavigate}
+        />
+        <SidebarItem
+          icon={Wrench}
+          label="Solicitar OPME"
+          to="/opme"
+          active={activeKey === "opme"}
+          hint="Solicite Órteses, Próteses e Materiais Especiais para procedimentos."
+          collapsed={collapsed}
+          onNavigate={onNavigate}
+        />
+        <SidebarItem
+          icon={FileSpreadsheet}
+          label="Relatórios e documentos"
+          to="/documentos"
+          active={activeKey === "relatorios"}
+          hint="Gere e gerencie relatórios, atestados e documentos clínicos."
+          collapsed={collapsed}
+          onNavigate={onNavigate}
+        />
+        <SidebarItem
+          icon={ScanLine}
+          label="Buscar CID-10"
+          to="/cid"
+          active={activeKey === "cid"}
+          hint="Pesquise códigos da Classificação Internacional de Doenças (CID-10)."
+          collapsed={collapsed}
+          onNavigate={onNavigate}
+        />
+      </SidebarGroup>
+    </nav>
   );
 }
 
@@ -308,6 +392,7 @@ function SidebarItem({
   hint,
   to,
   collapsed,
+  onNavigate,
 }: {
   icon: React.ComponentType<{ className?: string }>;
   label: string;
@@ -315,6 +400,7 @@ function SidebarItem({
   hint?: string;
   to?: string;
   collapsed?: boolean;
+  onNavigate?: () => void;
 }) {
   const className = [
     "group w-full flex items-center gap-3 rounded-md text-sm transition-colors",
@@ -366,7 +452,7 @@ function SidebarItem({
 
   if (to) {
     return (
-      <Link to={to} className={className}>
+      <Link to={to} className={className} onClick={onNavigate}>
         {inner}
       </Link>
     );
