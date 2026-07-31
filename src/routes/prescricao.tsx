@@ -1646,7 +1646,7 @@ function PrescricaoForm() {
 
               {/* Endereço */}
               <div className="space-y-3">
-                <div className="grid gap-3 md:grid-cols-[minmax(0,200px)_minmax(0,1fr)]">
+                <div className="grid gap-3 lg:grid-cols-[minmax(0,200px)_minmax(0,1fr)]">
                   <Field
                     label="CEP"
                     required
