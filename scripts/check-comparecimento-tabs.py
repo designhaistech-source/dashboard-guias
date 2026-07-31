@@ -32,7 +32,7 @@ MEASURE_TABS = """
     const labelRect = label.getBoundingClientRect();
     const style = getComputedStyle(label);
     return {
-      text: (label.textContent || '').trim(),
+      text: (label.innerText || '').trim(),
       width: rect.width,
       height: rect.height,
       top: rect.top,
