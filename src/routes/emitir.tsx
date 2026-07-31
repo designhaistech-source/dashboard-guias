@@ -1265,7 +1265,7 @@ function EmitirPage() {
                           clearable
                         />
                       </div>
-                      <div className="col-span-1">
+                      <div className="col-span-1 w-24 lg:w-auto">
                         <Input
                           type="number"
                           min={1}
@@ -1358,7 +1358,7 @@ function EmitirPage() {
                             placeholder="Descrição do material/prótese"
                           />
                         </div>
-                        <div className="col-span-1">
+                        <div className="col-span-1 w-24 lg:w-auto">
                           <Input
                             type="number"
                             min={1}
