@@ -26,7 +26,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import logoAsset from "@/assets/haisguias-logo.png.asset.json";
+import logoAsset from "@/assets/guiasplus-logo.png.asset.json";
 import { RenderProfiler } from "@/lib/render-profiler";
 
 type ItemKey =
@@ -62,7 +62,7 @@ export function AppSidebar({ activeKey }: { activeKey: ItemKey }) {
           {!collapsed && (
             <img
               src={logoAsset.url}
-              alt="HaisGuias"
+              alt="Guias+"
               className="block h-8 w-auto max-w-full object-contain"
             />
           )}
