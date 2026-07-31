@@ -51,6 +51,7 @@ import { Badge } from "@/components/ui/badge";
 import { EmptyState } from "@/components/data-state";
 import { Chip } from "@/components/ui/chip";
 import { CameraCaptureDialog } from "@/components/camera-capture-dialog";
+import { ProcedureCodeModal } from "@/components/procedure-code-modal";
 
 
 export const Route = createFileRoute("/guias")({
@@ -296,6 +297,7 @@ function History_Section({ extraRows }: { extraRows: Row[] }) {
   const allRows = [...extraRows, ...rows];
 
   const [detailRow, setDetailRow] = useState<Row | null>(null);
+  const [codeRow, setCodeRow] = useState<Row | null>(null);
 
   const [filtersOpen, setFiltersOpen] = useState(false);
 
@@ -401,7 +403,13 @@ function History_Section({ extraRows }: { extraRows: Row[] }) {
                   <Eye className="h-4 w-4" aria-hidden="true" />
                   Ver
                 </Button>
-                <Button variant="ghost" size="sm" aria-label="Copiar dados" disabled={r.status === "Erro"}>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  aria-label="Códigos de procedimento"
+                  disabled={r.status === "Erro"}
+                  onClick={() => setCodeRow(r)}
+                >
                   <ClipboardCopy className="h-4 w-4" aria-hidden="true" />
                 </Button>
               </div>
@@ -453,7 +461,9 @@ function History_Section({ extraRows }: { extraRows: Row[] }) {
                         <Eye className="h-4 w-4" />
                       </button>
                       <button
-                        aria-label="Copiar"
+                        aria-label="Códigos de procedimento"
+                        onClick={() => setCodeRow(r)}
+                        disabled={r.status === "Erro"}
                         className={r.status === "Erro" ? "opacity-40 cursor-not-allowed" : "hover:text-foreground"}
                       >
                         <ClipboardCopy className="h-4 w-4" />
@@ -484,6 +494,12 @@ function History_Section({ extraRows }: { extraRows: Row[] }) {
       </div>
 
       <GuideDetailsModal row={detailRow} onClose={() => setDetailRow(null)} />
+      <ProcedureCodeModal
+        open={codeRow !== null}
+        onOpenChange={(next: boolean) => {
+          if (!next) setCodeRow(null);
+        }}
+      />
     </section>
   );
 }
