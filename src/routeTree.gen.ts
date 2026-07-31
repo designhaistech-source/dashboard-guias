@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as QaResponsividadeRouteImport } from './routes/qa-responsividade'
 import { Route as ProcedimentosRouteImport } from './routes/procedimentos'
 import { Route as PrescricaoRouteImport } from './routes/prescricao'
 import { Route as OpmeRouteImport } from './routes/opme'
@@ -22,6 +23,11 @@ import { Route as CidRouteImport } from './routes/cid'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ApiCidRouteImport } from './routes/api/cid'
 
+const QaResponsividadeRoute = QaResponsividadeRouteImport.update({
+  id: '/qa-responsividade',
+  path: '/qa-responsividade',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ProcedimentosRoute = ProcedimentosRouteImport.update({
   id: '/procedimentos',
   path: '/procedimentos',
@@ -95,6 +101,7 @@ export interface FileRoutesByFullPath {
   '/opme': typeof OpmeRoute
   '/prescricao': typeof PrescricaoRoute
   '/procedimentos': typeof ProcedimentosRoute
+  '/qa-responsividade': typeof QaResponsividadeRoute
   '/api/cid': typeof ApiCidRoute
 }
 export interface FileRoutesByTo {
@@ -109,6 +116,7 @@ export interface FileRoutesByTo {
   '/opme': typeof OpmeRoute
   '/prescricao': typeof PrescricaoRoute
   '/procedimentos': typeof ProcedimentosRoute
+  '/qa-responsividade': typeof QaResponsividadeRoute
   '/api/cid': typeof ApiCidRoute
 }
 export interface FileRoutesById {
@@ -124,6 +132,7 @@ export interface FileRoutesById {
   '/opme': typeof OpmeRoute
   '/prescricao': typeof PrescricaoRoute
   '/procedimentos': typeof ProcedimentosRoute
+  '/qa-responsividade': typeof QaResponsividadeRoute
   '/api/cid': typeof ApiCidRoute
 }
 export interface FileRouteTypes {
@@ -140,6 +149,7 @@ export interface FileRouteTypes {
     | '/opme'
     | '/prescricao'
     | '/procedimentos'
+    | '/qa-responsividade'
     | '/api/cid'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -154,6 +164,7 @@ export interface FileRouteTypes {
     | '/opme'
     | '/prescricao'
     | '/procedimentos'
+    | '/qa-responsividade'
     | '/api/cid'
   id:
     | '__root__'
@@ -168,6 +179,7 @@ export interface FileRouteTypes {
     | '/opme'
     | '/prescricao'
     | '/procedimentos'
+    | '/qa-responsividade'
     | '/api/cid'
   fileRoutesById: FileRoutesById
 }
@@ -183,11 +195,19 @@ export interface RootRouteChildren {
   OpmeRoute: typeof OpmeRoute
   PrescricaoRoute: typeof PrescricaoRoute
   ProcedimentosRoute: typeof ProcedimentosRoute
+  QaResponsividadeRoute: typeof QaResponsividadeRoute
   ApiCidRoute: typeof ApiCidRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/qa-responsividade': {
+      id: '/qa-responsividade'
+      path: '/qa-responsividade'
+      fullPath: '/qa-responsividade'
+      preLoaderRoute: typeof QaResponsividadeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/procedimentos': {
       id: '/procedimentos'
       path: '/procedimentos'
@@ -287,6 +307,7 @@ const rootRouteChildren: RootRouteChildren = {
   OpmeRoute: OpmeRoute,
   PrescricaoRoute: PrescricaoRoute,
   ProcedimentosRoute: ProcedimentosRoute,
+  QaResponsividadeRoute: QaResponsividadeRoute,
   ApiCidRoute: ApiCidRoute,
 }
 export const routeTree = rootRouteImport
