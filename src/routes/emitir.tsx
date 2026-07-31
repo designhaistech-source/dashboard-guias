@@ -505,7 +505,7 @@ function EmitirPage() {
         <div className="w-full flex-1 space-y-6 px-6 py-8 pb-16 lg:px-10">
           <AppBreadcrumb />
           <PageHeader
-            title="Emitir Guias"
+            title="Emitir guia"
             description="Escolha entre guias de convênio (TISS) ou guias do SUS e selecione o tipo correspondente para começar."
             actions={
               <Button
