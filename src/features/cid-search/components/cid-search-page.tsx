@@ -99,7 +99,7 @@ export function CidSearchPage() {
                   className="flex flex-1 min-w-0 flex-col items-center justify-center gap-1 rounded-lg px-1.5 py-2 font-medium text-muted-foreground transition-all hover:text-foreground lg:flex-row lg:gap-2.5 lg:px-6 lg:py-3 data-[state=active]:border data-[state=active]:border-border/60 data-[state=active]:bg-background data-[state=active]:font-semibold data-[state=active]:text-foreground data-[state=active]:shadow-sm"
                 >
                   <Star className="icon-optical h-4 w-4 shrink-0" aria-hidden />
-                  <span className="max-w-full truncate whitespace-nowrap text-[11px] leading-tight tracking-tight sm:text-xs lg:text-sm">Favoritos<span className="hidden xs:inline sm:inline"> ({favorites.length})</span></span>
+                  <span className="max-w-full truncate whitespace-nowrap text-[11px] leading-tight tracking-tight sm:text-xs lg:text-sm">Favoritos<span className="hidden sm:inline"> ({favorites.length})</span></span>
                 </TabsTrigger>
                 <TabsTrigger
                   value="historico"
