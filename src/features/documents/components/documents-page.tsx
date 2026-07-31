@@ -51,29 +51,30 @@ export function DocumentsPage() {
           />
 
           <Tabs defaultValue="relatorios" className="space-y-6">
-            <TabsList className="grid w-full grid-cols-3 gap-1 h-auto rounded-xl border border-border bg-muted p-1 shadow-inner">
+            <TabsList className="flex w-full gap-1 h-auto rounded-xl border border-border bg-muted p-1 shadow-inner lg:grid lg:grid-cols-3">
               <TabsTrigger
                 value="relatorios"
-                className="flex min-w-0 items-center justify-center gap-2 rounded-lg px-1.5 py-2.5 font-medium text-muted-foreground transition-all hover:text-foreground sm:gap-2.5 sm:px-3 sm:py-3 lg:px-6 data-[state=active]:border data-[state=active]:border-border/60 data-[state=active]:bg-background data-[state=active]:font-semibold data-[state=active]:text-foreground data-[state=active]:shadow-sm"
+                className="flex flex-1 min-w-0 items-center justify-center gap-2 rounded-lg px-1.5 py-2.5 font-medium text-muted-foreground transition-all hover:text-foreground sm:gap-2.5 sm:px-3 sm:py-3 lg:px-6 data-[state=active]:border data-[state=active]:border-border/60 data-[state=active]:bg-background data-[state=active]:font-semibold data-[state=active]:text-foreground data-[state=active]:shadow-sm"
               >
                 <FileText className="icon-optical hidden h-4 w-4 shrink-0 lg:block" aria-hidden />
-                <span className="min-w-0 truncate text-[11px] leading-tight tracking-tight sm:text-xs lg:text-sm">Relatórios</span>
+                <span className="truncate whitespace-nowrap text-[11px] leading-tight tracking-tight sm:text-xs lg:text-sm">Relatórios</span>
               </TabsTrigger>
               <TabsTrigger
                 value="atestados"
-                className="flex min-w-0 items-center justify-center gap-2 rounded-lg px-1.5 py-2.5 font-medium text-muted-foreground transition-all hover:text-foreground sm:gap-2.5 sm:px-3 sm:py-3 lg:px-6 data-[state=active]:border data-[state=active]:border-border/60 data-[state=active]:bg-background data-[state=active]:font-semibold data-[state=active]:text-foreground data-[state=active]:shadow-sm"
+                className="flex flex-1 min-w-0 items-center justify-center gap-2 rounded-lg px-1.5 py-2.5 font-medium text-muted-foreground transition-all hover:text-foreground sm:gap-2.5 sm:px-3 sm:py-3 lg:px-6 data-[state=active]:border data-[state=active]:border-border/60 data-[state=active]:bg-background data-[state=active]:font-semibold data-[state=active]:text-foreground data-[state=active]:shadow-sm"
               >
                 <Stethoscope className="icon-optical hidden h-4 w-4 shrink-0 lg:block" aria-hidden />
-                <span className="min-w-0 truncate text-[11px] leading-tight tracking-tight sm:text-xs lg:text-sm">Atestados</span>
+                <span className="truncate whitespace-nowrap text-[11px] leading-tight tracking-tight sm:text-xs lg:text-sm">Atestados</span>
               </TabsTrigger>
               <TabsTrigger
                 value="comparecimento"
-                className="flex min-w-0 items-center justify-center gap-2 rounded-lg px-1.5 py-2.5 font-medium text-muted-foreground transition-all hover:text-foreground sm:gap-2.5 sm:px-3 sm:py-3 lg:px-6 data-[state=active]:border data-[state=active]:border-border/60 data-[state=active]:bg-background data-[state=active]:font-semibold data-[state=active]:text-foreground data-[state=active]:shadow-sm"
+                className="flex shrink-0 items-center justify-center gap-2 rounded-lg px-1.5 py-2.5 font-medium text-muted-foreground transition-all hover:text-foreground sm:gap-2.5 sm:px-3 sm:py-3 lg:flex-1 lg:px-6 data-[state=active]:border data-[state=active]:border-border/60 data-[state=active]:bg-background data-[state=active]:font-semibold data-[state=active]:text-foreground data-[state=active]:shadow-sm"
               >
                 <CalendarCheck className="icon-optical hidden h-4 w-4 shrink-0 lg:block" aria-hidden />
-                <span className="min-w-0 truncate text-[11px] leading-tight tracking-tight sm:text-xs lg:text-sm">Comparecimento</span>
+                <span className="whitespace-nowrap text-[11px] leading-tight tracking-tight sm:text-xs lg:text-sm">Comparecimento</span>
               </TabsTrigger>
             </TabsList>
+
 
             <TabsContent value="relatorios" className="space-y-6">
               <ReportsTab />
