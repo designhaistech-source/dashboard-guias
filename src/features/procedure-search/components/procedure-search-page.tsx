@@ -88,7 +88,7 @@ export function ProcedureSearchPage() {
               className="sm:w-44 space-y-0"
               triggerClassName="w-full"
             />
-            <Button type="submit" className="sm:w-32">
+            <Button type="submit" className="w-full sm:w-auto sm:px-8 justify-center">
               Buscar
             </Button>
           </form>
