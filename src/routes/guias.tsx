@@ -490,7 +490,7 @@ function GuideDetailsModal({ row, onClose }: { row: Row | null; onClose: () => v
 
         {row && details && (
           <DialogBody className="grid grid-cols-1 lg:grid-cols-2 gap-6 bg-muted/30">
-            <div className="lg:sticky lg:top-0 lg:self-start lg:h-[calc(92vh-3rem)] rounded-xl border border-border bg-card p-6 flex flex-col gap-4 min-h-0">
+            <div className="lg:sticky lg:top-0 lg:self-start lg:h-[calc(92vh-3rem)] rounded-xl border border-border bg-card p-4 sm:p-6 flex flex-col gap-4 min-h-0">
               <div className="text-sm font-medium truncate">Arquivo enviado: {row.file}</div>
               <div className="flex-1 min-h-0">
                 <GuidePreview src={guiaMock.url} alt={row.file} />
@@ -533,7 +533,7 @@ function GuideDetailsModal({ row, onClose }: { row: Row | null; onClose: () => v
               </SectionCard>
 
               <SectionCard title="Financeiro" icon={<span className="text-primary font-bold">$</span>}>
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                   {details.financeiro.map((f) => (
                     <div key={f.label} className="rounded-lg border border-border bg-muted/30 p-4 text-center">
                       <div className="text-xs text-muted-foreground">{f.label}</div>
@@ -564,10 +564,10 @@ function SectionCard({
   children: React.ReactNode;
 }) {
   return (
-    <div className="rounded-xl border border-border bg-card p-6">
+    <div className="rounded-xl border border-border bg-card p-4 sm:p-6">
       <div className="flex items-center gap-2 mb-4">
         {icon}
-        <h3 className="text-lg font-semibold">{title}</h3>
+        <h3 className="text-base font-semibold sm:text-lg">{title}</h3>
       </div>
       {children}
     </div>
@@ -746,17 +746,17 @@ function DetailCard({
   items: { label: string; value: string }[];
 }) {
   return (
-    <div className="rounded-xl border border-border bg-card p-6">
+    <div className="rounded-xl border border-border bg-card p-4 sm:p-6">
       <div className="flex items-center gap-2 mb-4">
         {icon}
-        <h3 className="text-lg font-semibold">{title}</h3>
+        <h3 className="text-base font-semibold sm:text-lg">{title}</h3>
       </div>
       <dl className="divide-y divide-border">
         {items.map((it) => (
-          <div key={it.label} className="flex items-center justify-between gap-4 py-3">
+          <div key={it.label} className="flex flex-col gap-1 py-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
             <dt className="text-sm text-muted-foreground">{it.label}</dt>
-            <dd className="flex items-center gap-2 text-sm font-medium text-foreground text-right">
-              <span className="truncate max-w-[280px]">{it.value}</span>
+            <dd className="flex min-w-0 items-center gap-2 text-sm font-medium text-foreground sm:text-right">
+              <span className="min-w-0 truncate sm:max-w-[280px]">{it.value}</span>
               <button
                 aria-label={`Copiar ${it.label}`}
                 onClick={() => navigator.clipboard?.writeText(it.value)}
@@ -774,16 +774,16 @@ function DetailCard({
 
 
 function Th({ children, className = "" }: { children: React.ReactNode; className?: string }) {
-  return <th className={`px-6 py-3 font-medium ${className}`}>{children}</th>;
+  return <th className={`whitespace-nowrap px-4 py-3 font-medium sm:px-6 ${className}`}>{children}</th>;
 }
 function Td({ children, className = "" }: { children: React.ReactNode; className?: string }) {
-  return <td className={`px-6 py-4 align-middle ${className}`}>{children}</td>;
+  return <td className={`px-4 py-4 align-middle sm:px-6 ${className}`}>{children}</td>;
 }
 
 
 function DateField({ label }: { label: string }) {
   return (
-    <button className="inline-flex items-center icon-optical gap-2 rounded-lg border border-border bg-card px-3 py-2 text-sm min-w-[150px]">
+    <button className="inline-flex w-full items-center icon-optical gap-2 rounded-lg border border-border bg-card px-3 py-2 text-sm lg:w-auto lg:min-w-[150px]">
       <Calendar className="h-4 w-4 text-muted-foreground" />
       <span className="text-muted-foreground">{label}</span>
     </button>
