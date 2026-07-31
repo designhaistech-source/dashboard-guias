@@ -37,6 +37,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Field as FormField, SelectField } from "@/components/form-field";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 import {
   Dialog,
@@ -415,6 +416,7 @@ function EmitirPage() {
   ]);
 
   const [previewOpen, setPreviewOpen] = useState(false);
+  const canPreview = convenioId === "tiss" ? Boolean(operadora) : true;
   const [preview, setPreview] = useState<null | {
     numero: string;
     tipo: string;
