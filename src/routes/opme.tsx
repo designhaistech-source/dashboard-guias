@@ -610,7 +610,7 @@ function OpmePage() {
                           <div className="relative">
                             <label
                               htmlFor={`spec-${m.id}`}
-                              className="mb-1 block text-xs font-medium text-muted-foreground"
+                              className="mb-1 block truncate text-xs font-medium text-muted-foreground"
                             >
                               Especificação de{" "}
                               {m.nome.trim() || `material ${idx + 1}`} (opcional)
@@ -619,7 +619,7 @@ function OpmePage() {
                               id={`spec-${m.id}`}
                               rows={2}
                               maxLength={300}
-                              className="bg-muted/30 pb-7 focus:bg-background"
+                              className="bg-muted/30 pb-7 text-base focus:bg-background lg:text-sm"
                               placeholder="Ex.: fabricante/distribuidor, modelo, dimensões ou marca de referência"
                               value={spec}
                               onChange={(e) => updateMaterial(m.id, { spec: e.target.value })}
