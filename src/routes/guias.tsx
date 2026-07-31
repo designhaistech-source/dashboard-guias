@@ -402,7 +402,13 @@ function History_Section({ extraRows }: { extraRows: Row[] }) {
                   <Eye className="h-4 w-4" aria-hidden="true" />
                   Ver
                 </Button>
-                <Button variant="ghost" size="sm" aria-label="Copiar dados" disabled={r.status === "Erro"}>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  aria-label="Códigos de procedimento"
+                  disabled={r.status === "Erro"}
+                  onClick={() => setCodeRow(r)}
+                >
                   <ClipboardCopy className="h-4 w-4" aria-hidden="true" />
                 </Button>
               </div>
