@@ -189,17 +189,17 @@ function Upload_Section({ onProcessed }: { onProcessed: (row: Row) => void }) {
         actions={<RequiredFieldsModal />}
       />
       <div
-        className="rounded-2xl border-2 border-dashed border-border bg-card px-6 py-14 flex flex-col items-center justify-center text-center"
+        className="rounded-2xl border-2 border-dashed border-border bg-card px-4 py-10 flex flex-col items-center justify-center text-center sm:px-6 sm:py-14"
         onDragOver={(event) => event.preventDefault()}
         onDrop={(event) => {
           event.preventDefault();
           handleFiles(event.dataTransfer.files);
         }}
       >
-        <div className="mb-5 grid place-items-center h-16 w-16 rounded-full bg-muted">
-          <Upload className="h-7 w-7 text-muted-foreground" />
+        <div className="mb-5 grid place-items-center h-14 w-14 rounded-full bg-muted sm:h-16 sm:w-16">
+          <Upload className="h-6 w-6 text-muted-foreground sm:h-7 sm:w-7" />
         </div>
-        <p className="text-lg font-semibold">Arraste suas guias médicas aqui</p>
+        <p className="text-base font-semibold sm:text-lg">Arraste suas guias médicas aqui</p>
         <p className="mt-1 text-sm text-muted-foreground">
           ou selecione um arquivo (PDF, imagem) ou tire uma foto da guia
         </p>
@@ -214,15 +214,15 @@ function Upload_Section({ onProcessed }: { onProcessed: (row: Row) => void }) {
             event.target.value = "";
           }}
         />
-        <div className="mt-6 flex flex-col items-center gap-3 sm:flex-row">
+        <div className="mt-6 flex w-full flex-col items-stretch gap-3 sm:w-auto sm:flex-row sm:items-center">
           <label
             htmlFor="guide-file-upload"
-            className="inline-flex items-center icon-optical gap-2 rounded-lg border border-border bg-card px-4 py-2 text-sm font-medium shadow-sm hover:bg-muted transition-colors cursor-pointer"
+            className="inline-flex items-center justify-center icon-optical gap-2 rounded-lg border border-border bg-card px-4 py-2 text-sm font-medium shadow-sm hover:bg-muted transition-colors cursor-pointer"
           >
             <FileUp className="h-4 w-4" />
             Selecionar arquivos
           </label>
-          <Button variant="secondary" onClick={() => setCameraOpen(true)}>
+          <Button variant="secondary" onClick={() => setCameraOpen(true)} className="justify-center">
             <Camera className="h-4 w-4" aria-hidden="true" />
             Tirar foto
           </Button>
