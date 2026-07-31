@@ -509,9 +509,12 @@ function OpmePage() {
                           >
                             Código TISS
                           </label>
+                          {/* text-base on mobile avoids iOS Safari's focus zoom (which shifts the layout). */}
                           <Input
                             id={`tiss-${m.id}`}
-                            className="h-9 font-mono text-xs"
+                            inputMode="numeric"
+                            maxLength={12}
+                            className="h-9 w-full min-w-0 px-2.5 font-mono text-base tracking-tight lg:text-xs"
                             placeholder="TISS"
                             value={m.tiss}
                             onChange={(e) => updateMaterial(m.id, { tiss: e.target.value })}
