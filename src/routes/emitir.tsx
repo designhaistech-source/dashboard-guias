@@ -587,11 +587,12 @@ function EmitirPage() {
                                   "h-5 w-5 rounded-full border-2 flex items-center justify-center transition-colors",
                                   active
                                     ? "border-primary bg-primary"
-                                    : "border-border bg-background",
+                                    : "border-muted-foreground/70 bg-background group-hover:border-primary group-hover:bg-primary/10",
                                 )}
                               >
                                 {active && <Check className="h-3 w-3 text-primary-foreground" strokeWidth={3} />}
                               </div>
+
                             </div>
                             <div className="mt-3">
                               <h3 className={cn("font-semibold leading-tight", active ? "text-foreground" : "text-foreground/90")}>
