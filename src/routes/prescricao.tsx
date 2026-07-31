@@ -2135,8 +2135,9 @@ function PrescricaoForm() {
       {/* Barra de ação — pills de status + ações */}
       <div>
 
-        <div className="rounded-xl border bg-card/95 backdrop-blur shadow-md px-4 py-3 flex flex-wrap items-center justify-between gap-3">
+        <div className="rounded-xl border bg-card/95 backdrop-blur shadow-md px-4 py-3 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
           <div className="flex flex-wrap items-center gap-2">
+
             <StatusPill
               done={paciente.trim().length > 0 && (!especial || (cpfValido && enderecoFullValido))}
               label="Paciente"
