@@ -68,7 +68,7 @@ export function ProcedureSearchPage() {
 
           <form
             onSubmit={handleSearch}
-            className="rounded-xl border border-border bg-card p-4 flex flex-col gap-3 sm:flex-row sm:items-center"
+            className="rounded-xl border border-border bg-card p-4 flex flex-col gap-3 lg:flex-row lg:items-center"
           >
             <div className="flex-1 min-w-0">
               <SearchInput
@@ -85,10 +85,10 @@ export function ProcedureSearchPage() {
               value={referencia}
               onValueChange={setReferencia}
               options={REFERENCE_OPTIONS}
-              className="sm:w-44 space-y-0"
+              className="lg:w-44 space-y-0"
               triggerClassName="w-full"
             />
-            <Button type="submit" className="w-full sm:w-auto sm:px-8 justify-center">
+            <Button type="submit" className="w-full justify-center lg:w-auto lg:px-8">
               Buscar
             </Button>
           </form>
@@ -179,7 +179,7 @@ export function ProcedureSearchPage() {
                 </div>
 
                 {/* Mobile: cartões empilhados evitam rolagem horizontal */}
-                <ul className="max-h-[32rem] divide-y divide-border overflow-y-auto md:hidden">
+                <ul className="max-h-[32rem] divide-y divide-border overflow-y-auto lg:hidden">
                   {results.map((p) => (
                     <li
                       key={`${p.referencia}-${p.codigo}`}
@@ -206,7 +206,7 @@ export function ProcedureSearchPage() {
                   ))}
                 </ul>
 
-                <div className="hidden max-h-[32rem] overflow-y-auto md:block">
+                <div className="hidden max-h-[32rem] overflow-y-auto lg:block">
                   <DataTable className="rounded-none border-0">
                     <DataTableRoot className="table-fixed">
                       <DataTableHeader className="sticky top-0 z-10 bg-card">
