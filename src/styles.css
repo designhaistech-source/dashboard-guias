@@ -329,3 +329,31 @@
     transform: translateY(-0.075em);
   }
 }
+
+/* Campos de data: move o indicador nativo de calendário para antes do texto,
+   mantendo o alinhamento com os demais inputs do design system. */
+@layer base {
+  input[type="date"],
+  input[type="datetime-local"],
+  input[type="time"],
+  input[type="month"] {
+    position: relative;
+    padding-left: 2.25rem;
+  }
+  input[type="date"]::-webkit-calendar-picker-indicator,
+  input[type="datetime-local"]::-webkit-calendar-picker-indicator,
+  input[type="time"]::-webkit-calendar-picker-indicator,
+  input[type="month"]::-webkit-calendar-picker-indicator {
+    position: absolute;
+    left: 0.625rem;
+    top: 50%;
+    transform: translateY(-50%);
+    margin: 0;
+    padding: 0;
+    cursor: pointer;
+    opacity: 0.6;
+  }
+  input[type="date"]::-webkit-calendar-picker-indicator:hover {
+    opacity: 1;
+  }
+}
