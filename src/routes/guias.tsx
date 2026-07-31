@@ -51,6 +51,7 @@ import { Badge } from "@/components/ui/badge";
 import { EmptyState } from "@/components/data-state";
 import { Chip } from "@/components/ui/chip";
 import { CameraCaptureDialog } from "@/components/camera-capture-dialog";
+import { ProcedureCodeModal } from "@/components/procedure-code-modal";
 
 
 export const Route = createFileRoute("/guias")({
