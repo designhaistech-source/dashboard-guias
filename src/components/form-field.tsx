@@ -59,23 +59,24 @@ export function Field({
     : children;
 
   return (
-    <div className={cn("space-y-1.5", className)}>
+    <div className={cn("min-w-0 space-y-1.5 sm:space-y-2", className)}>
       {label && (
         <label
           htmlFor={id}
           className={cn(
-            "flex items-center gap-1 text-sm font-medium text-foreground",
+            // Escala única: 13px no mobile → 14px do sm para cima, sempre com quebra segura.
+            "flex min-w-0 flex-wrap items-center gap-x-1 gap-y-0.5 text-[13px] font-medium leading-snug text-foreground break-words hyphens-auto sm:text-sm",
             labelClassName,
           )}
         >
-          <span>{label}</span>
+          <span className="min-w-0">{label}</span>
           {required && (
             <span aria-hidden className="text-destructive">
               *
             </span>
           )}
           {optional && !required && (
-            <span className="text-xs font-normal text-muted-foreground">
+            <span className="text-[11px] font-normal text-muted-foreground sm:text-xs">
               (opcional)
             </span>
           )}
@@ -95,13 +96,13 @@ export function Field({
         <p
           id={messageId}
           className={cn(
-            "flex items-center gap-1 text-xs",
+            "flex min-w-0 items-start gap-1 text-[11px] leading-snug break-words sm:text-xs",
             error ? "text-destructive" : "text-muted-foreground",
           )}
           role={error ? "alert" : undefined}
         >
-          {error && <AlertCircle className="h-3.5 w-3.5 shrink-0" />}
-          <span>{error ?? hint}</span>
+          {error && <AlertCircle className="mt-0.5 h-3.5 w-3.5 shrink-0" />}
+          <span className="min-w-0">{error ?? hint}</span>
         </p>
       )}
     </div>
