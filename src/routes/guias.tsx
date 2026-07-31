@@ -460,7 +460,9 @@ function History_Section({ extraRows }: { extraRows: Row[] }) {
                         <Eye className="h-4 w-4" />
                       </button>
                       <button
-                        aria-label="Copiar"
+                        aria-label="Códigos de procedimento"
+                        onClick={() => setCodeRow(r)}
+                        disabled={r.status === "Erro"}
                         className={r.status === "Erro" ? "opacity-40 cursor-not-allowed" : "hover:text-foreground"}
                       >
                         <ClipboardCopy className="h-4 w-4" />
