@@ -666,7 +666,7 @@ function OpmePage() {
                   : "Identificação profissional responsável pela solicitação."
               }
             >
-              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-[1fr_140px_160px_180px]">
+              <div className="grid gap-4 lg:grid-cols-2 xl:grid-cols-[1fr_140px_160px_180px]">
                 <Field label="Nome do profissional" required>
                   <div className="relative">
                     <Stethoscope className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
