@@ -1452,48 +1452,55 @@ function EmitirPage() {
             <DialogTitle>Preferências do Usuário</DialogTitle>
           </DialogHeader>
           <DialogBody className="space-y-5">
-            <PrefTextField
+            <Field
               id="pref-prestador"
               label="Nome do Prestador"
-              value={prefPrestador}
-              onChange={(v) => { setPrefPrestador(v); clearPrefError("prestador"); }}
-              placeholder="Nome completo do prestador"
+              required
               hint="Utilizado em todas as guias."
               error={prefErrors.prestador}
-              autoComplete="name"
-            />
-            <PrefTextField
+            >
+              <Input
+                value={prefPrestador}
+                onChange={(e) => { setPrefPrestador(e.target.value); clearPrefError("prestador"); }}
+                placeholder="Nome completo do prestador"
+                autoComplete="name"
+              />
+            </Field>
+            <Field
               id="pref-matricula"
               label="Matrícula / Conselho"
-              value={prefMatricula}
-              onChange={(v) => { setPrefMatricula(v); clearPrefError("matricula"); }}
-              placeholder="CRM 0000/UF ou nº de matrícula"
+              required
               hint="Formato aceito: CRM 123456/RN ou apenas números da matrícula."
               error={prefErrors.matricula}
-            />
-            <PrefTextField
+            >
+              <Input
+                value={prefMatricula}
+                onChange={(e) => { setPrefMatricula(e.target.value); clearPrefError("matricula"); }}
+                placeholder="CRM 0000/UF ou nº de matrícula"
+              />
+            </Field>
+            <Field
               id="pref-estabelecimento"
               label="Estabelecimento (Guia SUS)"
-              value={prefEstabelecimento}
-              onChange={(v) => { setPrefEstabelecimento(v); clearPrefError("estabelecimento"); }}
-              placeholder="Ex: Hospital Municipal, UBS Centro..."
-              hint="Opcional. Preenche automaticamente o campo Estabelecimento nas guias SUS."
+              optional
+              hint="Preenche automaticamente o campo Estabelecimento nas guias SUS."
               error={prefErrors.estabelecimento}
-            />
-            <div className="space-y-1.5">
-              <SelectField
-                label="UF"
-                value={prefUf}
-                onValueChange={(v) => { setPrefUf(v); clearPrefError("uf"); }}
-                options={UF_LIST.map((uf) => ({ value: uf, label: uf }))}
+            >
+              <Input
+                value={prefEstabelecimento}
+                onChange={(e) => { setPrefEstabelecimento(e.target.value); clearPrefError("estabelecimento"); }}
+                placeholder="Ex: Hospital Municipal, UBS Centro..."
               />
-              {prefErrors.uf && (
-                <p className="flex items-start gap-1.5 text-xs text-destructive" role="alert">
-                  <AlertCircle className="h-3.5 w-3.5 shrink-0 mt-px" aria-hidden="true" />
-                  <span>{prefErrors.uf}</span>
-                </p>
-              )}
-            </div>
+            </Field>
+            <SelectField
+              id="pref-uf"
+              label="UF"
+              required
+              value={prefUf}
+              onValueChange={(v) => { setPrefUf(v); clearPrefError("uf"); }}
+              options={UF_LIST.map((uf) => ({ value: uf, label: uf }))}
+              error={prefErrors.uf}
+            />
 
             <div className="rounded-md border border-primary/30 bg-primary/5 text-primary text-xs px-3 py-2 flex gap-2">
               <Info className="h-4 w-4 shrink-0 mt-0.5" aria-hidden="true" />
@@ -1506,7 +1513,7 @@ function EmitirPage() {
 
 
           <DialogFooter className="gap-2 sm:gap-2">
-            <Button variant="outline" onClick={() => setPrefsOpen(false)}>Fechar</Button>
+            <Button variant="outline" onClick={() => setPrefsOpen(false)}>Cancelar</Button>
             <Button onClick={savePrefs}>
               <Save className="h-4 w-4" />
               Salvar preferências
@@ -1518,55 +1525,6 @@ function EmitirPage() {
   );
 }
 
-/** Campo de texto do modal de preferências com rótulo, dica e erro acessíveis. */
-function PrefTextField({
-  id,
-  label,
-  value,
-  onChange,
-  placeholder,
-  hint,
-  error,
-  autoComplete,
-}: {
-  id: string;
-  label: string;
-  value: string;
-  onChange: (value: string) => void;
-  placeholder?: string;
-  hint?: string;
-  error?: string;
-  autoComplete?: string;
-}) {
-  const hintId = `${id}-hint`;
-  const errorId = `${id}-error`;
-  const describedBy = [hint ? hintId : null, error ? errorId : null].filter(Boolean).join(" ");
-
-  return (
-    <div className="space-y-1.5">
-      <Label htmlFor={id}>{label}</Label>
-      <Input
-        id={id}
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        placeholder={placeholder}
-        autoComplete={autoComplete}
-        aria-invalid={error ? true : undefined}
-        aria-describedby={describedBy || undefined}
-        className={cn(error && "border-destructive focus-visible:ring-destructive")}
-      />
-      {error ? (
-        <p id={errorId} role="alert" className="flex items-start gap-1.5 text-xs text-destructive">
-          <AlertCircle className="h-3.5 w-3.5 shrink-0 mt-px" aria-hidden="true" />
-          <span>{error}</span>
-        </p>
-      ) : null}
-      {hint ? (
-        <p id={hintId} className="text-xs text-muted-foreground">{hint}</p>
-      ) : null}
-    </div>
-  );
-}
 
 function Section({
 
