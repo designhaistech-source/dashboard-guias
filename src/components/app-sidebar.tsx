@@ -248,7 +248,20 @@ function SidebarNav({
           onNavigate={onNavigate}
         />
       </SidebarGroup>
+
+      <SidebarGroup label="QUALIDADE" collapsed={collapsed}>
+        <SidebarItem
+          icon={MonitorSmartphone}
+          label="Testes de responsividade"
+          to="/qa-responsividade"
+          active={activeKey === "qa-responsividade"}
+          hint="Compare a tela em 360, 390, 768 e 1280px e verifique cortes de texto."
+          collapsed={collapsed}
+          onNavigate={onNavigate}
+        />
+      </SidebarGroup>
     </nav>
+
   );
 }
 
