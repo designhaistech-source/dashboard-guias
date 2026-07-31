@@ -19,7 +19,9 @@ from playwright.async_api import async_playwright
 
 WIDTHS = [280, 320, 375, 414, 768]
 ROUTE = "/documentos"
-TAB_NAMES = ["Relatórios", "Atestados", "Comparecimento"]
+TAB_NAMES = ["Relatórios", "Atestados"]
+# < 360px usa o rótulo curto para não truncar
+COMPARECIMENTO_LABELS = {"Comparecimento", "Compar."}
 
 MEASURE_TABS = """
 () => {
@@ -51,12 +53,12 @@ async def check_width(browser, base: str, width: int) -> list[str]:
     page = await context.new_page()
     try:
         await page.goto(f"{base}{ROUTE}", wait_until="networkidle")
-        await page.get_by_role("tab", name="Comparecimento").click()
+        await page.locator('[role="tab"]').nth(2).click()
         await page.wait_for_timeout(250)
 
         tabs = await page.evaluate(MEASURE_TABS)
         found = [tab["text"] for tab in tabs]
-        if found != TAB_NAMES:
+        if found[:2] != TAB_NAMES or found[2:] and found[2] not in COMPARECIMENTO_LABELS:
             failures.append(f"{width}px: abas inesperadas {found}")
             return failures
 
