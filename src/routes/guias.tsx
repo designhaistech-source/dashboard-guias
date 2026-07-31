@@ -13,6 +13,7 @@ import {
   CheckCircle2,
   XCircle,
   ChevronDown,
+  SlidersHorizontal,
   ChevronLeft,
   ChevronRight,
   ListChecks,
@@ -322,8 +323,7 @@ function History_Section({ extraRows }: { extraRows: Row[] }) {
 
       <div
         id="history-filters"
-        hidden={!filtersOpen ? undefined : undefined}
-        className={`${filtersOpen ? "flex" : "hidden"} flex-col gap-3 rounded-xl border border-border bg-card p-4 sm:grid sm:grid-cols-2 sm:items-center lg:flex lg:flex-row lg:flex-wrap lg:border-0 lg:bg-transparent lg:p-0 ${filtersOpen ? "" : "lg:flex"}`}
+        className={`${filtersOpen ? "flex" : "hidden"} flex-col gap-3 rounded-xl border border-border bg-card p-4 sm:grid sm:grid-cols-2 sm:items-center lg:!flex lg:flex-row lg:flex-wrap lg:border-0 lg:bg-transparent lg:p-0`}
       >
         <div className="w-full min-w-0 sm:col-span-2 lg:w-auto lg:flex-1 lg:min-w-[240px] lg:max-w-md">
           <SearchInput placeholder="Buscar por arquivo ou paciente" />
