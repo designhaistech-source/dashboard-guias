@@ -60,11 +60,54 @@ import { TUSS, TUSS_OPTIONS } from "@/lib/tuss";
 import convenioHumanasAsset from "@/assets/convenio-humanas-real.png.asset.json";
 import convenioUnimedAsset from "@/assets/convenio-unimed-real.png.asset.json";
 import convenioCaurnAsset from "@/assets/convenio-caurn-real.png.asset.json";
+import { z } from "zod";
+import { AlertCircle } from "lucide-react";
+
+
 const convenioHumanasLogo = convenioHumanasAsset.url;
 const convenioUnimedLogo = convenioUnimedAsset.url;
 const convenioCaurnLogo = convenioCaurnAsset.url;
 
+
+const UF_LIST = [
+  "AC","AL","AP","AM","BA","CE","DF","ES","GO","MA","MT","MS","MG","PA","PB",
+  "PR","PE","PI","RJ","RN","RS","RO","RR","SC","SP","SE","TO",
+] as const;
+
+/**
+ * Validação das preferências do prestador. O padrão de matrícula aceita
+ * "CRM 123456/RN" (conselho + UF) ou uma matrícula numérica do SUS.
+ */
+const prefsSchema = z.object({
+  prestador: z
+    .string()
+    .trim()
+    .min(3, { message: "Informe o nome completo (mínimo de 3 caracteres)." })
+    .max(120, { message: "O nome deve ter no máximo 120 caracteres." })
+    .regex(/^[\p{L}\p{M}\s.'-]+$/u, { message: "Use apenas letras, espaços, apóstrofos e hífens." }),
+  matricula: z
+    .string()
+    .trim()
+    .min(1, { message: "Informe a matrícula ou o registro no conselho." })
+    .max(40, { message: "A matrícula deve ter no máximo 40 caracteres." })
+    .refine(
+      (value) =>
+        /^[A-Za-zÀ-ÿ]{2,6}\s?\d{2,10}\s?\/\s?[A-Za-z]{2}$/.test(value) || /^\d{4,15}$/.test(value),
+      { message: "Use o formato CRM 123456/RN ou apenas números da matrícula." },
+    ),
+  estabelecimento: z
+    .string()
+    .trim()
+    .max(120, { message: "O estabelecimento deve ter no máximo 120 caracteres." }),
+  uf: z.enum(UF_LIST, { message: "Selecione uma UF válida." }),
+});
+
+type PrefsValues = z.infer<typeof prefsSchema>;
+type PrefField = keyof PrefsValues;
+const PREF_FIELD_ORDER: PrefField[] = ["prestador", "matricula", "estabelecimento", "uf"];
+
 const OPERADORAS = [
+
   { value: "Humanas", label: "Humanas", logo: convenioHumanasLogo, ans: "357511" },
   { value: "Unimed", label: "Unimed Natal/RN", logo: convenioUnimedLogo, ans: "335592" },
   { value: "CAURN", label: "CAURN", logo: convenioCaurnLogo, ans: "31425-1" },
@@ -268,6 +311,14 @@ function EmitirPage() {
   const [prefMatricula, setPrefMatricula] = useState("");
   const [prefEstabelecimento, setPrefEstabelecimento] = useState("");
   const [prefUf, setPrefUf] = useState("RN");
+  const [prefErrors, setPrefErrors] = useState<Partial<Record<PrefField, string>>>({});
+  const clearPrefError = (field: PrefField) =>
+    setPrefErrors((prev) => {
+      if (!prev[field]) return prev;
+      const next = { ...prev };
+      delete next[field];
+      return next;
+    });
   useEffect(() => {
     try {
       const raw = localStorage.getItem("haisguias:prefs");
@@ -283,20 +334,42 @@ function EmitirPage() {
     } catch { /* ignore */ }
   }, []);
   const savePrefs = () => {
-    localStorage.setItem(
-      "haisguias:prefs",
-      JSON.stringify({
-        prestador: prefPrestador,
-        matricula: prefMatricula,
-        estabelecimento: prefEstabelecimento,
-        uf: prefUf,
-      }),
-    );
-    if (prefPrestador) setMedicoNome(prefPrestador);
-    if (prefMatricula) setMedicoCrm(prefMatricula);
+    const result = prefsSchema.safeParse({
+      prestador: prefPrestador,
+      matricula: prefMatricula,
+      estabelecimento: prefEstabelecimento,
+      uf: prefUf,
+    });
+
+    if (!result.success) {
+      const errors: Partial<Record<PrefField, string>> = {};
+      for (const issue of result.error.issues) {
+        const field = issue.path[0] as PrefField | undefined;
+        if (field && !errors[field]) errors[field] = issue.message;
+      }
+      setPrefErrors(errors);
+      toast.error("Revise os campos destacados antes de salvar.");
+      const firstField = PREF_FIELD_ORDER.find((f) => errors[f]);
+      if (firstField) {
+        document.getElementById(`pref-${firstField}`)?.focus();
+      }
+      return;
+    }
+
+    try {
+      localStorage.setItem("haisguias:prefs", JSON.stringify(result.data));
+    } catch {
+      toast.error("Não foi possível salvar as preferências neste navegador.");
+      return;
+    }
+
+    setPrefErrors({});
+    setMedicoNome(result.data.prestador);
+    setMedicoCrm(result.data.matricula);
     toast.success("Preferências salvas");
     setPrefsOpen(false);
   };
+
 
   const [pacienteNome, setPacienteNome] = useState("");
   const [pacienteCarteira, setPacienteCarteira] = useState("");
@@ -1379,50 +1452,58 @@ function EmitirPage() {
             <DialogTitle>Preferências do Usuário</DialogTitle>
           </DialogHeader>
           <DialogBody className="space-y-5">
-            <div className="space-y-1.5">
-              <Label>Nome do Prestador</Label>
-              <Input
-                value={prefPrestador}
-                onChange={(e) => setPrefPrestador(e.target.value)}
-                placeholder="Nome completo do prestador"
-              />
-              <p className="text-xs text-muted-foreground">Utilizado em todas as guias.</p>
-            </div>
-            <div className="space-y-1.5">
-              <Label>Matrícula / Conselho</Label>
-              <Input
-                value={prefMatricula}
-                onChange={(e) => setPrefMatricula(e.target.value)}
-                placeholder="CRM 0000/UF ou nº de matrícula"
-              />
-              <p className="text-xs text-muted-foreground">Utilizado como identificação do profissional.</p>
-            </div>
-            <div className="space-y-1.5">
-              <Label>Estabelecimento (Guia SUS)</Label>
-              <Input
-                value={prefEstabelecimento}
-                onChange={(e) => setPrefEstabelecimento(e.target.value)}
-                placeholder="Ex: Hospital Municipal, UBS Centro..."
-              />
-              <p className="text-xs text-muted-foreground">
-                Preenche automaticamente o campo <span className="font-medium">Estabelecimento</span> nas guias SUS.
-              </p>
-            </div>
-            <SelectField
-              label="UF"
-              value={prefUf}
-              onValueChange={setPrefUf}
-              options={["AC","AL","AP","AM","BA","CE","DF","ES","GO","MA","MT","MS","MG","PA","PB","PR","PE","PI","RJ","RN","RS","RO","RR","SC","SP","SE","TO"].map((uf) => ({ value: uf, label: uf }))}
+            <PrefTextField
+              id="pref-prestador"
+              label="Nome do Prestador"
+              value={prefPrestador}
+              onChange={(v) => { setPrefPrestador(v); clearPrefError("prestador"); }}
+              placeholder="Nome completo do prestador"
+              hint="Utilizado em todas as guias."
+              error={prefErrors.prestador}
+              autoComplete="name"
             />
+            <PrefTextField
+              id="pref-matricula"
+              label="Matrícula / Conselho"
+              value={prefMatricula}
+              onChange={(v) => { setPrefMatricula(v); clearPrefError("matricula"); }}
+              placeholder="CRM 0000/UF ou nº de matrícula"
+              hint="Formato aceito: CRM 123456/RN ou apenas números da matrícula."
+              error={prefErrors.matricula}
+            />
+            <PrefTextField
+              id="pref-estabelecimento"
+              label="Estabelecimento (Guia SUS)"
+              value={prefEstabelecimento}
+              onChange={(v) => { setPrefEstabelecimento(v); clearPrefError("estabelecimento"); }}
+              placeholder="Ex: Hospital Municipal, UBS Centro..."
+              hint="Opcional. Preenche automaticamente o campo Estabelecimento nas guias SUS."
+              error={prefErrors.estabelecimento}
+            />
+            <div className="space-y-1.5">
+              <SelectField
+                label="UF"
+                value={prefUf}
+                onValueChange={(v) => { setPrefUf(v); clearPrefError("uf"); }}
+                options={UF_LIST.map((uf) => ({ value: uf, label: uf }))}
+              />
+              {prefErrors.uf && (
+                <p className="flex items-start gap-1.5 text-xs text-destructive" role="alert">
+                  <AlertCircle className="h-3.5 w-3.5 shrink-0 mt-px" aria-hidden="true" />
+                  <span>{prefErrors.uf}</span>
+                </p>
+              )}
+            </div>
 
             <div className="rounded-md border border-primary/30 bg-primary/5 text-primary text-xs px-3 py-2 flex gap-2">
-              <Info className="h-4 w-4 shrink-0 mt-0.5" />
+              <Info className="h-4 w-4 shrink-0 mt-0.5" aria-hidden="true" />
               <span>
                 Estas preferências serão utilizadas para preencher automaticamente os campos
                 nas guias, evitando retrabalho. Você pode editá-las a qualquer momento.
               </span>
             </div>
           </DialogBody>
+
 
           <DialogFooter className="gap-2 sm:gap-2">
             <Button variant="outline" onClick={() => setPrefsOpen(false)}>Fechar</Button>
@@ -1437,7 +1518,58 @@ function EmitirPage() {
   );
 }
 
+/** Campo de texto do modal de preferências com rótulo, dica e erro acessíveis. */
+function PrefTextField({
+  id,
+  label,
+  value,
+  onChange,
+  placeholder,
+  hint,
+  error,
+  autoComplete,
+}: {
+  id: string;
+  label: string;
+  value: string;
+  onChange: (value: string) => void;
+  placeholder?: string;
+  hint?: string;
+  error?: string;
+  autoComplete?: string;
+}) {
+  const hintId = `${id}-hint`;
+  const errorId = `${id}-error`;
+  const describedBy = [hint ? hintId : null, error ? errorId : null].filter(Boolean).join(" ");
+
+  return (
+    <div className="space-y-1.5">
+      <Label htmlFor={id}>{label}</Label>
+      <Input
+        id={id}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        placeholder={placeholder}
+        autoComplete={autoComplete}
+        aria-invalid={error ? true : undefined}
+        aria-describedby={describedBy || undefined}
+        className={cn(error && "border-destructive focus-visible:ring-destructive")}
+      />
+      {error ? (
+        <p id={errorId} role="alert" className="flex items-start gap-1.5 text-xs text-destructive">
+          <AlertCircle className="h-3.5 w-3.5 shrink-0 mt-px" aria-hidden="true" />
+          <span>{error}</span>
+        </p>
+      ) : null}
+      {hint ? (
+        <p id={hintId} className="text-xs text-muted-foreground">{hint}</p>
+      ) : null}
+    </div>
+  );
+}
+
 function Section({
+
   icon,
   title,
   description,
