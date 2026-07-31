@@ -60,6 +60,8 @@ import { TUSS, TUSS_OPTIONS } from "@/lib/tuss";
 import convenioHumanasAsset from "@/assets/convenio-humanas-real.png.asset.json";
 import convenioUnimedAsset from "@/assets/convenio-unimed-real.png.asset.json";
 import convenioCaurnAsset from "@/assets/convenio-caurn-real.png.asset.json";
+import { z } from "zod";
+
 const convenioHumanasLogo = convenioHumanasAsset.url;
 const convenioUnimedLogo = convenioUnimedAsset.url;
 const convenioCaurnLogo = convenioCaurnAsset.url;
