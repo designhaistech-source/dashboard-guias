@@ -653,7 +653,7 @@ function EmitirPage() {
                       </p>
                     </div>
 
-                    <div className="grid grid-cols-2 gap-3">
+                    <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                       {c.guides.map((g) => {
                         const active = c.id === convenioId && g.id === guideKind;
                         const Icon = g.icon;
@@ -1203,7 +1203,7 @@ function EmitirPage() {
                 }
                 description="Arraste para reordenar. Adicione um ou mais procedimentos (TUSS)."
                 action={
-                  <div className="flex items-center gap-2">
+                  <div className="flex flex-wrap items-center gap-2">
                     <Button type="button" size="sm" variant="outline" onClick={clearProcedures}>
                       Limpar
                     </Button>
@@ -1230,21 +1230,21 @@ function EmitirPage() {
                       onDragOver={onDragOver}
                       onDrop={() => onDrop(p.id)}
                       className={cn(
-                        "grid grid-cols-12 gap-2 items-end rounded-md",
+                        "grid grid-cols-[28px_1fr_auto] items-end gap-2 rounded-md border p-2 lg:grid-cols-12 lg:border-0 lg:p-0",
                         dragId === p.id && "opacity-50",
                       )}
                     >
-                      <div className="col-span-1 flex items-center justify-center pb-2 cursor-grab active:cursor-grabbing text-muted-foreground">
+                      <div className="row-span-3 flex cursor-grab items-center justify-center self-center text-muted-foreground active:cursor-grabbing lg:row-span-1 lg:col-span-1 lg:self-end lg:pb-2">
                         <GripVertical className="h-4 w-4" />
                       </div>
-                      <div className="col-span-3">
+                      <div className="col-span-2 lg:col-span-3">
                         <Input
                           value={p.code}
                           onChange={(e) => updateProcedure(p.id, { code: e.target.value })}
                           placeholder="Código TUSS"
                         />
                       </div>
-                      <div className="col-span-6">
+                      <div className="col-span-2 lg:col-span-6">
                         <Combobox
                           value={
                             TUSS.some((t) => t.descricao === p.description)
@@ -1277,7 +1277,7 @@ function EmitirPage() {
                           }
                         />
                       </div>
-                      <div className="col-span-1 flex justify-end">
+                      <div className="col-span-1 flex justify-end lg:col-span-1">
                         <Button
                           type="button"
                           variant="ghost"
@@ -1335,21 +1335,21 @@ function EmitirPage() {
                         onDragOver={onDragOver}
                         onDrop={() => onOpmeDrop(o.id)}
                         className={cn(
-                          "grid grid-cols-12 gap-2 items-end rounded-md",
+                          "grid grid-cols-[28px_1fr_auto] items-end gap-2 rounded-md border p-2 lg:grid-cols-12 lg:border-0 lg:p-0",
                           dragOpmeId === o.id && "opacity-50",
                         )}
                       >
-                        <div className="col-span-1 flex items-center justify-center pb-2 cursor-grab active:cursor-grabbing text-muted-foreground">
+                        <div className="row-span-3 flex cursor-grab items-center justify-center self-center text-muted-foreground active:cursor-grabbing lg:row-span-1 lg:col-span-1 lg:self-end lg:pb-2">
                           <GripVertical className="h-4 w-4" />
                         </div>
-                        <div className="col-span-3">
+                        <div className="col-span-2 lg:col-span-3">
                           <Input
                             value={o.code}
                             onChange={(e) => updateOpme(o.id, { code: e.target.value })}
                             placeholder="Código"
                           />
                         </div>
-                        <div className="col-span-6">
+                        <div className="col-span-2 lg:col-span-6">
                           <Input
                             value={o.description}
                             onChange={(e) =>
@@ -1370,7 +1370,7 @@ function EmitirPage() {
                             }
                           />
                         </div>
-                        <div className="col-span-1 flex justify-end">
+                        <div className="col-span-1 flex justify-end lg:col-span-1">
                           <Button
                             type="button"
                             variant="ghost"
