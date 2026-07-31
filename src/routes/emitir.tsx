@@ -626,14 +626,15 @@ function EmitirPage() {
                   <TabsTrigger
                     key={c.id}
                     value={c.id}
-                    className="flex min-w-0 items-center justify-center gap-2 rounded-lg px-2 py-2.5 font-medium text-muted-foreground transition-all hover:text-foreground sm:gap-2.5 sm:px-6 sm:py-3 data-[state=active]:border data-[state=active]:border-border/60 data-[state=active]:bg-background data-[state=active]:font-semibold data-[state=active]:text-foreground data-[state=active]:shadow-sm"
+                    className="flex min-w-0 items-center justify-center gap-2 rounded-lg px-2 py-2.5 font-medium text-muted-foreground transition-all hover:text-foreground sm:gap-2.5 sm:px-3 sm:py-3 lg:px-6 data-[state=active]:border data-[state=active]:border-border/60 data-[state=active]:bg-background data-[state=active]:font-semibold data-[state=active]:text-foreground data-[state=active]:shadow-sm"
                   >
                     <Icon className="h-4 w-4 shrink-0" />
-                    <span className="truncate text-xs tracking-tight sm:text-sm">
-                      <span className="sm:hidden">{c.short}</span>
-                      <span className="hidden sm:inline">{c.label}</span>
+                    <span className="min-w-0 truncate text-xs tracking-tight sm:text-sm">
+                      <span className="lg:hidden">{c.short}</span>
+                      <span className="hidden lg:inline">{c.label}</span>
                     </span>
                   </TabsTrigger>
+
 
                 );
               })}
