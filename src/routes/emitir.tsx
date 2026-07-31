@@ -64,7 +64,46 @@ const convenioHumanasLogo = convenioHumanasAsset.url;
 const convenioUnimedLogo = convenioUnimedAsset.url;
 const convenioCaurnLogo = convenioCaurnAsset.url;
 
+
+const UF_LIST = [
+  "AC","AL","AP","AM","BA","CE","DF","ES","GO","MA","MT","MS","MG","PA","PB",
+  "PR","PE","PI","RJ","RN","RS","RO","RR","SC","SP","SE","TO",
+] as const;
+
+/**
+ * Validação das preferências do prestador. O padrão de matrícula aceita
+ * "CRM 123456/RN" (conselho + UF) ou uma matrícula numérica do SUS.
+ */
+const prefsSchema = z.object({
+  prestador: z
+    .string()
+    .trim()
+    .min(3, { message: "Informe o nome completo (mínimo de 3 caracteres)." })
+    .max(120, { message: "O nome deve ter no máximo 120 caracteres." })
+    .regex(/^[\p{L}\p{M}\s.'-]+$/u, { message: "Use apenas letras, espaços, apóstrofos e hífens." }),
+  matricula: z
+    .string()
+    .trim()
+    .min(1, { message: "Informe a matrícula ou o registro no conselho." })
+    .max(40, { message: "A matrícula deve ter no máximo 40 caracteres." })
+    .refine(
+      (value) =>
+        /^[A-Za-zÀ-ÿ]{2,6}\s?\d{2,10}\s?\/\s?[A-Za-z]{2}$/.test(value) || /^\d{4,15}$/.test(value),
+      { message: "Use o formato CRM 123456/RN ou apenas números da matrícula." },
+    ),
+  estabelecimento: z
+    .string()
+    .trim()
+    .max(120, { message: "O estabelecimento deve ter no máximo 120 caracteres." }),
+  uf: z.enum(UF_LIST, { message: "Selecione uma UF válida." }),
+});
+
+type PrefsValues = z.infer<typeof prefsSchema>;
+type PrefField = keyof PrefsValues;
+const PREF_FIELD_ORDER: PrefField[] = ["prestador", "matricula", "estabelecimento", "uf"];
+
 const OPERADORAS = [
+
   { value: "Humanas", label: "Humanas", logo: convenioHumanasLogo, ans: "357511" },
   { value: "Unimed", label: "Unimed Natal/RN", logo: convenioUnimedLogo, ans: "335592" },
   { value: "CAURN", label: "CAURN", logo: convenioCaurnLogo, ans: "31425-1" },
