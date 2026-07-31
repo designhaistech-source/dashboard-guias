@@ -714,9 +714,28 @@ function EmitirPage() {
                   </p>
                   <p className="text-sm font-semibold truncate">{guideHeaderTitle}</p>
                 </div>
-                <Button type="button" variant="outline" size="sm" onClick={() => setPreviewOpen(true)}>
-                  <Eye className="h-4 w-4" /> Pré-visualizar
-                </Button>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <span tabIndex={canPreview ? -1 : 0}>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        disabled={!canPreview}
+                        aria-describedby={canPreview ? undefined : "preview-disabled-hint"}
+                        onClick={() => setPreviewOpen(true)}
+                      >
+                        <Eye className="h-4 w-4" /> Pré-visualizar
+                      </Button>
+                    </span>
+                  </TooltipTrigger>
+                  {!canPreview && (
+                    <TooltipContent id="preview-disabled-hint">
+                      Selecione a operadora / convênio para pré-visualizar a guia.
+                    </TooltipContent>
+                  )}
+                </Tooltip>
+
               </div>
 
               {/* Convênio / Estabelecimento */}
