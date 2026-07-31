@@ -2146,9 +2146,10 @@ function PrescricaoForm() {
               done={itens.length > 0 && posologiasInvalidas.length === 0}
               label="Medicamentos"
             />
-          <div className="grid grid-cols-1 gap-2 sm:flex sm:flex-wrap sm:items-center">
+            <StatusPill done={podeEmitir} label="Pronto para emitir" />
           </div>
-          <div className="flex flex-wrap items-center gap-2">
+          <div className="grid grid-cols-1 gap-2 sm:flex sm:flex-wrap sm:items-center">
+
             <ActionBtn
               onClick={abrirSalvarKit}
               icon={<Save className="h-4 w-4" />}
