@@ -516,6 +516,22 @@ function EmitirPage() {
   const removeOpme = (id: string) =>
     setOpmeItems((o) => o.filter((x) => x.id !== id));
 
+  // Drag & drop reorder (OPME)
+  const [dragOpmeId, setDragOpmeId] = useState<string | null>(null);
+  const onOpmeDrop = (targetId: string) => {
+    if (!dragOpmeId || dragOpmeId === targetId) return setDragOpmeId(null);
+    setOpmeItems((list) => {
+      const from = list.findIndex((x) => x.id === dragOpmeId);
+      const to = list.findIndex((x) => x.id === targetId);
+      if (from < 0 || to < 0) return list;
+      const next = [...list];
+      const [moved] = next.splice(from, 1);
+      next.splice(to, 0, moved);
+      return next;
+    });
+    setDragOpmeId(null);
+  };
+
   // Separar em guias
   const [splitInGuides, setSplitInGuides] = useState(false);
   const filledProceduresCount = procedures.filter((p) => p.code.trim() && p.description.trim()).length;
