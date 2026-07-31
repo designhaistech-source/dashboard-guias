@@ -268,6 +268,14 @@ function EmitirPage() {
   const [prefMatricula, setPrefMatricula] = useState("");
   const [prefEstabelecimento, setPrefEstabelecimento] = useState("");
   const [prefUf, setPrefUf] = useState("RN");
+  const [prefErrors, setPrefErrors] = useState<Partial<Record<PrefField, string>>>({});
+  const clearPrefError = (field: PrefField) =>
+    setPrefErrors((prev) => {
+      if (!prev[field]) return prev;
+      const next = { ...prev };
+      delete next[field];
+      return next;
+    });
   useEffect(() => {
     try {
       const raw = localStorage.getItem("haisguias:prefs");
@@ -283,20 +291,42 @@ function EmitirPage() {
     } catch { /* ignore */ }
   }, []);
   const savePrefs = () => {
-    localStorage.setItem(
-      "haisguias:prefs",
-      JSON.stringify({
-        prestador: prefPrestador,
-        matricula: prefMatricula,
-        estabelecimento: prefEstabelecimento,
-        uf: prefUf,
-      }),
-    );
-    if (prefPrestador) setMedicoNome(prefPrestador);
-    if (prefMatricula) setMedicoCrm(prefMatricula);
+    const result = prefsSchema.safeParse({
+      prestador: prefPrestador,
+      matricula: prefMatricula,
+      estabelecimento: prefEstabelecimento,
+      uf: prefUf,
+    });
+
+    if (!result.success) {
+      const errors: Partial<Record<PrefField, string>> = {};
+      for (const issue of result.error.issues) {
+        const field = issue.path[0] as PrefField | undefined;
+        if (field && !errors[field]) errors[field] = issue.message;
+      }
+      setPrefErrors(errors);
+      toast.error("Revise os campos destacados antes de salvar.");
+      const firstField = PREF_FIELD_ORDER.find((f) => errors[f]);
+      if (firstField) {
+        document.getElementById(`pref-${firstField}`)?.focus();
+      }
+      return;
+    }
+
+    try {
+      localStorage.setItem("haisguias:prefs", JSON.stringify(result.data));
+    } catch {
+      toast.error("Não foi possível salvar as preferências neste navegador.");
+      return;
+    }
+
+    setPrefErrors({});
+    setMedicoNome(result.data.prestador);
+    setMedicoCrm(result.data.matricula);
     toast.success("Preferências salvas");
     setPrefsOpen(false);
   };
+
 
   const [pacienteNome, setPacienteNome] = useState("");
   const [pacienteCarteira, setPacienteCarteira] = useState("");
