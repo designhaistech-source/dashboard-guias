@@ -43,7 +43,9 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogBody,
   DialogFooter,
+
 } from "@/components/ui/dialog";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
@@ -1376,7 +1378,7 @@ function EmitirPage() {
           <DialogHeader>
             <DialogTitle>Preferências do Usuário</DialogTitle>
           </DialogHeader>
-          <div className="space-y-4">
+          <DialogBody className="space-y-5">
             <div className="space-y-1.5">
               <Label>Nome do Prestador</Label>
               <Input
@@ -1420,7 +1422,8 @@ function EmitirPage() {
                 nas guias, evitando retrabalho. Você pode editá-las a qualquer momento.
               </span>
             </div>
-          </div>
+          </DialogBody>
+
           <DialogFooter className="gap-2 sm:gap-2">
             <Button variant="outline" onClick={() => setPrefsOpen(false)}>Fechar</Button>
             <Button onClick={savePrefs}>
