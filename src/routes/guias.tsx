@@ -197,7 +197,7 @@ function Upload_Section({ onProcessed }: { onProcessed: (row: Row) => void }) {
         </div>
         <p className="text-lg font-semibold">Arraste suas guias médicas aqui</p>
         <p className="mt-1 text-sm text-muted-foreground">
-          ou clique para selecionar arquivos (PDF, imagem)
+          ou selecione um arquivo (PDF, imagem) ou tire uma foto da guia
         </p>
         <input
           id="guide-file-upload"
@@ -210,14 +210,27 @@ function Upload_Section({ onProcessed }: { onProcessed: (row: Row) => void }) {
             event.target.value = "";
           }}
         />
-        <label
-          htmlFor="guide-file-upload"
-          className="mt-6 inline-flex items-center icon-optical gap-2 rounded-lg border border-border bg-card px-4 py-2 text-sm font-medium shadow-sm hover:bg-muted transition-colors cursor-pointer"
-        >
-          <FileUp className="h-4 w-4" />
-          Selecionar arquivos
-        </label>
+        <div className="mt-6 flex flex-col items-center gap-3 sm:flex-row">
+          <label
+            htmlFor="guide-file-upload"
+            className="inline-flex items-center icon-optical gap-2 rounded-lg border border-border bg-card px-4 py-2 text-sm font-medium shadow-sm hover:bg-muted transition-colors cursor-pointer"
+          >
+            <FileUp className="h-4 w-4" />
+            Selecionar arquivos
+          </label>
+          <Button variant="secondary" onClick={() => setCameraOpen(true)}>
+            <Camera className="h-4 w-4" aria-hidden="true" />
+            Tirar foto
+          </Button>
+        </div>
       </div>
+
+      <CameraCaptureDialog
+        open={cameraOpen}
+        onOpenChange={setCameraOpen}
+        onCapture={(file) => handleFiles([file])}
+      />
+
 
       {queue.length > 0 && (
         <div className="space-y-3">
