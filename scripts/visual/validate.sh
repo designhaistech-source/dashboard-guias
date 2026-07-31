@@ -1,25 +1,29 @@
 #!/usr/bin/env bash
 # Validação completa do design system:
-#   1. tipos, 2. lint de tokens de cor, 3. alinhamento ícone/texto, 4. visual regression.
+#   1. tipos, 2. tokens de cor, 3. alinhamento ícone/texto, 4. visual regression, 5. abas Comparecimento.
 # Uso: bash scripts/visual/validate.sh [--update]
 set -uo pipefail
 
 status=0
 
-echo "==> 1/4 Typecheck"
+echo "==> 1/5 Typecheck"
 bunx tsgo --noEmit || status=1
 
 echo
-echo "==> 2/4 Tokens de cor"
+echo "==> 2/5 Tokens de cor"
 node scripts/visual/check-design-tokens.mjs || status=1
 
 echo
-echo "==> 3/4 Alinhamento ícone/texto"
+echo "==> 3/5 Alinhamento ícone/texto"
 python3 scripts/visual/check-icon-alignment.py || status=1
 
 echo
-echo "==> 4/4 Visual regression"
+echo "==> 4/5 Visual regression"
 python3 scripts/visual/visual-regression.py "$@" || status=1
+
+echo
+echo "==> 5/5 Visual da aba Comparecimento (mobile + desktop)"
+python3 scripts/visual/check-comparecimento-visual.py "$@" || status=1
 
 echo
 if [ "$status" -eq 0 ]; then
