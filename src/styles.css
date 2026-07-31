@@ -387,3 +387,10 @@ input[type="date"]::-webkit-calendar-picker-indicator:focus-visible {
   opacity: 1;
 }
 
+
+/* Mobile: compensa a barra fixa de 3.5rem que abriga o menu em gaveta. */
+@media (max-width: 767px) {
+  main {
+    padding-top: 3.5rem;
+  }
+}
