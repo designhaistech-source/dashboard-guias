@@ -1797,7 +1797,7 @@ function PrescricaoForm() {
 
 
             {!buscaCollapsed && (<>
-            <div className="grid gap-3 md:grid-cols-[minmax(0,1fr)_220px]">
+            <div className="grid gap-3 lg:grid-cols-[minmax(0,1fr)_220px]">
               <SearchInput
                 id="med-search"
                 ref={searchRef}
