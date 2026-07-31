@@ -1747,11 +1747,12 @@ function PrescricaoForm() {
       <section id="sec-medicamentos" className="scroll-mt-4 space-y-5">
 
           <div className="rounded-2xl border border-border bg-card shadow-xs p-5 space-y-4">
-            <div className="flex items-start justify-between gap-3">
+            <div className="flex flex-col items-start gap-2 sm:flex-row sm:items-start sm:justify-between sm:gap-3">
+
             <button
               type="button"
               onClick={() => setBuscaCollapsed((v) => !v)}
-              className="flex items-start gap-2 text-left group min-w-0 flex-1"
+              className="flex items-start gap-2 text-left group min-w-0 w-full sm:flex-1"
               aria-expanded={!buscaCollapsed}
             >
               <ChevronDown
@@ -2134,8 +2135,9 @@ function PrescricaoForm() {
       {/* Barra de ação — pills de status + ações */}
       <div>
 
-        <div className="rounded-xl border bg-card/95 backdrop-blur shadow-md px-4 py-3 flex flex-wrap items-center justify-between gap-3">
+        <div className="rounded-xl border bg-card/95 backdrop-blur shadow-md px-4 py-3 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
           <div className="flex flex-wrap items-center gap-2">
+
             <StatusPill
               done={paciente.trim().length > 0 && (!especial || (cpfValido && enderecoFullValido))}
               label="Paciente"
@@ -2146,7 +2148,8 @@ function PrescricaoForm() {
             />
             <StatusPill done={podeEmitir} label="Pronto para emitir" />
           </div>
-          <div className="flex flex-wrap items-center gap-2">
+          <div className="grid grid-cols-1 gap-2 sm:flex sm:flex-wrap sm:items-center">
+
             <ActionBtn
               onClick={abrirSalvarKit}
               icon={<Save className="h-4 w-4" />}
@@ -2301,7 +2304,7 @@ function ActionBtn({
       aria-disabled={disabled}
       aria-pressed={active}
       title={effectiveTitle}
-      className={`inline-flex items-center rounded-lg border font-medium transition-colors icon-optical [&_svg]:shrink-0 ${sizeCls} ${variantCls} disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-transparent`}
+      className={`inline-flex items-center justify-center rounded-lg border font-medium transition-colors icon-optical [&_svg]:shrink-0 ${sizeCls} ${variantCls} disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-transparent`}
     >
       {icon}
       {children}
