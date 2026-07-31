@@ -1450,50 +1450,58 @@ function EmitirPage() {
             <DialogTitle>Preferências do Usuário</DialogTitle>
           </DialogHeader>
           <DialogBody className="space-y-5">
-            <div className="space-y-1.5">
-              <Label>Nome do Prestador</Label>
-              <Input
-                value={prefPrestador}
-                onChange={(e) => setPrefPrestador(e.target.value)}
-                placeholder="Nome completo do prestador"
-              />
-              <p className="text-xs text-muted-foreground">Utilizado em todas as guias.</p>
-            </div>
-            <div className="space-y-1.5">
-              <Label>Matrícula / Conselho</Label>
-              <Input
-                value={prefMatricula}
-                onChange={(e) => setPrefMatricula(e.target.value)}
-                placeholder="CRM 0000/UF ou nº de matrícula"
-              />
-              <p className="text-xs text-muted-foreground">Utilizado como identificação do profissional.</p>
-            </div>
-            <div className="space-y-1.5">
-              <Label>Estabelecimento (Guia SUS)</Label>
-              <Input
-                value={prefEstabelecimento}
-                onChange={(e) => setPrefEstabelecimento(e.target.value)}
-                placeholder="Ex: Hospital Municipal, UBS Centro..."
-              />
-              <p className="text-xs text-muted-foreground">
-                Preenche automaticamente o campo <span className="font-medium">Estabelecimento</span> nas guias SUS.
-              </p>
-            </div>
-            <SelectField
-              label="UF"
-              value={prefUf}
-              onValueChange={setPrefUf}
-              options={["AC","AL","AP","AM","BA","CE","DF","ES","GO","MA","MT","MS","MG","PA","PB","PR","PE","PI","RJ","RN","RS","RO","RR","SC","SP","SE","TO"].map((uf) => ({ value: uf, label: uf }))}
+            <PrefTextField
+              id="pref-prestador"
+              label="Nome do Prestador"
+              value={prefPrestador}
+              onChange={(v) => { setPrefPrestador(v); clearPrefError("prestador"); }}
+              placeholder="Nome completo do prestador"
+              hint="Utilizado em todas as guias."
+              error={prefErrors.prestador}
+              autoComplete="name"
             />
+            <PrefTextField
+              id="pref-matricula"
+              label="Matrícula / Conselho"
+              value={prefMatricula}
+              onChange={(v) => { setPrefMatricula(v); clearPrefError("matricula"); }}
+              placeholder="CRM 0000/UF ou nº de matrícula"
+              hint="Formato aceito: CRM 123456/RN ou apenas números da matrícula."
+              error={prefErrors.matricula}
+            />
+            <PrefTextField
+              id="pref-estabelecimento"
+              label="Estabelecimento (Guia SUS)"
+              value={prefEstabelecimento}
+              onChange={(v) => { setPrefEstabelecimento(v); clearPrefError("estabelecimento"); }}
+              placeholder="Ex: Hospital Municipal, UBS Centro..."
+              hint="Opcional. Preenche automaticamente o campo Estabelecimento nas guias SUS."
+              error={prefErrors.estabelecimento}
+            />
+            <div className="space-y-1.5">
+              <SelectField
+                label="UF"
+                value={prefUf}
+                onValueChange={(v) => { setPrefUf(v); clearPrefError("uf"); }}
+                options={UF_LIST.map((uf) => ({ value: uf, label: uf }))}
+              />
+              {prefErrors.uf && (
+                <p className="flex items-start gap-1.5 text-xs text-destructive" role="alert">
+                  <AlertCircle className="h-3.5 w-3.5 shrink-0 mt-px" aria-hidden="true" />
+                  <span>{prefErrors.uf}</span>
+                </p>
+              )}
+            </div>
 
             <div className="rounded-md border border-primary/30 bg-primary/5 text-primary text-xs px-3 py-2 flex gap-2">
-              <Info className="h-4 w-4 shrink-0 mt-0.5" />
+              <Info className="h-4 w-4 shrink-0 mt-0.5" aria-hidden="true" />
               <span>
                 Estas preferências serão utilizadas para preencher automaticamente os campos
                 nas guias, evitando retrabalho. Você pode editá-las a qualquer momento.
               </span>
             </div>
           </DialogBody>
+
 
           <DialogFooter className="gap-2 sm:gap-2">
             <Button variant="outline" onClick={() => setPrefsOpen(false)}>Fechar</Button>
