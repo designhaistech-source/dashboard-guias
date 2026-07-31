@@ -529,7 +529,7 @@ function OpmePage() {
                           </label>
                           <Input
                             id={`nome-${m.id}`}
-                            className="h-9 w-full min-w-0 text-sm text-ellipsis"
+                            className="h-9 w-full min-w-0 px-2.5 text-base text-ellipsis lg:text-sm"
                             placeholder="Buscar material..."
                             value={m.nome}
                             onChange={(e) => autoFillFromCatalogo(m.id, e.target.value)}
