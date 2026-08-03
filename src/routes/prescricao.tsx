@@ -1486,6 +1486,7 @@ function PrescricaoForm() {
             <datalist id="pacientes-recentes">
 
               {pacientesRecentes.map((n) => (
+                /* ds-allow: itens do datalist nativo de pacientes recentes */
                 <option key={n} value={n} />
               ))}
             </datalist>

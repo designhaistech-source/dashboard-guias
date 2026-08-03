@@ -581,6 +581,7 @@ function OpmePage() {
                           <datalist id={`opme-nome-${idx}`}>
 
                             {CATALOGO_OPME.map((c) => (
+                              /* ds-allow: itens do datalist nativo do catálogo OPME */
                               <option key={c.tiss} value={c.nome} />
                             ))}
                           </datalist>
