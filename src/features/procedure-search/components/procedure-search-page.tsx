@@ -210,33 +210,47 @@ export function ProcedureSearchPage() {
                   </p>
                 </div>
 
-                {/* Mobile: cartões empilhados evitam rolagem horizontal */}
-                <ul className="max-h-[32rem] divide-y divide-border overflow-y-auto lg:hidden">
+                {/* Mobile: fallback em cards compartilhado (DataTable). */}
+                <DataTableCardList
+                  divided
+                  className="max-h-[32rem] overflow-y-auto"
+                >
                   {results.map((p) => (
-                    <li
-                      key={`${p.referencia}-${p.codigo}`}
-                      className="space-y-2 px-4 py-3"
-                    >
-                      <div className="flex items-start justify-between gap-3">
-                        <span className="font-mono text-xs tabular-nums">
-                          {p.codigo}
-                        </span>
-                        <span className="shrink-0 text-xs text-muted-foreground">
-                          {REFERENCE_LABELS[p.referencia]}
-                        </span>
-                      </div>
-                      <p className="text-sm lowercase break-words">
-                        {p.descricao}
-                      </p>
-                      <p className="text-xs text-muted-foreground">
-                        Similaridade:{" "}
-                        <span className="font-mono tabular-nums">
-                          {p.similaridade}%
-                        </span>
-                      </p>
-                    </li>
+                    <DataTableCard key={`${p.referencia}-${p.codigo}`} flat>
+                      <DataTableCardHeader
+                        title={
+                          <span className="font-mono text-xs tabular-nums">
+                            {p.codigo}
+                          </span>
+                        }
+                        subtitle={
+                          <span className="lowercase text-foreground">
+                            {p.descricao}
+                          </span>
+                        }
+                        trailing={
+                          <span className="text-xs text-muted-foreground">
+                            {REFERENCE_LABELS[p.referencia]}
+                          </span>
+                        }
+                      />
+                      <DataTableCardFields
+                        columns={1}
+                        fields={[
+                          {
+                            label: "Similaridade",
+                            value: (
+                              <span className="font-mono tabular-nums">
+                                {p.similaridade}%
+                              </span>
+                            ),
+                          },
+                        ]}
+                      />
+                    </DataTableCard>
                   ))}
-                </ul>
+                </DataTableCardList>
+
 
                 <div className="hidden max-h-[32rem] overflow-y-auto lg:block">
                   <DataTable className="rounded-none border-0">
