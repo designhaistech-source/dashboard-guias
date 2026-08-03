@@ -52,6 +52,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { toast } from "sonner";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { CURRENT_USER } from "@/lib/current-user";
 import logoAsset from "@/assets/guiasplus-logo.png.asset.json";
 import logoDarkAsset from "@/assets/guiasplus-logo-dark.png.asset.json";
