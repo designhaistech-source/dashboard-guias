@@ -2,6 +2,12 @@ import { useMemo, useState } from "react";
 import { AppModal } from "@/components/app-modal";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
+  DataTableCardList,
+  DataTableCard,
+  DataTableCardHeader,
+  DataTableCardFields,
+} from "@/components/data-table";
+import {
   REFERENCE_LABELS,
   searchProcedures,
   type ProcedureReference,
@@ -71,34 +77,51 @@ export function ProcedureCodeModal({ open, onOpenChange, term = "" }: ProcedureC
             </div>
           </fieldset>
 
-          {/* Mobile: lista em cartões para evitar rolagem horizontal da tabela. */}
-          <div className="max-h-[45vh] space-y-2 overflow-y-auto md:hidden">
-            {rows.length === 0 ? (
-              <p className="rounded-xl border border-border px-4 py-10 text-center text-sm text-muted-foreground">
-                {selected.length === 0
-                  ? "Selecione ao menos uma referência."
-                  : "Nenhum código encontrado."}
-              </p>
-            ) : (
-              rows.map((p) => (
-                <div
-                  key={`${p.referencia}-${p.codigo}`}
-                  className="rounded-xl border border-border p-3"
-                >
-                  <div className="flex items-center justify-between gap-2">
-                    <span className="font-mono text-sm tabular-nums">{p.codigo}</span>
-                    <span className="text-xs text-muted-foreground">
-                      {REFERENCE_LABELS[p.referencia]}
-                    </span>
-                  </div>
-                  <p className="mt-1 text-sm text-foreground">{p.descricao}</p>
-                  <p className="mt-1 text-xs text-muted-foreground tabular-nums">
-                    Similaridade: {p.similaridade.toFixed(2)}%
-                  </p>
-                </div>
-              ))
-            )}
-          </div>
+          {/* Mobile: fallback em cards compartilhado (DataTable). */}
+          {rows.length === 0 ? (
+            <p className="rounded-xl border border-border px-4 py-10 text-center text-sm text-muted-foreground md:hidden">
+              {selected.length === 0
+                ? "Selecione ao menos uma referência."
+                : "Nenhum código encontrado."}
+            </p>
+          ) : (
+            <DataTableCardList
+              breakpoint="md"
+              className="max-h-[45vh] overflow-y-auto"
+            >
+              {rows.map((p) => (
+                <DataTableCard key={`${p.referencia}-${p.codigo}`}>
+                  <DataTableCardHeader
+                    title={
+                      <span className="font-mono tabular-nums">{p.codigo}</span>
+                    }
+                    subtitle={
+                      <span className="text-foreground">{p.descricao}</span>
+                    }
+                    trailing={
+                      <span className="text-xs text-muted-foreground">
+                        {REFERENCE_LABELS[p.referencia]}
+                      </span>
+                    }
+                  />
+                  <DataTableCardFields
+                    columns={1}
+                    fields={[
+                      {
+                        label: "Similaridade",
+                        value: (
+                          <span className="tabular-nums">
+                            {p.similaridade.toFixed(2)}%
+                          </span>
+                        ),
+                      },
+                    ]}
+                  />
+                </DataTableCard>
+              ))}
+            </DataTableCardList>
+          )}
+
 
           <div className="hidden overflow-hidden rounded-xl border border-border md:block">
             <div className="max-h-[45vh] overflow-y-auto">
