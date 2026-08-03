@@ -760,21 +760,27 @@ function OpmePage() {
               </div>
             </SectionCard>
 
-            {/* Ação final */}
-            <div>
-              <div className="rounded-xl border bg-card/95 backdrop-blur shadow-md px-4 py-3 flex flex-wrap items-center justify-between gap-3">
-                <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
-                  <StatusPill done={convenioOk} label="Convênio" />
-                  <StatusPill done={clinicoOk} label="Justificativa" />
-                  <StatusPill done={materiaisOk} label="Materiais" />
-                  <StatusPill done={profOk} label="Profissional" />
-                </div>
-                <Button type="submit" size="sm" disabled={!canSubmit}>
-                  <Send />
-                  Enviar solicitação
-                </Button>
-              </div>
-            </div>
+            {/* Barra de ação padrão: etapas + ações */}
+            <FormActionBar
+              stepsLabel="Etapas preenchidas"
+              steps={[
+                { label: "Convênio", done: convenioOk },
+                { label: "Justificativa", done: clinicoOk },
+                { label: "Materiais", done: materiaisOk },
+                { label: "Profissional", done: profOk },
+              ]}
+              note={
+                <>
+                  Campos com <span className="text-destructive/80">*</span> são
+                  obrigatórios e serão validados antes do envio.
+                </>
+              }
+            >
+              <Button type="submit" size="sm" disabled={!canSubmit}>
+                <Send className="h-4 w-4" />
+                Enviar solicitação
+              </Button>
+            </FormActionBar>
           </form>
         </div>
 
