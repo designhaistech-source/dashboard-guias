@@ -152,6 +152,8 @@ export function CidSearchPage() {
               setTerm("");
               setLastQuery("");
               setResults(null);
+              setStatus("idle");
+
             }}
           />
         </div>
