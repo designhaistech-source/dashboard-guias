@@ -1416,15 +1416,8 @@ function PrescricaoForm() {
         description="Gere receitas médicas digitais, comuns ou especiais, prontas para impressão ou download em PDF."
         actions={
           <>
-            {savedAt && (
-              <div
-                className="hidden md:flex items-center gap-1.5 text-xs text-muted-foreground mr-1"
-                title={`Rascunho salvo às ${fmtHora(savedAt)}`}
-              >
-                <Cloud className="h-3.5 w-3.5" />
-                salvo {fmtHora(savedAt)}
-              </div>
-            )}
+            <SavedIndicator savedAt={savedAt} />
+
             {triedEmit && pendencias.length > 0 ? (
               <Button
                 type="button"
