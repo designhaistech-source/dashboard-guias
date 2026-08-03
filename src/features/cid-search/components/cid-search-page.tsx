@@ -157,17 +157,17 @@ export function CidSearchPage() {
               <TabsList className={appTabsListClass}>
                 <TabsTrigger value="favoritos" className={appTabsTriggerClass}>
                   <Star className={appTabsIconClass} aria-hidden />
-                  <span className={appTabsLabelClass}>
-                    Favoritos
-                    <span className="hidden sm:inline"> ({favorites.length})</span>
-                  </span>
+                  <span className={appTabsLabelClass}>Favoritos</span>
+                  <Badge variant="secondary" size="sm" className="tabular-nums">
+                    {favorites.length}
+                  </Badge>
                 </TabsTrigger>
                 <TabsTrigger value="historico" className={appTabsTriggerClass}>
                   <History className={appTabsIconClass} aria-hidden />
-                  <span className={appTabsLabelClass}>
-                    Histórico
-                    <span className="hidden sm:inline"> ({historyItems.length})</span>
-                  </span>
+                  <span className={appTabsLabelClass}>Histórico</span>
+                  <Badge variant="secondary" size="sm" className="tabular-nums">
+                    {historyItems.length}
+                  </Badge>
                 </TabsTrigger>
               </TabsList>
 
@@ -182,7 +182,23 @@ export function CidSearchPage() {
                 />
               </TabsContent>
 
-              <TabsContent value="historico">
+              <TabsContent value="historico" className="space-y-3">
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <p className="text-xs text-muted-foreground">
+                    Últimos códigos copiados (máximo de 10).
+                  </p>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={clearHistory}
+                    disabled={historyItems.length === 0}
+                  >
+                    <Trash2 className="icon-optical h-4 w-4" aria-hidden />
+                    Limpar histórico
+                  </Button>
+                </div>
+
                 <CidList
                   items={historyItems}
                   favorites={favorites}
@@ -194,6 +210,7 @@ export function CidSearchPage() {
               </TabsContent>
             </Tabs>
           </SurfaceCard>
+
 
         </div>
 
