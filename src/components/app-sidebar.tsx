@@ -30,6 +30,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { Button } from "@/components/ui/button";
 import logoAsset from "@/assets/guiasplus-logo.png.asset.json";
 import { RenderProfiler } from "@/lib/render-profiler";
 
@@ -278,21 +279,29 @@ function UserMenu({ collapsed }: { collapsed: boolean }) {
       <div className="border-t border-sidebar-border flex flex-col items-center py-3 gap-2">
         <Tooltip>
           <TooltipTrigger asChild>
-            <button className="p-1.5 rounded-md hover:bg-muted transition-colors">
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              aria-label="Perfil"
+              className="h-auto w-auto p-1.5"
+            >
               <CircleUser className="h-7 w-7 text-sidebar-muted" strokeWidth={1.5} />
-            </button>
+            </Button>
           </TooltipTrigger>
           <TooltipContent side="right">Dr Fulano</TooltipContent>
         </Tooltip>
         <Tooltip>
           <TooltipTrigger asChild>
-            <button
+            <Button
               type="button"
+              variant="ghost"
+              size="icon"
               aria-label="Sair"
-              className="p-2 rounded-md text-sidebar-muted hover:text-destructive hover:bg-muted transition-colors"
+              className="text-sidebar-muted hover:text-destructive"
             >
               <LogOut className="h-4 w-4" />
-            </button>
+            </Button>
           </TooltipTrigger>
           <TooltipContent side="right">Sair</TooltipContent>
         </Tooltip>
@@ -330,9 +339,11 @@ function UserMenu({ collapsed }: { collapsed: boolean }) {
             </div>
           </div>
           <div className="py-1">
-            <button
+            <Button
+              type="button"
+              variant="ghost"
               onClick={() => setDark((v) => !v)}
-              className="w-full px-4 py-2 flex items-center gap-3 text-sm hover:bg-muted transition-colors"
+              className="w-full justify-start rounded-none px-4 py-2 h-auto gap-3 text-sm font-normal"
             >
               {dark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
               <span className="flex-1 text-left">Modo {dark ? "claro" : "escuro"}</span>
@@ -347,21 +358,33 @@ function UserMenu({ collapsed }: { collapsed: boolean }) {
                   }`}
                 />
               </span>
-            </button>
-            <button className="w-full px-4 py-2 flex items-center gap-3 text-sm hover:bg-muted transition-colors">
+            </Button>
+            <Button
+              type="button"
+              variant="ghost"
+              className="w-full justify-start rounded-none px-4 py-2 h-auto gap-3 text-sm font-normal"
+            >
               <Settings className="h-4 w-4" />
               Configurações
-            </button>
-            <button className="w-full px-4 py-2 flex items-center gap-3 text-sm hover:bg-muted transition-colors">
+            </Button>
+            <Button
+              type="button"
+              variant="ghost"
+              className="w-full justify-start rounded-none px-4 py-2 h-auto gap-3 text-sm font-normal"
+            >
               <HelpCircle className="h-4 w-4" />
               <span className="flex-1 text-left">Ajuda</span>
-            </button>
+            </Button>
           </div>
           <div className="border-t border-border py-1">
-            <button className="w-full px-4 py-2 flex items-center gap-3 text-sm text-destructive hover:bg-muted transition-colors">
+            <Button
+              type="button"
+              variant="ghost"
+              className="w-full justify-start rounded-none px-4 py-2 h-auto gap-3 text-sm font-normal text-destructive hover:text-destructive"
+            >
               <LogOut className="h-4 w-4" />
               Sair
-            </button>
+            </Button>
           </div>
         </div>
       )}
@@ -381,7 +404,7 @@ function SidebarGroup({
   return (
     <div className="space-y-1">
       {!collapsed && (
-        <div className="px-3 text-[11px] font-medium tracking-wider text-sidebar-muted">
+        <div className="px-3 text-xs font-medium tracking-wider text-sidebar-muted">
           {label}
         </div>
       )}
@@ -462,5 +485,10 @@ function SidebarItem({
       </Link>
     );
   }
-  return <button className={className}>{inner}</button>;
+  return (
+    <button /* ds-allow: estilo compartilhado do item de sidebar */ type="button" className={className}>
+      {inner}
+    </button>
+  );
+
 }

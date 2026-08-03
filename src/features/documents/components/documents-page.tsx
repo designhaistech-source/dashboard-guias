@@ -288,7 +288,7 @@ function ReportsTab() {
             {DOCUMENT_VARIABLES.map((v) => (
               <code
                 key={v}
-                className="mr-1 rounded bg-muted px-1 py-0.5 font-mono text-[11px]"
+                className="mr-1 rounded bg-muted px-1 py-0.5 font-mono text-xs"
               >
                 {v}
               </code>

@@ -32,6 +32,7 @@ import { AppSidebar } from "@/components/app-sidebar";
 import { SiteFooter } from "@/components/site-footer";
 import { PageHeader } from "@/components/page-header";
 import { SurfaceCard } from "@/components/surface-card";
+import { Field } from "@/components/form-field";
 import { Button } from "@/components/ui/button";
 import logoAsset from "@/assets/haisguias-logo.png.asset.json";
 import { toast } from "sonner";
@@ -489,7 +490,7 @@ function ChartTooltip({ active, payload, label, suffix }: any) {
   return (
     <div className="rounded-lg border border-border bg-popover/95 px-3 py-2 shadow-md backdrop-blur">
       {label !== undefined && (
-        <div className="text-[11px] uppercase tracking-wider text-muted-foreground mb-1">
+        <div className="text-xs uppercase tracking-wider text-muted-foreground mb-1">
           Dia {label}
         </div>
       )}
@@ -585,10 +586,7 @@ function FilterField({
   inputRef?: React.Ref<HTMLInputElement>;
 }) {
   return (
-    <div className="flex flex-col gap-1">
-      <label className="text-[11px] uppercase tracking-wider text-muted-foreground font-medium">
-        {label}
-      </label>
+    <Field label={label} labelClassName="text-xs font-medium uppercase tracking-wider text-muted-foreground">
       <Input
         ref={inputRef}
         type={type}
@@ -597,7 +595,7 @@ function FilterField({
         aria-invalid={error || undefined}
         className={`h-9 ${error ? "border-destructive focus-visible:ring-destructive/40" : ""}`}
       />
-    </div>
+    </Field>
   );
 }
 
@@ -616,10 +614,7 @@ function FilterSelect({
   placeholder?: string;
 }) {
   return (
-    <div className="flex flex-col gap-1">
-      <label className="text-[11px] uppercase tracking-wider text-muted-foreground font-medium">
-        {label}
-      </label>
+    <Field label={label} labelClassName="text-xs font-medium uppercase tracking-wider text-muted-foreground">
       <Combobox
         value={value}
         onChange={onChange}
@@ -628,7 +623,7 @@ function FilterSelect({
         searchPlaceholder="Buscar..."
         clearable
       />
-    </div>
+    </Field>
   );
 }
 
@@ -795,7 +790,7 @@ function DashboardPage() {
                   <SlidersHorizontal className="h-4 w-4" />
                   Filtros
                   {activeFilters.length > 0 && (
-                    <span className="ml-1 inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-primary px-1.5 text-[11px] font-semibold text-primary-foreground">
+                    <span className="ml-1 inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-primary px-1.5 text-xs font-semibold text-primary-foreground">
                       {activeFilters.length}
                     </span>
                   )}
@@ -816,21 +811,27 @@ function DashboardPage() {
                 <Chip key={k} asSpan variant="outline">
                   <span className="text-muted-foreground">{filterLabels[k]}:</span>
                   <span className="font-medium">{v}</span>
-                  <button
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
                     onClick={() => removeFilter(k)}
-                    className="ml-1 rounded-full p-0.5 hover:bg-muted"
+                    className="ml-1 h-4 w-4 rounded-full p-0.5 hover:bg-muted [&_svg]:size-3"
                     aria-label={`Remover filtro ${filterLabels[k]}`}
                   >
                     <X className="h-3 w-3" />
-                  </button>
+                  </Button>
                 </Chip>
               ))}
-              <button
+              <Button
+                type="button"
+                variant="link"
+                size="sm"
                 onClick={() => setFilters(emptyFilters)}
-                className="text-xs text-muted-foreground hover:text-foreground underline underline-offset-2"
+                className="h-auto p-0 text-xs text-muted-foreground hover:text-foreground"
               >
                 Limpar todos
-              </button>
+              </Button>
             </div>
           )}
 
@@ -850,17 +851,20 @@ function DashboardPage() {
                     {isDirty && <span className="ml-2 text-warning-strong">• alterações não aplicadas</span>}
                   </p>
                 </div>
-                <button
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
                   onClick={requestClose}
-                  className="rounded-md p-1 text-muted-foreground hover:bg-muted hover:text-foreground"
+                  className="h-7 w-7 text-muted-foreground hover:text-foreground"
                   aria-label="Fechar filtros"
                 >
                   <X className="h-4 w-4" />
-                </button>
+                </Button>
               </div>
 
               <div>
-                <div className="text-[11px] uppercase tracking-wider text-muted-foreground font-medium mb-2">Atalhos</div>
+                <div className="mb-2 text-xs font-medium uppercase tracking-wider text-muted-foreground">Atalhos</div>
                 <div className="flex flex-wrap gap-2">
                   {[
                     { id: "hoje", label: "Hoje" },
@@ -880,7 +884,7 @@ function DashboardPage() {
               </div>
 
               <div>
-                <div className="text-[11px] uppercase tracking-wider text-muted-foreground font-medium mb-2">Período de autorização</div>
+                <div className="mb-2 text-xs font-medium uppercase tracking-wider text-muted-foreground">Período de autorização</div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
                   <FilterField label="De" type="date" error={dateRangeInvalid} value={draft.dataAutorizacaoDe} onChange={(v) => setDraft((d) => ({ ...d, dataAutorizacaoDe: v }))} inputRef={firstFieldRef} />
                   <FilterField label="Até" type="date" error={dateRangeInvalid} value={draft.dataAutorizacaoAte} onChange={(v) => setDraft((d) => ({ ...d, dataAutorizacaoAte: v }))} />
@@ -900,7 +904,7 @@ function DashboardPage() {
               </div>
 
               <div>
-                <div className="text-[11px] uppercase tracking-wider text-muted-foreground font-medium mb-2">Valor (R$)</div>
+                <div className="mb-2 text-xs font-medium uppercase tracking-wider text-muted-foreground">Valor (R$)</div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
                   <FilterField label="Mínimo" type="number" error={valueRangeInvalid} value={draft.valorMin} onChange={(v) => setDraft((d) => ({ ...d, valorMin: v }))} />
                   <FilterField label="Máximo" type="number" error={valueRangeInvalid} value={draft.valorMax} onChange={(v) => setDraft((d) => ({ ...d, valorMax: v }))} />
@@ -911,29 +915,26 @@ function DashboardPage() {
               </div>
 
               <div className="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-border">
-                <button
+                <Button
+                  type="button"
+                  variant="outline"
                   onClick={clearAllAndApply}
                   disabled={activeFilters.length === 0}
-                  className="inline-flex items-center icon-optical gap-1.5 rounded-md border border-border px-3 py-2 text-sm text-foreground hover:bg-muted transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   Limpar filtros
-                </button>
+                </Button>
                 <div className="flex items-center gap-2">
-                  <button
-                    onClick={cancelEdits}
-                    disabled={!isDirty}
-                    className="inline-flex items-center icon-optical gap-1.5 rounded-md border border-border px-3 py-2 text-sm text-foreground hover:bg-muted transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
+                  <Button type="button" variant="outline" onClick={cancelEdits} disabled={!isDirty}>
                     Cancelar
-                  </button>
-                  <button
+                  </Button>
+                  <Button
+                    type="button"
                     onClick={applyFilters}
                     disabled={hasErrors}
                     title={hasErrors ? "Corrija os campos destacados para aplicar" : undefined}
-                    className="inline-flex items-center icon-optical gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     Aplicar filtros{previewCount !== null && ` (${previewCount} ${previewCount === 1 ? "guia" : "guias"})`}
-                  </button>
+                  </Button>
                 </div>
               </div>
             </section>
@@ -1033,7 +1034,7 @@ function DashboardPage() {
                     <div className="text-2xl font-bold tabular-nums">
                       {activeType !== undefined ? typeData[activeType].value : total}
                     </div>
-                    <div className="text-[10px] uppercase tracking-wider text-muted-foreground">
+                    <div className="text-xs uppercase tracking-wider text-muted-foreground">
                       {activeType !== undefined ? typeData[activeType].name : "guias"}
                     </div>
                   </div>

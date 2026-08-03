@@ -37,6 +37,8 @@ import { MultiSelect } from "@/components/ui/combobox";
 import { Dialog, DialogBody, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Field, SearchInput, SelectField } from "@/components/form-field";
+import { PageHeader } from "@/components/page-header";
+import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Chip } from "@/components/ui/chip";
 import { StatusPill } from "@/components/status-pill";
@@ -486,7 +488,7 @@ function PrescricaoPage() {
   return (
     <div className="flex min-h-screen w-full bg-background text-foreground">
       <AppSidebar activeKey="prescricao" />
-      <main className="flex-1 flex flex-col min-h-screen">
+      <main className="flex-1 min-w-0 flex flex-col min-h-screen">
         <div className="w-full flex-1 space-y-6 px-6 py-8 pb-16 lg:px-10">
           <AppBreadcrumb />
           <PrescricaoForm />
@@ -500,18 +502,15 @@ function PrescricaoPage() {
 
 function Header() {
   return (
-    <div className="rounded-2xl border border-border bg-card shadow-xs px-6 py-5 flex items-center justify-between">
-      <div className="flex items-center gap-4">
-        <div className="grid place-items-center h-12 w-12 rounded-xl bg-primary/15 text-primary">
-          <Pill className="h-6 w-6" />
-        </div>
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight">Prescrição</h1>
-          <p className="text-sm text-muted-foreground">
-            Prescrição de medicamentos ou substâncias controladas
-          </p>
-        </div>
+    <div className="rounded-2xl border border-border bg-card shadow-xs px-6 py-5 flex items-center gap-4">
+      <div className="grid place-items-center h-12 w-12 rounded-xl bg-primary/15 text-primary shrink-0">
+        <Pill className="h-6 w-6" />
       </div>
+      <PageHeader
+        title="Prescrição"
+        description="Prescrição de medicamentos ou substâncias controladas"
+        className="flex-1"
+      />
     </div>
   );
 }
@@ -1412,66 +1411,64 @@ function PrescricaoForm() {
   return (
     <div className="space-y-5 pb-8">
       {/* Header unificado */}
-      <div className="flex flex-wrap items-start justify-between gap-3">
-        <div className="min-w-0">
-          <h1 className="font-display text-2xl font-semibold tracking-tight text-foreground">
-            Emitir prescrição
-          </h1>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Gere receitas médicas digitais, comuns ou especiais, prontas para impressão ou download em PDF.
-          </p>
-        </div>
-        <div className="flex items-center gap-2 shrink-0">
-          {savedAt && (
-            <div
-              className="hidden md:flex items-center gap-1.5 text-[11px] text-muted-foreground mr-1"
-              title={`Rascunho salvo às ${fmtHora(savedAt)}`}
+      <PageHeader
+        title="Emitir prescrição"
+        description="Gere receitas médicas digitais, comuns ou especiais, prontas para impressão ou download em PDF."
+        actions={
+          <>
+            {savedAt && (
+              <div
+                className="hidden md:flex items-center gap-1.5 text-xs text-muted-foreground mr-1"
+                title={`Rascunho salvo às ${fmtHora(savedAt)}`}
+              >
+                <Cloud className="h-3.5 w-3.5" />
+                salvo {fmtHora(savedAt)}
+              </div>
+            )}
+            {triedEmit && pendencias.length > 0 ? (
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() =>
+                  document
+                    .getElementById("sec-revisar")
+                    ?.scrollIntoView({ behavior: "smooth", block: "start" })
+                }
+                className="border-warning/40 bg-warning/10 text-warning-strong hover:bg-warning/15"
+                title="Ver o que falta"
+              >
+                <AlertCircle className="h-3.5 w-3.5" />
+                Faltam {pendencias.length} {pendencias.length > 1 ? "itens" : "item"}
+              </Button>
+            ) : triedEmit && pendencias.length === 0 ? (
+              <span
+                className="inline-flex items-center icon-optical gap-1.5 text-xs font-medium rounded-lg border border-success/40 bg-success/10 text-success-strong px-2.5 py-1.5"
+                title="Todos os campos estão válidos"
+              >
+                <CheckCircle2 className="h-3.5 w-3.5" />
+                Pronto para emitir
+              </span>
+            ) : null}
+            <ActionBtn
+              onClick={() => setKitsAberto(true)}
+              icon={<BookMarked className="h-3.5 w-3.5" />}
+              size="sm"
             >
-              <Cloud className="h-3.5 w-3.5" />
-              salvo {fmtHora(savedAt)}
-            </div>
-          )}
-          {triedEmit && pendencias.length > 0 ? (
-            <button
-              type="button"
-              onClick={() =>
-                document
-                  .getElementById("sec-revisar")
-                  ?.scrollIntoView({ behavior: "smooth", block: "start" })
-              }
-              className="inline-flex items-center icon-optical gap-1.5 text-xs font-medium rounded-lg border border-warning/40 bg-warning/10 text-warning-strong px-2.5 py-1.5 hover:bg-warning/15 transition-colors"
-              title="Ver o que falta"
+              Kits salvos
+            </ActionBtn>
+            <ActionBtn
+              onClick={() => setHistoricoAberto((v) => !v)}
+              icon={<History className="h-3.5 w-3.5" />}
+              size="sm"
+              active={historicoAberto}
+              title={historicoAberto ? "Ocultar histórico" : "Mostrar histórico"}
             >
-              <AlertCircle className="h-3.5 w-3.5" />
-              Faltam {pendencias.length} {pendencias.length > 1 ? "itens" : "item"}
-            </button>
-          ) : triedEmit && pendencias.length === 0 ? (
-            <span
-              className="inline-flex items-center icon-optical gap-1.5 text-xs font-medium rounded-lg border border-success/40 bg-success/10 text-success-strong px-2.5 py-1.5"
-              title="Todos os campos estão válidos"
-            >
-              <CheckCircle2 className="h-3.5 w-3.5" />
-              Pronto para emitir
-            </span>
-          ) : null}
-          <ActionBtn
-            onClick={() => setKitsAberto(true)}
-            icon={<BookMarked className="h-3.5 w-3.5" />}
-            size="sm"
-          >
-            Kits salvos
-          </ActionBtn>
-          <ActionBtn
-            onClick={() => setHistoricoAberto((v) => !v)}
-            icon={<History className="h-3.5 w-3.5" />}
-            size="sm"
-            active={historicoAberto}
-            title={historicoAberto ? "Ocultar histórico" : "Mostrar histórico"}
-          >
-            Histórico{historico.length > 0 ? ` (${historico.length})` : ""}
-          </ActionBtn>
-        </div>
-      </div>
+              Histórico{historico.length > 0 ? ` (${historico.length})` : ""}
+            </ActionBtn>
+          </>
+        }
+      />
 
 
 
@@ -1501,10 +1498,11 @@ function PrescricaoForm() {
       <section id="sec-paciente" className="scroll-mt-4">
         <div className="rounded-2xl border border-border bg-card shadow-xs p-5 space-y-4">
           <div className="flex flex-wrap items-start justify-between gap-3">
-            <button
+            <Button
               type="button"
+              variant="ghost"
               onClick={() => setPacienteCollapsed((v) => !v)}
-              className="flex items-start gap-2 text-left group min-w-0"
+              className="flex h-auto items-start justify-start gap-2 whitespace-normal p-0 text-left font-normal hover:bg-transparent group min-w-0"
               aria-expanded={!pacienteCollapsed}
             >
               <ChevronDown
@@ -1518,7 +1516,7 @@ function PrescricaoForm() {
                     : "Identifique o paciente. Campos de CPF e endereço aparecem para receita especial."}
                 </p>
               </div>
-            </button>
+            </Button>
           </div>
 
           {!pacienteCollapsed && (<>
@@ -1749,10 +1747,11 @@ function PrescricaoForm() {
           <div className="rounded-2xl border border-border bg-card shadow-xs p-5 space-y-4">
             <div className="flex flex-col items-start gap-2 sm:flex-row sm:items-start sm:justify-between sm:gap-3">
 
-            <button
+            <Button
               type="button"
+              variant="ghost"
               onClick={() => setBuscaCollapsed((v) => !v)}
-              className="flex items-start gap-2 text-left group min-w-0 w-full sm:flex-1"
+              className="flex h-auto items-start justify-start gap-2 whitespace-normal p-0 text-left font-normal hover:bg-transparent group min-w-0 w-full sm:flex-1"
               aria-expanded={!buscaCollapsed}
             >
               <ChevronDown
@@ -1766,7 +1765,7 @@ function PrescricaoForm() {
                     : "Busque pelo nome do medicamento para adicionar à prescrição. Medicamentos controlados são identificados automaticamente e geram receituário especial."}
                 </p>
               </div>
-            </button>
+            </Button>
             {itens.length > 0 && (
               <Chip
                 size="sm"
@@ -1909,12 +1908,15 @@ function PrescricaoForm() {
 
               </div>
               {itens.length > 0 && (
-                <button
+                <Button
+                  type="button"
+                  variant="link"
+                  size="sm"
                   onClick={() => setItens([])}
-                  className="text-xs text-muted-foreground hover:text-destructive hover:underline"
+                  className="h-auto p-0 text-xs text-muted-foreground hover:text-destructive"
                 >
                   Limpar itens
-                </button>
+                </Button>
               )}
             </div>
 
@@ -1971,15 +1973,17 @@ function PrescricaoForm() {
                     }`}
                   >
                     <div className="flex items-start gap-2">
-                      <button
+                      <Button
                         type="button"
+                        variant="ghost"
+                        size="icon"
                         aria-label="Arrastar para reordenar"
                         title="Arraste para reordenar"
-                        className="grid place-items-center h-6 w-6 mt-0.5 rounded text-muted-foreground hover:text-foreground cursor-grab active:cursor-grabbing shrink-0"
+                        className="h-6 w-6 mt-0.5 text-muted-foreground hover:text-foreground cursor-grab active:cursor-grabbing shrink-0"
                         onMouseDown={(e) => e.stopPropagation()}
                       >
                         <GripVertical className="h-4 w-4" />
-                      </button>
+                      </Button>
                       <div className="min-w-0 space-y-1 flex-1">
                         <div className="text-sm font-semibold">
                           <span className="text-muted-foreground mr-1">
@@ -1993,38 +1997,42 @@ function PrescricaoForm() {
                         </div>
                         {isEditing ? (
                           <div className="mt-2 space-y-1.5">
-                            <textarea
+                            <Textarea
                               value={editingPosValue}
                               onChange={(e) =>
                                 setEditingPosValue(e.target.value)
                               }
                               rows={2}
                               autoFocus
-                              className={`w-full rounded-lg border bg-background px-2.5 py-2 text-sm focus:outline-none focus:ring-2 ${
+                              aria-invalid={!editCheck?.ok}
+                              className={
                                 editCheck?.ok
-                                  ? "border-success/40 focus:ring-success/40"
-                                  : "border-destructive/50 focus:ring-destructive/40"
-                              }`}
+                                  ? "border-success/40 focus-visible:ring-success/40"
+                                  : "border-destructive/50 focus-visible:ring-destructive/40"
+                              }
                             />
                             {editCheck && !editCheck.ok && (
-                              <div className="text-[11px] text-destructive">
+                              <div className="text-xs text-destructive">
                                 ⚠ {editCheck.mensagem}
                               </div>
                             )}
                             <div className="flex items-center gap-2">
-                              <button
+                              <Button
+                                type="button"
+                                size="sm"
                                 onClick={saveEditPos}
                                 disabled={!editCheck?.ok}
-                                className="rounded-lg bg-primary text-primary-foreground px-3 py-1 text-xs font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
                               >
                                 Salvar
-                              </button>
-                              <button
+                              </Button>
+                              <Button
+                                type="button"
+                                variant="outline"
+                                size="sm"
                                 onClick={cancelEditPos}
-                                className="rounded-lg border border-border px-3 py-1 text-xs hover:bg-muted"
                               >
                                 Cancelar
-                              </button>
+                              </Button>
                             </div>
                           </div>
                         ) : (
@@ -2044,35 +2052,44 @@ function PrescricaoForm() {
                               </span>
                             </div>
                             {!posCheck.ok && (
-                              <div className="text-[11px] text-destructive flex items-center gap-2">
+                              <div className="text-xs text-destructive flex items-center gap-2">
                                 <span>⚠ {posCheck.mensagem}</span>
-                                <button
+                                <Button
+                                  type="button"
+                                  variant="link"
+                                  size="sm"
                                   onClick={() => startEditPos(i)}
-                                  className="underline hover:no-underline font-medium"
+                                  className="h-auto p-0 text-xs text-destructive underline hover:no-underline font-medium"
                                 >
                                   Editar posologia
-                                </button>
+                                </Button>
                               </div>
                             )}
                             {posCheck.ok && (
-                              <button
+                              <Button
+                                type="button"
+                                variant="link"
+                                size="sm"
                                 onClick={() => startEditPos(i)}
-                                className="text-[11px] text-muted-foreground hover:text-primary hover:underline"
+                                className="h-auto p-0 text-xs text-muted-foreground hover:text-primary"
                               >
                                 Editar posologia
-                              </button>
+                              </Button>
                             )}
                           </>
                         )}
                       </div>
 
-                      <button
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="icon"
                         onClick={() => removeItem(i)}
-                        className="grid place-items-center h-6 w-6 rounded border border-border text-muted-foreground hover:text-destructive hover:border-destructive/60 shrink-0"
+                        className="h-6 w-6 text-muted-foreground hover:text-destructive hover:border-destructive/60 shrink-0"
                         aria-label="Remover item"
                       >
                         <X className="h-3.5 w-3.5" />
-                      </button>
+                      </Button>
                     </div>
                   </li>
                 );
@@ -2251,17 +2268,19 @@ function PrescricaoForm() {
         }}
       />
 
-      <button
+      <Button
         type="button"
+        variant="outline"
+        size="icon"
         onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
         aria-label="Voltar ao topo"
         title="Voltar ao topo"
-        className={`fixed bottom-6 right-6 z-40 h-10 w-10 rounded-full border border-border bg-card/90 backdrop-blur text-muted-foreground shadow-md hover:text-foreground hover:bg-card transition-all duration-200 flex items-center justify-center ${
+        className={`fixed bottom-6 right-6 z-40 h-10 w-10 rounded-full bg-card/90 backdrop-blur text-muted-foreground shadow-md hover:text-foreground hover:bg-card transition-all duration-200 ${
           showTopBtn ? "opacity-100 translate-y-0 pointer-events-auto" : "opacity-0 translate-y-2 pointer-events-none"
         }`}
       >
         <ArrowUp className="h-4 w-4" />
-      </button>
+      </Button>
     </div>
   );
 }
@@ -2297,18 +2316,19 @@ function ActionBtn({
     size === "sm" ? "px-2.5 py-1.5 text-xs gap-1.5" : "px-3 py-1.5 text-sm gap-1.5";
   const effectiveTitle = disabled && disabledReason ? disabledReason : title;
   return (
-    <button
+    <Button
       type="button"
+      variant="outline"
       onClick={onClick}
       disabled={disabled}
       aria-disabled={disabled}
       aria-pressed={active}
       title={effectiveTitle}
-      className={`inline-flex items-center justify-center rounded-lg border font-medium transition-colors icon-optical [&_svg]:shrink-0 ${sizeCls} ${variantCls} disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-transparent`}
+      className={`rounded-lg border font-medium [&_svg]:shrink-0 ${sizeCls} ${variantCls} disabled:hover:bg-transparent`}
     >
       {icon}
       {children}
-    </button>
+    </Button>
   );
 }
 
@@ -2379,7 +2399,7 @@ function PosologiaPanel({
       </div>
 
       <div className="relative">
-        <textarea
+        <Textarea
           ref={taRef}
           value={pos}
           onChange={(e) => {
@@ -2390,24 +2410,24 @@ function PosologiaPanel({
           onKeyDown={onKey}
           rows={3}
           placeholder="Ex: Tomar 1 comprimido de 12 em 12 horas por 05 dias."
-          className="w-full rounded-lg border border-border bg-background px-3 py-2.5 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/40 resize-y"
         />
         {showSug && (
           <div className="mt-2 rounded-lg border border-border bg-card max-h-56 overflow-y-auto">
             {sugestoes.map((s, i) => (
-              <button
+              <Button
                 key={i}
                 type="button"
+                variant="ghost"
                 onMouseEnter={() => setHighlight(i)}
                 onClick={() => apply(i)}
-                className={`block w-full text-left px-3 py-2 text-sm ${
+                className={`block h-auto w-full justify-start rounded-none px-3 py-2 text-left text-sm font-normal ${
                   i === highlight
                     ? "bg-primary/15 text-foreground"
                     : "text-foreground/85 hover:bg-muted/50"
                 }`}
               >
                 {s}
-              </button>
+              </Button>
             ))}
           </div>
         )}
@@ -2428,21 +2448,18 @@ function PosologiaPanel({
       )}
 
       <div className="flex items-center gap-2 pt-1">
-        <button
+        <Button
+          type="button"
           onClick={submit}
           disabled={!check.ok}
-          className="inline-flex items-center icon-optical gap-1.5 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed"
           title={!check.ok ? check.mensagem : undefined}
         >
           <Plus className="h-4 w-4" />
           Adicionar à receita
-        </button>
-        <button
-          onClick={onCancel}
-          className="rounded-lg border border-border px-4 py-2 text-sm font-medium hover:bg-muted"
-        >
+        </Button>
+        <Button type="button" variant="outline" onClick={onCancel}>
           Cancelar
-        </button>
+        </Button>
       </div>
     </div>
   );
@@ -2450,7 +2467,7 @@ function PosologiaPanel({
 
 function Kbd({ children }: { children: React.ReactNode }) {
   return (
-    <kbd className="inline-flex items-center rounded border border-border bg-muted/60 px-1.5 py-0.5 text-[10px] font-mono">
+    <kbd className="inline-flex items-center rounded border border-border bg-muted/60 px-1.5 py-0.5 text-xs font-mono">
       {children}
     </kbd>
   );
@@ -2469,12 +2486,7 @@ function TipoCheckbox({
 }) {
   return (
     <label className="inline-flex items-center icon-optical gap-2 cursor-pointer select-none">
-      <input
-        type="checkbox"
-        checked={checked}
-        onChange={onChange}
-        className="h-4 w-4 rounded border-border accent-primary"
-      />
+      <Checkbox checked={checked} onCheckedChange={onChange} />
       <span className={`text-sm ${bold ? "font-semibold" : ""}`}>{label}</span>
     </label>
   );
@@ -2492,11 +2504,12 @@ function MedRow({
   onHover?: () => void;
 }) {
   return (
-    <button
+    <Button
       type="button"
+      variant="ghost"
       onClick={onPick}
       onMouseEnter={onHover}
-      className={`w-full text-left px-4 py-2.5 transition-colors grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 ${
+      className={`h-auto w-full items-center justify-start rounded-none px-4 py-2.5 whitespace-normal text-left font-normal grid grid-cols-[minmax(0,1fr)_auto] gap-3 ${
         highlighted ? "bg-primary/10" : "hover:bg-muted/40"
       }`}
     >
@@ -2507,7 +2520,7 @@ function MedRow({
             · {m.forma}
           </span>
         </div>
-        <div className="mt-0.5 text-[11px] text-muted-foreground truncate">
+        <div className="mt-0.5 text-xs text-muted-foreground truncate">
           <span className="xl:hidden">{m.forma} · </span>
           {m.principios}
         </div>
@@ -2539,7 +2552,7 @@ function MedRow({
           <Plus className="h-4 w-4" />
         </span>
       </div>
-    </button>
+    </Button>
   );
 }
 
@@ -2630,20 +2643,26 @@ function HistoricoPanel({
         </div>
         <div className="flex items-center gap-2">
           {historico.length > 0 && (
-            <button
+            <Button
+              type="button"
+              variant="link"
+              size="sm"
               onClick={onLimpar}
-              className="text-xs text-destructive hover:underline"
+              className="h-auto p-0 text-xs text-destructive"
             >
               Limpar tudo
-            </button>
+            </Button>
           )}
-          <button
+          <Button
+            type="button"
+            variant="outline"
+            size="icon"
             onClick={onClose}
-            className="grid place-items-center h-6 w-6 rounded border border-border text-muted-foreground hover:text-foreground"
+            className="h-6 w-6 text-muted-foreground hover:text-foreground"
             aria-label="Fechar histórico"
           >
             <X className="h-3.5 w-3.5" />
-          </button>
+          </Button>
         </div>
       </div>
 
@@ -2668,11 +2687,11 @@ function HistoricoPanel({
                       {h.paciente || "Sem paciente"}
                     </span>
                     {h.especial && (
-                      <span className="text-[10px] font-semibold uppercase tracking-wide rounded px-1.5 py-0.5 bg-destructive/15 text-destructive border border-destructive/30">
+                      <span className="text-xs font-semibold uppercase tracking-wide rounded px-1.5 py-0.5 bg-destructive/15 text-destructive border border-destructive/30">
                         Especial
                       </span>
                     )}
-                    <span className="text-[10px] uppercase tracking-wide text-muted-foreground">
+                    <span className="text-xs uppercase tracking-wide text-muted-foreground">
                       {h.action === "pdf" ? "PDF" : "Impressão"}
                     </span>
                   </div>
@@ -2685,22 +2704,28 @@ function HistoricoPanel({
                   </div>
                 </div>
                 <div className="flex flex-col gap-1 shrink-0">
-                  <button
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
                     onClick={() => onReutilizar(h)}
-                    className="inline-flex items-center icon-optical gap-1.5 rounded-lg border border-primary/50 text-primary px-2.5 py-1.5 text-xs font-medium hover:bg-primary/10"
+                    className="border-primary/50 text-primary hover:bg-primary/10"
                     title="Carregar esta prescrição no formulário como base"
                   >
                     <RefreshCw className="h-3.5 w-3.5" />
                     Reutilizar
-                  </button>
-                  <button
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
                     onClick={() => onRemover(h.id)}
-                    className="inline-flex items-center icon-optical gap-1.5 rounded-lg border border-border text-muted-foreground px-2.5 py-1.5 text-xs hover:text-destructive hover:border-destructive/60"
+                    className="text-muted-foreground hover:text-destructive hover:border-destructive/60"
                     title="Remover do histórico"
                   >
                     <Trash2 className="h-3.5 w-3.5" />
                     Remover
-                  </button>
+                  </Button>
                 </div>
               </div>
             </li>

@@ -45,10 +45,18 @@ import { AppBreadcrumb } from "@/components/app-breadcrumb";
 import { AppSidebar } from "@/components/app-sidebar";
 import { SiteFooter } from "@/components/site-footer";
 import { PageHeader } from "@/components/page-header";
-import { SearchInput } from "@/components/form-field";
+import { Field, SearchInput } from "@/components/form-field";
 import { Combobox, MultiSelect } from "@/components/ui/combobox";
 import { Badge } from "@/components/ui/badge";
 import { EmptyState } from "@/components/data-state";
+import {
+  DataTableRoot,
+  DataTableHeader,
+  DataTableBody,
+  DataTableRow,
+  DataTableHead,
+  DataTableCell,
+} from "@/components/data-table";
 import { Chip } from "@/components/ui/chip";
 import { CameraCaptureDialog } from "@/components/camera-capture-dialog";
 import { ProcedureCodeModal } from "@/components/procedure-code-modal";
@@ -217,13 +225,12 @@ function Upload_Section({ onProcessed }: { onProcessed: (row: Row) => void }) {
           }}
         />
         <div className="mt-6 flex w-full flex-col items-stretch gap-3 sm:w-auto sm:flex-row sm:items-center">
-          <label
-            htmlFor="guide-file-upload"
-            className="inline-flex items-center justify-center icon-optical gap-2 rounded-lg border border-border bg-card px-4 py-2 text-sm font-medium shadow-sm hover:bg-muted transition-colors cursor-pointer"
-          >
-            <FileUp className="h-4 w-4" />
-            Selecionar arquivos
-          </label>
+          <Button variant="outline" asChild className="justify-center">
+            <label htmlFor="guide-file-upload" className="cursor-pointer">
+              <FileUp className="h-4 w-4" />
+              Selecionar arquivos
+            </label>
+          </Button>
           <Button variant="secondary" onClick={() => setCameraOpen(true)} className="justify-center">
             <Camera className="h-4 w-4" aria-hidden="true" />
             Tirar foto
@@ -262,13 +269,15 @@ function Upload_Section({ onProcessed }: { onProcessed: (row: Row) => void }) {
                   )}
                   {item.done ? "Concluído" : "Processando Dados"}
                 </Badge>
-                <button
+                <Button
+                  variant="ghost"
+                  size="icon"
                   onClick={() => removeItem(item.id)}
-                  className="p-1 rounded hover:bg-muted text-muted-foreground"
+                  className="h-7 w-7 text-muted-foreground"
                   aria-label="Remover"
                 >
                   <X className="h-4 w-4" />
-                </button>
+                </Button>
               </div>
               <div className="h-1.5 w-full rounded-full bg-muted overflow-hidden">
                 <div
@@ -362,9 +371,12 @@ function History_Section({ extraRows }: { extraRows: Row[] }) {
         </div>
         <DateField label="Data início" />
         <DateField label="Data fim" />
-        <button className="self-start text-sm font-medium text-foreground hover:text-primary sm:col-span-2 lg:col-span-1 lg:self-auto">
+        <Button
+          variant="link"
+          className="h-auto self-start p-0 text-sm font-medium text-foreground hover:text-primary sm:col-span-2 lg:col-span-1 lg:self-auto"
+        >
           Limpar filtros
-        </button>
+        </Button>
       </div>
 
       {/* Mobile: cards tocáveis, sem scroll horizontal. */}
@@ -420,60 +432,64 @@ function History_Section({ extraRows }: { extraRows: Row[] }) {
 
       <div className="overflow-hidden rounded-xl border border-border bg-card">
         <div className="hidden w-full overflow-x-auto lg:block">
-          <table className="w-full min-w-[880px] text-sm">
-            <thead>
-              <tr className="text-left text-muted-foreground bg-muted/40">
-                <Th>Arquivo</Th>
-                <Th>ID da guia</Th>
-                <Th>Paciente</Th>
-                <Th>Tipo de guia</Th>
-                <Th>Data de envio</Th>
-                <Th>Status</Th>
-                <Th className="text-right pr-4 sm:pr-6">Ações</Th>
-              </tr>
-            </thead>
-            <tbody>
+          <DataTableRoot className="min-w-[880px]">
+            <DataTableHeader>
+              <DataTableRow className="hover:bg-transparent">
+                <DataTableHead>Arquivo</DataTableHead>
+                <DataTableHead>ID da guia</DataTableHead>
+                <DataTableHead>Paciente</DataTableHead>
+                <DataTableHead>Tipo de guia</DataTableHead>
+                <DataTableHead>Data de envio</DataTableHead>
+                <DataTableHead>Status</DataTableHead>
+                <DataTableHead className="text-right">Ações</DataTableHead>
+              </DataTableRow>
+            </DataTableHeader>
+            <DataTableBody>
               {allRows.map((r, i) => (
-                <tr key={i} className="border-t border-border hover:bg-muted/30">
-                  <Td>
+                <DataTableRow key={i}>
+                  <DataTableCell>
                     <div className="flex items-center gap-2">
                       <span className="block max-w-[200px] truncate sm:max-w-[260px]">{r.file}</span>
                       {r.warn && <AlertTriangle className="h-4 w-4 shrink-0 text-warning" />}
                     </div>
-                  </Td>
-                  <Td className="text-muted-foreground">{r.id}</Td>
-                  <Td className="max-w-[200px] truncate sm:max-w-[260px]">{r.patient}</Td>
-                  <Td>
+                  </DataTableCell>
+                  <DataTableCell className="text-muted-foreground">{r.id}</DataTableCell>
+                  <DataTableCell className="max-w-[200px] truncate sm:max-w-[260px]">{r.patient}</DataTableCell>
+                  <DataTableCell>
                     <TypeBadge type={r.type} />
-                  </Td>
-                  <Td className="whitespace-nowrap text-muted-foreground">{r.date}</Td>
-                  <Td>
+                  </DataTableCell>
+                  <DataTableCell className="whitespace-nowrap text-muted-foreground">{r.date}</DataTableCell>
+                  <DataTableCell>
                     <StatusBadge status={r.status} />
-                  </Td>
-                  <Td className="text-right pr-4 sm:pr-6">
+                  </DataTableCell>
+                  <DataTableCell className="text-right">
                     <div className="inline-flex items-center icon-optical gap-3 text-muted-foreground">
-                      <button
+                      <Button
+                        variant="ghost"
+                        size="icon"
                         aria-label="Visualizar"
                         onClick={() => setDetailRow(r)}
-                        className={r.status === "Erro" ? "opacity-40 cursor-not-allowed" : "hover:text-foreground"}
                         disabled={r.status === "Erro"}
+                        className="h-7 w-7 text-muted-foreground hover:text-foreground"
                       >
                         <Eye className="h-4 w-4" />
-                      </button>
-                      <button
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon"
                         aria-label="Códigos de procedimento"
                         onClick={() => setCodeRow(r)}
                         disabled={r.status === "Erro"}
-                        className={r.status === "Erro" ? "opacity-40 cursor-not-allowed" : "hover:text-foreground"}
+                        className="h-7 w-7 text-muted-foreground hover:text-foreground"
                       >
                         <ClipboardCopy className="h-4 w-4" />
-                      </button>
+                      </Button>
                     </div>
-                  </Td>
-                </tr>
+                  </DataTableCell>
+                </DataTableRow>
               ))}
-            </tbody>
-          </table>
+            </DataTableBody>
+          </DataTableRoot>
         </div>
 
 
@@ -484,9 +500,9 @@ function History_Section({ extraRows }: { extraRows: Row[] }) {
           <div className="flex flex-wrap items-center gap-3 sm:gap-4">
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
               Itens por página
-              <button className="inline-flex items-center icon-optical gap-1 rounded-md border border-border bg-card px-2 py-1 text-sm text-foreground">
+              <Button variant="outline" size="sm" className="gap-1">
                 10 <ChevronDown className="h-3.5 w-3.5" />
-              </button>
+              </Button>
             </div>
             <Pagination />
           </div>
@@ -589,20 +605,21 @@ function GuideDetailsModal({ row, onClose }: { row: Row | null; onClose: () => v
           {row && (
             <div className="mt-4 grid grid-cols-2 gap-1 rounded-lg bg-muted p-1 lg:hidden" role="tablist">
               {(["dados", "guia"] as const).map((tab) => (
-                <button
+                <Button
                   key={tab}
                   type="button"
+                  variant="ghost"
                   role="tab"
                   aria-selected={mobileTab === tab}
                   onClick={() => setMobileTab(tab)}
-                  className={`rounded-md px-3 py-2 text-sm font-medium transition-colors ${
+                  className={`h-auto rounded-md px-3 py-2 text-sm font-medium transition-colors ${
                     mobileTab === tab
-                      ? "bg-card text-foreground shadow-sm"
+                      ? "bg-card text-foreground shadow-sm hover:bg-card"
                       : "text-muted-foreground hover:text-foreground"
                   }`}
                 >
                   {tab === "dados" ? "Detalhamento" : "Imagem da guia"}
-                </button>
+                </Button>
               ))}
             </div>
           )}
@@ -616,10 +633,10 @@ function GuideDetailsModal({ row, onClose }: { row: Row | null; onClose: () => v
                 <GuidePreview src={guiaMock.url} alt={row.file} />
               </div>
               <div className="flex justify-end">
-                <button className="inline-flex items-center icon-optical gap-2 rounded-lg bg-primary text-primary-foreground px-4 py-2 text-sm font-medium hover:bg-primary/90 transition-colors">
+                <Button>
                   <FileUp className="h-4 w-4" />
                   Baixar arquivo
-                </button>
+                </Button>
               </div>
             </div>
 
@@ -755,42 +772,50 @@ function GuidePreview({ src, alt }: { src: string; alt: string }) {
 
   const controls = (
     <div className="absolute top-3 left-1/2 -translate-x-1/2 z-10 flex items-center gap-1 rounded-full border border-border bg-card/95 backdrop-blur px-2 py-1 shadow-sm">
-      <button
+      <Button
+        variant="ghost"
+        size="icon"
         aria-label="Diminuir zoom"
         onClick={() => setZoom((z) => clamp(z - 0.25))}
-        className="p-1.5 rounded-full hover:bg-muted text-muted-foreground hover:text-foreground"
+        className="h-8 w-8 rounded-full text-muted-foreground hover:text-foreground"
       >
         <ZoomOut className="h-4 w-4" />
-      </button>
+      </Button>
       <span className="text-xs font-medium tabular-nums w-12 text-center">
         {Math.round(zoom * 100)}%
       </span>
-      <button
+      <Button
+        variant="ghost"
+        size="icon"
         aria-label="Aumentar zoom"
         onClick={() => setZoom((z) => clamp(z + 0.25))}
-        className="p-1.5 rounded-full hover:bg-muted text-muted-foreground hover:text-foreground"
+        className="h-8 w-8 rounded-full text-muted-foreground hover:text-foreground"
       >
         <ZoomIn className="h-4 w-4" />
-      </button>
+      </Button>
 
 
-      <button
+      <Button
+        variant="outline"
+        size="sm"
         aria-label="Redefinir zoom para 100%"
         title="Redefinir zoom (100%)"
         onClick={() => setZoom(1)}
         disabled={zoom === 1}
-        className="ml-1 flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold border border-border bg-background text-foreground hover:bg-primary hover:text-primary-foreground hover:border-primary transition-colors disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-background disabled:hover:text-foreground disabled:hover:border-border"
+        className="ml-1 h-auto rounded-full px-3 py-1.5 text-xs font-semibold hover:bg-primary hover:text-primary-foreground hover:border-primary"
       >
         <RotateCcw className="h-3.5 w-3.5" /> Reset
-      </button>
+      </Button>
 
-      <button
+      <Button
+        variant="ghost"
+        size="icon"
         aria-label={expanded ? "Reduzir" : "Expandir"}
         onClick={() => setExpanded((v) => !v)}
-        className="p-1.5 rounded-full hover:bg-muted text-muted-foreground hover:text-foreground"
+        className="h-8 w-8 rounded-full text-muted-foreground hover:text-foreground"
       >
         <Maximize2 className="h-4 w-4" />
-      </button>
+      </Button>
     </div>
   );
 
@@ -828,13 +853,15 @@ function GuidePreview({ src, alt }: { src: string; alt: string }) {
         >
           <div className="flex items-center justify-between px-6 py-4 border-b border-border">
             <div className="text-sm font-medium truncate">{alt}</div>
-            <button
+            <Button
+              variant="ghost"
+              size="icon"
               aria-label="Fechar"
               onClick={() => setExpanded(false)}
-              className="p-2 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted"
+              className="text-muted-foreground hover:text-foreground"
             >
               <X className="h-5 w-5" />
-            </button>
+            </Button>
           </div>
           <div className="relative flex-1 overflow-hidden">
             {controls}
@@ -877,13 +904,15 @@ function DetailCard({
             <dt className="text-sm text-muted-foreground">{it.label}</dt>
             <dd className="flex min-w-0 items-center gap-2 text-sm font-medium text-foreground sm:text-right">
               <span className="min-w-0 truncate sm:max-w-[280px]">{it.value}</span>
-              <button
+              <Button
+                variant="ghost"
+                size="icon"
                 aria-label={`Copiar ${it.label}`}
                 onClick={() => navigator.clipboard?.writeText(it.value)}
-                className="text-muted-foreground hover:text-foreground"
+                className="h-6 w-6 text-muted-foreground hover:text-foreground"
               >
                 <ClipboardCopy className="h-3.5 w-3.5" />
-              </button>
+              </Button>
             </dd>
           </div>
         ))}
@@ -893,20 +922,17 @@ function DetailCard({
 }
 
 
-function Th({ children, className = "" }: { children: React.ReactNode; className?: string }) {
-  return <th className={`whitespace-nowrap px-4 py-3 font-medium sm:px-6 ${className}`}>{children}</th>;
-}
-function Td({ children, className = "" }: { children: React.ReactNode; className?: string }) {
-  return <td className={`px-4 py-4 align-middle sm:px-6 ${className}`}>{children}</td>;
-}
 
 
 function DateField({ label }: { label: string }) {
   return (
-    <button className="inline-flex w-full items-center icon-optical gap-2 rounded-lg border border-border bg-card px-3 py-2 text-sm lg:w-auto lg:min-w-[150px]">
+    <Button
+      variant="outline"
+      className="w-full justify-start gap-2 text-sm font-normal lg:w-auto lg:min-w-[150px]"
+    >
       <Calendar className="h-4 w-4 text-muted-foreground" />
       <span className="text-muted-foreground">{label}</span>
-    </button>
+    </Button>
   );
 }
 
@@ -964,17 +990,14 @@ function PagBtn({
   ...rest
 }: React.ButtonHTMLAttributes<HTMLButtonElement> & { active?: boolean }) {
   return (
-    <button
+    <Button
       {...rest}
-      className={[
-        "h-8 min-w-8 px-2 rounded-md text-sm border transition-colors inline-flex items-center justify-center",
-        active
-          ? "bg-primary text-primary-foreground border-primary"
-          : "bg-card text-foreground border-border hover:bg-muted",
-      ].join(" ")}
+      variant={active ? "default" : "outline"}
+      size="sm"
+      className="h-8 min-w-8 px-2"
     >
       {children}
-    </button>
+    </Button>
   );
 }
 
@@ -1081,13 +1104,10 @@ function RequiredFieldsModal() {
 
   return (
     <>
-      <button
-        onClick={() => setOpen(true)}
-        className="inline-flex items-center icon-optical gap-2 rounded-lg bg-secondary text-secondary-foreground border border-border px-4 py-2 text-sm font-medium hover:bg-muted transition-colors"
-      >
+      <Button variant="secondary" onClick={() => setOpen(true)}>
         <ListChecks className="h-4 w-4" />
         Campos obrigatórios
-      </button>
+      </Button>
 
       <Dialog open={open} onOpenChange={attemptClose}>
         <DialogContent size="lg">
@@ -1110,21 +1130,18 @@ function RequiredFieldsModal() {
 
           <DialogBody className="space-y-4">
             {/* Tipo de guia */}
-            <div className="space-y-1.5">
-              <label className="text-sm font-medium">Tipo de guia</label>
-              <div className="w-full sm:w-72">
-                <Combobox
-                  value={guideType}
-                  onChange={(v) => {
-                    setGuideType(v as GuideType);
-                    setPickerSelection([]);
-                  }}
-                  options={GUIDE_TYPES.map((t) => ({ value: t, label: t }))}
-                  placeholder="Selecione o tipo"
-                  searchPlaceholder="Buscar tipo..."
-                />
-              </div>
-            </div>
+            <Field label="Tipo de guia" className="w-full sm:w-72">
+              <Combobox
+                value={guideType}
+                onChange={(v) => {
+                  setGuideType(v as GuideType);
+                  setPickerSelection([]);
+                }}
+                options={GUIDE_TYPES.map((t) => ({ value: t, label: t }))}
+                placeholder="Selecione o tipo"
+                searchPlaceholder="Buscar tipo..."
+              />
+            </Field>
 
             {/* Selecionar campo */}
             <div className="flex flex-col sm:flex-row gap-2">
@@ -1145,15 +1162,11 @@ function RequiredFieldsModal() {
                   countLabel={(n) => `${n} campo${n > 1 ? "s" : ""} selecionado${n > 1 ? "s" : ""}`}
                 />
               </div>
-              <button
-                onClick={addSelected}
-                disabled={pickerSelection.length === 0}
-                className="inline-flex items-center icon-optical justify-center gap-2 rounded-lg bg-primary text-primary-foreground px-4 py-2.5 text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed hover:bg-primary/90"
-              >
+              <Button onClick={addSelected} disabled={pickerSelection.length === 0}>
                 <Plus className="h-4 w-4" />
                 Adicionar
                 {pickerSelection.length > 0 && ` (${pickerSelection.length})`}
-              </button>
+              </Button>
             </div>
 
 
@@ -1184,13 +1197,15 @@ function RequiredFieldsModal() {
                         className="inline-flex items-center icon-optical gap-2 rounded-full bg-muted px-3 py-1.5 text-sm"
                       >
                         {f}
-                        <button
+                        <Button
+                          variant="ghost"
+                          size="icon"
                           onClick={() => removeField(f)}
                           aria-label={`Remover ${f}`}
-                          className="text-muted-foreground hover:text-destructive"
+                          className="h-5 w-5 text-muted-foreground hover:text-destructive"
                         >
                           <Trash2 className="h-3.5 w-3.5" />
-                        </button>
+                        </Button>
                       </span>
                     ))}
                   </div>
