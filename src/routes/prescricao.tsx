@@ -573,8 +573,8 @@ function PrescricaoForm() {
   const [historico, setHistorico] = useState<Historico[]>([]);
   const [historicoAberto, setHistoricoAberto] = useState(false);
   const [kitsAberto, setKitsAberto] = useState(false);
-  const [pacienteCollapsed, setPacienteCollapsed] = useState(false);
-  const [buscaCollapsed, setBuscaCollapsed] = useState(false);
+
+
   const hidratado = useRef(false);
   const [step, setStep] = useState<1 | 2 | 3>(1);
   const [triedEmit, setTriedEmit] = useState(false);
@@ -1780,7 +1780,7 @@ function PrescricaoForm() {
             </div>
 
 
-            {!buscaCollapsed && (<>
+            <>
             <div className="grid gap-3 lg:grid-cols-[minmax(0,1fr)_220px]">
               <SearchInput
                 id="med-search"
@@ -1851,7 +1851,7 @@ function PrescricaoForm() {
                 onAdd={(pos) => addItem(editing, pos)}
               />
             )}
-            </>)}
+            </>
           </div>
 
 
