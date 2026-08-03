@@ -16,7 +16,6 @@ import {
   History,
   RefreshCw,
   Trash2,
-  ChevronDown,
   Cloud,
   BookMarked,
   AlertCircle,
