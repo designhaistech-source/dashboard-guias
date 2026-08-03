@@ -5,7 +5,7 @@ import { SearchPageLayout } from "@/components/search-page-layout";
 import { SearchInput, SelectField } from "@/components/form-field";
 import { Button } from "@/components/ui/button";
 
-import { EmptyState } from "@/components/data-state";
+import { EmptyState, ErrorState, LoadingState } from "@/components/data-state";
 import {
   DataTable,
   DataTableRoot,
