@@ -220,7 +220,21 @@ export function CidSearchPage() {
         </>
       }
     >
-      {results === null ? (
+      {status === "loading" ? (
+        <LoadingState
+          size="lg"
+          title="Buscando códigos CID-10…"
+          description="Estamos consultando a tabela CID-10."
+        />
+      ) : status === "error" ? (
+        <ErrorState
+          size="lg"
+          title="Não foi possível buscar códigos CID-10"
+          description="Verifique sua conexão e tente novamente em alguns instantes."
+          onRetry={() => void runSearch(lastQuery || term)}
+        />
+      ) : results === null ? (
+
 
               <EmptyState
                 size="lg"
