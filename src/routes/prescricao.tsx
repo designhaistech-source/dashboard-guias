@@ -1499,28 +1499,16 @@ function PrescricaoForm() {
       <section id="sec-paciente" className="scroll-mt-4">
         <div className="rounded-2xl border border-border bg-card shadow-xs p-5 space-y-4">
           <div className="flex flex-wrap items-start justify-between gap-3">
-            <Button
-              type="button"
-              variant="ghost"
-              onClick={() => setPacienteCollapsed((v) => !v)}
-              className="flex h-auto items-start justify-start gap-2 whitespace-normal p-0 text-left font-normal hover:bg-transparent group min-w-0"
-              aria-expanded={!pacienteCollapsed}
-            >
-              <ChevronDown
-                className={`h-4 w-4 mt-1 text-muted-foreground transition-transform ${pacienteCollapsed ? "-rotate-90" : ""}`}
-              />
-              <div className="min-w-0">
-                <h2 className="text-base font-semibold group-hover:text-foreground">1. Dados do paciente</h2>
-                <p className="text-xs text-muted-foreground">
-                  {pacienteCollapsed && paciente
-                    ? paciente + (especial ? " · Receita especial" : "")
-                    : "Identifique o paciente. Campos de CPF e endereço aparecem para receita especial."}
-                </p>
-              </div>
-            </Button>
+            <div className="min-w-0">
+              <h2 className="text-base font-semibold text-foreground">1. Dados do paciente</h2>
+              <p className="text-xs text-muted-foreground">
+                Identifique o paciente. Campos de CPF e endereço aparecem para receita especial.
+              </p>
+            </div>
           </div>
 
-          {!pacienteCollapsed && (<>
+          <>
+
           <Field id="paciente-input" label="Nome do paciente" required>
             <SearchInput
               ref={pacienteRef}
