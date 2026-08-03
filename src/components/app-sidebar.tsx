@@ -374,7 +374,7 @@ function UserMenu({ collapsed }: { collapsed: boolean }) {
       </DropdownMenuLabel>
       <DropdownMenuSeparator className="mx-0 my-0" />
 
-      {/* Bloco 1 — conta e sistema (destinos). */}
+      {/* Bloco 1 — conta, sistema e preferência de interface. */}
       <DropdownMenuGroup className="py-2">
         <DropdownMenuItem asChild className={itemClass}>
           <Link to="/perfil" aria-current={pathname === "/perfil" ? "page" : undefined}>
@@ -386,22 +386,7 @@ function UserMenu({ collapsed }: { collapsed: boolean }) {
           <Settings className="h-4 w-4" aria-hidden="true" />
           Configurações
         </DropdownMenuItem>
-      </DropdownMenuGroup>
-
-      <DropdownMenuSeparator className="mx-0 my-0" />
-
-      {/* Bloco 2 — suporte. */}
-      <DropdownMenuGroup className="py-2">
-        <DropdownMenuItem className={itemClass}>
-          <HelpCircle className="h-4 w-4" aria-hidden="true" />
-          Ajuda
-        </DropdownMenuItem>
-      </DropdownMenuGroup>
-
-      <DropdownMenuSeparator className="mx-0 my-0" />
-
-      {/* Bloco 3 — preferência rápida: mantém o menu aberto ao alternar. */}
-      <DropdownMenuGroup className="py-2">
+        {/* Preferência rápida: mantém o menu aberto ao alternar. */}
         <DropdownMenuItem
           className={itemClass}
           onSelect={(event) => {
@@ -423,6 +408,17 @@ function UserMenu({ collapsed }: { collapsed: boolean }) {
           />
         </DropdownMenuItem>
       </DropdownMenuGroup>
+
+      <DropdownMenuSeparator className="mx-0 my-0" />
+
+      {/* Bloco 2 — suporte. */}
+      <DropdownMenuGroup className="py-2">
+        <DropdownMenuItem className={itemClass}>
+          <HelpCircle className="h-4 w-4" aria-hidden="true" />
+          Ajuda
+        </DropdownMenuItem>
+      </DropdownMenuGroup>
+
 
       <DropdownMenuSeparator className="mx-0 my-0" />
 
