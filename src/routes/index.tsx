@@ -32,6 +32,7 @@ import { AppSidebar } from "@/components/app-sidebar";
 import { SiteFooter } from "@/components/site-footer";
 import { PageHeader } from "@/components/page-header";
 import { SurfaceCard } from "@/components/surface-card";
+import { FilterCard } from "@/components/filter-card";
 import { Field } from "@/components/form-field";
 import { Button } from "@/components/ui/button";
 import logoAsset from "@/assets/haisguias-logo.png.asset.json";
@@ -39,6 +40,7 @@ import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
 import { Combobox } from "@/components/ui/combobox";
 import { Chip } from "@/components/ui/chip";
+import { Badge } from "@/components/ui/badge";
 
 
 
@@ -791,9 +793,9 @@ function DashboardPage() {
                   <SlidersHorizontal className="h-4 w-4" />
                   Filtros
                   {activeFilters.length > 0 && (
-                    <span className="ml-1 inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-primary px-1.5 text-xs font-semibold text-primary-foreground">
+                    <Badge variant="secondary" size="sm">
                       {activeFilters.length}
-                    </span>
+                    </Badge>
                   )}
                 </Button>
                 <Button size="sm" onClick={() => generateReportPdf(range, dailyAvg, total)}>
@@ -836,34 +838,43 @@ function DashboardPage() {
             </div>
           )}
 
-          {/* Painel de filtros inline */}
+          {/* Painel de filtros padronizado (FilterCard) */}
           {filtersOpen && (
-            <section
+            <FilterCard
               id="dashboard-filters-panel"
-              role="region"
-              aria-label="Filtros do dashboard"
-              className="rounded-2xl border border-border bg-card shadow-xs p-6 space-y-5"
+              variant="panel"
+              hideToggle
+              open={filtersOpen}
+              onOpenChange={(v: boolean) => (v ? openFilters() : requestClose())}
+              title="Filtros"
+              description={
+                <>
+                  Refine as guias exibidas no dashboard.
+                  {isDirty && (
+                    <span className="ml-2 text-warning-strong">• alterações não aplicadas</span>
+                  )}
+                </>
+              }
+              activeCount={activeFilters.length}
+              onClear={clearAllAndApply}
+              clearDisabled={activeFilters.length === 0}
+              footerActions={
+                <>
+                  <Button type="button" variant="outline" size="sm" onClick={cancelEdits} disabled={!isDirty}>
+                    Cancelar
+                  </Button>
+                  <Button
+                    type="button"
+                    size="sm"
+                    onClick={applyFilters}
+                    disabled={hasErrors}
+                    title={hasErrors ? "Corrija os campos destacados para aplicar" : undefined}
+                  >
+                    Aplicar filtros{previewCount !== null && ` (${previewCount} ${previewCount === 1 ? "guia" : "guias"})`}
+                  </Button>
+                </>
+              }
             >
-              <div className="flex items-start justify-between gap-4">
-                <div>
-                  <h3 className="font-semibold">Filtros</h3>
-                  <p className="text-xs text-muted-foreground">
-                    Refine as guias exibidas no dashboard.
-                    {isDirty && <span className="ml-2 text-warning-strong">• alterações não aplicadas</span>}
-                  </p>
-                </div>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon"
-                  onClick={requestClose}
-                  className="h-7 w-7 text-muted-foreground hover:text-foreground"
-                  aria-label="Fechar filtros"
-                >
-                  <X className="h-4 w-4" />
-                </Button>
-              </div>
-
               <div>
                 <div className="mb-2 text-xs font-medium uppercase tracking-wider text-muted-foreground">Atalhos</div>
                 <div className="flex flex-wrap gap-2">
@@ -875,7 +886,7 @@ function DashboardPage() {
                   ].map((p) => (
                     <Chip
                       key={p.id}
-                      onClick={() => applyPreset(p.id as any)}
+                      onClick={() => applyPreset(p.id as "hoje" | "7d" | "30d" | "valorAlto")}
                       className="text-foreground hover:border-primary hover:bg-primary/5 hover:text-primary"
                     >
                       {p.label}
@@ -914,31 +925,7 @@ function DashboardPage() {
                   <p className="mt-1.5 text-xs text-destructive">O valor mínimo deve ser menor ou igual ao máximo.</p>
                 )}
               </div>
-
-              <div className="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-border">
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={clearAllAndApply}
-                  disabled={activeFilters.length === 0}
-                >
-                  Limpar filtros
-                </Button>
-                <div className="flex items-center gap-2">
-                  <Button type="button" variant="outline" onClick={cancelEdits} disabled={!isDirty}>
-                    Cancelar
-                  </Button>
-                  <Button
-                    type="button"
-                    onClick={applyFilters}
-                    disabled={hasErrors}
-                    title={hasErrors ? "Corrija os campos destacados para aplicar" : undefined}
-                  >
-                    Aplicar filtros{previewCount !== null && ` (${previewCount} ${previewCount === 1 ? "guia" : "guias"})`}
-                  </Button>
-                </div>
-              </div>
-            </section>
+            </FilterCard>
           )}
 
 
