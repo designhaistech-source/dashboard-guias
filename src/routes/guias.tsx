@@ -58,6 +58,12 @@ import {
   DataTableRow,
   DataTableHead,
   DataTableCell,
+  DataTableCardList,
+  DataTableCard,
+  DataTableCardHeader,
+  DataTableCardFields,
+  DataTableCardActions,
+  DataTableDesktop,
 } from "@/components/data-table";
 import { Chip } from "@/components/ui/chip";
 import { CameraCaptureDialog } from "@/components/camera-capture-dialog";
