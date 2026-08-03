@@ -577,7 +577,9 @@ function OpmePage() {
                             onChange={(e) => autoFillFromCatalogo(m.id, e.target.value)}
                             list={`opme-nome-${idx}`}
                           />
+                          {/* ds-allow: datalist nativo é o autocomplete leve do <Input> do catálogo OPME */}
                           <datalist id={`opme-nome-${idx}`}>
+
                             {CATALOGO_OPME.map((c) => (
                               <option key={c.tiss} value={c.nome} />
                             ))}
