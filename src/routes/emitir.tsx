@@ -34,7 +34,7 @@ import { PageHeader } from "@/components/page-header";
 import { SavedIndicator } from "@/components/saved-indicator";
 import { useDraftAutosave } from "@/hooks/use-draft-autosave";
 
-import { StatusPill } from "@/components/status-pill";
+import { FormActionBar } from "@/components/form-action-bar";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -1516,53 +1516,44 @@ function EmitirPage() {
                 />
               </Section>
 
-              {/* Resumo de preenchimento */}
-              <div className="rounded-xl border bg-card/95 backdrop-blur shadow-xs px-4 py-3">
-                <p className="text-xs font-semibold text-foreground">
-                  Etapas preenchidas
-                </p>
-                <div className="mt-2 flex flex-wrap items-center gap-2">
-                  <StatusPill
-                    done={convenioOk}
-                    label={convenioId === "tiss" ? "Convênio" : "Estabelecimento"}
-                  />
-                  {guideKind === "internacao" && (
-                    <StatusPill done={especificoOk} label="Internação" />
-                  )}
-                  {guideKind === "apac" && <StatusPill done={especificoOk} label="APAC" />}
-                  {guideKind === "aih" && <StatusPill done={especificoOk} label="AIH" />}
-                  <StatusPill done={pacienteOk} label="Beneficiário" />
-                  <StatusPill done={profissionalOk} label="Profissional" />
-                  <StatusPill done={clinicoOk} label="Dados clínicos" />
-                  <StatusPill done={procedimentosOk} label="Procedimentos" />
-                  <StatusPill done={opmeOk} label="OPME (opcional)" />
-                  <StatusPill done={assinaturaOk} label="Assinatura" />
-                </div>
-                <p className="mt-3 flex items-start gap-1.5 border-t border-border/60 pt-2 text-[11px] leading-relaxed text-muted-foreground/70">
-                  <Info className="mt-0.5 h-3 w-3 shrink-0" aria-hidden="true" />
-                  <span>
+              {/* Barra de ação padrão: etapas + ações */}
+              <FormActionBar
+                stepsLabel="Etapas preenchidas"
+                steps={[
+                  {
+                    label: convenioId === "tiss" ? "Convênio" : "Estabelecimento",
+                    done: convenioOk,
+                  },
+                  ...(guideKind === "internacao"
+                    ? [{ label: "Internação", done: especificoOk }]
+                    : []),
+                  ...(guideKind === "apac" ? [{ label: "APAC", done: especificoOk }] : []),
+                  ...(guideKind === "aih" ? [{ label: "AIH", done: especificoOk }] : []),
+                  { label: "Beneficiário", done: pacienteOk },
+                  { label: "Profissional", done: profissionalOk },
+                  { label: "Dados clínicos", done: clinicoOk },
+                  { label: "Procedimentos", done: procedimentosOk },
+                  { label: "OPME (opcional)", done: opmeOk },
+                  { label: "Assinatura", done: assinaturaOk },
+                ]}
+                note={
+                  <>
                     Campos com <span className="text-destructive/80">*</span> são
                     obrigatórios e serão validados antes da emissão.
-                  </span>
-                </p>
-
-              </div>
-
-
-              {/* Actions */}
-              <div className="flex flex-wrap items-center justify-end gap-2 sticky bottom-0 bg-background/80 backdrop-blur py-3 border-t">
-
-                <Button type="button" variant="ghost" onClick={handleReset}>
+                  </>
+                }
+              >
+                <Button type="button" variant="outline" size="sm" onClick={handleReset}>
                   Limpar
                 </Button>
-                <Button type="button" variant="outline">
+                <Button type="button" variant="outline" size="sm">
                   <Save className="h-4 w-4" /> Salvar rascunho
                 </Button>
-                <Button type="submit" disabled={submitting}>
+                <Button type="submit" size="sm" disabled={submitting}>
                   <FileText className="h-4 w-4" />
                   {submitting ? "Gerando..." : "Gerar guia"}
                 </Button>
-              </div>
+              </FormActionBar>
             </form>
             </div>
           )}

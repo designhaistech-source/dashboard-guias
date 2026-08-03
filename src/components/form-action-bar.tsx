@@ -1,0 +1,76 @@
+import type { ReactNode } from "react";
+import { Info } from "lucide-react";
+
+import { StatusPill } from "@/components/status-pill";
+import { cn } from "@/lib/utils";
+
+export interface FormActionStep {
+  label: string;
+  done: boolean;
+}
+
+interface FormActionBarProps {
+  /** Etapas do formulário, exibidas como pills de progresso. */
+  steps?: FormActionStep[];
+  /** Rótulo acima das pills (ex.: "Etapas preenchidas"). */
+  stepsLabel?: string;
+  /** Nota discreta abaixo das pills (ex.: aviso de campos obrigatórios). */
+  note?: ReactNode;
+  /** Botões de ação (secundários com `variant="outline"`, primário por último). */
+  children?: ReactNode;
+  className?: string;
+}
+
+/**
+ * Barra de ação padrão das telas de preenchimento (Emitir guia, Emitir prescrição,
+ * Solicitar OPME, Documentos): progresso das etapas à esquerda e ações à direita.
+ * Todos os botões devem usar `Button` com `size="sm"`.
+ */
+export function FormActionBar({
+  steps,
+  stepsLabel,
+  note,
+  children,
+  className,
+}: FormActionBarProps) {
+  const hasSteps = Boolean(steps && steps.length > 0);
+
+  return (
+    <div
+      className={cn(
+        "rounded-xl border border-border bg-card/95 px-4 py-3 shadow-xs backdrop-blur",
+        className,
+      )}
+    >
+      <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
+        {hasSteps ? (
+          <div className="min-w-0">
+            {stepsLabel && (
+              <p className="mb-2 text-xs font-semibold text-foreground">
+                {stepsLabel}
+              </p>
+            )}
+            <div className="flex flex-wrap items-center gap-2">
+              {steps!.map((step) => (
+                <StatusPill key={step.label} done={step.done} label={step.label} />
+              ))}
+            </div>
+          </div>
+        ) : (
+          <span aria-hidden />
+        )}
+        {children && (
+          <div className="grid grid-cols-1 gap-2 sm:flex sm:flex-wrap sm:items-center sm:justify-end">
+            {children}
+          </div>
+        )}
+      </div>
+      {note && (
+        <p className="mt-3 flex items-start gap-1.5 border-t border-border/60 pt-2 text-[11px] leading-relaxed text-muted-foreground/70">
+          <Info className="mt-0.5 h-3 w-3 shrink-0" aria-hidden="true" />
+          <span>{note}</span>
+        </p>
+      )}
+    </div>
+  );
+}

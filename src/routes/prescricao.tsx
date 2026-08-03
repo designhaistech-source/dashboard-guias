@@ -42,7 +42,7 @@ import { SavedIndicator } from "@/components/saved-indicator";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Chip } from "@/components/ui/chip";
-import { StatusPill } from "@/components/status-pill";
+import { FormActionBar } from "@/components/form-action-bar";
 import { EmptyState } from "@/components/data-state";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
@@ -2107,56 +2107,63 @@ function PrescricaoForm() {
         </div>
       </section>
 
-      {/* Barra de ação — pills de status + ações */}
-      <div>
-
-        <div className="rounded-xl border bg-card/95 backdrop-blur shadow-md px-4 py-3 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
-          <div className="flex flex-wrap items-center gap-2">
-
-            <StatusPill
-              done={paciente.trim().length > 0 && (!especial || (cpfValido && enderecoFullValido))}
-              label="Paciente"
-            />
-            <StatusPill
-              done={itens.length > 0 && posologiasInvalidas.length === 0}
-              label="Medicamentos"
-            />
-            <StatusPill done={podeEmitir} label="Pronto para emitir" />
-          </div>
-          <div className="grid grid-cols-1 gap-2 sm:flex sm:flex-wrap sm:items-center">
-
-            <ActionBtn
-              onClick={abrirSalvarKit}
-              icon={<Save className="h-4 w-4" />}
-              title="Ctrl+S"
-            >
-              Salvar como kit
-            </ActionBtn>
-            <ActionBtn
-              onClick={() => {
-                setTriedEmit(true);
-                if (!podeEmitir) {
-                  document
-                    .getElementById("sec-revisar")
-                    ?.scrollIntoView({ behavior: "smooth", block: "start" });
-                  return;
-                }
-                baixarPdf({ emitir: true });
-              }}
-              icon={<Printer className="h-4 w-4" />}
-              variant="primary"
-              disabled={!podeEmitir}
-              disabledReason={
-                pendencias.length > 0
-                  ? `Corrija ${pendencias.length} pendência${pendencias.length > 1 ? "s" : ""} antes de emitir:\n• ${pendencias.map((p) => p.msg).join("\n• ")}`
-                  : undefined
-              }
-            >
-              Emitir receita
-            </ActionBtn>
-          </div>
-        </div>
-      </div>
+      {/* Barra de ação padrão: etapas + ações */}
+      <FormActionBar
+        stepsLabel="Etapas preenchidas"
+        steps={[
+          {
+            label: "Paciente",
+            done:
+              paciente.trim().length > 0 &&
+              (!especial || (cpfValido && enderecoFullValido)),
+          },
+          {
+            label: "Medicamentos",
+            done: itens.length > 0 && posologiasInvalidas.length === 0,
+          },
+          { label: "Pronto para emitir", done: podeEmitir },
+        ]}
+        note={
+          <>
+            Campos com <span className="text-destructive/80">*</span> são
+            obrigatórios e serão validados antes da emissão.
+          </>
+        }
+      >
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          onClick={abrirSalvarKit}
+          title="Ctrl+S"
+        >
+          <Save className="h-4 w-4" />
+          Salvar como kit
+        </Button>
+        <Button
+          type="button"
+          size="sm"
+          onClick={() => {
+            setTriedEmit(true);
+            if (!podeEmitir) {
+              document
+                .getElementById("sec-revisar")
+                ?.scrollIntoView({ behavior: "smooth", block: "start" });
+              return;
+            }
+            baixarPdf({ emitir: true });
+          }}
+          disabled={!podeEmitir}
+          title={
+            !podeEmitir && pendencias.length > 0
+              ? `Corrija ${pendencias.length} pendência${pendencias.length > 1 ? "s" : ""} antes de emitir:\n• ${pendencias.map((p) => p.msg).join("\n• ")}`
+              : undefined
+          }
+        >
+          <Printer className="h-4 w-4" />
+          Emitir receita
+        </Button>
+      </FormActionBar>
 
       {/* Histórico de prescrições — rodapé da página, após as ações de emitir */}
       {historico.length > 0 && (
