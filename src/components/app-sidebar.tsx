@@ -440,7 +440,7 @@ function UserMenu({ collapsed }: { collapsed: boolean }) {
   if (collapsed) {
     return (
       <div className="border-t border-sidebar-border flex flex-col items-center py-3">
-        <DropdownMenu>
+        <DropdownMenu open={menuOpen} onOpenChange={setMenuOpen}>
           <Tooltip>
             <TooltipTrigger asChild>
               <DropdownMenuTrigger asChild>
@@ -459,13 +459,14 @@ function UserMenu({ collapsed }: { collapsed: boolean }) {
           </Tooltip>
           {content}
         </DropdownMenu>
+        {logoutConfirmation}
       </div>
     );
   }
 
   return (
     <div className="border-t border-sidebar-border flex items-center">
-      <DropdownMenu>
+      <DropdownMenu open={menuOpen} onOpenChange={setMenuOpen}>
         <DropdownMenuTrigger asChild>
           <button /* ds-allow: item de perfil do sidebar */
             type="button"
@@ -488,6 +489,7 @@ function UserMenu({ collapsed }: { collapsed: boolean }) {
             variant="ghost"
             size="icon"
             aria-label="Sair"
+            onClick={() => setLogoutOpen(true)}
             className="mr-3 shrink-0 text-sidebar-muted hover:text-destructive"
           >
             <LogOut className="h-5 w-5" aria-hidden="true" />
@@ -495,6 +497,8 @@ function UserMenu({ collapsed }: { collapsed: boolean }) {
         </TooltipTrigger>
         <TooltipContent side="top">Sair</TooltipContent>
       </Tooltip>
+
+      {logoutConfirmation}
     </div>
   );
 }
