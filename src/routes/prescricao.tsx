@@ -1450,34 +1450,10 @@ function PrescricaoForm() {
                 Pronto para emitir
               </span>
             ) : null}
-            <ActionBtn
-              onClick={() => setHistoricoAberto((v) => !v)}
-              icon={<History className="h-3.5 w-3.5" />}
-              size="sm"
-              active={historicoAberto}
-              title={historicoAberto ? "Ocultar histórico" : "Mostrar histórico"}
-            >
-              Histórico{historico.length > 0 ? ` (${historico.length})` : ""}
-            </ActionBtn>
           </>
         }
       />
 
-
-
-
-
-
-
-      {historicoAberto && (
-        <HistoricoPanel
-          historico={historico}
-          onClose={() => setHistoricoAberto(false)}
-          onReutilizar={reutilizarHistorico}
-          onRemover={removerHistorico}
-          onLimpar={limparHistorico}
-        />
-      )}
 
 
 
@@ -2186,6 +2162,41 @@ function PrescricaoForm() {
           </div>
         </div>
       </div>
+
+      {/* Histórico de prescrições — rodapé da página, após as ações de emitir */}
+      {historico.length > 0 && (
+        <section id="sec-historico" className="scroll-mt-4 space-y-3">
+          <div className="flex items-center justify-between gap-3">
+            <div className="min-w-0">
+              <h2 className="text-base font-semibold text-foreground">
+                Histórico de prescrições
+              </h2>
+              <p className="text-xs text-muted-foreground">
+                Últimas receitas emitidas neste navegador — reabra para reemitir.
+              </p>
+            </div>
+            <ActionBtn
+              onClick={() => setHistoricoAberto((v) => !v)}
+              icon={<History className="h-3.5 w-3.5" />}
+              size="sm"
+              active={historicoAberto}
+              title={historicoAberto ? "Ocultar histórico" : "Mostrar histórico"}
+            >
+              {historicoAberto ? "Ocultar" : `Ver (${historico.length})`}
+            </ActionBtn>
+          </div>
+          {historicoAberto && (
+            <HistoricoPanel
+              historico={historico}
+              onClose={() => setHistoricoAberto(false)}
+              onReutilizar={reutilizarHistorico}
+              onRemover={removerHistorico}
+              onLimpar={limparHistorico}
+            />
+          )}
+        </section>
+      )}
+
 
 
 
