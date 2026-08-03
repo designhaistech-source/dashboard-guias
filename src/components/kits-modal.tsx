@@ -21,16 +21,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  Dialog,
-  DialogBody,
-  DialogToolbar,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { AppModal } from "@/components/app-modal";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
@@ -175,20 +166,19 @@ export function KitsModal({
 
   return (
     <>
-    <Dialog open={open} onOpenChange={(v) => { if (!v) onClose(); }}>
-      <DialogContent size="lg" initialFocusRef={buscaRef}>
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <BookMarked className="size-4 text-primary" />
-            Kits salvos
-          </DialogTitle>
-          <DialogDescription>
-            Modelos reutilizáveis — aplique com um clique.
-          </DialogDescription>
-        </DialogHeader>
-
-        {/* Filtros */}
-        <DialogToolbar className="space-y-2.5">
+    <AppModal
+      open={open}
+      onOpenChange={(v: boolean) => {
+        if (!v) onClose();
+      }}
+      size="lg"
+      initialFocusRef={buscaRef}
+      icon={<BookMarked className="size-4" />}
+      title="Kits salvos"
+      description="Modelos reutilizáveis — aplique com um clique."
+      toolbarClassName="space-y-2.5"
+      toolbar={
+        <>
           <div className="flex gap-2">
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -272,12 +262,11 @@ export function KitsModal({
             )}
 
           </div>
-        </DialogToolbar>
-
-
-
-        {/* Lista */}
-        <DialogBody>
+        </>
+      }
+    >
+      {/* Lista */}
+      <>
           {filtrados.length === 0 ? (
             <div className="rounded-xl border border-dashed border-border bg-card px-6 py-12 text-center">
               <BookMarked className="h-8 w-8 mx-auto text-muted-foreground/60" />
@@ -401,33 +390,36 @@ export function KitsModal({
               })}
             </div>
           )}
-        </DialogBody>
-      </DialogContent>
-    </Dialog>
+      </>
+    </AppModal>
 
-    <Dialog open={!!pendente} onOpenChange={(v) => { if (!v) setPendente(null); }}>
-      <DialogContent size="sm" role="alertdialog">
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <AlertTriangle className="size-4 text-warning-strong" />
-            Aplicar kit à receita?
-          </DialogTitle>
-          <DialogDescription>
-            A receita atual já contém{" "}
-            <strong className="text-foreground">
-              {currentCount} {currentCount === 1 ? "medicamento" : "medicamentos"}
-            </strong>
-            {pendente && (
-              <>
-                . O kit <strong className="text-foreground">"{pendente.nome}"</strong> tem{" "}
-                {pendente.itens.length}{" "}
-                {pendente.itens.length === 1 ? "item" : "itens"}
-              </>
-            )}
-            . Como deseja prosseguir?
-          </DialogDescription>
-        </DialogHeader>
-        <DialogFooter>
+    <AppModal
+      open={!!pendente}
+      onOpenChange={(v: boolean) => {
+        if (!v) setPendente(null);
+      }}
+      size="sm"
+      role="alertdialog"
+      unstyledBody
+      icon={<AlertTriangle className="size-4 text-warning-strong" />}
+      title="Aplicar kit à receita?"
+      description={
+        <>
+          A receita atual já contém{" "}
+          <strong className="text-foreground">
+            {currentCount} {currentCount === 1 ? "medicamento" : "medicamentos"}
+          </strong>
+          {pendente && (
+            <>
+              . O kit <strong className="text-foreground">"{pendente.nome}"</strong> tem{" "}
+              {pendente.itens.length} {pendente.itens.length === 1 ? "item" : "itens"}
+            </>
+          )}
+          . Como deseja prosseguir?
+        </>
+      }
+      footer={
+        <>
           <Button variant="outline" size="sm" onClick={() => setPendente(null)}>
             Cancelar
           </Button>
@@ -437,9 +429,9 @@ export function KitsModal({
           <Button variant="destructive" size="sm" onClick={() => confirmar("replace")}>
             Substituir tudo
           </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+        </>
+      }
+    />
     </>
   );
 }

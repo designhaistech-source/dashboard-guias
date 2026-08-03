@@ -1,12 +1,5 @@
 import { useMemo, useState } from "react";
-import {
-  Dialog,
-  DialogBody,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-} from "@/components/ui/dialog";
+import { AppModal } from "@/components/app-modal";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
   REFERENCE_LABELS,
@@ -45,15 +38,15 @@ export function ProcedureCodeModal({ open, onOpenChange, term = "" }: ProcedureC
   }, [selected, term]);
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent size="lg">
-        <DialogHeader>
-          <DialogTitle>Código de Procedimento</DialogTitle>
-          <DialogDescription className="sr-only">
-            Sugestões de códigos de procedimento por referência.
-          </DialogDescription>
-        </DialogHeader>
-        <DialogBody className="space-y-4">
+    <AppModal
+      open={open}
+      onOpenChange={onOpenChange}
+      size="lg"
+      title="Código de Procedimento"
+      description="Sugestões de códigos de procedimento por referência."
+      descriptionHidden
+      bodyClassName="space-y-4"
+    >
           <fieldset className="rounded-xl border border-border bg-muted/30 p-3 sm:p-4">
             <legend className="px-1 text-sm font-semibold text-foreground">
               Selecione uma referência:
@@ -145,8 +138,6 @@ export function ProcedureCodeModal({ open, onOpenChange, term = "" }: ProcedureC
               </table>
             </div>
           </div>
-        </DialogBody>
-      </DialogContent>
-    </Dialog>
+    </AppModal>
   );
 }

@@ -1,14 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Camera, RefreshCcw, Check, AlertTriangle } from "lucide-react";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogBody,
-  DialogFooter,
-  DialogTitle,
-  DialogDescription,
-} from "@/components/ui/dialog";
+import { AppModal } from "@/components/app-modal";
 import { Button } from "@/components/ui/button";
 
 type CameraCaptureDialogProps = {
@@ -96,47 +88,16 @@ export function CameraCaptureDialog({ open, onOpenChange, onCapture }: CameraCap
   };
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent size="lg" className="fixed-layout">
-        <DialogHeader>
-          <DialogTitle>Tirar foto da guia</DialogTitle>
-          <DialogDescription>
-            Posicione o documento dentro do quadro e mantenha-o legível antes de capturar.
-          </DialogDescription>
-        </DialogHeader>
-        <DialogBody>
-          <div className="overflow-hidden rounded-xl border border-border bg-muted">
-            {error ? (
-              <div
-                role="alert"
-                className="flex flex-col items-center gap-3 px-6 py-12 text-center"
-              >
-                <AlertTriangle className="h-8 w-8 text-destructive" aria-hidden="true" />
-                <p className="text-sm text-muted-foreground">{error}</p>
-                <Button variant="secondary" size="sm" onClick={() => void startStream()}>
-                  <RefreshCcw className="h-4 w-4" aria-hidden="true" />
-                  Tentar novamente
-                </Button>
-              </div>
-            ) : preview ? (
-              <img src={preview} alt="Pré-visualização da foto capturada" className="w-full" />
-            ) : (
-              <video
-                ref={videoRef}
-                playsInline
-                muted
-                aria-label="Visualização da câmera"
-                className="w-full aspect-video bg-foreground/5 object-cover"
-              />
-            )}
-          </div>
-          {!error && !preview && !ready && (
-            <p className="mt-3 text-sm text-muted-foreground" aria-live="polite">
-              Iniciando a câmera...
-            </p>
-          )}
-        </DialogBody>
-        <DialogFooter>
+    <AppModal
+      open={open}
+      onOpenChange={onOpenChange}
+      size="lg"
+      className="fixed-layout"
+      icon={<Camera className="size-4" />}
+      title="Tirar foto da guia"
+      description="Posicione o documento dentro do quadro e mantenha-o legível antes de capturar."
+      footer={
+        <>
           <Button variant="outline" onClick={() => onOpenChange(false)}>
             Cancelar
           </Button>
@@ -157,8 +118,36 @@ export function CameraCaptureDialog({ open, onOpenChange, onCapture }: CameraCap
               Capturar
             </Button>
           )}
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+        </>
+      }
+    >
+      <div className="overflow-hidden rounded-xl border border-border bg-muted">
+        {error ? (
+          <div role="alert" className="flex flex-col items-center gap-3 px-6 py-12 text-center">
+            <AlertTriangle className="h-8 w-8 text-destructive" aria-hidden="true" />
+            <p className="text-sm text-muted-foreground">{error}</p>
+            <Button variant="secondary" size="sm" onClick={() => void startStream()}>
+              <RefreshCcw className="h-4 w-4" aria-hidden="true" />
+              Tentar novamente
+            </Button>
+          </div>
+        ) : preview ? (
+          <img src={preview} alt="Pré-visualização da foto capturada" className="w-full" />
+        ) : (
+          <video
+            ref={videoRef}
+            playsInline
+            muted
+            aria-label="Visualização da câmera"
+            className="w-full aspect-video bg-foreground/5 object-cover"
+          />
+        )}
+      </div>
+      {!error && !preview && !ready && (
+        <p className="mt-3 text-sm text-muted-foreground" aria-live="polite">
+          Iniciando a câmera...
+        </p>
+      )}
+    </AppModal>
   );
 }
