@@ -54,7 +54,7 @@ function BrandLogo({ className }: { className?: string }) {
 
 import { RenderProfiler } from "@/lib/render-profiler";
 
-type ItemKey =
+export type ItemKey =
   | "dashboard"
   | "emitir"
   | "extrair"
