@@ -227,14 +227,9 @@ export function ProcedureSearchPage() {
                   </DataTable>
                 </div>
 
-              </>
-            )}
-
-          </section>
-        </div>
-
-        <SiteFooter />
-      </main>
-    </div>
+        </>
+      )}
+    </SearchPageLayout>
   );
 }
+
