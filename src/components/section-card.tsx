@@ -18,6 +18,8 @@ export interface SectionCardProps {
   /** Ações alinhadas à direita do cabeçalho. */
   actions?: React.ReactNode;
   className?: string;
+  /** Ref para o container do card (usado em impressão/scroll). */
+  innerRef?: React.Ref<HTMLDivElement>;
   bodyClassName?: string;
   children?: React.ReactNode;
 }
