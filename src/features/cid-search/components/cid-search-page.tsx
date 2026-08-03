@@ -90,76 +90,86 @@ export function CidSearchPage() {
             description="Consulte códigos da Classificação Internacional de Doenças por código ou termo, com favoritos e histórico."
           />
 
+          {/* Busca sempre visível: é a ação principal da página */}
+          <SurfaceCard className="space-y-4">
+            <div className="relative">
+              <Search
+                aria-hidden
+                className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground"
+              />
+              <Input
+                value={term}
+                onChange={(event) => setTerm(event.target.value)}
+                placeholder="Digite CID (ex: I63.9) ou termo (ex: aneurisma)"
+                aria-label="Buscar CID-10 por código ou termo"
+                className="h-11 pl-9 pr-9"
+              />
+              {term ? (
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => setTerm("")}
+                  aria-label="Limpar busca"
+                  className="absolute right-1.5 top-1/2 h-8 w-8 -translate-y-1/2"
+                >
+                  <X className="icon-optical h-4 w-4" aria-hidden />
+                </Button>
+              ) : null}
+            </div>
+
+            <div className="flex items-center justify-between gap-3">
+              <h2 className="text-sm font-semibold">Resultados</h2>
+              {term ? (
+                <p
+                  aria-live="polite"
+                  className="text-xs text-muted-foreground tabular-nums"
+                >
+                  {results.length}{" "}
+                  {results.length === 1
+                    ? "código encontrado"
+                    : "códigos encontrados"}
+                </p>
+              ) : null}
+            </div>
+
+            {term ? (
+              <CidList
+                items={results}
+                favorites={favorites}
+                onToggleFavorite={toggleFavorite}
+                onCopy={copyCode}
+                emptyTitle="Nenhum CID encontrado"
+                emptyHint="Revise a grafia ou tente um termo mais curto, como “dor” ou “I10”."
+              />
+            ) : (
+              <EmptyHint
+                icon={BookOpen}
+                title="Comece a digitar para consultar a CID-10"
+                hint="Você pode buscar pelo código (ex: I10) ou por parte da descrição (ex: hipertensão)."
+              />
+            )}
+          </SurfaceCard>
+
+          {/* Listas de apoio: consulta secundária, agrupadas em abas */}
           <SurfaceCard>
-            <Tabs defaultValue="buscar" className="space-y-5">
+            <Tabs defaultValue="favoritos" className="space-y-5">
               <TabsList className={appTabsListClass}>
-                <TabsTrigger
-                  value="buscar"
-                  className={appTabsTriggerClass}
-                >
-                  <Search className={appTabsIconClass} aria-hidden />
-                  <span className={appTabsLabelClass}>Buscar</span>
-                </TabsTrigger>
-                <TabsTrigger
-                  value="favoritos"
-                  className={appTabsTriggerClass}
-                >
+                <TabsTrigger value="favoritos" className={appTabsTriggerClass}>
                   <Star className={appTabsIconClass} aria-hidden />
-                  <span className={appTabsLabelClass}>Favoritos<span className="hidden sm:inline"> ({favorites.length})</span></span>
+                  <span className={appTabsLabelClass}>
+                    Favoritos
+                    <span className="hidden sm:inline"> ({favorites.length})</span>
+                  </span>
                 </TabsTrigger>
-                <TabsTrigger
-                  value="historico"
-                  className={appTabsTriggerClass}
-                >
+                <TabsTrigger value="historico" className={appTabsTriggerClass}>
                   <History className={appTabsIconClass} aria-hidden />
-                  <span className={appTabsLabelClass}>Histórico</span>
+                  <span className={appTabsLabelClass}>
+                    Histórico
+                    <span className="hidden sm:inline"> ({historyItems.length})</span>
+                  </span>
                 </TabsTrigger>
               </TabsList>
-
-
-
-              <TabsContent value="buscar" className="space-y-4">
-                <div className="relative">
-                  <Search
-                    aria-hidden
-                    className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground"
-                  />
-                  <Input
-                    value={term}
-                    onChange={(event) => setTerm(event.target.value)}
-                    placeholder="Digite CID (ex: I63.9) ou termo (ex: aneurisma)"
-                    aria-label="Buscar CID-10 por código ou termo"
-                    className="h-11 pl-9 pr-9"
-                  />
-                  {term ? (
-                    <button
-                      type="button"
-                      onClick={() => setTerm("")}
-                      aria-label="Limpar busca"
-                      className="absolute right-2 top-1/2 -translate-y-1/2 rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                    >
-                      <X className="h-4 w-4" aria-hidden />
-                    </button>
-                  ) : null}
-                </div>
-
-                {term ? (
-                  <CidList
-                    items={results}
-                    favorites={favorites}
-                    onToggleFavorite={toggleFavorite}
-                    onCopy={copyCode}
-                    emptyTitle="Nenhum CID encontrado"
-                    emptyHint="Revise a grafia ou tente um termo mais curto, como “dor” ou “I10”."
-                  />
-                ) : (
-                  <EmptyHint
-                    icon={BookOpen}
-                    title="Comece a digitar para consultar a CID-10"
-                    hint="Você pode buscar pelo código (ex: I10) ou por parte da descrição (ex: hipertensão)."
-                  />
-                )}
-              </TabsContent>
 
               <TabsContent value="favoritos">
                 <CidList
@@ -184,6 +194,7 @@ export function CidSearchPage() {
               </TabsContent>
             </Tabs>
           </SurfaceCard>
+
         </div>
 
         <SiteFooter />
