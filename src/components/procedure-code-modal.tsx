@@ -138,8 +138,6 @@ export function ProcedureCodeModal({ open, onOpenChange, term = "" }: ProcedureC
               </table>
             </div>
           </div>
-        </DialogBody>
-      </DialogContent>
-    </Dialog>
+    </AppModal>
   );
 }
