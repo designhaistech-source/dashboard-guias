@@ -690,16 +690,20 @@ function EmitirPage() {
             title="Emitir guia"
             description="Escolha entre guias de convênio (TISS) ou guias do SUS e selecione o tipo correspondente para começar."
             actions={
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={() => setPrefsOpen(true)}
-              >
-                <Settings2 className="h-4 w-4" />
-                Preferências
-              </Button>
+              <>
+                <SavedIndicator savedAt={savedAt} />
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setPrefsOpen(true)}
+                >
+                  <Settings2 className="h-4 w-4" />
+                  Preferências
+                </Button>
+              </>
             }
+
           />
 
 
