@@ -1742,22 +1742,13 @@ function PrescricaoForm() {
           <div className="rounded-2xl border border-border bg-card shadow-xs p-5 space-y-4">
             <div className="flex flex-col items-start gap-2 sm:flex-row sm:items-start sm:justify-between sm:gap-3">
 
-            <Button
-              type="button"
-              variant="ghost"
-              onClick={() => setBuscaCollapsed((v) => !v)}
-              className="flex h-auto items-start justify-start gap-2 whitespace-normal p-0 text-left font-normal hover:bg-transparent group min-w-0 w-full sm:flex-1"
-              aria-expanded={!buscaCollapsed}
-            >
-              <ChevronDown
-                className={`h-4 w-4 mt-1 text-muted-foreground transition-transform ${buscaCollapsed ? "-rotate-90" : ""}`}
-              />
-              <div className="min-w-0">
-                <h2 className="text-base font-semibold group-hover:text-foreground">2. Buscar e adicionar medicamentos</h2>
-                <p className="text-xs text-muted-foreground">
-                  {buscaCollapsed
-                    ? `${itens.length} ${itens.length === 1 ? "medicamento adicionado" : "medicamentos adicionados"}`
-                    : "Busque pelo nome do medicamento para adicionar à prescrição. Medicamentos controlados são identificados automaticamente e geram receituário especial."}
+            <div className="min-w-0 w-full sm:flex-1">
+              <h2 className="text-base font-semibold text-foreground">2. Buscar e adicionar medicamentos</h2>
+              <p className="text-xs text-muted-foreground">
+                Busque pelo nome do medicamento para adicionar à prescrição. Medicamentos controlados são identificados automaticamente e geram receituário especial.
+              </p>
+            </div>
+
                 </p>
               </div>
             </Button>
