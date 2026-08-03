@@ -2106,9 +2106,8 @@ function PrescricaoForm() {
 
 
 
-          </div>
-        </div>
-      </section>
+      </SectionCard>
+
 
       {/* Barra de ação padrão: etapas + ações */}
       <FormActionBar
