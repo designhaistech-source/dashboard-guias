@@ -751,7 +751,7 @@ function EmitirPage() {
                         const active = c.id === convenioId && g.id === guideKind;
                         const Icon = g.icon;
                         return (
-                          <button
+                          <button /* ds-allow: card selecionável de tipo de guia */
                             key={g.id}
                             type="button"
                             onClick={() => setGuideKind(g.id)}
