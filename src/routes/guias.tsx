@@ -368,32 +368,32 @@ function History_Section({ extraRows }: { extraRows: Row[] }) {
         </div>
       )}
 
-      {/* Mobile: cards tocáveis, sem scroll horizontal. */}
-      <ul className="space-y-3 lg:hidden">
-
+      {/* Mobile: fallback em cards compartilhado (DataTable). */}
+      <DataTableCardList>
         {allRows.map((r, i) => (
-          <li key={i} className="rounded-xl border border-border bg-card p-4">
-            <div className="flex min-w-0 items-start justify-between gap-3">
-              <div className="min-w-0">
-                <div className="flex min-w-0 items-center gap-2">
-                  <span className="truncate text-sm font-medium">{r.file}</span>
-                  {r.warn && <AlertTriangle className="h-4 w-4 shrink-0 text-warning" aria-hidden="true" />}
-                </div>
-                <p className="mt-0.5 truncate text-sm text-muted-foreground">{r.patient}</p>
-              </div>
-              <StatusBadge status={r.status} />
-            </div>
-            <dl className="mt-3 grid grid-cols-2 gap-2 text-xs text-muted-foreground">
-              <div className="min-w-0">
-                <dt className="sr-only">ID da guia</dt>
-                <dd className="truncate">ID {r.id}</dd>
-              </div>
-              <div className="min-w-0">
-                <dt className="sr-only">Data de envio</dt>
-                <dd className="truncate">{r.date}</dd>
-              </div>
-            </dl>
-            <div className="mt-3 flex items-center justify-between gap-3">
+          <DataTableCard key={i}>
+            <DataTableCardHeader
+              title={
+                <>
+                  <span className="truncate">{r.file}</span>
+                  {r.warn && (
+                    <AlertTriangle
+                      className="h-4 w-4 shrink-0 text-warning"
+                      aria-hidden="true"
+                    />
+                  )}
+                </>
+              }
+              subtitle={r.patient}
+              trailing={<StatusBadge status={r.status} />}
+            />
+            <DataTableCardFields
+              fields={[
+                { label: "ID da guia", value: `ID ${r.id}`, hideLabel: true },
+                { label: "Data de envio", value: r.date, hideLabel: true },
+              ]}
+            />
+            <DataTableCardActions>
               <TypeBadge type={r.type} />
               <div className="flex items-center gap-2">
                 <Button
@@ -415,13 +415,14 @@ function History_Section({ extraRows }: { extraRows: Row[] }) {
                   <ClipboardCopy className="h-4 w-4" aria-hidden="true" />
                 </Button>
               </div>
-            </div>
-          </li>
+            </DataTableCardActions>
+          </DataTableCard>
         ))}
-      </ul>
+      </DataTableCardList>
 
       <div className="overflow-hidden rounded-xl border border-border bg-card">
-        <div className="hidden w-full overflow-x-auto lg:block">
+        <DataTableDesktop>
+
           <DataTableRoot className="min-w-[880px]">
             <DataTableHeader>
               <DataTableRow className="hover:bg-transparent">
