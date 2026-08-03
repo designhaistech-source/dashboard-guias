@@ -1,7 +1,7 @@
 import type { FormEvent, ReactNode } from "react";
 
 import { AppBreadcrumb } from "@/components/app-breadcrumb";
-import { AppSidebar } from "@/components/app-sidebar";
+import { AppSidebar, type ItemKey } from "@/components/app-sidebar";
 import { PageHeader } from "@/components/page-header";
 import { SiteFooter } from "@/components/site-footer";
 import { Button } from "@/components/ui/button";
@@ -9,7 +9,7 @@ import { cn } from "@/lib/utils";
 
 interface SearchPageLayoutProps {
   /** Chave do item ativo no menu lateral. */
-  activeKey: string;
+  activeKey: ItemKey;
   title: string;
   description: string;
   /** Campos do formulário de busca (input, filtros). */
