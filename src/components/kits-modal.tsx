@@ -390,9 +390,8 @@ export function KitsModal({
               })}
             </div>
           )}
-        </DialogBody>
-      </DialogContent>
-    </Dialog>
+      </>
+    </AppModal>
 
     <Dialog open={!!pendente} onOpenChange={(v) => { if (!v) setPendente(null); }}>
       <DialogContent size="sm" role="alertdialog">
