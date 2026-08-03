@@ -34,7 +34,7 @@ import { PageHeader } from "@/components/page-header";
 import { SavedIndicator } from "@/components/saved-indicator";
 import { useDraftAutosave } from "@/hooks/use-draft-autosave";
 
-import { StatusPill } from "@/components/status-pill";
+import { FormActionBar } from "@/components/form-action-bar";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";

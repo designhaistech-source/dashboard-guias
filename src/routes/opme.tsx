@@ -49,7 +49,7 @@ import convenioHumanasAsset from "@/assets/convenio-humanas-real.png.asset.json"
 import convenioUnimedAsset from "@/assets/convenio-unimed-real.png.asset.json";
 import convenioCaurnAsset from "@/assets/convenio-caurn-real.png.asset.json";
 import { Chip } from "@/components/ui/chip";
-import { StatusPill } from "@/components/status-pill";
+import { FormActionBar } from "@/components/form-action-bar";
 
 
 const OPERADORAS = [

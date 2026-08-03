@@ -42,7 +42,7 @@ import { SavedIndicator } from "@/components/saved-indicator";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Chip } from "@/components/ui/chip";
-import { StatusPill } from "@/components/status-pill";
+import { FormActionBar } from "@/components/form-action-bar";
 import { EmptyState } from "@/components/data-state";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
