@@ -393,29 +393,33 @@ export function KitsModal({
       </>
     </AppModal>
 
-    <Dialog open={!!pendente} onOpenChange={(v) => { if (!v) setPendente(null); }}>
-      <DialogContent size="sm" role="alertdialog">
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <AlertTriangle className="size-4 text-warning-strong" />
-            Aplicar kit à receita?
-          </DialogTitle>
-          <DialogDescription>
-            A receita atual já contém{" "}
-            <strong className="text-foreground">
-              {currentCount} {currentCount === 1 ? "medicamento" : "medicamentos"}
-            </strong>
-            {pendente && (
-              <>
-                . O kit <strong className="text-foreground">"{pendente.nome}"</strong> tem{" "}
-                {pendente.itens.length}{" "}
-                {pendente.itens.length === 1 ? "item" : "itens"}
-              </>
-            )}
-            . Como deseja prosseguir?
-          </DialogDescription>
-        </DialogHeader>
-        <DialogFooter>
+    <AppModal
+      open={!!pendente}
+      onOpenChange={(v: boolean) => {
+        if (!v) setPendente(null);
+      }}
+      size="sm"
+      role="alertdialog"
+      unstyledBody
+      icon={<AlertTriangle className="size-4 text-warning-strong" />}
+      title="Aplicar kit à receita?"
+      description={
+        <>
+          A receita atual já contém{" "}
+          <strong className="text-foreground">
+            {currentCount} {currentCount === 1 ? "medicamento" : "medicamentos"}
+          </strong>
+          {pendente && (
+            <>
+              . O kit <strong className="text-foreground">"{pendente.nome}"</strong> tem{" "}
+              {pendente.itens.length} {pendente.itens.length === 1 ? "item" : "itens"}
+            </>
+          )}
+          . Como deseja prosseguir?
+        </>
+      }
+      footer={
+        <>
           <Button variant="outline" size="sm" onClick={() => setPendente(null)}>
             Cancelar
           </Button>
@@ -425,9 +429,9 @@ export function KitsModal({
           <Button variant="destructive" size="sm" onClick={() => confirmar("replace")}>
             Substituir tudo
           </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+        </>
+      }
+    />
     </>
   );
 }
