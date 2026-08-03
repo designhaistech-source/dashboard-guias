@@ -1,3 +1,4 @@
+import * as React from "react";
 import { useMemo, useState } from "react";
 import { BookOpen, Copy, History, ScanSearch, Search, Star, Trash2 } from "lucide-react";
 import { toast } from "sonner";
@@ -186,6 +187,7 @@ export function CidSearchPage() {
                   favorites={favorites}
                   onToggleFavorite={toggleFavorite}
                   onCopy={copyCode}
+                  emptyIcon={<Star className="h-10 w-10" />}
                   emptyTitle="Nenhum favorito salvo"
                   emptyHint="Toque na estrela de um resultado para salvá-lo aqui."
                 />
@@ -213,6 +215,7 @@ export function CidSearchPage() {
                   favorites={favorites}
                   onToggleFavorite={toggleFavorite}
                   onCopy={copyCode}
+                  emptyIcon={<History className="h-10 w-10" />}
                   emptyTitle="Histórico vazio"
                   emptyHint="Os códigos copiados aparecem aqui para consulta rápida."
                 />
@@ -312,6 +315,7 @@ interface CidListProps {
   onCopy: (item: CidItem) => void;
   emptyTitle: string;
   emptyHint: string;
+  emptyIcon?: React.ReactNode;
 }
 
 function CidList({
@@ -321,9 +325,16 @@ function CidList({
   onCopy,
   emptyTitle,
   emptyHint,
+  emptyIcon,
 }: CidListProps) {
   if (items.length === 0) {
-    return <EmptyHint icon={Search} title={emptyTitle} hint={emptyHint} />;
+    return (
+      <EmptyState
+        icon={emptyIcon ?? <Search className="h-10 w-10" />}
+        title={emptyTitle}
+        description={emptyHint}
+      />
+    );
   }
 
   return (
