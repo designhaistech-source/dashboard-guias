@@ -52,6 +52,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { toast } from "sonner";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { CURRENT_USER } from "@/lib/current-user";
 import logoAsset from "@/assets/guiasplus-logo.png.asset.json";
 import logoDarkAsset from "@/assets/guiasplus-logo-dark.png.asset.json";
@@ -307,6 +308,14 @@ function UserMenu({ collapsed }: { collapsed: boolean }) {
 
   const itemClass = "gap-3 px-4 py-2.5 min-h-11 text-sm";
 
+  // Iniciais do nome: evita repetir o mesmo ícone do item "Meu Perfil".
+  const userInitials = CURRENT_USER.name
+    .split(" ")
+    .filter(Boolean)
+    .slice(-2)
+    .map((part) => part[0]?.toUpperCase() ?? "")
+    .join("");
+
   const confirmLogout = () => {
     setLogoutOpen(false);
     setMenuOpen(false);
@@ -348,11 +357,11 @@ function UserMenu({ collapsed }: { collapsed: boolean }) {
       {/* Cabeçalho informativo em 2 linhas: identidade + e-mail completo (sem corte). */}
       <DropdownMenuLabel className="px-4 py-3 font-normal">
         <div className="flex items-center gap-3 min-w-0">
-          <CircleUser
-            className="h-8 w-8 shrink-0 text-muted-foreground"
-            strokeWidth={1.5}
-            aria-hidden="true"
-          />
+          <Avatar className="h-9 w-9 shrink-0">
+            <AvatarFallback className="bg-primary/10 text-xs font-semibold text-primary">
+              {userInitials}
+            </AvatarFallback>
+          </Avatar>
           <div className="min-w-0">
             <div className="text-sm font-semibold text-foreground">
               {CURRENT_USER.name}
