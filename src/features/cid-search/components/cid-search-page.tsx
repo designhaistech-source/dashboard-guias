@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { BookOpen, Copy, History, Search, Star, X } from "lucide-react";
+import { BookOpen, Copy, History, Search, Star, Trash2, X } from "lucide-react";
 import { toast } from "sonner";
 
 import {
