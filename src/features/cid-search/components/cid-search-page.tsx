@@ -391,21 +391,4 @@ function CidList({
     </ul>
   );
 }
-
-function EmptyHint({
-  icon: Icon,
-  title,
-  hint,
-}: {
-  icon: typeof Search;
-  title: string;
-  hint: string;
-}) {
-  return (
-    <div className="flex flex-col items-center gap-2 rounded-lg border border-dashed border-border px-6 py-12 text-center">
-      <Icon className="h-6 w-6 text-muted-foreground" aria-hidden />
-      <p className="text-sm font-semibold">{title}</p>
-      <p className="max-w-md text-sm text-muted-foreground">{hint}</p>
-    </div>
-  );
 }
