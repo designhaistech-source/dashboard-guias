@@ -76,6 +76,7 @@ function BrandLogo({ className }: { className?: string }) {
 }
 
 import { RenderProfiler } from "@/lib/render-profiler";
+import { useTheme } from "@/lib/theme";
 
 export type ItemKey =
   | "dashboard"
@@ -89,6 +90,7 @@ export type ItemKey =
   | "relatorios"
   | "cid"
   | "perfil"
+  | "configuracoes"
   | "qa-responsividade"
   | "ajuda";
 
@@ -297,14 +299,13 @@ function SidebarNav({
 }
 
 function UserMenu({ collapsed }: { collapsed: boolean }) {
-  const [dark, setDark] = useState(false);
+  const { isDark, setTheme } = useTheme();
+  const dark = isDark;
+  const setDark = (updater: (value: boolean) => boolean) =>
+    setTheme(updater(dark) ? "dark" : "light");
   const [menuOpen, setMenuOpen] = useState(false);
   const [logoutOpen, setLogoutOpen] = useState(false);
   const pathname = useRouterState({ select: (state) => state.location.pathname });
-
-  useEffect(() => {
-    document.documentElement.classList.toggle("dark", dark);
-  }, [dark]);
 
   const itemClass = "gap-3 px-4 py-2.5 min-h-11 text-sm";
 
@@ -382,9 +383,14 @@ function UserMenu({ collapsed }: { collapsed: boolean }) {
             <span className="flex-1">Meu Perfil</span>
           </Link>
         </DropdownMenuItem>
-        <DropdownMenuItem className={itemClass}>
-          <Settings className="h-4 w-4" aria-hidden="true" />
-          Configurações
+        <DropdownMenuItem asChild className={itemClass}>
+          <Link
+            to="/configuracoes"
+            aria-current={pathname === "/configuracoes" ? "page" : undefined}
+          >
+            <Settings className="h-4 w-4" aria-hidden="true" />
+            <span className="flex-1">Configurações</span>
+          </Link>
         </DropdownMenuItem>
         {/* Preferência rápida: mantém o menu aberto ao alternar. */}
         <DropdownMenuItem
