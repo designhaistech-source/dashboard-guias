@@ -14,7 +14,7 @@ import {
   Moon,
   Sun,
   Settings,
-  Mail,
+  
   PanelLeft,
   Menu,
   X,
