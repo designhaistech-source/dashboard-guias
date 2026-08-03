@@ -156,7 +156,7 @@ export const SearchInput = React.forwardRef<HTMLInputElement, SearchInputProps>(
               <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" aria-hidden />
             )}
             {showClear && (
-              <button
+              <button /* ds-allow: botão de limpar embutido no Input */
                 type="button"
                 onClick={() => {
                   onClear?.();

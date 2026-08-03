@@ -62,7 +62,7 @@ export function CidAutocomplete({
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <button
+        <button /* ds-allow: trigger do combobox Radix (asChild) */
           id={id}
           type="button"
           role="combobox"

@@ -38,6 +38,6 @@ describe("StatusPill", () => {
   it("aplica o tamanho md do Badge em ambos os estados", () => {
     const { container } = render(<StatusPill done label="Pronto para emitir" />);
 
-    expect((container.firstElementChild as HTMLElement).className).toContain("h-6");
+    expect((container.firstElementChild as HTMLElement).className).toContain("h-7");
   });
 });

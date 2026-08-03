@@ -100,7 +100,7 @@ export function AppSidebar({ activeKey }: { activeKey: ItemKey }) {
           este wrapper não interfere no layout em flex das páginas. */}
       <div className="md:hidden">
         <header className="fixed inset-x-0 top-0 z-40 flex h-14 items-center gap-3 border-b border-sidebar-border bg-sidebar px-4 text-sidebar-foreground">
-          <button
+          <button /* ds-allow: controle de navegação do sidebar */
             type="button"
             onClick={() => setMobileOpen(true)}
             aria-label="Abrir menu"
@@ -114,7 +114,7 @@ export function AppSidebar({ activeKey }: { activeKey: ItemKey }) {
 
         {mobileOpen && (
           <div className="fixed inset-0 z-50">
-            <button
+            <button /* ds-allow: overlay de fechamento do drawer */
               type="button"
               aria-label="Fechar menu"
               onClick={() => setMobileOpen(false)}
@@ -128,7 +128,7 @@ export function AppSidebar({ activeKey }: { activeKey: ItemKey }) {
             >
               <div className="flex items-center justify-between gap-2 border-b border-sidebar-border px-4 py-4">
                 <BrandLogo className="h-8 w-auto" />
-                <button
+                <button /* ds-allow: fechar drawer do sidebar */
                   type="button"
                   onClick={() => setMobileOpen(false)}
                   aria-label="Fechar menu"
@@ -157,7 +157,7 @@ export function AppSidebar({ activeKey }: { activeKey: ItemKey }) {
           {!collapsed && (
             <BrandLogo className="h-8 w-auto" />
           )}
-          <button
+          <button /* ds-allow: colapsar/expandir sidebar */
             type="button"
             onClick={() => setCollapsed((v) => !v)}
             aria-label={collapsed ? "Expandir menu" : "Recolher menu"}
@@ -327,7 +327,7 @@ function UserMenu({ collapsed }: { collapsed: boolean }) {
 
   return (
     <div ref={ref} className="relative border-t border-sidebar-border flex items-center">
-      <button
+      <button /* ds-allow: item de perfil do sidebar */
         onClick={() => setOpen((v) => !v)}
         className="flex-1 min-w-0 px-4 py-4 flex items-center gap-3 hover:bg-muted transition-colors text-left"
       >
@@ -337,7 +337,7 @@ function UserMenu({ collapsed }: { collapsed: boolean }) {
           <div className="text-xs text-sidebar-muted">CRM 1234/RN</div>
         </div>
       </button>
-      <button
+      <button /* ds-allow: menu do perfil do sidebar */
         type="button"
         aria-label="Sair"
         className="shrink-0 mr-3 p-2 rounded-md text-sidebar-muted hover:text-destructive hover:bg-muted transition-colors"

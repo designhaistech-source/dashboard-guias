@@ -296,7 +296,7 @@ export function KitsModal({
                     className="rounded-xl border border-border bg-background overflow-hidden"
                   >
                     <div className="p-3 sm:p-4 flex flex-wrap items-start gap-2.5">
-                      <button
+                      <button /* ds-allow: toggle de favorito inline no card */
                         type="button"
                         onClick={() => favoritar(kit)}
                         aria-label={
@@ -365,7 +365,7 @@ export function KitsModal({
                       </div>
                     </div>
 
-                    <button
+                    <button /* ds-allow: área expansível do card, largura total */
                       type="button"
                       onClick={() => toggleExpand(kit.id)}
                       className="w-full flex items-center justify-center gap-1 py-1.5 text-xs text-muted-foreground hover:bg-muted transition-colors border-t border-border"
