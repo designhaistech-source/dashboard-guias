@@ -31,6 +31,8 @@ import { AppBreadcrumb } from "@/components/app-breadcrumb";
 import { AppSidebar } from "@/components/app-sidebar";
 import { SiteFooter } from "@/components/site-footer";
 import { PageHeader } from "@/components/page-header";
+import { StatusPill } from "@/components/status-pill";
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -542,6 +544,45 @@ function EmitirPage() {
   const [splitInGuides, setSplitInGuides] = useState(false);
   const filledProceduresCount = procedures.filter((p) => p.code.trim() && p.description.trim()).length;
 
+  /** Ordem dos tópicos numerados do formulário (varia conforme o tipo de guia). */
+  const stepKeys: string[] = [
+    "convenio",
+    ...(guideKind === "internacao" ? ["internacao"] : []),
+    ...(guideKind === "apac" ? ["apac"] : []),
+    ...(guideKind === "aih" ? ["aih"] : []),
+    "paciente",
+    "profissional",
+    "clinico",
+    "kits",
+    "procedimentos",
+    "opme",
+    "assinatura",
+  ];
+  const stepNumber = (key: string) => stepKeys.indexOf(key) + 1;
+
+  const convenioOk =
+    convenioId === "tiss"
+      ? Boolean(operadora.trim() && character.trim())
+      : Boolean(susEstabelecimento.trim());
+  const especificoOk =
+    guideKind === "internacao"
+      ? Boolean(internacaoTipo && internacaoDias > 0)
+      : guideKind === "apac"
+        ? Boolean(apacCompetencia && apacTipo)
+        : guideKind === "aih"
+          ? Boolean(aihCaraterEntry && aihMotivo.trim())
+          : true;
+  const pacienteOk = Boolean(pacienteNome.trim() && pacienteCarteira.trim());
+  const profissionalOk = Boolean(medicoNome.trim() && medicoCrm.trim());
+  const clinicoOk = Boolean(indicacaoClinica.trim());
+  const procedimentosOk = procedures.some(
+    (p) => p.code.trim() && p.description.trim() && p.quantity > 0,
+  );
+  const opmeOk = opmeItems.some((i) => i.description.trim());
+  const assinaturaOk = Boolean(medicoNome.trim());
+
+
+
 
   const validate = () => {
     const missing: string[] = [];
@@ -773,6 +814,8 @@ function EmitirPage() {
               {/* Convênio / Estabelecimento */}
               {convenioId === "tiss" ? (
                 <Section
+                  number={stepNumber("convenio")}
+                  done={convenioOk}
                   icon={<Building2 className="h-4 w-4" />}
                   title="Convênio e atendimento"
                   description="Operadora responsável e caráter da solicitação."
@@ -846,6 +889,8 @@ function EmitirPage() {
                 </Section>
               ) : (
                 <Section
+                  number={stepNumber("convenio")}
+                  done={convenioOk}
                   icon={<Building2 className="h-4 w-4" />}
                   title="Estabelecimento (SUS)"
                   description="Unidade executante e identificação DATASUS."
@@ -879,6 +924,8 @@ function EmitirPage() {
               {/* Detalhes específicos por tipo de guia */}
               {guideKind === "internacao" && (
                 <Section
+                  number={stepNumber("internacao")}
+                  done={especificoOk}
                   icon={<BedDouble className="h-4 w-4" />}
                   title="Dados da internação"
                   description="Regime, acomodação e previsão de permanência."
@@ -923,6 +970,8 @@ function EmitirPage() {
 
               {guideKind === "apac" && (
                 <Section
+                  number={stepNumber("apac")}
+                  done={especificoOk}
                   icon={<HeartPulse className="h-4 w-4" />}
                   title="Dados da APAC"
                   description="Competência e tipo de autorização."
@@ -950,6 +999,8 @@ function EmitirPage() {
 
               {guideKind === "aih" && (
                 <Section
+                  number={stepNumber("aih")}
+                  done={especificoOk}
                   icon={<Hospital className="h-4 w-4" />}
                   title="Dados da AIH"
                   description="Caráter da internação e motivo."
@@ -977,6 +1028,8 @@ function EmitirPage() {
 
               {/* Paciente */}
               <Section
+                number={stepNumber("paciente")}
+                done={pacienteOk}
                 icon={<User className="h-4 w-4" />}
                 title="Beneficiário / Paciente"
                 description="Identificação do paciente na operadora."
@@ -1027,6 +1080,8 @@ function EmitirPage() {
 
               {/* Solicitante */}
               <Section
+                number={stepNumber("profissional")}
+                done={profissionalOk}
                 icon={<Stethoscope className="h-4 w-4" />}
                 title="Profissional solicitante"
                 description="Médico responsável pela emissão."
@@ -1090,6 +1145,8 @@ function EmitirPage() {
 
               {/* Clínico */}
               <Section
+                number={stepNumber("clinico")}
+                done={clinicoOk}
                 icon={<FileText className="h-4 w-4" />}
                 title="Dados clínicos"
                 description="Hipótese diagnóstica e justificativa técnica."
@@ -1127,6 +1184,7 @@ function EmitirPage() {
 
               {/* Kits */}
               <Section
+                number={stepNumber("kits")}
                 icon={<Package className="h-4 w-4" />}
                 title="Kits"
                 description="Aplique um conjunto de procedimentos salvo ou por especialidade."
@@ -1196,6 +1254,8 @@ function EmitirPage() {
 
               {/* Procedimentos */}
               <Section
+                number={stepNumber("procedimentos")}
+                done={procedimentosOk}
                 icon={<ClipboardList className="h-4 w-4" />}
                 title={
                   <span className="flex items-center gap-2">
@@ -1315,6 +1375,8 @@ function EmitirPage() {
 
               {/* OPME */}
               <Section
+                number={stepNumber("opme")}
+                done={opmeOk}
                 icon={<Wrench className="h-4 w-4" />}
                 title="OPME — Órteses, Próteses e Materiais Especiais"
                 description="Arraste para reordenar. Adicione materiais/próteses solicitados (opcional)."
@@ -1395,6 +1457,8 @@ function EmitirPage() {
 
               {/* Assinatura */}
               <Section
+                number={stepNumber("assinatura")}
+                done={assinaturaOk}
                 icon={<User className="h-4 w-4" />}
                 title="Assinatura do Solicitante"
                 description="Nome do profissional responsável pela emissão."
@@ -1415,8 +1479,33 @@ function EmitirPage() {
                 </span>
               </div>
 
+              {/* Resumo de preenchimento */}
+              <div className="rounded-xl border bg-card/95 backdrop-blur shadow-xs px-4 py-3">
+                <p className="text-xs font-semibold text-foreground">
+                  Etapas preenchidas
+                </p>
+                <div className="mt-2 flex flex-wrap items-center gap-2">
+                  <StatusPill
+                    done={convenioOk}
+                    label={convenioId === "tiss" ? "Convênio" : "Estabelecimento"}
+                  />
+                  {guideKind === "internacao" && (
+                    <StatusPill done={especificoOk} label="Internação" />
+                  )}
+                  {guideKind === "apac" && <StatusPill done={especificoOk} label="APAC" />}
+                  {guideKind === "aih" && <StatusPill done={especificoOk} label="AIH" />}
+                  <StatusPill done={pacienteOk} label="Beneficiário" />
+                  <StatusPill done={profissionalOk} label="Profissional" />
+                  <StatusPill done={clinicoOk} label="Dados clínicos" />
+                  <StatusPill done={procedimentosOk} label="Procedimentos" />
+                  <StatusPill done={opmeOk} label="OPME (opcional)" />
+                  <StatusPill done={assinaturaOk} label="Assinatura" />
+                </div>
+              </div>
+
               {/* Actions */}
               <div className="flex flex-wrap items-center justify-end gap-2 sticky bottom-0 bg-background/80 backdrop-blur py-3 border-t">
+
                 <Button type="button" variant="ghost" onClick={handleReset}>
                   Limpar
                 </Button>
@@ -1600,13 +1689,16 @@ function EmitirPage() {
 
 
 function Section({
-
+  number,
+  done,
   icon,
   title,
   description,
   action,
   children,
 }: {
+  number?: number;
+  done?: boolean;
   icon: React.ReactNode;
   title: React.ReactNode;
   description?: string;
@@ -1621,7 +1713,18 @@ function Section({
             {icon}
           </div>
           <div className="min-w-0">
-            <h2 className="text-sm font-semibold">{title}</h2>
+            <h2 className="flex flex-wrap items-center gap-2 text-sm font-semibold">
+              <span className="min-w-0">
+                {number ? `${number}. ` : ""}
+                {title}
+              </span>
+              {done && (
+                <CheckCircle2
+                  aria-label="Seção preenchida"
+                  className="h-4 w-4 shrink-0 text-success-strong"
+                />
+              )}
+            </h2>
             {description && (
               <p className="text-xs text-muted-foreground mt-0.5">{description}</p>
             )}
@@ -1631,6 +1734,7 @@ function Section({
       </div>
       <div className="p-4 space-y-4 sm:p-5">{children}</div>
     </section>
+
   );
 }
 
