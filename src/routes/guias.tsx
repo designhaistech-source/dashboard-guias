@@ -481,7 +481,8 @@ function History_Section({ extraRows }: { extraRows: Row[] }) {
               ))}
             </DataTableBody>
           </DataTableRoot>
-        </div>
+        </DataTableDesktop>
+
 
 
         <div className="flex flex-col gap-4 border-t border-border px-4 py-4 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between sm:px-6">
