@@ -1639,13 +1639,16 @@ function EmitirPage() {
 
 
 function Section({
-
+  number,
+  done,
   icon,
   title,
   description,
   action,
   children,
 }: {
+  number?: number;
+  done?: boolean;
   icon: React.ReactNode;
   title: React.ReactNode;
   description?: string;
@@ -1660,7 +1663,18 @@ function Section({
             {icon}
           </div>
           <div className="min-w-0">
-            <h2 className="text-sm font-semibold">{title}</h2>
+            <h2 className="flex flex-wrap items-center gap-2 text-sm font-semibold">
+              <span className="min-w-0">
+                {number ? `${number}. ` : ""}
+                {title}
+              </span>
+              {done && (
+                <CheckCircle2
+                  aria-label="Seção preenchida"
+                  className="h-4 w-4 shrink-0 text-success-strong"
+                />
+              )}
+            </h2>
             {description && (
               <p className="text-xs text-muted-foreground mt-0.5">{description}</p>
             )}
@@ -1670,6 +1684,7 @@ function Section({
       </div>
       <div className="p-4 space-y-4 sm:p-5">{children}</div>
     </section>
+
   );
 }
 
