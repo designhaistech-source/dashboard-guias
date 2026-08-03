@@ -41,6 +41,17 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Switch } from "@/components/ui/switch";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { toast } from "sonner";
 import { CURRENT_USER } from "@/lib/current-user";
 import logoAsset from "@/assets/guiasplus-logo.png.asset.json";
 import logoDarkAsset from "@/assets/guiasplus-logo-dark.png.asset.json";
@@ -286,6 +297,8 @@ function SidebarNav({
 
 function UserMenu({ collapsed }: { collapsed: boolean }) {
   const [dark, setDark] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [logoutOpen, setLogoutOpen] = useState(false);
   const pathname = useRouterState({ select: (state) => state.location.pathname });
 
   useEffect(() => {
@@ -293,6 +306,37 @@ function UserMenu({ collapsed }: { collapsed: boolean }) {
   }, [dark]);
 
   const itemClass = "gap-3 px-4 py-2.5 min-h-11 text-sm";
+
+  const confirmLogout = () => {
+    setLogoutOpen(false);
+    setMenuOpen(false);
+    toast.success("Sessão encerrada.");
+  };
+
+  // Confirmação compartilhada pelos dois pontos de saída (menu e rodapé).
+  const logoutConfirmation = (
+    <AlertDialog open={logoutOpen} onOpenChange={setLogoutOpen}>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>Sair da conta?</AlertDialogTitle>
+          <AlertDialogDescription>
+            Você será desconectado e os dados não salvos deste formulário podem ser
+            perdidos.
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel>Cancelar</AlertDialogCancel>
+          <AlertDialogAction
+            onClick={confirmLogout}
+            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+          >
+            Sair
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+  );
+
 
   const content = (
     <DropdownMenuContent
@@ -378,8 +422,13 @@ function UserMenu({ collapsed }: { collapsed: boolean }) {
 
       {/* Bloco 4 — sessão. */}
       <DropdownMenuGroup className="py-1">
+        {/* Mantém o menu aberto: a confirmação decide se a sessão termina. */}
         <DropdownMenuItem
           className={`${itemClass} text-destructive focus:text-destructive`}
+          onSelect={(event) => {
+            event.preventDefault();
+            setLogoutOpen(true);
+          }}
         >
           <LogOut className="h-4 w-4" aria-hidden="true" />
           Sair
@@ -391,7 +440,7 @@ function UserMenu({ collapsed }: { collapsed: boolean }) {
   if (collapsed) {
     return (
       <div className="border-t border-sidebar-border flex flex-col items-center py-3">
-        <DropdownMenu>
+        <DropdownMenu open={menuOpen} onOpenChange={setMenuOpen}>
           <Tooltip>
             <TooltipTrigger asChild>
               <DropdownMenuTrigger asChild>
@@ -410,13 +459,14 @@ function UserMenu({ collapsed }: { collapsed: boolean }) {
           </Tooltip>
           {content}
         </DropdownMenu>
+        {logoutConfirmation}
       </div>
     );
   }
 
   return (
     <div className="border-t border-sidebar-border flex items-center">
-      <DropdownMenu>
+      <DropdownMenu open={menuOpen} onOpenChange={setMenuOpen}>
         <DropdownMenuTrigger asChild>
           <button /* ds-allow: item de perfil do sidebar */
             type="button"
@@ -439,6 +489,7 @@ function UserMenu({ collapsed }: { collapsed: boolean }) {
             variant="ghost"
             size="icon"
             aria-label="Sair"
+            onClick={() => setLogoutOpen(true)}
             className="mr-3 shrink-0 text-sidebar-muted hover:text-destructive"
           >
             <LogOut className="h-5 w-5" aria-hidden="true" />
@@ -446,6 +497,8 @@ function UserMenu({ collapsed }: { collapsed: boolean }) {
         </TooltipTrigger>
         <TooltipContent side="top">Sair</TooltipContent>
       </Tooltip>
+
+      {logoutConfirmation}
     </div>
   );
 }
