@@ -1,0 +1,84 @@
+import * as React from "react";
+import { CheckCircle2 } from "lucide-react";
+
+import { cn } from "@/lib/utils";
+
+export interface SectionCardProps {
+  /** Ancora para navegação interna da página. */
+  id?: string;
+  /** Número da etapa exibido antes do título (ex.: "1. Dados do paciente"). */
+  number?: number;
+  title: React.ReactNode;
+  /** Texto auxiliar curto exibido abaixo do título. */
+  description?: React.ReactNode;
+  /** Ícone opcional exibido em um badge à esquerda do título. */
+  icon?: React.ReactNode;
+  /** Marca a etapa como preenchida/concluída. */
+  done?: boolean;
+  /** Ações alinhadas à direita do cabeçalho. */
+  actions?: React.ReactNode;
+  className?: string;
+  bodyClassName?: string;
+  children?: React.ReactNode;
+}
+
+/**
+ * Card de etapa/seção padronizado para os formulários longos
+ * (Emitir guia, Solicitar OPME, Emitir prescrição).
+ *
+ * Centraliza a escala tipográfica do título, o espaçamento interno e o
+ * indicador de conclusão para que todas as páginas fiquem idênticas.
+ */
+export function SectionCard({
+  id,
+  number,
+  title,
+  description,
+  icon,
+  done,
+  actions,
+  className,
+  bodyClassName,
+  children,
+}: SectionCardProps) {
+  return (
+    <section id={id} className={cn("scroll-mt-4", className)}>
+      <div className="rounded-2xl border border-border bg-card shadow-xs">
+        <div className="flex flex-col gap-3 p-5 lg:flex-row lg:items-start lg:justify-between lg:gap-4">
+          <div className="flex min-w-0 flex-1 items-start gap-3">
+            {icon && (
+              <span className="mt-0.5 inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                {icon}
+              </span>
+            )}
+            <div className="min-w-0">
+              <h2 className="flex flex-wrap items-center gap-2 font-display text-base font-semibold tracking-tight text-foreground">
+                <span className="min-w-0">
+                  {number ? `${number}. ` : ""}
+                  {title}
+                </span>
+                {done && (
+                  <CheckCircle2
+                    aria-label="Seção preenchida"
+                    className="h-4 w-4 shrink-0 text-success-strong"
+                  />
+                )}
+              </h2>
+              {description && (
+                <p className="mt-0.5 text-xs text-muted-foreground">{description}</p>
+              )}
+            </div>
+          </div>
+          {actions && (
+            <div className="flex w-full flex-wrap items-center gap-2 lg:w-auto lg:shrink-0 lg:justify-end">
+              {actions}
+            </div>
+          )}
+        </div>
+        {children && (
+          <div className={cn("space-y-4 px-5 pb-5", bodyClassName)}>{children}</div>
+        )}
+      </div>
+    </section>
+  );
+}
