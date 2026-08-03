@@ -375,7 +375,7 @@ function UserMenu({ collapsed }: { collapsed: boolean }) {
       <DropdownMenuSeparator className="mx-0 my-0" />
 
       {/* Bloco 1 — conta e sistema (destinos). */}
-      <DropdownMenuGroup className="py-1">
+      <DropdownMenuGroup className="py-2">
         <DropdownMenuItem asChild className={itemClass}>
           <Link to="/perfil" aria-current={pathname === "/perfil" ? "page" : undefined}>
             <CircleUser className="h-4 w-4" aria-hidden="true" />
@@ -391,7 +391,7 @@ function UserMenu({ collapsed }: { collapsed: boolean }) {
       <DropdownMenuSeparator className="mx-0 my-0" />
 
       {/* Bloco 2 — suporte. */}
-      <DropdownMenuGroup className="py-1">
+      <DropdownMenuGroup className="py-2">
         <DropdownMenuItem className={itemClass}>
           <HelpCircle className="h-4 w-4" aria-hidden="true" />
           Ajuda
@@ -401,7 +401,7 @@ function UserMenu({ collapsed }: { collapsed: boolean }) {
       <DropdownMenuSeparator className="mx-0 my-0" />
 
       {/* Bloco 3 — preferência rápida: mantém o menu aberto ao alternar. */}
-      <DropdownMenuGroup className="py-1">
+      <DropdownMenuGroup className="py-2">
         <DropdownMenuItem
           className={itemClass}
           onSelect={(event) => {
@@ -427,7 +427,7 @@ function UserMenu({ collapsed }: { collapsed: boolean }) {
       <DropdownMenuSeparator className="mx-0 my-0" />
 
       {/* Bloco 4 — sessão. */}
-      <DropdownMenuGroup className="py-1">
+      <DropdownMenuGroup className="py-2">
         {/* Mantém o menu aberto: a confirmação decide se a sessão termina. */}
         <DropdownMenuItem
           className={`${itemClass} text-destructive focus:text-destructive`}
