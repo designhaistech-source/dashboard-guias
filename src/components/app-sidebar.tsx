@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import {
   LayoutGrid,
@@ -31,6 +31,15 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Switch } from "@/components/ui/switch";
 import { CURRENT_USER } from "@/lib/current-user";
 import logoAsset from "@/assets/guiasplus-logo.png.asset.json";
@@ -276,143 +285,129 @@ function SidebarNav({
 }
 
 function UserMenu({ collapsed }: { collapsed: boolean }) {
-  const [open, setOpen] = useState(false);
   const [dark, setDark] = useState(false);
-  const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     document.documentElement.classList.toggle("dark", dark);
   }, [dark]);
 
-  useEffect(() => {
-    if (!open) return;
-    const onClick = (e: MouseEvent) => {
-      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
-    };
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setOpen(false);
-    };
-    document.addEventListener("mousedown", onClick);
-    document.addEventListener("keydown", onKey);
-    return () => {
-      document.removeEventListener("mousedown", onClick);
-      document.removeEventListener("keydown", onKey);
-    };
-  }, [open]);
+  const itemClass = "gap-3 px-4 py-2.5 min-h-11 text-sm";
 
-  const itemClass =
-    "w-full justify-start rounded-none px-4 py-2.5 h-auto gap-3 text-sm font-normal";
-
-  const panel = (
-    <div
-      role="menu"
-      aria-label="Menu do usuário"
-      className={`absolute bottom-full mb-2 w-64 rounded-xl border border-border bg-popover text-popover-foreground shadow-lg overflow-hidden z-50 ${
-        collapsed ? "left-2" : "left-3 right-3 w-auto"
-      }`}
+  const content = (
+    <DropdownMenuContent
+      side="top"
+      align="start"
+      sideOffset={8}
+      className="w-64 p-0 overflow-hidden"
     >
       {/* Cabeçalho apenas informativo — sem ação de clique. */}
-      <div className="px-4 py-3 border-b border-border">
+      <DropdownMenuLabel className="px-4 py-3 font-normal">
         <div className="text-sm font-semibold text-foreground">{CURRENT_USER.name}</div>
         <div className="mt-0.5 font-mono text-xs text-muted-foreground">
           {CURRENT_USER.crm}
         </div>
         <div className="mt-1 flex items-center gap-1.5 text-xs text-muted-foreground">
           <Mail className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
-          <span className="truncate">{CURRENT_USER.email}</span>
+          <span className="truncate" title={CURRENT_USER.email}>
+            {CURRENT_USER.email}
+          </span>
         </div>
-      </div>
+      </DropdownMenuLabel>
+      <DropdownMenuSeparator className="mx-0 my-0" />
 
-      <div className="py-1">
-        <Button asChild variant="ghost" className={itemClass}>
-          <Link to="/perfil" role="menuitem" onClick={() => setOpen(false)}>
+      <DropdownMenuGroup className="py-1">
+        <DropdownMenuItem asChild className={itemClass}>
+          <Link to="/perfil">
             <CircleUser className="h-4 w-4" aria-hidden="true" />
             Meu Perfil
           </Link>
-        </Button>
-        <Button type="button" role="menuitem" variant="ghost" className={itemClass}>
+        </DropdownMenuItem>
+        <DropdownMenuItem className={itemClass}>
           <Settings className="h-4 w-4" aria-hidden="true" />
           Configurações
-        </Button>
-        <div className="flex items-center gap-3 px-4 py-2.5 text-sm">
+        </DropdownMenuItem>
+        {/* Preferência rápida: mantém o menu aberto ao alternar. */}
+        <DropdownMenuItem
+          className={itemClass}
+          onSelect={(event) => {
+            event.preventDefault();
+            setDark((value) => !value);
+          }}
+        >
           {dark ? (
             <Sun className="h-4 w-4 shrink-0" aria-hidden="true" />
           ) : (
             <Moon className="h-4 w-4 shrink-0" aria-hidden="true" />
           )}
-          <label htmlFor="pref-dark-mode" className="flex-1 cursor-pointer">
-            Modo escuro
-          </label>
+          <span className="flex-1">Modo escuro</span>
           <Switch
-            id="pref-dark-mode"
             checked={dark}
-            onCheckedChange={setDark}
-            aria-label="Modo escuro"
+            tabIndex={-1}
+            aria-hidden="true"
+            className="pointer-events-none"
           />
-        </div>
-        <Button type="button" role="menuitem" variant="ghost" className={itemClass}>
+        </DropdownMenuItem>
+        <DropdownMenuItem className={itemClass}>
           <HelpCircle className="h-4 w-4" aria-hidden="true" />
           Ajuda
-        </Button>
-      </div>
+        </DropdownMenuItem>
+      </DropdownMenuGroup>
 
-      <div className="border-t border-border py-1">
-        <Button
-          type="button"
-          role="menuitem"
-          variant="ghost"
-          className={`${itemClass} text-destructive hover:text-destructive`}
+      <DropdownMenuSeparator className="mx-0 my-0" />
+      <DropdownMenuGroup className="py-1">
+        <DropdownMenuItem
+          className={`${itemClass} text-destructive focus:text-destructive`}
         >
           <LogOut className="h-4 w-4" aria-hidden="true" />
           Sair
-        </Button>
-      </div>
-    </div>
+        </DropdownMenuItem>
+      </DropdownMenuGroup>
+    </DropdownMenuContent>
   );
 
   if (collapsed) {
     return (
-      <div
-        ref={ref}
-        className="relative border-t border-sidebar-border flex flex-col items-center py-3"
-      >
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              type="button"
-              variant="ghost"
-              size="icon"
-              aria-label="Menu do usuário"
-              aria-haspopup="menu"
-              aria-expanded={open}
-              onClick={() => setOpen((v) => !v)}
-              className="h-auto w-auto p-1.5"
-            >
-              <CircleUser className="h-7 w-7 text-sidebar-muted" strokeWidth={1.5} />
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent side="right">{CURRENT_USER.name}</TooltipContent>
-        </Tooltip>
-        {open && panel}
+      <div className="border-t border-sidebar-border flex flex-col items-center py-3">
+        <DropdownMenu>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  aria-label="Menu do usuário"
+                  className="h-auto w-auto p-1.5"
+                >
+                  <CircleUser className="h-7 w-7 text-sidebar-muted" strokeWidth={1.5} />
+                </Button>
+              </DropdownMenuTrigger>
+            </TooltipTrigger>
+            <TooltipContent side="right">{CURRENT_USER.name}</TooltipContent>
+          </Tooltip>
+          {content}
+        </DropdownMenu>
       </div>
     );
   }
 
   return (
-    <div ref={ref} className="relative border-t border-sidebar-border flex items-center">
-      <button /* ds-allow: item de perfil do sidebar */
-        type="button"
-        onClick={() => setOpen((v) => !v)}
-        aria-haspopup="menu"
-        aria-expanded={open}
-        className="flex-1 min-w-0 px-4 py-4 flex items-center gap-3 hover:bg-muted transition-colors text-left"
-      >
-        <CircleUser className="h-9 w-9 text-sidebar-muted shrink-0" strokeWidth={1.5} />
-        <div className="flex-1 min-w-0">
-          <div className="text-sm font-semibold truncate">{CURRENT_USER.name}</div>
-          <div className="text-xs text-sidebar-muted">{CURRENT_USER.crm}</div>
-        </div>
-      </button>
+    <div className="border-t border-sidebar-border flex items-center">
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <button /* ds-allow: item de perfil do sidebar */
+            type="button"
+            className="flex-1 min-w-0 px-4 py-4 flex items-center gap-3 hover:bg-muted transition-colors text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          >
+            <CircleUser className="h-9 w-9 text-sidebar-muted shrink-0" strokeWidth={1.5} />
+            <div className="flex-1 min-w-0">
+              <div className="text-sm font-semibold truncate">{CURRENT_USER.name}</div>
+              <div className="text-xs text-sidebar-muted">{CURRENT_USER.crm}</div>
+            </div>
+          </button>
+        </DropdownMenuTrigger>
+        {content}
+      </DropdownMenu>
 
       <Tooltip>
         <TooltipTrigger asChild>
@@ -428,8 +423,6 @@ function UserMenu({ collapsed }: { collapsed: boolean }) {
         </TooltipTrigger>
         <TooltipContent side="top">Sair</TooltipContent>
       </Tooltip>
-
-      {open && panel}
     </div>
   );
 }
