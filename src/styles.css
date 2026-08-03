@@ -334,6 +334,29 @@
   }
 }
 
+/* Escala tipográfica única dos cards de métrica (KPIs, centro de gráficos e
+   resumos numéricos). Tamanho fixo em todos os breakpoints para que os cards
+   fiquem idênticos em qualquer tela; números sempre tabulares. */
+@utility metric-label {
+  font-size: 0.875rem; /* text-sm */
+  line-height: 1.25rem;
+  color: var(--color-muted-foreground);
+}
+
+@utility metric-value {
+  font-size: 1.875rem; /* text-3xl */
+  line-height: 2.25rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  font-variant-numeric: tabular-nums;
+}
+
+@utility metric-hint {
+  font-size: 0.75rem; /* text-xs */
+  line-height: 1rem;
+  font-variant-numeric: tabular-nums;
+}
+
 /* Campos de data/hora: o indicador nativo de calendário vem antes do valor,
    com a mesma gutter horizontal dos outros inputs (0.75rem) em qualquer
    viewport. Seletor de atributo duplicado para vencer as utilities de padding. */
