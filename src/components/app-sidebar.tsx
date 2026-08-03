@@ -348,11 +348,11 @@ function UserMenu({ collapsed }: { collapsed: boolean }) {
       {/* Cabeçalho informativo em 2 linhas: identidade + e-mail completo (sem corte). */}
       <DropdownMenuLabel className="px-4 py-3 font-normal">
         <div className="flex items-center gap-3 min-w-0">
-          <CircleUser
-            className="h-8 w-8 shrink-0 text-muted-foreground"
-            strokeWidth={1.5}
-            aria-hidden="true"
-          />
+          <Avatar className="h-9 w-9 shrink-0">
+            <AvatarFallback className="bg-primary/10 text-xs font-semibold text-primary">
+              {userInitials}
+            </AvatarFallback>
+          </Avatar>
           <div className="min-w-0">
             <div className="text-sm font-semibold text-foreground">
               {CURRENT_USER.name}
