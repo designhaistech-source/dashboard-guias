@@ -33,6 +33,33 @@ const NATIVE_CONTROLS: Record<string, string> = {
   textarea: "<Textarea> de @/components/ui/textarea",
 };
 
+/**
+ * Padrões de checkbox/radio/switch nativos. Cobrem também atributos escritos em
+ * linhas separadas da abertura da tag (JSX multilinha), que o teste por tag não vê.
+ */
+const NATIVE_SELECTION_CONTROLS: Array<{
+  label: string;
+  pattern: RegExp;
+  replacement: string;
+}> = [
+  {
+    label: 'input type="checkbox"',
+    pattern: /type=\{?["']checkbox["']\}?/,
+    replacement: "<Checkbox> de @/components/ui/checkbox",
+  },
+  {
+    label: 'input type="radio"',
+    pattern: /type=\{?["']radio["']\}?/,
+    replacement: "<RadioGroup> / <RadioGroupItem> de @/components/ui/radio-group",
+  },
+  {
+    label: 'role="switch"',
+    pattern: /role=\{?["']switch["']\}?/,
+    replacement: "<Switch> de @/components/ui/switch",
+  },
+];
+
+
 function collectSourceFiles(dir: string, acc: string[] = []): string[] {
   for (const entry of readdirSync(dir)) {
     const fullPath = join(dir, entry);
