@@ -23,6 +23,8 @@ import { AppSidebar } from "@/components/app-sidebar";
 import { SiteFooter } from "@/components/site-footer";
 import { PageHeader } from "@/components/page-header";
 import { FormActionBar } from "@/components/form-action-bar";
+import { SavedIndicator } from "@/components/saved-indicator";
+import { useDraftAutosave } from "@/hooks/use-draft-autosave";
 import { SurfaceCard } from "@/components/surface-card";
 import { Field, SelectField } from "@/components/form-field";
 import { Button } from "@/components/ui/button";
@@ -248,6 +250,20 @@ function ReportsTab() {
   const [modelo, setModelo] = useState("");
   const [html, setHtml] = useState("");
 
+  const { savedAt } = useDraftAutosave({
+    key: "hg:documentos:relatorio",
+    data: { paciente, cid, diagnosticoSelecionado, modelo, html },
+    isEmpty: (d) =>
+      !d.paciente.trim() && !d.cid.trim() && !d.html.replace(/<[^>]+>/g, "").trim(),
+    onRestore: (d) => {
+      setPaciente(d.paciente ?? "");
+      setCid(d.cid ?? "");
+      setDiagnosticoSelecionado(d.diagnosticoSelecionado ?? "");
+      setModelo(d.modelo ?? "");
+      setHtml(d.html ?? "");
+    },
+  });
+
   const diagnostico =
     diagnosticoSelecionado ||
     (CID10.find((c) => c.codigo === cid)?.descricao ?? "");
@@ -256,6 +272,7 @@ function ReportsTab() {
     setCid(codigo);
     setDiagnosticoSelecionado(descricao);
   }
+
 
 
   function applyTemplate(value: string) {
@@ -282,6 +299,7 @@ function ReportsTab() {
         title="Dados do relatório"
         description="Identifique o paciente e o diagnóstico que será impresso no documento."
         padding="lg"
+        actions={<SavedIndicator savedAt={savedAt} />}
       >
         <div className="space-y-4">
           <PatientField id="relatorio-paciente" value={paciente} onChange={setPaciente} />
@@ -363,6 +381,21 @@ function CertificateTab() {
   const [cidade, setCidade] = useState("");
   const [html, setHtml] = useState("");
 
+  const { savedAt } = useDraftAutosave({
+    key: "hg:documentos:atestado",
+    data: { paciente, cid, diagnosticoSelecionado, dias, data, cidade, html },
+    isEmpty: (d) => !d.paciente.trim() && !d.cid.trim() && !d.cidade.trim() && !d.html,
+    onRestore: (d) => {
+      setPaciente(d.paciente ?? "");
+      setCid(d.cid ?? "");
+      setDiagnosticoSelecionado(d.diagnosticoSelecionado ?? "");
+      setDias(d.dias ?? "1");
+      setData(d.data ?? todayIso());
+      setCidade(d.cidade ?? "");
+      setHtml(d.html ?? "");
+    },
+  });
+
   const gerado = useMemo(
     () => buildAtestado({ paciente, dias, data, cidade, cid }),
     [paciente, dias, data, cidade, cid],
@@ -376,6 +409,7 @@ function CertificateTab() {
         title="Dados do atestado"
         description="O texto padrão é gerado automaticamente a partir destes campos."
         padding="lg"
+        actions={<SavedIndicator savedAt={savedAt} />}
       >
         <div className="space-y-4">
           <PatientField id="atestado-paciente" value={paciente} onChange={setPaciente} />
@@ -458,6 +492,22 @@ function AttendanceTab() {
   const [saida, setSaida] = useState("");
   const [html, setHtml] = useState("");
 
+  const { savedAt } = useDraftAutosave({
+    key: "hg:documentos:comparecimento",
+    data: { paciente, local, cidade, data, entrada, saida, html },
+    isEmpty: (d) =>
+      !d.paciente.trim() && !d.local.trim() && !d.cidade.trim() && !d.entrada && !d.saida && !d.html,
+    onRestore: (d) => {
+      setPaciente(d.paciente ?? "");
+      setLocal(d.local ?? "");
+      setCidade(d.cidade ?? "");
+      setData(d.data ?? todayIso());
+      setEntrada(d.entrada ?? "");
+      setSaida(d.saida ?? "");
+      setHtml(d.html ?? "");
+    },
+  });
+
   const gerado = useMemo(
     () => buildComparecimento({ paciente, local, cidade, data, entrada, saida }),
     [paciente, local, cidade, data, entrada, saida],
@@ -471,6 +521,7 @@ function AttendanceTab() {
         title="Dados da declaração"
         description="Informe o local e os horários de permanência do paciente no atendimento."
         padding="lg"
+        actions={<SavedIndicator savedAt={savedAt} />}
       >
         <div className="space-y-4">
           <PatientField id="comp-paciente" value={paciente} onChange={setPaciente} />
