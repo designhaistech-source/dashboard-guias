@@ -32,6 +32,7 @@ import { AppSidebar } from "@/components/app-sidebar";
 import { SiteFooter } from "@/components/site-footer";
 import { PageHeader } from "@/components/page-header";
 import { SurfaceCard } from "@/components/surface-card";
+import { FilterCard } from "@/components/filter-card";
 import { Field } from "@/components/form-field";
 import { Button } from "@/components/ui/button";
 import logoAsset from "@/assets/haisguias-logo.png.asset.json";
