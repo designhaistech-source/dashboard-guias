@@ -78,9 +78,7 @@ export function ProcedureSearchPage() {
         </>
       }
     >
-      {
-
-            {results === null ? (
+      {results === null ? (
               <EmptyState
                 size="lg"
                 icon={<Search className="h-12 w-12" />}
