@@ -171,6 +171,41 @@ function OpmePage() {
   const [profCollapsed, setProfCollapsed] = useState(false);
   const [showTopBtn, setShowTopBtn] = useState(false);
 
+  // Autosave do rascunho + indicador "salvo HH:MM" no cabeçalho.
+  const { savedAt, clearDraft } = useDraftAutosave({
+    key: "hg:opme:rascunho",
+    data: {
+      operadora,
+      caraterAtendimento,
+      paciente,
+      cartaoBenef,
+      justificativa,
+      materiais,
+      profissional,
+      conselho,
+      numeroConselho,
+      data,
+    },
+    isEmpty: (d) =>
+      !d.paciente.trim() &&
+      !d.cartaoBenef.trim() &&
+      !d.justificativa.trim() &&
+      !d.materiais.some((m) => m.nome.trim() || m.tiss.trim()),
+    onRestore: (d) => {
+      setOperadora(d.operadora);
+      setCarater(d.caraterAtendimento);
+      setPaciente(d.paciente);
+      setCartaoBenef(d.cartaoBenef);
+      setJustificativa(d.justificativa);
+      if (Array.isArray(d.materiais) && d.materiais.length) setMateriais(d.materiais);
+      setProfissional(d.profissional);
+      setConselho(d.conselho);
+      setNumeroConselho(d.numeroConselho);
+      setData(d.data);
+    },
+  });
+
+
   useEffect(() => {
     try {
       const raw = localStorage.getItem(KITS_STORAGE);
