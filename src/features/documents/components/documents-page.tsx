@@ -144,7 +144,7 @@ function DocumentActions({
         <Download className="icon-optical mr-2 h-4 w-4" aria-hidden />
         Baixar PDF
       </Button>
-      <Button type="button" variant="secondary" onClick={handlePrint}>
+      <Button type="button" variant="outline" size="sm" onClick={handlePrint}>
         <Printer className="icon-optical mr-2 h-4 w-4" aria-hidden />
         Imprimir
       </Button>

@@ -781,7 +781,8 @@ function DashboardPage() {
             actions={
               <>
                 <Button
-                  variant={filtersOpen ? "secondary" : "outline"}
+                  variant="outline"
+                  size="sm"
                   onClick={() => (filtersOpen ? requestClose() : openFilters())}
                   aria-expanded={filtersOpen}
                   aria-controls="dashboard-filters-panel"
