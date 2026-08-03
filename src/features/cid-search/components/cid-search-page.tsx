@@ -126,7 +126,9 @@ export function CidSearchPage() {
             </div>
 
             <div className="mt-6 mb-4 flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1 border-t border-border pt-5">
-              <h2 className="text-sm font-semibold leading-none">Resultados</h2>
+              <h2 className="font-display text-base font-semibold leading-none tracking-tight text-foreground">
+                Resultados
+              </h2>
               {term ? (
                 <p
                   aria-live="polite"
