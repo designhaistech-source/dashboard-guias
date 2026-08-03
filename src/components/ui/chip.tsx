@@ -16,9 +16,10 @@ const chipVariants = cva(
         outline: "border-border bg-card text-foreground",
       },
       size: {
-        sm: "px-2.5 py-0.5 text-xs/none [&_svg]:size-3",
-        md: "px-3 py-1 text-xs/none [&_svg]:size-3.5",
+        sm: "min-h-7 px-2.5 py-1.5 text-xs/none [&_svg]:size-3",
+        md: "min-h-8 px-3 py-2 text-xs/none [&_svg]:size-3.5",
       },
+
     },
     defaultVariants: { variant: "default", size: "md" },
   },
