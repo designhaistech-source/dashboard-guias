@@ -85,6 +85,8 @@ export function ProcedureSearchPage() {
       title="Buscar procedimento"
       description="Consulte códigos e descrições de procedimentos por referência (Tuss e Sigtap) para usar em guias e solicitações."
       onSubmit={handleSearch}
+      submitting={status === "loading"}
+
       searchFields={
         <>
           <div className="min-w-0 flex-1">
