@@ -414,6 +414,21 @@ function UserMenu({ collapsed }: { collapsed: boolean }) {
         </div>
       </button>
 
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            aria-label="Sair"
+            className="mr-3 shrink-0 text-sidebar-muted hover:text-destructive"
+          >
+            <LogOut className="h-5 w-5" aria-hidden="true" />
+          </Button>
+        </TooltipTrigger>
+        <TooltipContent side="top">Sair</TooltipContent>
+      </Tooltip>
+
       {open && panel}
     </div>
   );
