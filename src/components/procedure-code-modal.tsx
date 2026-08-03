@@ -1,12 +1,5 @@
 import { useMemo, useState } from "react";
-import {
-  Dialog,
-  DialogBody,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-} from "@/components/ui/dialog";
+import { AppModal } from "@/components/app-modal";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
   REFERENCE_LABELS,
