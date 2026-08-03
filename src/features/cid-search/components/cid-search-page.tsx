@@ -79,6 +79,12 @@ export function CidSearchPage() {
     [history],
   );
 
+  /** Limpa o histórico de códigos copiados. */
+  function clearHistory() {
+    setHistory([]);
+    toast.success("Histórico limpo");
+  }
+
   return (
     <div className="flex min-h-screen w-full bg-background text-foreground">
       <AppSidebar activeKey="cid" />
