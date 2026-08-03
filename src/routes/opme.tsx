@@ -21,6 +21,9 @@ import { AppBreadcrumb } from "@/components/app-breadcrumb";
 import { AppSidebar } from "@/components/app-sidebar";
 import { SiteFooter } from "@/components/site-footer";
 import { PageHeader } from "@/components/page-header";
+import { SavedIndicator } from "@/components/saved-indicator";
+import { useDraftAutosave } from "@/hooks/use-draft-autosave";
+
 import { Field } from "@/components/form-field";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -171,6 +174,41 @@ function OpmePage() {
   const [profCollapsed, setProfCollapsed] = useState(false);
   const [showTopBtn, setShowTopBtn] = useState(false);
 
+  // Autosave do rascunho + indicador "salvo HH:MM" no cabeçalho.
+  const { savedAt, clearDraft } = useDraftAutosave({
+    key: "hg:opme:rascunho",
+    data: {
+      operadora,
+      caraterAtendimento,
+      paciente,
+      cartaoBenef,
+      justificativa,
+      materiais,
+      profissional,
+      conselho,
+      numeroConselho,
+      data,
+    },
+    isEmpty: (d) =>
+      !d.paciente.trim() &&
+      !d.cartaoBenef.trim() &&
+      !d.justificativa.trim() &&
+      !d.materiais.some((m) => m.nome.trim() || m.tiss.trim()),
+    onRestore: (d) => {
+      setOperadora(d.operadora);
+      setCarater(d.caraterAtendimento);
+      setPaciente(d.paciente);
+      setCartaoBenef(d.cartaoBenef);
+      setJustificativa(d.justificativa);
+      if (Array.isArray(d.materiais) && d.materiais.length) setMateriais(d.materiais);
+      setProfissional(d.profissional);
+      setConselho(d.conselho);
+      setNumeroConselho(d.numeroConselho);
+      setData(d.data);
+    },
+  });
+
+
   useEffect(() => {
     try {
       const raw = localStorage.getItem(KITS_STORAGE);
@@ -285,7 +323,9 @@ function OpmePage() {
     toast.success(
       `Solicitação de OPME enviada (${materiaisValidos.length} ${materiaisValidos.length === 1 ? "item" : "itens"}).`,
     );
+    clearDraft();
   }
+
 
   return (
     <div className="flex min-h-screen w-full bg-background text-foreground">
@@ -297,7 +337,9 @@ function OpmePage() {
           <PageHeader
             title="Solicitar OPME"
             description="Solicite autorização de órteses, próteses e materiais especiais junto à operadora, com justificativa clínica e lista de materiais."
+            actions={<SavedIndicator savedAt={savedAt} />}
           />
+
 
           <form onSubmit={enviarSolicitacao} className="space-y-5">
             {/* 1. Convênio & Paciente */}
