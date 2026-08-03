@@ -170,7 +170,10 @@ describe("design system: controles de UI", () => {
     });
   }
 
-  for (const { label, pattern, replacement } of NATIVE_SELECTION_CONTROLS) {
+  for (const { label, pattern, replacement } of [
+    ...NATIVE_SELECTION_CONTROLS,
+    ...NATIVE_MENU_CONTROLS,
+  ]) {
     it(`não usa ${label} nativo sem marcação ${ALLOW_MARKER}`, () => {
       const offenders = files.flatMap((file) =>
         findUnmarkedMatches(file, pattern),
