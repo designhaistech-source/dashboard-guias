@@ -351,8 +351,19 @@ function History_Section({ extraRows }: { extraRows: Row[] }) {
 
 
 
+      {/* Estado vazio padronizado (mesmo componente das telas de busca). */}
+      {allRows.length === 0 && (
+        <div className="rounded-2xl border border-border bg-card shadow-xs">
+          <EmptyState
+            title="Nenhuma guia processada"
+            description="Envie ou fotografe uma guia para vê-la aqui. Ajuste os filtros se estiver buscando um envio antigo."
+          />
+        </div>
+      )}
+
       {/* Mobile: cards tocáveis, sem scroll horizontal. */}
       <ul className="space-y-3 lg:hidden">
+
         {allRows.map((r, i) => (
           <li key={i} className="rounded-xl border border-border bg-card p-4">
             <div className="flex min-w-0 items-start justify-between gap-3">
