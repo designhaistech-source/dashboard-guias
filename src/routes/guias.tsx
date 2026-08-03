@@ -213,7 +213,7 @@ function Upload_Section({ onProcessed }: { onProcessed: (row: Row) => void }) {
         <p className="mt-1 text-sm text-muted-foreground">
           ou selecione um arquivo (PDF, imagem) ou tire uma foto da guia
         </p>
-        <input
+        <input /* ds-allow: input de arquivo oculto acionado pelo Button/label */
           id="guide-file-upload"
           type="file"
           accept=".pdf,image/*"
