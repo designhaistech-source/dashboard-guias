@@ -39,10 +39,29 @@ function searchCid(term: string): CidItem[] {
   );
 }
 
+/**
+ * Consulta assíncrona simulada (dados sintéticos). O termo "erro" força a
+ * falha para permitir validar o estado de erro do protótipo.
+ */
+function fetchCid(term: string): Promise<CidItem[]> {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      if (normalize(term).includes("erro")) {
+        reject(new Error("Falha simulada na consulta da CID-10"));
+        return;
+      }
+      resolve(searchCid(term));
+    }, 500);
+  });
+}
+
 /** Página de consulta da CID-10 com favoritos e histórico. */
 export function CidSearchPage() {
   const [term, setTerm] = useState("");
   const [results, setResults] = useState<CidItem[] | null>(null);
+  const [status, setStatus] = useState<"idle" | "loading" | "error" | "done">(
+    "idle",
+  );
   const [lastQuery, setLastQuery] = useState("");
   const [favorites, setFavorites] = useState<string[]>(["I10"]);
   const [history, setHistory] = useState<string[]>([]);
@@ -52,16 +71,31 @@ export function CidSearchPage() {
     [favorites],
   );
 
-  function runSearch(nextTerm: string) {
+  async function runSearch(nextTerm: string) {
     setTerm(nextTerm);
     setLastQuery(nextTerm.trim());
-    setResults(nextTerm.trim() ? searchCid(nextTerm) : null);
+
+    if (!nextTerm.trim()) {
+      setResults(null);
+      setStatus("idle");
+      return;
+    }
+
+    setStatus("loading");
+    try {
+      setResults(await fetchCid(nextTerm));
+      setStatus("done");
+    } catch {
+      setResults(null);
+      setStatus("error");
+    }
   }
 
   function handleSearch(event?: React.FormEvent) {
     event?.preventDefault();
-    runSearch(term);
+    void runSearch(term);
   }
+
 
   function toggleFavorite(codigo: string) {
     setFavorites((prev) =>
