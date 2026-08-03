@@ -32,6 +32,26 @@ import {
 } from "@/components/ui/tooltip";
 import { Button } from "@/components/ui/button";
 import logoAsset from "@/assets/guiasplus-logo.png.asset.json";
+import logoDarkAsset from "@/assets/guiasplus-logo-dark.png.asset.json";
+
+/** Logo da marca com variante específica para o modo escuro. */
+function BrandLogo({ className }: { className?: string }) {
+  return (
+    <>
+      <img
+        src={logoAsset.url}
+        alt="Guias+"
+        className={`block max-w-full object-contain dark:hidden ${className ?? ""}`}
+      />
+      <img
+        src={logoDarkAsset.url}
+        alt="Guias+"
+        className={`hidden max-w-full object-contain dark:block ${className ?? ""}`}
+      />
+    </>
+  );
+}
+
 import { RenderProfiler } from "@/lib/render-profiler";
 
 type ItemKey =
@@ -89,7 +109,7 @@ export function AppSidebar({ activeKey }: { activeKey: ItemKey }) {
           >
             <Menu className="h-5 w-5" aria-hidden="true" />
           </button>
-          <img src={logoAsset.url} alt="Guias+" className="h-7 w-auto object-contain" />
+          <BrandLogo className="h-7 w-auto" />
         </header>
 
         {mobileOpen && (
@@ -107,7 +127,7 @@ export function AppSidebar({ activeKey }: { activeKey: ItemKey }) {
               className="absolute inset-y-0 left-0 flex w-[85%] max-w-xs flex-col border-r border-sidebar-border bg-sidebar text-sidebar-foreground shadow-xl"
             >
               <div className="flex items-center justify-between gap-2 border-b border-sidebar-border px-4 py-4">
-                <img src={logoAsset.url} alt="Guias+" className="h-8 w-auto object-contain" />
+                <BrandLogo className="h-8 w-auto" />
                 <button
                   type="button"
                   onClick={() => setMobileOpen(false)}
@@ -135,11 +155,7 @@ export function AppSidebar({ activeKey }: { activeKey: ItemKey }) {
           }`}
         >
           {!collapsed && (
-            <img
-              src={logoAsset.url}
-              alt="Guias+"
-              className="block h-8 w-auto max-w-full object-contain"
-            />
+            <BrandLogo className="h-8 w-auto" />
           )}
           <button
             type="button"
