@@ -8,10 +8,7 @@ import {
   appTabsListClass,
   appTabsTriggerClass,
 } from "@/components/app-tabs";
-import { AppBreadcrumb } from "@/components/app-breadcrumb";
-import { AppSidebar } from "@/components/app-sidebar";
-import { SiteFooter } from "@/components/site-footer";
-import { PageHeader } from "@/components/page-header";
+import { SearchPageLayout } from "@/components/search-page-layout";
 import { SearchInput } from "@/components/form-field";
 import { EmptyState } from "@/components/data-state";
 import { SurfaceCard } from "@/components/surface-card";
