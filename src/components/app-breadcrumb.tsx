@@ -28,6 +28,8 @@ const ROUTE_META: Record<string, RouteMeta> = {
     label: "Relatórios e documentos",
   },
   "/cid": { label: "Busca CID-10" },
+  "/perfil": { label: "Meu Perfil" },
+  "/configuracoes": { label: "Configurações" },
   "/design-system": { label: "Fundamentos" },
   "/design-system-icones": { label: "Ícones" },
 };
