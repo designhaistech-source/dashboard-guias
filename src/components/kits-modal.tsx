@@ -32,6 +32,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 import { Chip } from "@/components/ui/chip";
 import {
   type Kit,
@@ -257,14 +258,16 @@ export function KitsModal({
               {kits.length !== filtrados.length && ` de ${kits.length}`}
             </span>
             {filtrosAtivos && (
-              <button
-                type="button"
+              <Button
+                variant="link"
+                size="sm"
+                className="h-auto p-0"
                 onClick={limparFiltros}
-                className="text-primary hover:underline"
               >
                 Limpar filtros
-              </button>
+              </Button>
             )}
+
           </div>
         </DialogToolbar>
 
@@ -451,18 +454,21 @@ function IconAction({
   danger?: boolean;
 }) {
   return (
-    <button
-      type="button"
+    <Button
+      variant="outline"
+      size="icon"
       onClick={onClick}
       title={label}
       aria-label={label}
-      className={`inline-flex items-center justify-center h-7 w-7 rounded-lg border border-border transition-colors ${
+      className={cn(
+        "h-7 w-7 rounded-lg text-muted-foreground",
         danger
-          ? "text-muted-foreground hover:text-destructive hover:bg-destructive/10"
-          : "text-muted-foreground hover:text-foreground hover:bg-muted"
-      }`}
+          ? "hover:text-destructive hover:bg-destructive/10"
+          : "hover:text-foreground",
+      )}
     >
       {icon}
-    </button>
+    </Button>
   );
+
 }

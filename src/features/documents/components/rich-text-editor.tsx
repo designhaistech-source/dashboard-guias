@@ -11,6 +11,7 @@ import {
   AlignRight,
 } from "lucide-react";
 
+import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 interface ToolbarButton {
@@ -92,17 +93,19 @@ export function RichTextEditor({
               <span aria-hidden className="mx-1 h-5 w-px bg-border" />
             )}
             {group.map(({ command, label, icon: Icon }) => (
-              <button
+              <Button
                 key={command}
-                type="button"
+                variant="ghost"
+                size="icon"
                 onClick={() => run(command)}
                 aria-label={label}
                 title={label}
-                className="inline-flex h-7 w-7 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                className="h-7 w-7 text-muted-foreground hover:text-foreground"
               >
                 <Icon className="icon-optical h-3.5 w-3.5" aria-hidden />
-              </button>
+              </Button>
             ))}
+
           </React.Fragment>
         ))}
       </div>
