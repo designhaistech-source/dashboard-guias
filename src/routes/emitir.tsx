@@ -1477,8 +1477,33 @@ function EmitirPage() {
                 </span>
               </div>
 
+              {/* Resumo de preenchimento */}
+              <div className="rounded-xl border bg-card/95 backdrop-blur shadow-xs px-4 py-3">
+                <p className="text-xs font-semibold text-foreground">
+                  Etapas preenchidas
+                </p>
+                <div className="mt-2 flex flex-wrap items-center gap-2">
+                  <StatusPill
+                    done={convenioOk}
+                    label={convenioId === "tiss" ? "Convênio" : "Estabelecimento"}
+                  />
+                  {guideKind === "internacao" && (
+                    <StatusPill done={especificoOk} label="Internação" />
+                  )}
+                  {guideKind === "apac" && <StatusPill done={especificoOk} label="APAC" />}
+                  {guideKind === "aih" && <StatusPill done={especificoOk} label="AIH" />}
+                  <StatusPill done={pacienteOk} label="Beneficiário" />
+                  <StatusPill done={profissionalOk} label="Profissional" />
+                  <StatusPill done={clinicoOk} label="Dados clínicos" />
+                  <StatusPill done={procedimentosOk} label="Procedimentos" />
+                  <StatusPill done={opmeOk} label="OPME (opcional)" />
+                  <StatusPill done={assinaturaOk} label="Assinatura" />
+                </div>
+              </div>
+
               {/* Actions */}
               <div className="flex flex-wrap items-center justify-end gap-2 sticky bottom-0 bg-background/80 backdrop-blur py-3 border-t">
+
                 <Button type="button" variant="ghost" onClick={handleReset}>
                   Limpar
                 </Button>
