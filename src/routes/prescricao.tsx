@@ -1460,16 +1460,13 @@ function PrescricaoForm() {
 
 
       {/* Seção 1 — Dados do paciente */}
-      <section id="sec-paciente" className="scroll-mt-4">
-        <div className="rounded-2xl border border-border bg-card shadow-xs p-5 space-y-4">
-          <div className="flex flex-wrap items-start justify-between gap-3">
-            <div className="min-w-0">
-              <h2 className="text-base font-semibold text-foreground">1. Dados do paciente</h2>
-              <p className="text-xs text-muted-foreground">
-                Identifique o paciente. Campos de CPF e endereço aparecem para receita especial.
-              </p>
-            </div>
-          </div>
+      <SectionCard
+        id="sec-paciente"
+        number={1}
+        title="Dados do paciente"
+        description="Identifique o paciente. Campos de CPF e endereço aparecem para receita especial."
+      >
+
 
           <>
 
