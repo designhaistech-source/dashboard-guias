@@ -796,7 +796,7 @@ function DashboardPage() {
                     </span>
                   )}
                 </Button>
-                <Button onClick={() => generateReportPdf(range, dailyAvg, total)}>
+                <Button size="sm" onClick={() => generateReportPdf(range, dailyAvg, total)}>
                   <Download className="h-4 w-4" />
                   Gerar relatório
                 </Button>

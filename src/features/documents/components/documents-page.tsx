@@ -131,7 +131,7 @@ function DocumentActions({
   return (
     <div className="flex flex-wrap items-center gap-2">
       {onSaveTemplate && (
-        <Button type="button" variant="outline" onClick={onSaveTemplate}>
+        <Button type="button" variant="outline" size="sm" onClick={onSaveTemplate}>
           <BookmarkPlus className="icon-optical mr-2 h-4 w-4" aria-hidden />
           Salvar como modelo
         </Button>
@@ -139,6 +139,7 @@ function DocumentActions({
       <Button
         type="button"
         variant="outline"
+        size="sm"
         onClick={() => toast.success("Documento baixado em PDF (simulação).")}
       >
         <Download className="icon-optical mr-2 h-4 w-4" aria-hidden />
@@ -151,6 +152,7 @@ function DocumentActions({
       {signable && (
         <Button
           type="button"
+          size="sm"
           onClick={() =>
             toast.success("Solicitação de assinatura enviada ao VIDaaS (simulação).")
           }
