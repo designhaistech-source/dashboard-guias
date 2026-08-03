@@ -2170,7 +2170,7 @@ function PrescricaoForm() {
               active={historicoAberto}
               title={historicoAberto ? "Ocultar histórico" : "Mostrar histórico"}
             >
-              {historicoAberto ? "Ocultar" : `Ver (${historico.length})`}
+              {historicoAberto ? "Ocultar" : historicoStatus === "ready" ? `Ver (${historico.length})` : "Ver"}
             </ActionBtn>
           </div>
           {historicoAberto && (
