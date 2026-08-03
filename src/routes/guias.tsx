@@ -231,7 +231,7 @@ function Upload_Section({ onProcessed }: { onProcessed: (row: Row) => void }) {
               Selecionar arquivos
             </label>
           </Button>
-          <Button variant="secondary" onClick={() => setCameraOpen(true)} className="justify-center">
+          <Button variant="outline" onClick={() => setCameraOpen(true)} className="justify-center">
             <Camera className="h-4 w-4" aria-hidden="true" />
             Tirar foto
           </Button>
