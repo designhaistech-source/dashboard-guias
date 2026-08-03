@@ -1,14 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Camera, RefreshCcw, Check, AlertTriangle } from "lucide-react";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogBody,
-  DialogFooter,
-  DialogTitle,
-  DialogDescription,
-} from "@/components/ui/dialog";
+import { AppModal } from "@/components/app-modal";
 import { Button } from "@/components/ui/button";
 
 type CameraCaptureDialogProps = {
