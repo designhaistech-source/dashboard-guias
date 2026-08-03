@@ -421,7 +421,7 @@ function OpmePage() {
                     value={justificativa}
                     onChange={(e) => setJustificativa(e.target.value)}
                   />
-                  <span className="pointer-events-none absolute right-3 bottom-2.5 text-[11px] text-muted-foreground tabular-nums">
+                  <span className="pointer-events-none absolute right-3 bottom-2.5 text-xs text-muted-foreground tabular-nums">
                     {justificativa.length}/1500
                   </span>
                 </div>
@@ -489,7 +489,7 @@ function OpmePage() {
             >
               <div className="space-y-4">
                 <div className="rounded-lg border overflow-hidden">
-                  <div className="hidden lg:grid grid-cols-[120px_minmax(0,1fr)_180px_88px_36px] gap-x-3 px-4 py-2 bg-muted/50 border-b text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+                  <div className="hidden lg:grid grid-cols-[120px_minmax(0,1fr)_180px_88px_36px] gap-x-3 px-4 py-2 bg-muted/50 border-b text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                     <div>TISS</div>
                     <div>Nome comercial</div>
                     <div>Enquadramento técnico</div>
@@ -585,25 +585,29 @@ function OpmePage() {
                               }
                             />
                           </div>
-                          <button
+                          <Button
                             type="button"
+                            variant="ghost"
+                            size="icon"
                             aria-label="Remover material"
                             onClick={() => removeMaterial(m.id)}
                             disabled={materiais.length === 1}
-                            className="h-9 w-9 rounded-md flex items-center justify-center shrink-0 text-muted-foreground hover:text-destructive hover:bg-destructive/10 disabled:opacity-30 disabled:hover:bg-transparent lg:hidden"
+                            className="shrink-0 text-muted-foreground hover:text-destructive hover:bg-destructive/10 disabled:opacity-30 disabled:hover:bg-transparent lg:hidden"
                           >
                             <Trash2 className="h-4 w-4" />
-                          </button>
+                          </Button>
                         </div>
-                        <button
+                        <Button
                           type="button"
+                          variant="ghost"
+                          size="icon"
                           aria-label="Remover material"
                           onClick={() => removeMaterial(m.id)}
                           disabled={materiais.length === 1}
-                          className="hidden lg:flex h-8 w-8 justify-self-center rounded-md items-center justify-center shrink-0 text-muted-foreground hover:text-destructive hover:bg-destructive/10 disabled:opacity-30 disabled:hover:bg-transparent"
+                          className="hidden h-8 w-8 justify-self-center shrink-0 text-muted-foreground hover:text-destructive hover:bg-destructive/10 disabled:opacity-30 disabled:hover:bg-transparent lg:flex"
                         >
                           <Trash2 className="h-4 w-4" />
-                        </button>
+                        </Button>
                         </div>
 
                         <div className="px-4 pb-3 pt-2">
@@ -624,7 +628,7 @@ function OpmePage() {
                               value={spec}
                               onChange={(e) => updateMaterial(m.id, { spec: e.target.value })}
                             />
-                            <span className="pointer-events-none absolute right-3 bottom-2.5 text-[11px] text-muted-foreground tabular-nums">
+                            <span className="pointer-events-none absolute right-3 bottom-2.5 text-xs text-muted-foreground tabular-nums">
                               {spec.length}/300
                             </span>
                           </div>
@@ -768,14 +772,16 @@ function OpmePage() {
                 <Button type="button" size="sm" onClick={() => carregarKit(kit)}>
                   Carregar
                 </Button>
-                <button
+                <Button
                   type="button"
+                  variant="ghost"
+                  size="icon"
                   aria-label="Remover kit"
                   onClick={() => removerKit(kit.id)}
-                  className="h-8 w-8 rounded-md flex items-center justify-center text-destructive hover:bg-destructive/10"
+                  className="h-8 w-8 text-destructive hover:bg-destructive/10"
                 >
                   <Trash2 className="h-4 w-4" />
-                </button>
+                </Button>
               </div>
             ))}
           </DialogBody>
@@ -832,19 +838,21 @@ function OpmePage() {
         </DialogContent>
       </Dialog>
 
-      <button
+      <Button
         type="button"
+        variant="outline"
+        size="icon"
         onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
         aria-label="Voltar ao topo"
         title="Voltar ao topo"
-        className={`fixed bottom-6 right-6 z-40 h-10 w-10 rounded-full border border-border bg-card/90 backdrop-blur text-muted-foreground shadow-md hover:text-foreground hover:bg-card transition-all duration-200 flex items-center justify-center ${
+        className={`fixed bottom-6 right-6 z-40 h-10 w-10 rounded-full bg-card/90 backdrop-blur transition-all duration-200 ${
           showTopBtn
             ? "opacity-100 translate-y-0 pointer-events-auto"
             : "opacity-0 translate-y-2 pointer-events-none"
         }`}
       >
         <ArrowUp className="h-4 w-4" />
-      </button>
+      </Button>
     </div>
   );
 }
@@ -874,10 +882,11 @@ function SectionCard({
     <section id={id} className="scroll-mt-4">
       <div className="rounded-2xl border border-border bg-card shadow-xs p-5 space-y-4">
         <div className="flex flex-wrap items-start justify-between gap-3">
-          <button
+          <Button
             type="button"
+            variant="ghost"
             onClick={onToggle}
-            className="flex items-start gap-2 text-left group min-w-0 flex-1"
+            className="h-auto flex-1 min-w-0 items-start justify-start gap-2 whitespace-normal p-0 text-left font-normal hover:bg-transparent group"
             aria-expanded={!collapsed}
           >
             <ChevronDown
@@ -896,7 +905,7 @@ function SectionCard({
               </h2>
               <p className={`text-xs text-muted-foreground mt-0.5 ${collapsed ? "truncate" : ""}`}>{summary}</p>
             </div>
-          </button>
+          </Button>
           {headerRight && !collapsed && (
             <div className="w-full lg:w-auto" onClick={(e) => e.stopPropagation()}>{headerRight}</div>
           )}
