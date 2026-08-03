@@ -286,6 +286,8 @@ function SidebarNav({
 
 function UserMenu({ collapsed }: { collapsed: boolean }) {
   const [dark, setDark] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [logoutOpen, setLogoutOpen] = useState(false);
   const pathname = useRouterState({ select: (state) => state.location.pathname });
 
   useEffect(() => {
@@ -293,6 +295,37 @@ function UserMenu({ collapsed }: { collapsed: boolean }) {
   }, [dark]);
 
   const itemClass = "gap-3 px-4 py-2.5 min-h-11 text-sm";
+
+  const confirmLogout = () => {
+    setLogoutOpen(false);
+    setMenuOpen(false);
+    toast.success("Sessão encerrada.");
+  };
+
+  // Confirmação compartilhada pelos dois pontos de saída (menu e rodapé).
+  const logoutConfirmation = (
+    <AlertDialog open={logoutOpen} onOpenChange={setLogoutOpen}>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>Sair da conta?</AlertDialogTitle>
+          <AlertDialogDescription>
+            Você será desconectado e os dados não salvos deste formulário podem ser
+            perdidos.
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel>Cancelar</AlertDialogCancel>
+          <AlertDialogAction
+            onClick={confirmLogout}
+            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+          >
+            Sair
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+  );
+
 
   const content = (
     <DropdownMenuContent
