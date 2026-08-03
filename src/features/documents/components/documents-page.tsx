@@ -143,7 +143,7 @@ function DocumentActions({
     >
       {onSaveTemplate && (
         <Button type="button" variant="outline" size="sm" onClick={onSaveTemplate}>
-          <BookmarkPlus className="icon-optical mr-2 h-4 w-4" aria-hidden />
+          <BookmarkPlus className="icon-optical h-4 w-4" aria-hidden />
           Salvar como modelo
         </Button>
       )}
@@ -153,11 +153,11 @@ function DocumentActions({
         size="sm"
         onClick={() => toast.success("Documento baixado em PDF (simulação).")}
       >
-        <Download className="icon-optical mr-2 h-4 w-4" aria-hidden />
+        <Download className="icon-optical h-4 w-4" aria-hidden />
         Baixar PDF
       </Button>
       <Button type="button" variant="outline" size="sm" onClick={handlePrint}>
-        <Printer className="icon-optical mr-2 h-4 w-4" aria-hidden />
+        <Printer className="icon-optical h-4 w-4" aria-hidden />
         Imprimir
       </Button>
       {signable && (
@@ -168,7 +168,7 @@ function DocumentActions({
             toast.success("Solicitação de assinatura enviada ao VIDaaS (simulação).")
           }
         >
-          <ShieldCheck className="icon-optical mr-2 h-4 w-4" aria-hidden />
+          <ShieldCheck className="icon-optical h-4 w-4" aria-hidden />
           Assinar com VIDaaS
         </Button>
       )}
@@ -344,7 +344,7 @@ function ReportsTab() {
               </p>
             </div>
             <Button type="button" variant="ghost" size="sm" onClick={improveWithAi}>
-              <Sparkles className="icon-optical mr-2 h-4 w-4" aria-hidden />
+              <Sparkles className="icon-optical h-4 w-4" aria-hidden />
               Melhorar texto com IA
             </Button>
           </>
