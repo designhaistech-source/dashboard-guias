@@ -22,6 +22,7 @@ import { AppBreadcrumb } from "@/components/app-breadcrumb";
 import { AppSidebar } from "@/components/app-sidebar";
 import { SiteFooter } from "@/components/site-footer";
 import { PageHeader } from "@/components/page-header";
+import { FormActionBar } from "@/components/form-action-bar";
 import { SurfaceCard } from "@/components/surface-card";
 import { Field, SelectField } from "@/components/form-field";
 import { Button } from "@/components/ui/button";
@@ -119,6 +120,7 @@ function DocumentActions({
   signable?: boolean;
 }) {
   const disabled = !paciente.trim();
+  const temTexto = html.replace(/<[^>]+>/g, "").trim().length > 0;
 
   function handlePrint() {
     if (disabled) {
@@ -129,7 +131,14 @@ function DocumentActions({
   }
 
   return (
-    <div className="flex flex-wrap items-center gap-2">
+    <FormActionBar
+      stepsLabel="Etapas preenchidas"
+      steps={[
+        { label: "Paciente", done: !disabled },
+        { label: "Texto do documento", done: temTexto },
+      ]}
+      note="Campos marcados com * são obrigatórios. O documento é validado antes da assinatura."
+    >
       {onSaveTemplate && (
         <Button type="button" variant="outline" size="sm" onClick={onSaveTemplate}>
           <BookmarkPlus className="icon-optical mr-2 h-4 w-4" aria-hidden />
@@ -161,9 +170,10 @@ function DocumentActions({
           Assinar com VIDaaS
         </Button>
       )}
-    </div>
+    </FormActionBar>
   );
 }
+
 
 function PatientField({
   id,
