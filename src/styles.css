@@ -331,6 +331,7 @@
 @utility icon-optical {
   & svg {
     transform: translateY(-0.075em);
+  }
 }
 
 /* Escala tipográfica única dos cards de métrica (KPIs, centro de gráficos e
@@ -354,7 +355,6 @@
   font-size: 0.75rem; /* text-xs */
   line-height: 1rem;
   font-variant-numeric: tabular-nums;
-}
 }
 
 /* Campos de data/hora: o indicador nativo de calendário vem antes do valor,
