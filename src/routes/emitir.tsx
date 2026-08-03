@@ -1471,75 +1471,36 @@ function EmitirPage() {
               </Section>
 
               {/* Resumo de preenchimento */}
-              {(() => {
-                const steps = [
-                  {
-                    label: convenioId === "tiss" ? "Convênio" : "Estabelecimento",
-                    done: convenioOk,
-                  },
-                  ...(guideKind === "internacao"
-                    ? [{ label: "Internação", done: especificoOk }]
-                    : []),
-                  ...(guideKind === "apac" ? [{ label: "APAC", done: especificoOk }] : []),
-                  ...(guideKind === "aih" ? [{ label: "AIH", done: especificoOk }] : []),
-                  { label: "Beneficiário", done: pacienteOk },
-                  { label: "Profissional", done: profissionalOk },
-                  { label: "Dados clínicos", done: clinicoOk },
-                  { label: "Procedimentos", done: procedimentosOk },
-                  { label: "OPME (opcional)", done: opmeOk },
-                  { label: "Assinatura", done: assinaturaOk },
-                ];
-                const pending = steps.filter((s) => !s.done);
-                const completed = steps.filter((s) => s.done);
+              <div className="rounded-xl border bg-card/95 backdrop-blur shadow-xs px-4 py-3">
+                <p className="text-xs font-semibold text-foreground">
+                  Etapas preenchidas
+                </p>
+                <div className="mt-2 flex flex-wrap items-center gap-2">
+                  <StatusPill
+                    done={convenioOk}
+                    label={convenioId === "tiss" ? "Convênio" : "Estabelecimento"}
+                  />
+                  {guideKind === "internacao" && (
+                    <StatusPill done={especificoOk} label="Internação" />
+                  )}
+                  {guideKind === "apac" && <StatusPill done={especificoOk} label="APAC" />}
+                  {guideKind === "aih" && <StatusPill done={especificoOk} label="AIH" />}
+                  <StatusPill done={pacienteOk} label="Beneficiário" />
+                  <StatusPill done={profissionalOk} label="Profissional" />
+                  <StatusPill done={clinicoOk} label="Dados clínicos" />
+                  <StatusPill done={procedimentosOk} label="Procedimentos" />
+                  <StatusPill done={opmeOk} label="OPME (opcional)" />
+                  <StatusPill done={assinaturaOk} label="Assinatura" />
+                </div>
+                <p className="mt-3 flex items-start gap-1.5 border-t border-border/60 pt-2 text-[11px] leading-relaxed text-muted-foreground/70">
+                  <Info className="mt-0.5 h-3 w-3 shrink-0" aria-hidden="true" />
+                  <span>
+                    Campos com <span className="text-destructive/80">*</span> são
+                    obrigatórios e serão validados antes da emissão.
+                  </span>
+                </p>
 
-                return (
-                  <div className="rounded-xl border bg-card/95 backdrop-blur shadow-xs px-4 py-3">
-                    <div className="flex flex-wrap items-center justify-between gap-2">
-                      <p className="text-xs font-semibold text-foreground">
-                        Etapas preenchidas
-                      </p>
-                      <span className="font-mono text-xs text-muted-foreground">
-                        {completed.length}/{steps.length} concluídas
-                      </span>
-                    </div>
-
-                    {pending.length > 0 && (
-                      <div className="mt-2.5">
-                        <p className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
-                          Pendentes
-                        </p>
-                        <div className="mt-1.5 flex flex-wrap items-center gap-2">
-                          {pending.map((s) => (
-                            <StatusPill key={s.label} done={false} label={s.label} />
-                          ))}
-                        </div>
-                      </div>
-                    )}
-
-                    {completed.length > 0 && (
-                      <div className="mt-2.5">
-                        <p className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
-                          Concluídas
-                        </p>
-                        <div className="mt-1.5 flex flex-wrap items-center gap-2">
-                          {completed.map((s) => (
-                            <StatusPill key={s.label} done label={s.label} />
-                          ))}
-                        </div>
-                      </div>
-                    )}
-
-                    <p className="mt-3 flex items-start gap-1.5 border-t border-border/60 pt-2 text-[11px] leading-relaxed text-muted-foreground/70">
-                      <Info className="mt-0.5 h-3 w-3 shrink-0" aria-hidden="true" />
-                      <span>
-                        Campos com <span className="text-destructive/80">*</span> são
-                        obrigatórios e serão validados antes da emissão.
-                      </span>
-                    </p>
-                  </div>
-                );
-              })()}
-
+              </div>
 
 
               {/* Actions */}
