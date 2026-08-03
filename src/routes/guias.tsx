@@ -49,6 +49,7 @@ import { Field, SearchInput } from "@/components/form-field";
 import { Combobox, MultiSelect } from "@/components/ui/combobox";
 import { Badge } from "@/components/ui/badge";
 import { EmptyState } from "@/components/data-state";
+import { FilterCard } from "@/components/filter-card";
 import {
   DataTableRoot,
   DataTableHeader,
@@ -310,38 +311,12 @@ function History_Section({ extraRows }: { extraRows: Row[] }) {
   const [detailRow, setDetailRow] = useState<Row | null>(null);
   const [codeRow, setCodeRow] = useState<Row | null>(null);
 
-  const [filtersOpen, setFiltersOpen] = useState(false);
-
   return (
     <section className="space-y-4">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <h2 className="font-display text-xl font-semibold tracking-tight">Histórico de processamento</h2>
-        {/* No mobile os filtros ficam recolhidos para que a lista continue visível. */}
-        <Button
-          variant="outline"
-          size="sm"
-          className="lg:hidden"
-          aria-expanded={filtersOpen}
-          aria-controls="history-filters"
-          onClick={() => setFiltersOpen((v) => !v)}
-        >
-          <SlidersHorizontal className="h-4 w-4" aria-hidden="true" />
-          Filtros
-          <ChevronDown
-            className={`h-4 w-4 transition-transform ${filtersOpen ? "rotate-180" : ""}`}
-            aria-hidden="true"
-          />
-        </Button>
-      </div>
+      <h2 className="font-display text-xl font-semibold tracking-tight">Histórico de processamento</h2>
 
-      {/* Mesma estrutura da busca de procedimentos: um card com os campos em linha. */}
-      <div
-        id="history-filters"
-        className={cn(
-          "flex-col gap-3 rounded-xl border border-border bg-card p-4 sm:grid sm:grid-cols-2 sm:items-center lg:flex lg:flex-row lg:flex-wrap lg:items-center",
-          filtersOpen ? "flex" : "hidden lg:flex",
-        )}
-      >
+      {/* Card de filtros padronizado (mesmo componente das telas de busca). */}
+      <FilterCard id="history-filters" onClear={() => {}}>
         <div className="w-full min-w-0 sm:col-span-2 lg:w-auto lg:flex-1 lg:min-w-[240px]">
           <SearchInput placeholder="Buscar por arquivo ou paciente" />
         </div>
@@ -372,19 +347,23 @@ function History_Section({ extraRows }: { extraRows: Row[] }) {
         </div>
         <DateField label="Data início" />
         <DateField label="Data fim" />
-        <Button
-          type="button"
-          variant="outline"
-          size="sm"
-          className="w-full justify-center sm:col-span-2 lg:w-auto"
-        >
-          Limpar filtros
-        </Button>
-      </div>
+      </FilterCard>
 
+
+
+      {/* Estado vazio padronizado (mesmo componente das telas de busca). */}
+      {allRows.length === 0 && (
+        <div className="rounded-2xl border border-border bg-card shadow-xs">
+          <EmptyState
+            title="Nenhuma guia processada"
+            description="Envie ou fotografe uma guia para vê-la aqui. Ajuste os filtros se estiver buscando um envio antigo."
+          />
+        </div>
+      )}
 
       {/* Mobile: cards tocáveis, sem scroll horizontal. */}
       <ul className="space-y-3 lg:hidden">
+
         {allRows.map((r, i) => (
           <li key={i} className="rounded-xl border border-border bg-card p-4">
             <div className="flex min-w-0 items-start justify-between gap-3">

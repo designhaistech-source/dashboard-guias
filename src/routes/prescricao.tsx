@@ -37,6 +37,7 @@ import { Dialog, DialogBody, DialogContent, DialogDescription, DialogFooter, Dia
 import { Input } from "@/components/ui/input";
 import { Field, SearchInput, SelectField } from "@/components/form-field";
 import { PageHeader } from "@/components/page-header";
+import { SectionCard } from "@/components/section-card";
 import { SavedIndicator } from "@/components/saved-indicator";
 
 import { Textarea } from "@/components/ui/textarea";
@@ -1459,16 +1460,13 @@ function PrescricaoForm() {
 
 
       {/* Seção 1 — Dados do paciente */}
-      <section id="sec-paciente" className="scroll-mt-4">
-        <div className="rounded-2xl border border-border bg-card shadow-xs p-5 space-y-4">
-          <div className="flex flex-wrap items-start justify-between gap-3">
-            <div className="min-w-0">
-              <h2 className="text-base font-semibold text-foreground">1. Dados do paciente</h2>
-              <p className="text-xs text-muted-foreground">
-                Identifique o paciente. Campos de CPF e endereço aparecem para receita especial.
-              </p>
-            </div>
-          </div>
+      <SectionCard
+        id="sec-paciente"
+        number={1}
+        title="Dados do paciente"
+        description="Identifique o paciente. Campos de CPF e endereço aparecem para receita especial."
+      >
+
 
           <>
 
@@ -1698,34 +1696,25 @@ function PrescricaoForm() {
             </div>
           )}
           </>
+      </SectionCard>
 
-        </div>
-      </section>
 
       {/* Seção 2 — Medicamentos */}
-      <section id="sec-medicamentos" className="scroll-mt-4 space-y-5">
-
-          <div className="rounded-2xl border border-border bg-card shadow-xs p-5 space-y-4">
-            <div className="flex flex-col items-start gap-2 sm:flex-row sm:items-start sm:justify-between sm:gap-3">
-
-            <div className="min-w-0 w-full sm:flex-1">
-              <h2 className="text-base font-semibold text-foreground">2. Buscar e adicionar medicamentos</h2>
-              <p className="text-xs text-muted-foreground">
-                Busque pelo nome do medicamento para adicionar à prescrição. Medicamentos controlados são identificados automaticamente e geram receituário especial.
-              </p>
-            </div>
-
-
-            <div className="flex w-full shrink-0 flex-wrap items-center gap-2 sm:w-auto">
-              <ActionBtn
-                onClick={() => setKitsAberto(true)}
-                icon={<BookMarked className="h-3.5 w-3.5" />}
-                size="sm"
-              >
-                Kits salvos
-              </ActionBtn>
+      <SectionCard
+        id="sec-medicamentos"
+        number={2}
+        title="Buscar e adicionar medicamentos"
+        description="Busque pelo nome do medicamento para adicionar à prescrição. Medicamentos controlados são identificados automaticamente e geram receituário especial."
+        actions={
+          <>
+            <ActionBtn
+              onClick={() => setKitsAberto(true)}
+              icon={<BookMarked className="h-3.5 w-3.5" />}
+              size="sm"
+            >
+              Kits salvos
+            </ActionBtn>
             {itens.length > 0 && (
-
               <Chip
                 size="sm"
                 onClick={() =>
@@ -1752,8 +1741,10 @@ function PrescricaoForm() {
                 <ChevronRight className="h-3 w-3" />
               </Chip>
             )}
-            </div>
-            </div>
+          </>
+        }
+      >
+
 
 
 
@@ -1829,57 +1820,42 @@ function PrescricaoForm() {
               />
             )}
             </>
-          </div>
+      </SectionCard>
 
-
-
-
-
-
-      </section>
 
 
       {/* Seção 3 — Revisar e emitir */}
-      <section id="sec-revisar" className="scroll-mt-4">
+      <SectionCard
+        id="sec-revisar"
+        innerRef={receitaRef}
+        number={3}
+        title={
+          <>
+            Revisão da receita
+            {hasControlado && (
+              <Badge variant="warning-soft" size="sm" className="uppercase tracking-wide">
+                <span className="inline-block h-1.5 w-1.5 rounded-full bg-warning" />
+                {hasComum ? "Comum + Controlada" : "Controlada"}
+              </Badge>
+            )}
+          </>
+        }
+        description={`${itens.length} ${itens.length === 1 ? "medicamento" : "medicamentos"}`}
+        actions={
+          itens.length > 0 ? (
+            <Button
+              type="button"
+              variant="link"
+              size="sm"
+              onClick={() => setItens([])}
+              className="h-auto p-0 text-xs text-muted-foreground hover:text-destructive"
+            >
+              Limpar itens
+            </Button>
+          ) : undefined
+        }
+      >
 
-        <div
-          ref={receitaRef}
-          className="rounded-2xl border border-border bg-card shadow-xs"
-        >
-          <div className="p-5 space-y-4">
-            <div className="flex flex-wrap items-start justify-between gap-3">
-              <div className="min-w-0">
-                <div className="flex items-center gap-2 flex-wrap">
-                  <h2 className="text-base font-semibold">
-                    3. Revisão da receita
-                  </h2>
-
-                  {hasControlado && (
-                    <Badge variant="warning-soft" size="sm" className="uppercase tracking-wide">
-                      <span className="inline-block h-1.5 w-1.5 rounded-full bg-warning" />
-                      {hasComum ? "Comum + Controlada" : "Controlada"}
-                    </Badge>
-                  )}
-                </div>
-
-                <p className="text-xs text-muted-foreground mt-0.5">
-                  {itens.length}{" "}
-                  {itens.length === 1 ? "medicamento" : "medicamentos"}
-                </p>
-
-              </div>
-              {itens.length > 0 && (
-                <Button
-                  type="button"
-                  variant="link"
-                  size="sm"
-                  onClick={() => setItens([])}
-                  className="h-auto p-0 text-xs text-muted-foreground hover:text-destructive"
-                >
-                  Limpar itens
-                </Button>
-              )}
-            </div>
 
 
 
@@ -2106,9 +2082,8 @@ function PrescricaoForm() {
 
 
 
-          </div>
-        </div>
-      </section>
+      </SectionCard>
+
 
       {/* Barra de ação padrão: etapas + ações */}
       <FormActionBar

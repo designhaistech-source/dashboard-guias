@@ -21,6 +21,7 @@ import { AppBreadcrumb } from "@/components/app-breadcrumb";
 import { AppSidebar } from "@/components/app-sidebar";
 import { SiteFooter } from "@/components/site-footer";
 import { PageHeader } from "@/components/page-header";
+import { SectionCard as BaseSectionCard } from "@/components/section-card";
 import { SavedIndicator } from "@/components/saved-indicator";
 import { useDraftAutosave } from "@/hooks/use-draft-autosave";
 
@@ -929,25 +930,19 @@ function SectionCard({
   children: React.ReactNode;
 }) {
   return (
-    <section id={id} className="scroll-mt-4">
-      <div className="rounded-2xl border border-border bg-card shadow-xs p-5 space-y-4">
-        <div className="flex flex-wrap items-start justify-between gap-3">
-          <div className="min-w-0 flex-1">
-            <h2 className="flex items-center gap-2 text-base font-semibold text-foreground">
-              <span className="min-w-0">
-                {number}. {title}
-              </span>
-              {done && <CheckCircle2 className="h-4 w-4 shrink-0 text-success-strong" />}
-            </h2>
-            <p className="mt-0.5 text-xs text-muted-foreground">{summary}</p>
-          </div>
-          {headerRight && <div className="w-full lg:w-auto">{headerRight}</div>}
-        </div>
-        <div className="pt-1">{children}</div>
-      </div>
-    </section>
+    <BaseSectionCard
+      id={id}
+      number={number}
+      title={title}
+      description={summary}
+      done={done}
+      actions={headerRight}
+    >
+      {children}
+    </BaseSectionCard>
   );
 }
+
 
 
 

@@ -31,6 +31,7 @@ import { AppBreadcrumb } from "@/components/app-breadcrumb";
 import { AppSidebar } from "@/components/app-sidebar";
 import { SiteFooter } from "@/components/site-footer";
 import { PageHeader } from "@/components/page-header";
+import { SectionCard as BaseSectionCard } from "@/components/section-card";
 import { SavedIndicator } from "@/components/saved-indicator";
 import { useDraftAutosave } from "@/hooks/use-draft-autosave";
 
@@ -1743,37 +1744,19 @@ function Section({
   children: React.ReactNode;
 }) {
   return (
-    <section className="rounded-xl border bg-card shadow-sm">
-      <div className="flex flex-col gap-3 border-b px-4 py-4 sm:px-5 lg:flex-row lg:items-start lg:justify-between lg:gap-4">
-        <div className="flex min-w-0 items-start gap-3">
-          <div className="mt-0.5 h-8 w-8 shrink-0 rounded-md bg-primary/10 text-primary flex items-center justify-center">
-            {icon}
-          </div>
-          <div className="min-w-0">
-            <h2 className="flex flex-wrap items-center gap-2 text-sm font-semibold">
-              <span className="min-w-0">
-                {number ? `${number}. ` : ""}
-                {title}
-              </span>
-              {done && (
-                <CheckCircle2
-                  aria-label="Seção preenchida"
-                  className="h-4 w-4 shrink-0 text-success-strong"
-                />
-              )}
-            </h2>
-            {description && (
-              <p className="text-xs text-muted-foreground mt-0.5">{description}</p>
-            )}
-          </div>
-        </div>
-        {action}
-      </div>
-      <div className="p-4 space-y-4 sm:p-5">{children}</div>
-    </section>
-
+    <BaseSectionCard
+      number={number}
+      title={title}
+      description={description}
+      icon={icon}
+      done={done}
+      actions={action}
+    >
+      {children}
+    </BaseSectionCard>
   );
 }
+
 
 function Grid({ cols, children }: { cols: 2 | 3; children: React.ReactNode }) {
   return (
