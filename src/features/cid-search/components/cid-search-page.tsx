@@ -137,6 +137,8 @@ export function CidSearchPage() {
       title="Busca CID-10"
       description="Consulte códigos da Classificação Internacional de Doenças por código ou termo, com favoritos e histórico."
       onSubmit={handleSearch}
+      submitting={status === "loading"}
+
       searchFields={
         <div className="min-w-0 flex-1">
           <SearchInput
