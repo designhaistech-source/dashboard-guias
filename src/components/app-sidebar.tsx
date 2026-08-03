@@ -308,6 +308,14 @@ function UserMenu({ collapsed }: { collapsed: boolean }) {
 
   const itemClass = "gap-3 px-4 py-2.5 min-h-11 text-sm";
 
+  // Iniciais do nome: evita repetir o mesmo ícone do item "Meu Perfil".
+  const userInitials = CURRENT_USER.name
+    .split(" ")
+    .filter(Boolean)
+    .slice(-2)
+    .map((part) => part[0]?.toUpperCase() ?? "")
+    .join("");
+
   const confirmLogout = () => {
     setLogoutOpen(false);
     setMenuOpen(false);
