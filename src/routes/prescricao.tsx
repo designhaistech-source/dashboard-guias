@@ -1749,9 +1749,7 @@ function PrescricaoForm() {
               </p>
             </div>
 
-                </p>
-              </div>
-            </Button>
+
             {itens.length > 0 && (
               <Chip
                 size="sm"
