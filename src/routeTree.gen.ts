@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as QaResponsividadeRouteImport } from './routes/qa-responsividade'
 import { Route as ProcedimentosRouteImport } from './routes/procedimentos'
 import { Route as PrescricaoRouteImport } from './routes/prescricao'
+import { Route as PerfilRouteImport } from './routes/perfil'
 import { Route as OpmeRouteImport } from './routes/opme'
 import { Route as GuiasRouteImport } from './routes/guias'
 import { Route as EmitirRouteImport } from './routes/emitir'
@@ -36,6 +37,11 @@ const ProcedimentosRoute = ProcedimentosRouteImport.update({
 const PrescricaoRoute = PrescricaoRouteImport.update({
   id: '/prescricao',
   path: '/prescricao',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PerfilRoute = PerfilRouteImport.update({
+  id: '/perfil',
+  path: '/perfil',
   getParentRoute: () => rootRouteImport,
 } as any)
 const OpmeRoute = OpmeRouteImport.update({
@@ -99,6 +105,7 @@ export interface FileRoutesByFullPath {
   '/emitir': typeof EmitirRoute
   '/guias': typeof GuiasRoute
   '/opme': typeof OpmeRoute
+  '/perfil': typeof PerfilRoute
   '/prescricao': typeof PrescricaoRoute
   '/procedimentos': typeof ProcedimentosRoute
   '/qa-responsividade': typeof QaResponsividadeRoute
@@ -114,6 +121,7 @@ export interface FileRoutesByTo {
   '/emitir': typeof EmitirRoute
   '/guias': typeof GuiasRoute
   '/opme': typeof OpmeRoute
+  '/perfil': typeof PerfilRoute
   '/prescricao': typeof PrescricaoRoute
   '/procedimentos': typeof ProcedimentosRoute
   '/qa-responsividade': typeof QaResponsividadeRoute
@@ -130,6 +138,7 @@ export interface FileRoutesById {
   '/emitir': typeof EmitirRoute
   '/guias': typeof GuiasRoute
   '/opme': typeof OpmeRoute
+  '/perfil': typeof PerfilRoute
   '/prescricao': typeof PrescricaoRoute
   '/procedimentos': typeof ProcedimentosRoute
   '/qa-responsividade': typeof QaResponsividadeRoute
@@ -147,6 +156,7 @@ export interface FileRouteTypes {
     | '/emitir'
     | '/guias'
     | '/opme'
+    | '/perfil'
     | '/prescricao'
     | '/procedimentos'
     | '/qa-responsividade'
@@ -162,6 +172,7 @@ export interface FileRouteTypes {
     | '/emitir'
     | '/guias'
     | '/opme'
+    | '/perfil'
     | '/prescricao'
     | '/procedimentos'
     | '/qa-responsividade'
@@ -177,6 +188,7 @@ export interface FileRouteTypes {
     | '/emitir'
     | '/guias'
     | '/opme'
+    | '/perfil'
     | '/prescricao'
     | '/procedimentos'
     | '/qa-responsividade'
@@ -193,6 +205,7 @@ export interface RootRouteChildren {
   EmitirRoute: typeof EmitirRoute
   GuiasRoute: typeof GuiasRoute
   OpmeRoute: typeof OpmeRoute
+  PerfilRoute: typeof PerfilRoute
   PrescricaoRoute: typeof PrescricaoRoute
   ProcedimentosRoute: typeof ProcedimentosRoute
   QaResponsividadeRoute: typeof QaResponsividadeRoute
@@ -220,6 +233,13 @@ declare module '@tanstack/react-router' {
       path: '/prescricao'
       fullPath: '/prescricao'
       preLoaderRoute: typeof PrescricaoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/perfil': {
+      id: '/perfil'
+      path: '/perfil'
+      fullPath: '/perfil'
+      preLoaderRoute: typeof PerfilRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/opme': {
@@ -305,6 +325,7 @@ const rootRouteChildren: RootRouteChildren = {
   EmitirRoute: EmitirRoute,
   GuiasRoute: GuiasRoute,
   OpmeRoute: OpmeRoute,
+  PerfilRoute: PerfilRoute,
   PrescricaoRoute: PrescricaoRoute,
   ProcedimentosRoute: ProcedimentosRoute,
   QaResponsividadeRoute: QaResponsividadeRoute,

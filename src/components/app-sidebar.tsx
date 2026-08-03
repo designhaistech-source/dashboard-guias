@@ -65,6 +65,7 @@ export type ItemKey =
   | "opme"
   | "relatorios"
   | "cid"
+  | "perfil"
   | "qa-responsividade"
   | "ajuda";
 
