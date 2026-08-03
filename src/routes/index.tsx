@@ -1019,7 +1019,7 @@ function DashboardPage() {
                     </PieChart>
                   </ResponsiveContainer>
                   <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center">
-                    <div className="text-2xl font-bold tabular-nums">
+                    <div className="metric-value text-foreground">
                       {activeType !== undefined ? typeData[activeType].value : total}
                     </div>
                     <div className="text-xs uppercase tracking-wider text-muted-foreground">
@@ -1199,15 +1199,15 @@ function Kpi({
   return (
     <div className="group relative overflow-hidden rounded-2xl border border-border bg-card shadow-xs p-5 transition-shadow hover:shadow-sm">
       <div className="flex items-center justify-between">
-        <span className="text-sm text-muted-foreground">{label}</span>
+        <span className="metric-label">{label}</span>
         <span className={`grid place-items-center h-8 w-8 rounded-lg ${toneClass}`}>
           <Icon className="h-4 w-4" />
         </span>
       </div>
-      <div className="mt-3 text-3xl font-bold tabular-nums">{value}</div>
+      <div className="mt-3 metric-value text-foreground">{value}</div>
       <div
         className={[
-          "mt-1 text-xs flex items-center gap-1",
+          "mt-1 metric-hint flex items-center gap-1",
           trend === "up" ? "text-success" : "text-muted-foreground",
         ].join(" ")}
       >
