@@ -97,7 +97,7 @@ export function CameraCaptureDialog({ open, onOpenChange, onCapture }: CameraCap
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="fixed-layout sm:max-w-2xl">
+      <DialogContent size="lg" className="fixed-layout">
         <DialogHeader>
           <DialogTitle>Tirar foto da guia</DialogTitle>
           <DialogDescription>
