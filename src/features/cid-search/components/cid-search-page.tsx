@@ -130,7 +130,7 @@ export function CidSearchPage() {
               {term ? (
                 <p
                   aria-live="polite"
-                  className="text-xs text-muted-foreground tabular-nums"
+                  className="text-xs leading-none text-muted-foreground tabular-nums"
                 >
                   {results.length}{" "}
                   {results.length === 1
