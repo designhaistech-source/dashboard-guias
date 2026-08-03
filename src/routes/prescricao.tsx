@@ -44,7 +44,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Chip } from "@/components/ui/chip";
 import { FormActionBar } from "@/components/form-action-bar";
-import { EmptyState } from "@/components/data-state";
+import { EmptyState, ErrorState, LoadingState } from "@/components/data-state";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -411,15 +411,16 @@ function loadRascunho(): Rascunho | null {
   }
 }
 
-function loadHistorico(): Historico[] {
-  if (typeof window === "undefined") return [];
+/** Lê o histórico sinalizando falha de leitura para exibir ErrorState. */
+function readHistorico(): { ok: true; data: Historico[] } | { ok: false } {
+  if (typeof window === "undefined") return { ok: true, data: [] };
   try {
     const raw = window.localStorage.getItem(LS_HISTORICO);
-    if (!raw) return [];
+    if (!raw) return { ok: true, data: [] };
     const arr = JSON.parse(raw);
-    return Array.isArray(arr) ? (arr as Historico[]) : [];
+    return { ok: true, data: Array.isArray(arr) ? (arr as Historico[]) : [] };
   } catch {
-    return [];
+    return { ok: false };
   }
 }
 
@@ -574,6 +575,7 @@ function PrescricaoForm() {
   const [savedAt, setSavedAt] = useState<number | null>(null);
   const [historico, setHistorico] = useState<Historico[]>([]);
   const [historicoAberto, setHistoricoAberto] = useState(false);
+  const [historicoStatus, setHistoricoStatus] = useState<"loading" | "error" | "ready">("loading");
   const [kitsAberto, setKitsAberto] = useState(false);
 
 
@@ -599,7 +601,13 @@ function PrescricaoForm() {
   useEffect(() => {
     setPacientesRecentes(loadRecentes(LS_PACIENTES));
     setMedsRecentes(loadRecentes(LS_MEDS));
-    setHistorico(loadHistorico());
+    const hist = readHistorico();
+    if (hist.ok) {
+      setHistorico(hist.data);
+      setHistoricoStatus("ready");
+    } else {
+      setHistoricoStatus("error");
+    }
     const d = loadRascunho();
     if (d) {
       const temConteudo =
@@ -2144,7 +2152,7 @@ function PrescricaoForm() {
       </FormActionBar>
 
       {/* Histórico de prescrições — rodapé da página, após as ações de emitir */}
-      {historico.length > 0 && (
+      {(historicoStatus !== "ready" || historico.length > 0) && (
         <section id="sec-historico" className="scroll-mt-4 space-y-3">
           <div className="flex items-center justify-between gap-3">
             <div className="min-w-0">
@@ -2167,6 +2175,17 @@ function PrescricaoForm() {
           </div>
           {historicoAberto && (
             <HistoricoPanel
+              status={historicoStatus}
+              onRetry={() => {
+                setHistoricoStatus("loading");
+                const hist = readHistorico();
+                if (hist.ok) {
+                  setHistorico(hist.data);
+                  setHistoricoStatus("ready");
+                } else {
+                  setHistoricoStatus("error");
+                }
+              }}
               historico={historico}
               onClose={() => setHistoricoAberto(false)}
               onReutilizar={reutilizarHistorico}
@@ -2589,12 +2608,16 @@ function TipoBadge({ tipo }: { tipo: MedType }) {
 }
 
 function HistoricoPanel({
+  status,
+  onRetry,
   historico,
   onClose,
   onReutilizar,
   onRemover,
   onLimpar,
 }: {
+  status: "loading" | "error" | "ready";
+  onRetry: () => void;
   historico: Historico[];
   onClose: () => void;
   onReutilizar: (h: Historico) => void;
@@ -2616,11 +2639,13 @@ function HistoricoPanel({
           <History className="h-4 w-4 text-primary" />
           <h3 className="text-sm font-semibold">Histórico de prescrições</h3>
           <span className="text-xs text-muted-foreground">
-            ({historico.length} {historico.length === 1 ? "entrada" : "entradas"} — só neste navegador)
+            {status === "ready"
+              ? `(${historico.length} ${historico.length === 1 ? "entrada" : "entradas"} — só neste navegador)`
+              : "(só neste navegador)"}
           </span>
         </div>
         <div className="flex items-center gap-2">
-          {historico.length > 0 && (
+          {status === "ready" && historico.length > 0 && (
             <Button
               type="button"
               variant="link"
@@ -2644,11 +2669,23 @@ function HistoricoPanel({
         </div>
       </div>
 
-      {historico.length === 0 ? (
-        <div className="rounded-xl border border-dashed border-border p-6 text-sm text-muted-foreground text-center">
-          Ainda não há prescrições emitidas. Ao imprimir ou baixar um PDF, a
-          prescrição fica registrada aqui.
-        </div>
+      {status === "loading" ? (
+        <LoadingState
+          title="Carregando histórico…"
+          description="Buscando as prescrições emitidas neste navegador."
+        />
+      ) : status === "error" ? (
+        <ErrorState
+          title="Não foi possível carregar o histórico"
+          description="Os dados salvos neste navegador não puderam ser lidos. Tente novamente."
+          onRetry={onRetry}
+        />
+      ) : historico.length === 0 ? (
+        <EmptyState
+          icon={<History className="h-10 w-10" />}
+          title="Nenhuma prescrição emitida"
+          description="Ao imprimir ou baixar um PDF, a prescrição fica registrada aqui."
+        />
       ) : (
         <ul className="space-y-2 max-h-[480px] overflow-y-auto">
           {historico.map((h) => (
