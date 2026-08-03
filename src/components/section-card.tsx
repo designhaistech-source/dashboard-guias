@@ -18,6 +18,8 @@ export interface SectionCardProps {
   /** Ações alinhadas à direita do cabeçalho. */
   actions?: React.ReactNode;
   className?: string;
+  /** Classe extra para o texto auxiliar (permite reduzir o destaque). */
+  descriptionClassName?: string;
   /** Ref para o container do card (usado em impressão/scroll). */
   innerRef?: React.Ref<HTMLDivElement>;
   bodyClassName?: string;
@@ -40,6 +42,7 @@ export function SectionCard({
   done,
   actions,
   className,
+  descriptionClassName,
   bodyClassName,
   innerRef,
   children,
@@ -69,7 +72,14 @@ export function SectionCard({
                 )}
               </h2>
               {description && (
-                <p className="mt-0.5 text-xs text-muted-foreground">{description}</p>
+                <p
+                  className={cn(
+                    "mt-0.5 text-xs text-muted-foreground",
+                    descriptionClassName,
+                  )}
+                >
+                  {description}
+                </p>
               )}
             </div>
           </div>

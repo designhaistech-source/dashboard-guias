@@ -54,7 +54,7 @@ export function ProfilePage() {
       <main className="flex min-h-screen flex-1 flex-col overflow-x-hidden">
         <form
           onSubmit={onSubmit}
-          className="w-full flex-1 space-y-6 px-4 py-6 pb-16 pt-20 sm:px-6 sm:py-8 md:pt-8 lg:px-10"
+          className="w-full flex-1 space-y-5 px-4 py-6 pb-16 pt-20 sm:px-6 sm:py-8 md:pt-8 lg:px-10"
         >
           <AppBreadcrumb />
           <PageHeader
@@ -63,6 +63,7 @@ export function ProfilePage() {
           />
 
           <SectionCard
+            descriptionClassName="text-[11px] text-muted-foreground/80"
             title="Dados pessoais"
             description="Identificação do profissional responsável pelos documentos."
             icon={<UserRound className="h-4 w-4" aria-hidden="true" />}
@@ -101,6 +102,7 @@ export function ProfilePage() {
           </SectionCard>
 
           <SectionCard
+            descriptionClassName="text-[11px] text-muted-foreground/80"
             title="Dados do consultório"
             description="Endereço e contato exibidos no cabeçalho dos documentos."
             icon={<Building2 className="h-4 w-4" aria-hidden="true" />}
@@ -150,11 +152,12 @@ export function ProfilePage() {
           </SectionCard>
 
           <SectionCard
+            descriptionClassName="text-[11px] text-muted-foreground/80"
             title="Assinatura e identidade visual"
             description="Imagens aplicadas no rodapé e no cabeçalho dos documentos."
             icon={<PenLine className="h-4 w-4" aria-hidden="true" />}
           >
-            <div className="grid gap-4 sm:grid-cols-2">
+            <div className="grid items-stretch gap-4 sm:grid-cols-2">
               <ImageUploadField
                 label="Assinatura digital"
                 hint="PNG com fundo transparente, JPG ou SVG. Até 2 MB."

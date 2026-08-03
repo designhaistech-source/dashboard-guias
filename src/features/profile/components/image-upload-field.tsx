@@ -64,7 +64,7 @@ export function ImageUploadField({ label, hint, previewAlt }: ImageUploadFieldPr
   const inputId = `upload-${label.toLowerCase().replace(/\s+/g, "-")}`;
 
   return (
-    <div className="space-y-2">
+    <div className="flex h-full flex-col gap-2">
       <div className="flex items-center gap-1">
         <p className="text-[13px] font-medium leading-snug text-foreground sm:text-sm">
           {label}
@@ -72,11 +72,11 @@ export function ImageUploadField({ label, hint, previewAlt }: ImageUploadFieldPr
         <InfoHint label={`Requisitos para ${label}`}>{hint}</InfoHint>
       </div>
 
-      <div className="flex items-center gap-3 rounded-xl border border-border bg-muted/30 p-3">
+      <div className="flex flex-1 items-center gap-3 rounded-xl border border-border bg-muted/30 p-3">
         <button /* ds-allow: miniatura clicável abre o seletor de arquivos */
           type="button"
           onClick={() => inputRef.current?.click()}
-          aria-label={previewUrl ? `Trocar ${label}` : `Enviar ${label}`}
+          aria-label={previewUrl ? `Substituir ${label}` : `Selecionar ${label}`}
           className="flex h-16 w-24 shrink-0 items-center justify-center overflow-hidden rounded-lg border border-dashed border-border bg-background transition-colors hover:border-primary/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
         >
           {previewUrl ? (
@@ -94,7 +94,7 @@ export function ImageUploadField({ label, hint, previewAlt }: ImageUploadFieldPr
           <p className="truncate text-xs text-muted-foreground" aria-live="polite">
             {fileName ?? "Nenhuma imagem enviada"}
           </p>
-          <div className="flex flex-wrap items-center gap-1.5">
+          <div className="flex flex-wrap items-center gap-2">
             <Button
               type="button"
               variant="outline"
@@ -102,7 +102,7 @@ export function ImageUploadField({ label, hint, previewAlt }: ImageUploadFieldPr
               onClick={() => inputRef.current?.click()}
             >
               <Upload className="h-4 w-4" aria-hidden="true" />
-              {previewUrl ? "Trocar" : "Enviar"}
+              {previewUrl ? "Substituir imagem" : "Selecionar imagem"}
             </Button>
             {previewUrl && (
               <Button type="button" variant="ghost" size="sm" onClick={handleRemove}>
