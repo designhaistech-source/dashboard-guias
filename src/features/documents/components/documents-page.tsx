@@ -299,6 +299,7 @@ function ReportsTab() {
         title="Dados do relatório"
         description="Identifique o paciente e o diagnóstico que será impresso no documento."
         padding="lg"
+        actions={<SavedIndicator savedAt={savedAt} />}
       >
         <div className="space-y-4">
           <PatientField id="relatorio-paciente" value={paciente} onChange={setPaciente} />
@@ -380,6 +381,21 @@ function CertificateTab() {
   const [cidade, setCidade] = useState("");
   const [html, setHtml] = useState("");
 
+  const { savedAt } = useDraftAutosave({
+    key: "hg:documentos:atestado",
+    data: { paciente, cid, diagnosticoSelecionado, dias, data, cidade, html },
+    isEmpty: (d) => !d.paciente.trim() && !d.cid.trim() && !d.cidade.trim() && !d.html,
+    onRestore: (d) => {
+      setPaciente(d.paciente ?? "");
+      setCid(d.cid ?? "");
+      setDiagnosticoSelecionado(d.diagnosticoSelecionado ?? "");
+      setDias(d.dias ?? "1");
+      setData(d.data ?? todayIso());
+      setCidade(d.cidade ?? "");
+      setHtml(d.html ?? "");
+    },
+  });
+
   const gerado = useMemo(
     () => buildAtestado({ paciente, dias, data, cidade, cid }),
     [paciente, dias, data, cidade, cid],
@@ -393,6 +409,7 @@ function CertificateTab() {
         title="Dados do atestado"
         description="O texto padrão é gerado automaticamente a partir destes campos."
         padding="lg"
+        actions={<SavedIndicator savedAt={savedAt} />}
       >
         <div className="space-y-4">
           <PatientField id="atestado-paciente" value={paciente} onChange={setPaciente} />
