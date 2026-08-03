@@ -332,16 +332,15 @@ function History_Section({ extraRows }: { extraRows: Row[] }) {
         </Button>
       </div>
 
+      {/* Mesma estrutura da busca de procedimentos: um card com os campos em linha. */}
       <div
         id="history-filters"
-        className={
-          filtersOpen
-            ? "flex flex-col gap-3 rounded-xl border border-border bg-card p-4 sm:grid sm:grid-cols-2 sm:items-center lg:flex lg:flex-row lg:flex-wrap lg:border-0 lg:bg-transparent lg:p-0"
-            : "hidden gap-3 lg:flex lg:flex-row lg:flex-wrap lg:items-center"
-        }
+        className={cn(
+          "flex-col gap-3 rounded-xl border border-border bg-card p-4 sm:grid sm:grid-cols-2 sm:items-center lg:flex lg:flex-row lg:flex-wrap lg:items-center",
+          filtersOpen ? "flex" : "hidden lg:flex",
+        )}
       >
-
-        <div className="w-full min-w-0 sm:col-span-2 lg:w-auto lg:flex-1 lg:min-w-[240px] lg:max-w-md">
+        <div className="w-full min-w-0 sm:col-span-2 lg:w-auto lg:flex-1 lg:min-w-[240px]">
           <SearchInput placeholder="Buscar por arquivo ou paciente" />
         </div>
         <div className="w-full min-w-0 lg:w-[180px]">
@@ -372,12 +371,15 @@ function History_Section({ extraRows }: { extraRows: Row[] }) {
         <DateField label="Data início" />
         <DateField label="Data fim" />
         <Button
-          variant="link"
-          className="h-auto self-start p-0 text-sm font-medium text-foreground hover:text-primary sm:col-span-2 lg:col-span-1 lg:self-auto"
+          type="button"
+          variant="outline"
+          size="sm"
+          className="w-full justify-center sm:col-span-2 lg:w-auto"
         >
           Limpar filtros
         </Button>
       </div>
+
 
       {/* Mobile: cards tocáveis, sem scroll horizontal. */}
       <ul className="space-y-3 lg:hidden">
