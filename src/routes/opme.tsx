@@ -168,7 +168,7 @@ function OpmePage() {
   const [convenioCollapsed, setConvenioCollapsed] = useState(false);
   const [clinicoCollapsed, setClinicoCollapsed] = useState(false);
   const [materiaisCollapsed, setMateriaisCollapsed] = useState(false);
-  const [profCollapsed, setProfCollapsed] = useState(true);
+  const [profCollapsed, setProfCollapsed] = useState(false);
   const [showTopBtn, setShowTopBtn] = useState(false);
 
   useEffect(() => {
