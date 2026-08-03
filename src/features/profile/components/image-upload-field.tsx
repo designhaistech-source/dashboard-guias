@@ -137,7 +137,7 @@ export function ImageUploadField({ label, hint, previewAlt }: ImageUploadFieldPr
             </p>
           ) : (
             <p className="text-xs leading-snug text-muted-foreground" aria-live="polite">
-              Arraste uma imagem aqui ou selecione um arquivo.
+              Arraste aqui ou selecione um arquivo.
             </p>
           )}
 
