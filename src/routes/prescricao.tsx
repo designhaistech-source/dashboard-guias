@@ -523,6 +523,7 @@ function PrescricaoForm() {
   const [cepError, setCepError] = useState<string | null>(null);
   const [endereco, setEndereco] = useState("");
   const [numero, setNumero] = useState("");
+  const [numeroTouched, setNumeroTouched] = useState(false);
   const [complemento, setComplemento] = useState("");
   const [query, setQuery] = useState("");
   const [tipos, setTipos] = useState<Set<MedType>>(
