@@ -492,6 +492,22 @@ function AttendanceTab() {
   const [saida, setSaida] = useState("");
   const [html, setHtml] = useState("");
 
+  const { savedAt } = useDraftAutosave({
+    key: "hg:documentos:comparecimento",
+    data: { paciente, local, cidade, data, entrada, saida, html },
+    isEmpty: (d) =>
+      !d.paciente.trim() && !d.local.trim() && !d.cidade.trim() && !d.entrada && !d.saida && !d.html,
+    onRestore: (d) => {
+      setPaciente(d.paciente ?? "");
+      setLocal(d.local ?? "");
+      setCidade(d.cidade ?? "");
+      setData(d.data ?? todayIso());
+      setEntrada(d.entrada ?? "");
+      setSaida(d.saida ?? "");
+      setHtml(d.html ?? "");
+    },
+  });
+
   const gerado = useMemo(
     () => buildComparecimento({ paciente, local, cidade, data, entrada, saida }),
     [paciente, local, cidade, data, entrada, saida],
@@ -505,6 +521,7 @@ function AttendanceTab() {
         title="Dados da declaração"
         description="Informe o local e os horários de permanência do paciente no atendimento."
         padding="lg"
+        actions={<SavedIndicator savedAt={savedAt} />}
       >
         <div className="space-y-4">
           <PatientField id="comp-paciente" value={paciente} onChange={setPaciente} />
