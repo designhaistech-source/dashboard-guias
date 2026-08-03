@@ -323,7 +323,9 @@ function OpmePage() {
     toast.success(
       `Solicitação de OPME enviada (${materiaisValidos.length} ${materiaisValidos.length === 1 ? "item" : "itens"}).`,
     );
+    clearDraft();
   }
+
 
   return (
     <div className="flex min-h-screen w-full bg-background text-foreground">
