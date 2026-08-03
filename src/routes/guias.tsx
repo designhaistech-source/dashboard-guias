@@ -316,7 +316,7 @@ function History_Section({ extraRows }: { extraRows: Row[] }) {
         <h2 className="font-display text-xl font-semibold tracking-tight">Histórico de processamento</h2>
         {/* No mobile os filtros ficam recolhidos para que a lista continue visível. */}
         <Button
-          variant="secondary"
+          variant="outline"
           size="sm"
           className="lg:hidden"
           aria-expanded={filtersOpen}
@@ -1104,7 +1104,7 @@ function RequiredFieldsModal() {
 
   return (
     <>
-      <Button variant="secondary" onClick={() => setOpen(true)}>
+      <Button variant="outline" size="sm" onClick={() => setOpen(true)}>
         <ListChecks className="h-4 w-4" />
         Campos obrigatórios
       </Button>
