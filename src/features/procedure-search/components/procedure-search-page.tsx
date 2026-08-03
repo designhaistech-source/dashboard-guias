@@ -31,23 +31,53 @@ const SUGGESTED_TERMS = [
   "biópsia",
 ];
 
+/**
+ * Consulta assíncrona simulada (dados sintéticos). O termo "erro" força a
+ * falha para permitir validar o estado de erro do protótipo.
+ */
+function fetchProcedures(
+  term: string,
+  referencia: string,
+): Promise<ProcedureMatch[]> {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      if (term.trim().toLowerCase().includes("erro")) {
+        reject(new Error("Falha simulada na consulta de procedimentos"));
+        return;
+      }
+      resolve(searchProcedures(term, referencia));
+    }, 500);
+  });
+}
+
 export function ProcedureSearchPage() {
   const [term, setTerm] = useState("");
   const [referencia, setReferencia] = useState("todas");
   const [results, setResults] = useState<ProcedureMatch[] | null>(null);
+  const [status, setStatus] = useState<"idle" | "loading" | "error" | "done">(
+    "idle",
+  );
   const [lastQuery, setLastQuery] = useState("");
 
-  function runSearch(nextTerm: string, nextReferencia: string) {
+  async function runSearch(nextTerm: string, nextReferencia: string) {
     setTerm(nextTerm);
     setReferencia(nextReferencia);
     setLastQuery(nextTerm.trim());
-    setResults(searchProcedures(nextTerm, nextReferencia));
+    setStatus("loading");
+    try {
+      setResults(await fetchProcedures(nextTerm, nextReferencia));
+      setStatus("done");
+    } catch {
+      setResults(null);
+      setStatus("error");
+    }
   }
 
   function handleSearch(event?: React.FormEvent) {
     event?.preventDefault();
-    runSearch(term, referencia);
+    void runSearch(term, referencia);
   }
+
 
   return (
     <SearchPageLayout
