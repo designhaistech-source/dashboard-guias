@@ -5,7 +5,7 @@ import { AppSidebar } from "@/components/app-sidebar";
 import { PageHeader } from "@/components/page-header";
 import { SiteFooter } from "@/components/site-footer";
 import { SurfaceCard } from "@/components/surface-card";
-import { CURRENT_USER } from "../data/user";
+import { CURRENT_USER } from "@/lib/current-user";
 
 interface InfoRowProps {
   icon: React.ComponentType<{ className?: string }>;
