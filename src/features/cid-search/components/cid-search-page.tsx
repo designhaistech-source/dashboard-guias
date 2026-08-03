@@ -245,76 +245,12 @@ export function CidSearchPage() {
                     emptyHint="Revise a grafia ou tente um termo mais curto."
                   />
                 </div>
-              </>
-            )}
-          </section>
-
-          {/* Listas de apoio: consulta secundária, agrupadas em abas */}
-          <SurfaceCard>
-            <Tabs defaultValue="favoritos" className="space-y-5">
-              <TabsList className={appTabsListClass}>
-                <TabsTrigger value="favoritos" className={appTabsTriggerClass}>
-                  <Star className={appTabsIconClass} aria-hidden />
-                  <span className={appTabsLabelClass}>Favoritos</span>
-                  <Badge variant="secondary" size="sm" className="tabular-nums">
-                    {favorites.length}
-                  </Badge>
-                </TabsTrigger>
-                <TabsTrigger value="historico" className={appTabsTriggerClass}>
-                  <History className={appTabsIconClass} aria-hidden />
-                  <span className={appTabsLabelClass}>Histórico</span>
-                  <Badge variant="secondary" size="sm" className="tabular-nums">
-                    {historyItems.length}
-                  </Badge>
-                </TabsTrigger>
-              </TabsList>
-
-              <TabsContent value="favoritos">
-                <CidList
-                  items={favoriteItems}
-                  favorites={favorites}
-                  onToggleFavorite={toggleFavorite}
-                  onCopy={copyCode}
-                  emptyTitle="Nenhum favorito salvo"
-                  emptyHint="Toque na estrela de um resultado para salvá-lo aqui."
-                />
-              </TabsContent>
-
-              <TabsContent value="historico" className="space-y-3">
-                <div className="flex flex-wrap items-center justify-between gap-2">
-                  <p className="text-xs text-muted-foreground">
-                    Últimos códigos copiados (máximo de 10).
-                  </p>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    onClick={clearHistory}
-                    disabled={historyItems.length === 0}
-                  >
-                    <Trash2 className="icon-optical h-4 w-4" aria-hidden />
-                    Limpar histórico
-                  </Button>
-                </div>
-
-                <CidList
-                  items={historyItems}
-                  favorites={favorites}
-                  onToggleFavorite={toggleFavorite}
-                  onCopy={copyCode}
-                  emptyTitle="Histórico vazio"
-                  emptyHint="Os códigos copiados aparecem aqui para consulta rápida."
-                />
-              </TabsContent>
-            </Tabs>
-          </SurfaceCard>
-        </div>
-
-        <SiteFooter />
-      </main>
-    </div>
+        </>
+      )}
+    </SearchPageLayout>
   );
 }
+
 
 
 interface CidListProps {
