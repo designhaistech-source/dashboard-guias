@@ -33,6 +33,33 @@ const NATIVE_CONTROLS: Record<string, string> = {
   textarea: "<Textarea> de @/components/ui/textarea",
 };
 
+/**
+ * Padrões de checkbox/radio/switch nativos. Cobrem também atributos escritos em
+ * linhas separadas da abertura da tag (JSX multilinha), que o teste por tag não vê.
+ */
+const NATIVE_SELECTION_CONTROLS: Array<{
+  label: string;
+  pattern: RegExp;
+  replacement: string;
+}> = [
+  {
+    label: 'input type="checkbox"',
+    pattern: /type=\{?["']checkbox["']\}?/,
+    replacement: "<Checkbox> de @/components/ui/checkbox",
+  },
+  {
+    label: 'input type="radio"',
+    pattern: /type=\{?["']radio["']\}?/,
+    replacement: "<RadioGroup> / <RadioGroupItem> de @/components/ui/radio-group",
+  },
+  {
+    label: 'role="switch"',
+    pattern: /role=\{?["']switch["']\}?/,
+    replacement: "<Switch> de @/components/ui/switch",
+  },
+];
+
+
 function collectSourceFiles(dir: string, acc: string[] = []): string[] {
   for (const entry of readdirSync(dir)) {
     const fullPath = join(dir, entry);
@@ -53,10 +80,9 @@ function collectSourceFiles(dir: string, acc: string[] = []): string[] {
   return acc;
 }
 
-function findUnmarkedNativeControls(filePath: string, tag: string): string[] {
+function findUnmarkedMatches(filePath: string, pattern: RegExp): string[] {
   const lines = readFileSync(filePath, "utf8").split("\n");
   const relPath = relative(ROOT, filePath).replaceAll("\\", "/");
-  const pattern = new RegExp(`<${tag}[\\s>/]`);
   const offenders: string[] = [];
 
   lines.forEach((line, index) => {
@@ -72,6 +98,11 @@ function findUnmarkedNativeControls(filePath: string, tag: string): string[] {
 
   return offenders;
 }
+
+function findUnmarkedNativeControls(filePath: string, tag: string): string[] {
+  return findUnmarkedMatches(filePath, new RegExp(`<${tag}[\\s>/]`));
+}
+
 
 describe("design system: controles de UI", () => {
   const files = collectSourceFiles(ROOT);
@@ -91,6 +122,24 @@ describe("design system: controles de UI", () => {
         [
           `Use o componente ${replacement}.`,
           `Se o <${tag}> nativo for intencional, documente com um comentário "${ALLOW_MARKER}: motivo" na própria tag.`,
+          "Ocorrências:",
+          ...offenders,
+        ].join("\n"),
+      ).toEqual([]);
+    });
+  }
+
+  for (const { label, pattern, replacement } of NATIVE_SELECTION_CONTROLS) {
+    it(`não usa ${label} nativo sem marcação ${ALLOW_MARKER}`, () => {
+      const offenders = files.flatMap((file) =>
+        findUnmarkedMatches(file, pattern),
+      );
+
+      expect(
+        offenders,
+        [
+          `Use o componente ${replacement}.`,
+          `Se o controle nativo for intencional, documente com um comentário "${ALLOW_MARKER}: motivo" na própria tag.`,
           "Ocorrências:",
           ...offenders,
         ].join("\n"),
