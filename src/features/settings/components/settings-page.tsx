@@ -147,15 +147,6 @@ export function SettingsPage() {
                 </Field>
               </div>
               <div className="flex flex-wrap justify-end gap-2">
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={() => reset()}
-                  disabled={isSubmitting}
-                >
-                  Limpar
-                </Button>
                 <Button type="submit" size="sm" disabled={isSubmitting}>
                   <KeyRound aria-hidden="true" />
                   Alterar senha
