@@ -287,41 +287,111 @@ function UserMenu({ collapsed }: { collapsed: boolean }) {
     const onClick = (e: MouseEvent) => {
       if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
     };
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setOpen(false);
+    };
     document.addEventListener("mousedown", onClick);
-    return () => document.removeEventListener("mousedown", onClick);
+    document.addEventListener("keydown", onKey);
+    return () => {
+      document.removeEventListener("mousedown", onClick);
+      document.removeEventListener("keydown", onKey);
+    };
   }, [open]);
+
+  const itemClass =
+    "w-full justify-start rounded-none px-4 py-2.5 h-auto gap-3 text-sm font-normal";
+
+  const panel = (
+    <div
+      role="menu"
+      aria-label="Menu do usuário"
+      className={`absolute bottom-full mb-2 w-64 rounded-xl border border-border bg-popover text-popover-foreground shadow-lg overflow-hidden z-50 ${
+        collapsed ? "left-2" : "left-3 right-3 w-auto"
+      }`}
+    >
+      {/* Cabeçalho apenas informativo — sem ação de clique. */}
+      <div className="px-4 py-3 border-b border-border">
+        <div className="text-sm font-semibold text-foreground">{CURRENT_USER.name}</div>
+        <div className="mt-0.5 font-mono text-xs text-muted-foreground">
+          {CURRENT_USER.crm}
+        </div>
+        <div className="mt-1 flex items-center gap-1.5 text-xs text-muted-foreground">
+          <Mail className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
+          <span className="truncate">{CURRENT_USER.email}</span>
+        </div>
+      </div>
+
+      <div className="py-1">
+        <Button asChild variant="ghost" className={itemClass}>
+          <Link to="/perfil" role="menuitem" onClick={() => setOpen(false)}>
+            <CircleUser className="h-4 w-4" aria-hidden="true" />
+            Meu Perfil
+          </Link>
+        </Button>
+        <Button type="button" role="menuitem" variant="ghost" className={itemClass}>
+          <Settings className="h-4 w-4" aria-hidden="true" />
+          Configurações
+        </Button>
+        <div className="flex items-center gap-3 px-4 py-2.5 text-sm">
+          {dark ? (
+            <Sun className="h-4 w-4 shrink-0" aria-hidden="true" />
+          ) : (
+            <Moon className="h-4 w-4 shrink-0" aria-hidden="true" />
+          )}
+          <label htmlFor="pref-dark-mode" className="flex-1 cursor-pointer">
+            Modo escuro
+          </label>
+          <Switch
+            id="pref-dark-mode"
+            checked={dark}
+            onCheckedChange={setDark}
+            aria-label="Modo escuro"
+          />
+        </div>
+        <Button type="button" role="menuitem" variant="ghost" className={itemClass}>
+          <HelpCircle className="h-4 w-4" aria-hidden="true" />
+          Ajuda
+        </Button>
+      </div>
+
+      <div className="border-t border-border py-1">
+        <Button
+          type="button"
+          role="menuitem"
+          variant="ghost"
+          className={`${itemClass} text-destructive hover:text-destructive`}
+        >
+          <LogOut className="h-4 w-4" aria-hidden="true" />
+          Sair
+        </Button>
+      </div>
+    </div>
+  );
 
   if (collapsed) {
     return (
-      <div className="border-t border-sidebar-border flex flex-col items-center py-3 gap-2">
+      <div
+        ref={ref}
+        className="relative border-t border-sidebar-border flex flex-col items-center py-3"
+      >
         <Tooltip>
           <TooltipTrigger asChild>
             <Button
               type="button"
               variant="ghost"
               size="icon"
-              aria-label="Perfil"
+              aria-label="Menu do usuário"
+              aria-haspopup="menu"
+              aria-expanded={open}
+              onClick={() => setOpen((v) => !v)}
               className="h-auto w-auto p-1.5"
             >
               <CircleUser className="h-7 w-7 text-sidebar-muted" strokeWidth={1.5} />
             </Button>
           </TooltipTrigger>
-          <TooltipContent side="right">Dr Fulano</TooltipContent>
+          <TooltipContent side="right">{CURRENT_USER.name}</TooltipContent>
         </Tooltip>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              type="button"
-              variant="ghost"
-              size="icon"
-              aria-label="Sair"
-              className="text-sidebar-muted hover:text-destructive"
-            >
-              <LogOut className="h-4 w-4" />
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent side="right">Sair</TooltipContent>
-        </Tooltip>
+        {open && panel}
       </div>
     );
   }
@@ -329,85 +399,24 @@ function UserMenu({ collapsed }: { collapsed: boolean }) {
   return (
     <div ref={ref} className="relative border-t border-sidebar-border flex items-center">
       <button /* ds-allow: item de perfil do sidebar */
+        type="button"
         onClick={() => setOpen((v) => !v)}
+        aria-haspopup="menu"
+        aria-expanded={open}
         className="flex-1 min-w-0 px-4 py-4 flex items-center gap-3 hover:bg-muted transition-colors text-left"
       >
         <CircleUser className="h-9 w-9 text-sidebar-muted shrink-0" strokeWidth={1.5} />
         <div className="flex-1 min-w-0">
-          <div className="text-sm font-semibold truncate">Dr Fulano</div>
-          <div className="text-xs text-sidebar-muted">CRM 1234/RN</div>
+          <div className="text-sm font-semibold truncate">{CURRENT_USER.name}</div>
+          <div className="text-xs text-sidebar-muted">{CURRENT_USER.crm}</div>
         </div>
-      </button>
-      <button /* ds-allow: menu do perfil do sidebar */
-        type="button"
-        aria-label="Sair"
-        className="shrink-0 mr-3 p-2 rounded-md text-sidebar-muted hover:text-destructive hover:bg-muted transition-colors"
-      >
-        <LogOut className="h-4 w-4" />
       </button>
 
-      {open && (
-        <div className="absolute bottom-full left-3 right-3 mb-2 rounded-xl border border-border bg-popover text-popover-foreground shadow-lg overflow-hidden z-50">
-          <div className="px-4 py-3 border-b border-border">
-            <div className="text-sm font-semibold">Dr Fulano</div>
-            <div className="mt-0.5 flex items-center gap-1.5 text-xs text-muted-foreground">
-              <Mail className="h-3.5 w-3.5" />
-              dr.fulano@haistech.com
-            </div>
-          </div>
-          <div className="py-1">
-            <Button
-              type="button"
-              variant="ghost"
-              onClick={() => setDark((v) => !v)}
-              className="w-full justify-start rounded-none px-4 py-2 h-auto gap-3 text-sm font-normal"
-            >
-              {dark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
-              <span className="flex-1 text-left">Modo {dark ? "claro" : "escuro"}</span>
-              <span
-                className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${
-                  dark ? "bg-primary" : "bg-muted-foreground/30"
-                }`}
-              >
-                <span
-                  className={`inline-block h-4 w-4 transform rounded-full bg-surface transition-transform ${
-                    dark ? "translate-x-4" : "translate-x-0.5"
-                  }`}
-                />
-              </span>
-            </Button>
-            <Button
-              type="button"
-              variant="ghost"
-              className="w-full justify-start rounded-none px-4 py-2 h-auto gap-3 text-sm font-normal"
-            >
-              <Settings className="h-4 w-4" />
-              Configurações
-            </Button>
-            <Button
-              type="button"
-              variant="ghost"
-              className="w-full justify-start rounded-none px-4 py-2 h-auto gap-3 text-sm font-normal"
-            >
-              <HelpCircle className="h-4 w-4" />
-              <span className="flex-1 text-left">Ajuda</span>
-            </Button>
-          </div>
-          <div className="border-t border-border py-1">
-            <Button
-              type="button"
-              variant="ghost"
-              className="w-full justify-start rounded-none px-4 py-2 h-auto gap-3 text-sm font-normal text-destructive hover:text-destructive"
-            >
-              <LogOut className="h-4 w-4" />
-              Sair
-            </Button>
-          </div>
-        </div>
-      )}
+      {open && panel}
     </div>
   );
 }
+
 
 function SidebarGroup({
   label,
