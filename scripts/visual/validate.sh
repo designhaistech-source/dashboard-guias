@@ -22,8 +22,12 @@ echo "==> 4/5 Visual regression"
 python3 scripts/visual/visual-regression.py "$@" || status=1
 
 echo
-echo "==> 5/5 Visual da aba Comparecimento (mobile + desktop)"
+echo "==> 5/6 Visual da aba Comparecimento (mobile + desktop)"
 python3 scripts/visual/check-comparecimento-visual.py "$@" || status=1
+
+echo
+echo "==> 6/6 Abas em Documentos, CID-10 e Emitir guia (alinhamento entre rotas)"
+python3 scripts/visual/check-tabs-cross-route.py "$@" || status=1
 
 echo
 if [ "$status" -eq 0 ]; then
