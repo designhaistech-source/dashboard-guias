@@ -38,6 +38,7 @@ export function SearchPageLayout({
   searchFields,
   onSubmit,
   submitLabel = "Buscar",
+  submitting = false,
   children,
   extra,
   className,
@@ -63,11 +64,15 @@ export function SearchPageLayout({
             {searchFields}
             <Button
               type="submit"
+              disabled={submitting}
+              aria-busy={submitting}
               className="w-full justify-center lg:w-auto lg:px-8"
             >
-              {submitLabel}
+              {submitting && <Loader2 className="animate-spin" />}
+              {submitting ? "Buscando…" : submitLabel}
             </Button>
           </form>
+
 
           <section
             aria-label="Resultados da busca"
