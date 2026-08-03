@@ -560,33 +560,29 @@ function GuideDetailsModal({ row, onClose }: { row: Row | null; onClose: () => v
     : null;
 
   return (
-    <Dialog
+    <AppModal
       open={open}
-      onOpenChange={(v) => {
+      onOpenChange={(v: boolean) => {
         if (!v) {
           setMobileTab("dados");
           onClose();
         }
       }}
-    >
-      <DialogContent size="xl">
-        <DialogHeader>
-          <div className="flex items-center gap-2">
-            <FileUp className="h-5 w-5 text-primary" />
-            <DialogTitle>Detalhes da guia</DialogTitle>
-          </div>
-          {row && (
-            <DialogDescription>
-              {row.file} • ID: {row.id}
-            </DialogDescription>
-          )}
-          {row && (
+      size="xl"
+      unstyledBody
+      icon={<FileUp className="h-5 w-5" />}
+      title="Detalhes da guia"
+      description={row ? `${row.file} • ID: ${row.id}` : undefined}
+      headerExtra={
+        row ? (
+          <>
             <div className="mt-2">
               <TypeBadge type={row.type} />
             </div>
-          )}
-          {row && (
-            <div className="mt-4 grid grid-cols-2 gap-1 rounded-lg bg-muted p-1 lg:hidden" role="tablist">
+            <div
+              className="mt-4 grid grid-cols-2 gap-1 rounded-lg bg-muted p-1 lg:hidden"
+              role="tablist"
+            >
               {(["dados", "guia"] as const).map((tab) => (
                 <Button
                   key={tab}
@@ -605,8 +601,10 @@ function GuideDetailsModal({ row, onClose }: { row: Row | null; onClose: () => v
                 </Button>
               ))}
             </div>
-          )}
-        </DialogHeader>
+          </>
+        ) : undefined
+      }
+    >
 
         {row && details && (
           <DialogBody className="grid grid-cols-1 lg:grid-cols-2 gap-6 bg-muted/30">
