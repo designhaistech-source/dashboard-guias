@@ -59,6 +59,47 @@ const NATIVE_SELECTION_CONTROLS: Array<{
   },
 ];
 
+/**
+ * Dropdowns, menus e popovers nativos. Menus devem vir de DropdownMenu,
+ * Select, Command (combobox), Popover ou Collapsible do design system.
+ */
+const NATIVE_MENU_CONTROLS: Array<{
+  label: string;
+  pattern: RegExp;
+  replacement: string;
+}> = [
+  {
+    label: "<menu>",
+    pattern: /<menu[\s>/]/,
+    replacement: "<DropdownMenu> de @/components/ui/dropdown-menu",
+  },
+  {
+    label: "<datalist>",
+    pattern: /<datalist[\s>/]/,
+    replacement: "<Command> / <Combobox> de @/components/ui/command",
+  },
+  {
+    label: "<option> / <optgroup>",
+    pattern: /<(option|optgroup)[\s>/]/,
+    replacement: "<SelectItem> / <SelectGroup> de @/components/ui/select",
+  },
+  {
+    label: "<details> / <summary>",
+    pattern: /<(details|summary)[\s>/]/,
+    replacement: "<Collapsible> de @/components/ui/collapsible",
+  },
+  {
+    label: 'role="menu" / role="menuitem"',
+    pattern: /role=\{?["']menu(item|bar)?(checkbox|radio)?["']\}?/,
+    replacement: "<DropdownMenu> / <DropdownMenuItem> de @/components/ui/dropdown-menu",
+  },
+  {
+    label: 'role="listbox" / role="option"',
+    pattern: /role=\{?["'](listbox|option)["']\}?/,
+    replacement: "<Select> ou <Command> de @/components/ui/*",
+  },
+];
+
 
 function collectSourceFiles(dir: string, acc: string[] = []): string[] {
   for (const entry of readdirSync(dir)) {
@@ -129,7 +170,10 @@ describe("design system: controles de UI", () => {
     });
   }
 
-  for (const { label, pattern, replacement } of NATIVE_SELECTION_CONTROLS) {
+  for (const { label, pattern, replacement } of [
+    ...NATIVE_SELECTION_CONTROLS,
+    ...NATIVE_MENU_CONTROLS,
+  ]) {
     it(`não usa ${label} nativo sem marcação ${ALLOW_MARKER}`, () => {
       const offenders = files.flatMap((file) =>
         findUnmarkedMatches(file, pattern),
