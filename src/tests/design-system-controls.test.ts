@@ -80,10 +80,9 @@ function collectSourceFiles(dir: string, acc: string[] = []): string[] {
   return acc;
 }
 
-function findUnmarkedNativeControls(filePath: string, tag: string): string[] {
+function findUnmarkedMatches(filePath: string, pattern: RegExp): string[] {
   const lines = readFileSync(filePath, "utf8").split("\n");
   const relPath = relative(ROOT, filePath).replaceAll("\\", "/");
-  const pattern = new RegExp(`<${tag}[\\s>/]`);
   const offenders: string[] = [];
 
   lines.forEach((line, index) => {
@@ -99,6 +98,11 @@ function findUnmarkedNativeControls(filePath: string, tag: string): string[] {
 
   return offenders;
 }
+
+function findUnmarkedNativeControls(filePath: string, tag: string): string[] {
+  return findUnmarkedMatches(filePath, new RegExp(`<${tag}[\\s>/]`));
+}
+
 
 describe("design system: controles de UI", () => {
   const files = collectSourceFiles(ROOT);
