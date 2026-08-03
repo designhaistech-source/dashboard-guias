@@ -380,9 +380,6 @@ function UserMenu({ collapsed }: { collapsed: boolean }) {
           <Link to="/perfil" aria-current={pathname === "/perfil" ? "page" : undefined}>
             <CircleUser className="h-4 w-4" aria-hidden="true" />
             <span className="flex-1">Meu Perfil</span>
-            {pathname === "/perfil" && (
-              <span className="text-xs text-muted-foreground">Atual</span>
-            )}
           </Link>
         </DropdownMenuItem>
         <DropdownMenuItem className={itemClass}>
