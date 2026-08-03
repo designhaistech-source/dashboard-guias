@@ -257,14 +257,16 @@ export function KitsModal({
               {kits.length !== filtrados.length && ` de ${kits.length}`}
             </span>
             {filtrosAtivos && (
-              <button
-                type="button"
+              <Button
+                variant="link"
+                size="sm"
+                className="h-auto p-0"
                 onClick={limparFiltros}
-                className="text-primary hover:underline"
               >
                 Limpar filtros
-              </button>
+              </Button>
             )}
+
           </div>
         </DialogToolbar>
 
