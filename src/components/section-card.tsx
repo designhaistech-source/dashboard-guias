@@ -39,11 +39,13 @@ export function SectionCard({
   actions,
   className,
   bodyClassName,
+  innerRef,
   children,
 }: SectionCardProps) {
   return (
     <section id={id} className={cn("scroll-mt-4", className)}>
-      <div className="rounded-2xl border border-border bg-card shadow-xs">
+      <div ref={innerRef} className="rounded-2xl border border-border bg-card shadow-xs">
+
         <div className="flex flex-col gap-3 p-5 lg:flex-row lg:items-start lg:justify-between lg:gap-4">
           <div className="flex min-w-0 flex-1 items-start gap-3">
             {icon && (
