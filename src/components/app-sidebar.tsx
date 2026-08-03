@@ -286,6 +286,7 @@ function SidebarNav({
 
 function UserMenu({ collapsed }: { collapsed: boolean }) {
   const [dark, setDark] = useState(false);
+  const pathname = useRouterState({ select: (state) => state.location.pathname });
 
   useEffect(() => {
     document.documentElement.classList.toggle("dark", dark);
@@ -300,33 +301,60 @@ function UserMenu({ collapsed }: { collapsed: boolean }) {
       sideOffset={8}
       className="w-64 p-0 overflow-hidden"
     >
-      {/* Cabeçalho apenas informativo — sem ação de clique. */}
+      {/* Cabeçalho informativo em 2 linhas: identidade + identificadores secundários. */}
       <DropdownMenuLabel className="px-4 py-3 font-normal">
-        <div className="text-sm font-semibold text-foreground">{CURRENT_USER.name}</div>
-        <div className="mt-0.5 font-mono text-xs text-muted-foreground">
-          {CURRENT_USER.crm}
-        </div>
-        <div className="mt-1 flex items-center gap-1.5 text-xs text-muted-foreground">
-          <Mail className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
-          <span className="truncate" title={CURRENT_USER.email}>
-            {CURRENT_USER.email}
-          </span>
+        <div className="flex items-center gap-3 min-w-0">
+          <CircleUser
+            className="h-8 w-8 shrink-0 text-muted-foreground"
+            strokeWidth={1.5}
+            aria-hidden="true"
+          />
+          <div className="min-w-0">
+            <div className="text-sm font-semibold text-foreground truncate">
+              {CURRENT_USER.name}
+            </div>
+            <div
+              className="text-xs text-muted-foreground truncate"
+              title={`${CURRENT_USER.crm} · ${CURRENT_USER.email}`}
+            >
+              {CURRENT_USER.crm} · {CURRENT_USER.email}
+            </div>
+          </div>
         </div>
       </DropdownMenuLabel>
       <DropdownMenuSeparator className="mx-0 my-0" />
 
+      {/* Bloco 1 — conta e sistema (destinos). */}
       <DropdownMenuGroup className="py-1">
         <DropdownMenuItem asChild className={itemClass}>
-          <Link to="/perfil">
+          <Link to="/perfil" aria-current={pathname === "/perfil" ? "page" : undefined}>
             <CircleUser className="h-4 w-4" aria-hidden="true" />
-            Meu Perfil
+            <span className="flex-1">Meu Perfil</span>
+            {pathname === "/perfil" && (
+              <span className="text-xs text-muted-foreground">Atual</span>
+            )}
           </Link>
         </DropdownMenuItem>
         <DropdownMenuItem className={itemClass}>
           <Settings className="h-4 w-4" aria-hidden="true" />
           Configurações
         </DropdownMenuItem>
-        {/* Preferência rápida: mantém o menu aberto ao alternar. */}
+      </DropdownMenuGroup>
+
+      <DropdownMenuSeparator className="mx-0 my-0" />
+
+      {/* Bloco 2 — suporte. */}
+      <DropdownMenuGroup className="py-1">
+        <DropdownMenuItem className={itemClass}>
+          <HelpCircle className="h-4 w-4" aria-hidden="true" />
+          Ajuda
+        </DropdownMenuItem>
+      </DropdownMenuGroup>
+
+      <DropdownMenuSeparator className="mx-0 my-0" />
+
+      {/* Bloco 3 — preferência rápida: mantém o menu aberto ao alternar. */}
+      <DropdownMenuGroup className="py-1">
         <DropdownMenuItem
           className={itemClass}
           onSelect={(event) => {
@@ -347,13 +375,11 @@ function UserMenu({ collapsed }: { collapsed: boolean }) {
             className="pointer-events-none"
           />
         </DropdownMenuItem>
-        <DropdownMenuItem className={itemClass}>
-          <HelpCircle className="h-4 w-4" aria-hidden="true" />
-          Ajuda
-        </DropdownMenuItem>
       </DropdownMenuGroup>
 
       <DropdownMenuSeparator className="mx-0 my-0" />
+
+      {/* Bloco 4 — sessão. */}
       <DropdownMenuGroup className="py-1">
         <DropdownMenuItem
           className={`${itemClass} text-destructive focus:text-destructive`}
