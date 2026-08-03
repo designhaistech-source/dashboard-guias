@@ -812,6 +812,8 @@ function EmitirPage() {
               {/* Convênio / Estabelecimento */}
               {convenioId === "tiss" ? (
                 <Section
+                  number={stepNumber("convenio")}
+                  done={convenioOk}
                   icon={<Building2 className="h-4 w-4" />}
                   title="Convênio e atendimento"
                   description="Operadora responsável e caráter da solicitação."
@@ -885,6 +887,8 @@ function EmitirPage() {
                 </Section>
               ) : (
                 <Section
+                  number={stepNumber("convenio")}
+                  done={convenioOk}
                   icon={<Building2 className="h-4 w-4" />}
                   title="Estabelecimento (SUS)"
                   description="Unidade executante e identificação DATASUS."
@@ -918,6 +922,8 @@ function EmitirPage() {
               {/* Detalhes específicos por tipo de guia */}
               {guideKind === "internacao" && (
                 <Section
+                  number={stepNumber("internacao")}
+                  done={especificoOk}
                   icon={<BedDouble className="h-4 w-4" />}
                   title="Dados da internação"
                   description="Regime, acomodação e previsão de permanência."
@@ -962,6 +968,8 @@ function EmitirPage() {
 
               {guideKind === "apac" && (
                 <Section
+                  number={stepNumber("apac")}
+                  done={especificoOk}
                   icon={<HeartPulse className="h-4 w-4" />}
                   title="Dados da APAC"
                   description="Competência e tipo de autorização."
@@ -989,6 +997,8 @@ function EmitirPage() {
 
               {guideKind === "aih" && (
                 <Section
+                  number={stepNumber("aih")}
+                  done={especificoOk}
                   icon={<Hospital className="h-4 w-4" />}
                   title="Dados da AIH"
                   description="Caráter da internação e motivo."
@@ -1016,6 +1026,8 @@ function EmitirPage() {
 
               {/* Paciente */}
               <Section
+                number={stepNumber("paciente")}
+                done={pacienteOk}
                 icon={<User className="h-4 w-4" />}
                 title="Beneficiário / Paciente"
                 description="Identificação do paciente na operadora."
@@ -1066,6 +1078,8 @@ function EmitirPage() {
 
               {/* Solicitante */}
               <Section
+                number={stepNumber("profissional")}
+                done={profissionalOk}
                 icon={<Stethoscope className="h-4 w-4" />}
                 title="Profissional solicitante"
                 description="Médico responsável pela emissão."
@@ -1129,6 +1143,8 @@ function EmitirPage() {
 
               {/* Clínico */}
               <Section
+                number={stepNumber("clinico")}
+                done={clinicoOk}
                 icon={<FileText className="h-4 w-4" />}
                 title="Dados clínicos"
                 description="Hipótese diagnóstica e justificativa técnica."
@@ -1166,6 +1182,7 @@ function EmitirPage() {
 
               {/* Kits */}
               <Section
+                number={stepNumber("kits")}
                 icon={<Package className="h-4 w-4" />}
                 title="Kits"
                 description="Aplique um conjunto de procedimentos salvo ou por especialidade."
@@ -1235,6 +1252,8 @@ function EmitirPage() {
 
               {/* Procedimentos */}
               <Section
+                number={stepNumber("procedimentos")}
+                done={procedimentosOk}
                 icon={<ClipboardList className="h-4 w-4" />}
                 title={
                   <span className="flex items-center gap-2">
@@ -1354,6 +1373,8 @@ function EmitirPage() {
 
               {/* OPME */}
               <Section
+                number={stepNumber("opme")}
+                done={opmeOk}
                 icon={<Wrench className="h-4 w-4" />}
                 title="OPME — Órteses, Próteses e Materiais Especiais"
                 description="Arraste para reordenar. Adicione materiais/próteses solicitados (opcional)."
@@ -1434,6 +1455,8 @@ function EmitirPage() {
 
               {/* Assinatura */}
               <Section
+                number={stepNumber("assinatura")}
+                done={assinaturaOk}
                 icon={<User className="h-4 w-4" />}
                 title="Assinatura do Solicitante"
                 description="Nome do profissional responsável pela emissão."
