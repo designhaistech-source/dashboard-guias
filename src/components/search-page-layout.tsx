@@ -1,4 +1,6 @@
 import type { FormEvent, ReactNode } from "react";
+import { Loader2 } from "lucide-react";
+
 
 import { AppBreadcrumb } from "@/components/app-breadcrumb";
 import { AppSidebar, type ItemKey } from "@/components/app-sidebar";
@@ -17,6 +19,9 @@ interface SearchPageLayoutProps {
   onSubmit: (event: FormEvent) => void;
   /** Rótulo do botão de submit da busca. */
   submitLabel?: string;
+  /** Busca em andamento — desabilita o submit e mostra o rótulo de espera. */
+  submitting?: boolean;
+
   /** Conteúdo da seção de resultados. */
   children: ReactNode;
   /** Blocos adicionais abaixo dos resultados (ex.: favoritos e histórico). */
@@ -35,6 +40,7 @@ export function SearchPageLayout({
   searchFields,
   onSubmit,
   submitLabel = "Buscar",
+  submitting = false,
   children,
   extra,
   className,
@@ -60,11 +66,15 @@ export function SearchPageLayout({
             {searchFields}
             <Button
               type="submit"
+              disabled={submitting}
+              aria-busy={submitting}
               className="w-full justify-center lg:w-auto lg:px-8"
             >
-              {submitLabel}
+              {submitting && <Loader2 className="animate-spin" />}
+              {submitting ? "Buscando…" : submitLabel}
             </Button>
           </form>
+
 
           <section
             aria-label="Resultados da busca"

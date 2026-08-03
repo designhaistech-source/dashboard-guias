@@ -5,7 +5,7 @@ import { SearchPageLayout } from "@/components/search-page-layout";
 import { SearchInput, SelectField } from "@/components/form-field";
 import { Button } from "@/components/ui/button";
 
-import { EmptyState } from "@/components/data-state";
+import { EmptyState, ErrorState, LoadingState } from "@/components/data-state";
 import {
   DataTable,
   DataTableRoot,
@@ -31,23 +31,53 @@ const SUGGESTED_TERMS = [
   "biópsia",
 ];
 
+/**
+ * Consulta assíncrona simulada (dados sintéticos). O termo "erro" força a
+ * falha para permitir validar o estado de erro do protótipo.
+ */
+function fetchProcedures(
+  term: string,
+  referencia: string,
+): Promise<ProcedureMatch[]> {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      if (term.trim().toLowerCase().includes("erro")) {
+        reject(new Error("Falha simulada na consulta de procedimentos"));
+        return;
+      }
+      resolve(searchProcedures(term, referencia));
+    }, 500);
+  });
+}
+
 export function ProcedureSearchPage() {
   const [term, setTerm] = useState("");
   const [referencia, setReferencia] = useState("todas");
   const [results, setResults] = useState<ProcedureMatch[] | null>(null);
+  const [status, setStatus] = useState<"idle" | "loading" | "error" | "done">(
+    "idle",
+  );
   const [lastQuery, setLastQuery] = useState("");
 
-  function runSearch(nextTerm: string, nextReferencia: string) {
+  async function runSearch(nextTerm: string, nextReferencia: string) {
     setTerm(nextTerm);
     setReferencia(nextReferencia);
     setLastQuery(nextTerm.trim());
-    setResults(searchProcedures(nextTerm, nextReferencia));
+    setStatus("loading");
+    try {
+      setResults(await fetchProcedures(nextTerm, nextReferencia));
+      setStatus("done");
+    } catch {
+      setResults(null);
+      setStatus("error");
+    }
   }
 
   function handleSearch(event?: React.FormEvent) {
     event?.preventDefault();
-    runSearch(term, referencia);
+    void runSearch(term, referencia);
   }
+
 
   return (
     <SearchPageLayout
@@ -55,6 +85,8 @@ export function ProcedureSearchPage() {
       title="Buscar procedimento"
       description="Consulte códigos e descrições de procedimentos por referência (Tuss e Sigtap) para usar em guias e solicitações."
       onSubmit={handleSearch}
+      submitting={status === "loading"}
+
       searchFields={
         <>
           <div className="min-w-0 flex-1">
@@ -78,7 +110,21 @@ export function ProcedureSearchPage() {
         </>
       }
     >
-      {results === null ? (
+      {status === "loading" ? (
+        <LoadingState
+          size="lg"
+          title="Buscando procedimentos…"
+          description="Estamos consultando as referências selecionadas."
+        />
+      ) : status === "error" ? (
+        <ErrorState
+          size="lg"
+          title="Não foi possível buscar procedimentos"
+          description="Verifique sua conexão e tente novamente em alguns instantes."
+          onRetry={() => void runSearch(term, referencia)}
+        />
+      ) : results === null ? (
+
               <EmptyState
                 size="lg"
                 icon={<Search className="h-12 w-12" />}
@@ -138,6 +184,8 @@ export function ProcedureSearchPage() {
                           setReferencia("todas");
                           setLastQuery("");
                           setResults(null);
+                          setStatus("idle");
+
                         }}
                       >
                         Limpar busca

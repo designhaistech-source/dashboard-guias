@@ -10,7 +10,7 @@ import {
 } from "@/components/app-tabs";
 import { SearchPageLayout } from "@/components/search-page-layout";
 import { SearchInput } from "@/components/form-field";
-import { EmptyState } from "@/components/data-state";
+import { EmptyState, ErrorState, LoadingState } from "@/components/data-state";
 import { SurfaceCard } from "@/components/surface-card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -39,10 +39,29 @@ function searchCid(term: string): CidItem[] {
   );
 }
 
+/**
+ * Consulta assíncrona simulada (dados sintéticos). O termo "erro" força a
+ * falha para permitir validar o estado de erro do protótipo.
+ */
+function fetchCid(term: string): Promise<CidItem[]> {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      if (normalize(term).includes("erro")) {
+        reject(new Error("Falha simulada na consulta da CID-10"));
+        return;
+      }
+      resolve(searchCid(term));
+    }, 500);
+  });
+}
+
 /** Página de consulta da CID-10 com favoritos e histórico. */
 export function CidSearchPage() {
   const [term, setTerm] = useState("");
   const [results, setResults] = useState<CidItem[] | null>(null);
+  const [status, setStatus] = useState<"idle" | "loading" | "error" | "done">(
+    "idle",
+  );
   const [lastQuery, setLastQuery] = useState("");
   const [favorites, setFavorites] = useState<string[]>(["I10"]);
   const [history, setHistory] = useState<string[]>([]);
@@ -52,16 +71,31 @@ export function CidSearchPage() {
     [favorites],
   );
 
-  function runSearch(nextTerm: string) {
+  async function runSearch(nextTerm: string) {
     setTerm(nextTerm);
     setLastQuery(nextTerm.trim());
-    setResults(nextTerm.trim() ? searchCid(nextTerm) : null);
+
+    if (!nextTerm.trim()) {
+      setResults(null);
+      setStatus("idle");
+      return;
+    }
+
+    setStatus("loading");
+    try {
+      setResults(await fetchCid(nextTerm));
+      setStatus("done");
+    } catch {
+      setResults(null);
+      setStatus("error");
+    }
   }
 
   function handleSearch(event?: React.FormEvent) {
     event?.preventDefault();
-    runSearch(term);
+    void runSearch(term);
   }
+
 
   function toggleFavorite(codigo: string) {
     setFavorites((prev) =>
@@ -103,6 +137,8 @@ export function CidSearchPage() {
       title="Busca CID-10"
       description="Consulte códigos da Classificação Internacional de Doenças por código ou termo, com favoritos e histórico."
       onSubmit={handleSearch}
+      submitting={status === "loading"}
+
       searchFields={
         <div className="min-w-0 flex-1">
           <SearchInput
@@ -116,6 +152,8 @@ export function CidSearchPage() {
               setTerm("");
               setLastQuery("");
               setResults(null);
+              setStatus("idle");
+
             }}
           />
         </div>
@@ -184,7 +222,21 @@ export function CidSearchPage() {
         </>
       }
     >
-      {results === null ? (
+      {status === "loading" ? (
+        <LoadingState
+          size="lg"
+          title="Buscando códigos CID-10…"
+          description="Estamos consultando a tabela CID-10."
+        />
+      ) : status === "error" ? (
+        <ErrorState
+          size="lg"
+          title="Não foi possível buscar códigos CID-10"
+          description="Verifique sua conexão e tente novamente em alguns instantes."
+          onRetry={() => void runSearch(lastQuery || term)}
+        />
+      ) : results === null ? (
+
 
               <EmptyState
                 size="lg"
