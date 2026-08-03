@@ -544,6 +544,45 @@ function EmitirPage() {
   const [splitInGuides, setSplitInGuides] = useState(false);
   const filledProceduresCount = procedures.filter((p) => p.code.trim() && p.description.trim()).length;
 
+  // Autosave do rascunho + indicador "salvo HH:MM" no cabeçalho.
+  const { savedAt } = useDraftAutosave({
+    key: "hg:emitir:rascunho",
+    data: {
+      pacienteNome,
+      pacienteCarteira,
+      pacienteCpf,
+      pacienteNascimento,
+      pacienteSexo,
+      cidPrincipal,
+      indicacaoClinica,
+      observacoes,
+      procedures,
+      opmeItems,
+    },
+    isEmpty: (d) =>
+      !d.pacienteNome.trim() &&
+      !d.pacienteCarteira.trim() &&
+      !d.pacienteCpf.trim() &&
+      !d.cidPrincipal.trim() &&
+      !d.indicacaoClinica.trim() &&
+      !d.observacoes.trim() &&
+      !d.procedures.some((p) => p.code.trim() || p.description.trim()) &&
+      d.opmeItems.length === 0,
+    onRestore: (d) => {
+      setPacienteNome(d.pacienteNome);
+      setPacienteCarteira(d.pacienteCarteira);
+      setPacienteCpf(d.pacienteCpf);
+      setPacienteNascimento(d.pacienteNascimento);
+      setPacienteSexo(d.pacienteSexo);
+      setCidPrincipal(d.cidPrincipal);
+      setIndicacaoClinica(d.indicacaoClinica);
+      setObservacoes(d.observacoes);
+      if (Array.isArray(d.procedures) && d.procedures.length) setProcedures(d.procedures);
+      if (Array.isArray(d.opmeItems)) setOpmeItems(d.opmeItems);
+    },
+  });
+
+
   /** Ordem dos tópicos numerados do formulário (varia conforme o tipo de guia). */
   const stepKeys: string[] = [
     "convenio",
