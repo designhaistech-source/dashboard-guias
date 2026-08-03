@@ -1451,13 +1451,6 @@ function PrescricaoForm() {
               </span>
             ) : null}
             <ActionBtn
-              onClick={() => setKitsAberto(true)}
-              icon={<BookMarked className="h-3.5 w-3.5" />}
-              size="sm"
-            >
-              Kits salvos
-            </ActionBtn>
-            <ActionBtn
               onClick={() => setHistoricoAberto((v) => !v)}
               icon={<History className="h-3.5 w-3.5" />}
               size="sm"
