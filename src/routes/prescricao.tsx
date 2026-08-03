@@ -1704,29 +1704,21 @@ function PrescricaoForm() {
       </section>
 
       {/* Seção 2 — Medicamentos */}
-      <section id="sec-medicamentos" className="scroll-mt-4 space-y-5">
-
-          <div className="rounded-2xl border border-border bg-card shadow-xs p-5 space-y-4">
-            <div className="flex flex-col items-start gap-2 sm:flex-row sm:items-start sm:justify-between sm:gap-3">
-
-            <div className="min-w-0 w-full sm:flex-1">
-              <h2 className="text-base font-semibold text-foreground">2. Buscar e adicionar medicamentos</h2>
-              <p className="text-xs text-muted-foreground">
-                Busque pelo nome do medicamento para adicionar à prescrição. Medicamentos controlados são identificados automaticamente e geram receituário especial.
-              </p>
-            </div>
-
-
-            <div className="flex w-full shrink-0 flex-wrap items-center gap-2 sm:w-auto">
-              <ActionBtn
-                onClick={() => setKitsAberto(true)}
-                icon={<BookMarked className="h-3.5 w-3.5" />}
-                size="sm"
-              >
-                Kits salvos
-              </ActionBtn>
+      <SectionCard
+        id="sec-medicamentos"
+        number={2}
+        title="Buscar e adicionar medicamentos"
+        description="Busque pelo nome do medicamento para adicionar à prescrição. Medicamentos controlados são identificados automaticamente e geram receituário especial."
+        actions={
+          <>
+            <ActionBtn
+              onClick={() => setKitsAberto(true)}
+              icon={<BookMarked className="h-3.5 w-3.5" />}
+              size="sm"
+            >
+              Kits salvos
+            </ActionBtn>
             {itens.length > 0 && (
-
               <Chip
                 size="sm"
                 onClick={() =>
@@ -1753,8 +1745,10 @@ function PrescricaoForm() {
                 <ChevronRight className="h-3 w-3" />
               </Chip>
             )}
-            </div>
-            </div>
+          </>
+        }
+      >
+
 
 
 
