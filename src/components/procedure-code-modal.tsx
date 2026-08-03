@@ -2,6 +2,12 @@ import { useMemo, useState } from "react";
 import { AppModal } from "@/components/app-modal";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
+  DataTableCardList,
+  DataTableCard,
+  DataTableCardHeader,
+  DataTableCardFields,
+} from "@/components/data-table";
+import {
   REFERENCE_LABELS,
   searchProcedures,
   type ProcedureReference,
