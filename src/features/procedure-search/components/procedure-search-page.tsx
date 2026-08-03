@@ -14,6 +14,10 @@ import {
   DataTableRow,
   DataTableHead,
   DataTableCell,
+  DataTableCardList,
+  DataTableCard,
+  DataTableCardHeader,
+  DataTableCardFields,
 } from "@/components/data-table";
 import {
   REFERENCE_OPTIONS,
