@@ -60,17 +60,18 @@ export function FormActionBar({
           <span aria-hidden />
         )}
         {children && (
-          <div className="grid grid-cols-1 gap-2 sm:flex sm:flex-wrap sm:items-center sm:justify-end">
+          <div className="grid min-w-0 grid-cols-1 gap-2 xs:grid-cols-2 sm:flex sm:flex-wrap sm:items-center sm:justify-end [&>*]:w-full [&>*]:min-w-0 [&>*]:justify-center sm:[&>*]:w-auto">
             {children}
           </div>
         )}
       </div>
       {note && (
-        <p className="mt-3 flex items-start gap-1.5 border-t border-border/60 pt-2 text-[11px] leading-relaxed text-muted-foreground/70">
+        <p className="mt-3 flex items-start gap-1.5 border-t border-border/60 pt-2 text-xs leading-relaxed text-muted-foreground/80 sm:text-[11px] sm:text-muted-foreground/70">
           <Info className="mt-0.5 h-3 w-3 shrink-0" aria-hidden="true" />
           <span>{note}</span>
         </p>
       )}
+
     </div>
   );
 }
