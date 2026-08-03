@@ -10,7 +10,7 @@ import {
 } from "@/components/app-tabs";
 import { SearchPageLayout } from "@/components/search-page-layout";
 import { SearchInput } from "@/components/form-field";
-import { EmptyState } from "@/components/data-state";
+import { EmptyState, ErrorState, LoadingState } from "@/components/data-state";
 import { SurfaceCard } from "@/components/surface-card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
