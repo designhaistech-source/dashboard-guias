@@ -16,7 +16,6 @@ import {
   History,
   RefreshCw,
   Trash2,
-  ChevronDown,
   Cloud,
   BookMarked,
   AlertCircle,
@@ -573,8 +572,8 @@ function PrescricaoForm() {
   const [historico, setHistorico] = useState<Historico[]>([]);
   const [historicoAberto, setHistoricoAberto] = useState(false);
   const [kitsAberto, setKitsAberto] = useState(false);
-  const [pacienteCollapsed, setPacienteCollapsed] = useState(false);
-  const [buscaCollapsed, setBuscaCollapsed] = useState(false);
+
+
   const hidratado = useRef(false);
   const [step, setStep] = useState<1 | 2 | 3>(1);
   const [triedEmit, setTriedEmit] = useState(false);
@@ -1499,28 +1498,16 @@ function PrescricaoForm() {
       <section id="sec-paciente" className="scroll-mt-4">
         <div className="rounded-2xl border border-border bg-card shadow-xs p-5 space-y-4">
           <div className="flex flex-wrap items-start justify-between gap-3">
-            <Button
-              type="button"
-              variant="ghost"
-              onClick={() => setPacienteCollapsed((v) => !v)}
-              className="flex h-auto items-start justify-start gap-2 whitespace-normal p-0 text-left font-normal hover:bg-transparent group min-w-0"
-              aria-expanded={!pacienteCollapsed}
-            >
-              <ChevronDown
-                className={`h-4 w-4 mt-1 text-muted-foreground transition-transform ${pacienteCollapsed ? "-rotate-90" : ""}`}
-              />
-              <div className="min-w-0">
-                <h2 className="text-base font-semibold group-hover:text-foreground">1. Dados do paciente</h2>
-                <p className="text-xs text-muted-foreground">
-                  {pacienteCollapsed && paciente
-                    ? paciente + (especial ? " · Receita especial" : "")
-                    : "Identifique o paciente. Campos de CPF e endereço aparecem para receita especial."}
-                </p>
-              </div>
-            </Button>
+            <div className="min-w-0">
+              <h2 className="text-base font-semibold text-foreground">1. Dados do paciente</h2>
+              <p className="text-xs text-muted-foreground">
+                Identifique o paciente. Campos de CPF e endereço aparecem para receita especial.
+              </p>
+            </div>
           </div>
 
-          {!pacienteCollapsed && (<>
+          <>
+
           <Field id="paciente-input" label="Nome do paciente" required>
             <SearchInput
               ref={pacienteRef}
@@ -1743,7 +1730,8 @@ function PrescricaoForm() {
               </div>
             </div>
           )}
-          </>)}
+          </>
+
         </div>
       </section>
 
@@ -1753,25 +1741,14 @@ function PrescricaoForm() {
           <div className="rounded-2xl border border-border bg-card shadow-xs p-5 space-y-4">
             <div className="flex flex-col items-start gap-2 sm:flex-row sm:items-start sm:justify-between sm:gap-3">
 
-            <Button
-              type="button"
-              variant="ghost"
-              onClick={() => setBuscaCollapsed((v) => !v)}
-              className="flex h-auto items-start justify-start gap-2 whitespace-normal p-0 text-left font-normal hover:bg-transparent group min-w-0 w-full sm:flex-1"
-              aria-expanded={!buscaCollapsed}
-            >
-              <ChevronDown
-                className={`h-4 w-4 mt-1 text-muted-foreground transition-transform ${buscaCollapsed ? "-rotate-90" : ""}`}
-              />
-              <div className="min-w-0">
-                <h2 className="text-base font-semibold group-hover:text-foreground">2. Buscar e adicionar medicamentos</h2>
-                <p className="text-xs text-muted-foreground">
-                  {buscaCollapsed
-                    ? `${itens.length} ${itens.length === 1 ? "medicamento adicionado" : "medicamentos adicionados"}`
-                    : "Busque pelo nome do medicamento para adicionar à prescrição. Medicamentos controlados são identificados automaticamente e geram receituário especial."}
-                </p>
-              </div>
-            </Button>
+            <div className="min-w-0 w-full sm:flex-1">
+              <h2 className="text-base font-semibold text-foreground">2. Buscar e adicionar medicamentos</h2>
+              <p className="text-xs text-muted-foreground">
+                Busque pelo nome do medicamento para adicionar à prescrição. Medicamentos controlados são identificados automaticamente e geram receituário especial.
+              </p>
+            </div>
+
+
             {itens.length > 0 && (
               <Chip
                 size="sm"
@@ -1802,7 +1779,7 @@ function PrescricaoForm() {
             </div>
 
 
-            {!buscaCollapsed && (<>
+            <>
             <div className="grid gap-3 lg:grid-cols-[minmax(0,1fr)_220px]">
               <SearchInput
                 id="med-search"
@@ -1873,7 +1850,7 @@ function PrescricaoForm() {
                 onAdd={(pos) => addItem(editing, pos)}
               />
             )}
-            </>)}
+            </>
           </div>
 
 

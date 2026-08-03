@@ -168,7 +168,7 @@ function OpmePage() {
   const [convenioCollapsed, setConvenioCollapsed] = useState(false);
   const [clinicoCollapsed, setClinicoCollapsed] = useState(false);
   const [materiaisCollapsed, setMateriaisCollapsed] = useState(false);
-  const [profCollapsed, setProfCollapsed] = useState(true);
+  const [profCollapsed, setProfCollapsed] = useState(false);
   const [showTopBtn, setShowTopBtn] = useState(false);
 
   useEffect(() => {
@@ -862,8 +862,6 @@ function SectionCard({
   number,
   title,
   summary,
-  collapsed,
-  onToggle,
   done,
   headerRight,
   children,
@@ -872,8 +870,9 @@ function SectionCard({
   number: number;
   title: string;
   summary: string;
-  collapsed: boolean;
-  onToggle: () => void;
+  /** Mantido por compatibilidade: as seções são sempre visíveis. */
+  collapsed?: boolean;
+  onToggle?: () => void;
   done: boolean;
   headerRight?: React.ReactNode;
   children: React.ReactNode;
@@ -882,38 +881,22 @@ function SectionCard({
     <section id={id} className="scroll-mt-4">
       <div className="rounded-2xl border border-border bg-card shadow-xs p-5 space-y-4">
         <div className="flex flex-wrap items-start justify-between gap-3">
-          <Button
-            type="button"
-            variant="ghost"
-            onClick={onToggle}
-            className="h-auto flex-1 min-w-0 items-start justify-start gap-2 whitespace-normal p-0 text-left font-normal hover:bg-transparent group"
-            aria-expanded={!collapsed}
-          >
-            <ChevronDown
-              className={`h-4 w-4 mt-1 text-muted-foreground transition-transform ${
-                collapsed ? "-rotate-90" : ""
-              }`}
-            />
-            <div className="min-w-0 flex-1">
-              <h2 className="text-base font-semibold group-hover:text-foreground flex items-center gap-2 whitespace-nowrap">
-                <span>
-                  {number}. {title}
-                </span>
-                {done && (
-                  <CheckCircle2 className="h-4 w-4 text-success-strong" />
-                )}
-              </h2>
-              <p className={`text-xs text-muted-foreground mt-0.5 ${collapsed ? "truncate" : ""}`}>{summary}</p>
-            </div>
-          </Button>
-          {headerRight && !collapsed && (
-            <div className="w-full lg:w-auto" onClick={(e) => e.stopPropagation()}>{headerRight}</div>
-          )}
+          <div className="min-w-0 flex-1">
+            <h2 className="flex items-center gap-2 text-base font-semibold text-foreground">
+              <span className="min-w-0">
+                {number}. {title}
+              </span>
+              {done && <CheckCircle2 className="h-4 w-4 shrink-0 text-success-strong" />}
+            </h2>
+            <p className="mt-0.5 text-xs text-muted-foreground">{summary}</p>
+          </div>
+          {headerRight && <div className="w-full lg:w-auto">{headerRight}</div>}
         </div>
-        {!collapsed && <div className="pt-1">{children}</div>}
+        <div className="pt-1">{children}</div>
       </div>
     </section>
   );
 }
+
 
 
