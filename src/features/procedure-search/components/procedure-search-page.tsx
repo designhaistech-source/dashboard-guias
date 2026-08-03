@@ -110,7 +110,21 @@ export function ProcedureSearchPage() {
         </>
       }
     >
-      {results === null ? (
+      {status === "loading" ? (
+        <LoadingState
+          size="lg"
+          title="Buscando procedimentos…"
+          description="Estamos consultando as referências selecionadas."
+        />
+      ) : status === "error" ? (
+        <ErrorState
+          size="lg"
+          title="Não foi possível buscar procedimentos"
+          description="Verifique sua conexão e tente novamente em alguns instantes."
+          onRetry={() => void runSearch(term, referencia)}
+        />
+      ) : results === null ? (
+
               <EmptyState
                 size="lg"
                 icon={<Search className="h-12 w-12" />}
