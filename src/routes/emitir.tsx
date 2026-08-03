@@ -1492,13 +1492,14 @@ function EmitirPage() {
                   <StatusPill done={opmeOk} label="OPME (opcional)" />
                   <StatusPill done={assinaturaOk} label="Assinatura" />
                 </div>
-                <p className="mt-3 flex items-start gap-1.5 border-t pt-2.5 text-xs text-muted-foreground">
-                  <Info className="mt-px h-3.5 w-3.5 shrink-0" aria-hidden="true" />
+                <p className="mt-3 flex items-start gap-1.5 border-t border-border/60 pt-2 text-[11px] leading-relaxed text-muted-foreground/70">
+                  <Info className="mt-0.5 h-3 w-3 shrink-0" aria-hidden="true" />
                   <span>
-                    Campos com <span className="text-destructive">*</span> são
+                    Campos com <span className="text-destructive/80">*</span> são
                     obrigatórios e serão validados antes da emissão.
                   </span>
                 </p>
+
               </div>
 
 
