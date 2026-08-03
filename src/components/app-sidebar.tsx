@@ -32,6 +32,26 @@ import {
 } from "@/components/ui/tooltip";
 import { Button } from "@/components/ui/button";
 import logoAsset from "@/assets/guiasplus-logo.png.asset.json";
+import logoDarkAsset from "@/assets/guiasplus-logo-dark.png.asset.json";
+
+/** Logo da marca com variante específica para o modo escuro. */
+function BrandLogo({ className }: { className?: string }) {
+  return (
+    <>
+      <img
+        src={logoAsset.url}
+        alt="Guias+"
+        className={`block max-w-full object-contain dark:hidden ${className ?? ""}`}
+      />
+      <img
+        src={logoDarkAsset.url}
+        alt="Guias+"
+        className={`hidden max-w-full object-contain dark:block ${className ?? ""}`}
+      />
+    </>
+  );
+}
+
 import { RenderProfiler } from "@/lib/render-profiler";
 
 type ItemKey =
