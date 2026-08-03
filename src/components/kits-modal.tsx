@@ -453,18 +453,21 @@ function IconAction({
   danger?: boolean;
 }) {
   return (
-    <button
-      type="button"
+    <Button
+      variant="outline"
+      size="icon"
       onClick={onClick}
       title={label}
       aria-label={label}
-      className={`inline-flex items-center justify-center h-7 w-7 rounded-lg border border-border transition-colors ${
+      className={cn(
+        "h-7 w-7 rounded-lg text-muted-foreground",
         danger
-          ? "text-muted-foreground hover:text-destructive hover:bg-destructive/10"
-          : "text-muted-foreground hover:text-foreground hover:bg-muted"
-      }`}
+          ? "hover:text-destructive hover:bg-destructive/10"
+          : "hover:text-foreground",
+      )}
     >
       {icon}
-    </button>
+    </Button>
   );
+
 }
