@@ -667,8 +667,7 @@ function GuideDetailsModal({ row, onClose }: { row: Row | null; onClose: () => v
             </div>
           </DialogBody>
         )}
-      </DialogContent>
-    </Dialog>
+    </AppModal>
   );
 }
 
