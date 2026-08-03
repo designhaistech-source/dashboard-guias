@@ -1451,13 +1451,6 @@ function PrescricaoForm() {
               </span>
             ) : null}
             <ActionBtn
-              onClick={() => setKitsAberto(true)}
-              icon={<BookMarked className="h-3.5 w-3.5" />}
-              size="sm"
-            >
-              Kits salvos
-            </ActionBtn>
-            <ActionBtn
               onClick={() => setHistoricoAberto((v) => !v)}
               icon={<History className="h-3.5 w-3.5" />}
               size="sm"
@@ -1749,7 +1742,16 @@ function PrescricaoForm() {
             </div>
 
 
+            <div className="flex w-full shrink-0 flex-wrap items-center gap-2 sm:w-auto">
+              <ActionBtn
+                onClick={() => setKitsAberto(true)}
+                icon={<BookMarked className="h-3.5 w-3.5" />}
+                size="sm"
+              >
+                Kits salvos
+              </ActionBtn>
             {itens.length > 0 && (
+
               <Chip
                 size="sm"
                 onClick={() =>
@@ -1777,6 +1779,8 @@ function PrescricaoForm() {
               </Chip>
             )}
             </div>
+            </div>
+
 
 
             <>
