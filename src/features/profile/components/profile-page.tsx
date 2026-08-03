@@ -1,6 +1,6 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Building2, Info, PenLine, Save, UserRound } from "lucide-react";
+import { Building2, Info, PenLine, RotateCcw, Save, UserRound } from "lucide-react";
 import { toast } from "sonner";
 
 import { AppBreadcrumb } from "@/components/app-breadcrumb";
@@ -22,7 +22,8 @@ export function ProfilePage() {
   const {
     register,
     handleSubmit,
-    formState: { errors, isSubmitting, touchedFields },
+    reset,
+    formState: { errors, isDirty, isSubmitting, touchedFields },
   } = useForm<ProfileFormValues>({
     resolver: zodResolver(profileSchema),
     mode: "onBlur",
@@ -40,6 +41,7 @@ export function ProfilePage() {
   const onSubmit = handleSubmit(async (values) => {
     // Protótipo: sem persistência; apenas confirma a ação para o usuário.
     await new Promise((resolve) => setTimeout(resolve, 400));
+    reset(values);
     toast.success(`Perfil de ${values.name} atualizado.`);
   });
 
@@ -54,7 +56,7 @@ export function ProfilePage() {
       <main className="flex min-h-screen flex-1 flex-col overflow-x-hidden">
         <form
           onSubmit={onSubmit}
-          className="w-full flex-1 space-y-5 px-4 py-6 pb-16 pt-20 sm:px-6 sm:py-8 md:pt-8 lg:px-10"
+          className="mx-auto w-full max-w-4xl flex-1 space-y-6 px-4 py-6 pb-16 pt-20 sm:px-6 sm:py-8 md:pt-8 lg:px-10"
         >
           <AppBreadcrumb />
           <PageHeader
@@ -63,12 +65,12 @@ export function ProfilePage() {
           />
 
           <SectionCard
-            descriptionClassName="text-[11px] text-muted-foreground/80"
+            descriptionClassName="text-xs text-muted-foreground"
             title="Dados pessoais"
             description="Identificação do profissional responsável pelos documentos."
             icon={<UserRound className="h-4 w-4" aria-hidden="true" />}
           >
-            <div className="grid gap-4 sm:grid-cols-2">
+            <div className="grid gap-x-5 gap-y-4 sm:grid-cols-2">
               <Field id="profile-name" label="Nome" required error={errorFor("name")}>
                 <Input autoComplete="name" {...register("name")} />
               </Field>
@@ -102,18 +104,18 @@ export function ProfilePage() {
           </SectionCard>
 
           <SectionCard
-            descriptionClassName="text-[11px] text-muted-foreground/80"
+            descriptionClassName="text-xs text-muted-foreground"
             title="Dados do consultório"
             description="Endereço e contato exibidos no cabeçalho dos documentos."
             icon={<Building2 className="h-4 w-4" aria-hidden="true" />}
           >
-            <p className="flex items-start gap-2 rounded-lg border border-border bg-muted/40 px-3 py-2 text-xs text-muted-foreground">
-              <Info className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />
+            <p className="flex items-start gap-2 rounded-lg border border-border/70 bg-muted/30 px-3 py-2.5 text-xs leading-relaxed text-muted-foreground">
+              <Info className="mt-0.5 h-3.5 w-3.5 shrink-0 text-primary" aria-hidden="true" />
               Estes dados serão utilizados em prescrições, relatórios e demais documentos
               emitidos pelo sistema.
             </p>
 
-            <div className="grid gap-4 sm:grid-cols-2">
+            <div className="grid gap-x-5 gap-y-4 sm:grid-cols-2">
               <Field
                 id="profile-clinic-name"
                 label="Nome do consultório"
@@ -152,12 +154,12 @@ export function ProfilePage() {
           </SectionCard>
 
           <SectionCard
-            descriptionClassName="text-[11px] text-muted-foreground/80"
+            descriptionClassName="text-xs text-muted-foreground"
             title="Assinatura e identidade visual"
             description="Imagens aplicadas no rodapé e no cabeçalho dos documentos."
             icon={<PenLine className="h-4 w-4" aria-hidden="true" />}
           >
-            <div className="grid items-stretch gap-4 sm:grid-cols-2">
+            <div className="grid items-stretch gap-x-5 gap-y-4 sm:grid-cols-2">
               <ImageUploadField
                 label="Assinatura digital"
                 hint="PNG com fundo transparente, JPG ou SVG. Até 2 MB."
@@ -171,8 +173,24 @@ export function ProfilePage() {
             </div>
           </SectionCard>
 
-          <FormActionBar>
-            <Button type="submit" size="sm" disabled={isSubmitting}>
+          <FormActionBar
+            note={
+              isDirty
+                ? "Você tem alterações não salvas neste perfil."
+                : "Todas as alterações estão salvas."
+            }
+          >
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => reset()}
+              disabled={!isDirty || isSubmitting}
+            >
+              <RotateCcw className="h-4 w-4" aria-hidden="true" />
+              Descartar alterações
+            </Button>
+            <Button type="submit" size="sm" disabled={isSubmitting || !isDirty}>
               <Save className="h-4 w-4" aria-hidden="true" />
               {isSubmitting ? "Salvando..." : "Salvar alterações"}
             </Button>
