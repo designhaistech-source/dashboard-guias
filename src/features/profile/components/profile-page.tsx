@@ -7,6 +7,7 @@ import { AppBreadcrumb } from "@/components/app-breadcrumb";
 import { AppSidebar } from "@/components/app-sidebar";
 import { FormActionBar } from "@/components/form-action-bar";
 import { Field } from "@/components/form-field";
+import { InfoHint } from "@/components/info-hint";
 import { PageHeader } from "@/components/page-header";
 import { SectionCard } from "@/components/section-card";
 import { SiteFooter } from "@/components/site-footer";
@@ -62,7 +63,6 @@ export function ProfilePage() {
           />
 
           <SectionCard
-            number={1}
             title="Dados pessoais"
             description="Identificação do profissional responsável pelos documentos."
             icon={<UserRound className="h-4 w-4" aria-hidden="true" />}
@@ -84,9 +84,15 @@ export function ProfilePage() {
               </Field>
               <Field
                 id="profile-secondary-crm"
-                label="CRM secundário"
+                label={
+                  <span className="inline-flex items-center gap-1">
+                    CRM secundário
+                    <InfoHint label="Ajuda sobre CRM secundário">
+                      Use quando atuar em mais de um estado.
+                    </InfoHint>
+                  </span>
+                }
                 optional
-                hint="Use quando atuar em mais de um estado."
                 error={errorFor("secondaryCrm")}
               >
                 <Input placeholder="CRM 5678/PB" {...register("secondaryCrm")} />
@@ -95,11 +101,16 @@ export function ProfilePage() {
           </SectionCard>
 
           <SectionCard
-            number={2}
             title="Dados do consultório"
             description="Endereço e contato exibidos no cabeçalho dos documentos."
             icon={<Building2 className="h-4 w-4" aria-hidden="true" />}
           >
+            <p className="flex items-start gap-2 rounded-lg border border-border bg-muted/40 px-3 py-2 text-xs text-muted-foreground">
+              <Info className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />
+              Estes dados serão utilizados em prescrições, relatórios e demais documentos
+              emitidos pelo sistema.
+            </p>
+
             <div className="grid gap-4 sm:grid-cols-2">
               <Field
                 id="profile-clinic-name"
@@ -136,29 +147,22 @@ export function ProfilePage() {
                 />
               </Field>
             </div>
-
-            <p className="flex items-start gap-2 rounded-lg border border-border bg-muted/40 px-3 py-2 text-xs text-muted-foreground">
-              <Info className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />
-              Estes dados serão utilizados em prescrições, relatórios e demais documentos
-              emitidos pelo sistema.
-            </p>
           </SectionCard>
 
           <SectionCard
-            number={3}
             title="Assinatura e identidade visual"
             description="Imagens aplicadas no rodapé e no cabeçalho dos documentos."
             icon={<PenLine className="h-4 w-4" aria-hidden="true" />}
           >
-            <div className="grid gap-6 sm:grid-cols-2">
+            <div className="grid gap-4 sm:grid-cols-2">
               <ImageUploadField
                 label="Assinatura digital"
-                hint="PNG com fundo transparente, JPG ou SVG (até 2 MB)."
+                hint="PNG com fundo transparente, JPG ou SVG. Até 2 MB."
                 previewAlt="Pré-visualização da assinatura digital do profissional"
               />
               <ImageUploadField
                 label="Logo do consultório"
-                hint="PNG, JPG ou SVG na maior resolução disponível (até 2 MB)."
+                hint="PNG, JPG ou SVG na maior resolução disponível. Até 2 MB."
                 previewAlt="Pré-visualização da logo do consultório"
               />
             </div>
