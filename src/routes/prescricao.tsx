@@ -1482,7 +1482,9 @@ function PrescricaoForm() {
               placeholder="Digite o nome do beneficiário..."
               autoComplete="off"
             />
+            {/* ds-allow: datalist nativo é o autocomplete leve do <Input> para pacientes recentes */}
             <datalist id="pacientes-recentes">
+
               {pacientesRecentes.map((n) => (
                 <option key={n} value={n} />
               ))}
