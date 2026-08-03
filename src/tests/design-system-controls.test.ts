@@ -128,4 +128,22 @@ describe("design system: controles de UI", () => {
       ).toEqual([]);
     });
   }
+
+  for (const { label, pattern, replacement } of NATIVE_SELECTION_CONTROLS) {
+    it(`não usa ${label} nativo sem marcação ${ALLOW_MARKER}`, () => {
+      const offenders = files.flatMap((file) =>
+        findUnmarkedMatches(file, pattern),
+      );
+
+      expect(
+        offenders,
+        [
+          `Use o componente ${replacement}.`,
+          `Se o controle nativo for intencional, documente com um comentário "${ALLOW_MARKER}: motivo" na própria tag.`,
+          "Ocorrências:",
+          ...offenders,
+        ].join("\n"),
+      ).toEqual([]);
+    });
+  }
 });
