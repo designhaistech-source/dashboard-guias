@@ -17,6 +17,9 @@ interface SearchPageLayoutProps {
   onSubmit: (event: FormEvent) => void;
   /** Rótulo do botão de submit da busca. */
   submitLabel?: string;
+  /** Busca em andamento — desabilita o submit e mostra o rótulo de espera. */
+  submitting?: boolean;
+
   /** Conteúdo da seção de resultados. */
   children: ReactNode;
   /** Blocos adicionais abaixo dos resultados (ex.: favoritos e histórico). */
