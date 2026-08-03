@@ -33,10 +33,11 @@ const badgeVariants = cva(
         outline: "border-border text-foreground bg-transparent",
       },
       size: {
-        sm: "px-2 py-0 text-xs/none h-5 [&_svg]:size-3",
-        md: "px-2.5 py-0.5 text-xs/none h-6 [&_svg]:size-3.5",
-        lg: "px-3 py-1 text-sm/none h-7 [&_svg]:size-4",
+        sm: "px-2 h-6 text-xs [&_svg]:size-3",
+        md: "px-2.5 h-7 text-xs [&_svg]:size-3.5",
+        lg: "px-3 h-8 text-sm [&_svg]:size-4",
       },
+
     },
     defaultVariants: {
       variant: "default",
