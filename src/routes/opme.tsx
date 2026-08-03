@@ -335,7 +335,9 @@ function OpmePage() {
           <PageHeader
             title="Solicitar OPME"
             description="Solicite autorização de órteses, próteses e materiais especiais junto à operadora, com justificativa clínica e lista de materiais."
+            actions={<SavedIndicator savedAt={savedAt} />}
           />
+
 
           <form onSubmit={enviarSolicitacao} className="space-y-5">
             {/* 1. Convênio & Paciente */}
