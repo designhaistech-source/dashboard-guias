@@ -1699,9 +1699,8 @@ function PrescricaoForm() {
             </div>
           )}
           </>
+      </SectionCard>
 
-        </div>
-      </section>
 
       {/* Seção 2 — Medicamentos */}
       <SectionCard
