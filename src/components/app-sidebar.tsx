@@ -299,9 +299,9 @@ function UserMenu({ collapsed }: { collapsed: boolean }) {
       side="top"
       align="start"
       sideOffset={8}
-      className="w-64 p-0 overflow-hidden"
+      className="w-72 p-0 overflow-hidden"
     >
-      {/* Cabeçalho informativo em 2 linhas: identidade + identificadores secundários. */}
+      {/* Cabeçalho informativo em 2 linhas: identidade + e-mail completo (sem corte). */}
       <DropdownMenuLabel className="px-4 py-3 font-normal">
         <div className="flex items-center gap-3 min-w-0">
           <CircleUser
@@ -310,14 +310,11 @@ function UserMenu({ collapsed }: { collapsed: boolean }) {
             aria-hidden="true"
           />
           <div className="min-w-0">
-            <div className="text-sm font-semibold text-foreground truncate">
+            <div className="text-sm font-semibold text-foreground">
               {CURRENT_USER.name}
             </div>
-            <div
-              className="text-xs text-muted-foreground truncate"
-              title={`${CURRENT_USER.crm} · ${CURRENT_USER.email}`}
-            >
-              {CURRENT_USER.crm} · {CURRENT_USER.email}
+            <div className="text-xs text-muted-foreground break-all">
+              {CURRENT_USER.email}
             </div>
           </div>
         </div>
