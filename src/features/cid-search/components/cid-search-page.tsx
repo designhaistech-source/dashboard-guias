@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { BookOpen, Copy, History, Search, Star, X } from "lucide-react";
+import { BookOpen, Copy, History, Search, Star, Trash2, X } from "lucide-react";
 import { toast } from "sonner";
 
 import {
@@ -13,6 +13,7 @@ import { AppSidebar } from "@/components/app-sidebar";
 import { SiteFooter } from "@/components/site-footer";
 import { PageHeader } from "@/components/page-header";
 import { SurfaceCard } from "@/components/surface-card";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -77,6 +78,12 @@ export function CidSearchPage() {
         .filter((item): item is CidItem => Boolean(item)),
     [history],
   );
+
+  /** Limpa o histórico de códigos copiados. */
+  function clearHistory() {
+    setHistory([]);
+    toast.success("Histórico limpo");
+  }
 
   return (
     <div className="flex min-h-screen w-full bg-background text-foreground">
@@ -157,17 +164,17 @@ export function CidSearchPage() {
               <TabsList className={appTabsListClass}>
                 <TabsTrigger value="favoritos" className={appTabsTriggerClass}>
                   <Star className={appTabsIconClass} aria-hidden />
-                  <span className={appTabsLabelClass}>
-                    Favoritos
-                    <span className="hidden sm:inline"> ({favorites.length})</span>
-                  </span>
+                  <span className={appTabsLabelClass}>Favoritos</span>
+                  <Badge variant="secondary" size="sm" className="tabular-nums">
+                    {favorites.length}
+                  </Badge>
                 </TabsTrigger>
                 <TabsTrigger value="historico" className={appTabsTriggerClass}>
                   <History className={appTabsIconClass} aria-hidden />
-                  <span className={appTabsLabelClass}>
-                    Histórico
-                    <span className="hidden sm:inline"> ({historyItems.length})</span>
-                  </span>
+                  <span className={appTabsLabelClass}>Histórico</span>
+                  <Badge variant="secondary" size="sm" className="tabular-nums">
+                    {historyItems.length}
+                  </Badge>
                 </TabsTrigger>
               </TabsList>
 
@@ -182,7 +189,23 @@ export function CidSearchPage() {
                 />
               </TabsContent>
 
-              <TabsContent value="historico">
+              <TabsContent value="historico" className="space-y-3">
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <p className="text-xs text-muted-foreground">
+                    Últimos códigos copiados (máximo de 10).
+                  </p>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={clearHistory}
+                    disabled={historyItems.length === 0}
+                  >
+                    <Trash2 className="icon-optical h-4 w-4" aria-hidden />
+                    Limpar histórico
+                  </Button>
+                </div>
+
                 <CidList
                   items={historyItems}
                   favorites={favorites}
@@ -194,6 +217,7 @@ export function CidSearchPage() {
               </TabsContent>
             </Tabs>
           </SurfaceCard>
+
 
         </div>
 
