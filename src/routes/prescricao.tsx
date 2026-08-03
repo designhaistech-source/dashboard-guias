@@ -1840,46 +1840,37 @@ function PrescricaoForm() {
 
 
       {/* Seção 3 — Revisar e emitir */}
-      <section id="sec-revisar" className="scroll-mt-4">
+      <SectionCard
+        id="sec-revisar"
+        innerRef={receitaRef}
+        number={3}
+        title={
+          <>
+            Revisão da receita
+            {hasControlado && (
+              <Badge variant="warning-soft" size="sm" className="uppercase tracking-wide">
+                <span className="inline-block h-1.5 w-1.5 rounded-full bg-warning" />
+                {hasComum ? "Comum + Controlada" : "Controlada"}
+              </Badge>
+            )}
+          </>
+        }
+        description={`${itens.length} ${itens.length === 1 ? "medicamento" : "medicamentos"}`}
+        actions={
+          itens.length > 0 ? (
+            <Button
+              type="button"
+              variant="link"
+              size="sm"
+              onClick={() => setItens([])}
+              className="h-auto p-0 text-xs text-muted-foreground hover:text-destructive"
+            >
+              Limpar itens
+            </Button>
+          ) : undefined
+        }
+      >
 
-        <div
-          ref={receitaRef}
-          className="rounded-2xl border border-border bg-card shadow-xs"
-        >
-          <div className="p-5 space-y-4">
-            <div className="flex flex-wrap items-start justify-between gap-3">
-              <div className="min-w-0">
-                <div className="flex items-center gap-2 flex-wrap">
-                  <h2 className="text-base font-semibold">
-                    3. Revisão da receita
-                  </h2>
-
-                  {hasControlado && (
-                    <Badge variant="warning-soft" size="sm" className="uppercase tracking-wide">
-                      <span className="inline-block h-1.5 w-1.5 rounded-full bg-warning" />
-                      {hasComum ? "Comum + Controlada" : "Controlada"}
-                    </Badge>
-                  )}
-                </div>
-
-                <p className="text-xs text-muted-foreground mt-0.5">
-                  {itens.length}{" "}
-                  {itens.length === 1 ? "medicamento" : "medicamentos"}
-                </p>
-
-              </div>
-              {itens.length > 0 && (
-                <Button
-                  type="button"
-                  variant="link"
-                  size="sm"
-                  onClick={() => setItens([])}
-                  className="h-auto p-0 text-xs text-muted-foreground hover:text-destructive"
-                >
-                  Limpar itens
-                </Button>
-              )}
-            </div>
 
 
 
