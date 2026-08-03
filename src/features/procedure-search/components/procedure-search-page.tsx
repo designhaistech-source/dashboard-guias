@@ -184,6 +184,8 @@ export function ProcedureSearchPage() {
                           setReferencia("todas");
                           setLastQuery("");
                           setResults(null);
+                          setStatus("idle");
+
                         }}
                       >
                         Limpar busca
