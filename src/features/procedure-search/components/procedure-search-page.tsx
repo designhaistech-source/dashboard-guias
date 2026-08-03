@@ -85,7 +85,7 @@ export function ProcedureSearchPage() {
               value={referencia}
               onValueChange={setReferencia}
               options={REFERENCE_OPTIONS}
-              className="lg:w-44 space-y-0"
+              className="lg:w-44 space-y-0 sm:space-y-0"
               triggerClassName="w-full"
             />
             <Button type="submit" className="w-full justify-center lg:w-auto lg:px-8">
