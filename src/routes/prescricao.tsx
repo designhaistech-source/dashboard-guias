@@ -1830,14 +1830,8 @@ function PrescricaoForm() {
               />
             )}
             </>
-          </div>
+      </SectionCard>
 
-
-
-
-
-
-      </section>
 
 
       {/* Seção 3 — Revisar e emitir */}
