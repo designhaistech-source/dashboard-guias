@@ -1502,7 +1502,7 @@ function PrescricaoForm() {
               type="button"
               variant="ghost"
               onClick={() => setPacienteCollapsed((v) => !v)}
-              className="flex h-auto items-start justify-start gap-2 p-0 text-left font-normal hover:bg-transparent group min-w-0"
+              className="flex h-auto items-start justify-start gap-2 whitespace-normal p-0 text-left font-normal hover:bg-transparent group min-w-0"
               aria-expanded={!pacienteCollapsed}
             >
               <ChevronDown
@@ -1751,7 +1751,7 @@ function PrescricaoForm() {
               type="button"
               variant="ghost"
               onClick={() => setBuscaCollapsed((v) => !v)}
-              className="flex h-auto items-start justify-start gap-2 p-0 text-left font-normal hover:bg-transparent group min-w-0 w-full sm:flex-1"
+              className="flex h-auto items-start justify-start gap-2 whitespace-normal p-0 text-left font-normal hover:bg-transparent group min-w-0 w-full sm:flex-1"
               aria-expanded={!buscaCollapsed}
             >
               <ChevronDown
@@ -2509,7 +2509,7 @@ function MedRow({
       variant="ghost"
       onClick={onPick}
       onMouseEnter={onHover}
-      className={`h-auto w-full items-center justify-start rounded-none px-4 py-2.5 text-left font-normal grid grid-cols-[minmax(0,1fr)_auto] gap-3 ${
+      className={`h-auto w-full items-center justify-start rounded-none px-4 py-2.5 whitespace-normal text-left font-normal grid grid-cols-[minmax(0,1fr)_auto] gap-3 ${
         highlighted ? "bg-primary/10" : "hover:bg-muted/40"
       }`}
     >
