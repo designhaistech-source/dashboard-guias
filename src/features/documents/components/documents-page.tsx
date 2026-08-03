@@ -23,6 +23,8 @@ import { AppSidebar } from "@/components/app-sidebar";
 import { SiteFooter } from "@/components/site-footer";
 import { PageHeader } from "@/components/page-header";
 import { FormActionBar } from "@/components/form-action-bar";
+import { SavedIndicator } from "@/components/saved-indicator";
+import { useDraftAutosave } from "@/hooks/use-draft-autosave";
 import { SurfaceCard } from "@/components/surface-card";
 import { Field, SelectField } from "@/components/form-field";
 import { Button } from "@/components/ui/button";
@@ -248,6 +250,20 @@ function ReportsTab() {
   const [modelo, setModelo] = useState("");
   const [html, setHtml] = useState("");
 
+  const { savedAt } = useDraftAutosave({
+    key: "hg:documentos:relatorio",
+    data: { paciente, cid, diagnosticoSelecionado, modelo, html },
+    isEmpty: (d) =>
+      !d.paciente.trim() && !d.cid.trim() && !d.html.replace(/<[^>]+>/g, "").trim(),
+    onRestore: (d) => {
+      setPaciente(d.paciente ?? "");
+      setCid(d.cid ?? "");
+      setDiagnosticoSelecionado(d.diagnosticoSelecionado ?? "");
+      setModelo(d.modelo ?? "");
+      setHtml(d.html ?? "");
+    },
+  });
+
   const diagnostico =
     diagnosticoSelecionado ||
     (CID10.find((c) => c.codigo === cid)?.descricao ?? "");
@@ -256,6 +272,7 @@ function ReportsTab() {
     setCid(codigo);
     setDiagnosticoSelecionado(descricao);
   }
+
 
 
   function applyTemplate(value: string) {
