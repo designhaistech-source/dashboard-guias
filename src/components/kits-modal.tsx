@@ -166,20 +166,19 @@ export function KitsModal({
 
   return (
     <>
-    <Dialog open={open} onOpenChange={(v) => { if (!v) onClose(); }}>
-      <DialogContent size="lg" initialFocusRef={buscaRef}>
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <BookMarked className="size-4 text-primary" />
-            Kits salvos
-          </DialogTitle>
-          <DialogDescription>
-            Modelos reutilizáveis — aplique com um clique.
-          </DialogDescription>
-        </DialogHeader>
-
-        {/* Filtros */}
-        <DialogToolbar className="space-y-2.5">
+    <AppModal
+      open={open}
+      onOpenChange={(v: boolean) => {
+        if (!v) onClose();
+      }}
+      size="lg"
+      initialFocusRef={buscaRef}
+      icon={<BookMarked className="size-4" />}
+      title="Kits salvos"
+      description="Modelos reutilizáveis — aplique com um clique."
+      toolbarClassName="space-y-2.5"
+      toolbar={
+        <>
           <div className="flex gap-2">
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
