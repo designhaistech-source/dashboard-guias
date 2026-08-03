@@ -1470,15 +1470,6 @@ function EmitirPage() {
                 />
               </Section>
 
-
-              <div className="flex items-start gap-2 text-xs text-muted-foreground bg-muted/40 border rounded-md px-3 py-2">
-                <Info className="h-4 w-4 shrink-0 mt-0.5" />
-                <span>
-                  Campos marcados com <span className="text-destructive">*</span> são
-                  obrigatórios. A guia será validada antes da emissão.
-                </span>
-              </div>
-
               {/* Resumo de preenchimento */}
               <div className="rounded-xl border bg-card/95 backdrop-blur shadow-xs px-4 py-3">
                 <p className="text-xs font-semibold text-foreground">
@@ -1501,7 +1492,15 @@ function EmitirPage() {
                   <StatusPill done={opmeOk} label="OPME (opcional)" />
                   <StatusPill done={assinaturaOk} label="Assinatura" />
                 </div>
+                <p className="mt-3 flex items-start gap-1.5 border-t pt-2.5 text-xs text-muted-foreground">
+                  <Info className="mt-px h-3.5 w-3.5 shrink-0" aria-hidden="true" />
+                  <span>
+                    Campos com <span className="text-destructive">*</span> são
+                    obrigatórios e serão validados antes da emissão.
+                  </span>
+                </p>
               </div>
+
 
               {/* Actions */}
               <div className="flex flex-wrap items-center justify-end gap-2 sticky bottom-0 bg-background/80 backdrop-blur py-3 border-t">
