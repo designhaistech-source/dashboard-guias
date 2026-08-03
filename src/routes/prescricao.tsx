@@ -523,6 +523,7 @@ function PrescricaoForm() {
   const [cepError, setCepError] = useState<string | null>(null);
   const [endereco, setEndereco] = useState("");
   const [numero, setNumero] = useState("");
+  const [numeroTouched, setNumeroTouched] = useState(false);
   const [complemento, setComplemento] = useState("");
   const [query, setQuery] = useState("");
   const [tipos, setTipos] = useState<Set<MedType>>(
@@ -1707,16 +1708,21 @@ function PrescricaoForm() {
                 <Field
                   label="Número e complemento"
                   required
-                  error={numero.length === 0 ? "Informe o número." : undefined}
+                  error={
+                    numeroTouched && numero.length === 0
+                      ? "Informe o número."
+                      : undefined
+                  }
                 >
                   <div className="flex gap-2">
                     <Input
                       ref={numeroRef}
                       value={numero}
                       onChange={(e) => setNumero(e.target.value)}
+                      onBlur={() => setNumeroTouched(true)}
                       placeholder="Nº"
                       inputMode="numeric"
-                      aria-invalid={numero.length === 0}
+                      aria-invalid={numeroTouched && numero.length === 0}
                       className="w-24"
                     />
                     <Input
