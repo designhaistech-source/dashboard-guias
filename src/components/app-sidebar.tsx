@@ -422,8 +422,13 @@ function UserMenu({ collapsed }: { collapsed: boolean }) {
 
       {/* Bloco 4 — sessão. */}
       <DropdownMenuGroup className="py-1">
+        {/* Mantém o menu aberto: a confirmação decide se a sessão termina. */}
         <DropdownMenuItem
           className={`${itemClass} text-destructive focus:text-destructive`}
+          onSelect={(event) => {
+            event.preventDefault();
+            setLogoutOpen(true);
+          }}
         >
           <LogOut className="h-4 w-4" aria-hidden="true" />
           Sair
