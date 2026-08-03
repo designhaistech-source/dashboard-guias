@@ -844,7 +844,7 @@ function DashboardPage() {
               variant="panel"
               hideToggle
               open={filtersOpen}
-              onOpenChange={(v) => (v ? openFilters() : requestClose())}
+              onOpenChange={(v: boolean) => (v ? openFilters() : requestClose())}
               title="Filtros"
               description={
                 <>
