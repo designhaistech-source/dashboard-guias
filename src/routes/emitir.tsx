@@ -542,6 +542,45 @@ function EmitirPage() {
   const [splitInGuides, setSplitInGuides] = useState(false);
   const filledProceduresCount = procedures.filter((p) => p.code.trim() && p.description.trim()).length;
 
+  /** Ordem dos tópicos numerados do formulário (varia conforme o tipo de guia). */
+  const stepKeys: string[] = [
+    "convenio",
+    ...(guideKind === "internacao" ? ["internacao"] : []),
+    ...(guideKind === "apac" ? ["apac"] : []),
+    ...(guideKind === "aih" ? ["aih"] : []),
+    "paciente",
+    "profissional",
+    "clinico",
+    "kits",
+    "procedimentos",
+    "opme",
+    "assinatura",
+  ];
+  const stepNumber = (key: string) => stepKeys.indexOf(key) + 1;
+
+  const convenioOk =
+    convenioId === "tiss"
+      ? Boolean(operadora.trim() && character.trim())
+      : Boolean(susEstabelecimento.trim());
+  const especificoOk =
+    guideKind === "internacao"
+      ? Boolean(internacaoTipo && internacaoDias > 0)
+      : guideKind === "apac"
+        ? Boolean(apacCompetencia && apacTipo)
+        : guideKind === "aih"
+          ? Boolean(aihCaraterEntry && aihMotivo.trim())
+          : true;
+  const pacienteOk = Boolean(pacienteNome.trim() && pacienteCarteira.trim());
+  const profissionalOk = Boolean(medicoNome.trim() && medicoCrm.trim());
+  const clinicoOk = Boolean(indicacaoClinica.trim());
+  const procedimentosOk = procedures.some(
+    (p) => p.code.trim() && p.description.trim() && p.quantity > 0,
+  );
+  const opmeOk = opmeItems.some((i) => i.description.trim());
+  const assinaturaOk = Boolean(medicoNome.trim());
+
+
+
 
   const validate = () => {
     const missing: string[] = [];
