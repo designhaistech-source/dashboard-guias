@@ -1,10 +1,7 @@
 import { useState } from "react";
 import { Search, ScanSearch, Lightbulb } from "lucide-react";
 
-import { AppBreadcrumb } from "@/components/app-breadcrumb";
-import { AppSidebar } from "@/components/app-sidebar";
-import { SiteFooter } from "@/components/site-footer";
-import { PageHeader } from "@/components/page-header";
+import { SearchPageLayout } from "@/components/search-page-layout";
 import { SearchInput, SelectField } from "@/components/form-field";
 import { Button } from "@/components/ui/button";
 
@@ -52,53 +49,36 @@ export function ProcedureSearchPage() {
     runSearch(term, referencia);
   }
 
-
-
   return (
-    <div className="flex min-h-screen w-full bg-background text-foreground">
-      <AppSidebar activeKey="procedimento" />
-
-      <main className="flex-1 flex flex-col min-h-screen overflow-x-hidden">
-        <div className="w-full flex-1 space-y-6 px-4 py-6 pb-16 sm:px-6 sm:py-8 lg:px-10">
-          <AppBreadcrumb />
-          <PageHeader
-            title="Buscar procedimento"
-            description="Consulte códigos e descrições de procedimentos por referência (Tuss e Sigtap) para usar em guias e solicitações."
-          />
-
-          <form
-            onSubmit={handleSearch}
-            className="rounded-xl border border-border bg-card p-4 flex flex-col gap-3 lg:flex-row lg:items-center"
-          >
-            <div className="flex-1 min-w-0">
-              <SearchInput
-                id="busca-procedimento"
-                aria-label="Buscar por procedimento"
-                placeholder="Buscar por procedimento ou código"
-                value={term}
-                clearable
-                onChange={(e) => setTerm(e.target.value)}
-              />
-            </div>
-            <SelectField
-              id="referencia"
-              value={referencia}
-              onValueChange={setReferencia}
-              options={REFERENCE_OPTIONS}
-              className="lg:w-44 space-y-0 sm:space-y-0"
-              triggerClassName="w-full"
+    <SearchPageLayout
+      activeKey="procedimento"
+      title="Buscar procedimento"
+      description="Consulte códigos e descrições de procedimentos por referência (Tuss e Sigtap) para usar em guias e solicitações."
+      onSubmit={handleSearch}
+      searchFields={
+        <>
+          <div className="min-w-0 flex-1">
+            <SearchInput
+              id="busca-procedimento"
+              aria-label="Buscar por procedimento"
+              placeholder="Buscar por procedimento ou código"
+              value={term}
+              clearable
+              onChange={(e) => setTerm(e.target.value)}
             />
-            <Button type="submit" className="w-full justify-center lg:w-auto lg:px-8">
-              Buscar
-            </Button>
-          </form>
-
-
-          <section
-            aria-label="Resultados da busca"
-            className="rounded-xl border border-border bg-card"
-          >
-            {results === null ? (
+          </div>
+          <SelectField
+            id="referencia"
+            value={referencia}
+            onValueChange={setReferencia}
+            options={REFERENCE_OPTIONS}
+            className="lg:w-44 space-y-0 sm:space-y-0"
+            triggerClassName="w-full"
+          />
+        </>
+      }
+    >
+      {results === null ? (
               <EmptyState
                 size="lg"
                 icon={<Search className="h-12 w-12" />}
@@ -247,14 +227,9 @@ export function ProcedureSearchPage() {
                   </DataTable>
                 </div>
 
-              </>
-            )}
-
-          </section>
-        </div>
-
-        <SiteFooter />
-      </main>
-    </div>
+        </>
+      )}
+    </SearchPageLayout>
   );
 }
+

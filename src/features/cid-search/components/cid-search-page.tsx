@@ -8,10 +8,7 @@ import {
   appTabsListClass,
   appTabsTriggerClass,
 } from "@/components/app-tabs";
-import { AppBreadcrumb } from "@/components/app-breadcrumb";
-import { AppSidebar } from "@/components/app-sidebar";
-import { SiteFooter } from "@/components/site-footer";
-import { PageHeader } from "@/components/page-header";
+import { SearchPageLayout } from "@/components/search-page-layout";
 import { SearchInput } from "@/components/form-field";
 import { EmptyState } from "@/components/data-state";
 import { SurfaceCard } from "@/components/surface-card";
@@ -101,109 +98,30 @@ export function CidSearchPage() {
   }
 
   return (
-    <div className="flex min-h-screen w-full bg-background text-foreground">
-      <AppSidebar activeKey="cid" />
-
-      <main className="flex min-h-screen flex-1 flex-col overflow-x-hidden">
-        <div className="w-full flex-1 space-y-6 px-4 py-6 pb-16 sm:px-6 sm:py-8 lg:px-10">
-          <AppBreadcrumb />
-          <PageHeader
-            title="Busca CID-10"
-            description="Consulte códigos da Classificação Internacional de Doenças por código ou termo, com favoritos e histórico."
+    <SearchPageLayout
+      activeKey="cid"
+      title="Busca CID-10"
+      description="Consulte códigos da Classificação Internacional de Doenças por código ou termo, com favoritos e histórico."
+      onSubmit={handleSearch}
+      searchFields={
+        <div className="min-w-0 flex-1">
+          <SearchInput
+            id="busca-cid"
+            aria-label="Buscar CID-10 por código ou termo"
+            placeholder="Digite CID (ex: I63.9) ou termo (ex: aneurisma)"
+            value={term}
+            clearable
+            onChange={(event) => setTerm(event.target.value)}
+            onClear={() => {
+              setTerm("");
+              setLastQuery("");
+              setResults(null);
+            }}
           />
-
-          <form
-            onSubmit={handleSearch}
-            className="flex flex-col gap-3 rounded-xl border border-border bg-card p-4 lg:flex-row lg:items-center"
-          >
-            <div className="min-w-0 flex-1">
-              <SearchInput
-                id="busca-cid"
-                aria-label="Buscar CID-10 por código ou termo"
-                placeholder="Digite CID (ex: I63.9) ou termo (ex: aneurisma)"
-                value={term}
-                clearable
-                onChange={(event) => setTerm(event.target.value)}
-                onClear={() => {
-                  setTerm("");
-                  setLastQuery("");
-                  setResults(null);
-                }}
-              />
-            </div>
-            <Button type="submit" className="w-full justify-center lg:w-auto lg:px-8">
-              Buscar
-            </Button>
-          </form>
-
-          <section
-            aria-label="Resultados da busca"
-            className="rounded-xl border border-border bg-card"
-          >
-            {results === null ? (
-              <EmptyState
-                size="lg"
-                icon={<BookOpen className="h-12 w-12" />}
-                title="Faça uma busca"
-                description="Você pode buscar pelo código (ex: I10) ou por parte da descrição (ex: hipertensão)."
-              />
-            ) : results.length === 0 ? (
-              <EmptyState
-                size="lg"
-                icon={<ScanSearch className="h-12 w-12" />}
-                title="Nenhum CID encontrado"
-                description={
-                  lastQuery
-                    ? `Não encontramos resultados para “${lastQuery}”. Revise a grafia, use termos mais curtos ou tente uma das sugestões abaixo.`
-                    : "Revise a grafia, use termos mais curtos ou tente uma das sugestões abaixo."
-                }
-                action={
-                  <div className="flex flex-wrap items-center justify-center gap-2">
-                    <span className="text-xs text-muted-foreground">
-                      Sugestões:
-                    </span>
-                    {SUGGESTED_TERMS.map((sugestao) => (
-                      <Button
-                        key={sugestao}
-                        type="button"
-                        variant="outline"
-                        size="sm"
-                        onClick={() => runSearch(sugestao)}
-                      >
-                        {sugestao}
-                      </Button>
-                    ))}
-                  </div>
-                }
-              />
-            ) : (
-              <>
-                <div className="flex items-center justify-between border-b border-border px-4 py-3 sm:px-6">
-                  <p
-                    aria-live="polite"
-                    className="text-sm text-muted-foreground tabular-nums"
-                  >
-                    {results.length}{" "}
-                    {results.length === 1
-                      ? "código encontrado"
-                      : "códigos encontrados"}
-                  </p>
-                </div>
-
-                <div className="p-4 sm:p-6">
-                  <CidList
-                    items={results}
-                    favorites={favorites}
-                    onToggleFavorite={toggleFavorite}
-                    onCopy={copyCode}
-                    emptyTitle="Nenhum CID encontrado"
-                    emptyHint="Revise a grafia ou tente um termo mais curto."
-                  />
-                </div>
-              </>
-            )}
-          </section>
-
+        </div>
+      }
+      extra={
+        <>
           {/* Listas de apoio: consulta secundária, agrupadas em abas */}
           <SurfaceCard>
             <Tabs defaultValue="favoritos" className="space-y-5">
@@ -263,13 +181,76 @@ export function CidSearchPage() {
               </TabsContent>
             </Tabs>
           </SurfaceCard>
-        </div>
+        </>
+      }
+    >
+      {results === null ? (
 
-        <SiteFooter />
-      </main>
-    </div>
+              <EmptyState
+                size="lg"
+                icon={<BookOpen className="h-12 w-12" />}
+                title="Faça uma busca"
+                description="Você pode buscar pelo código (ex: I10) ou por parte da descrição (ex: hipertensão)."
+              />
+            ) : results.length === 0 ? (
+              <EmptyState
+                size="lg"
+                icon={<ScanSearch className="h-12 w-12" />}
+                title="Nenhum CID encontrado"
+                description={
+                  lastQuery
+                    ? `Não encontramos resultados para “${lastQuery}”. Revise a grafia, use termos mais curtos ou tente uma das sugestões abaixo.`
+                    : "Revise a grafia, use termos mais curtos ou tente uma das sugestões abaixo."
+                }
+                action={
+                  <div className="flex flex-wrap items-center justify-center gap-2">
+                    <span className="text-xs text-muted-foreground">
+                      Sugestões:
+                    </span>
+                    {SUGGESTED_TERMS.map((sugestao) => (
+                      <Button
+                        key={sugestao}
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => runSearch(sugestao)}
+                      >
+                        {sugestao}
+                      </Button>
+                    ))}
+                  </div>
+                }
+              />
+            ) : (
+              <>
+                <div className="flex items-center justify-between border-b border-border px-4 py-3 sm:px-6">
+                  <p
+                    aria-live="polite"
+                    className="text-sm text-muted-foreground tabular-nums"
+                  >
+                    {results.length}{" "}
+                    {results.length === 1
+                      ? "código encontrado"
+                      : "códigos encontrados"}
+                  </p>
+                </div>
+
+                <div className="p-4 sm:p-6">
+                  <CidList
+                    items={results}
+                    favorites={favorites}
+                    onToggleFavorite={toggleFavorite}
+                    onCopy={copyCode}
+                    emptyTitle="Nenhum CID encontrado"
+                    emptyHint="Revise a grafia ou tente um termo mais curto."
+                  />
+                </div>
+        </>
+      )}
+    </SearchPageLayout>
   );
 }
+
 
 
 interface CidListProps {
