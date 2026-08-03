@@ -98,46 +98,94 @@ export function CidSearchPage() {
   }
 
   return (
-    <div className="flex min-h-screen w-full bg-background text-foreground">
-      <AppSidebar activeKey="cid" />
-
-      <main className="flex min-h-screen flex-1 flex-col overflow-x-hidden">
-        <div className="w-full flex-1 space-y-6 px-4 py-6 pb-16 sm:px-6 sm:py-8 lg:px-10">
-          <AppBreadcrumb />
-          <PageHeader
-            title="Busca CID-10"
-            description="Consulte códigos da Classificação Internacional de Doenças por código ou termo, com favoritos e histórico."
+    <SearchPageLayout
+      activeKey="cid"
+      title="Busca CID-10"
+      description="Consulte códigos da Classificação Internacional de Doenças por código ou termo, com favoritos e histórico."
+      onSubmit={handleSearch}
+      searchFields={
+        <div className="min-w-0 flex-1">
+          <SearchInput
+            id="busca-cid"
+            aria-label="Buscar CID-10 por código ou termo"
+            placeholder="Digite CID (ex: I63.9) ou termo (ex: aneurisma)"
+            value={term}
+            clearable
+            onChange={(event) => setTerm(event.target.value)}
+            onClear={() => {
+              setTerm("");
+              setLastQuery("");
+              setResults(null);
+            }}
           />
+        </div>
+      }
+      extra={
+        <>
+          {/* Listas de apoio: consulta secundária, agrupadas em abas */}
+          <SurfaceCard>
+            <Tabs defaultValue="favoritos" className="space-y-5">
+              <TabsList className={appTabsListClass}>
+                <TabsTrigger value="favoritos" className={appTabsTriggerClass}>
+                  <Star className={appTabsIconClass} aria-hidden />
+                  <span className={appTabsLabelClass}>Favoritos</span>
+                  <Badge variant="secondary" size="sm" className="tabular-nums">
+                    {favorites.length}
+                  </Badge>
+                </TabsTrigger>
+                <TabsTrigger value="historico" className={appTabsTriggerClass}>
+                  <History className={appTabsIconClass} aria-hidden />
+                  <span className={appTabsLabelClass}>Histórico</span>
+                  <Badge variant="secondary" size="sm" className="tabular-nums">
+                    {historyItems.length}
+                  </Badge>
+                </TabsTrigger>
+              </TabsList>
 
-          <form
-            onSubmit={handleSearch}
-            className="flex flex-col gap-3 rounded-xl border border-border bg-card p-4 lg:flex-row lg:items-center"
-          >
-            <div className="min-w-0 flex-1">
-              <SearchInput
-                id="busca-cid"
-                aria-label="Buscar CID-10 por código ou termo"
-                placeholder="Digite CID (ex: I63.9) ou termo (ex: aneurisma)"
-                value={term}
-                clearable
-                onChange={(event) => setTerm(event.target.value)}
-                onClear={() => {
-                  setTerm("");
-                  setLastQuery("");
-                  setResults(null);
-                }}
-              />
-            </div>
-            <Button type="submit" className="w-full justify-center lg:w-auto lg:px-8">
-              Buscar
-            </Button>
-          </form>
+              <TabsContent value="favoritos">
+                <CidList
+                  items={favoriteItems}
+                  favorites={favorites}
+                  onToggleFavorite={toggleFavorite}
+                  onCopy={copyCode}
+                  emptyTitle="Nenhum favorito salvo"
+                  emptyHint="Toque na estrela de um resultado para salvá-lo aqui."
+                />
+              </TabsContent>
 
-          <section
-            aria-label="Resultados da busca"
-            className="rounded-xl border border-border bg-card"
-          >
-            {results === null ? (
+              <TabsContent value="historico" className="space-y-3">
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <p className="text-xs text-muted-foreground">
+                    Últimos códigos copiados (máximo de 10).
+                  </p>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={clearHistory}
+                    disabled={historyItems.length === 0}
+                  >
+                    <Trash2 className="icon-optical h-4 w-4" aria-hidden />
+                    Limpar histórico
+                  </Button>
+                </div>
+
+                <CidList
+                  items={historyItems}
+                  favorites={favorites}
+                  onToggleFavorite={toggleFavorite}
+                  onCopy={copyCode}
+                  emptyTitle="Histórico vazio"
+                  emptyHint="Os códigos copiados aparecem aqui para consulta rápida."
+                />
+              </TabsContent>
+            </Tabs>
+          </SurfaceCard>
+        </>
+      }
+    >
+      {results === null ? (
+
               <EmptyState
                 size="lg"
                 icon={<BookOpen className="h-12 w-12" />}
