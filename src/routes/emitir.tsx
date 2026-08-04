@@ -750,7 +750,7 @@ function EmitirPage() {
                   <div className="px-5 sm:px-7 py-6">
 
                     <div className="mb-5">
-                      <h2 className="text-lg font-semibold">Escolha o tipo de guia</h2>
+                      <h2 className="font-display text-base font-semibold tracking-tight text-foreground">Escolha o tipo de guia</h2>
                       <p className="text-sm text-muted-foreground mt-0.5">
                         Selecione a modalidade de atendimento para prosseguir com o formulário.
                       </p>
@@ -796,7 +796,7 @@ function EmitirPage() {
 
                             </div>
                             <div className="mt-3">
-                              <h3 className={cn("font-semibold leading-tight", active ? "text-foreground" : "text-foreground/90")}>
+                              <h3 className="font-display text-sm font-semibold leading-tight tracking-tight text-foreground">
                                 {g.label}
                               </h3>
                               <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
@@ -805,7 +805,7 @@ function EmitirPage() {
                             </div>
                             <div
                               className={cn(
-                                "mt-3 inline-flex items-center text-[10px] font-bold uppercase tracking-tight px-2 py-0.5 rounded",
+                                "mt-3 inline-flex items-center rounded px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wide",
                                 active
                                   ? "bg-primary/10 text-primary"
                                   : "text-muted-foreground",
@@ -835,7 +835,7 @@ function EmitirPage() {
               <div className="flex items-center gap-3">
                 <div className="w-1 h-8 bg-primary rounded-full" />
                 <div className="min-w-0 flex-1">
-                  <p className="text-[10px] uppercase font-bold tracking-widest text-muted-foreground">
+                  <p className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
                     Formulário de emissão
                   </p>
                   <p className="text-sm font-semibold truncate">{guideHeaderTitle}</p>
@@ -1801,7 +1801,7 @@ function GuiaLivePreview(props: {
     <div className={fullSize ? "" : "rounded-xl border bg-card shadow-sm overflow-hidden"}>
       {!fullSize && (
         <div className="px-4 py-2.5 border-b bg-muted/40 flex items-center justify-between">
-          <p className="text-[10px] uppercase font-bold tracking-widest text-muted-foreground">
+          <p className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
             Pré-visualização · Modelo TISS SP/SADT
           </p>
           <span className="text-[10px] text-muted-foreground">Atualiza em tempo real</span>
