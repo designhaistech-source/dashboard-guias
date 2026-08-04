@@ -52,7 +52,7 @@ export function DocumentsPage() {
       <AppSidebar activeKey="relatorios" />
 
       <main className="flex min-h-screen flex-1 flex-col overflow-x-hidden">
-        <div className="w-full flex-1 space-y-6 px-6 py-8 pb-16 lg:px-10">
+        <div className="w-full flex-1 space-y-6 px-6 py-8 pb-16 pt-20 md:pt-8 lg:px-10">
           <AppBreadcrumb />
           <PageHeader
             title="Relatórios e documentos"
