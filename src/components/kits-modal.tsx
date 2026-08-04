@@ -26,6 +26,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { Chip } from "@/components/ui/chip";
+import { Badge } from "@/components/ui/badge";
 import {
   type Kit,
 
@@ -56,6 +57,7 @@ export function KitsModal({
   >("recentes");
   const [expanded, setExpanded] = useState<Set<string>>(new Set());
   const [pendente, setPendente] = useState<Kit | null>(null);
+  const [paraExcluir, setParaExcluir] = useState<Kit | null>(null);
   // Foco inicial no campo de busca; trava de rolagem, focus trap, Esc e
   // restauração de foco são responsabilidade do Dialog do design system.
   const buscaRef = useRef<HTMLInputElement>(null);
@@ -144,11 +146,12 @@ export function KitsModal({
   };
 
   const excluir = (kit: Kit) => {
-    if (!confirm(`Excluir o kit "${kit.nome}"?`)) return;
     deleteKit(kit.id);
     setKits(loadKits());
+    setParaExcluir(null);
     toast.success("Kit excluído.");
   };
+
 
   const favoritar = (kit: Kit) => {
     toggleFavorito(kit.id);
@@ -304,12 +307,12 @@ export function KitsModal({
 
                       <div className="min-w-0 flex-1 basis-[calc(100%-3rem)] sm:basis-auto">
                         <div className="flex items-center gap-2 flex-wrap">
-                          <h3 className="text-sm font-semibold truncate">
+                          <h3 className="font-display text-sm font-semibold truncate">
                             {kit.nome}
                           </h3>
-                          <span className="shrink-0 text-xs px-2 py-0.5 rounded-full bg-muted text-muted-foreground">
+                          <Badge variant="secondary" className="shrink-0">
                             {kit.categoria}
-                          </span>
+                          </Badge>
                         </div>
                         <p className="text-xs text-muted-foreground mt-0.5 line-clamp-2">
                           {kit.descricao}
@@ -346,7 +349,7 @@ export function KitsModal({
                           icon={<Copy className="h-3.5 w-3.5" />}
                         />
                         <IconAction
-                          onClick={() => excluir(kit)}
+                          onClick={() => setParaExcluir(kit)}
                           label="Excluir"
                           danger
                           icon={<Trash2 className="h-3.5 w-3.5" />}
@@ -428,6 +431,39 @@ export function KitsModal({
           </Button>
           <Button variant="destructive" size="sm" onClick={() => confirmar("replace")}>
             Substituir tudo
+          </Button>
+        </>
+      }
+    />
+
+    <AppModal
+      open={!!paraExcluir}
+      onOpenChange={(v: boolean) => {
+        if (!v) setParaExcluir(null);
+      }}
+      size="sm"
+      role="alertdialog"
+      unstyledBody
+      icon={<AlertTriangle className="size-4 text-destructive" />}
+      title="Excluir kit?"
+      description={
+        <>
+          O kit{" "}
+          <strong className="text-foreground">"{paraExcluir?.nome}"</strong> será
+          removido permanentemente. Esta ação não pode ser desfeita.
+        </>
+      }
+      footer={
+        <>
+          <Button variant="outline" size="sm" onClick={() => setParaExcluir(null)}>
+            Cancelar
+          </Button>
+          <Button
+            variant="destructive"
+            size="sm"
+            onClick={() => paraExcluir && excluir(paraExcluir)}
+          >
+            Excluir kit
           </Button>
         </>
       }
