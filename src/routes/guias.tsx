@@ -1200,10 +1200,7 @@ function RequiredFieldsModal() {
                   </div>
                   <div className="flex flex-wrap gap-2">
                     {current.map((f) => (
-                      <span
-                        key={f}
-                        className="inline-flex items-center icon-optical gap-2 rounded-full bg-muted px-3 py-1.5 text-sm"
-                      >
+                      <Chip key={f} asSpan variant="outline" size="md" className="gap-1.5 pr-1.5">
                         {f}
                         <Button
                           variant="ghost"
@@ -1214,34 +1211,15 @@ function RequiredFieldsModal() {
                         >
                           <Trash2 className="h-3.5 w-3.5" />
                         </Button>
-                      </span>
+                      </Chip>
                     ))}
                   </div>
                 </>
               )}
             </div>
-          </DialogBody>
+        </>
+      </AppModal>
 
-          <DialogFooter>
-            <Button variant="outline" onClick={() => attemptClose(false)} disabled={saving}>
-              Cancelar
-            </Button>
-            <Button onClick={handleSave} disabled={saving || isEmpty || !isDirty}>
-              {saving ? (
-                <>
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                  Salvando…
-                </>
-              ) : (
-                <>
-                  <Save className="h-4 w-4" />
-                  Salvar alterações
-                </>
-              )}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
 
       {/* Confirmação de descarte */}
       <Dialog open={confirmDiscard} onOpenChange={setConfirmDiscard}>
