@@ -1204,8 +1204,32 @@ function EmitirPage() {
                       { value: "O", label: "Outro" },
                     ]}
                   />
-
+                  <Field label="Validade da carteira">
+                    <Input
+                      type="date"
+                      value={pacienteValidadeCarteira}
+                      onChange={(e) => setPacienteValidadeCarteira(e.target.value)}
+                    />
+                  </Field>
+                  <Field label="Cartão Nacional de Saúde (CNS)">
+                    <Input
+                      value={pacienteCns}
+                      onChange={(e) => setPacienteCns(e.target.value)}
+                      placeholder="000 0000 0000 0000"
+                    />
+                  </Field>
+                  <SelectField
+                    label="Atendimento a recém-nascido (RN)"
+                    labelClassName="text-xs font-medium text-muted-foreground"
+                    value={pacienteRn}
+                    onValueChange={setPacienteRn}
+                    options={[
+                      { value: "N", label: "Não" },
+                      { value: "S", label: "Sim" },
+                    ]}
+                  />
                 </Grid>
+
               </Section>
 
               {/* Solicitante */}
