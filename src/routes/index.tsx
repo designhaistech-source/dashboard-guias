@@ -572,6 +572,11 @@ const emptyFilters: GuideFilters = {
   tipoGuia: "",
 };
 
+/** Rótulo de grupo dentro do painel de filtros — único nível em caixa alta. */
+const filterGroupLabelClass =
+  "mb-2 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground";
+
+
 function FilterField({
   label,
   value,
