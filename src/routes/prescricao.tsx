@@ -904,10 +904,13 @@ function PrescricaoForm() {
     saveHistorico(next);
   };
 
+  const [confirmLimparHistorico, setConfirmLimparHistorico] = useState(false);
   const limparHistorico = () => {
     if (historico.length === 0) return;
-    if (typeof window !== "undefined" && !window.confirm("Apagar todo o histórico de prescrições?"))
-      return;
+    setConfirmLimparHistorico(true);
+  };
+  const confirmarLimparHistorico = () => {
+    setConfirmLimparHistorico(false);
     setHistorico([]);
     saveHistorico([]);
     toast.success("Histórico apagado.");
