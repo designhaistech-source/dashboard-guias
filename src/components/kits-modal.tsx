@@ -56,6 +56,7 @@ export function KitsModal({
   >("recentes");
   const [expanded, setExpanded] = useState<Set<string>>(new Set());
   const [pendente, setPendente] = useState<Kit | null>(null);
+  const [paraExcluir, setParaExcluir] = useState<Kit | null>(null);
   // Foco inicial no campo de busca; trava de rolagem, focus trap, Esc e
   // restauração de foco são responsabilidade do Dialog do design system.
   const buscaRef = useRef<HTMLInputElement>(null);
