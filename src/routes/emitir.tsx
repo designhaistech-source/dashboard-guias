@@ -1664,6 +1664,7 @@ function EmitirPage() {
                 nas guias, evitando retrabalho. Você pode editá-las a qualquer momento.
               </span>
             </div>
+        </>
       </AppModal>
     </div>
   );
