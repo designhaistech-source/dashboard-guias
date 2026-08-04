@@ -972,6 +972,50 @@ function EmitirPage() {
                       />
                     </Field>
                   </Grid>
+
+                  <div className="mt-5 space-y-4 border-t pt-5">
+                    <p className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+                      Autorização e senha
+                    </p>
+                    <Grid cols={3}>
+                      <Field label="Nº da guia principal">
+                        <Input
+                          value={guiaPrincipal}
+                          onChange={(e) => setGuiaPrincipal(e.target.value)}
+                          placeholder="Guia de internação vinculada"
+                        />
+                      </Field>
+                      <Field label="Nº da guia atribuído pela operadora">
+                        <Input
+                          value={guiaOperadora}
+                          onChange={(e) => setGuiaOperadora(e.target.value)}
+                          placeholder="Informado pela operadora"
+                        />
+                      </Field>
+                      <Field label="Data da autorização">
+                        <Input
+                          type="date"
+                          value={dataAutorizacao}
+                          onChange={(e) => setDataAutorizacao(e.target.value)}
+                        />
+                      </Field>
+                      <Field label="Senha de autorização">
+                        <Input
+                          value={senha}
+                          onChange={(e) => setSenha(e.target.value)}
+                          placeholder="Senha emitida pela operadora"
+                        />
+                      </Field>
+                      <Field label="Validade da senha">
+                        <Input
+                          type="date"
+                          value={validadeSenha}
+                          onChange={(e) => setValidadeSenha(e.target.value)}
+                        />
+                      </Field>
+                    </Grid>
+                  </div>
+
                 </Section>
               ) : (
                 <Section
