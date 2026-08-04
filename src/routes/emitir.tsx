@@ -2180,18 +2180,19 @@ function GuiaLivePreview(props: {
 
             <SectionBar>Dados do Contratado Executante</SectionBar>
             <FieldRow>
-              <FieldBox n="29" label="Código na Operadora" value="" width={190} />
-              <FieldBox n="30" label="Nome do Contratado" value={operadora} grow />
-              <FieldBox n="31" label="Código CNES" value="" width={160} />
+              <FieldBox n="29" label="Código na Operadora" value={codigoExecutante} width={190} />
+              <FieldBox n="30" label="Nome do Contratado" value={contratadoExecutante || operadora} grow />
+              <FieldBox n="31" label="Código CNES" value={cnesExecutante} width={160} />
             </FieldRow>
 
             <SectionBar>Dados do Atendimento</SectionBar>
             <FieldRow>
-              <FieldBox n="32" label="Tipo de Atendimento" value="" width={160} />
-              <FieldBox n="33" label="Indicação de Acidente" value="" width={200} />
-              <FieldBox n="34" label="Tipo de Consulta" value="" width={140} />
-              <FieldBox n="35" label="Motivo de Encerramento" value="" grow />
+              <FieldBox n="32" label="Tipo de Atendimento" value={tipoAtendimento} width={160} />
+              <FieldBox n="33" label="Indicação de Acidente" value={indicacaoAcidente} width={200} />
+              <FieldBox n="34" label="Tipo de Consulta" value={tipoConsulta} width={140} />
+              <FieldBox n="35" label="Motivo de Encerramento" value={motivoEncerramento} grow />
             </FieldRow>
+
 
             <SectionBar>Dados da Execução / Procedimentos e Exames Realizados</SectionBar>
             <div className="border-b border-foreground">
