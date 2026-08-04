@@ -325,26 +325,14 @@ function UserMenu({ collapsed }: { collapsed: boolean }) {
 
   // Confirmação compartilhada pelos dois pontos de saída (menu e rodapé).
   const logoutConfirmation = (
-    <AlertDialog open={logoutOpen} onOpenChange={setLogoutOpen}>
-      <AlertDialogContent>
-        <AlertDialogHeader>
-          <AlertDialogTitle>Sair da conta?</AlertDialogTitle>
-          <AlertDialogDescription>
-            Você será desconectado e os dados não salvos deste formulário podem ser
-            perdidos.
-          </AlertDialogDescription>
-        </AlertDialogHeader>
-        <AlertDialogFooter>
-          <AlertDialogCancel>Cancelar</AlertDialogCancel>
-          <AlertDialogAction
-            onClick={confirmLogout}
-            className={buttonVariants({ variant: "destructive" })}
-          >
-            Sair
-          </AlertDialogAction>
-        </AlertDialogFooter>
-      </AlertDialogContent>
-    </AlertDialog>
+    <ConfirmDialog
+      open={logoutOpen}
+      onOpenChange={setLogoutOpen}
+      title="Sair da conta?"
+      description="Você será desconectado e os dados não salvos deste formulário podem ser perdidos."
+      confirmLabel="Sair da conta"
+      onConfirm={confirmLogout}
+    />
   );
 
 
