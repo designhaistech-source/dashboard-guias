@@ -309,6 +309,31 @@ function EmitirPage() {
   const [operadora, setOperadora] = useState("");
   const [registroAns, setRegistroAns] = useState("");
 
+  // Campos TISS de autorização/senha (3 a 7)
+  const [guiaPrincipal, setGuiaPrincipal] = useState("");
+  const [dataAutorizacao, setDataAutorizacao] = useState("");
+  const [senha, setSenha] = useState("");
+  const [validadeSenha, setValidadeSenha] = useState("");
+  const [guiaOperadora, setGuiaOperadora] = useState("");
+
+  // Solicitante (13, 14, 18, 19)
+  const [codigoSolicitante, setCodigoSolicitante] = useState("");
+  const [contratadoSolicitante, setContratadoSolicitante] = useState("");
+  const [conselhoUf, setConselhoUf] = useState("RN");
+  const [codigoCbo, setCodigoCbo] = useState("");
+
+  // Contratado executante (29, 30, 31)
+  const [codigoExecutante, setCodigoExecutante] = useState("");
+  const [contratadoExecutante, setContratadoExecutante] = useState("");
+  const [cnesExecutante, setCnesExecutante] = useState("");
+
+  // Dados do atendimento (32 a 35)
+  const [tipoAtendimento, setTipoAtendimento] = useState("");
+  const [indicacaoAcidente, setIndicacaoAcidente] = useState("");
+  const [tipoConsulta, setTipoConsulta] = useState("");
+  const [motivoEncerramento, setMotivoEncerramento] = useState("");
+
+
   // nº da guia — gerado somente no cliente para evitar hydration mismatch
   const [numeroGuia, setNumeroGuia] = useState<string>("—");
   useEffect(() => {
