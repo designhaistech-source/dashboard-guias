@@ -435,6 +435,39 @@ export function KitsModal({
         </>
       }
     />
+
+    <AppModal
+      open={!!paraExcluir}
+      onOpenChange={(v: boolean) => {
+        if (!v) setParaExcluir(null);
+      }}
+      size="sm"
+      role="alertdialog"
+      unstyledBody
+      icon={<AlertTriangle className="size-4 text-destructive" />}
+      title="Excluir kit?"
+      description={
+        <>
+          O kit{" "}
+          <strong className="text-foreground">"{paraExcluir?.nome}"</strong> será
+          removido permanentemente. Esta ação não pode ser desfeita.
+        </>
+      }
+      footer={
+        <>
+          <Button variant="outline" size="sm" onClick={() => setParaExcluir(null)}>
+            Cancelar
+          </Button>
+          <Button
+            variant="destructive"
+            size="sm"
+            onClick={() => paraExcluir && excluir(paraExcluir)}
+          >
+            Excluir kit
+          </Button>
+        </>
+      }
+    />
     </>
   );
 }
