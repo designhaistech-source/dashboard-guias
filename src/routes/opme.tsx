@@ -26,6 +26,12 @@ import { SavedIndicator } from "@/components/saved-indicator";
 import { useDraftAutosave } from "@/hooks/use-draft-autosave";
 
 import { Field } from "@/components/form-field";
+import {
+  ProfessionalPicker,
+  defaultProfessionalValue,
+  isProfessionalComplete,
+  type ProfessionalValue,
+} from "@/features/professional";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
@@ -155,10 +161,12 @@ function OpmePage() {
     { id: "material-1", tiss: "", nome: "", enq: "", qtd: 1 },
   ]);
 
-  // Profissional
-  const [profissional, setProfissional] = useState("RAQUEL AMORIM DUARTE");
-  const [conselho, setConselho] = useState("CRM");
-  const [numeroConselho, setNumeroConselho] = useState("4723");
+  // Profissional (mesma UI compartilhada com Emitir guia)
+  const [prof, setProf] = useState<ProfessionalValue>(defaultProfessionalValue);
+  const profissional = prof.nome;
+  const conselho = prof.conselho;
+  const numeroConselho = prof.numero;
+
   const [data, setData] = useState(() => new Date().toISOString().slice(0, 10));
 
   // Kits
@@ -185,9 +193,7 @@ function OpmePage() {
       cartaoBenef,
       justificativa,
       materiais,
-      profissional,
-      conselho,
-      numeroConselho,
+      prof,
       data,
     },
     isEmpty: (d) =>
@@ -202,9 +208,8 @@ function OpmePage() {
       setCartaoBenef(d.cartaoBenef);
       setJustificativa(d.justificativa);
       if (Array.isArray(d.materiais) && d.materiais.length) setMateriais(d.materiais);
-      setProfissional(d.profissional);
-      setConselho(d.conselho);
-      setNumeroConselho(d.numeroConselho);
+      if (d.prof) setProf(d.prof);
+
       setData(d.data);
     },
   });
@@ -248,7 +253,7 @@ function OpmePage() {
   const convenioOk = !!operadora && !!paciente.trim();
   const clinicoOk = !!justificativa.trim();
   const materiaisOk = materiaisValidos.length > 0;
-  const profOk = !!profissional.trim() && !!numeroConselho.trim();
+  const profOk = isProfessionalComplete(prof);
 
   const canSubmit = convenioOk && clinicoOk && materiaisOk && profOk;
 
@@ -723,45 +728,16 @@ function OpmePage() {
                   : "Identificação profissional responsável pela solicitação."
               }
             >
-              <div className="grid gap-4 lg:grid-cols-2 xl:grid-cols-[1fr_140px_160px_180px]">
-                <Field label="Nome do profissional" required>
-                  <div className="relative">
-                    <Stethoscope className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                    <Input
-                      className="pl-9 uppercase"
-                      value={profissional}
-                      onChange={(e) => setProfissional(e.target.value)}
-                    />
-                  </div>
-                </Field>
-                <Field label="Conselho">
-                  <Select value={conselho} onValueChange={setConselho}>
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {["CRM", "CRO", "CREFITO", "COREN"].map((c) => (
-                        <SelectItem key={c} value={c}>
-                          {c}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </Field>
-                <Field label="Número do conselho" required>
-                  <Input
-                    value={numeroConselho}
-                    onChange={(e) => setNumeroConselho(e.target.value)}
-                  />
-                </Field>
-                <Field label="Data">
+              <ProfessionalPicker value={prof} onChange={setProf}>
+                <Field id="opme-data" label="Data">
                   <Input
                     type="date"
                     value={data}
                     onChange={(e) => setData(e.target.value)}
                   />
                 </Field>
-              </div>
+              </ProfessionalPicker>
+
             </SectionCard>
 
             {/* Barra de ação padrão: etapas + ações */}
