@@ -610,7 +610,6 @@ function EmitirPage() {
     "kits",
     "procedimentos",
     "opme",
-    "assinatura",
   ];
   const stepNumber = (key: string) => stepKeys.indexOf(key) + 1;
 
@@ -633,7 +632,6 @@ function EmitirPage() {
     (p) => p.code.trim() && p.description.trim() && p.quantity > 0,
   );
   const opmeOk = opmeItems.some((i) => i.description.trim());
-  const assinaturaOk = Boolean(medicoNome.trim());
 
 
 
@@ -1460,21 +1458,6 @@ function EmitirPage() {
                 )}
               </Section>
 
-              {/* Assinatura */}
-              <Section
-                number={stepNumber("assinatura")}
-                done={assinaturaOk}
-                icon={<User className="h-4 w-4" />}
-                title="Assinatura do Solicitante"
-                description="Nome do profissional responsável pela emissão."
-              >
-                <Input
-                  value={medicoNome}
-                  readOnly
-                  className="bg-muted/40 font-medium"
-                />
-              </Section>
-
               {/* Barra de ação padrão: etapas + ações */}
               <FormActionBar
                 stepsLabel="Etapas preenchidas"
@@ -1493,7 +1476,6 @@ function EmitirPage() {
                   { label: "Dados clínicos", done: clinicoOk },
                   { label: "Procedimentos", done: procedimentosOk },
                   { label: "OPME (opcional)", done: opmeOk },
-                  { label: "Assinatura", done: assinaturaOk },
                 ]}
                 note={
                   <>
@@ -1549,6 +1531,7 @@ function EmitirPage() {
               pacienteSexo={pacienteSexo}
               medicoNome={medicoNome}
               medicoCrm={medicoCrm}
+              medicoConselho={profissional.conselho}
               medicoEspecialidade={medicoEspecialidade}
               cidPrincipal={cidPrincipal}
               indicacaoClinica={indicacaoClinica}
@@ -1776,6 +1759,7 @@ function GuiaLivePreview(props: {
   pacienteSexo: string;
   medicoNome: string;
   medicoCrm: string;
+  medicoConselho: string;
   medicoEspecialidade: string;
   cidPrincipal: string;
   indicacaoClinica: string;
@@ -1796,7 +1780,7 @@ function GuiaLivePreview(props: {
     numeroGuia, operadora, operadoraLogo,
     registroAns, character, dataSolicitacao,
     pacienteNome, pacienteCarteira, pacienteCpf,
-    medicoNome, medicoCrm, medicoEspecialidade, cidPrincipal, indicacaoClinica,
+    medicoNome, medicoCrm, medicoConselho, medicoEspecialidade, cidPrincipal, indicacaoClinica,
     observacoes, procedures, opmeItems,
   } = props;
 
@@ -1883,7 +1867,7 @@ function GuiaLivePreview(props: {
             </FieldRow>
             <FieldRow>
               <FieldBox n="15" label="Nome do Profissional Solicitante" value={medicoNome} grow />
-              <FieldBox n="16" label="Conselho" value={medicoCrm ? "CRM" : ""} width={90} />
+              <FieldBox n="16" label="Conselho" value={medicoCrm ? medicoConselho : ""} width={90} />
               <FieldBox n="17" label="Nº Conselho" value={medicoCrm} width={140} />
               <FieldBox n="18" label="UF" value="" width={50} />
               <FieldBox n="19" label="Cód CBO" value={medicoEspecialidade} width={140} />
@@ -1985,7 +1969,7 @@ function GuiaLivePreview(props: {
                   <div className="px-1 py-0.5 border-r border-border"></div>
                   <div className="px-1 py-0.5 border-r border-border"></div>
                   <div className="px-1 py-0.5 border-r border-border truncate">{i === 0 ? medicoNome : ""}</div>
-                  <div className="px-1 py-0.5 border-r border-border">{i === 0 && medicoCrm ? "CRM" : ""}</div>
+                  <div className="px-1 py-0.5 border-r border-border">{i === 0 && medicoCrm ? medicoConselho : ""}</div>
                   <div className="px-1 py-0.5 border-r border-border font-mono">{i === 0 ? medicoCrm : ""}</div>
                   <div className="px-1 py-0.5 border-r border-border"></div>
                   <div className="px-1 py-0.5"></div>
