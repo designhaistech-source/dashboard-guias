@@ -1528,7 +1528,7 @@ function PrescricaoForm() {
                 <p className="font-medium">
                   Receita marcada como Especial — CPF e endereço obrigatórios
                 </p>
-                <p className="mt-0.5 text-warning-strong/90">
+                <p className="mt-0.5 text-warning-strong">
                   {itensControlados.length === 1
                     ? `Motivo: “${itensControlados[0].med.nome}” é medicamento controlado (Portaria 344/98).`
                     : `Motivo: ${itensControlados.length} medicamentos controlados na lista (Portaria 344/98).`}
@@ -1544,7 +1544,7 @@ function PrescricaoForm() {
           {mostrarCamposEspeciais && (
             <div className="space-y-4 pt-2 border-t border-border/60">
               <div>
-                <h3 className="text-sm font-semibold flex items-center gap-1.5">
+                <h3 className="flex items-center gap-1.5 font-display text-base font-semibold tracking-tight text-foreground">
                   <ShieldAlert className="h-4 w-4 text-warning-strong" />
                   Dados exigidos para receituário especial
                 </h3>
@@ -1982,7 +1982,7 @@ function PrescricaoForm() {
                           </div>
                         ) : (
                           <>
-                            <div className="mt-1 flex items-start gap-2 text-sm text-foreground/90">
+                            <div className="mt-1 flex items-start gap-2 text-sm text-foreground">
                               <Link2
                                 className={`h-3.5 w-3.5 mt-0.5 shrink-0 ${
                                   posCheck.ok ? "text-primary" : "text-destructive"
@@ -2156,7 +2156,7 @@ function PrescricaoForm() {
         <section id="sec-historico" className="scroll-mt-4 space-y-3">
           <div className="flex items-center justify-between gap-3">
             <div className="min-w-0">
-              <h2 className="text-base font-semibold text-foreground">
+              <h2 className="font-display text-base font-semibold tracking-tight text-foreground">
                 Histórico de prescrições
               </h2>
               <p className="text-xs text-muted-foreground">
@@ -2637,7 +2637,7 @@ function HistoricoPanel({
       <div className="flex items-center justify-between gap-3">
         <div className="flex items-center gap-2">
           <History className="h-4 w-4 text-primary" />
-          <h3 className="text-sm font-semibold">Histórico de prescrições</h3>
+          <h3 className="font-display text-base font-semibold tracking-tight text-foreground">Histórico de prescrições</h3>
           <span className="text-xs text-muted-foreground">
             {status === "ready"
               ? `(${historico.length} ${historico.length === 1 ? "entrada" : "entradas"} — só neste navegador)`
