@@ -145,11 +145,13 @@ export function KitsModal({
   };
 
   const excluir = (kit: Kit) => {
-    if (!confirm(`Excluir o kit "${kit.nome}"?`)) return;
+  const excluir = (kit: Kit) => {
     deleteKit(kit.id);
     setKits(loadKits());
+    setParaExcluir(null);
     toast.success("Kit excluído.");
   };
+
 
   const favoritar = (kit: Kit) => {
     toggleFavorito(kit.id);
