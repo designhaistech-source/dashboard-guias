@@ -31,7 +31,6 @@ import {
 } from "lucide-react";
 import guiaMock from "@/assets/guia-mock.png.asset.json";
 import { toast } from "sonner";
-import {
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   appTabsListClass,
