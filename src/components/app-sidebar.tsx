@@ -30,7 +30,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { Button, buttonVariants } from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -41,16 +41,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Switch } from "@/components/ui/switch";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
+import { ConfirmDialog } from "@/components/confirm-dialog";
 import { toast } from "sonner";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { CURRENT_USER } from "@/lib/current-user";
@@ -325,26 +316,14 @@ function UserMenu({ collapsed }: { collapsed: boolean }) {
 
   // Confirmação compartilhada pelos dois pontos de saída (menu e rodapé).
   const logoutConfirmation = (
-    <AlertDialog open={logoutOpen} onOpenChange={setLogoutOpen}>
-      <AlertDialogContent>
-        <AlertDialogHeader>
-          <AlertDialogTitle>Sair da conta?</AlertDialogTitle>
-          <AlertDialogDescription>
-            Você será desconectado e os dados não salvos deste formulário podem ser
-            perdidos.
-          </AlertDialogDescription>
-        </AlertDialogHeader>
-        <AlertDialogFooter>
-          <AlertDialogCancel>Cancelar</AlertDialogCancel>
-          <AlertDialogAction
-            onClick={confirmLogout}
-            className={buttonVariants({ variant: "destructive" })}
-          >
-            Sair
-          </AlertDialogAction>
-        </AlertDialogFooter>
-      </AlertDialogContent>
-    </AlertDialog>
+    <ConfirmDialog
+      open={logoutOpen}
+      onOpenChange={setLogoutOpen}
+      title="Sair da conta?"
+      description="Você será desconectado e os dados não salvos deste formulário podem ser perdidos."
+      confirmLabel="Sair da conta"
+      onConfirm={confirmLogout}
+    />
   );
 
 

@@ -53,6 +53,7 @@ import { toast } from "sonner";
 import { AppBreadcrumb } from "@/components/app-breadcrumb";
 import { AppSidebar } from "@/components/app-sidebar";
 import { SiteFooter } from "@/components/site-footer";
+import { ConfirmDialog } from "@/components/confirm-dialog";
 import { KitsModal } from "@/components/kits-modal";
 import { consumirKitParaAplicar, upsertKit, type Kit } from "@/lib/kits";
 import logoAsset from "@/assets/haisguias-logo.png.asset.json";
@@ -904,10 +905,13 @@ function PrescricaoForm() {
     saveHistorico(next);
   };
 
+  const [confirmLimparHistorico, setConfirmLimparHistorico] = useState(false);
   const limparHistorico = () => {
     if (historico.length === 0) return;
-    if (typeof window !== "undefined" && !window.confirm("Apagar todo o histórico de prescrições?"))
-      return;
+    setConfirmLimparHistorico(true);
+  };
+  const confirmarLimparHistorico = () => {
+    setConfirmLimparHistorico(false);
     setHistorico([]);
     saveHistorico([]);
     toast.success("Histórico apagado.");
@@ -2196,6 +2200,14 @@ function PrescricaoForm() {
         </section>
       )}
 
+      <ConfirmDialog
+        open={confirmLimparHistorico}
+        onOpenChange={setConfirmLimparHistorico}
+        title="Apagar todo o histórico?"
+        description="Todas as prescrições salvas neste dispositivo serão removidas. Esta ação não pode ser desfeita."
+        confirmLabel="Apagar histórico"
+        onConfirm={confirmarLimparHistorico}
+      />
 
 
 

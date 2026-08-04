@@ -22,6 +22,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { AppModal } from "@/components/app-modal";
+import { ConfirmDialog } from "@/components/confirm-dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
@@ -396,15 +397,12 @@ export function KitsModal({
       </>
     </AppModal>
 
-    <AppModal
+    <ConfirmDialog
       open={!!pendente}
-      onOpenChange={(v: boolean) => {
+      onOpenChange={(v) => {
         if (!v) setPendente(null);
       }}
-      size="sm"
-      role="alertdialog"
-      unstyledBody
-      icon={<AlertTriangle className="size-4 text-warning-strong" />}
+      tone="warning"
       title="Aplicar kit à receita?"
       description={
         <>
@@ -421,53 +419,28 @@ export function KitsModal({
           . Como deseja prosseguir?
         </>
       }
-      footer={
-        <>
-          <Button variant="outline" size="sm" onClick={() => setPendente(null)}>
-            Cancelar
-          </Button>
-          <Button variant="secondary" size="sm" onClick={() => confirmar("append")}>
-            Adicionar aos existentes
-          </Button>
-          <Button variant="destructive" size="sm" onClick={() => confirmar("replace")}>
-            Substituir tudo
-          </Button>
-        </>
-      }
+      secondaryLabel="Adicionar aos existentes"
+      onSecondary={() => confirmar("append")}
+      confirmLabel="Substituir tudo"
+      onConfirm={() => confirmar("replace")}
     />
 
-    <AppModal
+    <ConfirmDialog
       open={!!paraExcluir}
-      onOpenChange={(v: boolean) => {
+      onOpenChange={(v) => {
         if (!v) setParaExcluir(null);
       }}
-      size="sm"
-      role="alertdialog"
-      unstyledBody
-      icon={<AlertTriangle className="size-4 text-destructive" />}
       title="Excluir kit?"
       description={
         <>
-          O kit{" "}
-          <strong className="text-foreground">"{paraExcluir?.nome}"</strong> será
+          O kit <strong className="text-foreground">"{paraExcluir?.nome}"</strong> será
           removido permanentemente. Esta ação não pode ser desfeita.
         </>
       }
-      footer={
-        <>
-          <Button variant="outline" size="sm" onClick={() => setParaExcluir(null)}>
-            Cancelar
-          </Button>
-          <Button
-            variant="destructive"
-            size="sm"
-            onClick={() => paraExcluir && excluir(paraExcluir)}
-          >
-            Excluir kit
-          </Button>
-        </>
-      }
+      confirmLabel="Excluir kit"
+      onConfirm={() => paraExcluir && excluir(paraExcluir)}
     />
+
     </>
   );
 }

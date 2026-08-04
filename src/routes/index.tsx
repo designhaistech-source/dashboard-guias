@@ -30,6 +30,7 @@ import {
 import { AppBreadcrumb } from "@/components/app-breadcrumb";
 import { AppSidebar } from "@/components/app-sidebar";
 import { SiteFooter } from "@/components/site-footer";
+import { ConfirmDialog } from "@/components/confirm-dialog";
 import { PageHeader } from "@/components/page-header";
 import { SurfaceCard } from "@/components/surface-card";
 import { FilterCard } from "@/components/filter-card";
@@ -746,10 +747,16 @@ function DashboardPage() {
     () => (Object.keys(draft) as (keyof GuideFilters)[]).some((k) => draft[k] !== filters[k]),
     [draft, filters],
   );
+  const [confirmDiscardFilters, setConfirmDiscardFilters] = useState(false);
+  const discardFilterEdits = () => {
+    setConfirmDiscardFilters(false);
+    setDraft(filters);
+    setFiltersOpen(false);
+  };
   const requestClose = () => {
     if (isDirty) {
-      const ok = window.confirm("Você tem alterações não aplicadas. Deseja descartá-las?");
-      if (!ok) return;
+      setConfirmDiscardFilters(true);
+      return;
     }
     setDraft(filters);
     setFiltersOpen(false);
@@ -1132,6 +1139,17 @@ function DashboardPage() {
         </div>
         <SiteFooter />
       </main>
+
+      <ConfirmDialog
+        open={confirmDiscardFilters}
+        onOpenChange={setConfirmDiscardFilters}
+        title="Descartar alterações?"
+        description="Você tem filtros alterados que ainda não foram aplicados. Se sair agora, eles serão perdidos."
+        cancelLabel="Continuar editando"
+        confirmLabel="Descartar alterações"
+        onConfirm={discardFilterEdits}
+      />
+
 
     </div>
   );

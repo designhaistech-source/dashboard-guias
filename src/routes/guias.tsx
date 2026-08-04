@@ -38,6 +38,7 @@ import {
   appTabsLabelClass,
 } from "@/components/app-tabs";
 import { AppModal } from "@/components/app-modal";
+import { ConfirmDialog } from "@/components/confirm-dialog";
 import { Button } from "@/components/ui/button";
 import { AppBreadcrumb } from "@/components/app-breadcrumb";
 import { AppSidebar } from "@/components/app-sidebar";
@@ -1211,23 +1212,16 @@ function RequiredFieldsModal() {
 
 
       {/* Confirmação de descarte */}
-      <AppModal
+      <ConfirmDialog
         open={confirmDiscard}
         onOpenChange={setConfirmDiscard}
-        size="sm"
         title="Descartar alterações?"
         description="Você tem alterações não salvas. Se sair agora, elas serão perdidas."
-        footer={
-          <>
-            <Button variant="outline" onClick={() => setConfirmDiscard(false)}>
-              Continuar editando
-            </Button>
-            <Button variant="destructive" onClick={discardChanges}>
-              Descartar
-            </Button>
-          </>
-        }
+        cancelLabel="Continuar editando"
+        confirmLabel="Descartar alterações"
+        onConfirm={discardChanges}
       />
+
     </>
   );
 }
