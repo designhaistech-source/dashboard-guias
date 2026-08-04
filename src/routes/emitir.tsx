@@ -366,8 +366,91 @@ function EmitirPage() {
   const [prefEstabelecimento, setPrefEstabelecimento] = useState("");
   const [prefUf, setPrefUf] = useState("RN");
   const [prefErrors, setPrefErrors] = useState<Partial<Record<PrefField, string>>>({});
-  /** Indica que a guia foi pré-preenchida com os dados padrão salvos. */
-  const prefsApplied = Boolean(prefPrestador.trim() || prefMatricula.trim());
+
+  /** Campos dos dados padrão selecionados para aplicar nesta guia. */
+  const [prefSelection, setPrefSelection] = useState<Record<PrefField, boolean>>({
+    prestador: true,
+    matricula: true,
+    estabelecimento: true,
+    uf: true,
+  });
+  /** Estado da revisão: aguardando decisão, aplicado ou dispensado. */
+  const [prefsStatus, setPrefsStatus] = useState<"none" | "review" | "applied" | "dismissed">(
+    "none",
+  );
+  /** Snapshot dos campos da guia antes de aplicar (permite desfazer). */
+  const [prefsUndo, setPrefsUndo] = useState<
+    | {
+        profissional: ProfessionalValue;
+        estabelecimento: string;
+        uf: string;
+      }
+    | null
+  >(null);
+
+  /** Só oferece revisão quando existe algum dado padrão preenchido. */
+  const prefsFilled: PrefField[] = [
+    prefPrestador.trim() && ("prestador" as PrefField),
+    prefMatricula.trim() && ("matricula" as PrefField),
+    prefEstabelecimento.trim() && ("estabelecimento" as PrefField),
+    prefUf.trim() && ("uf" as PrefField),
+  ].filter(Boolean) as PrefField[];
+
+  const prefValue = (field: PrefField) =>
+    field === "prestador"
+      ? prefPrestador
+      : field === "matricula"
+        ? prefMatricula
+        : field === "estabelecimento"
+          ? prefEstabelecimento
+          : prefUf;
+
+  const PREF_LABELS: Record<PrefField, string> = {
+    prestador: "Nome do profissional (campo 15)",
+    matricula: "Conselho e registro (campos 16/17)",
+    estabelecimento: "Estabelecimento (guia SUS)",
+    uf: "UF do conselho (campo 18)",
+  };
+
+  const selectedPrefFields = prefsFilled.filter((f) => prefSelection[f]);
+
+  const togglePrefField = (field: PrefField) =>
+    setPrefSelection((prev) => ({ ...prev, [field]: !prev[field] }));
+
+  /** Aplica somente os campos revisados e marcados pelo usuário. */
+  const applySelectedPrefs = () => {
+    if (selectedPrefFields.length === 0) return;
+    setPrefsUndo({
+      profissional,
+      estabelecimento: susEstabelecimento,
+      uf: conselhoUf,
+    });
+    if (prefSelection.prestador || prefSelection.matricula) {
+      applyPrefsToProfissional(
+        prefSelection.prestador ? prefPrestador : undefined,
+        prefSelection.matricula ? prefMatricula : undefined,
+      );
+    }
+    if (prefSelection.estabelecimento && prefEstabelecimento.trim()) {
+      setSusEstabelecimento(prefEstabelecimento);
+    }
+    if (prefSelection.uf && prefUf.trim()) setConselhoUf(prefUf);
+    setPrefsStatus("applied");
+    toast.success(
+      `${selectedPrefFields.length} ${selectedPrefFields.length === 1 ? "campo aplicado" : "campos aplicados"} a esta guia`,
+    );
+  };
+
+  /** Restaura os valores que a guia tinha antes da aplicação. */
+  const undoPrefs = () => {
+    if (!prefsUndo) return;
+    setProfissional(prefsUndo.profissional);
+    setSusEstabelecimento(prefsUndo.estabelecimento);
+    setConselhoUf(prefsUndo.uf);
+    setPrefsUndo(null);
+    setPrefsStatus("review");
+    toast.success("Aplicação desfeita");
+  };
 
   const clearPrefError = (field: PrefField) =>
     setPrefErrors((prev) => {
@@ -385,8 +468,8 @@ function EmitirPage() {
         setPrefMatricula(p.matricula ?? "");
         setPrefEstabelecimento(p.estabelecimento ?? "");
         setPrefUf(p.uf ?? "RN");
-        if (p.prestador || p.matricula) applyPrefsToProfissional(p.prestador, p.matricula);
-
+        // Nada é aplicado automaticamente: o usuário revisa e confirma.
+        if (p.prestador || p.matricula || p.estabelecimento) setPrefsStatus("review");
       }
     } catch { /* ignore */ }
   }, []);
@@ -421,10 +504,11 @@ function EmitirPage() {
     }
 
     setPrefErrors({});
-    applyPrefsToProfissional(result.data.prestador, result.data.matricula);
-    toast.success("Dados padrão salvos");
+    setPrefsStatus("review");
+    toast.success("Dados padrão salvos — revise e aplique a esta guia");
     setPrefsOpen(false);
   };
+
 
 
   const [pacienteNome, setPacienteNome] = useState("");
