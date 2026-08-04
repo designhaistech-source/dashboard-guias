@@ -605,7 +605,7 @@ function GuideDetailsModal({ row, onClose }: { row: Row | null; onClose: () => v
     >
 
         {row && details && (
-          <div className="grid grid-cols-1 gap-6 bg-muted/30 px-4 py-4 sm:px-6 lg:grid-cols-2">;
+          <div className="grid grid-cols-1 gap-6 bg-muted/30 px-4 py-4 sm:px-6 lg:grid-cols-2">
             <div className={`${mobileTab === "guia" ? "flex" : "hidden"} lg:!flex lg:sticky lg:top-0 lg:self-start h-[65vh] lg:h-[calc(92vh-3rem)] rounded-xl border border-border bg-card p-4 sm:p-6 flex-col gap-4 min-h-0`}>
               <div className="text-sm font-medium truncate">Arquivo enviado: {row.file}</div>
               <div className="flex-1 min-h-0">
