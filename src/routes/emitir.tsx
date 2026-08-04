@@ -739,22 +739,9 @@ function EmitirPage() {
           <PageHeader
             title="Emitir guia"
             description="Escolha entre guias de convênio (TISS) ou guias do SUS e selecione o tipo correspondente para começar."
-            actions={
-              <>
-                <SavedIndicator savedAt={savedAt} />
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setPrefsOpen(true)}
-                >
-                  <Settings2 className="h-4 w-4" />
-                  Preferências
-                </Button>
-              </>
-            }
-
+            actions={<SavedIndicator savedAt={savedAt} />}
           />
+
 
 
           {/* Hub: modo (TISS/SUS) via Tabs */}
