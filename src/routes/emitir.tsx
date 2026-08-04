@@ -1587,13 +1587,27 @@ function EmitirPage() {
         </DialogContent>
       </Dialog>
 
-      <Dialog open={prefsOpen} onOpenChange={setPrefsOpen}>
-        <DialogContent className="max-w-lg">
-          <DialogHeader>
-            <DialogTitle>Preferências do Usuário</DialogTitle>
-          </DialogHeader>
-          <DialogBody className="space-y-5">
-            <FormField
+      <AppModal
+        open={prefsOpen}
+        onOpenChange={setPrefsOpen}
+        title="Preferências do usuário"
+        icon={<Settings2 className="h-4 w-4" aria-hidden="true" />}
+        size="lg"
+        bodyClassName="space-y-5"
+        footer={
+          <>
+            <Button variant="outline" onClick={() => setPrefsOpen(false)}>
+              Cancelar
+            </Button>
+            <Button onClick={savePrefs}>
+              <Save className="h-4 w-4" />
+              Salvar preferências
+            </Button>
+          </>
+        }
+      >
+        <>
+          <FormField
               id="pref-prestador"
               label="Nome do Prestador"
               required
