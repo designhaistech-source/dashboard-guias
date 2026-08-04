@@ -131,7 +131,7 @@ export function AppSidebar({ activeKey }: { activeKey: ItemKey }) {
             onClick={() => setMobileOpen(true)}
             aria-label="Abrir menu"
             aria-expanded={mobileOpen}
-            className="-ml-1 grid size-9 shrink-0 place-items-center rounded-md text-sidebar-muted transition-colors hover:bg-muted hover:text-foreground"
+            className="-ml-1 grid size-9 shrink-0 place-items-center rounded-md text-sidebar-muted transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
           >
             <Menu className="h-5 w-5" aria-hidden="true" />
           </button>
@@ -158,7 +158,7 @@ export function AppSidebar({ activeKey }: { activeKey: ItemKey }) {
                   type="button"
                   onClick={() => setMobileOpen(false)}
                   aria-label="Fechar menu"
-                  className="grid size-9 shrink-0 place-items-center rounded-md text-sidebar-muted transition-colors hover:bg-muted hover:text-foreground"
+                  className="grid size-9 shrink-0 place-items-center rounded-md text-sidebar-muted transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
                 >
                   <X className="h-5 w-5" aria-hidden="true" />
                 </button>
@@ -187,7 +187,7 @@ export function AppSidebar({ activeKey }: { activeKey: ItemKey }) {
             type="button"
             onClick={() => setCollapsed((v) => !v)}
             aria-label={collapsed ? "Expandir menu" : "Recolher menu"}
-            className="shrink-0 p-1.5 rounded-md text-sidebar-muted hover:text-foreground hover:bg-muted transition-colors"
+            className="shrink-0 p-1.5 rounded-md text-sidebar-muted hover:text-sidebar-accent-foreground hover:bg-sidebar-accent transition-colors"
           >
             <PanelLeft className="h-4 w-4" />
           </button>
@@ -213,7 +213,7 @@ function SidebarNav({
 }) {
   return (
     <nav className="flex-1 overflow-y-auto px-3 py-4 space-y-6">
-      <SidebarGroup label="INÍCIO" collapsed={collapsed}>
+      <SidebarGroup label="Início" collapsed={collapsed}>
         <SidebarItem
           icon={LayoutGrid}
           label="Dashboard"
@@ -225,7 +225,7 @@ function SidebarNav({
         />
       </SidebarGroup>
 
-      <SidebarGroup label="GUIAS" collapsed={collapsed}>
+      <SidebarGroup label="Guias" collapsed={collapsed}>
         <SidebarItem
           icon={FileText}
           label="Emitir guia"
@@ -255,7 +255,7 @@ function SidebarNav({
         />
       </SidebarGroup>
 
-      <SidebarGroup label="ATENDIMENTO CLÍNICO" collapsed={collapsed}>
+      <SidebarGroup label="Atendimento clínico" collapsed={collapsed}>
         <SidebarItem
           icon={Pill}
           label="Emitir prescrição"
@@ -478,7 +478,7 @@ function UserMenu({ collapsed }: { collapsed: boolean }) {
         <DropdownMenuTrigger asChild>
           <button /* ds-allow: item de perfil do sidebar */
             type="button"
-            className="flex-1 min-w-0 px-4 py-4 flex items-center gap-3 hover:bg-muted transition-colors text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            className="flex-1 min-w-0 px-4 py-4 flex items-center gap-3 hover:bg-sidebar-accent transition-colors text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           >
             <CircleUser className="h-9 w-9 text-sidebar-muted shrink-0" strokeWidth={1.5} />
             <div className="flex-1 min-w-0">
@@ -524,7 +524,7 @@ function SidebarGroup({
   return (
     <div className="space-y-1">
       {!collapsed && (
-        <div className="px-3 text-xs font-medium tracking-wider text-sidebar-muted">
+        <div className="px-3 text-[11px] font-semibold uppercase tracking-wide text-sidebar-muted">
           {label}
         </div>
       )}
@@ -555,7 +555,7 @@ function SidebarItem({
     collapsed ? "justify-center px-2 py-2" : "px-3 py-2",
     active
       ? "bg-sidebar-accent text-sidebar-accent-foreground font-semibold"
-      : "text-sidebar-foreground hover:bg-muted",
+      : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
   ].join(" ");
 
   const inner = collapsed ? (
@@ -579,7 +579,7 @@ function SidebarItem({
               tabIndex={0}
               aria-label={`Sobre ${label}`}
               onClick={(e) => e.stopPropagation()}
-              className="shrink-0 opacity-60 hover:opacity-100 focus:opacity-100 transition-opacity text-sidebar-muted hover:text-foreground"
+              className="shrink-0 opacity-60 hover:opacity-100 focus:opacity-100 transition-opacity text-sidebar-muted hover:text-sidebar-accent-foreground"
             >
               <HelpCircle className="h-3.5 w-3.5" />
             </span>
