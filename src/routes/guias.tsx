@@ -219,7 +219,7 @@ function Upload_Section({ onProcessed }: { onProcessed: (row: Row) => void }) {
         <div className="mb-5 grid place-items-center h-14 w-14 rounded-full bg-muted sm:h-16 sm:w-16">
           <Upload className="h-6 w-6 text-muted-foreground sm:h-7 sm:w-7" />
         </div>
-        <p className="text-base font-semibold sm:text-lg">Arraste suas guias médicas aqui</p>
+        <p className="font-display text-base font-semibold tracking-tight text-foreground">Arraste suas guias médicas aqui</p>
         <p className="mt-1 text-sm text-muted-foreground">
           ou selecione um arquivo (PDF, imagem) ou tire uma foto da guia
         </p>
@@ -257,7 +257,7 @@ function Upload_Section({ onProcessed }: { onProcessed: (row: Row) => void }) {
 
       {queue.length > 0 && (
         <div className="space-y-3">
-          <h2 className="text-lg font-semibold">Fila de Processamento ({queue.length})</h2>
+          <h2 className="font-display text-base font-semibold tracking-tight text-foreground">Fila de processamento ({queue.length})</h2>
           {queue.map((item) => (
             <div
               key={item.id}
@@ -693,7 +693,7 @@ function SectionCard({
     <div className="rounded-xl border border-border bg-card p-4 sm:p-6">
       <div className="flex items-center gap-2 mb-4">
         {icon}
-        <h3 className="text-base font-semibold sm:text-lg">{title}</h3>
+        <h3 className="font-display text-base font-semibold tracking-tight text-foreground">{title}</h3>
       </div>
       {children}
     </div>
@@ -885,7 +885,7 @@ function DetailCard({
     <div className="rounded-xl border border-border bg-card p-4 sm:p-6">
       <div className="flex items-center gap-2 mb-4">
         {icon}
-        <h3 className="text-base font-semibold sm:text-lg">{title}</h3>
+        <h3 className="font-display text-base font-semibold tracking-tight text-foreground">{title}</h3>
       </div>
       <dl className="divide-y divide-border">
         {items.map((it) => (
