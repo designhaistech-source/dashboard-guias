@@ -1236,8 +1236,38 @@ function EmitirPage() {
                 icon={<Stethoscope className="h-4 w-4" />}
                 title="Profissional solicitante"
                 description="Médico responsável pela emissão."
+                action={
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setPrefsOpen(true)}
+                  >
+                    <Settings2 className="h-4 w-4" />
+                    Dados padrão
+                  </Button>
+                }
               >
+                {prefsApplied && (
+                  <p className="mb-4 flex items-start gap-2 rounded-lg border border-border/70 bg-muted/30 px-3 py-2.5 text-xs leading-relaxed text-muted-foreground">
+                    <Info className="mt-0.5 h-3.5 w-3.5 shrink-0 text-primary" aria-hidden="true" />
+                    <span>
+                      Preenchido automaticamente pelos seus dados padrão do prestador. Edite abaixo
+                      para valer só nesta guia, ou use{" "}
+                      <button /* ds-allow: link inline dentro de texto de apoio */
+                        type="button"
+                        onClick={() => setPrefsOpen(true)}
+                        className="font-medium text-primary underline underline-offset-2 hover:no-underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                      >
+                        Dados padrão
+                      </button>{" "}
+                      para alterar em todas.
+                    </span>
+                  </p>
+                )}
+
                 <ProfessionalPicker value={profissional} onChange={setProfissional} />
+
 
                 <div className="mt-5 border-t pt-5">
                   <Grid cols={3}>
