@@ -366,6 +366,9 @@ function EmitirPage() {
   const [prefEstabelecimento, setPrefEstabelecimento] = useState("");
   const [prefUf, setPrefUf] = useState("RN");
   const [prefErrors, setPrefErrors] = useState<Partial<Record<PrefField, string>>>({});
+  /** Indica que a guia foi pré-preenchida com os dados padrão salvos. */
+  const prefsApplied = Boolean(prefPrestador.trim() || prefMatricula.trim());
+
   const clearPrefError = (field: PrefField) =>
     setPrefErrors((prev) => {
       if (!prev[field]) return prev;
@@ -419,7 +422,7 @@ function EmitirPage() {
 
     setPrefErrors({});
     applyPrefsToProfissional(result.data.prestador, result.data.matricula);
-    toast.success("Preferências salvas");
+    toast.success("Dados padrão salvos");
     setPrefsOpen(false);
   };
 
@@ -739,22 +742,9 @@ function EmitirPage() {
           <PageHeader
             title="Emitir guia"
             description="Escolha entre guias de convênio (TISS) ou guias do SUS e selecione o tipo correspondente para começar."
-            actions={
-              <>
-                <SavedIndicator savedAt={savedAt} />
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setPrefsOpen(true)}
-                >
-                  <Settings2 className="h-4 w-4" />
-                  Preferências
-                </Button>
-              </>
-            }
-
+            actions={<SavedIndicator savedAt={savedAt} />}
           />
+
 
 
           {/* Hub: modo (TISS/SUS) via Tabs */}
@@ -1249,8 +1239,38 @@ function EmitirPage() {
                 icon={<Stethoscope className="h-4 w-4" />}
                 title="Profissional solicitante"
                 description="Médico responsável pela emissão."
+                action={
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setPrefsOpen(true)}
+                  >
+                    <Settings2 className="h-4 w-4" />
+                    Dados padrão
+                  </Button>
+                }
               >
+                {prefsApplied && (
+                  <p className="mb-4 flex items-start gap-2 rounded-lg border border-border/70 bg-muted/30 px-3 py-2.5 text-xs leading-relaxed text-muted-foreground">
+                    <Info className="mt-0.5 h-3.5 w-3.5 shrink-0 text-primary" aria-hidden="true" />
+                    <span>
+                      Preenchido automaticamente pelos seus dados padrão do prestador. Edite abaixo
+                      para valer só nesta guia, ou use{" "}
+                      <button /* ds-allow: link inline dentro de texto de apoio */
+                        type="button"
+                        onClick={() => setPrefsOpen(true)}
+                        className="font-medium text-primary underline underline-offset-2 hover:no-underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                      >
+                        Dados padrão
+                      </button>{" "}
+                      para alterar em todas.
+                    </span>
+                  </p>
+                )}
+
                 <ProfessionalPicker value={profissional} onChange={setProfissional} />
+
 
                 <div className="mt-5 border-t pt-5">
                   <Grid cols={3}>
@@ -1842,7 +1862,8 @@ function EmitirPage() {
       <AppModal
         open={prefsOpen}
         onOpenChange={setPrefsOpen}
-        title="Preferências do usuário"
+        title="Dados padrão do prestador"
+        description="Usados para preencher automaticamente o profissional solicitante e o estabelecimento em todas as novas guias."
         icon={<Settings2 className="h-4 w-4" aria-hidden="true" />}
         size="lg"
         bodyClassName="space-y-5"
@@ -1853,10 +1874,11 @@ function EmitirPage() {
             </Button>
             <Button onClick={savePrefs}>
               <Save className="h-4 w-4" />
-              Salvar preferências
+              Salvar dados padrão
             </Button>
           </>
         }
+
       >
         <>
           <FormField
@@ -1909,13 +1931,13 @@ function EmitirPage() {
               error={prefErrors.uf}
             />
 
-            <div className="rounded-md border border-primary/30 bg-primary/5 text-primary text-xs px-3 py-2 flex gap-2">
-              <Info className="h-4 w-4 shrink-0 mt-0.5" aria-hidden="true" />
-              <span>
-                Estas preferências serão utilizadas para preencher automaticamente os campos
-                nas guias, evitando retrabalho. Você pode editá-las a qualquer momento.
-              </span>
-            </div>
+
+            <p className="flex items-start gap-2 rounded-lg border border-border/70 bg-muted/30 px-3 py-2.5 text-xs leading-relaxed text-muted-foreground">
+              <Info className="mt-0.5 h-3.5 w-3.5 shrink-0 text-primary" aria-hidden="true" />
+              Ao salvar, os campos do profissional solicitante desta guia são atualizados. Você
+              pode sobrescrevê-los na guia sem alterar os dados padrão.
+            </p>
+
         </>
       </AppModal>
     </div>
