@@ -366,6 +366,9 @@ function EmitirPage() {
   const [prefEstabelecimento, setPrefEstabelecimento] = useState("");
   const [prefUf, setPrefUf] = useState("RN");
   const [prefErrors, setPrefErrors] = useState<Partial<Record<PrefField, string>>>({});
+  /** Indica que a guia foi pré-preenchida com os dados padrão salvos. */
+  const prefsApplied = Boolean(prefPrestador.trim() || prefMatricula.trim());
+
   const clearPrefError = (field: PrefField) =>
     setPrefErrors((prev) => {
       if (!prev[field]) return prev;
