@@ -349,7 +349,7 @@ export function KitsModal({
                           icon={<Copy className="h-3.5 w-3.5" />}
                         />
                         <IconAction
-                          onClick={() => excluir(kit)}
+                          onClick={() => setParaExcluir(kit)}
                           label="Excluir"
                           danger
                           icon={<Trash2 className="h-3.5 w-3.5" />}
