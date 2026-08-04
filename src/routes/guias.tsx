@@ -1222,24 +1222,23 @@ function RequiredFieldsModal() {
 
 
       {/* Confirmação de descarte */}
-      <Dialog open={confirmDiscard} onOpenChange={setConfirmDiscard}>
-        <DialogContent size="sm">
-          <DialogHeader>
-            <DialogTitle>Descartar alterações?</DialogTitle>
-            <DialogDescription>
-              Você tem alterações não salvas. Se sair agora, elas serão perdidas.
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
+      <AppModal
+        open={confirmDiscard}
+        onOpenChange={setConfirmDiscard}
+        size="sm"
+        title="Descartar alterações?"
+        description="Você tem alterações não salvas. Se sair agora, elas serão perdidas."
+        footer={
+          <>
             <Button variant="outline" onClick={() => setConfirmDiscard(false)}>
               Continuar editando
             </Button>
             <Button variant="destructive" onClick={discardChanges}>
               Descartar
             </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+          </>
+        }
+      />
     </>
   );
 }
