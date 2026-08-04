@@ -2024,6 +2024,25 @@ function GuiaLivePreview(props: {
   apacTipo: string;
   aihMotivo: string;
   aihCaraterEntry: string;
+  guiaPrincipal: string;
+  dataAutorizacao: string;
+  senha: string;
+  validadeSenha: string;
+  guiaOperadora: string;
+  codigoSolicitante: string;
+  contratadoSolicitante: string;
+  conselhoUf: string;
+  codigoCbo: string;
+  codigoExecutante: string;
+  contratadoExecutante: string;
+  cnesExecutante: string;
+  tipoAtendimento: string;
+  indicacaoAcidente: string;
+  tipoConsulta: string;
+  motivoEncerramento: string;
+  pacienteValidadeCarteira: string;
+  pacienteCns: string;
+  pacienteRn: string;
   fullSize?: boolean;
 }) {
   const {
@@ -2032,7 +2051,13 @@ function GuiaLivePreview(props: {
     pacienteNome, pacienteCarteira, pacienteCpf,
     medicoNome, medicoCrm, medicoConselho, medicoEspecialidade, cidPrincipal, indicacaoClinica,
     observacoes, procedures, opmeItems,
+    guiaPrincipal, dataAutorizacao, senha, validadeSenha, guiaOperadora,
+    codigoSolicitante, contratadoSolicitante, conselhoUf, codigoCbo,
+    codigoExecutante, contratadoExecutante, cnesExecutante,
+    tipoAtendimento, indicacaoAcidente, tipoConsulta, motivoEncerramento,
+    pacienteValidadeCarteira, pacienteCns, pacienteRn,
   } = props;
+
 
   const dd = (iso: string) => {
     const f = fmtDate(iso);
