@@ -31,15 +31,12 @@ import {
 } from "lucide-react";
 import guiaMock from "@/assets/guia-mock.png.asset.json";
 import { toast } from "sonner";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogBody,
-  DialogFooter,
-  DialogTitle,
-  DialogDescription,
-} from "@/components/ui/dialog";
+  appTabsListClass,
+  appTabsTriggerClass,
+  appTabsLabelClass,
+} from "@/components/app-tabs";
 import { AppModal } from "@/components/app-modal";
 import { Button } from "@/components/ui/button";
 import { AppBreadcrumb } from "@/components/app-breadcrumb";
@@ -588,35 +585,27 @@ function GuideDetailsModal({ row, onClose }: { row: Row | null; onClose: () => v
             <div className="mt-2">
               <TypeBadge type={row.type} />
             </div>
-            <div
-              className="mt-4 grid grid-cols-2 gap-1 rounded-lg bg-muted p-1 lg:hidden"
-              role="tablist"
+            <Tabs
+              value={mobileTab}
+              onValueChange={(v) => setMobileTab(v as "dados" | "guia")}
+              className="mt-4 lg:hidden"
             >
-              {(["dados", "guia"] as const).map((tab) => (
-                <Button
-                  key={tab}
-                  type="button"
-                  variant="ghost"
-                  role="tab"
-                  aria-selected={mobileTab === tab}
-                  onClick={() => setMobileTab(tab)}
-                  className={`h-auto rounded-md px-3 py-2 text-sm font-medium transition-colors ${
-                    mobileTab === tab
-                      ? "bg-card text-foreground shadow-sm hover:bg-card"
-                      : "text-muted-foreground hover:text-foreground"
-                  }`}
-                >
-                  {tab === "dados" ? "Detalhamento" : "Imagem da guia"}
-                </Button>
-              ))}
-            </div>
+              <TabsList className={appTabsListClass}>
+                <TabsTrigger value="dados" className={appTabsTriggerClass}>
+                  <span className={appTabsLabelClass}>Detalhamento</span>
+                </TabsTrigger>
+                <TabsTrigger value="guia" className={appTabsTriggerClass}>
+                  <span className={appTabsLabelClass}>Imagem da guia</span>
+                </TabsTrigger>
+              </TabsList>
+            </Tabs>
           </>
         ) : undefined
       }
     >
 
         {row && details && (
-          <DialogBody className="grid grid-cols-1 lg:grid-cols-2 gap-6 bg-muted/30">
+          <div className="grid grid-cols-1 gap-6 bg-muted/30 px-4 py-4 sm:px-6 lg:grid-cols-2">
             <div className={`${mobileTab === "guia" ? "flex" : "hidden"} lg:!flex lg:sticky lg:top-0 lg:self-start h-[65vh] lg:h-[calc(92vh-3rem)] rounded-xl border border-border bg-card p-4 sm:p-6 flex-col gap-4 min-h-0`}>
               <div className="text-sm font-medium truncate">Arquivo enviado: {row.file}</div>
               <div className="flex-1 min-h-0">
@@ -674,7 +663,7 @@ function GuideDetailsModal({ row, onClose }: { row: Row | null; onClose: () => v
                 </div>
               </SectionCard>
             </div>
-          </DialogBody>
+          </div>
         )}
     </AppModal>
   );
