@@ -2116,38 +2116,39 @@ function GuiaLivePreview(props: {
 
             <FieldRow>
               <FieldBox n="1" label="Registro ANS" value={registroAns} width={140} />
-              <FieldBox n="3" label="Número da Guia Principal" value="" grow />
+              <FieldBox n="3" label="Número da Guia Principal" value={guiaPrincipal} grow />
             </FieldRow>
 
             <FieldRow>
-              <FieldBoxDate n="4" label="Data da Autorização" d="" m="" y="" width={170} />
-              <FieldBox n="5" label="Senha" value="" grow />
-              <FieldBoxDate n="6" label="Data de Validade da Senha" d="" m="" y="" width={190} />
-              <FieldBox n="7" label="Nº Guia Atribuído pela Operadora" value="" width={280} />
+              <FieldBoxDate n="4" label="Data da Autorização" {...dd(dataAutorizacao)} width={170} />
+              <FieldBox n="5" label="Senha" value={senha} grow />
+              <FieldBoxDate n="6" label="Data de Validade da Senha" {...dd(validadeSenha)} width={190} />
+              <FieldBox n="7" label="Nº Guia Atribuído pela Operadora" value={guiaOperadora} width={280} />
             </FieldRow>
 
             <SectionBar>Dados do Beneficiário</SectionBar>
             <FieldRow>
               <FieldBox n="8" label="Número da Carteira" value={pacienteCarteira} width={230} />
-              <FieldBoxDate n="9" label="Validade da Carteira" d="" m="" y="" width={170} />
+              <FieldBoxDate n="9" label="Validade da Carteira" {...dd(pacienteValidadeCarteira)} width={170} />
               <FieldBox n="10" label="Nome" value={pacienteNome} grow />
-              <FieldBox n="11" label="Cartão Nacional de Saúde" value={pacienteCpf} width={200} />
-              <FieldBox n="12" label="Atend. RN" value="" width={90} />
+              <FieldBox n="11" label="Cartão Nacional de Saúde" value={pacienteCns} width={200} />
+              <FieldBox n="12" label="Atend. RN" value={pacienteRn === "S" ? "Sim" : "Não"} width={90} />
             </FieldRow>
 
             <SectionBar>Dados do Solicitante</SectionBar>
             <FieldRow>
-              <FieldBox n="13" label="Código na Operadora" value="" width={190} />
-              <FieldBox n="14" label="Nome do Contratado" value={operadora} grow />
+              <FieldBox n="13" label="Código na Operadora" value={codigoSolicitante} width={190} />
+              <FieldBox n="14" label="Nome do Contratado" value={contratadoSolicitante || operadora} grow />
             </FieldRow>
             <FieldRow>
               <FieldBox n="15" label="Nome do Profissional Solicitante" value={medicoNome} grow />
               <FieldBox n="16" label="Conselho" value={medicoCrm ? medicoConselho : ""} width={90} />
               <FieldBox n="17" label="Nº Conselho" value={medicoCrm} width={140} />
-              <FieldBox n="18" label="UF" value="" width={50} />
-              <FieldBox n="19" label="Cód CBO" value={medicoEspecialidade} width={140} />
+              <FieldBox n="18" label="UF" value={conselhoUf} width={50} />
+              <FieldBox n="19" label="Cód CBO" value={codigoCbo || medicoEspecialidade} width={140} />
               <FieldBox n="20" label="Assinatura Solicitante" value="" width={220} />
             </FieldRow>
+
 
             <SectionBar>Dados da Solicitação / Procedimentos ou Itens Assistenciais Solicitados</SectionBar>
             <FieldRow>
