@@ -21,7 +21,7 @@ import { Field } from "@/components/form-field";
 import { PageHeader } from "@/components/page-header";
 import { SectionCard } from "@/components/section-card";
 import { SiteFooter } from "@/components/site-footer";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { CURRENT_USER } from "@/lib/current-user";
 import { useTheme, type ThemePreference } from "@/lib/theme";
