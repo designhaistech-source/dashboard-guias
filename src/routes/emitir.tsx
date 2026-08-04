@@ -49,6 +49,15 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Field as FormField, SelectField } from "@/components/form-field";
+import {
+  MANUAL_PROFESSIONAL_ID,
+  ProfessionalPicker,
+  councilLabel,
+  defaultProfessionalValue,
+  parseCouncil,
+  type ProfessionalValue,
+} from "@/features/professional";
+
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 import {
@@ -126,19 +135,6 @@ const OPERADORAS = [
   { value: "CAURN", label: "CAURN", logo: convenioCaurnLogo, ans: "31425-1" },
 ] as const;
 
-interface Medico {
-  id: string;
-  nome: string;
-  crm: string;
-  especialidade: string;
-}
-
-const MEDICOS: Medico[] = [
-  { id: "m1", nome: "Dra. Ana Beatriz Lima", crm: "CRM 1234/RN", especialidade: "Cardiologia" },
-  { id: "m2", nome: "Dr. Carlos Eduardo Rocha", crm: "CRM 4521/RN", especialidade: "Ortopedia" },
-  { id: "m3", nome: "Dra. Mariana Torres", crm: "CRM 7788/RN", especialidade: "Clínica médica" },
-  { id: "m4", nome: "Dr. Rafael Nogueira", crm: "CRM 9012/PB", especialidade: "Neurologia" },
-];
 
 
 
@@ -318,7 +314,26 @@ function EmitirPage() {
     setNumeroGuia(`G-${Math.floor(Math.random() * 900000 + 100000)}`);
   }, []);
 
+  // Profissional solicitante (UI compartilhada em Emitir guia e Solicitar OPME)
+  const [profissional, setProfissional] = useState<ProfessionalValue>(
+    defaultProfessionalValue,
+  );
+  const medicoNome = profissional.nome;
+  const medicoCrm = councilLabel(profissional);
+  const medicoEspecialidade = profissional.especialidade;
+
+  /** Preferências salvas sobrescrevem o profissional como preenchimento manual. */
+  const applyPrefsToProfissional = (prestador?: string, matricula?: string) => {
+    setProfissional((prev) => ({
+      ...prev,
+      id: MANUAL_PROFESSIONAL_ID,
+      nome: prestador?.trim() ? prestador : prev.nome,
+      ...(matricula?.trim() ? parseCouncil(matricula) : {}),
+    }));
+  };
+
   // Preferências do usuário (persistidas em localStorage)
+
   const [prefsOpen, setPrefsOpen] = useState(false);
   const [prefPrestador, setPrefPrestador] = useState("");
   const [prefMatricula, setPrefMatricula] = useState("");
@@ -341,8 +356,8 @@ function EmitirPage() {
         setPrefMatricula(p.matricula ?? "");
         setPrefEstabelecimento(p.estabelecimento ?? "");
         setPrefUf(p.uf ?? "RN");
-        if (p.prestador) setMedicoNome(p.prestador);
-        if (p.matricula) setMedicoCrm(p.matricula);
+        if (p.prestador || p.matricula) applyPrefsToProfissional(p.prestador, p.matricula);
+
       }
     } catch { /* ignore */ }
   }, []);
@@ -377,8 +392,7 @@ function EmitirPage() {
     }
 
     setPrefErrors({});
-    setMedicoNome(result.data.prestador);
-    setMedicoCrm(result.data.matricula);
+    applyPrefsToProfissional(result.data.prestador, result.data.matricula);
     toast.success("Preferências salvas");
     setPrefsOpen(false);
   };
@@ -390,10 +404,7 @@ function EmitirPage() {
   const [pacienteNascimento, setPacienteNascimento] = useState("");
   const [pacienteSexo, setPacienteSexo] = useState("F");
 
-  const [medicoSelecionado, setMedicoSelecionado] = useState(MEDICOS[0].id);
-  const [medicoNome, setMedicoNome] = useState(MEDICOS[0].nome);
-  const [medicoCrm, setMedicoCrm] = useState(MEDICOS[0].crm);
-  const [medicoEspecialidade, setMedicoEspecialidade] = useState(MEDICOS[0].especialidade);
+
 
   const [cidPrincipal, setCidPrincipal] = useState("");
   const [indicacaoClinica, setIndicacaoClinica] = useState("");
@@ -1133,63 +1144,9 @@ function EmitirPage() {
                 title="Profissional solicitante"
                 description="Médico responsável pela emissão."
               >
-                <Grid cols={2}>
-                  <SelectField
-                    label="Selecionar profissional"
-                    placeholder="Escolha o médico"
-                    value={medicoSelecionado}
-                    onValueChange={(v) => {
-                      setMedicoSelecionado(v);
-                      const m = MEDICOS.find((x) => x.id === v);
-                      if (m) {
-                        setMedicoNome(m.nome);
-                        setMedicoCrm(m.crm);
-                        setMedicoEspecialidade(m.especialidade);
-                      } else {
-                        setMedicoNome("");
-                        setMedicoCrm("");
-                        setMedicoEspecialidade("");
-                      }
-                    }}
-                    options={[
-                      ...MEDICOS.map((m) => ({
-                        value: m.id,
-                        label: `${m.nome} — ${m.crm} · ${m.especialidade}`,
-                      })),
-                      { value: "outro", label: "Outro (informar manualmente)" },
-                    ]}
-                    hint="Troque o médico responsável a qualquer momento."
-                  />
-                </Grid>
-
-
-                {medicoSelecionado === "outro" && (
-                  <Grid cols={2}>
-                    <Field label="Nome do profissional" required>
-                      <Input
-                        value={medicoNome}
-                        onChange={(e) => setMedicoNome(e.target.value)}
-                      />
-                    </Field>
-                    <Field label="Conselho / Nº" required>
-                      <Input
-                        value={medicoCrm}
-                        onChange={(e) => setMedicoCrm(e.target.value)}
-                        placeholder="CRM 0000/UF"
-                      />
-                    </Field>
-                    <Field label="Especialidade">
-                      <Input
-                        value={medicoEspecialidade}
-                        onChange={(e) => setMedicoEspecialidade(e.target.value)}
-                        placeholder="Cardiologia, Ortopedia..."
-                      />
-                    </Field>
-                  </Grid>
-                )}
-
-
+                <ProfessionalPicker value={profissional} onChange={setProfissional} />
               </Section>
+
 
               {/* Clínico */}
               <Section
