@@ -1241,7 +1241,131 @@ function EmitirPage() {
                 description="Médico responsável pela emissão."
               >
                 <ProfessionalPicker value={profissional} onChange={setProfissional} />
+
+                <div className="mt-5 border-t pt-5">
+                  <Grid cols={3}>
+                    <Field label="Código do solicitante na operadora">
+                      <Input
+                        value={codigoSolicitante}
+                        onChange={(e) => setCodigoSolicitante(e.target.value)}
+                        placeholder="Código do contrato"
+                      />
+                    </Field>
+                    <Field label="Nome do contratado solicitante">
+                      <Input
+                        value={contratadoSolicitante}
+                        onChange={(e) => setContratadoSolicitante(e.target.value)}
+                        placeholder="Clínica, consultório ou hospital"
+                      />
+                    </Field>
+                    <Field label="UF do conselho">
+                      <Input
+                        value={conselhoUf}
+                        onChange={(e) => setConselhoUf(e.target.value.toUpperCase().slice(0, 2))}
+                        placeholder="RN"
+                      />
+                    </Field>
+                    <Field label="Código CBO">
+                      <Input
+                        value={codigoCbo}
+                        onChange={(e) => setCodigoCbo(e.target.value)}
+                        placeholder="225125"
+                      />
+                    </Field>
+                  </Grid>
+                </div>
               </Section>
+
+              {/* Contratado executante e atendimento */}
+              <Section
+                number={stepNumber("executante")}
+                done={executanteOk}
+                icon={<Building2 className="h-4 w-4" />}
+                title="Contratado executante e atendimento"
+                description="Quem executa o procedimento e as características do atendimento."
+              >
+                <Grid cols={3}>
+                  <Field label="Código do executante na operadora">
+                    <Input
+                      value={codigoExecutante}
+                      onChange={(e) => setCodigoExecutante(e.target.value)}
+                      placeholder="Código do contrato"
+                    />
+                  </Field>
+                  <Field label="Nome do contratado executante">
+                    <Input
+                      value={contratadoExecutante}
+                      onChange={(e) => setContratadoExecutante(e.target.value)}
+                      placeholder="Prestador que executa"
+                    />
+                  </Field>
+                  <Field label="Código CNES">
+                    <Input
+                      value={cnesExecutante}
+                      onChange={(e) => setCnesExecutante(e.target.value)}
+                      placeholder="0000000"
+                    />
+                  </Field>
+                  <SelectField
+                    label="Tipo de atendimento"
+                    labelClassName="text-xs font-medium text-muted-foreground"
+                    value={tipoAtendimento}
+                    onValueChange={setTipoAtendimento}
+                    placeholder="Selecione"
+                    options={[
+                      "Remoção",
+                      "Pequena cirurgia",
+                      "Terapias",
+                      "Consulta",
+                      "Exame",
+                      "Atendimento domiciliar",
+                      "Urgência / emergência",
+                      "SADT internado",
+                    ].map((o) => ({ value: o, label: o }))}
+                  />
+                  <SelectField
+                    label="Indicação de acidente"
+                    labelClassName="text-xs font-medium text-muted-foreground"
+                    value={indicacaoAcidente}
+                    onValueChange={setIndicacaoAcidente}
+                    placeholder="Selecione"
+                    options={[
+                      "Acidente de trabalho",
+                      "Acidente de trânsito",
+                      "Outros acidentes",
+                      "Não acidente",
+                    ].map((o) => ({ value: o, label: o }))}
+                  />
+                  <SelectField
+                    label="Tipo de consulta"
+                    labelClassName="text-xs font-medium text-muted-foreground"
+                    value={tipoConsulta}
+                    onValueChange={setTipoConsulta}
+                    placeholder="Selecione"
+                    options={["Primeira consulta", "Seguimento", "Pré-natal", "Por encaminhamento"].map(
+                      (o) => ({ value: o, label: o }),
+                    )}
+                  />
+                  <SelectField
+                    label="Motivo de encerramento do atendimento"
+                    labelClassName="text-xs font-medium text-muted-foreground"
+                    value={motivoEncerramento}
+                    onValueChange={setMotivoEncerramento}
+                    placeholder="Selecione"
+                    options={[
+                      "Retorno",
+                      "Retorno por complicação",
+                      "Alta curado",
+                      "Alta melhorado",
+                      "Alta a pedido",
+                      "Alta com previsão de retorno",
+                      "Alta administrativa",
+                      "Óbito",
+                    ].map((o) => ({ value: o, label: o }))}
+                  />
+                </Grid>
+              </Section>
+
 
 
               {/* Clínico */}
