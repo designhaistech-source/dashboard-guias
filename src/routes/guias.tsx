@@ -588,28 +588,20 @@ function GuideDetailsModal({ row, onClose }: { row: Row | null; onClose: () => v
             <div className="mt-2">
               <TypeBadge type={row.type} />
             </div>
-            <div
-              className="mt-4 grid grid-cols-2 gap-1 rounded-lg bg-muted p-1 lg:hidden"
-              role="tablist"
+            <Tabs
+              value={mobileTab}
+              onValueChange={(v) => setMobileTab(v as "dados" | "guia")}
+              className="mt-4 lg:hidden"
             >
-              {(["dados", "guia"] as const).map((tab) => (
-                <Button
-                  key={tab}
-                  type="button"
-                  variant="ghost"
-                  role="tab"
-                  aria-selected={mobileTab === tab}
-                  onClick={() => setMobileTab(tab)}
-                  className={`h-auto rounded-md px-3 py-2 text-sm font-medium transition-colors ${
-                    mobileTab === tab
-                      ? "bg-card text-foreground shadow-sm hover:bg-card"
-                      : "text-muted-foreground hover:text-foreground"
-                  }`}
-                >
-                  {tab === "dados" ? "Detalhamento" : "Imagem da guia"}
-                </Button>
-              ))}
-            </div>
+              <TabsList className={appTabsListClass}>
+                <TabsTrigger value="dados" className={appTabsTriggerClass}>
+                  <span className={appTabsLabelClass}>Detalhamento</span>
+                </TabsTrigger>
+                <TabsTrigger value="guia" className={appTabsTriggerClass}>
+                  <span className={appTabsLabelClass}>Imagem da guia</span>
+                </TabsTrigger>
+              </TabsList>
+            </Tabs>
           </>
         ) : undefined
       }
