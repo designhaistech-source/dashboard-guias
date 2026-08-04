@@ -222,7 +222,7 @@ export function SettingsPage() {
             icon={<Palette className="h-4 w-4" aria-hidden="true" />}
           >
             <fieldset className="space-y-2">
-              <legend className="text-xs font-semibold text-foreground">Tema</legend>
+              <legend className="text-[13px] font-medium leading-snug text-foreground sm:text-sm">Tema</legend>
               <div
                 role="radiogroup"
                 aria-label="Tema da interface"
@@ -232,7 +232,7 @@ export function SettingsPage() {
                   const Icon = option.icon;
                   const selected = theme === option.value;
                   return (
-                    <button
+                    <button /* ds-allow: card de rádio customizado para escolha de tema */
                       key={option.value}
                       type="button"
                       role="radio"

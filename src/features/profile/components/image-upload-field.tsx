@@ -77,7 +77,7 @@ export function ImageUploadField({ label, hint, previewAlt }: ImageUploadFieldPr
       <div className="flex items-center gap-1">
         <label
           htmlFor={inputId}
-          className="text-sm font-medium leading-snug text-foreground"
+          className="text-[13px] font-medium leading-snug text-foreground sm:text-sm"
         >
           {label}
         </label>
