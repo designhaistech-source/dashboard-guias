@@ -533,14 +533,9 @@ function EmitirPage() {
   // Campos SUS (substituem operadora/ANS)
   const [susEstabelecimento, setSusEstabelecimento] = useState("");
   const [susCnes, setSusCnes] = useState("");
-  useEffect(() => {
-    if (prefEstabelecimento) setSusEstabelecimento(prefEstabelecimento);
-  }, [prefEstabelecimento]);
+  // Estabelecimento e UF do conselho só são preenchidos após a revisão explícita
+  // dos dados padrão (ver applySelectedPrefs).
 
-  // UF preferida alimenta o campo 18 (UF do conselho) da guia TISS
-  useEffect(() => {
-    if (prefUf) setConselhoUf(prefUf);
-  }, [prefUf]);
 
 
   // Específicos por tipo de guia
