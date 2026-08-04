@@ -1152,20 +1152,16 @@ function EmitirPage() {
                       }
                     }}
                     options={[
-                      ...MEDICOS.map((m) => ({ value: m.id, label: `${m.nome} — ${m.crm}` })),
+                      ...MEDICOS.map((m) => ({
+                        value: m.id,
+                        label: `${m.nome} — ${m.crm} · ${m.especialidade}`,
+                      })),
                       { value: "outro", label: "Outro (informar manualmente)" },
                     ]}
                     hint="Troque o médico responsável a qualquer momento."
                   />
-                  {medicoSelecionado !== "outro" && medicoNome ? (
-                    <div className="flex flex-col justify-center gap-1 rounded-lg border border-border/70 bg-muted/30 px-3 py-2.5">
-                      <span className="text-sm font-medium text-foreground">{medicoNome}</span>
-                      <span className="text-xs text-muted-foreground">
-                        {[medicoCrm, medicoEspecialidade].filter(Boolean).join(" · ")}
-                      </span>
-                    </div>
-                  ) : null}
                 </Grid>
+
 
                 {medicoSelecionado === "outro" && (
                   <Grid cols={2}>
