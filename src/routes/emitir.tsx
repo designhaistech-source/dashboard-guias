@@ -429,6 +429,10 @@ function EmitirPage() {
   const [pacienteCpf, setPacienteCpf] = useState("");
   const [pacienteNascimento, setPacienteNascimento] = useState("");
   const [pacienteSexo, setPacienteSexo] = useState("F");
+  const [pacienteValidadeCarteira, setPacienteValidadeCarteira] = useState("");
+  const [pacienteCns, setPacienteCns] = useState("");
+  const [pacienteRn, setPacienteRn] = useState("N");
+
 
 
 
