@@ -90,11 +90,11 @@ const dailyData30: { day: string; guias: number; meta: number }[] = [
 ].map((d) => ({ ...d, meta: 10 }));
 
 const typeData = [
-  { name: "Consulta", value: 89, color: "oklch(0.55 0.19 255)" },
-  { name: "SP/SADT", value: 78, color: "oklch(0.62 0.18 285)" },
-  { name: "Internação", value: 41, color: "oklch(0.68 0.16 35)" },
-  { name: "Honorários", value: 26, color: "oklch(0.70 0.17 145)" },
-  { name: "Odontológica", value: 18, color: "oklch(0.72 0.15 80)" },
+  { name: "Consulta", value: 89, color: "var(--primary)" },
+  { name: "SP/SADT", value: 78, color: "var(--purple)" },
+  { name: "Internação", value: 41, color: "var(--cat-6)" },
+  { name: "Honorários", value: 26, color: "var(--success)" },
+  { name: "Odontológica", value: 18, color: "var(--warning)" },
 ];
 
 const prestadoresList = [
@@ -944,25 +944,23 @@ function DashboardPage() {
 
           {/* Charts row */}
           <div className="grid gap-4 grid-cols-1 lg:grid-cols-3">
-            <SurfaceCard className="lg:col-span-2">
-              <div className="mb-4 flex items-start justify-between gap-4">
-                <div>
-                  <h3 className="font-semibold">Guias extraídas por dia</h3>
-                  <p className="text-xs text-muted-foreground">
-                    Últimos {range === "7d" ? 7 : range === "30d" ? 30 : 90} dias
-                  </p>
-                </div>
+            <SurfaceCard
+              className="lg:col-span-2"
+              title="Guias extraídas por dia"
+              description={`Últimos ${range === "7d" ? 7 : range === "30d" ? 30 : 90} dias`}
+              actions={
                 <div className="flex items-center gap-3 text-xs">
-                  <LegendDot color="oklch(0.55 0.19 255)" label="Guias" />
+                  <LegendDot color="var(--primary)" label="Guias" />
                 </div>
-              </div>
+              }
+            >
               <div className="h-72" data-chart="daily">
                 <ResponsiveContainer width="100%" height="100%">
                   <AreaChart data={dailyData30} margin={{ top: 10, right: 10, left: -10, bottom: 0 }}>
                     <defs>
                       <linearGradient id="gradPrimary" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="0%" stopColor="oklch(0.55 0.19 255)" stopOpacity={0.45} />
-                        <stop offset="100%" stopColor="oklch(0.55 0.19 255)" stopOpacity={0} />
+                        <stop offset="0%" stopColor="var(--primary)" stopOpacity={0.45} />
+                        <stop offset="100%" stopColor="var(--primary)" stopOpacity={0} />
                       </linearGradient>
                     </defs>
                     <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" vertical={false} />
@@ -970,13 +968,13 @@ function DashboardPage() {
                     <YAxis stroke="var(--muted-foreground)" fontSize={11} tickLine={false} axisLine={false} width={32} />
                     <RTooltip
                       content={<ChartTooltip />}
-                      cursor={{ stroke: "oklch(0.55 0.19 255)", strokeOpacity: 0.25, strokeWidth: 1 }}
+                      cursor={{ stroke: "var(--primary)", strokeOpacity: 0.25, strokeWidth: 1 }}
                     />
                     <Area
                       type="monotone"
                       dataKey="guias"
                       name="Guias"
-                      stroke="oklch(0.55 0.19 255)"
+                      stroke="var(--primary)"
                       strokeWidth={2.5}
                       fill="url(#gradPrimary)"
                       dot={{ r: 0 }}
@@ -989,12 +987,7 @@ function DashboardPage() {
               </div>
             </SurfaceCard>
 
-            <SurfaceCard>
-
-              <div className="mb-4">
-                <h3 className="font-semibold">Por tipo de guia</h3>
-                <p className="text-xs text-muted-foreground">Distribuição no período</p>
-              </div>
+            <SurfaceCard title="Por tipo de guia" description="Distribuição no período">
               <div className="space-y-4">
                 <div className="relative h-44" data-chart="types">
                   <ResponsiveContainer width="100%" height="100%">
@@ -1068,14 +1061,10 @@ function DashboardPage() {
           </div>
 
           {/* Procedures */}
-          <SurfaceCard>
-
-            <div className="flex items-center justify-between mb-4">
-              <div>
-                <h3 className="font-semibold">Procedimentos mais realizados</h3>
-                <p className="text-xs text-muted-foreground">Top códigos TUSS no período</p>
-              </div>
-            </div>
+          <SurfaceCard
+            title="Procedimentos mais realizados"
+            description="Top códigos TUSS no período"
+          >
             <div className="grid gap-6 lg:grid-cols-2">
               <div className="h-64" data-chart="procedures">
                 <ResponsiveContainer width="100%" height="100%">
@@ -1087,8 +1076,8 @@ function DashboardPage() {
                   >
                     <defs>
                       <linearGradient id="gradBar" x1="0" y1="0" x2="1" y2="0">
-                        <stop offset="0%" stopColor="oklch(0.62 0.18 285)" />
-                        <stop offset="100%" stopColor="oklch(0.55 0.19 255)" />
+                        <stop offset="0%" stopColor="var(--purple)" />
+                        <stop offset="100%" stopColor="var(--primary)" />
                       </linearGradient>
                     </defs>
                     <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" horizontal={false} />
@@ -1195,14 +1184,17 @@ function Kpi({
   }[tone];
 
   const toneStroke = {
-    primary: "oklch(0.55 0.19 255)",
-    success: "oklch(0.70 0.17 145)",
-    info: "oklch(0.62 0.18 285)",
-    purple: "oklch(0.62 0.18 285)",
+    primary: "var(--primary)",
+    success: "var(--success)",
+    info: "var(--info)",
+    purple: "var(--purple)",
   }[tone];
 
   return (
-    <div className="group relative overflow-hidden rounded-2xl border border-border bg-card shadow-xs p-5 transition-shadow hover:shadow-sm">
+    <SurfaceCard
+      padding="md"
+      className="group relative overflow-hidden hover:shadow-sm"
+    >
       <div className="flex items-center justify-between">
         <span className="metric-label">{label}</span>
         <span className={`grid place-items-center h-8 w-8 rounded-lg ${toneClass}`}>
@@ -1219,6 +1211,6 @@ function Kpi({
         {trend === "up" && <span className="text-success">↗</span>}
         {hint}
       </div>
-    </div>
+    </SurfaceCard>
   );
 }
