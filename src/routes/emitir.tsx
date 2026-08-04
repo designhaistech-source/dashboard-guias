@@ -450,6 +450,12 @@ function EmitirPage() {
     if (prefEstabelecimento) setSusEstabelecimento(prefEstabelecimento);
   }, [prefEstabelecimento]);
 
+  // UF preferida alimenta o campo 18 (UF do conselho) da guia TISS
+  useEffect(() => {
+    if (prefUf) setConselhoUf(prefUf);
+  }, [prefUf]);
+
+
   // Específicos por tipo de guia
   const [internacaoTipo, setInternacaoTipo] = useState("Clínica");
   const [internacaoRegime, setInternacaoRegime] = useState("Hospitalar");
