@@ -306,12 +306,12 @@ export function KitsModal({
 
                       <div className="min-w-0 flex-1 basis-[calc(100%-3rem)] sm:basis-auto">
                         <div className="flex items-center gap-2 flex-wrap">
-                          <h3 className="text-sm font-semibold truncate">
+                          <h3 className="font-display text-sm font-semibold truncate">
                             {kit.nome}
                           </h3>
-                          <span className="shrink-0 text-xs px-2 py-0.5 rounded-full bg-muted text-muted-foreground">
+                          <Badge variant="secondary" className="shrink-0">
                             {kit.categoria}
-                          </span>
+                          </Badge>
                         </div>
                         <p className="text-xs text-muted-foreground mt-0.5 line-clamp-2">
                           {kit.descricao}
