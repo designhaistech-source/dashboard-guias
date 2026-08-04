@@ -56,7 +56,7 @@ export function ProfilePage() {
       <main className="flex min-h-screen flex-1 flex-col overflow-x-hidden">
         <form
           onSubmit={onSubmit}
-          className="mx-auto w-full max-w-4xl flex-1 space-y-6 px-4 py-6 pb-16 pt-20 sm:px-6 sm:py-8 md:pt-8 lg:px-10"
+          className="w-full flex-1 space-y-6 px-4 py-6 pb-16 pt-20 sm:px-6 sm:py-8 md:pt-8 lg:px-10"
         >
           <AppBreadcrumb />
           <PageHeader
