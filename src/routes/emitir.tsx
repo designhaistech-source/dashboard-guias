@@ -1772,6 +1772,26 @@ function EmitirPage() {
               apacTipo={apacTipo}
               aihMotivo={aihMotivo}
               aihCaraterEntry={aihCaraterEntry}
+              guiaPrincipal={guiaPrincipal}
+              dataAutorizacao={dataAutorizacao}
+              senha={senha}
+              validadeSenha={validadeSenha}
+              guiaOperadora={guiaOperadora}
+              codigoSolicitante={codigoSolicitante}
+              contratadoSolicitante={contratadoSolicitante}
+              conselhoUf={conselhoUf}
+              codigoCbo={codigoCbo}
+              codigoExecutante={codigoExecutante}
+              contratadoExecutante={contratadoExecutante}
+              cnesExecutante={cnesExecutante}
+              tipoAtendimento={tipoAtendimento}
+              indicacaoAcidente={indicacaoAcidente}
+              tipoConsulta={tipoConsulta}
+              motivoEncerramento={motivoEncerramento}
+              pacienteValidadeCarteira={pacienteValidadeCarteira}
+              pacienteCns={pacienteCns}
+              pacienteRn={pacienteRn}
+
               fullSize
             />
           )}
