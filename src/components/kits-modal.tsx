@@ -145,7 +145,6 @@ export function KitsModal({
   };
 
   const excluir = (kit: Kit) => {
-  const excluir = (kit: Kit) => {
     deleteKit(kit.id);
     setKits(loadKits());
     setParaExcluir(null);
