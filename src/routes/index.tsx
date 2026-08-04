@@ -588,7 +588,7 @@ function FilterField({
   inputRef?: React.Ref<HTMLInputElement>;
 }) {
   return (
-    <Field label={label} labelClassName="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+    <Field label={label}>
       <Input
         ref={inputRef}
         type={type}
@@ -616,7 +616,7 @@ function FilterSelect({
   placeholder?: string;
 }) {
   return (
-    <Field label={label} labelClassName="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+    <Field label={label}>
       <Combobox
         value={value}
         onChange={onChange}
@@ -876,7 +876,7 @@ function DashboardPage() {
               }
             >
               <div>
-                <div className="mb-2 text-xs font-medium uppercase tracking-wider text-muted-foreground">Atalhos</div>
+                <div className={filterGroupLabelClass}>Atalhos</div>
                 <div className="flex flex-wrap gap-2">
                   {[
                     { id: "hoje", label: "Hoje" },
@@ -896,7 +896,7 @@ function DashboardPage() {
               </div>
 
               <div>
-                <div className="mb-2 text-xs font-medium uppercase tracking-wider text-muted-foreground">Período de autorização</div>
+                <div className={filterGroupLabelClass}>Período de autorização</div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
                   <FilterField label="De" type="date" error={dateRangeInvalid} value={draft.dataAutorizacaoDe} onChange={(v) => setDraft((d) => ({ ...d, dataAutorizacaoDe: v }))} inputRef={firstFieldRef} />
                   <FilterField label="Até" type="date" error={dateRangeInvalid} value={draft.dataAutorizacaoAte} onChange={(v) => setDraft((d) => ({ ...d, dataAutorizacaoAte: v }))} />
@@ -916,7 +916,7 @@ function DashboardPage() {
               </div>
 
               <div>
-                <div className="mb-2 text-xs font-medium uppercase tracking-wider text-muted-foreground">Valor (R$)</div>
+                <div className={filterGroupLabelClass}>Valor (R$)</div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
                   <FilterField label="Mínimo" type="number" error={valueRangeInvalid} value={draft.valorMin} onChange={(v) => setDraft((d) => ({ ...d, valorMin: v }))} />
                   <FilterField label="Máximo" type="number" error={valueRangeInvalid} value={draft.valorMax} onChange={(v) => setDraft((d) => ({ ...d, valorMax: v }))} />
