@@ -338,7 +338,7 @@ function OpmePage() {
       <AppSidebar activeKey="opme" />
 
       <main className="flex-1 flex flex-col min-h-screen overflow-x-hidden">
-        <div className="w-full flex-1 space-y-6 px-6 py-8 pb-16 lg:px-10">
+        <div className="w-full flex-1 space-y-6 px-6 py-8 pb-16 pt-20 md:pt-8 lg:px-10">
           <AppBreadcrumb />
           <PageHeader
             title="Solicitar OPME"

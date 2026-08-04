@@ -51,7 +51,7 @@ export function ResponsiveQaPage() {
       <AppSidebar activeKey="qa-responsividade" />
 
       <main className="flex-1 flex flex-col min-h-screen overflow-x-hidden">
-        <div className="w-full flex-1 space-y-6 px-4 py-6 pb-16 sm:px-6 sm:py-8 lg:px-10">
+        <div className="w-full flex-1 space-y-6 px-4 py-6 pb-16 pt-20 sm:px-6 sm:py-8 md:pt-8 lg:px-10">
           <AppBreadcrumb />
           <PageHeader
             title="Testes de responsividade"
