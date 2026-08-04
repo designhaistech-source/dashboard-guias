@@ -32,14 +32,12 @@ import {
 import guiaMock from "@/assets/guia-mock.png.asset.json";
 import { toast } from "sonner";
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogBody,
-  DialogFooter,
-  DialogTitle,
-  DialogDescription,
-} from "@/components/ui/dialog";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  appTabsListClass,
+  appTabsTriggerClass,
+  appTabsLabelClass,
+} from "@/components/app-tabs";
 import { AppModal } from "@/components/app-modal";
 import { Button } from "@/components/ui/button";
 import { AppBreadcrumb } from "@/components/app-breadcrumb";
