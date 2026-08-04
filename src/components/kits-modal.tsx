@@ -26,6 +26,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { Chip } from "@/components/ui/chip";
+import { Badge } from "@/components/ui/badge";
 import {
   type Kit,
 
