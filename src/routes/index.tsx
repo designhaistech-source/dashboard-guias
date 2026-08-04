@@ -746,10 +746,16 @@ function DashboardPage() {
     () => (Object.keys(draft) as (keyof GuideFilters)[]).some((k) => draft[k] !== filters[k]),
     [draft, filters],
   );
+  const [confirmDiscardFilters, setConfirmDiscardFilters] = useState(false);
+  const discardFilterEdits = () => {
+    setConfirmDiscardFilters(false);
+    setDraft(filters);
+    setFiltersOpen(false);
+  };
   const requestClose = () => {
     if (isDirty) {
-      const ok = window.confirm("Você tem alterações não aplicadas. Deseja descartá-las?");
-      if (!ok) return;
+      setConfirmDiscardFilters(true);
+      return;
     }
     setDraft(filters);
     setFiltersOpen(false);
