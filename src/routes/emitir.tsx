@@ -309,6 +309,31 @@ function EmitirPage() {
   const [operadora, setOperadora] = useState("");
   const [registroAns, setRegistroAns] = useState("");
 
+  // Campos TISS de autorização/senha (3 a 7)
+  const [guiaPrincipal, setGuiaPrincipal] = useState("");
+  const [dataAutorizacao, setDataAutorizacao] = useState("");
+  const [senha, setSenha] = useState("");
+  const [validadeSenha, setValidadeSenha] = useState("");
+  const [guiaOperadora, setGuiaOperadora] = useState("");
+
+  // Solicitante (13, 14, 18, 19)
+  const [codigoSolicitante, setCodigoSolicitante] = useState("");
+  const [contratadoSolicitante, setContratadoSolicitante] = useState("");
+  const [conselhoUf, setConselhoUf] = useState("RN");
+  const [codigoCbo, setCodigoCbo] = useState("");
+
+  // Contratado executante (29, 30, 31)
+  const [codigoExecutante, setCodigoExecutante] = useState("");
+  const [contratadoExecutante, setContratadoExecutante] = useState("");
+  const [cnesExecutante, setCnesExecutante] = useState("");
+
+  // Dados do atendimento (32 a 35)
+  const [tipoAtendimento, setTipoAtendimento] = useState("");
+  const [indicacaoAcidente, setIndicacaoAcidente] = useState("");
+  const [tipoConsulta, setTipoConsulta] = useState("");
+  const [motivoEncerramento, setMotivoEncerramento] = useState("");
+
+
   // nº da guia — gerado somente no cliente para evitar hydration mismatch
   const [numeroGuia, setNumeroGuia] = useState<string>("—");
   useEffect(() => {
@@ -404,6 +429,10 @@ function EmitirPage() {
   const [pacienteCpf, setPacienteCpf] = useState("");
   const [pacienteNascimento, setPacienteNascimento] = useState("");
   const [pacienteSexo, setPacienteSexo] = useState("F");
+  const [pacienteValidadeCarteira, setPacienteValidadeCarteira] = useState("");
+  const [pacienteCns, setPacienteCns] = useState("");
+  const [pacienteRn, setPacienteRn] = useState("N");
+
 
 
 
@@ -607,6 +636,8 @@ function EmitirPage() {
     ...(guideKind === "aih" ? ["aih"] : []),
     "paciente",
     "profissional",
+    "executante",
+
     "clinico",
     "kits",
     "procedimentos",
@@ -628,6 +659,8 @@ function EmitirPage() {
           : true;
   const pacienteOk = Boolean(pacienteNome.trim() && pacienteCarteira.trim());
   const profissionalOk = Boolean(medicoNome.trim() && medicoCrm.trim());
+  const executanteOk = Boolean(contratadoExecutante.trim() && tipoAtendimento.trim());
+
   const clinicoOk = Boolean(indicacaoClinica.trim());
   const procedimentosOk = procedures.some(
     (p) => p.code.trim() && p.description.trim() && p.quantity > 0,
@@ -943,6 +976,50 @@ function EmitirPage() {
                       />
                     </Field>
                   </Grid>
+
+                  <div className="mt-5 space-y-4 border-t pt-5">
+                    <p className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+                      Autorização e senha
+                    </p>
+                    <Grid cols={3}>
+                      <Field label="Nº da guia principal">
+                        <Input
+                          value={guiaPrincipal}
+                          onChange={(e) => setGuiaPrincipal(e.target.value)}
+                          placeholder="Guia de internação vinculada"
+                        />
+                      </Field>
+                      <Field label="Nº da guia atribuído pela operadora">
+                        <Input
+                          value={guiaOperadora}
+                          onChange={(e) => setGuiaOperadora(e.target.value)}
+                          placeholder="Informado pela operadora"
+                        />
+                      </Field>
+                      <Field label="Data da autorização">
+                        <Input
+                          type="date"
+                          value={dataAutorizacao}
+                          onChange={(e) => setDataAutorizacao(e.target.value)}
+                        />
+                      </Field>
+                      <Field label="Senha de autorização">
+                        <Input
+                          value={senha}
+                          onChange={(e) => setSenha(e.target.value)}
+                          placeholder="Senha emitida pela operadora"
+                        />
+                      </Field>
+                      <Field label="Validade da senha">
+                        <Input
+                          type="date"
+                          value={validadeSenha}
+                          onChange={(e) => setValidadeSenha(e.target.value)}
+                        />
+                      </Field>
+                    </Grid>
+                  </div>
+
                 </Section>
               ) : (
                 <Section
@@ -1131,8 +1208,32 @@ function EmitirPage() {
                       { value: "O", label: "Outro" },
                     ]}
                   />
-
+                  <Field label="Validade da carteira">
+                    <Input
+                      type="date"
+                      value={pacienteValidadeCarteira}
+                      onChange={(e) => setPacienteValidadeCarteira(e.target.value)}
+                    />
+                  </Field>
+                  <Field label="Cartão Nacional de Saúde (CNS)">
+                    <Input
+                      value={pacienteCns}
+                      onChange={(e) => setPacienteCns(e.target.value)}
+                      placeholder="000 0000 0000 0000"
+                    />
+                  </Field>
+                  <SelectField
+                    label="Atendimento a recém-nascido (RN)"
+                    labelClassName="text-xs font-medium text-muted-foreground"
+                    value={pacienteRn}
+                    onValueChange={setPacienteRn}
+                    options={[
+                      { value: "N", label: "Não" },
+                      { value: "S", label: "Sim" },
+                    ]}
+                  />
                 </Grid>
+
               </Section>
 
               {/* Solicitante */}
@@ -1144,7 +1245,131 @@ function EmitirPage() {
                 description="Médico responsável pela emissão."
               >
                 <ProfessionalPicker value={profissional} onChange={setProfissional} />
+
+                <div className="mt-5 border-t pt-5">
+                  <Grid cols={3}>
+                    <Field label="Código do solicitante na operadora">
+                      <Input
+                        value={codigoSolicitante}
+                        onChange={(e) => setCodigoSolicitante(e.target.value)}
+                        placeholder="Código do contrato"
+                      />
+                    </Field>
+                    <Field label="Nome do contratado solicitante">
+                      <Input
+                        value={contratadoSolicitante}
+                        onChange={(e) => setContratadoSolicitante(e.target.value)}
+                        placeholder="Clínica, consultório ou hospital"
+                      />
+                    </Field>
+                    <Field label="UF do conselho">
+                      <Input
+                        value={conselhoUf}
+                        onChange={(e) => setConselhoUf(e.target.value.toUpperCase().slice(0, 2))}
+                        placeholder="RN"
+                      />
+                    </Field>
+                    <Field label="Código CBO">
+                      <Input
+                        value={codigoCbo}
+                        onChange={(e) => setCodigoCbo(e.target.value)}
+                        placeholder="225125"
+                      />
+                    </Field>
+                  </Grid>
+                </div>
               </Section>
+
+              {/* Contratado executante e atendimento */}
+              <Section
+                number={stepNumber("executante")}
+                done={executanteOk}
+                icon={<Building2 className="h-4 w-4" />}
+                title="Contratado executante e atendimento"
+                description="Quem executa o procedimento e as características do atendimento."
+              >
+                <Grid cols={3}>
+                  <Field label="Código do executante na operadora">
+                    <Input
+                      value={codigoExecutante}
+                      onChange={(e) => setCodigoExecutante(e.target.value)}
+                      placeholder="Código do contrato"
+                    />
+                  </Field>
+                  <Field label="Nome do contratado executante">
+                    <Input
+                      value={contratadoExecutante}
+                      onChange={(e) => setContratadoExecutante(e.target.value)}
+                      placeholder="Prestador que executa"
+                    />
+                  </Field>
+                  <Field label="Código CNES">
+                    <Input
+                      value={cnesExecutante}
+                      onChange={(e) => setCnesExecutante(e.target.value)}
+                      placeholder="0000000"
+                    />
+                  </Field>
+                  <SelectField
+                    label="Tipo de atendimento"
+                    labelClassName="text-xs font-medium text-muted-foreground"
+                    value={tipoAtendimento}
+                    onValueChange={setTipoAtendimento}
+                    placeholder="Selecione"
+                    options={[
+                      "Remoção",
+                      "Pequena cirurgia",
+                      "Terapias",
+                      "Consulta",
+                      "Exame",
+                      "Atendimento domiciliar",
+                      "Urgência / emergência",
+                      "SADT internado",
+                    ].map((o) => ({ value: o, label: o }))}
+                  />
+                  <SelectField
+                    label="Indicação de acidente"
+                    labelClassName="text-xs font-medium text-muted-foreground"
+                    value={indicacaoAcidente}
+                    onValueChange={setIndicacaoAcidente}
+                    placeholder="Selecione"
+                    options={[
+                      "Acidente de trabalho",
+                      "Acidente de trânsito",
+                      "Outros acidentes",
+                      "Não acidente",
+                    ].map((o) => ({ value: o, label: o }))}
+                  />
+                  <SelectField
+                    label="Tipo de consulta"
+                    labelClassName="text-xs font-medium text-muted-foreground"
+                    value={tipoConsulta}
+                    onValueChange={setTipoConsulta}
+                    placeholder="Selecione"
+                    options={["Primeira consulta", "Seguimento", "Pré-natal", "Por encaminhamento"].map(
+                      (o) => ({ value: o, label: o }),
+                    )}
+                  />
+                  <SelectField
+                    label="Motivo de encerramento do atendimento"
+                    labelClassName="text-xs font-medium text-muted-foreground"
+                    value={motivoEncerramento}
+                    onValueChange={setMotivoEncerramento}
+                    placeholder="Selecione"
+                    options={[
+                      "Retorno",
+                      "Retorno por complicação",
+                      "Alta curado",
+                      "Alta melhorado",
+                      "Alta a pedido",
+                      "Alta com previsão de retorno",
+                      "Alta administrativa",
+                      "Óbito",
+                    ].map((o) => ({ value: o, label: o }))}
+                  />
+                </Grid>
+              </Section>
+
 
 
               {/* Clínico */}
@@ -1547,6 +1772,26 @@ function EmitirPage() {
               apacTipo={apacTipo}
               aihMotivo={aihMotivo}
               aihCaraterEntry={aihCaraterEntry}
+              guiaPrincipal={guiaPrincipal}
+              dataAutorizacao={dataAutorizacao}
+              senha={senha}
+              validadeSenha={validadeSenha}
+              guiaOperadora={guiaOperadora}
+              codigoSolicitante={codigoSolicitante}
+              contratadoSolicitante={contratadoSolicitante}
+              conselhoUf={conselhoUf}
+              codigoCbo={codigoCbo}
+              codigoExecutante={codigoExecutante}
+              contratadoExecutante={contratadoExecutante}
+              cnesExecutante={cnesExecutante}
+              tipoAtendimento={tipoAtendimento}
+              indicacaoAcidente={indicacaoAcidente}
+              tipoConsulta={tipoConsulta}
+              motivoEncerramento={motivoEncerramento}
+              pacienteValidadeCarteira={pacienteValidadeCarteira}
+              pacienteCns={pacienteCns}
+              pacienteRn={pacienteRn}
+
               fullSize
             />
           )}
@@ -1779,6 +2024,25 @@ function GuiaLivePreview(props: {
   apacTipo: string;
   aihMotivo: string;
   aihCaraterEntry: string;
+  guiaPrincipal: string;
+  dataAutorizacao: string;
+  senha: string;
+  validadeSenha: string;
+  guiaOperadora: string;
+  codigoSolicitante: string;
+  contratadoSolicitante: string;
+  conselhoUf: string;
+  codigoCbo: string;
+  codigoExecutante: string;
+  contratadoExecutante: string;
+  cnesExecutante: string;
+  tipoAtendimento: string;
+  indicacaoAcidente: string;
+  tipoConsulta: string;
+  motivoEncerramento: string;
+  pacienteValidadeCarteira: string;
+  pacienteCns: string;
+  pacienteRn: string;
   fullSize?: boolean;
 }) {
   const {
@@ -1787,7 +2051,13 @@ function GuiaLivePreview(props: {
     pacienteNome, pacienteCarteira, pacienteCpf,
     medicoNome, medicoCrm, medicoConselho, medicoEspecialidade, cidPrincipal, indicacaoClinica,
     observacoes, procedures, opmeItems,
+    guiaPrincipal, dataAutorizacao, senha, validadeSenha, guiaOperadora,
+    codigoSolicitante, contratadoSolicitante, conselhoUf, codigoCbo,
+    codigoExecutante, contratadoExecutante, cnesExecutante,
+    tipoAtendimento, indicacaoAcidente, tipoConsulta, motivoEncerramento,
+    pacienteValidadeCarteira, pacienteCns, pacienteRn,
   } = props;
+
 
   const dd = (iso: string) => {
     const f = fmtDate(iso);
@@ -1846,38 +2116,39 @@ function GuiaLivePreview(props: {
 
             <FieldRow>
               <FieldBox n="1" label="Registro ANS" value={registroAns} width={140} />
-              <FieldBox n="3" label="Número da Guia Principal" value="" grow />
+              <FieldBox n="3" label="Número da Guia Principal" value={guiaPrincipal} grow />
             </FieldRow>
 
             <FieldRow>
-              <FieldBoxDate n="4" label="Data da Autorização" d="" m="" y="" width={170} />
-              <FieldBox n="5" label="Senha" value="" grow />
-              <FieldBoxDate n="6" label="Data de Validade da Senha" d="" m="" y="" width={190} />
-              <FieldBox n="7" label="Nº Guia Atribuído pela Operadora" value="" width={280} />
+              <FieldBoxDate n="4" label="Data da Autorização" {...dd(dataAutorizacao)} width={170} />
+              <FieldBox n="5" label="Senha" value={senha} grow />
+              <FieldBoxDate n="6" label="Data de Validade da Senha" {...dd(validadeSenha)} width={190} />
+              <FieldBox n="7" label="Nº Guia Atribuído pela Operadora" value={guiaOperadora} width={280} />
             </FieldRow>
 
             <SectionBar>Dados do Beneficiário</SectionBar>
             <FieldRow>
               <FieldBox n="8" label="Número da Carteira" value={pacienteCarteira} width={230} />
-              <FieldBoxDate n="9" label="Validade da Carteira" d="" m="" y="" width={170} />
+              <FieldBoxDate n="9" label="Validade da Carteira" {...dd(pacienteValidadeCarteira)} width={170} />
               <FieldBox n="10" label="Nome" value={pacienteNome} grow />
-              <FieldBox n="11" label="Cartão Nacional de Saúde" value={pacienteCpf} width={200} />
-              <FieldBox n="12" label="Atend. RN" value="" width={90} />
+              <FieldBox n="11" label="Cartão Nacional de Saúde" value={pacienteCns} width={200} />
+              <FieldBox n="12" label="Atend. RN" value={pacienteRn === "S" ? "Sim" : "Não"} width={90} />
             </FieldRow>
 
             <SectionBar>Dados do Solicitante</SectionBar>
             <FieldRow>
-              <FieldBox n="13" label="Código na Operadora" value="" width={190} />
-              <FieldBox n="14" label="Nome do Contratado" value={operadora} grow />
+              <FieldBox n="13" label="Código na Operadora" value={codigoSolicitante} width={190} />
+              <FieldBox n="14" label="Nome do Contratado" value={contratadoSolicitante || operadora} grow />
             </FieldRow>
             <FieldRow>
               <FieldBox n="15" label="Nome do Profissional Solicitante" value={medicoNome} grow />
               <FieldBox n="16" label="Conselho" value={medicoCrm ? medicoConselho : ""} width={90} />
               <FieldBox n="17" label="Nº Conselho" value={medicoCrm} width={140} />
-              <FieldBox n="18" label="UF" value="" width={50} />
-              <FieldBox n="19" label="Cód CBO" value={medicoEspecialidade} width={140} />
+              <FieldBox n="18" label="UF" value={conselhoUf} width={50} />
+              <FieldBox n="19" label="Cód CBO" value={codigoCbo || medicoEspecialidade} width={140} />
               <FieldBox n="20" label="Assinatura Solicitante" value="" width={220} />
             </FieldRow>
+
 
             <SectionBar>Dados da Solicitação / Procedimentos ou Itens Assistenciais Solicitados</SectionBar>
             <FieldRow>
@@ -1909,18 +2180,19 @@ function GuiaLivePreview(props: {
 
             <SectionBar>Dados do Contratado Executante</SectionBar>
             <FieldRow>
-              <FieldBox n="29" label="Código na Operadora" value="" width={190} />
-              <FieldBox n="30" label="Nome do Contratado" value={operadora} grow />
-              <FieldBox n="31" label="Código CNES" value="" width={160} />
+              <FieldBox n="29" label="Código na Operadora" value={codigoExecutante} width={190} />
+              <FieldBox n="30" label="Nome do Contratado" value={contratadoExecutante || operadora} grow />
+              <FieldBox n="31" label="Código CNES" value={cnesExecutante} width={160} />
             </FieldRow>
 
             <SectionBar>Dados do Atendimento</SectionBar>
             <FieldRow>
-              <FieldBox n="32" label="Tipo de Atendimento" value="" width={160} />
-              <FieldBox n="33" label="Indicação de Acidente" value="" width={200} />
-              <FieldBox n="34" label="Tipo de Consulta" value="" width={140} />
-              <FieldBox n="35" label="Motivo de Encerramento" value="" grow />
+              <FieldBox n="32" label="Tipo de Atendimento" value={tipoAtendimento} width={160} />
+              <FieldBox n="33" label="Indicação de Acidente" value={indicacaoAcidente} width={200} />
+              <FieldBox n="34" label="Tipo de Consulta" value={tipoConsulta} width={140} />
+              <FieldBox n="35" label="Motivo de Encerramento" value={motivoEncerramento} grow />
             </FieldRow>
+
 
             <SectionBar>Dados da Execução / Procedimentos e Exames Realizados</SectionBar>
             <div className="border-b border-foreground">
