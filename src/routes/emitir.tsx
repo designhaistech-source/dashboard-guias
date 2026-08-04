@@ -1931,13 +1931,13 @@ function EmitirPage() {
               error={prefErrors.uf}
             />
 
-            <div className="rounded-md border border-primary/30 bg-primary/5 text-primary text-xs px-3 py-2 flex gap-2">
-              <Info className="h-4 w-4 shrink-0 mt-0.5" aria-hidden="true" />
-              <span>
-                Estas preferências serão utilizadas para preencher automaticamente os campos
-                nas guias, evitando retrabalho. Você pode editá-las a qualquer momento.
-              </span>
-            </div>
+
+            <p className="flex items-start gap-2 rounded-lg border border-border/70 bg-muted/30 px-3 py-2.5 text-xs leading-relaxed text-muted-foreground">
+              <Info className="mt-0.5 h-3.5 w-3.5 shrink-0 text-primary" aria-hidden="true" />
+              Ao salvar, os campos do profissional solicitante desta guia são atualizados. Você
+              pode sobrescrevê-los na guia sem alterar os dados padrão.
+            </p>
+
         </>
       </AppModal>
     </div>
