@@ -335,7 +335,7 @@ function ReportsTab() {
         header={
           <>
             <div className="min-w-0">
-              <p className="font-display text-sm font-semibold uppercase tracking-wide text-foreground">
+              <p className="font-display text-base font-semibold tracking-tight text-foreground">
                 Relatório médico
               </p>
               <p className="mt-0.5 text-xs text-muted-foreground">
@@ -449,7 +449,7 @@ function CertificateTab() {
         header={
           <>
             <div className="min-w-0">
-              <p className="font-display text-sm font-semibold uppercase tracking-wide text-foreground">
+              <p className="font-display text-base font-semibold tracking-tight text-foreground">
                 Atestado médico
               </p>
               <p className="mt-0.5 text-xs text-muted-foreground">
@@ -577,7 +577,7 @@ function AttendanceTab() {
         header={
           <>
             <div className="min-w-0">
-              <p className="font-display text-sm font-semibold uppercase tracking-wide text-foreground">
+              <p className="font-display text-base font-semibold tracking-tight text-foreground">
                 Declaração de comparecimento
               </p>
               <p className="mt-0.5 text-xs text-muted-foreground">
