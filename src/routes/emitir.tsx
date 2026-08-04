@@ -636,6 +636,8 @@ function EmitirPage() {
     ...(guideKind === "aih" ? ["aih"] : []),
     "paciente",
     "profissional",
+    "executante",
+
     "clinico",
     "kits",
     "procedimentos",
