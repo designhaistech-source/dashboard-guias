@@ -1157,36 +1157,41 @@ function EmitirPage() {
                     ]}
                     hint="Troque o médico responsável a qualquer momento."
                   />
-                  <Field label="Nome do profissional" required>
-                    <Input
-                      value={medicoNome}
-                      onChange={(e) => {
-                        setMedicoNome(e.target.value);
-                        setMedicoSelecionado("outro");
-                      }}
-                    />
-                  </Field>
-                  <Field label="Conselho / Nº" required>
-                    <Input
-                      value={medicoCrm}
-                      onChange={(e) => {
-                        setMedicoCrm(e.target.value);
-                        setMedicoSelecionado("outro");
-                      }}
-                      placeholder="CRM 0000/UF"
-                    />
-                  </Field>
-                  <Field label="Especialidade">
-                    <Input
-                      value={medicoEspecialidade}
-                      onChange={(e) => {
-                        setMedicoEspecialidade(e.target.value);
-                        setMedicoSelecionado("outro");
-                      }}
-                      placeholder="Cardiologia, Ortopedia..."
-                    />
-                  </Field>
+                  {medicoSelecionado !== "outro" && medicoNome ? (
+                    <div className="flex flex-col justify-center gap-1 rounded-lg border border-border/70 bg-muted/30 px-3 py-2.5">
+                      <span className="text-sm font-medium text-foreground">{medicoNome}</span>
+                      <span className="text-xs text-muted-foreground">
+                        {[medicoCrm, medicoEspecialidade].filter(Boolean).join(" · ")}
+                      </span>
+                    </div>
+                  ) : null}
                 </Grid>
+
+                {medicoSelecionado === "outro" && (
+                  <Grid cols={2}>
+                    <Field label="Nome do profissional" required>
+                      <Input
+                        value={medicoNome}
+                        onChange={(e) => setMedicoNome(e.target.value)}
+                      />
+                    </Field>
+                    <Field label="Conselho / Nº" required>
+                      <Input
+                        value={medicoCrm}
+                        onChange={(e) => setMedicoCrm(e.target.value)}
+                        placeholder="CRM 0000/UF"
+                      />
+                    </Field>
+                    <Field label="Especialidade">
+                      <Input
+                        value={medicoEspecialidade}
+                        onChange={(e) => setMedicoEspecialidade(e.target.value)}
+                        placeholder="Cardiologia, Ortopedia..."
+                      />
+                    </Field>
+                  </Grid>
+                )}
+
 
               </Section>
 
