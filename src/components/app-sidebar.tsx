@@ -338,7 +338,7 @@ function UserMenu({ collapsed }: { collapsed: boolean }) {
           <AlertDialogCancel>Cancelar</AlertDialogCancel>
           <AlertDialogAction
             onClick={confirmLogout}
-            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            className={buttonVariants({ variant: "destructive" })}
           >
             Sair
           </AlertDialogAction>

@@ -316,7 +316,7 @@ export function SettingsPage() {
             </Button>
             <Button
               size="sm"
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              className={buttonVariants({ variant: "destructive" })}
               disabled={deleteConfirm.trim().toUpperCase() !== "EXCLUIR"}
               onClick={requestDeletion}
             >
