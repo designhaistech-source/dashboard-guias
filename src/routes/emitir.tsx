@@ -366,8 +366,91 @@ function EmitirPage() {
   const [prefEstabelecimento, setPrefEstabelecimento] = useState("");
   const [prefUf, setPrefUf] = useState("RN");
   const [prefErrors, setPrefErrors] = useState<Partial<Record<PrefField, string>>>({});
-  /** Indica que a guia foi pré-preenchida com os dados padrão salvos. */
-  const prefsApplied = Boolean(prefPrestador.trim() || prefMatricula.trim());
+
+  /** Campos dos dados padrão selecionados para aplicar nesta guia. */
+  const [prefSelection, setPrefSelection] = useState<Record<PrefField, boolean>>({
+    prestador: true,
+    matricula: true,
+    estabelecimento: true,
+    uf: true,
+  });
+  /** Estado da revisão: aguardando decisão, aplicado ou dispensado. */
+  const [prefsStatus, setPrefsStatus] = useState<"none" | "review" | "applied" | "dismissed">(
+    "none",
+  );
+  /** Snapshot dos campos da guia antes de aplicar (permite desfazer). */
+  const [prefsUndo, setPrefsUndo] = useState<
+    | {
+        profissional: ProfessionalValue;
+        estabelecimento: string;
+        uf: string;
+      }
+    | null
+  >(null);
+
+  /** Só oferece revisão quando existe algum dado padrão preenchido. */
+  const prefsFilled: PrefField[] = [
+    prefPrestador.trim() && ("prestador" as PrefField),
+    prefMatricula.trim() && ("matricula" as PrefField),
+    prefEstabelecimento.trim() && ("estabelecimento" as PrefField),
+    prefUf.trim() && ("uf" as PrefField),
+  ].filter(Boolean) as PrefField[];
+
+  const prefValue = (field: PrefField) =>
+    field === "prestador"
+      ? prefPrestador
+      : field === "matricula"
+        ? prefMatricula
+        : field === "estabelecimento"
+          ? prefEstabelecimento
+          : prefUf;
+
+  const PREF_LABELS: Record<PrefField, string> = {
+    prestador: "Nome do profissional (campo 15)",
+    matricula: "Conselho e registro (campos 16/17)",
+    estabelecimento: "Estabelecimento (guia SUS)",
+    uf: "UF do conselho (campo 18)",
+  };
+
+  const selectedPrefFields = prefsFilled.filter((f) => prefSelection[f]);
+
+  const togglePrefField = (field: PrefField) =>
+    setPrefSelection((prev) => ({ ...prev, [field]: !prev[field] }));
+
+  /** Aplica somente os campos revisados e marcados pelo usuário. */
+  const applySelectedPrefs = () => {
+    if (selectedPrefFields.length === 0) return;
+    setPrefsUndo({
+      profissional,
+      estabelecimento: susEstabelecimento,
+      uf: conselhoUf,
+    });
+    if (prefSelection.prestador || prefSelection.matricula) {
+      applyPrefsToProfissional(
+        prefSelection.prestador ? prefPrestador : undefined,
+        prefSelection.matricula ? prefMatricula : undefined,
+      );
+    }
+    if (prefSelection.estabelecimento && prefEstabelecimento.trim()) {
+      setSusEstabelecimento(prefEstabelecimento);
+    }
+    if (prefSelection.uf && prefUf.trim()) setConselhoUf(prefUf);
+    setPrefsStatus("applied");
+    toast.success(
+      `${selectedPrefFields.length} ${selectedPrefFields.length === 1 ? "campo aplicado" : "campos aplicados"} a esta guia`,
+    );
+  };
+
+  /** Restaura os valores que a guia tinha antes da aplicação. */
+  const undoPrefs = () => {
+    if (!prefsUndo) return;
+    setProfissional(prefsUndo.profissional);
+    setSusEstabelecimento(prefsUndo.estabelecimento);
+    setConselhoUf(prefsUndo.uf);
+    setPrefsUndo(null);
+    setPrefsStatus("review");
+    toast.success("Aplicação desfeita");
+  };
 
   const clearPrefError = (field: PrefField) =>
     setPrefErrors((prev) => {
@@ -385,8 +468,8 @@ function EmitirPage() {
         setPrefMatricula(p.matricula ?? "");
         setPrefEstabelecimento(p.estabelecimento ?? "");
         setPrefUf(p.uf ?? "RN");
-        if (p.prestador || p.matricula) applyPrefsToProfissional(p.prestador, p.matricula);
-
+        // Nada é aplicado automaticamente: o usuário revisa e confirma.
+        if (p.prestador || p.matricula || p.estabelecimento) setPrefsStatus("review");
       }
     } catch { /* ignore */ }
   }, []);
@@ -421,10 +504,11 @@ function EmitirPage() {
     }
 
     setPrefErrors({});
-    applyPrefsToProfissional(result.data.prestador, result.data.matricula);
-    toast.success("Dados padrão salvos");
+    setPrefsStatus("review");
+    toast.success("Dados padrão salvos — revise e aplique a esta guia");
     setPrefsOpen(false);
   };
+
 
 
   const [pacienteNome, setPacienteNome] = useState("");
@@ -449,14 +533,9 @@ function EmitirPage() {
   // Campos SUS (substituem operadora/ANS)
   const [susEstabelecimento, setSusEstabelecimento] = useState("");
   const [susCnes, setSusCnes] = useState("");
-  useEffect(() => {
-    if (prefEstabelecimento) setSusEstabelecimento(prefEstabelecimento);
-  }, [prefEstabelecimento]);
+  // Estabelecimento e UF do conselho só são preenchidos após a revisão explícita
+  // dos dados padrão (ver applySelectedPrefs).
 
-  // UF preferida alimenta o campo 18 (UF do conselho) da guia TISS
-  useEffect(() => {
-    if (prefUf) setConselhoUf(prefUf);
-  }, [prefUf]);
 
 
   // Específicos por tipo de guia
@@ -1251,23 +1330,93 @@ function EmitirPage() {
                   </Button>
                 }
               >
-                {prefsApplied && (
-                  <p className="mb-4 flex items-start gap-2 rounded-lg border border-border/70 bg-muted/30 px-3 py-2.5 text-xs leading-relaxed text-muted-foreground">
-                    <Info className="mt-0.5 h-3.5 w-3.5 shrink-0 text-primary" aria-hidden="true" />
-                    <span>
-                      Preenchido automaticamente pelos seus dados padrão do prestador. Edite abaixo
-                      para valer só nesta guia, ou use{" "}
-                      <button /* ds-allow: link inline dentro de texto de apoio */
+                {prefsStatus === "review" && prefsFilled.length > 0 && (
+                  <div className="mb-4 rounded-xl border border-primary/30 bg-primary/5 p-4">
+                    <div className="flex items-start gap-2">
+                      <Info className="mt-0.5 h-4 w-4 shrink-0 text-primary" aria-hidden="true" />
+                      <div className="min-w-0 space-y-1">
+                        <p className="text-sm font-semibold text-foreground">
+                          Revise seus dados padrão antes de aplicar
+                        </p>
+                        <p className="text-xs leading-relaxed text-muted-foreground">
+                          Nada foi preenchido ainda. Escolha o que deve entrar nesta guia.
+                        </p>
+                      </div>
+                    </div>
+
+                    <ul className="mt-3 space-y-2">
+                      {prefsFilled.map((field) => (
+                        <li key={field} className="flex items-start gap-2.5">
+                          <Checkbox
+                            id={`pref-apply-${field}`}
+                            checked={prefSelection[field]}
+                            onCheckedChange={() => togglePrefField(field)}
+                            className="mt-0.5"
+                          />
+                          <label
+                            htmlFor={`pref-apply-${field}`}
+                            className="min-w-0 cursor-pointer text-xs leading-relaxed"
+                          >
+                            <span className="block text-muted-foreground">
+                              {PREF_LABELS[field]}
+                            </span>
+                            <span className="block font-medium text-foreground">
+                              {prefValue(field)}
+                            </span>
+                          </label>
+                        </li>
+                      ))}
+                    </ul>
+
+                    <div className="mt-4 flex flex-wrap items-center gap-2">
+                      <Button
                         type="button"
-                        onClick={() => setPrefsOpen(true)}
-                        className="font-medium text-primary underline underline-offset-2 hover:no-underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                        size="sm"
+                        onClick={applySelectedPrefs}
+                        disabled={selectedPrefFields.length === 0}
                       >
-                        Dados padrão
-                      </button>{" "}
-                      para alterar em todas.
-                    </span>
-                  </p>
+                        <CheckCircle2 className="h-4 w-4" />
+                        Aplicar {selectedPrefFields.length > 0 ? selectedPrefFields.length : ""}{" "}
+                        {selectedPrefFields.length === 1 ? "campo" : "campos"}
+                      </Button>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setPrefsOpen(true)}
+                      >
+                        <Settings2 className="h-4 w-4" />
+                        Editar dados padrão
+                      </Button>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setPrefsStatus("dismissed")}
+                      >
+                        Preencher manualmente
+                      </Button>
+                    </div>
+                  </div>
                 )}
+
+                {prefsStatus === "applied" && (
+                  <div className="mb-4 flex flex-wrap items-center justify-between gap-2 rounded-xl border border-border/70 bg-muted/30 px-3.5 py-2.5">
+                    <p className="flex min-w-0 items-start gap-2 text-xs leading-relaxed text-muted-foreground">
+                      <CheckCircle2
+                        className="mt-0.5 h-3.5 w-3.5 shrink-0 text-success-strong"
+                        aria-hidden="true"
+                      />
+                      <span>
+                        Dados padrão aplicados a esta guia. Edite abaixo para valer só aqui.
+                      </span>
+                    </p>
+                    <Button type="button" variant="outline" size="sm" onClick={undoPrefs}>
+                      Desfazer
+                    </Button>
+                  </div>
+                )}
+
 
                 <ProfessionalPicker value={profissional} onChange={setProfissional} />
 
