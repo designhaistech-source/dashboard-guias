@@ -422,7 +422,7 @@ function EmitirPage() {
 
     setPrefErrors({});
     applyPrefsToProfissional(result.data.prestador, result.data.matricula);
-    toast.success("Preferências salvas");
+    toast.success("Dados padrão salvos");
     setPrefsOpen(false);
   };
 
