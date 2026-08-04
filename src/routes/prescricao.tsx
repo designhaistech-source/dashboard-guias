@@ -53,6 +53,7 @@ import { toast } from "sonner";
 import { AppBreadcrumb } from "@/components/app-breadcrumb";
 import { AppSidebar } from "@/components/app-sidebar";
 import { SiteFooter } from "@/components/site-footer";
+import { ConfirmDialog } from "@/components/confirm-dialog";
 import { KitsModal } from "@/components/kits-modal";
 import { consumirKitParaAplicar, upsertKit, type Kit } from "@/lib/kits";
 import logoAsset from "@/assets/haisguias-logo.png.asset.json";
