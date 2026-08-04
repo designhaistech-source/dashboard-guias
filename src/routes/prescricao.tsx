@@ -2199,6 +2199,14 @@ function PrescricaoForm() {
         </section>
       )}
 
+      <ConfirmDialog
+        open={confirmLimparHistorico}
+        onOpenChange={setConfirmLimparHistorico}
+        title="Apagar todo o histórico?"
+        description="Todas as prescrições salvas neste dispositivo serão removidas. Esta ação não pode ser desfeita."
+        confirmLabel="Apagar histórico"
+        onConfirm={confirmarLimparHistorico}
+      />
 
 
 
