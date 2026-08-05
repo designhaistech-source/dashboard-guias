@@ -60,10 +60,7 @@ export function SectionCard({
             )}
             <div className="min-w-0">
               <h2 className="flex flex-wrap items-center gap-2 font-display text-base font-semibold tracking-tight text-foreground">
-                <span className="min-w-0">
-                  {number ? `${number}. ` : ""}
-                  {title}
-                </span>
+                <span className="min-w-0">{title}</span>
                 {done && (
                   <CheckCircle2
                     aria-label="Seção preenchida"
