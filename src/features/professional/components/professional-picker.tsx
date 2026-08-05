@@ -125,7 +125,7 @@ export function ProfessionalPicker({ value, onChange, children, labels }: Profes
               aria-hidden
               className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground"
             />
-            {open && (suggestions.length > 0 || isManual) && (
+            {open && (
               <ul
                 id="profissional-nome-sugestoes"
                 role="listbox" /* ds-allow: autocomplete inline ancorado no próprio Input do design system (Select/Command não aceitam texto livre com máscara) */
@@ -134,9 +134,10 @@ export function ProfessionalPicker({ value, onChange, children, labels }: Profes
               >
                 {suggestions.length === 0 && (
                   <li className="px-2 py-1.5 text-xs text-muted-foreground">
-                    Nenhum profissional cadastrado com esse nome. O nome digitado será usado nesta guia.
+                    Nenhum profissional cadastrado com esse nome.
                   </li>
                 )}
+
 
 
 
