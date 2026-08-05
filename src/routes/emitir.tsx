@@ -2542,7 +2542,7 @@ function EmitirPage() {
                     </span>
                   </div>
 
-                  <div className="grid gap-4 lg:grid-cols-3">
+                  <div className="grid gap-4 @3xl:grid-cols-3">
                     <SignatureField
                       label="66 - Assinatura do Responsável pela Autorização"
                       value={assinaturaAutorizacao}
