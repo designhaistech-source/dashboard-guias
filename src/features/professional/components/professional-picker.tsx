@@ -42,9 +42,13 @@ export function ProfessionalPicker({ value, onChange, children, labels }: Profes
 
   const suggestions = useMemo(() => {
     const query = value.nome.trim().toLowerCase();
+    // Nome idêntico a um cadastro: comporta-se como seletor e lista todos.
+    const exact = PROFESSIONALS.some((p) => p.nome.toLowerCase() === query);
+    if (!query || exact) return PROFESSIONALS;
     const matches = PROFESSIONALS.filter((p) => p.nome.toLowerCase().includes(query));
-    return query && matches.length === 0 ? PROFESSIONALS : matches;
+    return matches.length > 0 ? matches : PROFESSIONALS;
   }, [value.nome]);
+
 
   const selectProfessional = (id: string) => {
     const found = PROFESSIONALS.find((p) => p.id === id);
