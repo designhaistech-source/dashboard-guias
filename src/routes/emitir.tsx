@@ -2441,6 +2441,7 @@ function EmitirPage() {
                   { label: "Executante", done: executanteOk },
                   { label: "Atendimento", done: atendimentoOk },
                   { label: "Execução", done: realizadosOk },
+                  { label: "Profissional executante", done: executantesOk },
 
 
                   { label: "OPME (opcional)", done: opmeOk },
