@@ -1664,6 +1664,7 @@ function EmitirPage() {
                           <Input
                             type="number"
                             min={1}
+                            aria-label={`27 - Qtde. Solic. (item ${idx + 1})`}
                             value={p.quantity}
                             onChange={(e) =>
                               updateProcedure(p.id, {
