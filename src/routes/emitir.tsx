@@ -2239,7 +2239,7 @@ function GuiaLivePreview(props: {
     codigoSolicitante, contratadoSolicitante, conselhoUf, codigoCbo,
     codigoExecutante, contratadoExecutante, cnesExecutante,
     tipoAtendimento, indicacaoAcidente, tipoConsulta, motivoEncerramento,
-    pacienteValidadeCarteira, pacienteCns, pacienteRn,
+    pacienteValidadeCarteira, pacienteCns, pacienteRn, assinaturaSolicitante,
   } = props;
 
 
