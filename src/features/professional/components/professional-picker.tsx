@@ -1,5 +1,5 @@
 import { useMemo, useRef, useState, type ReactNode } from "react";
-import { Check, ChevronDown } from "lucide-react";
+import { Check, ChevronDown, UserPlus } from "lucide-react";
 
 import { Field, SelectField } from "@/components/form-field";
 import { Input } from "@/components/ui/input";
