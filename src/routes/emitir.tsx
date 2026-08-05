@@ -1027,7 +1027,7 @@ function EmitirPage() {
                       </Select>
                     </Field>
 
-                    <Field label="Registro ANS">
+                    <Field label="1 - Registro ANS">
                       <Input
                         value={registroAns}
                         onChange={(e) => setRegistroAns(e.target.value)}
@@ -1035,7 +1035,7 @@ function EmitirPage() {
                       />
                     </Field>
                     <SelectField
-                      label="Caráter do atendimento"
+                      label="21 - Caráter do Atendimento"
                       required
                       labelClassName="text-xs font-medium text-muted-foreground"
                       value={character}
@@ -1043,7 +1043,7 @@ function EmitirPage() {
                       options={CHARACTER_OPTIONS.map((c) => ({ value: c, label: c }))}
                     />
 
-                    <Field label="Data da solicitação">
+                    <Field label="22 - Data da Solicitação">
                       <Input
                         type="date"
                         value={dataSolicitacao}
@@ -1057,35 +1057,35 @@ function EmitirPage() {
                       Autorização e senha
                     </p>
                     <Grid cols={3}>
-                      <Field label="Nº da guia principal">
+                      <Field label="3 - Número da Guia Principal">
                         <Input
                           value={guiaPrincipal}
                           onChange={(e) => setGuiaPrincipal(e.target.value)}
                           placeholder="Guia de internação vinculada"
                         />
                       </Field>
-                      <Field label="Nº da guia atribuído pela operadora">
+                      <Field label="7 - Nº Guia Atribuído pela Operadora">
                         <Input
                           value={guiaOperadora}
                           onChange={(e) => setGuiaOperadora(e.target.value)}
                           placeholder="Informado pela operadora"
                         />
                       </Field>
-                      <Field label="Data da autorização">
+                      <Field label="4 - Data da Autorização">
                         <Input
                           type="date"
                           value={dataAutorizacao}
                           onChange={(e) => setDataAutorizacao(e.target.value)}
                         />
                       </Field>
-                      <Field label="Senha de autorização">
+                      <Field label="5 - Senha">
                         <Input
                           value={senha}
                           onChange={(e) => setSenha(e.target.value)}
                           placeholder="Senha emitida pela operadora"
                         />
                       </Field>
-                      <Field label="Validade da senha">
+                      <Field label="6 - Data de Validade da Senha">
                         <Input
                           type="date"
                           value={validadeSenha}
@@ -1244,14 +1244,14 @@ function EmitirPage() {
                 description="Identificação do paciente na operadora."
               >
                 <Grid cols={2}>
-                  <Field label="Nome do beneficiário" required>
+                  <Field label="10 - Nome" required>
                     <Input
                       value={pacienteNome}
                       onChange={(e) => setPacienteNome(e.target.value)}
                       placeholder="Nome completo"
                     />
                   </Field>
-                  <Field label="Nº da carteira / Código na operadora" required>
+                  <Field label="8 - Número da Carteira" required>
                     <Input
                       value={pacienteCarteira}
                       onChange={(e) => setPacienteCarteira(e.target.value)}
@@ -1283,14 +1283,14 @@ function EmitirPage() {
                       { value: "O", label: "Outro" },
                     ]}
                   />
-                  <Field label="Validade da carteira">
+                  <Field label="9 - Validade da Carteira">
                     <Input
                       type="date"
                       value={pacienteValidadeCarteira}
                       onChange={(e) => setPacienteValidadeCarteira(e.target.value)}
                     />
                   </Field>
-                  <Field label="Cartão Nacional de Saúde (CNS)">
+                  <Field label="11 - Cartão Nacional de Saúde">
                     <Input
                       value={pacienteCns}
                       onChange={(e) => setPacienteCns(e.target.value)}
@@ -1298,7 +1298,7 @@ function EmitirPage() {
                     />
                   </Field>
                   <SelectField
-                    label="Atendimento a recém-nascido (RN)"
+                    label="12 - Atendimento a RN"
                     labelClassName="text-xs font-medium text-muted-foreground"
                     value={pacienteRn}
                     onValueChange={setPacienteRn}
@@ -1423,28 +1423,28 @@ function EmitirPage() {
 
                 <div className="mt-5 border-t pt-5">
                   <Grid cols={3}>
-                    <Field label="Código do solicitante na operadora">
+                    <Field label="13 - Código na Operadora">
                       <Input
                         value={codigoSolicitante}
                         onChange={(e) => setCodigoSolicitante(e.target.value)}
                         placeholder="Código do contrato"
                       />
                     </Field>
-                    <Field label="Nome do contratado solicitante">
+                    <Field label="14 - Nome do Contratado">
                       <Input
                         value={contratadoSolicitante}
                         onChange={(e) => setContratadoSolicitante(e.target.value)}
                         placeholder="Clínica, consultório ou hospital"
                       />
                     </Field>
-                    <Field label="UF do conselho">
+                    <Field label="18 - UF">
                       <Input
                         value={conselhoUf}
                         onChange={(e) => setConselhoUf(e.target.value.toUpperCase().slice(0, 2))}
                         placeholder="RN"
                       />
                     </Field>
-                    <Field label="Código CBO">
+                    <Field label="19 - Código CBO">
                       <Input
                         value={codigoCbo}
                         onChange={(e) => setCodigoCbo(e.target.value)}
@@ -1464,21 +1464,21 @@ function EmitirPage() {
                 description="Quem executa o procedimento e as características do atendimento."
               >
                 <Grid cols={3}>
-                  <Field label="Código do executante na operadora">
+                  <Field label="29 - Código na Operadora">
                     <Input
                       value={codigoExecutante}
                       onChange={(e) => setCodigoExecutante(e.target.value)}
                       placeholder="Código do contrato"
                     />
                   </Field>
-                  <Field label="Nome do contratado executante">
+                  <Field label="30 - Nome do Contratado">
                     <Input
                       value={contratadoExecutante}
                       onChange={(e) => setContratadoExecutante(e.target.value)}
                       placeholder="Prestador que executa"
                     />
                   </Field>
-                  <Field label="Código CNES">
+                  <Field label="31 - Código CNES">
                     <Input
                       value={cnesExecutante}
                       onChange={(e) => setCnesExecutante(e.target.value)}
@@ -1486,7 +1486,7 @@ function EmitirPage() {
                     />
                   </Field>
                   <SelectField
-                    label="Tipo de atendimento"
+                    label="32 - Tipo de Atendimento"
                     labelClassName="text-xs font-medium text-muted-foreground"
                     value={tipoAtendimento}
                     onValueChange={setTipoAtendimento}
@@ -1503,7 +1503,7 @@ function EmitirPage() {
                     ].map((o) => ({ value: o, label: o }))}
                   />
                   <SelectField
-                    label="Indicação de acidente"
+                    label="33 - Indicação de Acidente"
                     labelClassName="text-xs font-medium text-muted-foreground"
                     value={indicacaoAcidente}
                     onValueChange={setIndicacaoAcidente}
@@ -1516,7 +1516,7 @@ function EmitirPage() {
                     ].map((o) => ({ value: o, label: o }))}
                   />
                   <SelectField
-                    label="Tipo de consulta"
+                    label="34 - Tipo de Consulta"
                     labelClassName="text-xs font-medium text-muted-foreground"
                     value={tipoConsulta}
                     onValueChange={setTipoConsulta}
@@ -1526,7 +1526,7 @@ function EmitirPage() {
                     )}
                   />
                   <SelectField
-                    label="Motivo de encerramento do atendimento"
+                    label="35 - Motivo de Encerramento"
                     labelClassName="text-xs font-medium text-muted-foreground"
                     value={motivoEncerramento}
                     onValueChange={setMotivoEncerramento}
@@ -1568,7 +1568,7 @@ function EmitirPage() {
                     />
                   </Field>
                 </Grid>
-                <Field label="Indicação clínica / justificativa" required>
+                <Field label="23 - Indicação Clínica" required>
                   <Textarea
                     rows={3}
                     value={indicacaoClinica}
@@ -1576,7 +1576,7 @@ function EmitirPage() {
                     placeholder="Descreva a justificativa clínica do procedimento."
                   />
                 </Field>
-                <Field label="Observações">
+                <Field label="58 - Observação / Justificativa">
                   <Textarea
                     rows={2}
                     value={observacoes}
