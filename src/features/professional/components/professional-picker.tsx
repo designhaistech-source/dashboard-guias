@@ -99,23 +99,28 @@ export function ProfessionalPicker({ value, onChange, children, labels }: Profes
           label={labels?.nome ?? "Nome do profissional"}
           required
           error={errorFor("nome", errors.nome)}
-          hint="Digite para buscar um cadastro ou informe um nome novo — conselho e número seguem editáveis."
-
-
+          hint={
+            manualMode
+              ? "Preenchimento manual: informe nome, conselho e número deste profissional."
+              : "Digite para buscar um profissional cadastrado."
+          }
           className="relative"
         >
           <div id="profissional-nome-wrap" className="relative">
             <Input
               id="profissional-nome"
+              ref={nomeRef}
               aria-invalid={Boolean(errorFor("nome", errors.nome)) || undefined}
               aria-describedby="profissional-nome-msg"
               value={value.nome}
-
+              placeholder={manualMode ? "Nome completo do profissional" : "Buscar profissional cadastrado"}
               onChange={(e) => {
                 handleNameChange(e.target.value);
-                setOpen(true);
+                if (!manualMode) setOpen(true);
               }}
-              onFocus={() => setOpen(true)}
+              onFocus={() => {
+                if (!manualMode) setOpen(true);
+              }}
               onBlur={() => {
                 markTouched("nome");
                 blurTimer.current = setTimeout(() => setOpen(false), 120);
@@ -123,20 +128,23 @@ export function ProfessionalPicker({ value, onChange, children, labels }: Profes
               onKeyDown={(e) => {
                 if (e.key === "Escape") setOpen(false);
               }}
-              role="combobox"
-              aria-expanded={open}
-              aria-autocomplete="list"
-              aria-controls="profissional-nome-sugestoes"
+              role={manualMode ? undefined : "combobox"}
+              aria-expanded={manualMode ? undefined : open}
+              aria-autocomplete={manualMode ? undefined : "list"}
+              aria-controls={manualMode ? undefined : "profissional-nome-sugestoes"}
               autoComplete="off"
               inputMode="text"
               maxLength={70}
-              className="pr-9"
+              className={manualMode ? undefined : "pr-9"}
             />
-            <ChevronDown
-              aria-hidden
-              className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground"
-            />
-            {open && (
+            {!manualMode && (
+              <ChevronDown
+                aria-hidden
+                className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground"
+              />
+            )}
+            {open && !manualMode && (
+
               <ul
                 id="profissional-nome-sugestoes"
                 role="listbox" /* ds-allow: autocomplete inline ancorado no próprio Input do design system (Select/Command não aceitam texto livre com máscara) */
