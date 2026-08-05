@@ -1229,7 +1229,7 @@ function EmitirPage() {
                 number={stepNumber("paciente")}
                 done={pacienteOk}
                 icon={<User className="h-4 w-4" />}
-                title="Beneficiário / Paciente"
+                title="Dados do Beneficiário"
                 description="Campos 8 a 12 da guia — identificação do beneficiário na operadora."
               >
                 <Grid cols={2}>
