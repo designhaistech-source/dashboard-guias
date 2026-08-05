@@ -79,9 +79,13 @@ export function ProfessionalPicker({ value, onChange, children, labels }: Profes
           hint="Digite para buscar um profissional cadastrado ou informe um novo nome."
           className="relative"
         >
-          <div className="relative">
+          <div id="profissional-nome-wrap" className="relative">
             <Input
+              id="profissional-nome"
+              aria-invalid={Boolean(errorFor("nome", errors.nome)) || undefined}
+              aria-describedby="profissional-nome-msg"
               value={value.nome}
+
               onChange={(e) => {
                 handleNameChange(e.target.value);
                 setOpen(true);
