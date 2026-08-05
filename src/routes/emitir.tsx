@@ -322,6 +322,7 @@ function EmitirPage() {
   const [contratadoSolicitante, setContratadoSolicitante] = useState("");
   const [conselhoUf, setConselhoUf] = useState("RN");
   const [codigoCbo, setCodigoCbo] = useState("");
+  const [assinaturaSolicitante, setAssinaturaSolicitante] = useState("");
 
   // Contratado executante (29, 30, 31)
   const [codigoExecutante, setCodigoExecutante] = useState("");
