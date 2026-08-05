@@ -2523,7 +2523,7 @@ function EmitirPage() {
                   { label: "Valores e assinaturas", done: financeiroOk },
 
 
-                  { label: "OPME (opcional)", done: opmeOk },
+                  
                 ]}
                 note={
                   <>
