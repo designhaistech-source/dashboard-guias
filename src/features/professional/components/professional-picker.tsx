@@ -1,8 +1,10 @@
 import { useMemo, useRef, useState, type ReactNode } from "react";
-import { Check, ChevronDown } from "lucide-react";
+import { Check, ChevronDown, Search, UserPlus } from "lucide-react";
 
 import { Field, SelectField } from "@/components/form-field";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+
 import { useTouchedFields } from "@/hooks/use-touched-fields";
 import { cn } from "@/lib/utils";
 
@@ -38,8 +40,11 @@ export function ProfessionalPicker({ value, onChange, children, labels }: Profes
   const { markTouched, errorFor, resetTouched } = useTouchedFields<ProfessionalField>();
   const errors = validateProfessional(value);
   const [open, setOpen] = useState(false);
+  const [manualMode, setManualMode] = useState(false);
   const blurTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const numeroRef = useRef<HTMLInputElement>(null);
+  const nomeRef = useRef<HTMLInputElement>(null);
+
 
 
   const query = value.nome.trim();
@@ -64,12 +69,28 @@ export function ProfessionalPicker({ value, onChange, children, labels }: Profes
   const handleNameChange = (raw: string) => {
     const nome = maskProfessionalName(raw);
     const found = PROFESSIONALS.find((p) => p.nome.toLowerCase() === nome.trim().toLowerCase());
-    if (found) {
+    if (found && !manualMode) {
       onChange({ ...found });
       return;
     }
     onChange({ ...value, id: MANUAL_PROFESSIONAL_ID, nome });
   };
+
+  /** Alterna entre buscar um cadastro e digitar um profissional novo. */
+  const startManual = () => {
+    if (blurTimer.current) clearTimeout(blurTimer.current);
+    resetTouched();
+    setManualMode(true);
+    setOpen(false);
+    onChange({ id: MANUAL_PROFESSIONAL_ID, nome: "", conselho: "CRM", numero: "", especialidade: "" });
+    requestAnimationFrame(() => nomeRef.current?.focus());
+  };
+
+  const backToSearch = () => {
+    setManualMode(false);
+    requestAnimationFrame(() => nomeRef.current?.focus());
+  };
+
 
 
   return (
@@ -80,23 +101,28 @@ export function ProfessionalPicker({ value, onChange, children, labels }: Profes
           label={labels?.nome ?? "Nome do profissional"}
           required
           error={errorFor("nome", errors.nome)}
-          hint="Digite para buscar um cadastro ou informe um nome novo — conselho e número seguem editáveis."
-
-
+          hint={
+            manualMode
+              ? "Preenchimento manual: informe nome, conselho e número deste profissional."
+              : "Digite para buscar um profissional cadastrado."
+          }
           className="relative"
         >
           <div id="profissional-nome-wrap" className="relative">
             <Input
               id="profissional-nome"
+              ref={nomeRef}
               aria-invalid={Boolean(errorFor("nome", errors.nome)) || undefined}
               aria-describedby="profissional-nome-msg"
               value={value.nome}
-
+              placeholder={manualMode ? "Nome completo do profissional" : "Buscar profissional cadastrado"}
               onChange={(e) => {
                 handleNameChange(e.target.value);
-                setOpen(true);
+                if (!manualMode) setOpen(true);
               }}
-              onFocus={() => setOpen(true)}
+              onFocus={() => {
+                if (!manualMode) setOpen(true);
+              }}
               onBlur={() => {
                 markTouched("nome");
                 blurTimer.current = setTimeout(() => setOpen(false), 120);
@@ -104,20 +130,23 @@ export function ProfessionalPicker({ value, onChange, children, labels }: Profes
               onKeyDown={(e) => {
                 if (e.key === "Escape") setOpen(false);
               }}
-              role="combobox"
-              aria-expanded={open}
-              aria-autocomplete="list"
-              aria-controls="profissional-nome-sugestoes"
+              role={manualMode ? undefined : "combobox"}
+              aria-expanded={manualMode ? undefined : open}
+              aria-autocomplete={manualMode ? undefined : "list"}
+              aria-controls={manualMode ? undefined : "profissional-nome-sugestoes"}
               autoComplete="off"
               inputMode="text"
               maxLength={70}
-              className="pr-9"
+              className={manualMode ? undefined : "pr-9"}
             />
-            <ChevronDown
-              aria-hidden
-              className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground"
-            />
-            {open && (
+            {!manualMode && (
+              <ChevronDown
+                aria-hidden
+                className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground"
+              />
+            )}
+            {open && !manualMode && (
+
               <ul
                 id="profissional-nome-sugestoes"
                 role="listbox" /* ds-allow: autocomplete inline ancorado no próprio Input do design system (Select/Command não aceitam texto livre com máscara) */
@@ -126,9 +155,10 @@ export function ProfessionalPicker({ value, onChange, children, labels }: Profes
               >
                 {suggestions.length === 0 && (
                   <li className="px-2 py-1.5 text-xs text-muted-foreground">
-                    Nenhum cadastro com esse nome. O nome digitado será usado nesta guia.
+                    Nenhum profissional cadastrado com esse nome. Use “Cadastrar manualmente”.
                   </li>
                 )}
+
 
                 {suggestions.map((p) => {
                   const active = p.id === value.id;
@@ -164,7 +194,27 @@ export function ProfessionalPicker({ value, onChange, children, labels }: Profes
 
             )}
           </div>
+          <Button
+            type="button"
+            variant="link"
+            size="sm"
+            className="mt-1 h-auto p-0"
+            onClick={manualMode ? backToSearch : startManual}
+          >
+            {manualMode ? (
+              <>
+                <Search aria-hidden />
+                Buscar profissional cadastrado
+              </>
+            ) : (
+              <>
+                <UserPlus aria-hidden />
+                Cadastrar manualmente
+              </>
+            )}
+          </Button>
         </Field>
+
         <SelectField
           id="profissional-conselho"
           label={labels?.conselho ?? "Conselho"}
