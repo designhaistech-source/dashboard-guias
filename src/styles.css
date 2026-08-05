@@ -129,6 +129,10 @@
   --background: var(--neutral-50);
   --foreground: oklch(0.22 0.04 260);
 
+  /* Tinta de assinatura/impressão — constante nos dois temas (sai em papel branco) */
+  --ink: oklch(0.22 0.04 260);
+
+
   /* Surfaces (layered elevation) */
   --surface: oklch(1 0 0);
   --surface-subtle: var(--neutral-100);
