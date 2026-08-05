@@ -2425,7 +2425,8 @@ function EmitirPage() {
                   <p className="mb-3 text-xs font-medium text-muted-foreground">
                     56 - Data de Realização de Procedimentos em Série
                   </p>
-                  <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
+                  <div className="@container">
+                  <div className="grid grid-cols-2 gap-3 @sm:grid-cols-3 @2xl:grid-cols-5">
                     {serieDates.map((d, i) => (
                       <Field key={i} label={`${i + 1}ª data`}>
                         <Input
