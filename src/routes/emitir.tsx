@@ -2483,8 +2483,8 @@ function EmitirPage() {
                 title="Valores Totais e Assinaturas"
                 description="Campos 59 a 68 — totais do quadro financeiro e assinaturas da guia."
               >
-                <div className="space-y-6">
-                  <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                <div className="space-y-6 @container">
+                  <div className="grid gap-4 @sm:grid-cols-2 @3xl:grid-cols-3">
                     <FormField label="59 - Total de Procedimentos (R$)" hint="Calculado a partir dos procedimentos realizados (campo 47).">
                       <Input value={formatMoney(totalProcedimentos)} disabled className="font-mono text-right" />
                     </FormField>
