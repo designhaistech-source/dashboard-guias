@@ -1543,25 +1543,26 @@ function EmitirPage() {
                   </p>
 
                   {/* Rótulos das colunas (campos 24 a 28) — visíveis no desktop */}
-                  <div className="hidden lg:grid lg:grid-cols-[28px_minmax(0,1fr)_128px_80px_56px_80px_40px] items-end gap-3 text-xs font-medium text-muted-foreground">
+                  <div className="hidden lg:grid lg:grid-cols-[28px_56px_128px_minmax(0,1fr)_80px_80px_40px] items-end gap-3 text-xs font-medium text-muted-foreground">
                     <div />
-                    <div className="truncate" title="26 - Descrição">
-                      26 - Descrição <span className="text-destructive">*</span>
+                    <div className="truncate text-center" title="24 - Tabela">
+                      24 - Tab.
                     </div>
                     <div className="truncate" title="25 - Código do Procedimento ou Item Assistencial">
                       25 - Código <span className="text-destructive">*</span>
                     </div>
+                    <div className="truncate" title="26 - Descrição">
+                      26 - Descrição <span className="text-destructive">*</span>
+                    </div>
                     <div className="truncate text-center" title="27 - Qtde. Solicitada">
                       27 - Qtde. <span className="text-destructive">*</span>
-                    </div>
-                    <div className="truncate text-center" title="24 - Tabela">
-                      24 - Tab.
                     </div>
                     <div className="truncate text-center" title="28 - Qtde. Autorizada (operadora)">
                       28 - Qtde. Aut.
                     </div>
                     <div />
                   </div>
+
 
                   <div className="space-y-3 lg:space-y-2">
                     {procedures.map((p, idx) => (
