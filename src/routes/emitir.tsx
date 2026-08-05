@@ -1847,12 +1847,12 @@ function EmitirPage() {
                           </div>
                         </div>
 
-                        {/* Campo 24 - Tabela (somente leitura) */}
+                        {/* Tabela (campo 24), somente leitura */}
                         <div className="hidden @3xl:block text-center font-mono text-sm text-muted-foreground">
                           22
                         </div>
 
-                        {/* Campo 25 - Código do Procedimento ou Item Assistencial */}
+                        {/* Código do procedimento ou item assistencial (campo 25) */}
                         <FormField
                           label="25 - Código do Procedimento ou Item Assistencial"
                           required
@@ -1868,7 +1868,7 @@ function EmitirPage() {
                           />
                         </FormField>
 
-                        {/* Campo 26 - Descrição */}
+                        {/* Descrição (campo 26) */}
                         <FormField
                           label="26 - Descrição"
                           required
@@ -1896,7 +1896,7 @@ function EmitirPage() {
                           />
                         </FormField>
 
-                        {/* Campo 27 - Qtde. Solic. */}
+                        {/* Quantidade solicitada (campo 27) */}
                         <FormField
                           label="27 - Qtde. Solic."
                           required
@@ -1917,13 +1917,13 @@ function EmitirPage() {
                           />
                         </FormField>
 
-                        {/* Campo 28 - Qtde. Aut. */}
+                        {/* Quantidade autorizada pela operadora (campo 28) */}
                         <div className="hidden @3xl:block text-center text-sm text-muted-foreground">
                           —
                         </div>
                         <p className="mt-3 text-xs text-muted-foreground @3xl:hidden">
-                          Campo 24 - Tabela: <span className="font-mono">22</span> · campo 28 - Qtde. Aut.
-                          preenchido pela operadora
+                          Tabela (campo 24): <span className="font-mono">22</span> · quantidade autorizada
+                          (campo 28) preenchida pela operadora
                         </p>
 
 
