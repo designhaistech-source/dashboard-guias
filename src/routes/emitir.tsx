@@ -1473,8 +1473,9 @@ function EmitirPage() {
                 done={clinicoOk && procedimentosOk}
                 icon={<FileText className="h-4 w-4" />}
                 title={
-                  <span className="flex items-center gap-2">
+                  <span className="flex items-center gap-2 whitespace-nowrap">
                     Dados da Solicitação
+
                     {guideKind && (
                       <span className="text-destructive font-semibold text-sm">
                         - {GUIDE_SHORT[guideKind]}
