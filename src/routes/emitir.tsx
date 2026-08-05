@@ -1543,25 +1543,26 @@ function EmitirPage() {
                   </p>
 
                   {/* Rótulos das colunas (campos 24 a 28) — visíveis no desktop */}
-                  <div className="hidden lg:grid lg:grid-cols-[28px_minmax(0,1fr)_128px_80px_56px_80px_40px] items-end gap-3 text-xs font-medium text-muted-foreground">
+                  <div className="hidden lg:grid lg:grid-cols-[28px_56px_128px_minmax(0,1fr)_80px_80px_40px] items-end gap-3 text-xs font-medium text-muted-foreground">
                     <div />
-                    <div className="truncate" title="26 - Descrição">
-                      26 - Descrição <span className="text-destructive">*</span>
+                    <div className="truncate text-center" title="24 - Tabela">
+                      24 - Tab.
                     </div>
                     <div className="truncate" title="25 - Código do Procedimento ou Item Assistencial">
                       25 - Código <span className="text-destructive">*</span>
                     </div>
+                    <div className="truncate" title="26 - Descrição">
+                      26 - Descrição <span className="text-destructive">*</span>
+                    </div>
                     <div className="truncate text-center" title="27 - Qtde. Solicitada">
                       27 - Qtde. <span className="text-destructive">*</span>
-                    </div>
-                    <div className="truncate text-center" title="24 - Tabela">
-                      24 - Tab.
                     </div>
                     <div className="truncate text-center" title="28 - Qtde. Autorizada (operadora)">
                       28 - Qtde. Aut.
                     </div>
                     <div />
                   </div>
+
 
                   <div className="space-y-3 lg:space-y-2">
                     {procedures.map((p, idx) => (
@@ -1572,7 +1573,7 @@ function EmitirPage() {
                         onDragOver={onDragOver}
                         onDrop={() => onDrop(p.id)}
                         className={cn(
-                          "rounded-lg border p-3 lg:grid lg:grid-cols-[28px_minmax(0,1fr)_128px_80px_56px_80px_40px] lg:items-center lg:gap-3 lg:rounded-none lg:border-0 lg:p-0",
+                          "rounded-lg border p-3 lg:grid lg:grid-cols-[28px_56px_128px_minmax(0,1fr)_80px_80px_40px] lg:items-center lg:gap-3 lg:rounded-none lg:border-0 lg:p-0",
                           dragId === p.id && "opacity-50",
                         )}
                       >
@@ -1598,12 +1599,33 @@ function EmitirPage() {
                           </div>
                         </div>
 
+                        {/* 24 - Tabela (somente leitura) */}
+                        <div className="hidden lg:block text-center font-mono text-sm text-muted-foreground">
+                          22
+                        </div>
+
+                        {/* 25 - Código */}
+                        <FormField
+                          label="25 - Código"
+                          required
+                          labelClassName="lg:hidden"
+                          className="min-w-0 lg:space-y-0"
+                        >
+                          <Input
+                            value={p.code}
+                            onChange={(e) => updateProcedure(p.id, { code: e.target.value })}
+                            aria-label="25 - Código do Procedimento ou Item Assistencial"
+                            placeholder="Código TUSS"
+                            className="font-mono"
+                          />
+                        </FormField>
+
                         {/* 26 - Descrição (busca principal) */}
                         <FormField
                           label="26 - Descrição"
                           required
                           labelClassName="lg:hidden"
-                          className="min-w-0 lg:space-y-0"
+                          className="mt-3 min-w-0 lg:mt-0 lg:space-y-0"
                         >
                           <Combobox
                             value={
@@ -1623,22 +1645,6 @@ function EmitirPage() {
                             searchPlaceholder="Digite o código ou a descrição..."
                             emptyMessage="Nenhum procedimento encontrado."
                             clearable
-                          />
-                        </FormField>
-
-                        {/* 25 - Código */}
-                        <FormField
-                          label="25 - Código"
-                          required
-                          labelClassName="lg:hidden"
-                          className="mt-3 lg:mt-0 lg:space-y-0"
-                        >
-                          <Input
-                            value={p.code}
-                            onChange={(e) => updateProcedure(p.id, { code: e.target.value })}
-                            aria-label="25 - Código do Procedimento ou Item Assistencial"
-                            placeholder="Código TUSS"
-                            className="font-mono"
                           />
                         </FormField>
 
@@ -1663,10 +1669,7 @@ function EmitirPage() {
                           />
                         </FormField>
 
-                        {/* 24 - Tabela e 28 - Qtde. Autorizada (somente leitura) */}
-                        <div className="hidden lg:block text-center font-mono text-sm text-muted-foreground">
-                          22
-                        </div>
+                        {/* 28 - Qtde. Autorizada (operadora) */}
                         <div className="hidden lg:block text-center text-sm text-muted-foreground">
                           —
                         </div>
@@ -1674,6 +1677,7 @@ function EmitirPage() {
                           24 - Tabela: <span className="font-mono">22</span> · 28 - Qtde. Aut.: —
                           (operadora)
                         </p>
+
 
                         <div className="hidden lg:flex lg:justify-end">
                           <Button
