@@ -1444,9 +1444,23 @@ function EmitirPage() {
                 done={clinicoOk}
                 icon={<FileText className="h-4 w-4" />}
                 title="Dados clínicos"
-                description="Campo 23 da guia — indicação clínica e justificativa técnica."
+                description="Campos 21 a 23 da guia — solicitação e indicação clínica."
               >
-                <Grid cols={2}>
+                <Grid cols={3}>
+                  <SelectField
+                    label="21 - Caráter do Atendimento"
+                    required
+                    value={character}
+                    onValueChange={setCharacter}
+                    options={CHARACTER_OPTIONS.map((c) => ({ value: c, label: c }))}
+                  />
+                  <Field label="22 - Data da Solicitação">
+                    <Input
+                      type="date"
+                      value={dataSolicitacao}
+                      onChange={(e) => setDataSolicitacao(e.target.value)}
+                    />
+                  </Field>
                   <Field label="CID principal">
                     <Combobox
                       value={cidPrincipal}
@@ -1459,6 +1473,7 @@ function EmitirPage() {
                     />
                   </Field>
                 </Grid>
+
                 <Field label="23 - Indicação Clínica" required>
                   <Textarea
                     rows={3}
