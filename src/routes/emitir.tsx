@@ -1885,8 +1885,7 @@ function EmitirPage() {
                   ...(guideKind === "aih" ? [{ label: "AIH", done: especificoOk }] : []),
                   { label: "Beneficiário", done: pacienteOk },
                   { label: "Profissional", done: profissionalOk },
-                  { label: "Dados da Solicitação", done: clinicoOk },
-                  { label: "Procedimentos", done: procedimentosOk },
+                  { label: "Dados da Solicitação", done: clinicoOk && procedimentosOk },
                   { label: "Executante", done: executanteOk },
                   { label: "OPME (opcional)", done: opmeOk },
                 ]}
