@@ -34,8 +34,11 @@ interface ProfessionalPickerProps {
  */
 export function ProfessionalPicker({ value, onChange, children, labels }: ProfessionalPickerProps) {
   const manual = isManual(value);
+  const { markTouched, errorFor, resetTouched } = useTouchedFields<ProfessionalField>();
+  const errors = validateProfessional(value);
 
   const handleSelect = (id: string) => {
+    resetTouched();
     const found = PROFESSIONALS.find((p) => p.id === id);
     if (found) {
       onChange({ ...found });
@@ -49,6 +52,7 @@ export function ProfessionalPicker({ value, onChange, children, labels }: Profes
       especialidade: "",
     });
   };
+
 
   return (
     <div className="space-y-4">
