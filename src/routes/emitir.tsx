@@ -773,9 +773,8 @@ function EmitirPage() {
     "profissional",
     "clinico",
     "executante",
-    // Posição reservada ao quadro "Procedimentos e exames realizados" (36-56)
-    // da guia impressa, para que OPME siga como tópico 7.
-    "realizados",
+    "atendimento",
+
     "opme",
   ];
 
