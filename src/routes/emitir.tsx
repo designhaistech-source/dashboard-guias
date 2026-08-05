@@ -1040,7 +1040,6 @@ function EmitirPage() {
                       />
                     </Field>
                   </Grid>
-                  </Grid>
 
                   <div className="mt-5 space-y-4 border-t pt-5">
                     <p className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
