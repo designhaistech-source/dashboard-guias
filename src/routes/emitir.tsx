@@ -1053,13 +1053,6 @@ function EmitirPage() {
                           placeholder="Guia de internação vinculada"
                         />
                       </Field>
-                      <Field label="7 - Número da Guia Atribuído pela Operadora">
-                        <Input
-                          value={guiaOperadora}
-                          onChange={(e) => setGuiaOperadora(e.target.value)}
-                          placeholder="Informado pela operadora"
-                        />
-                      </Field>
                       <Field label="4 - Data da Autorização">
                         <Input
                           type="date"
@@ -1079,6 +1072,13 @@ function EmitirPage() {
                           type="date"
                           value={validadeSenha}
                           onChange={(e) => setValidadeSenha(e.target.value)}
+                        />
+                      </Field>
+                      <Field label="7 - Número da Guia Atribuído pela Operadora">
+                        <Input
+                          value={guiaOperadora}
+                          onChange={(e) => setGuiaOperadora(e.target.value)}
+                          placeholder="Informado pela operadora"
                         />
                       </Field>
                     </Grid>
