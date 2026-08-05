@@ -2341,6 +2341,36 @@ function EmitirPage() {
                     ))}
                   </div>
                 )}
+
+                <div className="mt-5 border-t pt-5">
+                  <p className="mb-3 text-xs font-medium text-muted-foreground">
+                    56 - Data de Realização de Procedimentos em Série
+                  </p>
+                  <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
+                    {serieDates.map((d, i) => (
+                      <Field key={i} label={`${i + 1}ª data`}>
+                        <Input
+                          type="date"
+                          value={d}
+                          onChange={(e) =>
+                            setSerieDates((l) =>
+                              l.map((v, j) => (j === i ? e.target.value : v)),
+                            )
+                          }
+                        />
+                      </Field>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="mt-5 border-t pt-5">
+                  <SignatureField
+                    label="57 - Assinatura do Beneficiário ou Responsável"
+                    value={assinaturaBeneficiario}
+                    onChange={setAssinaturaBeneficiario}
+                    hint="Opcional: desenhe ou envie a assinatura para sair impressa no campo 57. Deixe em branco para assinar à mão no papel."
+                  />
+                </div>
               </Section>
 
               {/* OPME */}
