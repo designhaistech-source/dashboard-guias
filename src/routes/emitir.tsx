@@ -2405,7 +2405,100 @@ function EmitirPage() {
                 </FormField>
               </Section>
 
+              {/* Valores totais e assinaturas */}
+
+              <Section
+                number={stepNumber("financeiro")}
+                done={financeiroOk}
+                icon={<FileText className="h-4 w-4" />}
+                title="Valores Totais e Assinaturas"
+                description="Campos 59 a 68 — totais do quadro financeiro e assinaturas da guia."
+              >
+                <div className="space-y-6">
+                  <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                    <FormField label="59 - Total de Procedimentos (R$)" hint="Calculado a partir dos procedimentos realizados (campo 47).">
+                      <Input value={formatMoney(totalProcedimentos)} disabled className="font-mono text-right" />
+                    </FormField>
+                    <FormField label="60 - Total de Taxas e Aluguéis (R$)">
+                      <Input
+                        value={totalTaxas}
+                        onChange={(e) => setTotalTaxas(e.target.value)}
+                        placeholder="0,00"
+                        inputMode="decimal"
+                        className="font-mono text-right"
+                      />
+                    </FormField>
+                    <FormField label="61 - Total de Materiais (R$)">
+                      <Input
+                        value={totalMateriais}
+                        onChange={(e) => setTotalMateriais(e.target.value)}
+                        placeholder="0,00"
+                        inputMode="decimal"
+                        className="font-mono text-right"
+                      />
+                    </FormField>
+                    <FormField label="62 - Total de OPME (R$)">
+                      <Input
+                        value={totalOpme}
+                        onChange={(e) => setTotalOpme(e.target.value)}
+                        placeholder="0,00"
+                        inputMode="decimal"
+                        className="font-mono text-right"
+                      />
+                    </FormField>
+                    <FormField label="63 - Total de Medicamentos (R$)">
+                      <Input
+                        value={totalMedicamentos}
+                        onChange={(e) => setTotalMedicamentos(e.target.value)}
+                        placeholder="0,00"
+                        inputMode="decimal"
+                        className="font-mono text-right"
+                      />
+                    </FormField>
+                    <FormField label="64 - Total de Gases Medicinais (R$)">
+                      <Input
+                        value={totalGases}
+                        onChange={(e) => setTotalGases(e.target.value)}
+                        placeholder="0,00"
+                        inputMode="decimal"
+                        className="font-mono text-right"
+                      />
+                    </FormField>
+                  </div>
+
+                  <div className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-border bg-muted/40 px-4 py-3">
+                    <span className="text-sm font-medium text-foreground">65 - Total Geral (R$)</span>
+                    <span className="font-mono text-lg font-semibold text-foreground">
+                      {formatMoney(totalGeral)}
+                    </span>
+                  </div>
+
+                  <div className="grid gap-4 lg:grid-cols-3">
+                    <SignatureField
+                      label="66 - Assinatura do Responsável pela Autorização"
+                      value={assinaturaAutorizacao}
+                      onChange={setAssinaturaAutorizacao}
+                      hint="Opcional: deixe em branco para assinar à mão no papel."
+                    />
+                    <SignatureField
+                      label="67 - Assinatura do Beneficiário ou Responsável"
+                      value={assinaturaBeneficiarioFinal}
+                      onChange={setAssinaturaBeneficiarioFinal}
+                      hint="Opcional: deixe em branco para assinar à mão no papel."
+                    />
+                    <SignatureField
+                      label="68 - Assinatura do Contratado"
+                      value={assinaturaContratado}
+                      onChange={setAssinaturaContratado}
+                      hint="Opcional: deixe em branco para assinar à mão no papel."
+                    />
+                  </div>
+                </div>
+              </Section>
+
               {/* OPME */}
+
+
 
 
               <Section
