@@ -1608,9 +1608,16 @@ function EmitirPage() {
                   {/* Rótulos das colunas (campos 25 a 27) — visíveis no desktop */}
                   <div className="hidden lg:grid lg:grid-cols-12 gap-2 text-xs font-medium text-muted-foreground">
                     <div className="lg:col-span-1" />
-                    <div className="lg:col-span-3">25 - Código do Procedimento *</div>
-                    <div className="lg:col-span-6">26 - Descrição *</div>
-                    <div className="lg:col-span-1">27 - Qtde. Solic. *</div>
+                    <div className="lg:col-span-3">
+                      25 - Código do Procedimento ou Item Assistencial{" "}
+                      <span className="text-destructive">*</span>
+                    </div>
+                    <div className="lg:col-span-6">
+                      26 - Descrição <span className="text-destructive">*</span>
+                    </div>
+                    <div className="lg:col-span-1">
+                      27 - Qtde. Solic. <span className="text-destructive">*</span>
+                    </div>
                     <div className="lg:col-span-1" />
                   </div>
 
@@ -1635,7 +1642,7 @@ function EmitirPage() {
                           <Input
                             value={p.code}
                             onChange={(e) => updateProcedure(p.id, { code: e.target.value })}
-                            aria-label={`25 - Código do Procedimento (item ${idx + 1})`}
+                            aria-label="25 - Código do Procedimento ou Item Assistencial"
                             placeholder="Código TUSS"
                           />
                         </div>
@@ -1664,7 +1671,7 @@ function EmitirPage() {
                           <Input
                             type="number"
                             min={1}
-                            aria-label={`27 - Qtde. Solic. (item ${idx + 1})`}
+                            aria-label="27 - Qtde. Solic."
                             value={p.quantity}
                             onChange={(e) =>
                               updateProcedure(p.id, {
