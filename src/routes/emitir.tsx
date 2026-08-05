@@ -900,6 +900,7 @@ function EmitirPage() {
     "realizados",
     "executantes",
     "observacao",
+    "financeiro",
     "opme",
   ];
 
@@ -924,6 +925,7 @@ function EmitirPage() {
   const realizadosOk = executedItems.some((i) => i.description.trim() || i.code.trim());
   const executantesOk = executantes.some((e) => e.name.trim() && e.councilNumber.trim());
   const observacaoOk = Boolean(observacoes.trim());
+  const financeiroOk = totalGeral > 0;
 
 
 
