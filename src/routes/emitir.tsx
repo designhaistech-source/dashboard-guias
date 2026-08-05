@@ -1621,14 +1621,14 @@ function EmitirPage() {
                         onDragOver={onDragOver}
                         onDrop={() => onDrop(p.id)}
                         className={cn(
-                          "grid grid-cols-[28px_1fr_auto] items-end gap-2 rounded-md border p-2 lg:grid-cols-12 lg:border-0 lg:p-0",
+                          "grid grid-cols-[28px_1fr_auto] items-center gap-2 rounded-md border p-2 lg:grid-cols-[28px_minmax(0,180px)_minmax(0,1fr)_96px_40px] lg:gap-3 lg:border-0 lg:p-0",
                           dragId === p.id && "opacity-50",
                         )}
                       >
-                        <div className="row-span-3 flex cursor-grab items-center justify-center self-center text-muted-foreground active:cursor-grabbing lg:row-span-1 lg:col-span-1 lg:self-end lg:pb-2">
+                        <div className="row-span-3 flex cursor-grab items-center justify-center self-center text-muted-foreground active:cursor-grabbing lg:row-span-1">
                           <GripVertical className="h-4 w-4" />
                         </div>
-                        <div className="col-span-2 lg:col-span-3">
+                        <div className="col-span-2 min-w-0 lg:col-span-1">
                           <Input
                             value={p.code}
                             onChange={(e) => updateProcedure(p.id, { code: e.target.value })}
@@ -1636,7 +1636,7 @@ function EmitirPage() {
                             placeholder="Código TUSS"
                           />
                         </div>
-                        <div className="col-span-2 lg:col-span-6">
+                        <div className="col-span-2 min-w-0 lg:col-span-1">
                           <Combobox
                             value={
                               TUSS.some((t) => t.descricao === p.description)
@@ -1661,7 +1661,8 @@ function EmitirPage() {
                           <Input
                             type="number"
                             min={1}
-                            aria-label="27 - Qtde. Solic."
+                            aria-label="27 - Qtde. Solicitada"
+                            className="text-center"
                             value={p.quantity}
                             onChange={(e) =>
                               updateProcedure(p.id, {
@@ -1670,7 +1671,7 @@ function EmitirPage() {
                             }
                           />
                         </div>
-                        <div className="col-span-1 flex justify-end lg:col-span-1">
+                        <div className="col-span-1 flex justify-end">
                           <Button
                             type="button"
                             variant="ghost"
@@ -1682,6 +1683,7 @@ function EmitirPage() {
                             <Trash2 className="h-4 w-4 text-destructive" />
                           </Button>
                         </div>
+
                       </div>
                     ))}
                   </div>
