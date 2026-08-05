@@ -1271,31 +1271,6 @@ function EmitirPage() {
                       { value: "S", label: "Sim" },
                     ]}
                   />
-                  <Field label="CPF">
-                    <Input
-                      value={pacienteCpf}
-                      onChange={(e) => setPacienteCpf(e.target.value)}
-                      placeholder="000.000.000-00"
-                    />
-                  </Field>
-                  <Field label="Data de nascimento">
-                    <Input
-                      type="date"
-                      value={pacienteNascimento}
-                      onChange={(e) => setPacienteNascimento(e.target.value)}
-                    />
-                  </Field>
-                  <SelectField
-                    label="Sexo"
-                    labelClassName="text-xs font-medium text-muted-foreground"
-                    value={pacienteSexo}
-                    onValueChange={setPacienteSexo}
-                    options={[
-                      { value: "F", label: "Feminino" },
-                      { value: "M", label: "Masculino" },
-                      { value: "O", label: "Outro" },
-                    ]}
-                  />
                 </Grid>
 
               </Section>
