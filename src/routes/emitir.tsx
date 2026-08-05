@@ -2225,6 +2225,7 @@ function GuiaLivePreview(props: {
   pacienteValidadeCarteira: string;
   pacienteCns: string;
   pacienteRn: string;
+  assinaturaSolicitante: string;
   fullSize?: boolean;
 }) {
   const {
