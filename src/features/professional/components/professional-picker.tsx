@@ -38,8 +38,11 @@ export function ProfessionalPicker({ value, onChange, children, labels }: Profes
   const { markTouched, errorFor, resetTouched } = useTouchedFields<ProfessionalField>();
   const errors = validateProfessional(value);
   const [open, setOpen] = useState(false);
+  const [manualMode, setManualMode] = useState(false);
   const blurTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const numeroRef = useRef<HTMLInputElement>(null);
+  const nomeRef = useRef<HTMLInputElement>(null);
+
 
 
   const query = value.nome.trim();
