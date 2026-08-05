@@ -136,12 +136,9 @@ export function ProfessionalPicker({ value, onChange, children, labels }: Profes
               >
                 {suggestions.length === 0 && (
                   <li className="px-2 py-1.5 text-xs text-muted-foreground">
-                    Nenhum profissional cadastrado com esse nome.
+                    Nenhum cadastro com esse nome. O nome digitado será usado nesta guia.
                   </li>
                 )}
-
-
-
 
                 {suggestions.map((p) => {
                   const active = p.id === value.id;
@@ -172,26 +169,7 @@ export function ProfessionalPicker({ value, onChange, children, labels }: Profes
                     </li>
                   );
                 })}
-                <li className="mt-1 border-t border-border pt-1">
-                  <button /* ds-allow: opção de lista de sugestões */
-                    type="button"
-                    role="option"
-                    aria-selected={isManualName}
-                    onMouseDown={(e) => e.preventDefault()}
-                    onClick={startManual}
-                    className="flex w-full items-center gap-2 rounded-sm px-2 py-1.5 text-left text-sm hover:bg-accent hover:text-accent-foreground focus-visible:bg-accent focus-visible:outline-none"
-                  >
-                    <UserPlus className="h-4 w-4 shrink-0 text-primary" aria-hidden />
-                    <span className="min-w-0">
-                      <span className="block truncate">
-                        {query ? `Cadastrar “${query}” manualmente` : "Informar outro profissional manualmente"}
-                      </span>
-                      <span className="block text-xs text-muted-foreground">
-                        Você preenche conselho e número à mão.
-                      </span>
-                    </span>
-                  </button>
-                </li>
+
               </ul>
 
             )}
