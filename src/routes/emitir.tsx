@@ -56,9 +56,12 @@ import {
   ProfessionalPicker,
   councilLabel,
   defaultProfessionalValue,
+  isProfessionalValid,
   parseCouncil,
+  validateProfessional,
   type ProfessionalValue,
 } from "@/features/professional";
+
 
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
