@@ -639,6 +639,8 @@ function EmitirPage() {
 
   // Formulário inline "criar kit" (rodapé do tópico 4)
   const [kitName, setKitName] = useState("");
+  const [kitFormOpen, setKitFormOpen] = useState(false);
+
   const filledProcedures = useMemo(
     () => procedures.filter((p) => p.code.trim() && p.description.trim()),
     [procedures],
