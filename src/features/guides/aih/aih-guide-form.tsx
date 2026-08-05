@@ -86,10 +86,14 @@ const UF_OPTIONS = [
 
 function Grid({ cols, children }: { cols: 2 | 3; children: React.ReactNode }) {
   return (
-    <div
-      className={`@container grid gap-4 ${cols === 2 ? "@md:grid-cols-2" : "@md:grid-cols-2 @3xl:grid-cols-3"}`}
-    >
-      {children}
+    <div className="@container">
+      <div
+        className={`grid gap-4 ${
+          cols === 2 ? "@md:grid-cols-2" : "@md:grid-cols-2 @3xl:grid-cols-3"
+        }`}
+      >
+        {children}
+      </div>
     </div>
   );
 }
@@ -633,7 +637,7 @@ export function AihGuideForm({ header }: AihGuideFormProps) {
             />
           </Field>
         </Grid>
-        <div className="mt-5 grid gap-4 border-t pt-5 @3xl:grid-cols-2">
+        <div className="mt-5 grid gap-4 border-t pt-5 lg:grid-cols-2">
           <SignatureField
             label="35 - Assinatura e Carimbo (Nº do Registro do Conselho)"
             value={assinaturaSolicitante}
@@ -773,7 +777,7 @@ export function AihGuideForm({ header }: AihGuideFormProps) {
             />
           </Field>
         </Grid>
-        <div className="mt-5 grid gap-4 border-t pt-5 @3xl:grid-cols-2">
+        <div className="mt-5 grid gap-4 border-t pt-5 lg:grid-cols-2">
           <SignatureField
             label="51 - Assinatura e Carimbo (Nº do Registro do Conselho)"
             value={assinaturaAutorizador}

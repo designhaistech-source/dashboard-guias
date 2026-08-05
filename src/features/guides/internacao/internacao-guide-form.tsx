@@ -105,10 +105,14 @@ function newItem(): RequestedItem {
 
 function Grid({ cols, children }: { cols: 2 | 3; children: React.ReactNode }) {
   return (
-    <div
-      className={`@container grid gap-4 ${cols === 2 ? "@md:grid-cols-2" : "@md:grid-cols-2 @3xl:grid-cols-3"}`}
-    >
-      {children}
+    <div className="@container">
+      <div
+        className={`grid gap-4 ${
+          cols === 2 ? "@md:grid-cols-2" : "@md:grid-cols-2 @3xl:grid-cols-3"
+        }`}
+      >
+        {children}
+      </div>
     </div>
   );
 }
@@ -636,7 +640,7 @@ export function InternacaoGuideForm({
             icon={<ClipboardList className="h-8 w-8" />}
           />
         ) : (
-          <div className="space-y-3">
+          <div className="space-y-3 @container">
             <div className="hidden gap-3 px-1 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground @3xl:grid @3xl:grid-cols-[110px_130px_1fr_90px_90px_40px]">
               <span>34 - Tabela</span>
               <span>35 - Código</span>
@@ -801,7 +805,7 @@ export function InternacaoGuideForm({
           </Grid>
         </div>
 
-        <div className="mt-5 grid gap-4 border-t pt-5 @3xl:grid-cols-3">
+        <div className="mt-5 grid gap-4 border-t pt-5 lg:grid-cols-3">
           <SignatureField
             label="47 - Assinatura do Profissional Solicitante"
             value={assinaturaProfissional}
