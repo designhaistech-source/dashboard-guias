@@ -2421,11 +2421,10 @@ function EmitirPage() {
                   </div>
                 )}
 
-                <div className="mt-5 border-t pt-5">
+                <div className="mt-5 border-t pt-5 @container">
                   <p className="mb-3 text-xs font-medium text-muted-foreground">
                     56 - Data de Realização de Procedimentos em Série
                   </p>
-                  <div className="@container">
                   <div className="grid grid-cols-2 gap-3 @sm:grid-cols-3 @2xl:grid-cols-5">
                     {serieDates.map((d, i) => (
                       <Field key={i} label={`${i + 1}ª data`}>
