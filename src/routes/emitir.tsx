@@ -352,6 +352,10 @@ function EmitirPage() {
   const medicoNome = profissional.nome;
   const medicoCrm = councilLabel(profissional);
   const medicoEspecialidade = profissional.especialidade;
+  /** Campos 15, 16 e 17 precisam estar válidos antes de imprimir ou gerar o PDF. */
+  const profissionalErrors = validateProfessional(profissional);
+  const profissionalValido = isProfessionalValid(profissional);
+
 
   /** Preferências salvas sobrescrevem o profissional como preenchimento manual. */
   const applyPrefsToProfissional = (prestador?: string, matricula?: string) => {
