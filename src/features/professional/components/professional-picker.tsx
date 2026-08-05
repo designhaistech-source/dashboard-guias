@@ -1,5 +1,5 @@
 import { useMemo, useRef, useState, type ReactNode } from "react";
-import { Check, ChevronDown, UserPlus } from "lucide-react";
+import { Check, ChevronDown } from "lucide-react";
 
 import { Field, SelectField } from "@/components/form-field";
 import { Input } from "@/components/ui/input";
@@ -45,14 +45,11 @@ export function ProfessionalPicker({ value, onChange, children, labels }: Profes
   const query = value.nome.trim();
   const suggestions = useMemo(() => {
     const q = query.toLowerCase();
-    // Nome idêntico a um cadastro: comporta-se como seletor e lista todos.
+    if (!q) return PROFESSIONALS;
     const exact = PROFESSIONALS.some((p) => p.nome.toLowerCase() === q);
-    if (!q || exact) return PROFESSIONALS;
+    if (exact) return PROFESSIONALS;
     return PROFESSIONALS.filter((p) => p.nome.toLowerCase().includes(q));
   }, [query]);
-
-  const isManualName =
-    query.length > 0 && !PROFESSIONALS.some((p) => p.nome.toLowerCase() === query.toLowerCase());
 
   const selectProfessional = (id: string) => {
     const found = PROFESSIONALS.find((p) => p.id === id);
@@ -60,16 +57,9 @@ export function ProfessionalPicker({ value, onChange, children, labels }: Profes
     resetTouched();
     onChange({ ...found });
     setOpen(false);
+    requestAnimationFrame(() => numeroRef.current?.blur());
   };
 
-  /** Sai do cadastro e libera conselho/número para digitação livre. */
-  const startManual = () => {
-    if (blurTimer.current) clearTimeout(blurTimer.current);
-    resetTouched();
-    onChange({ id: MANUAL_PROFESSIONAL_ID, nome: query, conselho: "CRM", numero: "", especialidade: "" });
-    setOpen(false);
-    requestAnimationFrame(() => numeroRef.current?.focus());
-  };
 
   const handleNameChange = (raw: string) => {
     const nome = maskProfessionalName(raw);
@@ -90,7 +80,7 @@ export function ProfessionalPicker({ value, onChange, children, labels }: Profes
           label={labels?.nome ?? "Nome do profissional"}
           required
           error={errorFor("nome", errors.nome)}
-          hint="Digite o nome: escolha um profissional cadastrado ou informe um novo."
+          hint="Digite para buscar um cadastro ou informe um nome novo — conselho e número seguem editáveis."
 
 
           className="relative"
@@ -136,12 +126,9 @@ export function ProfessionalPicker({ value, onChange, children, labels }: Profes
               >
                 {suggestions.length === 0 && (
                   <li className="px-2 py-1.5 text-xs text-muted-foreground">
-                    Nenhum profissional cadastrado com esse nome.
+                    Nenhum cadastro com esse nome. O nome digitado será usado nesta guia.
                   </li>
                 )}
-
-
-
 
                 {suggestions.map((p) => {
                   const active = p.id === value.id;
@@ -172,26 +159,7 @@ export function ProfessionalPicker({ value, onChange, children, labels }: Profes
                     </li>
                   );
                 })}
-                <li className="mt-1 border-t border-border pt-1">
-                  <button /* ds-allow: opção de lista de sugestões */
-                    type="button"
-                    role="option"
-                    aria-selected={isManualName}
-                    onMouseDown={(e) => e.preventDefault()}
-                    onClick={startManual}
-                    className="flex w-full items-center gap-2 rounded-sm px-2 py-1.5 text-left text-sm hover:bg-accent hover:text-accent-foreground focus-visible:bg-accent focus-visible:outline-none"
-                  >
-                    <UserPlus className="h-4 w-4 shrink-0 text-primary" aria-hidden />
-                    <span className="min-w-0">
-                      <span className="block truncate">
-                        {query ? `Cadastrar “${query}” manualmente` : "Informar outro profissional manualmente"}
-                      </span>
-                      <span className="block text-xs text-muted-foreground">
-                        Você preenche conselho e número à mão.
-                      </span>
-                    </span>
-                  </button>
-                </li>
+
               </ul>
 
             )}
