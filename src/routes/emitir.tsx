@@ -1596,24 +1596,28 @@ function EmitirPage() {
                     operadora.
                   </p>
 
-                  {/* Rótulos das colunas (campos 25 a 27) — visíveis no desktop */}
-                  <div className="hidden lg:grid lg:grid-cols-[28px_minmax(0,180px)_minmax(0,1fr)_96px_40px] gap-3 text-xs font-medium text-muted-foreground">
+                  {/* Rótulos das colunas (campos 24 a 28) — visíveis no desktop */}
+                  <div className="hidden lg:grid lg:grid-cols-[28px_72px_minmax(0,150px)_minmax(0,1fr)_84px_84px_40px] items-end gap-3 text-xs font-medium text-muted-foreground">
                     <div />
+                    <div className="truncate" title="24 - Tabela">
+                      24 - Tabela
+                    </div>
                     <div className="truncate" title="25 - Código do Procedimento ou Item Assistencial">
                       25 - Código <span className="text-destructive">*</span>
                     </div>
-                    <div className="truncate">
+                    <div className="truncate" title="26 - Descrição">
                       26 - Descrição <span className="text-destructive">*</span>
                     </div>
-                    <div className="truncate" title="27 - Qtde. Solicitada">
-                      27 - Qtde. <span className="text-destructive">*</span>
+                    <div className="truncate text-center" title="27 - Qtde. Solicitada">
+                      27 - Qtde. Solic. <span className="text-destructive">*</span>
+                    </div>
+                    <div className="truncate text-center" title="28 - Qtde. Autorizada (operadora)">
+                      28 - Qtde. Aut.
                     </div>
                     <div />
                   </div>
 
-
-                  <div className="space-y-2">
-
+                  <div className="space-y-3 lg:space-y-2">
                     {procedures.map((p, idx) => (
                       <div
                         key={p.id}
@@ -1622,22 +1626,69 @@ function EmitirPage() {
                         onDragOver={onDragOver}
                         onDrop={() => onDrop(p.id)}
                         className={cn(
-                          "grid grid-cols-[28px_1fr_auto] items-center gap-2 rounded-md border p-2 lg:grid-cols-[28px_minmax(0,180px)_minmax(0,1fr)_96px_40px] lg:gap-3 lg:border-0 lg:p-0",
+                          "rounded-lg border p-3 lg:grid lg:grid-cols-[28px_72px_minmax(0,150px)_minmax(0,1fr)_84px_84px_40px] lg:items-center lg:gap-3 lg:rounded-none lg:border-0 lg:p-0",
                           dragId === p.id && "opacity-50",
                         )}
                       >
-                        <div className="row-span-3 flex cursor-grab items-center justify-center self-center text-muted-foreground active:cursor-grabbing lg:row-span-1">
-                          <GripVertical className="h-4 w-4" />
+                        {/* Handle + remover (mobile: linha superior) */}
+                        <div className="mb-2 flex items-center justify-between lg:mb-0 lg:contents">
+                          <div className="flex cursor-grab items-center justify-center text-muted-foreground active:cursor-grabbing lg:order-none">
+                            <GripVertical className="h-4 w-4" />
+                            <span className="ml-1 text-xs font-medium lg:hidden">
+                              Item {idx + 1}
+                            </span>
+                          </div>
+                          <div className="lg:hidden">
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => removeProcedure(p.id)}
+                              disabled={procedures.length === 1}
+                              aria-label={`Remover procedimento ${idx + 1}`}
+                            >
+                              <Trash2 className="h-4 w-4 text-destructive" />
+                            </Button>
+                          </div>
                         </div>
-                        <div className="col-span-2 min-w-0 lg:col-span-1">
+
+                        {/* 24 - Tabela (automático) */}
+                        <FormField
+                          label="24 - Tabela"
+                          labelClassName="lg:hidden"
+                          className="lg:space-y-0"
+                        >
+                          <Input
+                            value="22"
+                            readOnly
+                            tabIndex={-1}
+                            aria-label="24 - Tabela"
+                            className="bg-muted text-center text-muted-foreground"
+                          />
+                        </FormField>
+
+                        {/* 25 - Código */}
+                        <FormField
+                          label={<>25 - Código</>}
+                          required
+                          labelClassName="lg:hidden"
+                          className="mt-3 lg:mt-0 lg:space-y-0"
+                        >
                           <Input
                             value={p.code}
                             onChange={(e) => updateProcedure(p.id, { code: e.target.value })}
                             aria-label="25 - Código do Procedimento ou Item Assistencial"
                             placeholder="Código TUSS"
                           />
-                        </div>
-                        <div className="col-span-2 min-w-0 lg:col-span-1">
+                        </FormField>
+
+                        {/* 26 - Descrição */}
+                        <FormField
+                          label="26 - Descrição"
+                          required
+                          labelClassName="lg:hidden"
+                          className="mt-3 min-w-0 lg:mt-0 lg:space-y-0"
+                        >
                           <Combobox
                             value={
                               TUSS.some((t) => t.descricao === p.description)
@@ -1657,8 +1708,15 @@ function EmitirPage() {
                             emptyMessage="Nenhum procedimento encontrado."
                             clearable
                           />
-                        </div>
-                        <div className="col-span-1 w-24 lg:w-auto">
+                        </FormField>
+
+                        {/* 27 - Qtde. Solicitada */}
+                        <FormField
+                          label="27 - Qtde. Solic."
+                          required
+                          labelClassName="lg:hidden"
+                          className="mt-3 lg:mt-0 lg:space-y-0"
+                        >
                           <Input
                             type="number"
                             min={1}
@@ -1671,8 +1729,25 @@ function EmitirPage() {
                               })
                             }
                           />
-                        </div>
-                        <div className="col-span-1 flex justify-end">
+                        </FormField>
+
+                        {/* 28 - Qtde. Autorizada (operadora) */}
+                        <FormField
+                          label="28 - Qtde. Aut."
+                          labelClassName="lg:hidden"
+                          className="mt-3 lg:mt-0 lg:space-y-0"
+                        >
+                          <Input
+                            value=""
+                            readOnly
+                            tabIndex={-1}
+                            placeholder="—"
+                            aria-label="28 - Qtde. Autorizada (preenchida pela operadora)"
+                            className="bg-muted text-center text-muted-foreground"
+                          />
+                        </FormField>
+
+                        <div className="hidden lg:flex lg:justify-end">
                           <Button
                             type="button"
                             variant="ghost"
@@ -1684,10 +1759,10 @@ function EmitirPage() {
                             <Trash2 className="h-4 w-4 text-destructive" />
                           </Button>
                         </div>
-
                       </div>
                     ))}
                   </div>
+
 
                   {filledProceduresCount > 1 && (
                     <div className="flex items-center justify-end gap-2 pt-2 border-t">
