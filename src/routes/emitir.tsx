@@ -56,9 +56,12 @@ import {
   ProfessionalPicker,
   councilLabel,
   defaultProfessionalValue,
+  isProfessionalValid,
   parseCouncil,
+  validateProfessional,
   type ProfessionalValue,
 } from "@/features/professional";
+
 
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
@@ -349,6 +352,10 @@ function EmitirPage() {
   const medicoNome = profissional.nome;
   const medicoCrm = councilLabel(profissional);
   const medicoEspecialidade = profissional.especialidade;
+  /** Campos 15, 16 e 17 precisam estar válidos antes de imprimir ou gerar o PDF. */
+  const profissionalErrors = validateProfessional(profissional);
+  const profissionalValido = isProfessionalValid(profissional);
+
 
   /** Preferências salvas sobrescrevem o profissional como preenchimento manual. */
   const applyPrefsToProfissional = (prestador?: string, matricula?: string) => {
@@ -753,7 +760,7 @@ function EmitirPage() {
           ? Boolean(aihCaraterEntry && aihMotivo.trim())
           : true;
   const pacienteOk = Boolean(pacienteNome.trim() && pacienteCarteira.trim());
-  const profissionalOk = Boolean(medicoNome.trim() && medicoCrm.trim());
+  const profissionalOk = profissionalValido;
   const executanteOk = Boolean(contratadoExecutante.trim() && tipoAtendimento.trim());
 
   const clinicoOk = Boolean(indicacaoClinica.trim());
@@ -2004,14 +2011,44 @@ function EmitirPage() {
               />
             </div>
           )}
+          {!profissionalValido && (
+            <p
+              id="print-disabled-hint"
+              role="alert"
+              className="flex items-start gap-2 rounded-md border border-destructive/40 bg-destructive/10 p-3 text-xs text-destructive"
+            >
+              <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" aria-hidden />
+              <span>
+                Corrija os campos 15, 16 e 17 (Dados do Solicitante) antes de imprimir ou
+                gerar o PDF:{" "}
+                {[
+                  profissionalErrors.nome && `15 — ${profissionalErrors.nome}`,
+                  profissionalErrors.conselho && `16 — ${profissionalErrors.conselho}`,
+                  profissionalErrors.numero && `17 — ${profissionalErrors.numero}`,
+                ]
+                  .filter(Boolean)
+                  .join(" ")}
+              </span>
+            </p>
+          )}
           <DialogFooter className="gap-2 sm:gap-2">
-            <Button variant="outline" onClick={() => window.print()}>
+            <Button
+              variant="outline"
+              disabled={!profissionalValido}
+              aria-describedby={profissionalValido ? undefined : "print-disabled-hint"}
+              onClick={() => window.print()}
+            >
               <Printer className="h-4 w-4" /> Imprimir
             </Button>
-            <Button onClick={() => toast.success("Download iniciado")}>
+            <Button
+              disabled={!profissionalValido}
+              aria-describedby={profissionalValido ? undefined : "print-disabled-hint"}
+              onClick={() => toast.success("Download iniciado")}
+            >
               <Download className="h-4 w-4" /> Baixar PDF
             </Button>
           </DialogFooter>
+
         </DialogContent>
       </Dialog>
 

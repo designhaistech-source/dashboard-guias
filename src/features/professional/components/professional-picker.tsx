@@ -2,9 +2,17 @@ import type { ReactNode } from "react";
 
 import { Field, SelectField } from "@/components/form-field";
 import { Input } from "@/components/ui/input";
+import { useTouchedFields } from "@/hooks/use-touched-fields";
 
 import { COUNCILS, MANUAL_PROFESSIONAL_ID, PROFESSIONALS } from "../data/professionals";
 import { isManual, type ProfessionalValue } from "../lib/professional";
+import {
+  maskCouncilNumber,
+  maskProfessionalName,
+  validateProfessional,
+  type ProfessionalField,
+} from "../lib/professional-validation";
+
 
 interface ProfessionalPickerProps {
   value: ProfessionalValue;
@@ -26,8 +34,11 @@ interface ProfessionalPickerProps {
  */
 export function ProfessionalPicker({ value, onChange, children, labels }: ProfessionalPickerProps) {
   const manual = isManual(value);
+  const { markTouched, errorFor, resetTouched } = useTouchedFields<ProfessionalField>();
+  const errors = validateProfessional(value);
 
   const handleSelect = (id: string) => {
+    resetTouched();
     const found = PROFESSIONALS.find((p) => p.id === id);
     if (found) {
       onChange({ ...found });
@@ -41,6 +52,7 @@ export function ProfessionalPicker({ value, onChange, children, labels }: Profes
       especialidade: "",
     });
   };
+
 
   return (
     <div className="space-y-4">
@@ -70,27 +82,50 @@ export function ProfessionalPicker({ value, onChange, children, labels }: Profes
       </div>
 
       <div className="grid gap-4 lg:grid-cols-2 xl:grid-cols-[1fr_140px_160px_200px]">
-        <Field id="profissional-nome" label={labels?.nome ?? "Nome do profissional"} required>
+        <Field
+          id="profissional-nome"
+          label={labels?.nome ?? "Nome do profissional"}
+          required
+          error={errorFor("nome", errors.nome)}
+          hint="Nome e sobrenome, sem números."
+        >
           <Input
             value={value.nome}
-            onChange={(e) => onChange({ ...value, nome: e.target.value })}
+            onChange={(e) => onChange({ ...value, nome: maskProfessionalName(e.target.value) })}
+            onBlur={() => markTouched("nome")}
             autoComplete="name"
+            inputMode="text"
+            maxLength={70}
           />
         </Field>
         <SelectField
           id="profissional-conselho"
           label={labels?.conselho ?? "Conselho"}
           value={value.conselho}
-          onValueChange={(conselho) => onChange({ ...value, conselho })}
+          onValueChange={(conselho) => {
+            markTouched("conselho");
+            onChange({ ...value, conselho });
+          }}
+          error={errorFor("conselho", errors.conselho)}
           options={COUNCILS.map((c) => ({ value: c, label: c }))}
         />
-        <Field id="profissional-numero" label={labels?.numero ?? "Número do conselho"} required>
+        <Field
+          id="profissional-numero"
+          label={labels?.numero ?? "Número do conselho"}
+          required
+          error={errorFor("numero", errors.numero)}
+          hint="Formato 0000/UF."
+        >
           <Input
             value={value.numero}
-            onChange={(e) => onChange({ ...value, numero: e.target.value })}
+            onChange={(e) => onChange({ ...value, numero: maskCouncilNumber(e.target.value) })}
+            onBlur={() => markTouched("numero")}
             placeholder="0000/UF"
+            inputMode="text"
+            maxLength={11}
           />
         </Field>
+
         <Field id="profissional-especialidade" label="Especialidade">
           <Input
             value={value.especialidade}

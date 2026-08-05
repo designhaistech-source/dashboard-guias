@@ -6,6 +6,15 @@ export {
   type Professional,
 } from "./data/professionals";
 export {
+  PROFESSIONAL_FIELDS,
+  UFS,
+  isProfessionalValid,
+  maskCouncilNumber,
+  maskProfessionalName,
+  validateProfessional,
+  type ProfessionalField,
+} from "./lib/professional-validation";
+export {
   councilLabel,
   defaultProfessionalValue,
   isManual,
