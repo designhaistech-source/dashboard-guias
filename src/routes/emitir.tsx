@@ -998,7 +998,7 @@ function EmitirPage() {
       <AppSidebar activeKey="emitir" />
 
       <main className="flex-1 overflow-x-hidden flex flex-col min-h-screen">
-        <div className="w-full flex-1 space-y-6 px-6 py-8 pb-16 pt-20 md:pt-8 lg:px-10">
+        <div className="w-full flex-1 space-y-6 px-4 py-6 pb-16 pt-20 sm:px-6 sm:py-8 md:pt-8 lg:px-10">
           <AppBreadcrumb />
           <PageHeader
             title="Emitir guia"
@@ -1728,8 +1728,8 @@ function EmitirPage() {
 
 
                 {/* Procedimentos solicitados (24 a 28) */}
-                <div className="mt-5 border-t pt-5 space-y-3">
-                  <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-2 sm:flex sm:justify-between">
+                <div className="mt-5 border-t pt-5 space-y-3 @container">
+                  <div className="flex flex-col gap-2 @md:flex-row @md:items-center @md:justify-between">
                     <h4 className="min-w-0 text-sm font-medium">
                       Procedimentos solicitados
                       <span className="ml-2 text-xs font-normal text-muted-foreground">
@@ -1737,10 +1737,21 @@ function EmitirPage() {
                       </span>
                     </h4>
                     <div className="flex shrink-0 items-center gap-2">
-                      <Button type="button" size="sm" variant="outline" onClick={clearProcedures}>
+                      <Button
+                        type="button"
+                        size="sm"
+                        variant="outline"
+                        onClick={clearProcedures}
+                        className="flex-1 justify-center @md:flex-none"
+                      >
                         Limpar
                       </Button>
-                      <Button type="button" size="sm" onClick={addProcedure}>
+                      <Button
+                        type="button"
+                        size="sm"
+                        onClick={addProcedure}
+                        className="flex-1 justify-center @md:flex-none"
+                      >
                         <Plus className="h-4 w-4" /> Adicionar
                       </Button>
                     </div>
@@ -1782,7 +1793,7 @@ function EmitirPage() {
 
 
                   {/* Rótulos das colunas (campos 24 a 28) — visíveis no desktop */}
-                  <div className="hidden lg:grid lg:grid-cols-[28px_56px_128px_minmax(0,1fr)_80px_80px_40px] items-end gap-3 text-xs font-medium text-muted-foreground">
+                  <div className="hidden @3xl:grid @3xl:grid-cols-[28px_56px_128px_minmax(0,1fr)_80px_80px_40px] items-end gap-3 text-xs font-medium text-muted-foreground">
                     <div />
                     <div className="truncate text-center" title="24 - Tabela">
                       24 - Tab.
@@ -1803,7 +1814,7 @@ function EmitirPage() {
                   </div>
 
 
-                  <div className="space-y-3 lg:space-y-2">
+                  <div className="space-y-3 @3xl:space-y-2">
                     {procedures.map((p, idx) => (
                       <div
                         key={p.id}
@@ -1812,19 +1823,19 @@ function EmitirPage() {
                         onDragOver={onDragOver}
                         onDrop={() => onDrop(p.id)}
                         className={cn(
-                          "rounded-lg border p-3 lg:grid lg:grid-cols-[28px_56px_128px_minmax(0,1fr)_80px_80px_40px] lg:items-center lg:gap-3 lg:rounded-none lg:border-0 lg:p-0",
+                          "rounded-lg border p-3 @3xl:grid @3xl:grid-cols-[28px_56px_128px_minmax(0,1fr)_80px_80px_40px] @3xl:items-center @3xl:gap-3 @3xl:rounded-none @3xl:border-0 @3xl:p-0",
                           dragId === p.id && "opacity-50",
                         )}
                       >
                         {/* Handle + remover (mobile: linha superior) */}
-                        <div className="mb-2 flex items-center justify-between lg:mb-0 lg:contents">
+                        <div className="mb-2 flex items-center justify-between @3xl:mb-0 @3xl:contents">
                           <div className="flex cursor-grab items-center justify-center text-muted-foreground active:cursor-grabbing">
                             <GripVertical className="h-4 w-4" />
-                            <span className="ml-1 text-xs font-medium lg:hidden">
+                            <span className="ml-1 text-xs font-medium @3xl:hidden">
                               Item {idx + 1}
                             </span>
                           </div>
-                          <div className="lg:hidden">
+                          <div className="@3xl:hidden">
                             <Button
                               type="button"
                               variant="ghost"
@@ -1839,7 +1850,7 @@ function EmitirPage() {
                         </div>
 
                         {/* 24 - Tabela (somente leitura) */}
-                        <div className="hidden lg:block text-center font-mono text-sm text-muted-foreground">
+                        <div className="hidden @3xl:block text-center font-mono text-sm text-muted-foreground">
                           22
                         </div>
 
@@ -1847,8 +1858,8 @@ function EmitirPage() {
                         <FormField
                           label="25 - Código"
                           required
-                          labelClassName="lg:hidden"
-                          className="min-w-0 lg:space-y-0"
+                          labelClassName="@3xl:hidden"
+                          className="min-w-0 @3xl:space-y-0"
                         >
                           <Input
                             value={p.code}
@@ -1863,8 +1874,8 @@ function EmitirPage() {
                         <FormField
                           label="26 - Descrição"
                           required
-                          labelClassName="lg:hidden"
-                          className="mt-3 min-w-0 lg:mt-0 lg:space-y-0"
+                          labelClassName="@3xl:hidden"
+                          className="mt-3 min-w-0 @3xl:mt-0 @3xl:space-y-0"
                         >
                           <Combobox
                             value={
@@ -1891,8 +1902,8 @@ function EmitirPage() {
                         <FormField
                           label="27 - Qtde. Solic."
                           required
-                          labelClassName="lg:hidden"
-                          className="mt-3 lg:mt-0 lg:space-y-0"
+                          labelClassName="@3xl:hidden"
+                          className="mt-3 @3xl:mt-0 @3xl:space-y-0"
                         >
                           <Input
                             type="number"
@@ -1909,16 +1920,16 @@ function EmitirPage() {
                         </FormField>
 
                         {/* 28 - Qtde. Autorizada (operadora) */}
-                        <div className="hidden lg:block text-center text-sm text-muted-foreground">
+                        <div className="hidden @3xl:block text-center text-sm text-muted-foreground">
                           —
                         </div>
-                        <p className="mt-3 text-xs text-muted-foreground lg:hidden">
+                        <p className="mt-3 text-xs text-muted-foreground @3xl:hidden">
                           24 - Tabela: <span className="font-mono">22</span> · 28 - Qtde. Aut.: —
                           (operadora)
                         </p>
 
 
-                        <div className="hidden lg:flex lg:justify-end">
+                        <div className="hidden @3xl:flex @3xl:justify-end">
                           <Button
                             type="button"
                             variant="ghost"
@@ -2410,11 +2421,11 @@ function EmitirPage() {
                   </div>
                 )}
 
-                <div className="mt-5 border-t pt-5">
+                <div className="mt-5 border-t pt-5 @container">
                   <p className="mb-3 text-xs font-medium text-muted-foreground">
                     56 - Data de Realização de Procedimentos em Série
                   </p>
-                  <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
+                  <div className="grid grid-cols-2 gap-3 @sm:grid-cols-3 @2xl:grid-cols-5">
                     {serieDates.map((d, i) => (
                       <Field key={i} label={`${i + 1}ª data`}>
                         <Input
@@ -2472,8 +2483,8 @@ function EmitirPage() {
                 title="Valores Totais e Assinaturas"
                 description="Campos 59 a 68 — totais do quadro financeiro e assinaturas da guia."
               >
-                <div className="space-y-6">
-                  <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                <div className="space-y-6 @container">
+                  <div className="grid gap-4 @sm:grid-cols-2 @3xl:grid-cols-3">
                     <FormField label="59 - Total de Procedimentos (R$)" hint="Calculado a partir dos procedimentos realizados (campo 47).">
                       <Input value={formatMoney(totalProcedimentos)} disabled className="font-mono text-right" />
                     </FormField>
@@ -2531,7 +2542,7 @@ function EmitirPage() {
                     </span>
                   </div>
 
-                  <div className="grid gap-4 lg:grid-cols-3">
+                  <div className="grid gap-4 @3xl:grid-cols-3">
                     <SignatureField
                       label="66 - Assinatura do Responsável pela Autorização"
                       value={assinaturaAutorizacao}
@@ -2877,10 +2888,14 @@ function Section({
 
 function Grid({ cols, children }: { cols: 2 | 3; children: React.ReactNode }) {
   return (
-    <div
-      className={`grid gap-4 ${cols === 2 ? "lg:grid-cols-2" : "lg:grid-cols-2 xl:grid-cols-3"}`}
-    >
-      {children}
+    <div className="@container">
+      <div
+        className={`grid gap-4 ${
+          cols === 2 ? "@md:grid-cols-2" : "@md:grid-cols-2 @3xl:grid-cols-3"
+        }`}
+      >
+        {children}
+      </div>
     </div>
   );
 }

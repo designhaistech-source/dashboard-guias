@@ -86,10 +86,14 @@ const UF_OPTIONS = [
 
 function Grid({ cols, children }: { cols: 2 | 3; children: React.ReactNode }) {
   return (
-    <div
-      className={`grid gap-4 ${cols === 2 ? "lg:grid-cols-2" : "lg:grid-cols-2 xl:grid-cols-3"}`}
-    >
-      {children}
+    <div className="@container">
+      <div
+        className={`grid gap-4 ${
+          cols === 2 ? "@md:grid-cols-2" : "@md:grid-cols-2 @3xl:grid-cols-3"
+        }`}
+      >
+        {children}
+      </div>
     </div>
   );
 }

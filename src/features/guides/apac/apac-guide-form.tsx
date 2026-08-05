@@ -66,10 +66,14 @@ function newSecondary(): SecondaryProcedure {
 
 function Grid({ cols, children }: { cols: 2 | 3; children: React.ReactNode }) {
   return (
-    <div
-      className={`grid gap-4 ${cols === 2 ? "lg:grid-cols-2" : "lg:grid-cols-2 xl:grid-cols-3"}`}
-    >
-      {children}
+    <div className="@container">
+      <div
+        className={`grid gap-4 ${
+          cols === 2 ? "@md:grid-cols-2" : "@md:grid-cols-2 @3xl:grid-cols-3"
+        }`}
+      >
+        {children}
+      </div>
     </div>
   );
 }
@@ -480,8 +484,8 @@ export function ApacGuideForm({ header }: ApacGuideFormProps) {
             icon={<ClipboardList className="h-8 w-8" />}
           />
         ) : (
-          <div className="space-y-3">
-            <div className="hidden gap-3 px-1 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground lg:grid lg:grid-cols-[160px_1fr_90px_40px]">
+          <div className="space-y-3 @container">
+            <div className="hidden gap-3 px-1 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground @3xl:grid @3xl:grid-cols-[160px_1fr_90px_40px]">
               <span>Código</span>
               <span>Nome do procedimento</span>
               <span className="text-center">Qtde.</span>
@@ -490,9 +494,9 @@ export function ApacGuideForm({ header }: ApacGuideFormProps) {
             {secundarios.map((item, idx) => (
               <div
                 key={item.id}
-                className="grid gap-3 rounded-lg border p-3 lg:grid-cols-[160px_1fr_90px_40px] lg:items-center lg:border-0 lg:p-0"
+                className="grid gap-3 rounded-lg border p-3 @3xl:grid-cols-[160px_1fr_90px_40px] @3xl:items-center @3xl:border-0 @3xl:p-0"
               >
-                <div className="text-xs font-semibold text-muted-foreground lg:hidden">
+                <div className="text-xs font-semibold text-muted-foreground @3xl:hidden">
                   Procedimento secundário {idx + 1}
                 </div>
                 <Input
