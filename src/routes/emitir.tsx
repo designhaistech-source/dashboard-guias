@@ -1299,7 +1299,8 @@ function EmitirPage() {
                     onClick={() => setPrefsOpen(true)}
                   >
                     <Settings2 className="h-4 w-4" />
-                    Dados padrão
+                    Meus dados padrão
+
                   </Button>
                 }
               >
