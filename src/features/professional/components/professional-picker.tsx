@@ -49,9 +49,8 @@ export function ProfessionalPicker({ value, onChange, children, labels }: Profes
     return PROFESSIONALS.filter((p) => p.nome.toLowerCase().includes(q));
   }, [query]);
 
-  const isManual = query.length > 0 && !PROFESSIONALS.some((p) => p.nome.toLowerCase() === query.toLowerCase());
-
-
+  const isManualName =
+    query.length > 0 && !PROFESSIONALS.some((p) => p.nome.toLowerCase() === query.toLowerCase());
 
   const selectProfessional = (id: string) => {
     const found = PROFESSIONALS.find((p) => p.id === id);
@@ -59,6 +58,15 @@ export function ProfessionalPicker({ value, onChange, children, labels }: Profes
     resetTouched();
     onChange({ ...found });
     setOpen(false);
+  };
+
+  /** Sai do cadastro e libera conselho/número para digitação livre. */
+  const startManual = () => {
+    if (blurTimer.current) clearTimeout(blurTimer.current);
+    resetTouched();
+    onChange({ id: MANUAL_PROFESSIONAL_ID, nome: query, conselho: "CRM", numero: "", especialidade: "" });
+    setOpen(false);
+    requestAnimationFrame(() => numeroRef.current?.focus());
   };
 
   const handleNameChange = (raw: string) => {
@@ -70,6 +78,7 @@ export function ProfessionalPicker({ value, onChange, children, labels }: Profes
     }
     onChange({ ...value, id: MANUAL_PROFESSIONAL_ID, nome });
   };
+
 
   return (
     <div className="space-y-4">
