@@ -740,8 +740,6 @@ function EmitirPage() {
     "paciente",
     "profissional",
     "clinico",
-    "kits",
-    "procedimentos",
     "executante",
     "opme",
   ];
