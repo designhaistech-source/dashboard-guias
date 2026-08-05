@@ -61,7 +61,7 @@ import {
   validateProfessional,
   type ProfessionalValue,
 } from "@/features/professional";
-import { ApacGuideForm, InternacaoGuideForm } from "@/features/guides";
+import { AihGuideForm, ApacGuideForm, InternacaoGuideForm } from "@/features/guides";
 
 
 
@@ -1148,9 +1148,27 @@ function EmitirPage() {
             />
           ) : null}
 
+          {guideKind === "aih" && convenioId === "sus" ? (
+            <AihGuideForm
+              header={
+                <div className="flex items-center gap-3">
+                  <div className="w-1 h-8 bg-primary rounded-full" />
+                  <div className="min-w-0 flex-1">
+                    <p className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+                      Formulário de emissão
+                    </p>
+                    <p className="text-sm font-semibold truncate">{guideHeaderTitle}</p>
+                  </div>
+                </div>
+              }
+            />
+          ) : null}
+
           {guideKind &&
             !(guideKind === "internacao" && convenioId === "tiss") &&
-            !(guideKind === "apac" && convenioId === "sus") && (
+            !(guideKind === "apac" && convenioId === "sus") &&
+            !(guideKind === "aih" && convenioId === "sus") && (
+
 
             <div>
             <form

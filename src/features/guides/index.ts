@@ -6,3 +6,7 @@ export { ApacGuideForm } from "./apac/apac-guide-form";
 export type { ApacGuideFormProps } from "./apac/apac-guide-form";
 export { ApacGuidePreview } from "./apac/apac-guide-preview";
 export type { ApacGuidePreviewProps } from "./apac/apac-guide-preview";
+export { AihGuideForm } from "./aih/aih-guide-form";
+export type { AihGuideFormProps } from "./aih/aih-guide-form";
+export { AihGuidePreview } from "./aih/aih-guide-preview";
+export type { AihGuidePreviewProps } from "./aih/aih-guide-preview";
