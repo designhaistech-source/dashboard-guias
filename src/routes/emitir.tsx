@@ -1418,7 +1418,15 @@ function EmitirPage() {
                 )}
 
 
-                <ProfessionalPicker value={profissional} onChange={setProfissional} />
+                <ProfessionalPicker
+                  value={profissional}
+                  onChange={setProfissional}
+                  labels={{
+                    nome: "15 - Nome do Profissional Solicitante",
+                    conselho: "16 - Conselho Profissional",
+                    numero: "17 - Número no Conselho",
+                  }}
+                />
 
 
                 <div className="mt-5 border-t pt-5">

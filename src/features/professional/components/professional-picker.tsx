@@ -11,6 +11,12 @@ interface ProfessionalPickerProps {
   onChange: (value: ProfessionalValue) => void;
   /** Campos adicionais específicos da página (ex.: data da solicitação). */
   children?: ReactNode;
+  /** Sobrescreve os rótulos para casar com a nomenclatura oficial da guia. */
+  labels?: {
+    nome?: string;
+    conselho?: string;
+    numero?: string;
+  };
 }
 
 /**
@@ -18,7 +24,7 @@ interface ProfessionalPickerProps {
  * Mostra apenas o seletor para profissionais cadastrados e libera os campos
  * de identificação somente no modo manual, evitando dados repetidos na tela.
  */
-export function ProfessionalPicker({ value, onChange, children }: ProfessionalPickerProps) {
+export function ProfessionalPicker({ value, onChange, children, labels }: ProfessionalPickerProps) {
   const manual = isManual(value);
 
   const handleSelect = (id: string) => {
@@ -59,7 +65,7 @@ export function ProfessionalPicker({ value, onChange, children }: ProfessionalPi
 
       {manual && (
         <div className="grid gap-4 lg:grid-cols-2 xl:grid-cols-[1fr_140px_160px_200px]">
-          <Field id="profissional-nome" label="Nome do profissional" required>
+          <Field id="profissional-nome" label={labels?.nome ?? "Nome do profissional"} required>
             <Input
               value={value.nome}
               onChange={(e) => onChange({ ...value, nome: e.target.value })}
@@ -68,12 +74,12 @@ export function ProfessionalPicker({ value, onChange, children }: ProfessionalPi
           </Field>
           <SelectField
             id="profissional-conselho"
-            label="Conselho"
+            label={labels?.conselho ?? "Conselho"}
             value={value.conselho}
             onValueChange={(conselho) => onChange({ ...value, conselho })}
             options={COUNCILS.map((c) => ({ value: c, label: c }))}
           />
-          <Field id="profissional-numero" label="Número do conselho" required>
+          <Field id="profissional-numero" label={labels?.numero ?? "Número do conselho"} required>
             <Input
               value={value.numero}
               onChange={(e) => onChange({ ...value, numero: e.target.value })}
