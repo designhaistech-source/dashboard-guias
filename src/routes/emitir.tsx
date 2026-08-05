@@ -1581,11 +1581,12 @@ function EmitirPage() {
                       <Button
                         type="button"
                         size="sm"
+                        variant="outline"
                         onClick={saveAsKit}
-                        className="bg-success text-success-foreground hover:bg-success/90"
                       >
-                        <Plus className="h-4 w-4" /> Salvar como kit
+                        Salvar como kit
                       </Button>
+
                     </div>
                   </div>
 
