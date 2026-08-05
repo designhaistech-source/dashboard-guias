@@ -33,6 +33,7 @@ import { SiteFooter } from "@/components/site-footer";
 import { PageHeader } from "@/components/page-header";
 import { SectionCard as BaseSectionCard } from "@/components/section-card";
 import { SavedIndicator } from "@/components/saved-indicator";
+import { SignatureField } from "@/components/signature-field";
 import { useDraftAutosave } from "@/hooks/use-draft-autosave";
 
 import { FormActionBar } from "@/components/form-action-bar";
@@ -321,6 +322,7 @@ function EmitirPage() {
   const [contratadoSolicitante, setContratadoSolicitante] = useState("");
   const [conselhoUf, setConselhoUf] = useState("RN");
   const [codigoCbo, setCodigoCbo] = useState("");
+  const [assinaturaSolicitante, setAssinaturaSolicitante] = useState("");
 
   // Contratado executante (29, 30, 31)
   const [codigoExecutante, setCodigoExecutante] = useState("");
@@ -1428,9 +1430,15 @@ function EmitirPage() {
                       />
                     </Field>
                   </Grid>
-                  <p className="mt-3 text-xs text-muted-foreground">
-                    Campo 20 (assinatura do profissional solicitante) é preenchido na guia impressa.
-                  </p>
+                </div>
+
+                <div className="mt-5 border-t pt-5">
+                  <SignatureField
+                    label="20 - Assinatura do Profissional Solicitante"
+                    value={assinaturaSolicitante}
+                    onChange={setAssinaturaSolicitante}
+                    hint="Desenhe ou envie a assinatura para sair impressa no campo 20 da guia. Deixe em branco para assinar à mão no papel."
+                  />
                 </div>
               </Section>
 
@@ -1963,6 +1971,7 @@ function EmitirPage() {
               pacienteValidadeCarteira={pacienteValidadeCarteira}
               pacienteCns={pacienteCns}
               pacienteRn={pacienteRn}
+              assinaturaSolicitante={assinaturaSolicitante}
 
               fullSize
             />
@@ -2217,6 +2226,7 @@ function GuiaLivePreview(props: {
   pacienteValidadeCarteira: string;
   pacienteCns: string;
   pacienteRn: string;
+  assinaturaSolicitante: string;
   fullSize?: boolean;
 }) {
   const {
@@ -2229,7 +2239,7 @@ function GuiaLivePreview(props: {
     codigoSolicitante, contratadoSolicitante, conselhoUf, codigoCbo,
     codigoExecutante, contratadoExecutante, cnesExecutante,
     tipoAtendimento, indicacaoAcidente, tipoConsulta, motivoEncerramento,
-    pacienteValidadeCarteira, pacienteCns, pacienteRn,
+    pacienteValidadeCarteira, pacienteCns, pacienteRn, assinaturaSolicitante,
   } = props;
 
 
@@ -2320,7 +2330,7 @@ function GuiaLivePreview(props: {
               <FieldBox n="17" label="Número no Conselho" value={medicoCrm} width={140} />
               <FieldBox n="18" label="UF" value={conselhoUf} width={50} />
               <FieldBox n="19" label="Código CBO" value={codigoCbo || medicoEspecialidade} width={140} />
-              <FieldBox n="20" label="Assinatura do Profissional Solicitante" value="" width={220} />
+              <FieldBox n="20" label="Assinatura do Profissional Solicitante" value="" image={assinaturaSolicitante} width={220} />
             </FieldRow>
 
 
@@ -2504,12 +2514,15 @@ function FieldBox({
   n,
   label,
   value,
+  image,
   width,
   grow,
 }: {
   n: string;
   label: string;
   value: string;
+  /** Data URL opcional renderizado no lugar do texto (ex.: assinatura). */
+  image?: string;
   width?: number;
   grow?: boolean;
 }) {
@@ -2519,10 +2532,15 @@ function FieldBox({
       style={{ width: grow ? undefined : width, flex: grow ? 1 : undefined, minWidth: 0 }}
     >
       <div className="text-[8px] font-bold">{n} - {label}</div>
-      <div className="text-[10px] font-mono truncate min-h-[12px]">{value}</div>
+      {image ? (
+        <img src={image} alt={label} className="h-6 w-auto max-w-full object-contain" />
+      ) : (
+        <div className="text-[10px] font-mono truncate min-h-[12px]">{value}</div>
+      )}
     </div>
   );
 }
+
 
 function FieldBoxDate({
   n,
