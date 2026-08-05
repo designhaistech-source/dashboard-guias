@@ -1536,11 +1536,40 @@ function EmitirPage() {
                     </div>
                   </div>
 
+                  {/* Usar kit salvo */}
+                  <div className="flex flex-col gap-2 rounded-lg border bg-muted/30 p-3 sm:flex-row sm:items-center">
+                    <Label htmlFor="use-kit" className="shrink-0 text-xs font-medium">
+                      Usar kit salvo
+                    </Label>
+                    <div className="min-w-0 flex-1">
+                      <Combobox
+                        id="use-kit"
+                        value={selectedUserKit}
+                        onChange={(id) => {
+                          setSelectedUserKit(id);
+                          const kit = kitOptionsSource.find((k) => k.id === id);
+                          if (kit) applyKit(kit);
+                        }}
+                        options={kitOptions}
+                        placeholder={
+                          kitOptions.length === 0
+                            ? "Nenhum kit disponível"
+                            : "Selecione um kit de procedimentos"
+                        }
+                        searchPlaceholder="Buscar kit..."
+                        emptyMessage="Nenhum kit encontrado."
+                        disabled={kitOptions.length === 0}
+                        clearable
+                      />
+                    </div>
+                  </div>
+
                   <p className="text-xs text-muted-foreground">
                     Busque pela descrição — o código TUSS é preenchido automaticamente. O campo{" "}
                     <strong>24 - Tabela</strong> é fixo (22) e o campo <strong>28 - Qtde. Aut.</strong>{" "}
                     é preenchido pela operadora.
                   </p>
+
 
                   {/* Rótulos das colunas (campos 24 a 28) — visíveis no desktop */}
                   <div className="hidden lg:grid lg:grid-cols-[28px_56px_128px_minmax(0,1fr)_80px_80px_40px] items-end gap-3 text-xs font-medium text-muted-foreground">
