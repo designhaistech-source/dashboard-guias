@@ -743,6 +743,40 @@ function EmitirPage() {
     toast.success(`${filled.length} procedimento(s) copiado(s) dos solicitados`);
   };
 
+  /** Quadro "Identificação do(a) profissional executante" (campos 48 a 55). */
+  type ExecutanteItem = {
+    id: string;
+    seqRef: string;
+    participation: string;
+    operatorCode: string;
+    name: string;
+    council: string;
+    councilNumber: string;
+    uf: string;
+    cbo: string;
+  };
+  const [executantes, setExecutantes] = useState<ExecutanteItem[]>([]);
+  const addExecutante = () =>
+    setExecutantes((l) => [
+      ...l,
+      {
+        id: crypto.randomUUID(),
+        seqRef: String(l.length + 1),
+        participation: "",
+        operatorCode: "",
+        name: "",
+        council: "",
+        councilNumber: "",
+        uf: "",
+        cbo: "",
+      },
+    ]);
+  const updateExecutante = (id: string, patch: Partial<ExecutanteItem>) =>
+    setExecutantes((l) => l.map((x) => (x.id === id ? { ...x, ...patch } : x)));
+  const removeExecutante = (id: string) => setExecutantes((l) => l.filter((x) => x.id !== id));
+
+
+
   const parseMoney = (v: string) => Number(v.replace(/\./g, "").replace(",", ".")) || 0;
   const formatMoney = (v: number) =>
     v.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
