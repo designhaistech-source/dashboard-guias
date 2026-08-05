@@ -259,7 +259,7 @@ export function InternacaoGuideForm({
         number={1}
         done={guiaOk}
         icon={<Building2 className="h-4 w-4" />}
-        title="1. Dados da Guia e Autorização"
+        title="Dados da Guia e Autorização"
         description="Campos 1 a 6 — identificação da guia, autorização e senha."
       >
         <Grid cols={3}>
@@ -305,7 +305,7 @@ export function InternacaoGuideForm({
         number={2}
         done={beneficiarioOk}
         icon={<User className="h-4 w-4" />}
-        title="2. Dados do Beneficiário"
+        title="Dados do Beneficiário"
         description="Campos 7 a 11 — identificação do beneficiário na operadora."
       >
         <Grid cols={3}>
@@ -349,7 +349,7 @@ export function InternacaoGuideForm({
         number={3}
         done={solicitanteOk}
         icon={<Stethoscope className="h-4 w-4" />}
-        title="3. Dados do Contratado Solicitante"
+        title="Dados do Contratado Solicitante"
         description="Campos 12 a 18 — prestador e profissional que solicita a internação."
       >
         <Grid cols={3}>
@@ -407,7 +407,7 @@ export function InternacaoGuideForm({
         number={4}
         done={internacaoOk}
         icon={<BedDouble className="h-4 w-4" />}
-        title="4. Dados do Hospital / Local Solicitado e da Internação"
+        title="Dados do Hospital / Local Solicitado e da Internação"
         description="Campos 19 a 28 — local solicitado, regime, diárias e indicação clínica."
       >
         <Grid cols={3}>
@@ -499,7 +499,7 @@ export function InternacaoGuideForm({
         number={5}
         done={diagnosticoOk}
         icon={<ClipboardList className="h-4 w-4" />}
-        title="5. Hipóteses Diagnósticas"
+        title="Hipóteses Diagnósticas"
         description="Campos 29 a 33 — CID-10 (opcionais) e indicação de acidente."
       >
         <Grid cols={3}>
@@ -555,7 +555,7 @@ export function InternacaoGuideForm({
         number={6}
         done={itemsOk}
         icon={<ClipboardList className="h-4 w-4" />}
-        title="6. Procedimentos ou Itens Assistenciais Solicitados"
+        title="Procedimentos ou Itens Assistenciais Solicitados"
         description="Campos 34 a 38 — tabela, código, descrição e quantidades."
         actions={
           <Button type="button" size="sm" onClick={() => setItems((p) => [...p, newItem()])}>
@@ -660,7 +660,7 @@ export function InternacaoGuideForm({
       <SectionCard
         number={7}
         icon={<Hospital className="h-4 w-4" />}
-        title="7. Dados da Autorização"
+        title="Dados da Autorização"
         description="Campos 39 a 44 — preenchidos pela operadora em caso de autorização."
       >
         <Grid cols={3}>
@@ -712,7 +712,7 @@ export function InternacaoGuideForm({
         number={8}
         done={finalOk}
         icon={<FileText className="h-4 w-4" />}
-        title="8. Observação e Assinaturas"
+        title="Observação e Assinaturas"
         description="Campos 45 a 49 — justificativa, data da solicitação e assinaturas."
       >
         <Field label="45 - Observação / Justificativa">
