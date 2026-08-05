@@ -1382,33 +1382,37 @@ function EmitirPage() {
                 )}
 
 
-                <ProfessionalPicker
-                  value={profissional}
-                  onChange={setProfissional}
-                  labels={{
-                    nome: "15 - Nome do Profissional Solicitante",
-                    conselho: "16 - Conselho Profissional",
-                    numero: "17 - Número no Conselho",
-                  }}
-                />
-
+                <Grid cols={2}>
+                  <Field label="13 - Código na Operadora">
+                    <Input
+                      value={codigoSolicitante}
+                      onChange={(e) => setCodigoSolicitante(e.target.value)}
+                      placeholder="Código do contrato"
+                    />
+                  </Field>
+                  <Field label="14 - Nome do Contratado">
+                    <Input
+                      value={contratadoSolicitante}
+                      onChange={(e) => setContratadoSolicitante(e.target.value)}
+                      placeholder="Clínica, consultório ou hospital"
+                    />
+                  </Field>
+                </Grid>
 
                 <div className="mt-5 border-t pt-5">
+                  <ProfessionalPicker
+                    value={profissional}
+                    onChange={setProfissional}
+                    labels={{
+                      nome: "15 - Nome do Profissional Solicitante",
+                      conselho: "16 - Conselho Profissional",
+                      numero: "17 - Número no Conselho",
+                    }}
+                  />
+                </div>
+
+                <div className="mt-5">
                   <Grid cols={3}>
-                    <Field label="13 - Código na Operadora">
-                      <Input
-                        value={codigoSolicitante}
-                        onChange={(e) => setCodigoSolicitante(e.target.value)}
-                        placeholder="Código do contrato"
-                      />
-                    </Field>
-                    <Field label="14 - Nome do Contratado">
-                      <Input
-                        value={contratadoSolicitante}
-                        onChange={(e) => setContratadoSolicitante(e.target.value)}
-                        placeholder="Clínica, consultório ou hospital"
-                      />
-                    </Field>
                     <Field label="18 - UF">
                       <Input
                         value={conselhoUf}
@@ -1423,24 +1427,13 @@ function EmitirPage() {
                         placeholder="225125"
                       />
                     </Field>
-                    <SelectField
-                      label="21 - Caráter do Atendimento"
-                      required
-                      labelClassName="text-xs font-medium text-muted-foreground"
-                      value={character}
-                      onValueChange={setCharacter}
-                      options={CHARACTER_OPTIONS.map((c) => ({ value: c, label: c }))}
-                    />
-                    <Field label="22 - Data da Solicitação">
-                      <Input
-                        type="date"
-                        value={dataSolicitacao}
-                        onChange={(e) => setDataSolicitacao(e.target.value)}
-                      />
-                    </Field>
                   </Grid>
+                  <p className="mt-3 text-xs text-muted-foreground">
+                    20 - Assinatura do Profissional Solicitante é preenchida na guia impressa.
+                  </p>
                 </div>
               </Section>
+
 
 
 
