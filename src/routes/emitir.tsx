@@ -1770,6 +1770,16 @@ function EmitirPage() {
                   )}
                 </div>
 
+                <div className="mt-5 flex flex-wrap items-center justify-between gap-3 border-t pt-4">
+                  <p className="min-w-0 text-xs text-muted-foreground">
+                    Salve os procedimentos acima como um kit para reutilizar em próximas guias.
+                  </p>
+                  <Button type="button" size="sm" variant="outline" onClick={saveAsKit}>
+                    <Plus className="h-4 w-4" /> Salvar como kit
+                  </Button>
+                </div>
+
+
               </Section>
 
 
