@@ -1233,13 +1233,6 @@ function EmitirPage() {
                 description="Campos 8 a 12 da guia — identificação do beneficiário na operadora."
               >
                 <Grid cols={2}>
-                  <Field label="10 - Nome" required>
-                    <Input
-                      value={pacienteNome}
-                      onChange={(e) => setPacienteNome(e.target.value)}
-                      placeholder="Nome completo"
-                    />
-                  </Field>
                   <Field label="8 - Número da Carteira" required>
                     <Input
                       value={pacienteCarteira}
@@ -1247,6 +1240,37 @@ function EmitirPage() {
                       placeholder="0000 0000 0000 0000"
                     />
                   </Field>
+                  <Field label="9 - Validade da Carteira">
+                    <Input
+                      type="date"
+                      value={pacienteValidadeCarteira}
+                      onChange={(e) => setPacienteValidadeCarteira(e.target.value)}
+                    />
+                  </Field>
+                  <Field label="10 - Nome" required>
+                    <Input
+                      value={pacienteNome}
+                      onChange={(e) => setPacienteNome(e.target.value)}
+                      placeholder="Nome completo"
+                    />
+                  </Field>
+                  <Field label="11 - Cartão Nacional de Saúde">
+                    <Input
+                      value={pacienteCns}
+                      onChange={(e) => setPacienteCns(e.target.value)}
+                      placeholder="000 0000 0000 0000"
+                    />
+                  </Field>
+                  <SelectField
+                    label="12 - Atendimento a RN"
+                    labelClassName="text-xs font-medium text-muted-foreground"
+                    value={pacienteRn}
+                    onValueChange={setPacienteRn}
+                    options={[
+                      { value: "N", label: "Não" },
+                      { value: "S", label: "Sim" },
+                    ]}
+                  />
                   <Field label="CPF">
                     <Input
                       value={pacienteCpf}
@@ -1270,30 +1294,6 @@ function EmitirPage() {
                       { value: "F", label: "Feminino" },
                       { value: "M", label: "Masculino" },
                       { value: "O", label: "Outro" },
-                    ]}
-                  />
-                  <Field label="9 - Validade da Carteira">
-                    <Input
-                      type="date"
-                      value={pacienteValidadeCarteira}
-                      onChange={(e) => setPacienteValidadeCarteira(e.target.value)}
-                    />
-                  </Field>
-                  <Field label="11 - Cartão Nacional de Saúde">
-                    <Input
-                      value={pacienteCns}
-                      onChange={(e) => setPacienteCns(e.target.value)}
-                      placeholder="000 0000 0000 0000"
-                    />
-                  </Field>
-                  <SelectField
-                    label="12 - Atendimento a RN"
-                    labelClassName="text-xs font-medium text-muted-foreground"
-                    value={pacienteRn}
-                    onValueChange={setPacienteRn}
-                    options={[
-                      { value: "N", label: "Não" },
-                      { value: "S", label: "Sim" },
                     ]}
                   />
                 </Grid>
