@@ -341,6 +341,10 @@ function EmitirPage() {
   const [conselhoUf, setConselhoUf] = useState("RN");
   const [codigoCbo, setCodigoCbo] = useState("");
   const [assinaturaSolicitante, setAssinaturaSolicitante] = useState("");
+  /** Campo 56 — até 10 datas de realização de procedimentos em série. */
+  const [serieDates, setSerieDates] = useState<string[]>(Array(10).fill(""));
+  /** Campo 57 — assinatura do beneficiário ou responsável. */
+  const [assinaturaBeneficiario, setAssinaturaBeneficiario] = useState("");
 
   // Contratado executante (29, 30, 31)
   const [codigoExecutante, setCodigoExecutante] = useState("");
