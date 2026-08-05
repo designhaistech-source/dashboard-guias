@@ -641,7 +641,7 @@ export function InternacaoGuideForm({
           />
         ) : (
           <div className="space-y-3 @container">
-            <div className="hidden gap-3 px-1 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground @3xl:grid @3xl:grid-cols-[110px_130px_1fr_90px_90px_40px]">
+            <div className="hidden gap-3 px-1 text-eyebrow @3xl:grid @3xl:grid-cols-[110px_130px_1fr_90px_90px_40px]">
               <span>34 - Tabela</span>
               <span>35 - Código</span>
               <span>36 - Descrição</span>
@@ -657,19 +657,18 @@ export function InternacaoGuideForm({
                 <div className="@3xl:hidden text-xs font-semibold text-muted-foreground">
                   Item {idx + 1}
                 </div>
-                <Input
+                <SelectField
+                  id={`tabela-${item.id}`}
+                  label="34 - Tabela"
+                  labelClassName="@3xl:hidden"
+                  className="min-w-0 @3xl:space-y-0"
+                  triggerClassName="w-full"
                   value={item.table}
-                  onChange={(e) => updateItem(item.id, { table: e.target.value })}
-                  aria-label="34 - Tabela"
-                  list={`tabelas-${item.id}`}
+                  onValueChange={(table) => updateItem(item.id, { table })}
+                  options={TABELA_OPTIONS}
+                  placeholder="Tabela"
                 />
-                <datalist id={`tabelas-${item.id}`}>
-                  {TABELA_OPTIONS.map((t) => (
-                    <option key={t.value} value={t.value}>
-                      {t.label}
-                    </option>
-                  ))}
-                </datalist>
+
                 <Input
                   value={item.code}
                   onChange={(e) => updateItem(item.id, { code: e.target.value })}

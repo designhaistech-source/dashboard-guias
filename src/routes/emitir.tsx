@@ -1094,16 +1094,14 @@ function EmitirPage() {
                                 {g.description}
                               </p>
                             </div>
-                            <div
-                              className={cn(
-                                "mt-3 inline-flex items-center rounded px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wide",
-                                active
-                                  ? "bg-primary/10 text-primary"
-                                  : "text-muted-foreground",
-                              )}
+                            <Badge
+                              variant={active ? "primary-soft" : "outline"}
+                              size="sm"
+                              className="mt-3 self-start uppercase tracking-wide"
                             >
                               {g.badge}
-                            </div>
+                            </Badge>
+
                           </button>
                         );
                       })}
@@ -1122,7 +1120,7 @@ function EmitirPage() {
                 <div className="flex items-center gap-3">
                   <div className="w-1 h-8 bg-primary rounded-full" />
                   <div className="min-w-0 flex-1">
-                    <p className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+                    <p className="text-eyebrow">
                       Formulário de emissão
                     </p>
                     <p className="text-sm font-semibold truncate">{guideHeaderTitle}</p>
@@ -1138,7 +1136,7 @@ function EmitirPage() {
                 <div className="flex items-center gap-3">
                   <div className="w-1 h-8 bg-primary rounded-full" />
                   <div className="min-w-0 flex-1">
-                    <p className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+                    <p className="text-eyebrow">
                       Formulário de emissão
                     </p>
                     <p className="text-sm font-semibold truncate">{guideHeaderTitle}</p>
@@ -1154,7 +1152,7 @@ function EmitirPage() {
                 <div className="flex items-center gap-3">
                   <div className="w-1 h-8 bg-primary rounded-full" />
                   <div className="min-w-0 flex-1">
-                    <p className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+                    <p className="text-eyebrow">
                       Formulário de emissão
                     </p>
                     <p className="text-sm font-semibold truncate">{guideHeaderTitle}</p>
@@ -1182,7 +1180,7 @@ function EmitirPage() {
               <div className="flex items-center gap-3">
                 <div className="w-1 h-8 bg-primary rounded-full" />
                 <div className="min-w-0 flex-1">
-                  <p className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+                  <p className="text-eyebrow">
                     Formulário de emissão
                   </p>
                   <p className="text-sm font-semibold truncate">{guideHeaderTitle}</p>
@@ -1275,7 +1273,7 @@ function EmitirPage() {
                   </Grid>
 
                   <div className="mt-5 space-y-4 border-t pt-5">
-                    <p className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+                    <p className="text-eyebrow">
                       Autorização e senha
                     </p>
                     <Grid cols={3}>
@@ -1796,18 +1794,18 @@ function EmitirPage() {
                   <div className="hidden @3xl:grid @3xl:grid-cols-[28px_56px_128px_minmax(0,1fr)_80px_80px_40px] items-end gap-3 text-xs font-medium text-muted-foreground">
                     <div />
                     <div className="truncate text-center" title="24 - Tabela">
-                      24 - Tab.
+                      24 - Tabela
                     </div>
                     <div className="truncate" title="25 - Código do Procedimento ou Item Assistencial">
-                      25 - Código <span className="text-destructive">*</span>
+                      25 - Código do Procedimento ou Item Assistencial <span className="text-destructive">*</span>
                     </div>
                     <div className="truncate" title="26 - Descrição">
                       26 - Descrição <span className="text-destructive">*</span>
                     </div>
-                    <div className="truncate text-center" title="27 - Qtde. Solicitada">
-                      27 - Qtde. <span className="text-destructive">*</span>
+                    <div className="truncate text-center" title="27 - Qtde. Solic.">
+                      27 - Qtde. Solic. <span className="text-destructive">*</span>
                     </div>
-                    <div className="truncate text-center" title="28 - Qtde. Autorizada (operadora)">
+                    <div className="truncate text-center" title="28 - Qtde. Aut.">
                       28 - Qtde. Aut.
                     </div>
                     <div />
@@ -1849,14 +1847,14 @@ function EmitirPage() {
                           </div>
                         </div>
 
-                        {/* 24 - Tabela (somente leitura) */}
+                        {/* Tabela (campo 24), somente leitura */}
                         <div className="hidden @3xl:block text-center font-mono text-sm text-muted-foreground">
                           22
                         </div>
 
-                        {/* 25 - Código */}
+                        {/* Código do procedimento ou item assistencial (campo 25) */}
                         <FormField
-                          label="25 - Código"
+                          label="25 - Código do Procedimento ou Item Assistencial"
                           required
                           labelClassName="@3xl:hidden"
                           className="min-w-0 @3xl:space-y-0"
@@ -1870,7 +1868,7 @@ function EmitirPage() {
                           />
                         </FormField>
 
-                        {/* 26 - Descrição (busca principal) */}
+                        {/* Descrição (campo 26) */}
                         <FormField
                           label="26 - Descrição"
                           required
@@ -1898,7 +1896,7 @@ function EmitirPage() {
                           />
                         </FormField>
 
-                        {/* 27 - Qtde. Solicitada */}
+                        {/* Quantidade solicitada (campo 27) */}
                         <FormField
                           label="27 - Qtde. Solic."
                           required
@@ -1908,7 +1906,7 @@ function EmitirPage() {
                           <Input
                             type="number"
                             min={1}
-                            aria-label="27 - Qtde. Solicitada"
+                            aria-label="27 - Qtde. Solic."
                             className="text-center"
                             value={p.quantity}
                             onChange={(e) =>
@@ -1919,13 +1917,13 @@ function EmitirPage() {
                           />
                         </FormField>
 
-                        {/* 28 - Qtde. Autorizada (operadora) */}
+                        {/* Quantidade autorizada pela operadora (campo 28) */}
                         <div className="hidden @3xl:block text-center text-sm text-muted-foreground">
                           —
                         </div>
                         <p className="mt-3 text-xs text-muted-foreground @3xl:hidden">
-                          24 - Tabela: <span className="font-mono">22</span> · 28 - Qtde. Aut.: —
-                          (operadora)
+                          Tabela (campo 24): <span className="font-mono">22</span> · quantidade autorizada
+                          (campo 28) preenchida pela operadora
                         </p>
 
 
@@ -2220,7 +2218,7 @@ function EmitirPage() {
                               placeholder="Descrição do procedimento realizado"
                             />
                           </Field>
-                          <Field label="42 - Qtde. Realizada">
+                          <Field label="42 - Qtde.">
                             <Input
                               type="number"
                               min={1}
@@ -2233,7 +2231,7 @@ function EmitirPage() {
                             />
                           </Field>
                           <SelectField
-                            label="43 - Via de Acesso"
+                            label="43 - Via"
                             labelClassName="text-xs font-medium text-muted-foreground"
                             value={item.via}
                             onValueChange={(v) => updateExecuted(item.id, { via: v })}
@@ -2244,7 +2242,7 @@ function EmitirPage() {
                             }))}
                           />
                           <SelectField
-                            label="44 - Técnica Utilizada"
+                            label="44 - Tec."
                             labelClassName="text-xs font-medium text-muted-foreground"
                             value={item.technique}
                             onValueChange={(v) => updateExecuted(item.id, { technique: v })}
@@ -2254,7 +2252,7 @@ function EmitirPage() {
                               label: o,
                             }))}
                           />
-                          <Field label="45 - Fator de Redução / Acréscimo">
+                          <Field label="45 - Fator Red./Acresc.">
                             <Input
                               value={item.reductionFactor}
                               onChange={(e) =>
@@ -2340,7 +2338,7 @@ function EmitirPage() {
                             />
                           </Field>
                           <SelectField
-                            label="49 - Grau de Participação"
+                            label="49 - Grau Part."
                             labelClassName="text-xs font-medium text-muted-foreground"
                             value={ex.participation}
                             onValueChange={(v) => updateExecutante(ex.id, { participation: v })}
@@ -3024,7 +3022,7 @@ function GuiaLivePreview(props: {
     <div className={fullSize ? "" : "rounded-xl border bg-card shadow-sm overflow-hidden"}>
       {!fullSize && (
         <div className="px-4 py-2.5 border-b bg-muted/40 flex items-center justify-between">
-          <p className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+          <p className="text-eyebrow">
             Pré-visualização · Modelo TISS SP/SADT
           </p>
           <span className="text-[10px] text-muted-foreground">Atualiza em tempo real</span>
