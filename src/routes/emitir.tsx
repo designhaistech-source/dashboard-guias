@@ -1705,25 +1705,26 @@ function EmitirPage() {
                   )}
                 </div>
 
-                <div className="mt-5 space-y-3 border-t pt-4">
-                  <div>
-                    <h4 className="text-sm font-semibold">Criar kit</h4>
-                    <p className="text-xs text-muted-foreground">
-                      Salve os procedimentos preenchidos acima como um kit reutilizável nas
-                      próximas guias.
+                <div className="mt-5 border-t pt-4">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setKitFormOpen((o) => !o)}
+                    aria-expanded={kitFormOpen}
+                    disabled={filledProcedures.length === 0}
+                  >
+                    <Plus className="h-4 w-4" /> Salvar como kit
+                  </Button>
+                  {filledProcedures.length === 0 && (
+                    <p className="mt-2 text-xs text-muted-foreground">
+                      Preencha ao menos um procedimento para criar um kit reutilizável.
                     </p>
-                  </div>
+                  )}
 
-                  <div>
-                    <p className="text-xs font-medium text-muted-foreground">
-                      Itens do kit ({filledProcedures.length})
-                    </p>
-                    {filledProcedures.length === 0 ? (
-                      <p className="mt-1 text-xs text-muted-foreground">
-                        Preencha código e descrição de ao menos um procedimento para criar um kit.
-                      </p>
-                    ) : (
-                      <ul className="mt-1 space-y-1">
+                  {kitFormOpen && filledProcedures.length > 0 && (
+                    <div className="mt-3 space-y-3 rounded-lg border bg-muted/30 p-3">
+                      <ul className="space-y-1">
                         {filledProcedures.map((p) => (
                           <li
                             key={p.id}
@@ -1731,39 +1732,37 @@ function EmitirPage() {
                           >
                             <span className="font-mono text-muted-foreground">{p.code}</span>
                             <span className="min-w-0 flex-1 truncate">{p.description}</span>
-                            <span className="shrink-0 text-muted-foreground">
-                              {p.quantity}x
-                            </span>
+                            <span className="shrink-0 text-muted-foreground">{p.quantity}x</span>
                           </li>
                         ))}
                       </ul>
-                    )}
-                  </div>
 
-                  <div className="flex flex-col gap-3 sm:flex-row sm:items-end">
-                    <FormField
-                      id="kit-name"
-                      label="Nome do kit"
-                      className="min-w-0 flex-1"
-                      hint="Ex.: Check-up cardiológico"
-                    >
-                      <Input
-                        value={kitName}
-                        onChange={(e) => setKitName(e.target.value)}
-                        placeholder="Nome do kit"
-                      />
-                    </FormField>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      onClick={saveAsKit}
-                      disabled={filledProcedures.length === 0 || !kitName.trim()}
-                      className="sm:mb-6"
-                    >
-                      <Plus className="h-4 w-4" /> Salvar como kit
-                    </Button>
-                  </div>
+                      <div className="flex flex-col gap-3 sm:flex-row sm:items-end">
+                        <FormField
+                          id="kit-name"
+                          label="Nome do kit"
+                          className="min-w-0 flex-1"
+                          hint="Ex.: Check-up cardiológico"
+                        >
+                          <Input
+                            value={kitName}
+                            onChange={(e) => setKitName(e.target.value)}
+                            placeholder="Nome do kit"
+                          />
+                        </FormField>
+                        <Button
+                          type="button"
+                          onClick={saveAsKit}
+                          disabled={!kitName.trim()}
+                          className="sm:mb-6"
+                        >
+                          Salvar kit
+                        </Button>
+                      </div>
+                    </div>
+                  )}
                 </div>
+
 
 
 
