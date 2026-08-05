@@ -67,12 +67,28 @@ export function ProfessionalPicker({ value, onChange, children, labels }: Profes
   const handleNameChange = (raw: string) => {
     const nome = maskProfessionalName(raw);
     const found = PROFESSIONALS.find((p) => p.nome.toLowerCase() === nome.trim().toLowerCase());
-    if (found) {
+    if (found && !manualMode) {
       onChange({ ...found });
       return;
     }
     onChange({ ...value, id: MANUAL_PROFESSIONAL_ID, nome });
   };
+
+  /** Alterna entre buscar um cadastro e digitar um profissional novo. */
+  const startManual = () => {
+    if (blurTimer.current) clearTimeout(blurTimer.current);
+    resetTouched();
+    setManualMode(true);
+    setOpen(false);
+    onChange({ id: MANUAL_PROFESSIONAL_ID, nome: "", conselho: "CRM", numero: "", especialidade: "" });
+    requestAnimationFrame(() => nomeRef.current?.focus());
+  };
+
+  const backToSearch = () => {
+    setManualMode(false);
+    requestAnimationFrame(() => nomeRef.current?.focus());
+  };
+
 
 
   return (
