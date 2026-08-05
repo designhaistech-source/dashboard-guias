@@ -743,6 +743,40 @@ function EmitirPage() {
     toast.success(`${filled.length} procedimento(s) copiado(s) dos solicitados`);
   };
 
+  /** Quadro "Identificação do(a) profissional executante" (campos 48 a 55). */
+  type ExecutanteItem = {
+    id: string;
+    seqRef: string;
+    participation: string;
+    operatorCode: string;
+    name: string;
+    council: string;
+    councilNumber: string;
+    uf: string;
+    cbo: string;
+  };
+  const [executantes, setExecutantes] = useState<ExecutanteItem[]>([]);
+  const addExecutante = () =>
+    setExecutantes((l) => [
+      ...l,
+      {
+        id: crypto.randomUUID(),
+        seqRef: String(l.length + 1),
+        participation: "",
+        operatorCode: "",
+        name: "",
+        council: "",
+        councilNumber: "",
+        uf: "",
+        cbo: "",
+      },
+    ]);
+  const updateExecutante = (id: string, patch: Partial<ExecutanteItem>) =>
+    setExecutantes((l) => l.map((x) => (x.id === id ? { ...x, ...patch } : x)));
+  const removeExecutante = (id: string) => setExecutantes((l) => l.filter((x) => x.id !== id));
+
+
+
   const parseMoney = (v: string) => Number(v.replace(/\./g, "").replace(",", ".")) || 0;
   const formatMoney = (v: number) =>
     v.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
@@ -854,8 +888,7 @@ function EmitirPage() {
     "executante",
     "atendimento",
     "realizados",
-
-
+    "executantes",
     "opme",
   ];
 
@@ -878,6 +911,7 @@ function EmitirPage() {
   const executanteOk = Boolean(contratadoExecutante.trim());
   const atendimentoOk = Boolean(tipoAtendimento.trim());
   const realizadosOk = executedItems.some((i) => i.description.trim() || i.code.trim());
+  const executantesOk = executantes.some((e) => e.name.trim() && e.councilNumber.trim());
 
 
 
@@ -2173,6 +2207,138 @@ function EmitirPage() {
 
               </Section>
 
+              {/* Identificação do(a) Profissional Executante (campos 48 a 55) */}
+              <Section
+                number={stepNumber("executantes")}
+                done={executantesOk}
+                icon={<Stethoscope className="h-4 w-4" />}
+                title="Identificação do(a) Profissional Executante"
+                description="Campos 48 a 55 da guia — equipe que executou os procedimentos."
+                action={
+                  <Button type="button" size="sm" onClick={addExecutante}>
+                    <Plus className="h-4 w-4" /> Adicionar profissional
+                  </Button>
+                }
+              >
+                {executantes.length === 0 ? (
+                  <EmptyState
+                    size="sm"
+                    title="Nenhum profissional executante"
+                    description="Adicione os profissionais que participaram da execução."
+                    icon={<Stethoscope className="h-8 w-8" />}
+                  />
+                ) : (
+                  <div className="space-y-3">
+                    {executantes.map((ex, idx) => (
+                      <div key={ex.id} className="rounded-md border p-3">
+                        <div className="mb-2 flex items-center justify-between">
+                          <span className="text-xs font-medium text-muted-foreground">
+                            Profissional {idx + 1}
+                          </span>
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => removeExecutante(ex.id)}
+                            aria-label={`Remover profissional executante ${idx + 1}`}
+                          >
+                            <Trash2 className="h-4 w-4 text-destructive" />
+                          </Button>
+                        </div>
+                        <Grid cols={3}>
+                          <Field label="48 - Seq. Ref.">
+                            <Input
+                              value={ex.seqRef}
+                              onChange={(e) =>
+                                updateExecutante(ex.id, { seqRef: e.target.value })
+                              }
+                              className="font-mono"
+                              placeholder="1"
+                            />
+                          </Field>
+                          <SelectField
+                            label="49 - Grau de Participação"
+                            labelClassName="text-xs font-medium text-muted-foreground"
+                            value={ex.participation}
+                            onValueChange={(v) => updateExecutante(ex.id, { participation: v })}
+                            placeholder="Selecione"
+                            options={[
+                              "Cirurgião",
+                              "Primeiro Auxiliar",
+                              "Segundo Auxiliar",
+                              "Terceiro Auxiliar",
+                              "Instrumentador",
+                              "Anestesista",
+                              "Auxiliar de Anestesista",
+                              "Consultor",
+                              "Perfusionista",
+                              "Pediatra",
+                              "Clínico",
+                            ].map((o) => ({ value: o, label: o }))}
+                          />
+                          <Field label="50 - Código na Operadora / CPF">
+                            <Input
+                              value={ex.operatorCode}
+                              onChange={(e) =>
+                                updateExecutante(ex.id, { operatorCode: e.target.value })
+                              }
+                              className="font-mono"
+                              placeholder="000.000.000-00"
+                            />
+                          </Field>
+                          <Field label="51 - Nome do Profissional">
+                            <Input
+                              value={ex.name}
+                              onChange={(e) => updateExecutante(ex.id, { name: e.target.value })}
+                              placeholder="Nome completo"
+                            />
+                          </Field>
+                          <SelectField
+                            label="52 - Conselho Profissional"
+                            labelClassName="text-xs font-medium text-muted-foreground"
+                            value={ex.council}
+                            onValueChange={(v) => updateExecutante(ex.id, { council: v })}
+                            placeholder="Selecione"
+                            options={["CRM", "CRO", "COREN", "CRF", "CREFITO", "Outros"].map(
+                              (o) => ({ value: o, label: o }),
+                            )}
+                          />
+                          <Field label="53 - Número no Conselho">
+                            <Input
+                              value={ex.councilNumber}
+                              onChange={(e) =>
+                                updateExecutante(ex.id, { councilNumber: e.target.value })
+                              }
+                              className="font-mono"
+                              placeholder="000000"
+                            />
+                          </Field>
+                          <Field label="54 - UF">
+                            <Input
+                              value={ex.uf}
+                              onChange={(e) =>
+                                updateExecutante(ex.id, { uf: e.target.value.toUpperCase() })
+                              }
+                              maxLength={2}
+                              className="font-mono uppercase"
+                              placeholder="RN"
+                            />
+                          </Field>
+                          <Field label="55 - Código CBO">
+                            <Input
+                              value={ex.cbo}
+                              onChange={(e) => updateExecutante(ex.id, { cbo: e.target.value })}
+                              className="font-mono"
+                              placeholder="225125"
+                            />
+                          </Field>
+                        </Grid>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </Section>
+
               {/* OPME */}
 
               <Section
@@ -2275,6 +2441,7 @@ function EmitirPage() {
                   { label: "Executante", done: executanteOk },
                   { label: "Atendimento", done: atendimentoOk },
                   { label: "Execução", done: realizadosOk },
+                  { label: "Profissional executante", done: executantesOk },
 
 
                   { label: "OPME (opcional)", done: opmeOk },
