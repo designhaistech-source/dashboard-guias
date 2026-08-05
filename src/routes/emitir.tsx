@@ -61,6 +61,8 @@ import {
   validateProfessional,
   type ProfessionalValue,
 } from "@/features/professional";
+import { InternacaoGuideForm } from "@/features/guides";
+
 
 
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
@@ -1112,13 +1114,32 @@ function EmitirPage() {
             ))}
           </Tabs>
 
-          {guideKind && (
+          {guideKind === "internacao" && convenioId === "tiss" ? (
+            <InternacaoGuideForm
+              numeroGuia={numeroGuia}
+              registroAns={registroAns}
+              header={
+                <div className="flex items-center gap-3">
+                  <div className="w-1 h-8 bg-primary rounded-full" />
+                  <div className="min-w-0 flex-1">
+                    <p className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+                      Formulário de emissão
+                    </p>
+                    <p className="text-sm font-semibold truncate">{guideHeaderTitle}</p>
+                  </div>
+                </div>
+              }
+            />
+          ) : null}
+
+          {guideKind && !(guideKind === "internacao" && convenioId === "tiss") && (
             <div>
             <form
               key={guideKind}
               onSubmit={handleSubmit}
               className="space-y-6 animate-fade-in"
             >
+
 
               {/* Cabeçalho integrado do formulário selecionado */}
               <div className="flex items-center gap-3">
