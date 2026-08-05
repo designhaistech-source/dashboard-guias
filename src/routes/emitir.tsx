@@ -1094,16 +1094,14 @@ function EmitirPage() {
                                 {g.description}
                               </p>
                             </div>
-                            <div
-                              className={cn(
-                                "mt-3 inline-flex items-center rounded px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wide",
-                                active
-                                  ? "bg-primary/10 text-primary"
-                                  : "text-muted-foreground",
-                              )}
+                            <Badge
+                              variant={active ? "primary-soft" : "outline"}
+                              size="sm"
+                              className="mt-3 self-start uppercase tracking-wide"
                             >
                               {g.badge}
-                            </div>
+                            </Badge>
+
                           </button>
                         );
                       })}
