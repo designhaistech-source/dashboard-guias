@@ -1497,70 +1497,8 @@ function EmitirPage() {
                   />
                 </Field>
 
-                {/* Kits — atalho para preencher os procedimentos 24 a 28 */}
-                <div className="mt-5 border-t pt-5 space-y-3">
-                  <div className="flex flex-wrap items-center justify-between gap-2">
-                    <h4 className="text-sm font-semibold">Kits</h4>
-                    <Button
-                      type="button"
-                      size="sm"
-                      variant="outline"
-                      onClick={() => setKitsEditOpen(true)}
-                    >
-                      <Pencil className="h-4 w-4" /> Editar kits
-                    </Button>
-                  </div>
-                  <SelectField
-                    label="Kits do usuário"
-                    labelClassName="text-xs font-medium text-muted-foreground"
-                    value={selectedUserKit}
-                    onValueChange={(v) => {
-                      setSelectedUserKit(v);
-                      const kit = userKits.find((k) => k.id === v);
-                      if (kit) applyKit(kit);
-                    }}
-                    placeholder={
-                      userKits.length === 0
-                        ? "Nenhum kit cadastrado"
-                        : "Selecione um kit salvo"
-                    }
-                    options={userKits.map((k) => ({
-                      value: k.id,
-                      label: `${k.name} (${k.procedures.length})`,
-                    }))}
-                  />
 
-                  <Grid cols={2}>
-                    <SelectField
-                      label="Kits por Especialidade Médica"
-                      labelClassName="text-xs font-medium text-muted-foreground"
-                      value={selectedSpecialty}
-                      onValueChange={(v) => {
-                        setSelectedSpecialty(v);
-                        setSelectedSpecialtyKit("");
-                      }}
-                      placeholder="Selecione uma especialidade (CBO)"
-                      options={specialties.map((s) => ({ value: s, label: s }))}
-                    />
-                    <SelectField
-                      label="Procedimento"
-                      labelClassName="text-xs font-medium text-muted-foreground"
-                      value={selectedSpecialtyKit}
-                      onValueChange={(v) => {
-                        setSelectedSpecialtyKit(v);
-                        const kit = specialtyKitOptions.find((k) => k.id === v);
-                        if (kit) applyKit(kit);
-                      }}
-                      disabled={!selectedSpecialty}
-                      placeholder={
-                        selectedSpecialty
-                          ? "Selecione um kit"
-                          : "Escolha a especialidade primeiro"
-                      }
-                      options={specialtyKitOptions.map((k) => ({ value: k.id, label: k.name }))}
-                    />
-                  </Grid>
-                </div>
+
 
                 {/* Procedimentos solicitados (24 a 28) */}
                 <div className="mt-5 border-t pt-5 space-y-3">
