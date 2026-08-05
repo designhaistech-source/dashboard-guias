@@ -1064,7 +1064,7 @@ function EmitirPage() {
                           placeholder="Guia de internação vinculada"
                         />
                       </Field>
-                      <Field label="7 - Nº Guia Atribuído pela Operadora">
+                      <Field label="7 - Número da Guia Atribuído pela Operadora">
                         <Input
                           value={guiaOperadora}
                           onChange={(e) => setGuiaOperadora(e.target.value)}
@@ -1503,7 +1503,7 @@ function EmitirPage() {
                     ].map((o) => ({ value: o, label: o }))}
                   />
                   <SelectField
-                    label="33 - Indicação de Acidente"
+                    label="33 - Indicação de Acidente (acidente ou doença relacionada)"
                     labelClassName="text-xs font-medium text-muted-foreground"
                     value={indicacaoAcidente}
                     onValueChange={setIndicacaoAcidente}
@@ -1526,7 +1526,7 @@ function EmitirPage() {
                     )}
                   />
                   <SelectField
-                    label="35 - Motivo de Encerramento"
+                    label="35 - Motivo de Encerramento do Atendimento"
                     labelClassName="text-xs font-medium text-muted-foreground"
                     value={motivoEncerramento}
                     onValueChange={setMotivoEncerramento}
@@ -2300,7 +2300,7 @@ function GuiaLivePreview(props: {
               <FieldBoxDate n="4" label="Data da Autorização" {...dd(dataAutorizacao)} width={170} />
               <FieldBox n="5" label="Senha" value={senha} grow />
               <FieldBoxDate n="6" label="Data de Validade da Senha" {...dd(validadeSenha)} width={190} />
-              <FieldBox n="7" label="Nº Guia Atribuído pela Operadora" value={guiaOperadora} width={280} />
+              <FieldBox n="7" label="Número da Guia Atribuído pela Operadora" value={guiaOperadora} width={280} />
             </FieldRow>
 
             <SectionBar>Dados do Beneficiário</SectionBar>
@@ -2309,7 +2309,7 @@ function GuiaLivePreview(props: {
               <FieldBoxDate n="9" label="Validade da Carteira" {...dd(pacienteValidadeCarteira)} width={170} />
               <FieldBox n="10" label="Nome" value={pacienteNome} grow />
               <FieldBox n="11" label="Cartão Nacional de Saúde" value={pacienteCns} width={200} />
-              <FieldBox n="12" label="Atend. RN" value={pacienteRn === "S" ? "Sim" : "Não"} width={90} />
+              <FieldBox n="12" label="Atendimento a RN" value={pacienteRn === "S" ? "Sim" : "Não"} width={90} />
             </FieldRow>
 
             <SectionBar>Dados do Solicitante</SectionBar>
@@ -2319,17 +2319,17 @@ function GuiaLivePreview(props: {
             </FieldRow>
             <FieldRow>
               <FieldBox n="15" label="Nome do Profissional Solicitante" value={medicoNome} grow />
-              <FieldBox n="16" label="Conselho" value={medicoCrm ? medicoConselho : ""} width={90} />
-              <FieldBox n="17" label="Nº Conselho" value={medicoCrm} width={140} />
+              <FieldBox n="16" label="Conselho Profissional" value={medicoCrm ? medicoConselho : ""} width={90} />
+              <FieldBox n="17" label="Número no Conselho" value={medicoCrm} width={140} />
               <FieldBox n="18" label="UF" value={conselhoUf} width={50} />
-              <FieldBox n="19" label="Cód CBO" value={codigoCbo || medicoEspecialidade} width={140} />
-              <FieldBox n="20" label="Assinatura Solicitante" value="" width={220} />
+              <FieldBox n="19" label="Código CBO" value={codigoCbo || medicoEspecialidade} width={140} />
+              <FieldBox n="20" label="Assinatura do Profissional Solicitante" value="" width={220} />
             </FieldRow>
 
 
             <SectionBar>Dados da Solicitação / Procedimentos ou Itens Assistenciais Solicitados</SectionBar>
             <FieldRow>
-              <FieldBox n="21" label="Caráter" value={character} width={140} />
+              <FieldBox n="21" label="Caráter do Atendimento" value={character} width={140} />
               <FieldBoxDate n="22" label="Data da Solicitação" d={dataSol.d} m={dataSol.m} y={dataSol.y} width={180} />
               <FieldBox n="23" label="Indicação Clínica" value={`${cidPrincipal ? cidPrincipal + " · " : ""}${indicacaoClinica}`} grow />
             </FieldRow>
@@ -2337,11 +2337,11 @@ function GuiaLivePreview(props: {
             <div className="border-b border-foreground">
               <div className="grid grid-cols-[38px_60px_140px_1fr_60px_60px] text-[8px] font-bold border-b border-foreground bg-surface-subtle">
                 <div className="px-1 py-0.5 border-r border-foreground">&nbsp;</div>
-                <div className="px-1 py-0.5 border-r border-foreground">24-Tab</div>
-                <div className="px-1 py-0.5 border-r border-foreground">25-Código</div>
-                <div className="px-1 py-0.5 border-r border-foreground">26-Descrição</div>
-                <div className="px-1 py-0.5 border-r border-foreground text-center">27-Qtd.Sol</div>
-                <div className="px-1 py-0.5 text-center">28-Qtd.Aut</div>
+                <div className="px-1 py-0.5 border-r border-foreground">24 - Tabela</div>
+                <div className="px-1 py-0.5 border-r border-foreground">25 - Código do Procedimento ou Item Assistencial</div>
+                <div className="px-1 py-0.5 border-r border-foreground">26 - Descrição</div>
+                <div className="px-1 py-0.5 border-r border-foreground text-center">27 - Qtde. Solic.</div>
+                <div className="px-1 py-0.5 text-center">28 - Qtde. Aut.</div>
               </div>
               {rows.map((p, i) => (
                 <div key={i} className="grid grid-cols-[38px_60px_140px_1fr_60px_60px] text-[10px] border-b last:border-b-0 border-border min-h-[16px]">
@@ -2365,9 +2365,9 @@ function GuiaLivePreview(props: {
             <SectionBar>Dados do Atendimento</SectionBar>
             <FieldRow>
               <FieldBox n="32" label="Tipo de Atendimento" value={tipoAtendimento} width={160} />
-              <FieldBox n="33" label="Indicação de Acidente" value={indicacaoAcidente} width={200} />
+              <FieldBox n="33" label="Indicação de Acidente (acidente ou doença relacionada)" value={indicacaoAcidente} width={200} />
               <FieldBox n="34" label="Tipo de Consulta" value={tipoConsulta} width={140} />
-              <FieldBox n="35" label="Motivo de Encerramento" value={motivoEncerramento} grow />
+              <FieldBox n="35" label="Motivo de Encerramento do Atendimento" value={motivoEncerramento} grow />
             </FieldRow>
 
 
@@ -2375,17 +2375,17 @@ function GuiaLivePreview(props: {
             <div className="border-b border-foreground">
               <div className="grid grid-cols-[24px_80px_100px_50px_70px_1fr_40px_40px_40px_60px_70px_70px] text-[8px] font-bold border-b border-foreground bg-surface-subtle">
                 <div className="px-1 py-0.5 border-r border-foreground">&nbsp;</div>
-                <div className="px-1 py-0.5 border-r border-foreground">36-Data</div>
-                <div className="px-1 py-0.5 border-r border-foreground">37/38-Hora</div>
-                <div className="px-1 py-0.5 border-r border-foreground text-center">39-Tab</div>
-                <div className="px-1 py-0.5 border-r border-foreground">40-Código</div>
-                <div className="px-1 py-0.5 border-r border-foreground">41-Descrição</div>
-                <div className="px-1 py-0.5 border-r border-foreground text-center">42-Qtd</div>
-                <div className="px-1 py-0.5 border-r border-foreground text-center">43-Via</div>
-                <div className="px-1 py-0.5 border-r border-foreground text-center">44-Tec</div>
-                <div className="px-1 py-0.5 border-r border-foreground text-center">45-Red/Acr</div>
-                <div className="px-1 py-0.5 border-r border-foreground text-center">46-Vl Unit</div>
-                <div className="px-1 py-0.5 text-center">47-Vl Total</div>
+                <div className="px-1 py-0.5 border-r border-foreground">36 - Data</div>
+                <div className="px-1 py-0.5 border-r border-foreground">37 - Hora Inicial / 38 - Hora Final</div>
+                <div className="px-1 py-0.5 border-r border-foreground text-center">39 - Tabela</div>
+                <div className="px-1 py-0.5 border-r border-foreground">40 - Código do Procedimento</div>
+                <div className="px-1 py-0.5 border-r border-foreground">41 - Descrição</div>
+                <div className="px-1 py-0.5 border-r border-foreground text-center">42 - Qtde.</div>
+                <div className="px-1 py-0.5 border-r border-foreground text-center">43 - Via</div>
+                <div className="px-1 py-0.5 border-r border-foreground text-center">44 - Tec.</div>
+                <div className="px-1 py-0.5 border-r border-foreground text-center">45 - Fator Red./Acresc.</div>
+                <div className="px-1 py-0.5 border-r border-foreground text-center">46 - Valor Unitário (R$)</div>
+                <div className="px-1 py-0.5 text-center">47 - Valor Total (R$)</div>
               </div>
               {execRows.map((p, i) => (
                 <div key={i} className="grid grid-cols-[24px_80px_100px_50px_70px_1fr_40px_40px_40px_60px_70px_70px] text-[10px] border-b last:border-b-0 border-border min-h-[16px]">
@@ -2408,14 +2408,14 @@ function GuiaLivePreview(props: {
             <SectionBar>Identificação do(s) Profissional(is) Executante(s)</SectionBar>
             <div className="border-b border-foreground">
               <div className="grid grid-cols-[50px_60px_110px_1fr_90px_90px_40px_80px] text-[8px] font-bold border-b border-foreground bg-surface-subtle">
-                <div className="px-1 py-0.5 border-r border-foreground">48-Seq</div>
-                <div className="px-1 py-0.5 border-r border-foreground">49-Grau</div>
-                <div className="px-1 py-0.5 border-r border-foreground">50-Cód/CPF</div>
-                <div className="px-1 py-0.5 border-r border-foreground">51-Nome</div>
-                <div className="px-1 py-0.5 border-r border-foreground">52-Conselho</div>
-                <div className="px-1 py-0.5 border-r border-foreground">53-Nº</div>
-                <div className="px-1 py-0.5 border-r border-foreground">54-UF</div>
-                <div className="px-1 py-0.5">55-CBO</div>
+                <div className="px-1 py-0.5 border-r border-foreground">48 - Seq. Ref.</div>
+                <div className="px-1 py-0.5 border-r border-foreground">49 - Grau Part.</div>
+                <div className="px-1 py-0.5 border-r border-foreground">50 - Código na Operadora / CPF</div>
+                <div className="px-1 py-0.5 border-r border-foreground">51 - Nome do Profissional</div>
+                <div className="px-1 py-0.5 border-r border-foreground">52 - Conselho Profissional</div>
+                <div className="px-1 py-0.5 border-r border-foreground">53 - Número no Conselho</div>
+                <div className="px-1 py-0.5 border-r border-foreground">54 - UF</div>
+                <div className="px-1 py-0.5">55 - Código CBO</div>
               </div>
               {profRows.map((_, i) => (
                 <div key={i} className="grid grid-cols-[50px_60px_110px_1fr_90px_90px_40px_80px] text-[10px] border-b last:border-b-0 border-border min-h-[16px]">
@@ -2444,7 +2444,7 @@ function GuiaLivePreview(props: {
               </div>
               <div>
                 <div className="px-1 py-0.5 text-[8px] font-bold bg-surface-subtle border-b border-border">
-                  57 - Assinatura do Beneficiário
+                  57 - Assinatura do Beneficiário ou Responsável
                 </div>
                 <div className="h-10"></div>
               </div>
@@ -2457,12 +2457,12 @@ function GuiaLivePreview(props: {
 
             <div className="grid grid-cols-7 border-b border-foreground text-[9px]">
               {[
-                ["59", "Total Procedimentos"],
-                ["60", "Total Taxas/Aluguéis"],
-                ["61", "Total Materiais"],
-                ["62", "Total OPME"],
-                ["63", "Total Medicamentos"],
-                ["64", "Total Gases Med."],
+                ["59", "Total de Procedimentos (R$)"],
+                ["60", "Total de Taxas e Aluguéis (R$)"],
+                ["61", "Total de Materiais (R$)"],
+                ["62", "Total de OPME (R$)"],
+                ["63", "Total de Medicamentos (R$)"],
+                ["64", "Total de Gases Medicinais (R$)"],
                 ["65", "Total Geral (R$)"],
               ].map(([n, l]) => (
                 <div key={n} className="border-r last:border-r-0 border-border-strong px-1 py-0.5">
@@ -2474,8 +2474,8 @@ function GuiaLivePreview(props: {
 
             <div className="grid grid-cols-3 text-[9px]">
               {[
-                "66 - Assinatura Responsável pela Autorização",
-                "67 - Assinatura Beneficiário",
+                "66 - Assinatura do Responsável pela Autorização",
+                "67 - Assinatura do Beneficiário ou Responsável",
                 "68 - Assinatura do Contratado",
               ].map((l) => (
                 <div key={l} className="border-r last:border-r-0 border-border-strong px-1 py-1">
