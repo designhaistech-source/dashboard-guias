@@ -2,9 +2,17 @@ import type { ReactNode } from "react";
 
 import { Field, SelectField } from "@/components/form-field";
 import { Input } from "@/components/ui/input";
+import { useTouchedFields } from "@/hooks/use-touched-fields";
 
 import { COUNCILS, MANUAL_PROFESSIONAL_ID, PROFESSIONALS } from "../data/professionals";
 import { isManual, type ProfessionalValue } from "../lib/professional";
+import {
+  maskCouncilNumber,
+  maskProfessionalName,
+  validateProfessional,
+  type ProfessionalField,
+} from "../lib/professional-validation";
+
 
 interface ProfessionalPickerProps {
   value: ProfessionalValue;
