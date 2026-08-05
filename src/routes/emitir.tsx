@@ -2603,6 +2603,7 @@ function EmitirPage() {
                   { label: "Execução", done: realizadosOk },
                   { label: "Profissional executante", done: executantesOk },
                   { label: "Observação (opcional)", done: observacaoOk },
+                  { label: "Valores e assinaturas", done: financeiroOk },
 
 
                   { label: "OPME (opcional)", done: opmeOk },
