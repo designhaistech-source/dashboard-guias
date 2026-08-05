@@ -3232,26 +3232,31 @@ function GuiaLivePreview(props: {
                 ["63", "Total de Medicamentos (R$)"],
                 ["64", "Total de Gases Medicinais (R$)"],
                 ["65", "Total Geral (R$)"],
-              ].map(([n, l]) => (
+              ].map(([n, l], i) => (
                 <div key={n} className="border-r last:border-r-0 border-border-strong px-1 py-0.5">
                   <div className="text-[8px] font-bold">{n} - {l}</div>
-                  <div className="font-mono text-right min-h-[12px]">{opmeItems.length > 0 && n === "62" ? "" : ""}</div>
+                  <div className="font-mono text-right min-h-[12px]">{totais[i] ?? ""}</div>
                 </div>
               ))}
             </div>
 
             <div className="grid grid-cols-3 text-[9px]">
               {[
-                "66 - Assinatura do Responsável pela Autorização",
-                "67 - Assinatura do Beneficiário ou Responsável",
-                "68 - Assinatura do Contratado",
-              ].map((l) => (
+                ["66 - Assinatura do Responsável pela Autorização", assinaturaAutorizacao],
+                ["67 - Assinatura do Beneficiário ou Responsável", assinaturaBeneficiarioFinal],
+                ["68 - Assinatura do Contratado", assinaturaContratado],
+              ].map(([l, img]) => (
                 <div key={l} className="border-r last:border-r-0 border-border-strong px-1 py-1">
                   <div className="text-[8px] font-bold">{l}</div>
-                  <div className="h-8"></div>
+                  <div className="h-8 flex items-end">
+                    {img ? (
+                      <img src={img} alt="" className="max-h-8 object-contain" />
+                    ) : null}
+                  </div>
                 </div>
               ))}
             </div>
+
           </div>
         </div>
       </div>
