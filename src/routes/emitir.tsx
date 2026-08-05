@@ -877,6 +877,8 @@ function EmitirPage() {
   const profissionalOk = profissionalValido;
   const executanteOk = Boolean(contratadoExecutante.trim());
   const atendimentoOk = Boolean(tipoAtendimento.trim());
+  const realizadosOk = executedItems.some((i) => i.description.trim() || i.code.trim());
+
 
 
   const clinicoOk = Boolean(indicacaoClinica.trim() && dataSolicitacao.trim());
