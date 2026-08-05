@@ -1700,16 +1700,6 @@ function EmitirPage() {
                   )}
                 </div>
 
-                <div className="mt-5 border-t pt-5">
-                  <Field label="58 - Observação / Justificativa">
-                    <Textarea
-                      rows={2}
-                      value={observacoes}
-                      onChange={(e) => setObservacoes(e.target.value)}
-                      placeholder="Informações adicionais (opcional)."
-                    />
-                  </Field>
-                </div>
               </Section>
 
 
