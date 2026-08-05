@@ -153,9 +153,10 @@ export function ProfessionalPicker({ value, onChange, children, labels }: Profes
               >
                 {suggestions.length === 0 && (
                   <li className="px-2 py-1.5 text-xs text-muted-foreground">
-                    Nenhum cadastro com esse nome. O nome digitado será usado nesta guia.
+                    Nenhum profissional cadastrado com esse nome. Use “Cadastrar manualmente”.
                   </li>
                 )}
+
 
                 {suggestions.map((p) => {
                   const active = p.id === value.id;
