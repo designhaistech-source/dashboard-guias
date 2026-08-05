@@ -740,8 +740,6 @@ function EmitirPage() {
     "paciente",
     "profissional",
     "clinico",
-    "kits",
-    "procedimentos",
     "executante",
     "opme",
   ];
@@ -1455,13 +1453,22 @@ function EmitirPage() {
 
 
 
-              {/* Clínico */}
+              {/* Dados da solicitação (21 a 28) */}
               <Section
                 number={stepNumber("clinico")}
-                done={clinicoOk}
+                done={clinicoOk && procedimentosOk}
                 icon={<FileText className="h-4 w-4" />}
-                title="Dados da Solicitação"
-                description="Campos 21 a 23 da guia — solicitação e indicação clínica."
+                title={
+                  <span className="flex items-center gap-2">
+                    Dados da Solicitação
+                    {guideKind && (
+                      <span className="text-destructive font-semibold text-sm">
+                        - {GUIDE_SHORT[guideKind]}
+                      </span>
+                    )}
+                  </span>
+                }
+                description="Campos 21 a 28 da guia — solicitação, indicação clínica e procedimentos solicitados."
               >
                 <Grid cols={3}>
                   <SelectField
@@ -1499,206 +1506,197 @@ function EmitirPage() {
                     placeholder="Descreva a justificativa clínica do procedimento."
                   />
                 </Field>
-                <Field label="58 - Observação / Justificativa">
-                  <Textarea
-                    rows={2}
-                    value={observacoes}
-                    onChange={(e) => setObservacoes(e.target.value)}
-                    placeholder="Informações adicionais (opcional)."
-                  />
-                </Field>
-              </Section>
 
-              {/* Kits */}
-              <Section
-                number={stepNumber("kits")}
-                icon={<Package className="h-4 w-4" />}
-                title="Kits"
-                description="Aplique um conjunto de procedimentos salvo ou por especialidade."
-                action={
-                  <Button
-                    type="button"
-                    size="sm"
-                    variant="outline"
-                    onClick={() => setKitsEditOpen(true)}
-                  >
-                    <Pencil className="h-4 w-4" /> Editar kits
-                  </Button>
-                }
-              >
-                <SelectField
-                  label="Kits do usuário"
-                  labelClassName="text-xs font-medium text-muted-foreground"
-                  value={selectedUserKit}
-                  onValueChange={(v) => {
-                    setSelectedUserKit(v);
-                    const kit = userKits.find((k) => k.id === v);
-                    if (kit) applyKit(kit);
-                  }}
-                  placeholder={
-                    userKits.length === 0
-                      ? "Nenhum kit cadastrado"
-                      : "Selecione um kit salvo"
-                  }
-                  options={userKits.map((k) => ({
-                    value: k.id,
-                    label: `${k.name} (${k.procedures.length})`,
-                  }))}
-                />
-
-                <Grid cols={2}>
-                  <SelectField
-                    label="Kits por Especialidade Médica"
-                    labelClassName="text-xs font-medium text-muted-foreground"
-                    value={selectedSpecialty}
-                    onValueChange={(v) => {
-                      setSelectedSpecialty(v);
-                      setSelectedSpecialtyKit("");
-                    }}
-                    placeholder="Selecione uma especialidade (CBO)"
-                    options={specialties.map((s) => ({ value: s, label: s }))}
-                  />
-                  <SelectField
-                    label="Procedimento"
-                    labelClassName="text-xs font-medium text-muted-foreground"
-                    value={selectedSpecialtyKit}
-                    onValueChange={(v) => {
-                      setSelectedSpecialtyKit(v);
-                      const kit = specialtyKitOptions.find((k) => k.id === v);
-                      if (kit) applyKit(kit);
-                    }}
-                    disabled={!selectedSpecialty}
-                    placeholder={
-                      selectedSpecialty
-                        ? "Selecione um kit"
-                        : "Escolha a especialidade primeiro"
-                    }
-                    options={specialtyKitOptions.map((k) => ({ value: k.id, label: k.name }))}
-                  />
-
-                </Grid>
-              </Section>
-
-              {/* Procedimentos */}
-              <Section
-                number={stepNumber("procedimentos")}
-                done={procedimentosOk}
-                icon={<ClipboardList className="h-4 w-4" />}
-                title={
-                  <span className="flex items-center gap-2">
-                    Procedimentos solicitados
-                    {guideKind && (
-                      <span className="text-destructive font-semibold text-sm">
-                        - {GUIDE_SHORT[guideKind]}
-                      </span>
-                    )}
-                  </span>
-                }
-                description="Campos 24 a 28 da guia — procedimentos e itens assistenciais solicitados."
-                action={
-                  <div className="flex flex-wrap items-center gap-2">
-                    <Button type="button" size="sm" variant="outline" onClick={clearProcedures}>
-                      Limpar
-                    </Button>
-                    <Button type="button" size="sm" onClick={addProcedure}>
-                      <Plus className="h-4 w-4" /> Adicionar
-                    </Button>
+                {/* Kits — atalho para preencher os procedimentos 24 a 28 */}
+                <div className="mt-5 border-t pt-5 space-y-3">
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    <h4 className="text-sm font-semibold">Kits</h4>
                     <Button
                       type="button"
                       size="sm"
-                      onClick={saveAsKit}
-                      className="bg-success text-success-foreground hover:bg-success/90"
+                      variant="outline"
+                      onClick={() => setKitsEditOpen(true)}
                     >
-                      <Plus className="h-4 w-4" /> Salvar como kit
+                      <Pencil className="h-4 w-4" /> Editar kits
                     </Button>
                   </div>
-                }
-              >
-                <div className="space-y-2">
-                  {procedures.map((p, idx) => (
-                    <div
-                      key={p.id}
-                      draggable
-                      onDragStart={() => onDragStart(p.id)}
-                      onDragOver={onDragOver}
-                      onDrop={() => onDrop(p.id)}
-                      className={cn(
-                        "grid grid-cols-[28px_1fr_auto] items-end gap-2 rounded-md border p-2 lg:grid-cols-12 lg:border-0 lg:p-0",
-                        dragId === p.id && "opacity-50",
-                      )}
-                    >
-                      <div className="row-span-3 flex cursor-grab items-center justify-center self-center text-muted-foreground active:cursor-grabbing lg:row-span-1 lg:col-span-1 lg:self-end lg:pb-2">
-                        <GripVertical className="h-4 w-4" />
-                      </div>
-                      <div className="col-span-2 lg:col-span-3">
-                        <Input
-                          value={p.code}
-                          onChange={(e) => updateProcedure(p.id, { code: e.target.value })}
-                          placeholder="Código TUSS"
-                        />
-                      </div>
-                      <div className="col-span-2 lg:col-span-6">
-                        <Combobox
-                          value={
-                            TUSS.some((t) => t.descricao === p.description)
-                              ? TUSS.find((t) => t.descricao === p.description)!.codigo
-                              : ""
-                          }
-                          onChange={(codigo) => {
-                            const item = TUSS.find((t) => t.codigo === codigo);
-                            updateProcedure(p.id, {
-                              code: item ? item.codigo : "",
-                              description: item ? item.descricao : "",
-                            });
-                          }}
-                          options={TUSS_OPTIONS}
-                          placeholder={p.description || "Buscar procedimento (TUSS)"}
-                          searchPlaceholder="Digite o código ou a descrição..."
-                          emptyMessage="Nenhum procedimento encontrado."
-                          clearable
-                        />
-                      </div>
-                      <div className="col-span-1 w-24 lg:w-auto">
-                        <Input
-                          type="number"
-                          min={1}
-                          value={p.quantity}
-                          onChange={(e) =>
-                            updateProcedure(p.id, {
-                              quantity: Math.max(1, Number(e.target.value) || 1),
-                            })
-                          }
-                        />
-                      </div>
-                      <div className="col-span-1 flex justify-end lg:col-span-1">
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => removeProcedure(p.id)}
-                          disabled={procedures.length === 1}
-                          aria-label={`Remover procedimento ${idx + 1}`}
-                        >
-                          <Trash2 className="h-4 w-4 text-destructive" />
-                        </Button>
-                      </div>
-                    </div>
-                  ))}
+                  <SelectField
+                    label="Kits do usuário"
+                    labelClassName="text-xs font-medium text-muted-foreground"
+                    value={selectedUserKit}
+                    onValueChange={(v) => {
+                      setSelectedUserKit(v);
+                      const kit = userKits.find((k) => k.id === v);
+                      if (kit) applyKit(kit);
+                    }}
+                    placeholder={
+                      userKits.length === 0
+                        ? "Nenhum kit cadastrado"
+                        : "Selecione um kit salvo"
+                    }
+                    options={userKits.map((k) => ({
+                      value: k.id,
+                      label: `${k.name} (${k.procedures.length})`,
+                    }))}
+                  />
+
+                  <Grid cols={2}>
+                    <SelectField
+                      label="Kits por Especialidade Médica"
+                      labelClassName="text-xs font-medium text-muted-foreground"
+                      value={selectedSpecialty}
+                      onValueChange={(v) => {
+                        setSelectedSpecialty(v);
+                        setSelectedSpecialtyKit("");
+                      }}
+                      placeholder="Selecione uma especialidade (CBO)"
+                      options={specialties.map((s) => ({ value: s, label: s }))}
+                    />
+                    <SelectField
+                      label="Procedimento"
+                      labelClassName="text-xs font-medium text-muted-foreground"
+                      value={selectedSpecialtyKit}
+                      onValueChange={(v) => {
+                        setSelectedSpecialtyKit(v);
+                        const kit = specialtyKitOptions.find((k) => k.id === v);
+                        if (kit) applyKit(kit);
+                      }}
+                      disabled={!selectedSpecialty}
+                      placeholder={
+                        selectedSpecialty
+                          ? "Selecione um kit"
+                          : "Escolha a especialidade primeiro"
+                      }
+                      options={specialtyKitOptions.map((k) => ({ value: k.id, label: k.name }))}
+                    />
+                  </Grid>
                 </div>
 
-                {filledProceduresCount > 1 && (
-                  <div className="flex items-center justify-end gap-2 pt-2 border-t">
-                    <Checkbox
-                      id="split-guides"
-                      checked={splitInGuides}
-                      onCheckedChange={(c) => setSplitInGuides(!!c)}
-                    />
-                    <Label htmlFor="split-guides" className="text-sm cursor-pointer">
-                      Solicitar os exames em {filledProceduresCount} guias separadas
-                    </Label>
+                {/* Procedimentos solicitados (24 a 28) */}
+                <div className="mt-5 border-t pt-5 space-y-3">
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    <h4 className="text-sm font-semibold">
+                      Procedimentos solicitados
+                      <span className="ml-2 text-xs font-normal text-muted-foreground">
+                        Campos 24 a 28
+                      </span>
+                    </h4>
+                    <div className="flex flex-wrap items-center gap-2">
+                      <Button type="button" size="sm" variant="outline" onClick={clearProcedures}>
+                        Limpar
+                      </Button>
+                      <Button type="button" size="sm" onClick={addProcedure}>
+                        <Plus className="h-4 w-4" /> Adicionar
+                      </Button>
+                      <Button
+                        type="button"
+                        size="sm"
+                        onClick={saveAsKit}
+                        className="bg-success text-success-foreground hover:bg-success/90"
+                      >
+                        <Plus className="h-4 w-4" /> Salvar como kit
+                      </Button>
+                    </div>
                   </div>
-                )}
+
+                  <div className="space-y-2">
+                    {procedures.map((p, idx) => (
+                      <div
+                        key={p.id}
+                        draggable
+                        onDragStart={() => onDragStart(p.id)}
+                        onDragOver={onDragOver}
+                        onDrop={() => onDrop(p.id)}
+                        className={cn(
+                          "grid grid-cols-[28px_1fr_auto] items-end gap-2 rounded-md border p-2 lg:grid-cols-12 lg:border-0 lg:p-0",
+                          dragId === p.id && "opacity-50",
+                        )}
+                      >
+                        <div className="row-span-3 flex cursor-grab items-center justify-center self-center text-muted-foreground active:cursor-grabbing lg:row-span-1 lg:col-span-1 lg:self-end lg:pb-2">
+                          <GripVertical className="h-4 w-4" />
+                        </div>
+                        <div className="col-span-2 lg:col-span-3">
+                          <Input
+                            value={p.code}
+                            onChange={(e) => updateProcedure(p.id, { code: e.target.value })}
+                            placeholder="Código TUSS"
+                          />
+                        </div>
+                        <div className="col-span-2 lg:col-span-6">
+                          <Combobox
+                            value={
+                              TUSS.some((t) => t.descricao === p.description)
+                                ? TUSS.find((t) => t.descricao === p.description)!.codigo
+                                : ""
+                            }
+                            onChange={(codigo) => {
+                              const item = TUSS.find((t) => t.codigo === codigo);
+                              updateProcedure(p.id, {
+                                code: item ? item.codigo : "",
+                                description: item ? item.descricao : "",
+                              });
+                            }}
+                            options={TUSS_OPTIONS}
+                            placeholder={p.description || "Buscar procedimento (TUSS)"}
+                            searchPlaceholder="Digite o código ou a descrição..."
+                            emptyMessage="Nenhum procedimento encontrado."
+                            clearable
+                          />
+                        </div>
+                        <div className="col-span-1 w-24 lg:w-auto">
+                          <Input
+                            type="number"
+                            min={1}
+                            value={p.quantity}
+                            onChange={(e) =>
+                              updateProcedure(p.id, {
+                                quantity: Math.max(1, Number(e.target.value) || 1),
+                              })
+                            }
+                          />
+                        </div>
+                        <div className="col-span-1 flex justify-end lg:col-span-1">
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => removeProcedure(p.id)}
+                            disabled={procedures.length === 1}
+                            aria-label={`Remover procedimento ${idx + 1}`}
+                          >
+                            <Trash2 className="h-4 w-4 text-destructive" />
+                          </Button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  {filledProceduresCount > 1 && (
+                    <div className="flex items-center justify-end gap-2 pt-2 border-t">
+                      <Checkbox
+                        id="split-guides"
+                        checked={splitInGuides}
+                        onCheckedChange={(c) => setSplitInGuides(!!c)}
+                      />
+                      <Label htmlFor="split-guides" className="text-sm cursor-pointer">
+                        Solicitar os exames em {filledProceduresCount} guias separadas
+                      </Label>
+                    </div>
+                  )}
+                </div>
+
+                <div className="mt-5 border-t pt-5">
+                  <Field label="58 - Observação / Justificativa">
+                    <Textarea
+                      rows={2}
+                      value={observacoes}
+                      onChange={(e) => setObservacoes(e.target.value)}
+                      placeholder="Informações adicionais (opcional)."
+                    />
+                  </Field>
+                </div>
               </Section>
+
 
               {/* Contratado executante e atendimento */}
               <Section
@@ -1887,8 +1885,7 @@ function EmitirPage() {
                   ...(guideKind === "aih" ? [{ label: "AIH", done: especificoOk }] : []),
                   { label: "Beneficiário", done: pacienteOk },
                   { label: "Profissional", done: profissionalOk },
-                  { label: "Dados da Solicitação", done: clinicoOk },
-                  { label: "Procedimentos", done: procedimentosOk },
+                  { label: "Dados da Solicitação", done: clinicoOk && procedimentosOk },
                   { label: "Executante", done: executanteOk },
                   { label: "OPME (opcional)", done: opmeOk },
                 ]}
