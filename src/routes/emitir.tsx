@@ -2982,6 +2982,10 @@ function GuiaLivePreview(props: {
   pacienteCns: string;
   pacienteRn: string;
   assinaturaSolicitante: string;
+  totais?: string[];
+  assinaturaAutorizacao?: string;
+  assinaturaBeneficiarioFinal?: string;
+  assinaturaContratado?: string;
   fullSize?: boolean;
 }) {
   const {
@@ -2995,6 +2999,8 @@ function GuiaLivePreview(props: {
     codigoExecutante, contratadoExecutante, cnesExecutante,
     tipoAtendimento, indicacaoAcidente, tipoConsulta, motivoEncerramento,
     pacienteValidadeCarteira, pacienteCns, pacienteRn, assinaturaSolicitante,
+    totais = [], assinaturaAutorizacao = "", assinaturaBeneficiarioFinal = "",
+    assinaturaContratado = "",
   } = props;
 
 
