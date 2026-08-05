@@ -1,8 +1,10 @@
 import { useMemo, useRef, useState, type ReactNode } from "react";
-import { Check, ChevronDown } from "lucide-react";
+import { Check, ChevronDown, Search, UserPlus } from "lucide-react";
 
 import { Field, SelectField } from "@/components/form-field";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+
 import { useTouchedFields } from "@/hooks/use-touched-fields";
 import { cn } from "@/lib/utils";
 
