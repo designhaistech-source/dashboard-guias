@@ -593,7 +593,7 @@ function EmitirPage() {
   ]);
 
   const [previewOpen, setPreviewOpen] = useState(false);
-  const canPreview = convenioId === "tiss" ? Boolean(operadora) : true;
+  const canPreview = true;
   const [preview, setPreview] = useState<null | {
     numero: string;
     tipo: string;
