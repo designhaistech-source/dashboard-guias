@@ -192,7 +192,27 @@ export function ProfessionalPicker({ value, onChange, children, labels }: Profes
 
             )}
           </div>
+          <Button
+            type="button"
+            variant="link"
+            size="sm"
+            className="mt-1 h-auto p-0"
+            onClick={manualMode ? backToSearch : startManual}
+          >
+            {manualMode ? (
+              <>
+                <Search aria-hidden />
+                Buscar profissional cadastrado
+              </>
+            ) : (
+              <>
+                <UserPlus aria-hidden />
+                Cadastrar manualmente
+              </>
+            )}
+          </Button>
         </Field>
+
         <SelectField
           id="profissional-conselho"
           label={labels?.conselho ?? "Conselho"}
