@@ -854,8 +854,7 @@ function EmitirPage() {
     "executante",
     "atendimento",
     "realizados",
-
-
+    "executantes",
     "opme",
   ];
 
@@ -878,6 +877,7 @@ function EmitirPage() {
   const executanteOk = Boolean(contratadoExecutante.trim());
   const atendimentoOk = Boolean(tipoAtendimento.trim());
   const realizadosOk = executedItems.some((i) => i.description.trim() || i.code.trim());
+  const executantesOk = executantes.some((e) => e.name.trim() && e.councilNumber.trim());
 
 
 
