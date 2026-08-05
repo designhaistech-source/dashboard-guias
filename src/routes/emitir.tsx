@@ -1517,44 +1517,43 @@ function EmitirPage() {
 
                 {/* Procedimentos solicitados (24 a 28) */}
                 <div className="mt-5 border-t pt-5 space-y-3">
-                  <div className="flex flex-wrap items-center justify-between gap-2">
-                    <h4 className="text-sm font-semibold">
+                  <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-2 sm:flex sm:justify-between">
+                    <h4 className="min-w-0 text-sm font-medium">
                       Procedimentos solicitados
                       <span className="ml-2 text-xs font-normal text-muted-foreground">
                         Campos 24 a 28
                       </span>
                     </h4>
-                    <div className="flex flex-wrap items-center gap-2">
+                    <div className="flex shrink-0 items-center gap-2">
                       <Button type="button" size="sm" variant="outline" onClick={clearProcedures}>
                         Limpar
                       </Button>
                       <Button type="button" size="sm" onClick={addProcedure}>
                         <Plus className="h-4 w-4" /> Adicionar
                       </Button>
-
                     </div>
                   </div>
 
                   <p className="text-xs text-muted-foreground">
-                    O campo <strong>24 - Tabela</strong> é preenchido automaticamente com a tabela
-                    22 (TUSS) e o campo <strong>28 - Qtde. Aut.</strong> é de preenchimento da
-                    operadora.
+                    Busque pela descrição — o código TUSS é preenchido automaticamente. O campo{" "}
+                    <strong>24 - Tabela</strong> é fixo (22) e o campo <strong>28 - Qtde. Aut.</strong>{" "}
+                    é preenchido pela operadora.
                   </p>
 
                   {/* Rótulos das colunas (campos 24 a 28) — visíveis no desktop */}
-                  <div className="hidden lg:grid lg:grid-cols-[28px_72px_minmax(0,150px)_minmax(0,1fr)_84px_84px_40px] items-end gap-3 text-xs font-medium text-muted-foreground">
+                  <div className="hidden lg:grid lg:grid-cols-[28px_minmax(0,1fr)_128px_80px_56px_80px_40px] items-end gap-3 text-xs font-medium text-muted-foreground">
                     <div />
-                    <div className="truncate" title="24 - Tabela">
-                      24 - Tabela
+                    <div className="truncate" title="26 - Descrição">
+                      26 - Descrição <span className="text-destructive">*</span>
                     </div>
                     <div className="truncate" title="25 - Código do Procedimento ou Item Assistencial">
                       25 - Código <span className="text-destructive">*</span>
                     </div>
-                    <div className="truncate" title="26 - Descrição">
-                      26 - Descrição <span className="text-destructive">*</span>
-                    </div>
                     <div className="truncate text-center" title="27 - Qtde. Solicitada">
-                      27 - Qtde. Solic. <span className="text-destructive">*</span>
+                      27 - Qtde. <span className="text-destructive">*</span>
+                    </div>
+                    <div className="truncate text-center" title="24 - Tabela">
+                      24 - Tab.
                     </div>
                     <div className="truncate text-center" title="28 - Qtde. Autorizada (operadora)">
                       28 - Qtde. Aut.
@@ -1571,13 +1570,13 @@ function EmitirPage() {
                         onDragOver={onDragOver}
                         onDrop={() => onDrop(p.id)}
                         className={cn(
-                          "rounded-lg border p-3 lg:grid lg:grid-cols-[28px_72px_minmax(0,150px)_minmax(0,1fr)_84px_84px_40px] lg:items-center lg:gap-3 lg:rounded-none lg:border-0 lg:p-0",
+                          "rounded-lg border p-3 lg:grid lg:grid-cols-[28px_minmax(0,1fr)_128px_80px_56px_80px_40px] lg:items-center lg:gap-3 lg:rounded-none lg:border-0 lg:p-0",
                           dragId === p.id && "opacity-50",
                         )}
                       >
                         {/* Handle + remover (mobile: linha superior) */}
                         <div className="mb-2 flex items-center justify-between lg:mb-0 lg:contents">
-                          <div className="flex cursor-grab items-center justify-center text-muted-foreground active:cursor-grabbing lg:order-none">
+                          <div className="flex cursor-grab items-center justify-center text-muted-foreground active:cursor-grabbing">
                             <GripVertical className="h-4 w-4" />
                             <span className="ml-1 text-xs font-medium lg:hidden">
                               Item {idx + 1}
@@ -1597,42 +1596,12 @@ function EmitirPage() {
                           </div>
                         </div>
 
-                        {/* 24 - Tabela (automático) */}
-                        <FormField
-                          label="24 - Tabela"
-                          labelClassName="lg:hidden"
-                          className="lg:space-y-0"
-                        >
-                          <Input
-                            value="22"
-                            readOnly
-                            tabIndex={-1}
-                            aria-label="24 - Tabela"
-                            className="bg-muted text-center text-muted-foreground"
-                          />
-                        </FormField>
-
-                        {/* 25 - Código */}
-                        <FormField
-                          label={<>25 - Código</>}
-                          required
-                          labelClassName="lg:hidden"
-                          className="mt-3 lg:mt-0 lg:space-y-0"
-                        >
-                          <Input
-                            value={p.code}
-                            onChange={(e) => updateProcedure(p.id, { code: e.target.value })}
-                            aria-label="25 - Código do Procedimento ou Item Assistencial"
-                            placeholder="Código TUSS"
-                          />
-                        </FormField>
-
-                        {/* 26 - Descrição */}
+                        {/* 26 - Descrição (busca principal) */}
                         <FormField
                           label="26 - Descrição"
                           required
                           labelClassName="lg:hidden"
-                          className="mt-3 min-w-0 lg:mt-0 lg:space-y-0"
+                          className="min-w-0 lg:space-y-0"
                         >
                           <Combobox
                             value={
@@ -1652,6 +1621,22 @@ function EmitirPage() {
                             searchPlaceholder="Digite o código ou a descrição..."
                             emptyMessage="Nenhum procedimento encontrado."
                             clearable
+                          />
+                        </FormField>
+
+                        {/* 25 - Código */}
+                        <FormField
+                          label="25 - Código"
+                          required
+                          labelClassName="lg:hidden"
+                          className="mt-3 lg:mt-0 lg:space-y-0"
+                        >
+                          <Input
+                            value={p.code}
+                            onChange={(e) => updateProcedure(p.id, { code: e.target.value })}
+                            aria-label="25 - Código do Procedimento ou Item Assistencial"
+                            placeholder="Código TUSS"
+                            className="font-mono"
                           />
                         </FormField>
 
@@ -1676,21 +1661,17 @@ function EmitirPage() {
                           />
                         </FormField>
 
-                        {/* 28 - Qtde. Autorizada (operadora) */}
-                        <FormField
-                          label="28 - Qtde. Aut."
-                          labelClassName="lg:hidden"
-                          className="mt-3 lg:mt-0 lg:space-y-0"
-                        >
-                          <Input
-                            value=""
-                            readOnly
-                            tabIndex={-1}
-                            placeholder="—"
-                            aria-label="28 - Qtde. Autorizada (preenchida pela operadora)"
-                            className="bg-muted text-center text-muted-foreground"
-                          />
-                        </FormField>
+                        {/* 24 - Tabela e 28 - Qtde. Autorizada (somente leitura) */}
+                        <div className="hidden lg:block text-center font-mono text-sm text-muted-foreground">
+                          22
+                        </div>
+                        <div className="hidden lg:block text-center text-sm text-muted-foreground">
+                          —
+                        </div>
+                        <p className="mt-3 text-xs text-muted-foreground lg:hidden">
+                          24 - Tabela: <span className="font-mono">22</span> · 28 - Qtde. Aut.: —
+                          (operadora)
+                        </p>
 
                         <div className="hidden lg:flex lg:justify-end">
                           <Button
@@ -1707,6 +1688,7 @@ function EmitirPage() {
                       </div>
                     ))}
                   </div>
+
 
 
                   {filledProceduresCount > 1 && (
