@@ -1831,7 +1831,7 @@ function EmitirPage() {
                 done={executanteOk}
                 icon={<Building2 className="h-4 w-4" />}
                 title="Dados do Contratado Executante"
-                description="Campos 29 a 35 da guia — contratado executante e características do atendimento."
+                description="Campos 29 a 31 da guia — identificação do contratado executante."
               >
                 <Grid cols={3}>
                   <Field label="29 - Código na Operadora">
@@ -1855,6 +1855,19 @@ function EmitirPage() {
                       placeholder="0000000"
                     />
                   </Field>
+                </Grid>
+              </Section>
+
+              {/* Dados do Atendimento */}
+              <Section
+                number={stepNumber("atendimento")}
+                done={atendimentoOk}
+                icon={<ClipboardList className="h-4 w-4" />}
+                title="Dados do Atendimento"
+                description="Campos 32 a 35 da guia — características do atendimento executado."
+              >
+                <Grid cols={3}>
+
                   <SelectField
                     label="32 - Tipo de Atendimento"
                     labelClassName="text-xs font-medium text-muted-foreground"
