@@ -6,6 +6,7 @@ import {
   FileText,
   Hospital,
   Plus,
+  Eye,
   Save,
   Stethoscope,
   Trash2,
@@ -23,6 +24,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Combobox } from "@/components/ui/combobox";
 import { EmptyState } from "@/components/data-state";
 import { SelectField } from "@/components/form-field";
+import { AppModal } from "@/components/app-modal";
+import { InternacaoGuidePreview } from "./internacao-guide-preview";
 import { CID_OPTIONS } from "@/lib/cid";
 import { TUSS, TUSS_OPTIONS } from "@/lib/tuss";
 
@@ -211,6 +214,56 @@ export function InternacaoGuideForm({
   const [assinaturaAutorizacao, setAssinaturaAutorizacao] = useState("");
 
   const [submitting, setSubmitting] = useState(false);
+  const [previewOpen, setPreviewOpen] = useState(false);
+
+  /** Dados normalizados enviados à pré-visualização da guia impressa. */
+  const previewData = {
+    ans,
+    guiaPrestador,
+    guiaOperadora,
+    dataAutorizacao,
+    senha,
+    validadeSenha,
+    carteira,
+    validadeCarteira,
+    atendimentoRn,
+    nomeBeneficiario,
+    cns,
+    codigoSolicitante,
+    nomeContratado,
+    nomeProfissional,
+    conselho,
+    numeroConselho,
+    ufConselho,
+    cbo,
+    codigoHospital,
+    nomeHospital,
+    dataSugerida,
+    carater,
+    tipoInternacao,
+    regimeInternacao,
+    diariasSolicitadas,
+    previsaoOpme,
+    previsaoQuimio,
+    indicacaoClinica,
+    cid1,
+    cid2,
+    cid3,
+    cid4,
+    indicacaoAcidente,
+    items,
+    dataAdmissao,
+    diariasAutorizadas,
+    acomodacaoAutorizada,
+    codigoAutorizado,
+    hospitalAutorizado,
+    cnes,
+    observacao,
+    dataSolicitacao,
+    assinaturaProfissional,
+    assinaturaBeneficiario,
+    assinaturaAutorizacao,
+  };
 
   const updateItem = (id: string, patch: Partial<RequestedItem>) =>
     setItems((prev) => prev.map((i) => (i.id === id ? { ...i, ...patch } : i)));
@@ -252,7 +305,19 @@ export function InternacaoGuideForm({
 
   return (
     <form onSubmit={handleSubmit} className="animate-fade-in space-y-6">
-      {header}
+      {header ? (
+        <div className="flex flex-wrap items-center gap-3">
+          <div className="min-w-0 flex-1">{header}</div>
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={() => setPreviewOpen(true)}
+          >
+            <Eye className="h-4 w-4" /> Pré-visualizar
+          </Button>
+        </div>
+      ) : null}
 
       {/* 1 a 6 */}
       <SectionCard
@@ -784,6 +849,16 @@ export function InternacaoGuideForm({
           {submitting ? "Gerando..." : "Gerar guia"}
         </Button>
       </FormActionBar>
+
+      <AppModal
+        open={previewOpen}
+        onOpenChange={setPreviewOpen}
+        title="Pré-visualização da guia"
+        description="Guia de Solicitação de Internação — padrão TISS."
+        size="xl"
+      >
+        <InternacaoGuidePreview {...previewData} fullSize />
+      </AppModal>
     </form>
   );
 }
