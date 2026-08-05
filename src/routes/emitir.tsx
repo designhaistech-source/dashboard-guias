@@ -61,7 +61,7 @@ import {
   validateProfessional,
   type ProfessionalValue,
 } from "@/features/professional";
-import { InternacaoGuideForm } from "@/features/guides";
+import { ApacGuideForm, InternacaoGuideForm } from "@/features/guides";
 
 
 
