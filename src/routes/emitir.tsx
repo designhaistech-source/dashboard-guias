@@ -853,6 +853,8 @@ function EmitirPage() {
     "clinico",
     "executante",
     "atendimento",
+    "realizados",
+
 
     "opme",
   ];
