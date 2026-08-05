@@ -61,6 +61,8 @@ import {
   validateProfessional,
   type ProfessionalValue,
 } from "@/features/professional";
+import { InternacaoGuideForm } from "@/features/guides";
+
 
 
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
