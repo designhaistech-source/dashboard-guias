@@ -1475,15 +1475,15 @@ function EmitirPage() {
                 title={
                   <span className="flex items-center gap-2 whitespace-nowrap">
                     Dados da Solicitação
-
                     {guideKind && (
-                      <span className="text-destructive font-semibold text-sm">
-                        - {GUIDE_SHORT[guideKind]}
-                      </span>
+                      <Badge variant="secondary" className="font-medium">
+                        {GUIDE_SHORT[guideKind]}
+                      </Badge>
                     )}
                   </span>
                 }
                 description="Campos 21 a 28 da guia — solicitação, indicação clínica e procedimentos solicitados."
+
               >
                 <Grid cols={2}>
                   <SelectField
