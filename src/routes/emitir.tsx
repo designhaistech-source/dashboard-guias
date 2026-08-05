@@ -1460,7 +1460,7 @@ function EmitirPage() {
                 number={stepNumber("clinico")}
                 done={clinicoOk}
                 icon={<FileText className="h-4 w-4" />}
-                title="Dados clínicos"
+                title="Dados da Solicitação"
                 description="Campos 21 a 23 da guia — solicitação e indicação clínica."
               >
                 <Grid cols={3}>
@@ -1887,7 +1887,7 @@ function EmitirPage() {
                   ...(guideKind === "aih" ? [{ label: "AIH", done: especificoOk }] : []),
                   { label: "Beneficiário", done: pacienteOk },
                   { label: "Profissional", done: profissionalOk },
-                  { label: "Dados clínicos", done: clinicoOk },
+                  { label: "Dados da Solicitação", done: clinicoOk },
                   { label: "Procedimentos", done: procedimentosOk },
                   { label: "Executante", done: executanteOk },
                   { label: "OPME (opcional)", done: opmeOk },
