@@ -68,38 +68,37 @@ export function ProfessionalPicker({ value, onChange, children, labels }: Profes
         {children}
       </div>
 
-      {manual && (
-        <div className="grid gap-4 lg:grid-cols-2 xl:grid-cols-[1fr_140px_160px_200px]">
-          <Field id="profissional-nome" label={labels?.nome ?? "Nome do profissional"} required>
-            <Input
-              value={value.nome}
-              onChange={(e) => onChange({ ...value, nome: e.target.value })}
-              autoComplete="name"
-            />
-          </Field>
-          <SelectField
-            id="profissional-conselho"
-            label={labels?.conselho ?? "Conselho"}
-            value={value.conselho}
-            onValueChange={(conselho) => onChange({ ...value, conselho })}
-            options={COUNCILS.map((c) => ({ value: c, label: c }))}
+      <div className="grid gap-4 lg:grid-cols-2 xl:grid-cols-[1fr_140px_160px_200px]">
+        <Field id="profissional-nome" label={labels?.nome ?? "Nome do profissional"} required>
+          <Input
+            value={value.nome}
+            onChange={(e) => onChange({ ...value, nome: e.target.value })}
+            autoComplete="name"
           />
-          <Field id="profissional-numero" label={labels?.numero ?? "Número do conselho"} required>
-            <Input
-              value={value.numero}
-              onChange={(e) => onChange({ ...value, numero: e.target.value })}
-              placeholder="0000/UF"
-            />
-          </Field>
-          <Field id="profissional-especialidade" label="Especialidade">
-            <Input
-              value={value.especialidade}
-              onChange={(e) => onChange({ ...value, especialidade: e.target.value })}
-              placeholder="Cardiologia, Ortopedia..."
-            />
-          </Field>
-        </div>
-      )}
+        </Field>
+        <SelectField
+          id="profissional-conselho"
+          label={labels?.conselho ?? "Conselho"}
+          value={value.conselho}
+          onValueChange={(conselho) => onChange({ ...value, conselho })}
+          options={COUNCILS.map((c) => ({ value: c, label: c }))}
+        />
+        <Field id="profissional-numero" label={labels?.numero ?? "Número do conselho"} required>
+          <Input
+            value={value.numero}
+            onChange={(e) => onChange({ ...value, numero: e.target.value })}
+            placeholder="0000/UF"
+          />
+        </Field>
+        <Field id="profissional-especialidade" label="Especialidade">
+          <Input
+            value={value.especialidade}
+            onChange={(e) => onChange({ ...value, especialidade: e.target.value })}
+            placeholder="Cardiologia, Ortopedia..."
+          />
+        </Field>
+      </div>
     </div>
   );
 }
+
