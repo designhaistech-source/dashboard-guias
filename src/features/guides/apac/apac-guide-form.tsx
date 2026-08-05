@@ -67,7 +67,7 @@ function newSecondary(): SecondaryProcedure {
 function Grid({ cols, children }: { cols: 2 | 3; children: React.ReactNode }) {
   return (
     <div
-      className={`grid gap-4 ${cols === 2 ? "lg:grid-cols-2" : "lg:grid-cols-2 xl:grid-cols-3"}`}
+      className={`@container grid gap-4 ${cols === 2 ? "@md:grid-cols-2" : "@md:grid-cols-2 @3xl:grid-cols-3"}`}
     >
       {children}
     </div>
@@ -481,7 +481,7 @@ export function ApacGuideForm({ header }: ApacGuideFormProps) {
           />
         ) : (
           <div className="space-y-3">
-            <div className="hidden gap-3 px-1 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground lg:grid lg:grid-cols-[160px_1fr_90px_40px]">
+            <div className="hidden gap-3 px-1 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground @3xl:grid @3xl:grid-cols-[160px_1fr_90px_40px]">
               <span>Código</span>
               <span>Nome do procedimento</span>
               <span className="text-center">Qtde.</span>
@@ -490,9 +490,9 @@ export function ApacGuideForm({ header }: ApacGuideFormProps) {
             {secundarios.map((item, idx) => (
               <div
                 key={item.id}
-                className="grid gap-3 rounded-lg border p-3 lg:grid-cols-[160px_1fr_90px_40px] lg:items-center lg:border-0 lg:p-0"
+                className="grid gap-3 rounded-lg border p-3 @3xl:grid-cols-[160px_1fr_90px_40px] @3xl:items-center @3xl:border-0 @3xl:p-0"
               >
-                <div className="text-xs font-semibold text-muted-foreground lg:hidden">
+                <div className="text-xs font-semibold text-muted-foreground @3xl:hidden">
                   Procedimento secundário {idx + 1}
                 </div>
                 <Input
@@ -637,7 +637,7 @@ export function ApacGuideForm({ header }: ApacGuideFormProps) {
             />
           </Field>
         </Grid>
-        <div className="mt-5 grid gap-4 border-t pt-5 lg:grid-cols-2">
+        <div className="mt-5 grid gap-4 border-t pt-5 @3xl:grid-cols-2">
           <SignatureField
             label="45 - Assinatura e Carimbo (Nº Registro do Conselho)"
             value={assinaturaSolicitante}
@@ -717,7 +717,7 @@ export function ApacGuideForm({ header }: ApacGuideFormProps) {
             />
           </Field>
         </Grid>
-        <div className="mt-5 grid gap-4 border-t pt-5 lg:grid-cols-2">
+        <div className="mt-5 grid gap-4 border-t pt-5 @3xl:grid-cols-2">
           <SignatureField
             label="51 - Assinatura e Carimbo (Nº do Registro do Conselho)"
             value={assinaturaAutorizador}
