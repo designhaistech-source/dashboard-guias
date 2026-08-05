@@ -761,7 +761,7 @@ function EmitirPage() {
   const profissionalOk = profissionalValido;
   const executanteOk = Boolean(contratadoExecutante.trim() && tipoAtendimento.trim());
 
-  const clinicoOk = Boolean(indicacaoClinica.trim());
+  const clinicoOk = Boolean(indicacaoClinica.trim() && dataSolicitacao.trim());
   const procedimentosOk = procedures.some(
     (p) => p.code.trim() && p.description.trim() && p.quantity > 0,
   );
@@ -1478,7 +1478,7 @@ function EmitirPage() {
                     onValueChange={setCharacter}
                     options={CHARACTER_OPTIONS.map((c) => ({ value: c, label: c }))}
                   />
-                  <Field label="22 - Data da Solicitação">
+                  <Field label="22 - Data da Solicitação" required>
                     <Input
                       type="date"
                       value={dataSolicitacao}
@@ -1599,7 +1599,30 @@ function EmitirPage() {
                     </div>
                   </div>
 
+                  <p className="text-xs text-muted-foreground">
+                    O campo <strong>24 - Tabela</strong> é preenchido automaticamente com a tabela
+                    22 (TUSS) e o campo <strong>28 - Qtde. Aut.</strong> é de preenchimento da
+                    operadora.
+                  </p>
+
+                  {/* Rótulos das colunas (campos 25 a 27) — visíveis no desktop */}
+                  <div className="hidden lg:grid lg:grid-cols-12 gap-2 text-xs font-medium text-muted-foreground">
+                    <div className="lg:col-span-1" />
+                    <div className="lg:col-span-3">
+                      25 - Código do Procedimento ou Item Assistencial{" "}
+                      <span className="text-destructive">*</span>
+                    </div>
+                    <div className="lg:col-span-6">
+                      26 - Descrição <span className="text-destructive">*</span>
+                    </div>
+                    <div className="lg:col-span-1">
+                      27 - Qtde. Solic. <span className="text-destructive">*</span>
+                    </div>
+                    <div className="lg:col-span-1" />
+                  </div>
+
                   <div className="space-y-2">
+
                     {procedures.map((p, idx) => (
                       <div
                         key={p.id}
@@ -1619,6 +1642,7 @@ function EmitirPage() {
                           <Input
                             value={p.code}
                             onChange={(e) => updateProcedure(p.id, { code: e.target.value })}
+                            aria-label="25 - Código do Procedimento ou Item Assistencial"
                             placeholder="Código TUSS"
                           />
                         </div>
@@ -1647,6 +1671,7 @@ function EmitirPage() {
                           <Input
                             type="number"
                             min={1}
+                            aria-label="27 - Qtde. Solic."
                             value={p.quantity}
                             onChange={(e) =>
                               updateProcedure(p.id, {
@@ -2394,7 +2419,7 @@ function GuiaLivePreview(props: {
                   <div className="px-1 py-0.5 border-r border-border font-mono">{p?.code ?? ""}</div>
                   <div className="px-1 py-0.5 border-r border-border truncate">{p?.description ?? ""}</div>
                   <div className="px-1 py-0.5 border-r border-border text-center font-mono">{p?.quantity ?? ""}</div>
-                  <div className="px-1 py-0.5 text-center font-mono">{p?.quantity ?? ""}</div>
+                  <div className="px-1 py-0.5 text-center font-mono">&nbsp;</div>
                 </div>
               ))}
             </div>
