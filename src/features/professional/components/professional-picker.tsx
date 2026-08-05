@@ -80,7 +80,7 @@ export function ProfessionalPicker({ value, onChange, children, labels }: Profes
           label={labels?.nome ?? "Nome do profissional"}
           required
           error={errorFor("nome", errors.nome)}
-          hint="Digite o nome: escolha um profissional cadastrado ou informe um novo."
+          hint="Digite para buscar um cadastro ou informe um nome novo — conselho e número seguem editáveis."
 
 
           className="relative"
