@@ -893,6 +893,7 @@ function EmitirPage() {
     "atendimento",
     "realizados",
     "executantes",
+    "observacao",
     "opme",
   ];
 
@@ -916,6 +917,7 @@ function EmitirPage() {
   const atendimentoOk = Boolean(tipoAtendimento.trim());
   const realizadosOk = executedItems.some((i) => i.description.trim() || i.code.trim());
   const executantesOk = executantes.some((e) => e.name.trim() && e.councilNumber.trim());
+  const observacaoOk = Boolean(observacoes.trim());
 
 
 
@@ -2476,6 +2478,7 @@ function EmitirPage() {
                   { label: "Atendimento", done: atendimentoOk },
                   { label: "Execução", done: realizadosOk },
                   { label: "Profissional executante", done: executantesOk },
+                  { label: "Observação (opcional)", done: observacaoOk },
 
 
                   { label: "OPME (opcional)", done: opmeOk },
