@@ -2017,7 +2017,7 @@ function EmitirPage() {
                 done={realizadosOk}
                 icon={<ClipboardList className="h-4 w-4" />}
                 title="Dados da Execução / Procedimentos e Exames Realizados"
-                description="Campos 36 a 54 da guia — execução dos procedimentos e totais."
+                description="Campos 36 a 47 da guia — execução dos procedimentos realizados."
                 action={
                   <div className="flex flex-wrap gap-2">
                     <Button
@@ -2171,69 +2171,6 @@ function EmitirPage() {
                   </div>
                 )}
 
-                <div className="mt-4 border-t pt-4">
-                  <p className="mb-3 text-xs font-medium text-muted-foreground">
-                    Totais da guia (campos 48 a 54)
-                  </p>
-                  <Grid cols={3}>
-                    <Field label="48 - Total de Procedimentos (R$)">
-                      <Input
-                        value={formatMoney(totalProcedimentos)}
-                        readOnly
-                        disabled
-                        className="font-mono"
-                      />
-                    </Field>
-                    <Field label="49 - Total de Taxas e Aluguéis (R$)">
-                      <Input
-                        value={totalTaxas}
-                        onChange={(e) => setTotalTaxas(e.target.value)}
-                        placeholder="0,00"
-                        className="font-mono"
-                      />
-                    </Field>
-                    <Field label="50 - Total de Materiais (R$)">
-                      <Input
-                        value={totalMateriais}
-                        onChange={(e) => setTotalMateriais(e.target.value)}
-                        placeholder="0,00"
-                        className="font-mono"
-                      />
-                    </Field>
-                    <Field label="51 - Total de OPME (R$)">
-                      <Input
-                        value={totalOpme}
-                        onChange={(e) => setTotalOpme(e.target.value)}
-                        placeholder="0,00"
-                        className="font-mono"
-                      />
-                    </Field>
-                    <Field label="52 - Total de Medicamentos (R$)">
-                      <Input
-                        value={totalMedicamentos}
-                        onChange={(e) => setTotalMedicamentos(e.target.value)}
-                        placeholder="0,00"
-                        className="font-mono"
-                      />
-                    </Field>
-                    <Field label="53 - Total de Gases Medicinais (R$)">
-                      <Input
-                        value={totalGases}
-                        onChange={(e) => setTotalGases(e.target.value)}
-                        placeholder="0,00"
-                        className="font-mono"
-                      />
-                    </Field>
-                    <Field label="54 - Total Geral (R$)">
-                      <Input
-                        value={formatMoney(totalGeral)}
-                        readOnly
-                        disabled
-                        className="font-mono font-semibold"
-                      />
-                    </Field>
-                  </Grid>
-                </div>
               </Section>
 
               {/* OPME */}
