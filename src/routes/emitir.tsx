@@ -630,12 +630,28 @@ function EmitirPage() {
     [selectedSpecialty],
   );
 
+  // Todos os kits disponíveis (usuário + especialidade) para o seletor do tópico 4
+  const kitOptionsSource = useMemo<Kit[]>(
+    () => [...userKits, ...SPECIALTY_KITS],
+    [userKits],
+  );
+  const kitOptions = useMemo(
+    () =>
+      kitOptionsSource.map((k) => ({
+        value: k.id,
+        label: k.specialty ? `${k.name} · ${k.specialty}` : k.name,
+        description: `${k.procedures.length} procedimento(s)`,
+      })),
+    [kitOptionsSource],
+  );
+
   const applyKit = (kit: Kit) => {
     setProcedures(
       kit.procedures.map((p) => ({ id: crypto.randomUUID(), ...p })),
     );
     toast.success(`Kit "${kit.name}" aplicado (${kit.procedures.length} procedimentos)`);
   };
+
 
   // Formulário inline "criar kit" (rodapé do tópico 4)
   const [kitName, setKitName] = useState("");
