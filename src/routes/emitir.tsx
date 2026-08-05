@@ -2496,91 +2496,8 @@ function EmitirPage() {
                 </div>
               </Section>
 
-              {/* OPME */}
 
 
-
-
-              <Section
-                number={stepNumber("opme")}
-                done={opmeOk}
-                icon={<Wrench className="h-4 w-4" />}
-                title="OPME — Órteses, Próteses e Materiais Especiais"
-                description="Materiais, órteses e próteses utilizados (opcional)."
-                action={
-                  <Button type="button" size="sm" onClick={addOpme}>
-                    <Plus className="h-4 w-4" /> Adicionar OPME
-                  </Button>
-                }
-              >
-                {opmeItems.length === 0 ? (
-                  <EmptyState
-                    size="sm"
-                    title="Nenhum item OPME"
-                    description="Adicione materiais, órteses ou próteses solicitados."
-                    icon={<Package className="h-8 w-8" />}
-                  />
-                ) : (
-                  <div className="space-y-2">
-                    {opmeItems.map((o, idx) => (
-                      <div
-                        key={o.id}
-                        draggable
-                        onDragStart={() => setDragOpmeId(o.id)}
-                        onDragOver={onDragOver}
-                        onDrop={() => onOpmeDrop(o.id)}
-                        className={cn(
-                          "grid grid-cols-[28px_1fr_auto] items-end gap-2 rounded-md border p-2 lg:grid-cols-12 lg:border-0 lg:p-0",
-                          dragOpmeId === o.id && "opacity-50",
-                        )}
-                      >
-                        <div className="row-span-3 flex cursor-grab items-center justify-center self-center text-muted-foreground active:cursor-grabbing lg:row-span-1 lg:col-span-1 lg:self-end lg:pb-2">
-                          <GripVertical className="h-4 w-4" />
-                        </div>
-                        <div className="col-span-2 lg:col-span-3">
-                          <Input
-                            value={o.code}
-                            onChange={(e) => updateOpme(o.id, { code: e.target.value })}
-                            placeholder="Código"
-                          />
-                        </div>
-                        <div className="col-span-2 lg:col-span-6">
-                          <Input
-                            value={o.description}
-                            onChange={(e) =>
-                              updateOpme(o.id, { description: e.target.value })
-                            }
-                            placeholder="Descrição do material/prótese"
-                          />
-                        </div>
-                        <div className="col-span-1 w-24 lg:w-auto">
-                          <Input
-                            type="number"
-                            min={1}
-                            value={o.quantity}
-                            onChange={(e) =>
-                              updateOpme(o.id, {
-                                quantity: Math.max(1, Number(e.target.value) || 1),
-                              })
-                            }
-                          />
-                        </div>
-                        <div className="col-span-1 flex justify-end lg:col-span-1">
-                          <Button
-                            type="button"
-                            variant="ghost"
-                            size="icon"
-                            onClick={() => removeOpme(o.id)}
-                            aria-label={`Remover OPME ${idx + 1}`}
-                          >
-                            <Trash2 className="h-4 w-4 text-destructive" />
-                          </Button>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </Section>
 
               {/* Barra de ação padrão: etapas + ações */}
               <FormActionBar
@@ -2606,7 +2523,7 @@ function EmitirPage() {
                   { label: "Valores e assinaturas", done: financeiroOk },
 
 
-                  { label: "OPME (opcional)", done: opmeOk },
+                  
                 ]}
                 note={
                   <>
