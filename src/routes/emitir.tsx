@@ -760,7 +760,7 @@ function EmitirPage() {
           ? Boolean(aihCaraterEntry && aihMotivo.trim())
           : true;
   const pacienteOk = Boolean(pacienteNome.trim() && pacienteCarteira.trim());
-  const profissionalOk = Boolean(medicoNome.trim() && medicoCrm.trim());
+  const profissionalOk = profissionalValido;
   const executanteOk = Boolean(contratadoExecutante.trim() && tipoAtendimento.trim());
 
   const clinicoOk = Boolean(indicacaoClinica.trim());
