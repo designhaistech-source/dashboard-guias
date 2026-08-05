@@ -1794,18 +1794,18 @@ function EmitirPage() {
                   <div className="hidden @3xl:grid @3xl:grid-cols-[28px_56px_128px_minmax(0,1fr)_80px_80px_40px] items-end gap-3 text-xs font-medium text-muted-foreground">
                     <div />
                     <div className="truncate text-center" title="24 - Tabela">
-                      24 - Tab.
+                      24 - Tabela
                     </div>
                     <div className="truncate" title="25 - Código do Procedimento ou Item Assistencial">
-                      25 - Código <span className="text-destructive">*</span>
+                      25 - Código do Procedimento ou Item Assistencial <span className="text-destructive">*</span>
                     </div>
                     <div className="truncate" title="26 - Descrição">
                       26 - Descrição <span className="text-destructive">*</span>
                     </div>
-                    <div className="truncate text-center" title="27 - Qtde. Solicitada">
-                      27 - Qtde. <span className="text-destructive">*</span>
+                    <div className="truncate text-center" title="27 - Qtde. Solic.">
+                      27 - Qtde. Solic. <span className="text-destructive">*</span>
                     </div>
-                    <div className="truncate text-center" title="28 - Qtde. Autorizada (operadora)">
+                    <div className="truncate text-center" title="28 - Qtde. Aut.">
                       28 - Qtde. Aut.
                     </div>
                     <div />
@@ -1847,14 +1847,14 @@ function EmitirPage() {
                           </div>
                         </div>
 
-                        {/* 24 - Tabela (somente leitura) */}
+                        {/* Campo 24 - Tabela (somente leitura) */}
                         <div className="hidden @3xl:block text-center font-mono text-sm text-muted-foreground">
                           22
                         </div>
 
-                        {/* 25 - Código */}
+                        {/* Campo 25 - Código do Procedimento ou Item Assistencial */}
                         <FormField
-                          label="25 - Código"
+                          label="25 - Código do Procedimento ou Item Assistencial"
                           required
                           labelClassName="@3xl:hidden"
                           className="min-w-0 @3xl:space-y-0"
@@ -1868,7 +1868,7 @@ function EmitirPage() {
                           />
                         </FormField>
 
-                        {/* 26 - Descrição (busca principal) */}
+                        {/* Campo 26 - Descrição */}
                         <FormField
                           label="26 - Descrição"
                           required
@@ -1896,7 +1896,7 @@ function EmitirPage() {
                           />
                         </FormField>
 
-                        {/* 27 - Qtde. Solicitada */}
+                        {/* Campo 27 - Qtde. Solic. */}
                         <FormField
                           label="27 - Qtde. Solic."
                           required
@@ -1906,7 +1906,7 @@ function EmitirPage() {
                           <Input
                             type="number"
                             min={1}
-                            aria-label="27 - Qtde. Solicitada"
+                            aria-label="27 - Qtde. Solic."
                             className="text-center"
                             value={p.quantity}
                             onChange={(e) =>
@@ -1917,13 +1917,13 @@ function EmitirPage() {
                           />
                         </FormField>
 
-                        {/* 28 - Qtde. Autorizada (operadora) */}
+                        {/* Campo 28 - Qtde. Aut. */}
                         <div className="hidden @3xl:block text-center text-sm text-muted-foreground">
                           —
                         </div>
                         <p className="mt-3 text-xs text-muted-foreground @3xl:hidden">
-                          24 - Tabela: <span className="font-mono">22</span> · 28 - Qtde. Aut.: —
-                          (operadora)
+                          Campo 24 - Tabela: <span className="font-mono">22</span> · campo 28 - Qtde. Aut.
+                          preenchido pela operadora
                         </p>
 
 
@@ -2218,7 +2218,7 @@ function EmitirPage() {
                               placeholder="Descrição do procedimento realizado"
                             />
                           </Field>
-                          <Field label="42 - Qtde. Realizada">
+                          <Field label="42 - Qtde.">
                             <Input
                               type="number"
                               min={1}
@@ -2231,7 +2231,7 @@ function EmitirPage() {
                             />
                           </Field>
                           <SelectField
-                            label="43 - Via de Acesso"
+                            label="43 - Via"
                             labelClassName="text-xs font-medium text-muted-foreground"
                             value={item.via}
                             onValueChange={(v) => updateExecuted(item.id, { via: v })}
@@ -2242,7 +2242,7 @@ function EmitirPage() {
                             }))}
                           />
                           <SelectField
-                            label="44 - Técnica Utilizada"
+                            label="44 - Tec."
                             labelClassName="text-xs font-medium text-muted-foreground"
                             value={item.technique}
                             onValueChange={(v) => updateExecuted(item.id, { technique: v })}
@@ -2252,7 +2252,7 @@ function EmitirPage() {
                               label: o,
                             }))}
                           />
-                          <Field label="45 - Fator de Redução / Acréscimo">
+                          <Field label="45 - Fator Red./Acresc.">
                             <Input
                               value={item.reductionFactor}
                               onChange={(e) =>
@@ -2338,7 +2338,7 @@ function EmitirPage() {
                             />
                           </Field>
                           <SelectField
-                            label="49 - Grau de Participação"
+                            label="49 - Grau Part."
                             labelClassName="text-xs font-medium text-muted-foreground"
                             value={ex.participation}
                             onValueChange={(v) => updateExecutante(ex.id, { participation: v })}
