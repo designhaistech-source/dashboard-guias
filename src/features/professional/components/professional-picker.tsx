@@ -216,6 +216,7 @@ export function ProfessionalPicker({ value, onChange, children, labels }: Profes
           hint="Formato 0000/UF."
         >
           <Input
+            ref={numeroRef}
             value={value.numero}
             onChange={(e) => onChange({ ...value, numero: maskCouncilNumber(e.target.value) })}
             onBlur={() => markTouched("numero")}
