@@ -61,8 +61,9 @@ export function ProfessionalPicker({ value, onChange, children, labels }: Profes
           hint={
             manual
               ? "Informe os dados do profissional nos campos abaixo."
-              : `${value.conselho} ${value.numero} · ${value.especialidade}`
+              : "Dados preenchidos automaticamente — ajuste se precisar."
           }
+
         />
 
         {children}
