@@ -2375,7 +2375,30 @@ function EmitirPage() {
                 </div>
               </Section>
 
+              {/* Observação / Justificativa */}
+
+              <Section
+                number={stepNumber("observacao")}
+                done={observacaoOk}
+                icon={<FileText className="h-4 w-4" />}
+                title="Observação / Justificativa"
+                description="Campo 58 — informações complementares ou justificativa clínica (opcional)."
+              >
+                <FormField
+                  label="58 - Observação / Justificativa"
+                  hint="Texto livre impresso no campo 58 da guia."
+                >
+                  <Textarea
+                    value={observacoes}
+                    onChange={(e) => setObservacoes(e.target.value)}
+                    placeholder="Descreva observações ou a justificativa clínica do procedimento."
+                    rows={4}
+                  />
+                </FormField>
+              </Section>
+
               {/* OPME */}
+
 
               <Section
                 number={stepNumber("opme")}
