@@ -1971,6 +1971,7 @@ function EmitirPage() {
               pacienteValidadeCarteira={pacienteValidadeCarteira}
               pacienteCns={pacienteCns}
               pacienteRn={pacienteRn}
+              assinaturaSolicitante={assinaturaSolicitante}
 
               fullSize
             />
