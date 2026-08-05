@@ -1429,7 +1429,7 @@ function EmitirPage() {
                     </Field>
                   </Grid>
                   <p className="mt-3 text-xs text-muted-foreground">
-                    20 - Assinatura do Profissional Solicitante é preenchida na guia impressa.
+                    Campo 20 (assinatura do profissional solicitante) é preenchido na guia impressa.
                   </p>
                 </div>
               </Section>
