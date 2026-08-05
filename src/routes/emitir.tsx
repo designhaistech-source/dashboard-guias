@@ -1470,7 +1470,7 @@ function EmitirPage() {
                 }
                 description="Campos 21 a 28 da guia — solicitação, indicação clínica e procedimentos solicitados."
               >
-                <Grid cols={3}>
+                <Grid cols={2}>
                   <SelectField
                     label="21 - Caráter do Atendimento"
                     required
@@ -1485,18 +1485,8 @@ function EmitirPage() {
                       onChange={(e) => setDataSolicitacao(e.target.value)}
                     />
                   </Field>
-                  <Field label="CID principal">
-                    <Combobox
-                      value={cidPrincipal}
-                      onChange={setCidPrincipal}
-                      options={CID_OPTIONS}
-                      placeholder="Buscar CID-10 (ex.: I10)"
-                      searchPlaceholder="Digite o código ou a descrição..."
-                      emptyMessage="Nenhum CID encontrado."
-                      clearable
-                    />
-                  </Field>
                 </Grid>
+
 
                 <Field label="23 - Indicação Clínica" required>
                   <Textarea
