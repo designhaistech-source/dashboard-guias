@@ -716,7 +716,13 @@ function EmitirPage() {
   });
 
 
-  /** Ordem dos tópicos numerados do formulário (varia conforme o tipo de guia). */
+  /**
+   * Ordem dos tópicos numerados do formulário. Segue a mesma sequência dos
+   * quadros impressos na guia SP/SADT: dados da operadora (1-7), beneficiário
+   * (8-12), contratado solicitante (13-22), dados da solicitação (23),
+   * procedimentos solicitados (24-28), contratado executante e atendimento
+   * (29-35) e procedimentos/materiais realizados (36-56).
+   */
   const stepKeys: string[] = [
     "convenio",
     ...(guideKind === "internacao" ? ["internacao"] : []),
@@ -724,11 +730,10 @@ function EmitirPage() {
     ...(guideKind === "aih" ? ["aih"] : []),
     "paciente",
     "profissional",
-    "executante",
-
     "clinico",
     "kits",
     "procedimentos",
+    "executante",
     "opme",
   ];
   const stepNumber = (key: string) => stepKeys.indexOf(key) + 1;
