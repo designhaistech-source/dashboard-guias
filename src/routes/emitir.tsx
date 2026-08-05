@@ -1463,95 +1463,6 @@ function EmitirPage() {
                 </div>
               </Section>
 
-              {/* Contratado executante e atendimento */}
-              <Section
-                number={stepNumber("executante")}
-                done={executanteOk}
-                icon={<Building2 className="h-4 w-4" />}
-                title="Contratado executante e atendimento"
-                description="Quem executa o procedimento e as características do atendimento."
-              >
-                <Grid cols={3}>
-                  <Field label="29 - Código na Operadora">
-                    <Input
-                      value={codigoExecutante}
-                      onChange={(e) => setCodigoExecutante(e.target.value)}
-                      placeholder="Código do contrato"
-                    />
-                  </Field>
-                  <Field label="30 - Nome do Contratado">
-                    <Input
-                      value={contratadoExecutante}
-                      onChange={(e) => setContratadoExecutante(e.target.value)}
-                      placeholder="Prestador que executa"
-                    />
-                  </Field>
-                  <Field label="31 - Código CNES">
-                    <Input
-                      value={cnesExecutante}
-                      onChange={(e) => setCnesExecutante(e.target.value)}
-                      placeholder="0000000"
-                    />
-                  </Field>
-                  <SelectField
-                    label="32 - Tipo de Atendimento"
-                    labelClassName="text-xs font-medium text-muted-foreground"
-                    value={tipoAtendimento}
-                    onValueChange={setTipoAtendimento}
-                    placeholder="Selecione"
-                    options={[
-                      "Remoção",
-                      "Pequena cirurgia",
-                      "Terapias",
-                      "Consulta",
-                      "Exame",
-                      "Atendimento domiciliar",
-                      "Urgência / emergência",
-                      "SADT internado",
-                    ].map((o) => ({ value: o, label: o }))}
-                  />
-                  <SelectField
-                    label="33 - Indicação de Acidente (acidente ou doença relacionada)"
-                    labelClassName="text-xs font-medium text-muted-foreground"
-                    value={indicacaoAcidente}
-                    onValueChange={setIndicacaoAcidente}
-                    placeholder="Selecione"
-                    options={[
-                      "Acidente de trabalho",
-                      "Acidente de trânsito",
-                      "Outros acidentes",
-                      "Não acidente",
-                    ].map((o) => ({ value: o, label: o }))}
-                  />
-                  <SelectField
-                    label="34 - Tipo de Consulta"
-                    labelClassName="text-xs font-medium text-muted-foreground"
-                    value={tipoConsulta}
-                    onValueChange={setTipoConsulta}
-                    placeholder="Selecione"
-                    options={["Primeira consulta", "Seguimento", "Pré-natal", "Por encaminhamento"].map(
-                      (o) => ({ value: o, label: o }),
-                    )}
-                  />
-                  <SelectField
-                    label="35 - Motivo de Encerramento do Atendimento"
-                    labelClassName="text-xs font-medium text-muted-foreground"
-                    value={motivoEncerramento}
-                    onValueChange={setMotivoEncerramento}
-                    placeholder="Selecione"
-                    options={[
-                      "Retorno",
-                      "Retorno por complicação",
-                      "Alta curado",
-                      "Alta melhorado",
-                      "Alta a pedido",
-                      "Alta com previsão de retorno",
-                      "Alta administrativa",
-                      "Óbito",
-                    ].map((o) => ({ value: o, label: o }))}
-                  />
-                </Grid>
-              </Section>
 
 
 
@@ -1783,6 +1694,96 @@ function EmitirPage() {
                     </Label>
                   </div>
                 )}
+              </Section>
+
+              {/* Contratado executante e atendimento */}
+              <Section
+                number={stepNumber("executante")}
+                done={executanteOk}
+                icon={<Building2 className="h-4 w-4" />}
+                title="Contratado executante e atendimento"
+                description="Quem executa o procedimento e as características do atendimento."
+              >
+                <Grid cols={3}>
+                  <Field label="29 - Código na Operadora">
+                    <Input
+                      value={codigoExecutante}
+                      onChange={(e) => setCodigoExecutante(e.target.value)}
+                      placeholder="Código do contrato"
+                    />
+                  </Field>
+                  <Field label="30 - Nome do Contratado">
+                    <Input
+                      value={contratadoExecutante}
+                      onChange={(e) => setContratadoExecutante(e.target.value)}
+                      placeholder="Prestador que executa"
+                    />
+                  </Field>
+                  <Field label="31 - Código CNES">
+                    <Input
+                      value={cnesExecutante}
+                      onChange={(e) => setCnesExecutante(e.target.value)}
+                      placeholder="0000000"
+                    />
+                  </Field>
+                  <SelectField
+                    label="32 - Tipo de Atendimento"
+                    labelClassName="text-xs font-medium text-muted-foreground"
+                    value={tipoAtendimento}
+                    onValueChange={setTipoAtendimento}
+                    placeholder="Selecione"
+                    options={[
+                      "Remoção",
+                      "Pequena cirurgia",
+                      "Terapias",
+                      "Consulta",
+                      "Exame",
+                      "Atendimento domiciliar",
+                      "Urgência / emergência",
+                      "SADT internado",
+                    ].map((o) => ({ value: o, label: o }))}
+                  />
+                  <SelectField
+                    label="33 - Indicação de Acidente (acidente ou doença relacionada)"
+                    labelClassName="text-xs font-medium text-muted-foreground"
+                    value={indicacaoAcidente}
+                    onValueChange={setIndicacaoAcidente}
+                    placeholder="Selecione"
+                    options={[
+                      "Acidente de trabalho",
+                      "Acidente de trânsito",
+                      "Outros acidentes",
+                      "Não acidente",
+                    ].map((o) => ({ value: o, label: o }))}
+                  />
+                  <SelectField
+                    label="34 - Tipo de Consulta"
+                    labelClassName="text-xs font-medium text-muted-foreground"
+                    value={tipoConsulta}
+                    onValueChange={setTipoConsulta}
+                    placeholder="Selecione"
+                    options={["Primeira consulta", "Seguimento", "Pré-natal", "Por encaminhamento"].map(
+                      (o) => ({ value: o, label: o }),
+                    )}
+                  />
+                  <SelectField
+                    label="35 - Motivo de Encerramento do Atendimento"
+                    labelClassName="text-xs font-medium text-muted-foreground"
+                    value={motivoEncerramento}
+                    onValueChange={setMotivoEncerramento}
+                    placeholder="Selecione"
+                    options={[
+                      "Retorno",
+                      "Retorno por complicação",
+                      "Alta curado",
+                      "Alta melhorado",
+                      "Alta a pedido",
+                      "Alta com previsão de retorno",
+                      "Alta administrativa",
+                      "Óbito",
+                    ].map((o) => ({ value: o, label: o }))}
+                  />
+                </Grid>
               </Section>
 
               {/* OPME */}
