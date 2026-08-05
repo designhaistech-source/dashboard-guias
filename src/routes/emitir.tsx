@@ -1360,7 +1360,7 @@ function EmitirPage() {
                         onClick={() => setPrefsOpen(true)}
                       >
                         <Settings2 className="h-4 w-4" />
-                        Editar dados padrão
+                        Editar meus dados padrão
                       </Button>
                       <Button
                         type="button"
