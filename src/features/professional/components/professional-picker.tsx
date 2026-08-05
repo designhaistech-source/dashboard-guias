@@ -1,5 +1,5 @@
 import { useMemo, useRef, useState, type ReactNode } from "react";
-import { Check, ChevronDown, UserPlus } from "lucide-react";
+import { Check, ChevronDown } from "lucide-react";
 
 import { Field, SelectField } from "@/components/form-field";
 import { Input } from "@/components/ui/input";
@@ -79,11 +79,8 @@ export function ProfessionalPicker({ value, onChange, children, labels }: Profes
           label={labels?.nome ?? "Nome do profissional"}
           required
           error={errorFor("nome", errors.nome)}
-          hint={
-            isManual
-              ? "Profissional não cadastrado: o nome será usado como digitado. Preencha conselho e número manualmente."
-              : "Digite para buscar um profissional cadastrado ou informe um novo nome."
-          }
+          hint="Digite o nome: escolha um profissional cadastrado ou informe um novo."
+
 
           className="relative"
         >
@@ -126,30 +123,12 @@ export function ProfessionalPicker({ value, onChange, children, labels }: Profes
                 aria-label="Profissionais cadastrados"
                 className="absolute z-50 mt-1 max-h-56 w-full overflow-y-auto rounded-md border border-border bg-popover p-1 shadow-md"
               >
-                {isManual && (
-                  <li>
-                    <button /* ds-allow: opção de lista de sugestões */
-                      type="button"
-                      role="option"
-                      aria-selected={value.id === MANUAL_PROFESSIONAL_ID}
-                      onMouseDown={(e) => e.preventDefault()}
-                      onClick={() => {
-                        if (blurTimer.current) clearTimeout(blurTimer.current);
-                        onChange({ ...value, id: MANUAL_PROFESSIONAL_ID, nome: query });
-                        setOpen(false);
-                      }}
-                      className="flex w-full items-center gap-2 rounded-sm px-2 py-1.5 text-left text-sm hover:bg-accent hover:text-accent-foreground focus-visible:bg-accent focus-visible:outline-none"
-                    >
-                      <UserPlus className="h-4 w-4 shrink-0 text-muted-foreground" aria-hidden />
-                      <span className="min-w-0">
-                        <span className="block truncate">Adicionar “{query}” manualmente</span>
-                        <span className="block truncate text-xs text-muted-foreground">
-                          Profissional não cadastrado
-                        </span>
-                      </span>
-                    </button>
+                {suggestions.length === 0 && (
+                  <li className="px-2 py-1.5 text-xs text-muted-foreground">
+                    Nenhum profissional cadastrado com esse nome. O nome digitado será usado nesta guia.
                   </li>
                 )}
+
 
 
                 {suggestions.map((p) => {
