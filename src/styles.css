@@ -363,6 +363,18 @@
   font-variant-numeric: tabular-nums;
 }
 
+/* Rótulo "sobrancelha": títulos curtos em caixa alta usados acima de grupos de
+   informação (resumos, painéis de revisão, pré-visualizações). */
+@utility text-eyebrow {
+  font-size: 0.6875rem; /* 11px */
+  line-height: 1rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-muted-foreground);
+}
+
+
 /* Campos de data/hora: o indicador nativo de calendário vem antes do valor,
    com a mesma gutter horizontal dos outros inputs (0.75rem) em qualquer
    viewport. Seletor de atributo duplicado para vencer as utilities de padding. */
