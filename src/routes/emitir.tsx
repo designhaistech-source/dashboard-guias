@@ -1820,12 +1820,12 @@ function EmitirPage() {
               </Section>
 
 
-              {/* Contratado executante e atendimento */}
+              {/* Dados do Contratado Executante */}
               <Section
                 number={stepNumber("executante")}
                 done={executanteOk}
                 icon={<Building2 className="h-4 w-4" />}
-                title="Contratado executante e atendimento"
+                title="Dados do Contratado Executante"
                 description="Campos 29 a 35 da guia — contratado executante e características do atendimento."
               >
                 <Grid cols={3}>
