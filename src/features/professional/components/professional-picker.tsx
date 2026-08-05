@@ -54,12 +54,17 @@ export function ProfessionalPicker({ value, onChange, children, labels }: Profes
           options={[
             ...PROFESSIONALS.map((p) => ({
               value: p.id,
-              label: `${p.nome} — ${p.conselho} ${p.numero} · ${p.especialidade}`,
+              label: p.nome,
             })),
             { value: MANUAL_PROFESSIONAL_ID, label: "Outro (informar manualmente)" },
           ]}
-          hint="Troque o profissional responsável a qualquer momento."
+          hint={
+            manual
+              ? "Informe os dados do profissional nos campos abaixo."
+              : `${value.conselho} ${value.numero} · ${value.especialidade}`
+          }
         />
+
         {children}
       </div>
 
