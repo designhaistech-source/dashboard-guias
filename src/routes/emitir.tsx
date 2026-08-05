@@ -1434,7 +1434,7 @@ function EmitirPage() {
 
                 <div className="mt-5 border-t pt-5">
                   <SignatureField
-                    label="20 - Assinatura do Profissional Solicitante"
+                    label="20 - Assinatura do Profissional Solicitante (opcional)"
                     value={assinaturaSolicitante}
                     onChange={setAssinaturaSolicitante}
                     hint="Desenhe ou envie a assinatura para sair impressa no campo 20 da guia. Deixe em branco para assinar à mão no papel."
