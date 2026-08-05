@@ -2011,7 +2011,233 @@ function EmitirPage() {
                 </Grid>
               </Section>
 
+              {/* Dados da Execução — Procedimentos e Exames Realizados */}
+              <Section
+                number={stepNumber("realizados")}
+                done={realizadosOk}
+                icon={<ClipboardList className="h-4 w-4" />}
+                title="Dados da Execução / Procedimentos e Exames Realizados"
+                description="Campos 36 a 54 da guia — execução dos procedimentos e totais."
+                action={
+                  <div className="flex flex-wrap gap-2">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={importSolicitedProcedures}
+                    >
+                      Copiar solicitados
+                    </Button>
+                    <Button type="button" size="sm" onClick={addExecuted}>
+                      <Plus className="h-4 w-4" /> Adicionar procedimento
+                    </Button>
+                  </div>
+                }
+              >
+                {executedItems.length === 0 ? (
+                  <EmptyState
+                    size="sm"
+                    title="Nenhum procedimento realizado"
+                    description="Adicione os procedimentos executados ou copie os solicitados."
+                    icon={<ClipboardList className="h-8 w-8" />}
+                  />
+                ) : (
+                  <div className="space-y-3">
+                    {executedItems.map((item, idx) => (
+                      <div key={item.id} className="rounded-md border p-3">
+                        <div className="mb-2 flex items-center justify-between">
+                          <span className="text-xs font-medium text-muted-foreground">
+                            Procedimento {idx + 1}
+                          </span>
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => removeExecuted(item.id)}
+                            aria-label={`Remover procedimento realizado ${idx + 1}`}
+                          >
+                            <Trash2 className="h-4 w-4 text-destructive" />
+                          </Button>
+                        </div>
+                        <Grid cols={3}>
+                          <Field label="36 - Data">
+                            <Input
+                              type="date"
+                              value={item.date}
+                              onChange={(e) => updateExecuted(item.id, { date: e.target.value })}
+                            />
+                          </Field>
+                          <Field label="37 - Hora Inicial">
+                            <Input
+                              type="time"
+                              value={item.startTime}
+                              onChange={(e) =>
+                                updateExecuted(item.id, { startTime: e.target.value })
+                              }
+                            />
+                          </Field>
+                          <Field label="38 - Hora Final">
+                            <Input
+                              type="time"
+                              value={item.endTime}
+                              onChange={(e) => updateExecuted(item.id, { endTime: e.target.value })}
+                            />
+                          </Field>
+                          <Field label="39 - Tabela">
+                            <Input value="22" readOnly disabled className="font-mono" />
+                          </Field>
+                          <Field label="40 - Código do Procedimento">
+                            <Input
+                              value={item.code}
+                              onChange={(e) => updateExecuted(item.id, { code: e.target.value })}
+                              placeholder="00000000"
+                              className="font-mono"
+                            />
+                          </Field>
+                          <Field label="41 - Descrição">
+                            <Input
+                              value={item.description}
+                              onChange={(e) =>
+                                updateExecuted(item.id, { description: e.target.value })
+                              }
+                              placeholder="Descrição do procedimento realizado"
+                            />
+                          </Field>
+                          <Field label="42 - Qtde. Realizada">
+                            <Input
+                              type="number"
+                              min={1}
+                              value={item.quantity}
+                              onChange={(e) =>
+                                updateExecuted(item.id, {
+                                  quantity: Math.max(1, Number(e.target.value) || 1),
+                                })
+                              }
+                            />
+                          </Field>
+                          <SelectField
+                            label="43 - Via de Acesso"
+                            labelClassName="text-xs font-medium text-muted-foreground"
+                            value={item.via}
+                            onValueChange={(v) => updateExecuted(item.id, { via: v })}
+                            placeholder="Selecione"
+                            options={["Única", "Mesma via", "Diferentes vias"].map((o) => ({
+                              value: o,
+                              label: o,
+                            }))}
+                          />
+                          <SelectField
+                            label="44 - Técnica Utilizada"
+                            labelClassName="text-xs font-medium text-muted-foreground"
+                            value={item.technique}
+                            onValueChange={(v) => updateExecuted(item.id, { technique: v })}
+                            placeholder="Selecione"
+                            options={["Convencional", "Videolaparoscopia"].map((o) => ({
+                              value: o,
+                              label: o,
+                            }))}
+                          />
+                          <Field label="45 - Fator de Redução / Acréscimo">
+                            <Input
+                              value={item.reductionFactor}
+                              onChange={(e) =>
+                                updateExecuted(item.id, { reductionFactor: e.target.value })
+                              }
+                              placeholder="1,00"
+                              className="font-mono"
+                            />
+                          </Field>
+                          <Field label="46 - Valor Unitário (R$)">
+                            <Input
+                              value={item.unitValue}
+                              onChange={(e) =>
+                                updateExecuted(item.id, { unitValue: e.target.value })
+                              }
+                              placeholder="0,00"
+                              className="font-mono"
+                            />
+                          </Field>
+                          <Field label="47 - Valor Total (R$)">
+                            <Input
+                              value={formatMoney(executedItemTotal(item))}
+                              readOnly
+                              disabled
+                              className="font-mono"
+                            />
+                          </Field>
+                        </Grid>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                <div className="mt-4 border-t pt-4">
+                  <p className="mb-3 text-xs font-medium text-muted-foreground">
+                    Totais da guia (campos 48 a 54)
+                  </p>
+                  <Grid cols={3}>
+                    <Field label="48 - Total de Procedimentos (R$)">
+                      <Input
+                        value={formatMoney(totalProcedimentos)}
+                        readOnly
+                        disabled
+                        className="font-mono"
+                      />
+                    </Field>
+                    <Field label="49 - Total de Taxas e Aluguéis (R$)">
+                      <Input
+                        value={totalTaxas}
+                        onChange={(e) => setTotalTaxas(e.target.value)}
+                        placeholder="0,00"
+                        className="font-mono"
+                      />
+                    </Field>
+                    <Field label="50 - Total de Materiais (R$)">
+                      <Input
+                        value={totalMateriais}
+                        onChange={(e) => setTotalMateriais(e.target.value)}
+                        placeholder="0,00"
+                        className="font-mono"
+                      />
+                    </Field>
+                    <Field label="51 - Total de OPME (R$)">
+                      <Input
+                        value={totalOpme}
+                        onChange={(e) => setTotalOpme(e.target.value)}
+                        placeholder="0,00"
+                        className="font-mono"
+                      />
+                    </Field>
+                    <Field label="52 - Total de Medicamentos (R$)">
+                      <Input
+                        value={totalMedicamentos}
+                        onChange={(e) => setTotalMedicamentos(e.target.value)}
+                        placeholder="0,00"
+                        className="font-mono"
+                      />
+                    </Field>
+                    <Field label="53 - Total de Gases Medicinais (R$)">
+                      <Input
+                        value={totalGases}
+                        onChange={(e) => setTotalGases(e.target.value)}
+                        placeholder="0,00"
+                        className="font-mono"
+                      />
+                    </Field>
+                    <Field label="54 - Total Geral (R$)">
+                      <Input
+                        value={formatMoney(totalGeral)}
+                        readOnly
+                        disabled
+                        className="font-mono font-semibold"
+                      />
+                    </Field>
+                  </Grid>
+                </div>
+              </Section>
+
               {/* OPME */}
+
               <Section
                 number={stepNumber("opme")}
                 done={opmeOk}
