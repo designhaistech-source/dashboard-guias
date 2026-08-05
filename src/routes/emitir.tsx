@@ -1120,7 +1120,7 @@ function EmitirPage() {
                 <div className="flex items-center gap-3">
                   <div className="w-1 h-8 bg-primary rounded-full" />
                   <div className="min-w-0 flex-1">
-                    <p className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+                    <p className="text-eyebrow">
                       Formulário de emissão
                     </p>
                     <p className="text-sm font-semibold truncate">{guideHeaderTitle}</p>
@@ -1136,7 +1136,7 @@ function EmitirPage() {
                 <div className="flex items-center gap-3">
                   <div className="w-1 h-8 bg-primary rounded-full" />
                   <div className="min-w-0 flex-1">
-                    <p className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+                    <p className="text-eyebrow">
                       Formulário de emissão
                     </p>
                     <p className="text-sm font-semibold truncate">{guideHeaderTitle}</p>
@@ -1152,7 +1152,7 @@ function EmitirPage() {
                 <div className="flex items-center gap-3">
                   <div className="w-1 h-8 bg-primary rounded-full" />
                   <div className="min-w-0 flex-1">
-                    <p className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+                    <p className="text-eyebrow">
                       Formulário de emissão
                     </p>
                     <p className="text-sm font-semibold truncate">{guideHeaderTitle}</p>
@@ -1180,7 +1180,7 @@ function EmitirPage() {
               <div className="flex items-center gap-3">
                 <div className="w-1 h-8 bg-primary rounded-full" />
                 <div className="min-w-0 flex-1">
-                  <p className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+                  <p className="text-eyebrow">
                     Formulário de emissão
                   </p>
                   <p className="text-sm font-semibold truncate">{guideHeaderTitle}</p>
@@ -1273,7 +1273,7 @@ function EmitirPage() {
                   </Grid>
 
                   <div className="mt-5 space-y-4 border-t pt-5">
-                    <p className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+                    <p className="text-eyebrow">
                       Autorização e senha
                     </p>
                     <Grid cols={3}>
@@ -3022,7 +3022,7 @@ function GuiaLivePreview(props: {
     <div className={fullSize ? "" : "rounded-xl border bg-card shadow-sm overflow-hidden"}>
       {!fullSize && (
         <div className="px-4 py-2.5 border-b bg-muted/40 flex items-center justify-between">
-          <p className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+          <p className="text-eyebrow">
             Pré-visualização · Modelo TISS SP/SADT
           </p>
           <span className="text-[10px] text-muted-foreground">Atualiza em tempo real</span>
