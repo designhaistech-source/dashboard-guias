@@ -761,7 +761,7 @@ function EmitirPage() {
   const profissionalOk = profissionalValido;
   const executanteOk = Boolean(contratadoExecutante.trim() && tipoAtendimento.trim());
 
-  const clinicoOk = Boolean(indicacaoClinica.trim());
+  const clinicoOk = Boolean(indicacaoClinica.trim() && dataSolicitacao.trim());
   const procedimentosOk = procedures.some(
     (p) => p.code.trim() && p.description.trim() && p.quantity > 0,
   );
@@ -1635,6 +1635,7 @@ function EmitirPage() {
                           <Input
                             value={p.code}
                             onChange={(e) => updateProcedure(p.id, { code: e.target.value })}
+                            aria-label={`25 - Código do Procedimento (item ${idx + 1})`}
                             placeholder="Código TUSS"
                           />
                         </div>
@@ -2410,7 +2411,7 @@ function GuiaLivePreview(props: {
                   <div className="px-1 py-0.5 border-r border-border font-mono">{p?.code ?? ""}</div>
                   <div className="px-1 py-0.5 border-r border-border truncate">{p?.description ?? ""}</div>
                   <div className="px-1 py-0.5 border-r border-border text-center font-mono">{p?.quantity ?? ""}</div>
-                  <div className="px-1 py-0.5 text-center font-mono">{p?.quantity ?? ""}</div>
+                  <div className="px-1 py-0.5 text-center font-mono">&nbsp;</div>
                 </div>
               ))}
             </div>
