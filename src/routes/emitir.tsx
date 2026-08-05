@@ -1448,6 +1448,21 @@ function EmitirPage() {
                         placeholder="225125"
                       />
                     </Field>
+                    <SelectField
+                      label="21 - Caráter do Atendimento"
+                      required
+                      labelClassName="text-xs font-medium text-muted-foreground"
+                      value={character}
+                      onValueChange={setCharacter}
+                      options={CHARACTER_OPTIONS.map((c) => ({ value: c, label: c }))}
+                    />
+                    <Field label="22 - Data da Solicitação">
+                      <Input
+                        type="date"
+                        value={dataSolicitacao}
+                        onChange={(e) => setDataSolicitacao(e.target.value)}
+                      />
+                    </Field>
                   </Grid>
                 </div>
               </Section>
