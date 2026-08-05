@@ -2243,7 +2243,7 @@ function EmitirPage() {
                 done={opmeOk}
                 icon={<Wrench className="h-4 w-4" />}
                 title="OPME — Órteses, Próteses e Materiais Especiais"
-                description="Campos 36 a 56 da guia — materiais, órteses e próteses realizados (opcional)."
+                description="Materiais, órteses e próteses utilizados (opcional)."
                 action={
                   <Button type="button" size="sm" onClick={addOpme}>
                     <Plus className="h-4 w-4" /> Adicionar OPME
