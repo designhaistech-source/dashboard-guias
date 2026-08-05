@@ -2027,6 +2027,8 @@ function EmitirPage() {
                   { label: "Profissional", done: profissionalOk },
                   { label: "Dados da Solicitação", done: clinicoOk && procedimentosOk },
                   { label: "Executante", done: executanteOk },
+                  { label: "Atendimento", done: atendimentoOk },
+
                   { label: "OPME (opcional)", done: opmeOk },
                 ]}
                 note={
