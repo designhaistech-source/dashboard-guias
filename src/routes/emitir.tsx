@@ -1596,20 +1596,20 @@ function EmitirPage() {
                   </p>
 
                   {/* Rótulos das colunas (campos 25 a 27) — visíveis no desktop */}
-                  <div className="hidden lg:grid lg:grid-cols-12 gap-2 text-xs font-medium text-muted-foreground">
-                    <div className="lg:col-span-1" />
-                    <div className="lg:col-span-3">
-                      25 - Código do Procedimento ou Item Assistencial{" "}
-                      <span className="text-destructive">*</span>
+                  <div className="hidden lg:grid lg:grid-cols-[28px_minmax(0,180px)_minmax(0,1fr)_96px_40px] gap-3 text-xs font-medium text-muted-foreground">
+                    <div />
+                    <div className="truncate" title="25 - Código do Procedimento ou Item Assistencial">
+                      25 - Código <span className="text-destructive">*</span>
                     </div>
-                    <div className="lg:col-span-6">
+                    <div className="truncate">
                       26 - Descrição <span className="text-destructive">*</span>
                     </div>
-                    <div className="lg:col-span-1">
-                      27 - Qtde. Solic. <span className="text-destructive">*</span>
+                    <div className="truncate" title="27 - Qtde. Solicitada">
+                      27 - Qtde. <span className="text-destructive">*</span>
                     </div>
-                    <div className="lg:col-span-1" />
+                    <div />
                   </div>
+
 
                   <div className="space-y-2">
 
