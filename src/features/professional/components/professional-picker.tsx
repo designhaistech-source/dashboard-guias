@@ -114,10 +114,11 @@ export function ProfessionalPicker({ value, onChange, children, labels }: Profes
             {open && suggestions.length > 0 && (
               <ul
                 id="profissional-nome-sugestoes"
-                role="listbox"
+                role="listbox" /* ds-allow: autocomplete inline ancorado no próprio Input do design system (Select/Command não aceitam texto livre com máscara) */
                 aria-label="Profissionais cadastrados"
                 className="absolute z-50 mt-1 max-h-56 w-full overflow-y-auto rounded-md border border-border bg-popover p-1 shadow-md"
               >
+
                 {suggestions.map((p) => {
                   const active = p.id === value.id;
                   return (
