@@ -1,5 +1,5 @@
 import { useMemo, useRef, useState, type ReactNode } from "react";
-import { Check, ChevronDown } from "lucide-react";
+import { Check, ChevronDown, UserPlus } from "lucide-react";
 
 import { Field, SelectField } from "@/components/form-field";
 import { Input } from "@/components/ui/input";
@@ -39,6 +39,8 @@ export function ProfessionalPicker({ value, onChange, children, labels }: Profes
   const errors = validateProfessional(value);
   const [open, setOpen] = useState(false);
   const blurTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const numeroRef = useRef<HTMLInputElement>(null);
+
 
   const query = value.nome.trim();
   const suggestions = useMemo(() => {
@@ -49,9 +51,8 @@ export function ProfessionalPicker({ value, onChange, children, labels }: Profes
     return PROFESSIONALS.filter((p) => p.nome.toLowerCase().includes(q));
   }, [query]);
 
-  const isManual = query.length > 0 && !PROFESSIONALS.some((p) => p.nome.toLowerCase() === query.toLowerCase());
-
-
+  const isManualName =
+    query.length > 0 && !PROFESSIONALS.some((p) => p.nome.toLowerCase() === query.toLowerCase());
 
   const selectProfessional = (id: string) => {
     const found = PROFESSIONALS.find((p) => p.id === id);
@@ -59,6 +60,15 @@ export function ProfessionalPicker({ value, onChange, children, labels }: Profes
     resetTouched();
     onChange({ ...found });
     setOpen(false);
+  };
+
+  /** Sai do cadastro e libera conselho/número para digitação livre. */
+  const startManual = () => {
+    if (blurTimer.current) clearTimeout(blurTimer.current);
+    resetTouched();
+    onChange({ id: MANUAL_PROFESSIONAL_ID, nome: query, conselho: "CRM", numero: "", especialidade: "" });
+    setOpen(false);
+    requestAnimationFrame(() => numeroRef.current?.focus());
   };
 
   const handleNameChange = (raw: string) => {
@@ -70,6 +80,7 @@ export function ProfessionalPicker({ value, onChange, children, labels }: Profes
     }
     onChange({ ...value, id: MANUAL_PROFESSIONAL_ID, nome });
   };
+
 
   return (
     <div className="space-y-4">
@@ -116,7 +127,7 @@ export function ProfessionalPicker({ value, onChange, children, labels }: Profes
               aria-hidden
               className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground"
             />
-            {open && (suggestions.length > 0 || isManual) && (
+            {open && (
               <ul
                 id="profissional-nome-sugestoes"
                 role="listbox" /* ds-allow: autocomplete inline ancorado no próprio Input do design system (Select/Command não aceitam texto livre com máscara) */
@@ -125,9 +136,10 @@ export function ProfessionalPicker({ value, onChange, children, labels }: Profes
               >
                 {suggestions.length === 0 && (
                   <li className="px-2 py-1.5 text-xs text-muted-foreground">
-                    Nenhum profissional cadastrado com esse nome. O nome digitado será usado nesta guia.
+                    Nenhum profissional cadastrado com esse nome.
                   </li>
                 )}
+
 
 
 
@@ -160,7 +172,28 @@ export function ProfessionalPicker({ value, onChange, children, labels }: Profes
                     </li>
                   );
                 })}
+                <li className="mt-1 border-t border-border pt-1">
+                  <button /* ds-allow: opção de lista de sugestões */
+                    type="button"
+                    role="option"
+                    aria-selected={isManualName}
+                    onMouseDown={(e) => e.preventDefault()}
+                    onClick={startManual}
+                    className="flex w-full items-center gap-2 rounded-sm px-2 py-1.5 text-left text-sm hover:bg-accent hover:text-accent-foreground focus-visible:bg-accent focus-visible:outline-none"
+                  >
+                    <UserPlus className="h-4 w-4 shrink-0 text-primary" aria-hidden />
+                    <span className="min-w-0">
+                      <span className="block truncate">
+                        {query ? `Cadastrar “${query}” manualmente` : "Informar outro profissional manualmente"}
+                      </span>
+                      <span className="block text-xs text-muted-foreground">
+                        Você preenche conselho e número à mão.
+                      </span>
+                    </span>
+                  </button>
+                </li>
               </ul>
+
             )}
           </div>
         </Field>
@@ -183,6 +216,7 @@ export function ProfessionalPicker({ value, onChange, children, labels }: Profes
           hint="Formato 0000/UF."
         >
           <Input
+            ref={numeroRef}
             value={value.numero}
             onChange={(e) => onChange({ ...value, numero: maskCouncilNumber(e.target.value) })}
             onBlur={() => markTouched("numero")}
