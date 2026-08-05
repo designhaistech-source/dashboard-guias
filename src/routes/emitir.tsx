@@ -1132,7 +1132,26 @@ function EmitirPage() {
             />
           ) : null}
 
-          {guideKind && !(guideKind === "internacao" && convenioId === "tiss") && (
+          {guideKind === "apac" && convenioId === "sus" ? (
+            <ApacGuideForm
+              header={
+                <div className="flex items-center gap-3">
+                  <div className="w-1 h-8 bg-primary rounded-full" />
+                  <div className="min-w-0 flex-1">
+                    <p className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+                      Formulário de emissão
+                    </p>
+                    <p className="text-sm font-semibold truncate">{guideHeaderTitle}</p>
+                  </div>
+                </div>
+              }
+            />
+          ) : null}
+
+          {guideKind &&
+            !(guideKind === "internacao" && convenioId === "tiss") &&
+            !(guideKind === "apac" && convenioId === "sus") && (
+
             <div>
             <form
               key={guideKind}
