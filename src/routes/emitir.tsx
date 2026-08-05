@@ -221,6 +221,21 @@ const CONVENIOS: {
 
 type Procedure = { id: string; code: string; description: string; quantity: number };
 type OpmeItem = { id: string; code: string; description: string; quantity: number };
+
+/** Quadro "Procedimentos e exames realizados" (campos 36 a 47) da guia SP/SADT. */
+type ExecutedItem = {
+  id: string;
+  date: string;
+  startTime: string;
+  endTime: string;
+  code: string;
+  description: string;
+  quantity: number;
+  via: string;
+  technique: string;
+  reductionFactor: string;
+  unitValue: string;
+};
 type Kit = { id: string; name: string; specialty?: string; procedures: Omit<Procedure, "id">[] };
 
 const CHARACTER_OPTIONS = ["Eletivo", "Urgência", "Emergência"];
