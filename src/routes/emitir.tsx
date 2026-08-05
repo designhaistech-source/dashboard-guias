@@ -637,22 +637,36 @@ function EmitirPage() {
     toast.success(`Kit "${kit.name}" aplicado (${kit.procedures.length} procedimentos)`);
   };
 
+  // Formulário inline "criar kit" (rodapé do tópico 4)
+  const [kitName, setKitName] = useState("");
+  const filledProcedures = useMemo(
+    () => procedures.filter((p) => p.code.trim() && p.description.trim()),
+    [procedures],
+  );
+
   const saveAsKit = () => {
-    const filled = procedures.filter((p) => p.code.trim() && p.description.trim());
-    if (filled.length === 0) {
+    if (filledProcedures.length === 0) {
       toast.error("Preencha ao menos um procedimento para salvar como kit");
       return;
     }
-    const name = window.prompt("Nome do kit:", "");
-    if (!name?.trim()) return;
+    if (!kitName.trim()) {
+      toast.error("Informe um nome para o kit");
+      return;
+    }
     const kit: Kit = {
       id: crypto.randomUUID(),
-      name: name.trim(),
-      procedures: filled.map(({ code, description, quantity }) => ({ code, description, quantity })),
+      name: kitName.trim(),
+      procedures: filledProcedures.map(({ code, description, quantity }) => ({
+        code,
+        description,
+        quantity,
+      })),
     };
     setUserKits((k) => [...k, kit]);
+    setKitName("");
     toast.success(`Kit "${kit.name}" salvo`);
   };
+
 
   // OPME
   const [opmeItems, setOpmeItems] = useState<OpmeItem[]>([]);
