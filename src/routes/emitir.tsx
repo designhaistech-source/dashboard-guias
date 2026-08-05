@@ -345,6 +345,12 @@ function EmitirPage() {
   const [serieDates, setSerieDates] = useState<string[]>(Array(10).fill(""));
   /** Campo 57 — assinatura do beneficiário ou responsável. */
   const [assinaturaBeneficiario, setAssinaturaBeneficiario] = useState("");
+  /** Campo 66 — assinatura do responsável pela autorização. */
+  const [assinaturaAutorizacao, setAssinaturaAutorizacao] = useState("");
+  /** Campo 67 — assinatura do beneficiário ou responsável (quadro final). */
+  const [assinaturaBeneficiarioFinal, setAssinaturaBeneficiarioFinal] = useState("");
+  /** Campo 68 — assinatura do contratado. */
+  const [assinaturaContratado, setAssinaturaContratado] = useState("");
 
   // Contratado executante (29, 30, 31)
   const [codigoExecutante, setCodigoExecutante] = useState("");
@@ -894,6 +900,7 @@ function EmitirPage() {
     "realizados",
     "executantes",
     "observacao",
+    "financeiro",
     "opme",
   ];
 
@@ -918,6 +925,7 @@ function EmitirPage() {
   const realizadosOk = executedItems.some((i) => i.description.trim() || i.code.trim());
   const executantesOk = executantes.some((e) => e.name.trim() && e.councilNumber.trim());
   const observacaoOk = Boolean(observacoes.trim());
+  const financeiroOk = totalGeral > 0;
 
 
 
@@ -2397,7 +2405,100 @@ function EmitirPage() {
                 </FormField>
               </Section>
 
+              {/* Valores totais e assinaturas */}
+
+              <Section
+                number={stepNumber("financeiro")}
+                done={financeiroOk}
+                icon={<FileText className="h-4 w-4" />}
+                title="Valores Totais e Assinaturas"
+                description="Campos 59 a 68 — totais do quadro financeiro e assinaturas da guia."
+              >
+                <div className="space-y-6">
+                  <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                    <FormField label="59 - Total de Procedimentos (R$)" hint="Calculado a partir dos procedimentos realizados (campo 47).">
+                      <Input value={formatMoney(totalProcedimentos)} disabled className="font-mono text-right" />
+                    </FormField>
+                    <FormField label="60 - Total de Taxas e Aluguéis (R$)">
+                      <Input
+                        value={totalTaxas}
+                        onChange={(e) => setTotalTaxas(e.target.value)}
+                        placeholder="0,00"
+                        inputMode="decimal"
+                        className="font-mono text-right"
+                      />
+                    </FormField>
+                    <FormField label="61 - Total de Materiais (R$)">
+                      <Input
+                        value={totalMateriais}
+                        onChange={(e) => setTotalMateriais(e.target.value)}
+                        placeholder="0,00"
+                        inputMode="decimal"
+                        className="font-mono text-right"
+                      />
+                    </FormField>
+                    <FormField label="62 - Total de OPME (R$)">
+                      <Input
+                        value={totalOpme}
+                        onChange={(e) => setTotalOpme(e.target.value)}
+                        placeholder="0,00"
+                        inputMode="decimal"
+                        className="font-mono text-right"
+                      />
+                    </FormField>
+                    <FormField label="63 - Total de Medicamentos (R$)">
+                      <Input
+                        value={totalMedicamentos}
+                        onChange={(e) => setTotalMedicamentos(e.target.value)}
+                        placeholder="0,00"
+                        inputMode="decimal"
+                        className="font-mono text-right"
+                      />
+                    </FormField>
+                    <FormField label="64 - Total de Gases Medicinais (R$)">
+                      <Input
+                        value={totalGases}
+                        onChange={(e) => setTotalGases(e.target.value)}
+                        placeholder="0,00"
+                        inputMode="decimal"
+                        className="font-mono text-right"
+                      />
+                    </FormField>
+                  </div>
+
+                  <div className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-border bg-muted/40 px-4 py-3">
+                    <span className="text-sm font-medium text-foreground">65 - Total Geral (R$)</span>
+                    <span className="font-mono text-lg font-semibold text-foreground">
+                      {formatMoney(totalGeral)}
+                    </span>
+                  </div>
+
+                  <div className="grid gap-4 lg:grid-cols-3">
+                    <SignatureField
+                      label="66 - Assinatura do Responsável pela Autorização"
+                      value={assinaturaAutorizacao}
+                      onChange={setAssinaturaAutorizacao}
+                      hint="Opcional: deixe em branco para assinar à mão no papel."
+                    />
+                    <SignatureField
+                      label="67 - Assinatura do Beneficiário ou Responsável"
+                      value={assinaturaBeneficiarioFinal}
+                      onChange={setAssinaturaBeneficiarioFinal}
+                      hint="Opcional: deixe em branco para assinar à mão no papel."
+                    />
+                    <SignatureField
+                      label="68 - Assinatura do Contratado"
+                      value={assinaturaContratado}
+                      onChange={setAssinaturaContratado}
+                      hint="Opcional: deixe em branco para assinar à mão no papel."
+                    />
+                  </div>
+                </div>
+              </Section>
+
               {/* OPME */}
+
+
 
 
               <Section
@@ -2502,6 +2603,7 @@ function EmitirPage() {
                   { label: "Execução", done: realizadosOk },
                   { label: "Profissional executante", done: executantesOk },
                   { label: "Observação (opcional)", done: observacaoOk },
+                  { label: "Valores e assinaturas", done: financeiroOk },
 
 
                   { label: "OPME (opcional)", done: opmeOk },
@@ -2595,6 +2697,18 @@ function EmitirPage() {
               pacienteCns={pacienteCns}
               pacienteRn={pacienteRn}
               assinaturaSolicitante={assinaturaSolicitante}
+              totais={[
+                formatMoney(totalProcedimentos),
+                totalTaxas,
+                totalMateriais,
+                totalOpme,
+                totalMedicamentos,
+                totalGases,
+                formatMoney(totalGeral),
+              ]}
+              assinaturaAutorizacao={assinaturaAutorizacao}
+              assinaturaBeneficiarioFinal={assinaturaBeneficiarioFinal}
+              assinaturaContratado={assinaturaContratado}
 
               fullSize
             />
@@ -2881,6 +2995,10 @@ function GuiaLivePreview(props: {
   pacienteCns: string;
   pacienteRn: string;
   assinaturaSolicitante: string;
+  totais?: string[];
+  assinaturaAutorizacao?: string;
+  assinaturaBeneficiarioFinal?: string;
+  assinaturaContratado?: string;
   fullSize?: boolean;
 }) {
   const {
@@ -2894,6 +3012,8 @@ function GuiaLivePreview(props: {
     codigoExecutante, contratadoExecutante, cnesExecutante,
     tipoAtendimento, indicacaoAcidente, tipoConsulta, motivoEncerramento,
     pacienteValidadeCarteira, pacienteCns, pacienteRn, assinaturaSolicitante,
+    totais = [], assinaturaAutorizacao = "", assinaturaBeneficiarioFinal = "",
+    assinaturaContratado = "",
   } = props;
 
 
@@ -3125,26 +3245,31 @@ function GuiaLivePreview(props: {
                 ["63", "Total de Medicamentos (R$)"],
                 ["64", "Total de Gases Medicinais (R$)"],
                 ["65", "Total Geral (R$)"],
-              ].map(([n, l]) => (
+              ].map(([n, l], i) => (
                 <div key={n} className="border-r last:border-r-0 border-border-strong px-1 py-0.5">
                   <div className="text-[8px] font-bold">{n} - {l}</div>
-                  <div className="font-mono text-right min-h-[12px]">{opmeItems.length > 0 && n === "62" ? "" : ""}</div>
+                  <div className="font-mono text-right min-h-[12px]">{totais[i] ?? ""}</div>
                 </div>
               ))}
             </div>
 
             <div className="grid grid-cols-3 text-[9px]">
               {[
-                "66 - Assinatura do Responsável pela Autorização",
-                "67 - Assinatura do Beneficiário ou Responsável",
-                "68 - Assinatura do Contratado",
-              ].map((l) => (
+                ["66 - Assinatura do Responsável pela Autorização", assinaturaAutorizacao],
+                ["67 - Assinatura do Beneficiário ou Responsável", assinaturaBeneficiarioFinal],
+                ["68 - Assinatura do Contratado", assinaturaContratado],
+              ].map(([l, img]) => (
                 <div key={l} className="border-r last:border-r-0 border-border-strong px-1 py-1">
                   <div className="text-[8px] font-bold">{l}</div>
-                  <div className="h-8"></div>
+                  <div className="h-8 flex items-end">
+                    {img ? (
+                      <img src={img} alt="" className="max-h-8 object-contain" />
+                    ) : null}
+                  </div>
                 </div>
               ))}
             </div>
+
           </div>
         </div>
       </div>
