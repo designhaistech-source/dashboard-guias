@@ -1653,7 +1653,7 @@ function EmitirPage() {
                         </div>
 
                         {/* 24 - Tabela (automático) */}
-                        <Field
+                        <FormField
                           label="24 - Tabela"
                           labelClassName="lg:hidden"
                           className="lg:space-y-0"
@@ -1665,10 +1665,10 @@ function EmitirPage() {
                             aria-label="24 - Tabela"
                             className="bg-muted text-center text-muted-foreground"
                           />
-                        </Field>
+                        </FormField>
 
                         {/* 25 - Código */}
-                        <Field
+                        <FormField
                           label={<>25 - Código</>}
                           required
                           labelClassName="lg:hidden"
@@ -1680,10 +1680,10 @@ function EmitirPage() {
                             aria-label="25 - Código do Procedimento ou Item Assistencial"
                             placeholder="Código TUSS"
                           />
-                        </Field>
+                        </FormField>
 
                         {/* 26 - Descrição */}
-                        <Field
+                        <FormField
                           label="26 - Descrição"
                           required
                           labelClassName="lg:hidden"
@@ -1708,10 +1708,10 @@ function EmitirPage() {
                             emptyMessage="Nenhum procedimento encontrado."
                             clearable
                           />
-                        </Field>
+                        </FormField>
 
                         {/* 27 - Qtde. Solicitada */}
-                        <Field
+                        <FormField
                           label="27 - Qtde. Solic."
                           required
                           labelClassName="lg:hidden"
@@ -1729,10 +1729,10 @@ function EmitirPage() {
                               })
                             }
                           />
-                        </Field>
+                        </FormField>
 
                         {/* 28 - Qtde. Autorizada (operadora) */}
-                        <Field
+                        <FormField
                           label="28 - Qtde. Aut."
                           labelClassName="lg:hidden"
                           className="mt-3 lg:mt-0 lg:space-y-0"
@@ -1745,7 +1745,7 @@ function EmitirPage() {
                             aria-label="28 - Qtde. Autorizada (preenchida pela operadora)"
                             className="bg-muted text-center text-muted-foreground"
                           />
-                        </Field>
+                        </FormField>
 
                         <div className="hidden lg:flex lg:justify-end">
                           <Button
