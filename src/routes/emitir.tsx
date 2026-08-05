@@ -1578,14 +1578,6 @@ function EmitirPage() {
                       <Button type="button" size="sm" onClick={addProcedure}>
                         <Plus className="h-4 w-4" /> Adicionar
                       </Button>
-                      <Button
-                        type="button"
-                        size="sm"
-                        variant="outline"
-                        onClick={saveAsKit}
-                      >
-                        Salvar como kit
-                      </Button>
 
                     </div>
                   </div>
