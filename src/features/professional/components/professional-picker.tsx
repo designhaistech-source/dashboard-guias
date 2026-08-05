@@ -40,14 +40,17 @@ export function ProfessionalPicker({ value, onChange, children, labels }: Profes
   const [open, setOpen] = useState(false);
   const blurTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  const query = value.nome.trim();
   const suggestions = useMemo(() => {
-    const query = value.nome.trim().toLowerCase();
+    const q = query.toLowerCase();
     // Nome idêntico a um cadastro: comporta-se como seletor e lista todos.
-    const exact = PROFESSIONALS.some((p) => p.nome.toLowerCase() === query);
-    if (!query || exact) return PROFESSIONALS;
-    const matches = PROFESSIONALS.filter((p) => p.nome.toLowerCase().includes(query));
-    return matches.length > 0 ? matches : PROFESSIONALS;
-  }, [value.nome]);
+    const exact = PROFESSIONALS.some((p) => p.nome.toLowerCase() === q);
+    if (!q || exact) return PROFESSIONALS;
+    return PROFESSIONALS.filter((p) => p.nome.toLowerCase().includes(q));
+  }, [query]);
+
+  const isManual = query.length > 0 && !PROFESSIONALS.some((p) => p.nome.toLowerCase() === query.toLowerCase());
+
 
 
   const selectProfessional = (id: string) => {
