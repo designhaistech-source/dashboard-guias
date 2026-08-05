@@ -82,27 +82,50 @@ export function ProfessionalPicker({ value, onChange, children, labels }: Profes
       </div>
 
       <div className="grid gap-4 lg:grid-cols-2 xl:grid-cols-[1fr_140px_160px_200px]">
-        <Field id="profissional-nome" label={labels?.nome ?? "Nome do profissional"} required>
+        <Field
+          id="profissional-nome"
+          label={labels?.nome ?? "Nome do profissional"}
+          required
+          error={errorFor("nome", errors.nome)}
+          hint="Nome e sobrenome, sem números."
+        >
           <Input
             value={value.nome}
-            onChange={(e) => onChange({ ...value, nome: e.target.value })}
+            onChange={(e) => onChange({ ...value, nome: maskProfessionalName(e.target.value) })}
+            onBlur={() => markTouched("nome")}
             autoComplete="name"
+            inputMode="text"
+            maxLength={70}
           />
         </Field>
         <SelectField
           id="profissional-conselho"
           label={labels?.conselho ?? "Conselho"}
           value={value.conselho}
-          onValueChange={(conselho) => onChange({ ...value, conselho })}
+          onValueChange={(conselho) => {
+            markTouched("conselho");
+            onChange({ ...value, conselho });
+          }}
+          error={errorFor("conselho", errors.conselho)}
           options={COUNCILS.map((c) => ({ value: c, label: c }))}
         />
-        <Field id="profissional-numero" label={labels?.numero ?? "Número do conselho"} required>
+        <Field
+          id="profissional-numero"
+          label={labels?.numero ?? "Número do conselho"}
+          required
+          error={errorFor("numero", errors.numero)}
+          hint="Formato 0000/UF."
+        >
           <Input
             value={value.numero}
-            onChange={(e) => onChange({ ...value, numero: e.target.value })}
+            onChange={(e) => onChange({ ...value, numero: maskCouncilNumber(e.target.value) })}
+            onBlur={() => markTouched("numero")}
             placeholder="0000/UF"
+            inputMode="text"
+            maxLength={11}
           />
         </Field>
+
         <Field id="profissional-especialidade" label="Especialidade">
           <Input
             value={value.especialidade}
