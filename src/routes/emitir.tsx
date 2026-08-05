@@ -2514,12 +2514,15 @@ function FieldBox({
   n,
   label,
   value,
+  image,
   width,
   grow,
 }: {
   n: string;
   label: string;
   value: string;
+  /** Data URL opcional renderizado no lugar do texto (ex.: assinatura). */
+  image?: string;
   width?: number;
   grow?: boolean;
 }) {
@@ -2529,10 +2532,15 @@ function FieldBox({
       style={{ width: grow ? undefined : width, flex: grow ? 1 : undefined, minWidth: 0 }}
     >
       <div className="text-[8px] font-bold">{n} - {label}</div>
-      <div className="text-[10px] font-mono truncate min-h-[12px]">{value}</div>
+      {image ? (
+        <img src={image} alt={label} className="h-6 w-auto max-w-full object-contain" />
+      ) : (
+        <div className="text-[10px] font-mono truncate min-h-[12px]">{value}</div>
+      )}
     </div>
   );
 }
+
 
 function FieldBoxDate({
   n,
