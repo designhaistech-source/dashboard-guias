@@ -2696,6 +2696,18 @@ function EmitirPage() {
               pacienteCns={pacienteCns}
               pacienteRn={pacienteRn}
               assinaturaSolicitante={assinaturaSolicitante}
+              totais={[
+                formatMoney(totalProcedimentos),
+                totalTaxas,
+                totalMateriais,
+                totalOpme,
+                totalMedicamentos,
+                totalGases,
+                formatMoney(totalGeral),
+              ]}
+              assinaturaAutorizacao={assinaturaAutorizacao}
+              assinaturaBeneficiarioFinal={assinaturaBeneficiarioFinal}
+              assinaturaContratado={assinaturaContratado}
 
               fullSize
             />
