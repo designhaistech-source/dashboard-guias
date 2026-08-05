@@ -1729,7 +1729,7 @@ function EmitirPage() {
 
                 {/* Procedimentos solicitados (24 a 28) */}
                 <div className="mt-5 border-t pt-5 space-y-3 @container">
-                  <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-2 sm:flex sm:justify-between">
+                  <div className="flex flex-col gap-2 @md:flex-row @md:items-center @md:justify-between">
                     <h4 className="min-w-0 text-sm font-medium">
                       Procedimentos solicitados
                       <span className="ml-2 text-xs font-normal text-muted-foreground">
@@ -1737,10 +1737,21 @@ function EmitirPage() {
                       </span>
                     </h4>
                     <div className="flex shrink-0 items-center gap-2">
-                      <Button type="button" size="sm" variant="outline" onClick={clearProcedures}>
+                      <Button
+                        type="button"
+                        size="sm"
+                        variant="outline"
+                        onClick={clearProcedures}
+                        className="flex-1 justify-center @md:flex-none"
+                      >
                         Limpar
                       </Button>
-                      <Button type="button" size="sm" onClick={addProcedure}>
+                      <Button
+                        type="button"
+                        size="sm"
+                        onClick={addProcedure}
+                        className="flex-1 justify-center @md:flex-none"
+                      >
                         <Plus className="h-4 w-4" /> Adicionar
                       </Button>
                     </div>
