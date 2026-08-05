@@ -345,6 +345,12 @@ function EmitirPage() {
   const [serieDates, setSerieDates] = useState<string[]>(Array(10).fill(""));
   /** Campo 57 — assinatura do beneficiário ou responsável. */
   const [assinaturaBeneficiario, setAssinaturaBeneficiario] = useState("");
+  /** Campo 66 — assinatura do responsável pela autorização. */
+  const [assinaturaAutorizacao, setAssinaturaAutorizacao] = useState("");
+  /** Campo 67 — assinatura do beneficiário ou responsável (quadro final). */
+  const [assinaturaBeneficiarioFinal, setAssinaturaBeneficiarioFinal] = useState("");
+  /** Campo 68 — assinatura do contratado. */
+  const [assinaturaContratado, setAssinaturaContratado] = useState("");
 
   // Contratado executante (29, 30, 31)
   const [codigoExecutante, setCodigoExecutante] = useState("");
