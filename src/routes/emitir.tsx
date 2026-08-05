@@ -2535,9 +2535,10 @@ function EmitirPage() {
 
                   <div className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-border bg-muted/40 px-4 py-3">
                     <span className="text-sm font-medium text-foreground">65 - Total Geral (R$)</span>
-                    <span className="font-mono text-lg font-semibold text-foreground">
+                    <span className="font-mono text-sm font-semibold text-foreground">
                       {formatMoney(totalGeral)}
                     </span>
+
                   </div>
 
                   <div className="grid gap-4 @3xl:grid-cols-3">
