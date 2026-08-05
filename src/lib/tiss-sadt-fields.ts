@@ -108,7 +108,9 @@ export function validateTissLabels(labels: readonly string[]): {
   const checkedFields: number[] = [];
 
   for (const raw of labels) {
-    for (const part of raw.split(" / ")) {
+    // Composite labels such as "37 - Hora Inicial / 38 - Hora Final" are split
+    // only where a new field number starts, so names containing " / " survive.
+    for (const part of raw.split(/\s\/\s(?=\d{1,2}\s-\s)/)) {
       const label = part.trim();
       const match = /^(\d{1,2})\s-\s(.+)$/.exec(label);
       if (!match) continue;
@@ -129,12 +131,21 @@ export function validateTissLabels(labels: readonly string[]): {
   return { ok: issues.length === 0, issues, checkedFields: [...new Set(checkedFields)].sort((a, b) => a - b) };
 }
 
-/** Extracts every `"N - ..."` label occurrence from a source file's text. */
+/**
+ * Extracts every field label occurrence from a source file's text, covering both
+ * inline labels (`"58 - Observação / Justificativa"`) and tuple definitions
+ * (`["59", "Total de Procedimentos (R$)"]`) used to render the guide totals.
+ */
 export function extractTissLabels(source: string): string[] {
-  return [...source.matchAll(/\d{1,2}\s-\s[^"'`<>{}\n]+/g)]
-    .map((m) => m[0].trim().replace(/\s+/g, " "))
+  const inline = [...source.matchAll(/\d{1,2}\s-\s[^"'`<>{}\n]+/g)].map((m) => m[0]);
+  const tuples = [...source.matchAll(/\[\s*"(\d{1,2})"\s*,\s*"([^"]+)"\s*\]/g)].map(
+    (m) => `${m[1]} - ${m[2]}`,
+  );
+  return [...inline, ...tuples]
+    .map((l) => l.trim().replace(/\s+/g, " "))
     .filter((l) => /^\d{1,2}\s-\s\S/.test(l));
 }
+
 
 /** Field numbers that must appear somewhere in the issuing screen. */
 export function missingTissFields(checkedFields: readonly number[]): number[] {
