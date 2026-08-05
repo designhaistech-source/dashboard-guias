@@ -716,7 +716,13 @@ function EmitirPage() {
   });
 
 
-  /** Ordem dos tópicos numerados do formulário (varia conforme o tipo de guia). */
+  /**
+   * Ordem dos tópicos numerados do formulário. Segue a mesma sequência dos
+   * quadros impressos na guia SP/SADT: dados da operadora (1-7), beneficiário
+   * (8-12), contratado solicitante (13-22), dados da solicitação (23),
+   * procedimentos solicitados (24-28), contratado executante e atendimento
+   * (29-35) e procedimentos/materiais realizados (36-56).
+   */
   const stepKeys: string[] = [
     "convenio",
     ...(guideKind === "internacao" ? ["internacao"] : []),
@@ -724,11 +730,10 @@ function EmitirPage() {
     ...(guideKind === "aih" ? ["aih"] : []),
     "paciente",
     "profissional",
-    "executante",
-
     "clinico",
     "kits",
     "procedimentos",
+    "executante",
     "opme",
   ];
   const stepNumber = (key: string) => stepKeys.indexOf(key) + 1;
@@ -983,7 +988,7 @@ function EmitirPage() {
                   done={convenioOk}
                   icon={<Building2 className="h-4 w-4" />}
                   title="Convênio e atendimento"
-                  description="Operadora responsável e caráter da solicitação."
+                  description="Campos 1 a 7 da guia — operadora responsável, autorização e senha."
                 >
                   <Grid cols={2}>
                     <Field label="Operadora / Convênio" required>
@@ -1241,7 +1246,7 @@ function EmitirPage() {
                 done={pacienteOk}
                 icon={<User className="h-4 w-4" />}
                 title="Beneficiário / Paciente"
-                description="Identificação do paciente na operadora."
+                description="Campos 8 a 12 da guia — identificação do beneficiário na operadora."
               >
                 <Grid cols={2}>
                   <Field label="10 - Nome" required>
@@ -1317,7 +1322,7 @@ function EmitirPage() {
                 done={profissionalOk}
                 icon={<Stethoscope className="h-4 w-4" />}
                 title="Profissional solicitante"
-                description="Médico responsável pela emissão."
+                description="Campos 13 a 22 da guia — contratado e profissional solicitante."
                 action={
                   <Button
                     type="button"
@@ -1463,95 +1468,6 @@ function EmitirPage() {
                 </div>
               </Section>
 
-              {/* Contratado executante e atendimento */}
-              <Section
-                number={stepNumber("executante")}
-                done={executanteOk}
-                icon={<Building2 className="h-4 w-4" />}
-                title="Contratado executante e atendimento"
-                description="Quem executa o procedimento e as características do atendimento."
-              >
-                <Grid cols={3}>
-                  <Field label="29 - Código na Operadora">
-                    <Input
-                      value={codigoExecutante}
-                      onChange={(e) => setCodigoExecutante(e.target.value)}
-                      placeholder="Código do contrato"
-                    />
-                  </Field>
-                  <Field label="30 - Nome do Contratado">
-                    <Input
-                      value={contratadoExecutante}
-                      onChange={(e) => setContratadoExecutante(e.target.value)}
-                      placeholder="Prestador que executa"
-                    />
-                  </Field>
-                  <Field label="31 - Código CNES">
-                    <Input
-                      value={cnesExecutante}
-                      onChange={(e) => setCnesExecutante(e.target.value)}
-                      placeholder="0000000"
-                    />
-                  </Field>
-                  <SelectField
-                    label="32 - Tipo de Atendimento"
-                    labelClassName="text-xs font-medium text-muted-foreground"
-                    value={tipoAtendimento}
-                    onValueChange={setTipoAtendimento}
-                    placeholder="Selecione"
-                    options={[
-                      "Remoção",
-                      "Pequena cirurgia",
-                      "Terapias",
-                      "Consulta",
-                      "Exame",
-                      "Atendimento domiciliar",
-                      "Urgência / emergência",
-                      "SADT internado",
-                    ].map((o) => ({ value: o, label: o }))}
-                  />
-                  <SelectField
-                    label="33 - Indicação de Acidente (acidente ou doença relacionada)"
-                    labelClassName="text-xs font-medium text-muted-foreground"
-                    value={indicacaoAcidente}
-                    onValueChange={setIndicacaoAcidente}
-                    placeholder="Selecione"
-                    options={[
-                      "Acidente de trabalho",
-                      "Acidente de trânsito",
-                      "Outros acidentes",
-                      "Não acidente",
-                    ].map((o) => ({ value: o, label: o }))}
-                  />
-                  <SelectField
-                    label="34 - Tipo de Consulta"
-                    labelClassName="text-xs font-medium text-muted-foreground"
-                    value={tipoConsulta}
-                    onValueChange={setTipoConsulta}
-                    placeholder="Selecione"
-                    options={["Primeira consulta", "Seguimento", "Pré-natal", "Por encaminhamento"].map(
-                      (o) => ({ value: o, label: o }),
-                    )}
-                  />
-                  <SelectField
-                    label="35 - Motivo de Encerramento do Atendimento"
-                    labelClassName="text-xs font-medium text-muted-foreground"
-                    value={motivoEncerramento}
-                    onValueChange={setMotivoEncerramento}
-                    placeholder="Selecione"
-                    options={[
-                      "Retorno",
-                      "Retorno por complicação",
-                      "Alta curado",
-                      "Alta melhorado",
-                      "Alta a pedido",
-                      "Alta com previsão de retorno",
-                      "Alta administrativa",
-                      "Óbito",
-                    ].map((o) => ({ value: o, label: o }))}
-                  />
-                </Grid>
-              </Section>
 
 
 
@@ -1561,7 +1477,7 @@ function EmitirPage() {
                 done={clinicoOk}
                 icon={<FileText className="h-4 w-4" />}
                 title="Dados clínicos"
-                description="Hipótese diagnóstica e justificativa técnica."
+                description="Campo 23 da guia — indicação clínica e justificativa técnica."
               >
                 <Grid cols={2}>
                   <Field label="CID principal">
@@ -1679,7 +1595,7 @@ function EmitirPage() {
                     )}
                   </span>
                 }
-                description="Arraste para reordenar. Adicione um ou mais procedimentos (TUSS)."
+                description="Campos 24 a 28 da guia — procedimentos e itens assistenciais solicitados."
                 action={
                   <div className="flex flex-wrap items-center gap-2">
                     <Button type="button" size="sm" variant="outline" onClick={clearProcedures}>
@@ -1785,13 +1701,103 @@ function EmitirPage() {
                 )}
               </Section>
 
+              {/* Contratado executante e atendimento */}
+              <Section
+                number={stepNumber("executante")}
+                done={executanteOk}
+                icon={<Building2 className="h-4 w-4" />}
+                title="Contratado executante e atendimento"
+                description="Campos 29 a 35 da guia — contratado executante e características do atendimento."
+              >
+                <Grid cols={3}>
+                  <Field label="29 - Código na Operadora">
+                    <Input
+                      value={codigoExecutante}
+                      onChange={(e) => setCodigoExecutante(e.target.value)}
+                      placeholder="Código do contrato"
+                    />
+                  </Field>
+                  <Field label="30 - Nome do Contratado">
+                    <Input
+                      value={contratadoExecutante}
+                      onChange={(e) => setContratadoExecutante(e.target.value)}
+                      placeholder="Prestador que executa"
+                    />
+                  </Field>
+                  <Field label="31 - Código CNES">
+                    <Input
+                      value={cnesExecutante}
+                      onChange={(e) => setCnesExecutante(e.target.value)}
+                      placeholder="0000000"
+                    />
+                  </Field>
+                  <SelectField
+                    label="32 - Tipo de Atendimento"
+                    labelClassName="text-xs font-medium text-muted-foreground"
+                    value={tipoAtendimento}
+                    onValueChange={setTipoAtendimento}
+                    placeholder="Selecione"
+                    options={[
+                      "Remoção",
+                      "Pequena cirurgia",
+                      "Terapias",
+                      "Consulta",
+                      "Exame",
+                      "Atendimento domiciliar",
+                      "Urgência / emergência",
+                      "SADT internado",
+                    ].map((o) => ({ value: o, label: o }))}
+                  />
+                  <SelectField
+                    label="33 - Indicação de Acidente (acidente ou doença relacionada)"
+                    labelClassName="text-xs font-medium text-muted-foreground"
+                    value={indicacaoAcidente}
+                    onValueChange={setIndicacaoAcidente}
+                    placeholder="Selecione"
+                    options={[
+                      "Acidente de trabalho",
+                      "Acidente de trânsito",
+                      "Outros acidentes",
+                      "Não acidente",
+                    ].map((o) => ({ value: o, label: o }))}
+                  />
+                  <SelectField
+                    label="34 - Tipo de Consulta"
+                    labelClassName="text-xs font-medium text-muted-foreground"
+                    value={tipoConsulta}
+                    onValueChange={setTipoConsulta}
+                    placeholder="Selecione"
+                    options={["Primeira consulta", "Seguimento", "Pré-natal", "Por encaminhamento"].map(
+                      (o) => ({ value: o, label: o }),
+                    )}
+                  />
+                  <SelectField
+                    label="35 - Motivo de Encerramento do Atendimento"
+                    labelClassName="text-xs font-medium text-muted-foreground"
+                    value={motivoEncerramento}
+                    onValueChange={setMotivoEncerramento}
+                    placeholder="Selecione"
+                    options={[
+                      "Retorno",
+                      "Retorno por complicação",
+                      "Alta curado",
+                      "Alta melhorado",
+                      "Alta a pedido",
+                      "Alta com previsão de retorno",
+                      "Alta administrativa",
+                      "Óbito",
+                    ].map((o) => ({ value: o, label: o }))}
+                  />
+                </Grid>
+              </Section>
+
               {/* OPME */}
               <Section
                 number={stepNumber("opme")}
                 done={opmeOk}
                 icon={<Wrench className="h-4 w-4" />}
                 title="OPME — Órteses, Próteses e Materiais Especiais"
-                description="Arraste para reordenar. Adicione materiais/próteses solicitados (opcional)."
+                description="Campos 36 a 56 da guia — materiais, órteses e próteses realizados (opcional)."
                 action={
                   <Button type="button" size="sm" onClick={addOpme}>
                     <Plus className="h-4 w-4" /> Adicionar OPME
@@ -1884,6 +1890,7 @@ function EmitirPage() {
                   { label: "Profissional", done: profissionalOk },
                   { label: "Dados clínicos", done: clinicoOk },
                   { label: "Procedimentos", done: procedimentosOk },
+                  { label: "Executante", done: executanteOk },
                   { label: "OPME (opcional)", done: opmeOk },
                 ]}
                 note={
