@@ -119,13 +119,38 @@ export function ProfessionalPicker({ value, onChange, children, labels }: Profes
               aria-hidden
               className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground"
             />
-            {open && suggestions.length > 0 && (
+            {open && (suggestions.length > 0 || isManual) && (
               <ul
                 id="profissional-nome-sugestoes"
                 role="listbox" /* ds-allow: autocomplete inline ancorado no próprio Input do design system (Select/Command não aceitam texto livre com máscara) */
                 aria-label="Profissionais cadastrados"
                 className="absolute z-50 mt-1 max-h-56 w-full overflow-y-auto rounded-md border border-border bg-popover p-1 shadow-md"
               >
+                {isManual && (
+                  <li>
+                    <button /* ds-allow: opção de lista de sugestões */
+                      type="button"
+                      role="option"
+                      aria-selected={value.id === MANUAL_PROFESSIONAL_ID}
+                      onMouseDown={(e) => e.preventDefault()}
+                      onClick={() => {
+                        if (blurTimer.current) clearTimeout(blurTimer.current);
+                        onChange({ ...value, id: MANUAL_PROFESSIONAL_ID, nome: query });
+                        setOpen(false);
+                      }}
+                      className="flex w-full items-center gap-2 rounded-sm px-2 py-1.5 text-left text-sm hover:bg-accent hover:text-accent-foreground focus-visible:bg-accent focus-visible:outline-none"
+                    >
+                      <UserPlus className="h-4 w-4 shrink-0 text-muted-foreground" aria-hidden />
+                      <span className="min-w-0">
+                        <span className="block truncate">Adicionar “{query}” manualmente</span>
+                        <span className="block truncate text-xs text-muted-foreground">
+                          Profissional não cadastrado
+                        </span>
+                      </span>
+                    </button>
+                  </li>
+                )}
+
 
                 {suggestions.map((p) => {
                   const active = p.id === value.id;
