@@ -893,6 +893,7 @@ function EmitirPage() {
     "atendimento",
     "realizados",
     "executantes",
+    "observacao",
     "opme",
   ];
 
@@ -916,6 +917,7 @@ function EmitirPage() {
   const atendimentoOk = Boolean(tipoAtendimento.trim());
   const realizadosOk = executedItems.some((i) => i.description.trim() || i.code.trim());
   const executantesOk = executantes.some((e) => e.name.trim() && e.councilNumber.trim());
+  const observacaoOk = Boolean(observacoes.trim());
 
 
 
@@ -2373,7 +2375,30 @@ function EmitirPage() {
                 </div>
               </Section>
 
+              {/* Observação / Justificativa */}
+
+              <Section
+                number={stepNumber("observacao")}
+                done={observacaoOk}
+                icon={<FileText className="h-4 w-4" />}
+                title="Observação / Justificativa"
+                description="Campo 58 — informações complementares ou justificativa clínica (opcional)."
+              >
+                <FormField
+                  label="58 - Observação / Justificativa"
+                  hint="Texto livre impresso no campo 58 da guia."
+                >
+                  <Textarea
+                    value={observacoes}
+                    onChange={(e) => setObservacoes(e.target.value)}
+                    placeholder="Descreva observações ou a justificativa clínica do procedimento."
+                    rows={4}
+                  />
+                </FormField>
+              </Section>
+
               {/* OPME */}
+
 
               <Section
                 number={stepNumber("opme")}
@@ -2476,6 +2501,7 @@ function EmitirPage() {
                   { label: "Atendimento", done: atendimentoOk },
                   { label: "Execução", done: realizadosOk },
                   { label: "Profissional executante", done: executantesOk },
+                  { label: "Observação (opcional)", done: observacaoOk },
 
 
                   { label: "OPME (opcional)", done: opmeOk },
