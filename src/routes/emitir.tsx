@@ -701,6 +701,70 @@ function EmitirPage() {
   };
 
 
+  // Procedimentos e exames realizados (campos 36 a 47)
+  const [executedItems, setExecutedItems] = useState<ExecutedItem[]>([]);
+  const newExecutedItem = (patch: Partial<ExecutedItem> = {}): ExecutedItem => ({
+    id: crypto.randomUUID(),
+    date: "",
+    startTime: "",
+    endTime: "",
+    code: "",
+    description: "",
+    quantity: 1,
+    via: "",
+    technique: "",
+    reductionFactor: "",
+    unitValue: "",
+    ...patch,
+  });
+  const addExecuted = () => setExecutedItems((l) => [...l, newExecutedItem()]);
+  const updateExecuted = (id: string, patch: Partial<ExecutedItem>) =>
+    setExecutedItems((l) => l.map((x) => (x.id === id ? { ...x, ...patch } : x)));
+  const removeExecuted = (id: string) =>
+    setExecutedItems((l) => l.filter((x) => x.id !== id));
+
+  /** Copia os procedimentos solicitados (campos 25-27) para o quadro de realizados. */
+  const importSolicitedProcedures = () => {
+    const filled = procedures.filter((p) => p.code.trim() || p.description.trim());
+    if (filled.length === 0) {
+      toast.error("Nenhum procedimento solicitado preenchido");
+      return;
+    }
+    setExecutedItems((l) => [
+      ...l,
+      ...filled.map((p) =>
+        newExecutedItem({
+          code: p.code,
+          description: p.description,
+          quantity: p.quantity ?? 1,
+        }),
+      ),
+    ]);
+    toast.success(`${filled.length} procedimento(s) copiado(s) dos solicitados`);
+  };
+
+  const parseMoney = (v: string) => Number(v.replace(/\./g, "").replace(",", ".")) || 0;
+  const formatMoney = (v: number) =>
+    v.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  const executedItemTotal = (item: ExecutedItem) =>
+    parseMoney(item.unitValue) * (item.quantity || 0);
+  const totalProcedimentos = executedItems.reduce((sum, i) => sum + executedItemTotal(i), 0);
+
+  // Totais do quadro financeiro (campos 49 a 54)
+  const [totalTaxas, setTotalTaxas] = useState("");
+  const [totalMateriais, setTotalMateriais] = useState("");
+  const [totalOpme, setTotalOpme] = useState("");
+  const [totalMedicamentos, setTotalMedicamentos] = useState("");
+  const [totalGases, setTotalGases] = useState("");
+  const totalGeral =
+    totalProcedimentos +
+    parseMoney(totalTaxas) +
+    parseMoney(totalMateriais) +
+    parseMoney(totalOpme) +
+    parseMoney(totalMedicamentos) +
+    parseMoney(totalGases);
+
+
   // OPME
   const [opmeItems, setOpmeItems] = useState<OpmeItem[]>([]);
   const addOpme = () =>
