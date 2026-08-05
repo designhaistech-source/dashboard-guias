@@ -773,9 +773,8 @@ function EmitirPage() {
     "profissional",
     "clinico",
     "executante",
-    // Posição reservada ao quadro "Procedimentos e exames realizados" (36-56)
-    // da guia impressa, para que OPME siga como tópico 7.
-    "realizados",
+    "atendimento",
+
     "opme",
   ];
 
@@ -795,7 +794,9 @@ function EmitirPage() {
           : true;
   const pacienteOk = Boolean(pacienteNome.trim() && pacienteCarteira.trim());
   const profissionalOk = profissionalValido;
-  const executanteOk = Boolean(contratadoExecutante.trim() && tipoAtendimento.trim());
+  const executanteOk = Boolean(contratadoExecutante.trim());
+  const atendimentoOk = Boolean(tipoAtendimento.trim());
+
 
   const clinicoOk = Boolean(indicacaoClinica.trim() && dataSolicitacao.trim());
   const procedimentosOk = procedures.some(
@@ -1830,7 +1831,7 @@ function EmitirPage() {
                 done={executanteOk}
                 icon={<Building2 className="h-4 w-4" />}
                 title="Dados do Contratado Executante"
-                description="Campos 29 a 35 da guia — contratado executante e características do atendimento."
+                description="Campos 29 a 31 da guia — identificação do contratado executante."
               >
                 <Grid cols={3}>
                   <Field label="29 - Código na Operadora">
@@ -1854,6 +1855,19 @@ function EmitirPage() {
                       placeholder="0000000"
                     />
                   </Field>
+                </Grid>
+              </Section>
+
+              {/* Dados do Atendimento */}
+              <Section
+                number={stepNumber("atendimento")}
+                done={atendimentoOk}
+                icon={<ClipboardList className="h-4 w-4" />}
+                title="Dados do Atendimento"
+                description="Campos 32 a 35 da guia — características do atendimento executado."
+              >
+                <Grid cols={3}>
+
                   <SelectField
                     label="32 - Tipo de Atendimento"
                     labelClassName="text-xs font-medium text-muted-foreground"
@@ -2013,6 +2027,8 @@ function EmitirPage() {
                   { label: "Profissional", done: profissionalOk },
                   { label: "Dados da Solicitação", done: clinicoOk && procedimentosOk },
                   { label: "Executante", done: executanteOk },
+                  { label: "Atendimento", done: atendimentoOk },
+
                   { label: "OPME (opcional)", done: opmeOk },
                 ]}
                 note={
