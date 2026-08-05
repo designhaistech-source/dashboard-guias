@@ -1478,7 +1478,7 @@ function EmitirPage() {
                     onValueChange={setCharacter}
                     options={CHARACTER_OPTIONS.map((c) => ({ value: c, label: c }))}
                   />
-                  <Field label="22 - Data da Solicitação">
+                  <Field label="22 - Data da Solicitação" required>
                     <Input
                       type="date"
                       value={dataSolicitacao}
@@ -1599,7 +1599,23 @@ function EmitirPage() {
                     </div>
                   </div>
 
+                  <p className="text-xs text-muted-foreground">
+                    O campo <strong>24 - Tabela</strong> é preenchido automaticamente com a tabela
+                    22 (TUSS) e o campo <strong>28 - Qtde. Aut.</strong> é de preenchimento da
+                    operadora.
+                  </p>
+
+                  {/* Rótulos das colunas (campos 25 a 27) — visíveis no desktop */}
+                  <div className="hidden lg:grid lg:grid-cols-12 gap-2 text-xs font-medium text-muted-foreground">
+                    <div className="lg:col-span-1" />
+                    <div className="lg:col-span-3">25 - Código do Procedimento *</div>
+                    <div className="lg:col-span-6">26 - Descrição *</div>
+                    <div className="lg:col-span-1">27 - Qtde. Solic. *</div>
+                    <div className="lg:col-span-1" />
+                  </div>
+
                   <div className="space-y-2">
+
                     {procedures.map((p, idx) => (
                       <div
                         key={p.id}
