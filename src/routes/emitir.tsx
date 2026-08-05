@@ -1281,7 +1281,7 @@ function EmitirPage() {
                 done={profissionalOk}
                 icon={<Stethoscope className="h-4 w-4" />}
                 title="Dados do Solicitante"
-                description="Campos 13 a 22 da guia — contratado e profissional solicitante."
+                description="Campos 13 a 20 da guia — contratado e profissional solicitante."
                 action={
                   <Button
                     type="button"
