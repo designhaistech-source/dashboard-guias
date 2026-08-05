@@ -1281,7 +1281,7 @@ function EmitirPage() {
                 done={profissionalOk}
                 icon={<Stethoscope className="h-4 w-4" />}
                 title="Dados do Solicitante"
-                description="Campos 13 a 22 da guia — contratado e profissional solicitante."
+                description="Campos 13 a 20 da guia — contratado e profissional solicitante."
                 action={
                   <Button
                     type="button"
@@ -1382,33 +1382,37 @@ function EmitirPage() {
                 )}
 
 
-                <ProfessionalPicker
-                  value={profissional}
-                  onChange={setProfissional}
-                  labels={{
-                    nome: "15 - Nome do Profissional Solicitante",
-                    conselho: "16 - Conselho Profissional",
-                    numero: "17 - Número no Conselho",
-                  }}
-                />
-
+                <Grid cols={2}>
+                  <Field label="13 - Código na Operadora">
+                    <Input
+                      value={codigoSolicitante}
+                      onChange={(e) => setCodigoSolicitante(e.target.value)}
+                      placeholder="Código do contrato"
+                    />
+                  </Field>
+                  <Field label="14 - Nome do Contratado">
+                    <Input
+                      value={contratadoSolicitante}
+                      onChange={(e) => setContratadoSolicitante(e.target.value)}
+                      placeholder="Clínica, consultório ou hospital"
+                    />
+                  </Field>
+                </Grid>
 
                 <div className="mt-5 border-t pt-5">
+                  <ProfessionalPicker
+                    value={profissional}
+                    onChange={setProfissional}
+                    labels={{
+                      nome: "15 - Nome do Profissional Solicitante",
+                      conselho: "16 - Conselho Profissional",
+                      numero: "17 - Número no Conselho",
+                    }}
+                  />
+                </div>
+
+                <div className="mt-5">
                   <Grid cols={3}>
-                    <Field label="13 - Código na Operadora">
-                      <Input
-                        value={codigoSolicitante}
-                        onChange={(e) => setCodigoSolicitante(e.target.value)}
-                        placeholder="Código do contrato"
-                      />
-                    </Field>
-                    <Field label="14 - Nome do Contratado">
-                      <Input
-                        value={contratadoSolicitante}
-                        onChange={(e) => setContratadoSolicitante(e.target.value)}
-                        placeholder="Clínica, consultório ou hospital"
-                      />
-                    </Field>
                     <Field label="18 - UF">
                       <Input
                         value={conselhoUf}
@@ -1423,24 +1427,13 @@ function EmitirPage() {
                         placeholder="225125"
                       />
                     </Field>
-                    <SelectField
-                      label="21 - Caráter do Atendimento"
-                      required
-                      labelClassName="text-xs font-medium text-muted-foreground"
-                      value={character}
-                      onValueChange={setCharacter}
-                      options={CHARACTER_OPTIONS.map((c) => ({ value: c, label: c }))}
-                    />
-                    <Field label="22 - Data da Solicitação">
-                      <Input
-                        type="date"
-                        value={dataSolicitacao}
-                        onChange={(e) => setDataSolicitacao(e.target.value)}
-                      />
-                    </Field>
                   </Grid>
+                  <p className="mt-3 text-xs text-muted-foreground">
+                    Campo 20 (assinatura do profissional solicitante) é preenchido na guia impressa.
+                  </p>
                 </div>
               </Section>
+
 
 
 
@@ -1451,9 +1444,23 @@ function EmitirPage() {
                 done={clinicoOk}
                 icon={<FileText className="h-4 w-4" />}
                 title="Dados clínicos"
-                description="Campo 23 da guia — indicação clínica e justificativa técnica."
+                description="Campos 21 a 23 da guia — solicitação e indicação clínica."
               >
-                <Grid cols={2}>
+                <Grid cols={3}>
+                  <SelectField
+                    label="21 - Caráter do Atendimento"
+                    required
+                    value={character}
+                    onValueChange={setCharacter}
+                    options={CHARACTER_OPTIONS.map((c) => ({ value: c, label: c }))}
+                  />
+                  <Field label="22 - Data da Solicitação">
+                    <Input
+                      type="date"
+                      value={dataSolicitacao}
+                      onChange={(e) => setDataSolicitacao(e.target.value)}
+                    />
+                  </Field>
                   <Field label="CID principal">
                     <Combobox
                       value={cidPrincipal}
@@ -1466,6 +1473,7 @@ function EmitirPage() {
                     />
                   </Field>
                 </Grid>
+
                 <Field label="23 - Indicação Clínica" required>
                   <Textarea
                     rows={3}
