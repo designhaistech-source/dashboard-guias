@@ -641,7 +641,7 @@ export function InternacaoGuideForm({
           />
         ) : (
           <div className="space-y-3 @container">
-            <div className="hidden gap-3 px-1 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground @3xl:grid @3xl:grid-cols-[110px_130px_1fr_90px_90px_40px]">
+            <div className="hidden gap-3 px-1 text-eyebrow @3xl:grid @3xl:grid-cols-[110px_130px_1fr_90px_90px_40px]">
               <span>34 - Tabela</span>
               <span>35 - Código</span>
               <span>36 - Descrição</span>

@@ -127,7 +127,7 @@ export function SignatureField({
   return (
     <div className={cn("min-w-0 space-y-2", className)}>
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <span className="text-[13px] font-medium leading-snug text-foreground sm:text-sm">
+        <span className="text-sm font-medium leading-snug text-foreground">
           {label}
         </span>
         <div className="flex items-center gap-1.5">
@@ -175,7 +175,7 @@ export function SignatureField({
             onPointerLeave={commitDrawing}
             onPointerCancel={commitDrawing}
           />
-          <p className="mt-2 text-[11px] text-muted-foreground sm:text-xs">
+          <p className="mt-2 text-xs text-muted-foreground">
             Assine com o mouse ou o dedo dentro da área acima.
           </p>
         </div>
@@ -193,7 +193,7 @@ export function SignatureField({
               <Upload className="h-4 w-4" />
               Selecionar imagem
             </Button>
-            <span className="text-[11px] text-muted-foreground sm:text-xs">
+            <span className="text-xs text-muted-foreground">
               PNG, JPG ou WEBP até 2 MB — de preferência com fundo transparente.
             </span>
           </div>
@@ -213,7 +213,7 @@ export function SignatureField({
           Limpar assinatura
         </Button>
         {value && !error && (
-          <span className="text-[11px] text-muted-foreground sm:text-xs">
+          <span className="text-xs text-muted-foreground">
             Assinatura pronta — ela sai impressa na guia.
           </span>
         )}
@@ -222,7 +222,7 @@ export function SignatureField({
       {(error || hint) && (
         <p
           className={cn(
-            "text-[11px] leading-snug sm:text-xs",
+            "text-xs leading-snug",
             error ? "text-destructive" : "text-muted-foreground",
           )}
           role={error ? "alert" : undefined}
