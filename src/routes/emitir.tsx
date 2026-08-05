@@ -2056,8 +2056,9 @@ function EmitirPage() {
       <AppModal
         open={prefsOpen}
         onOpenChange={setPrefsOpen}
-        title="Dados padrão do prestador"
-        description="Usados para preencher automaticamente o profissional solicitante e o estabelecimento em todas as novas guias."
+        title="Meus dados padrão de emissão"
+        description="Salve uma vez os seus dados de prestador. Em cada nova guia você escolhe quais deles aplicar aos campos 13 a 20 — sem redigitar."
+
         icon={<Settings2 className="h-4 w-4" aria-hidden="true" />}
         size="lg"
         bodyClassName="space-y-5"
