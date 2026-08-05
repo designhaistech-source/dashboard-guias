@@ -988,7 +988,7 @@ function EmitirPage() {
                   done={convenioOk}
                   icon={<Building2 className="h-4 w-4" />}
                   title="Convênio e atendimento"
-                  description="Operadora responsável e caráter da solicitação."
+                  description="Campos 1 a 7 da guia — operadora responsável, autorização e senha."
                 >
                   <Grid cols={2}>
                     <Field label="Operadora / Convênio" required>
@@ -1246,7 +1246,7 @@ function EmitirPage() {
                 done={pacienteOk}
                 icon={<User className="h-4 w-4" />}
                 title="Beneficiário / Paciente"
-                description="Identificação do paciente na operadora."
+                description="Campos 8 a 12 da guia — identificação do beneficiário na operadora."
               >
                 <Grid cols={2}>
                   <Field label="10 - Nome" required>
@@ -1322,7 +1322,7 @@ function EmitirPage() {
                 done={profissionalOk}
                 icon={<Stethoscope className="h-4 w-4" />}
                 title="Profissional solicitante"
-                description="Médico responsável pela emissão."
+                description="Campos 13 a 22 da guia — contratado e profissional solicitante."
                 action={
                   <Button
                     type="button"
@@ -1477,7 +1477,7 @@ function EmitirPage() {
                 done={clinicoOk}
                 icon={<FileText className="h-4 w-4" />}
                 title="Dados clínicos"
-                description="Hipótese diagnóstica e justificativa técnica."
+                description="Campo 23 da guia — indicação clínica e justificativa técnica."
               >
                 <Grid cols={2}>
                   <Field label="CID principal">
@@ -1595,7 +1595,7 @@ function EmitirPage() {
                     )}
                   </span>
                 }
-                description="Arraste para reordenar. Adicione um ou mais procedimentos (TUSS)."
+                description="Campos 24 a 28 da guia — procedimentos e itens assistenciais solicitados."
                 action={
                   <div className="flex flex-wrap items-center gap-2">
                     <Button type="button" size="sm" variant="outline" onClick={clearProcedures}>
@@ -1707,7 +1707,7 @@ function EmitirPage() {
                 done={executanteOk}
                 icon={<Building2 className="h-4 w-4" />}
                 title="Contratado executante e atendimento"
-                description="Quem executa o procedimento e as características do atendimento."
+                description="Campos 29 a 35 da guia — contratado executante e características do atendimento."
               >
                 <Grid cols={3}>
                   <Field label="29 - Código na Operadora">
@@ -1797,7 +1797,7 @@ function EmitirPage() {
                 done={opmeOk}
                 icon={<Wrench className="h-4 w-4" />}
                 title="OPME — Órteses, Próteses e Materiais Especiais"
-                description="Arraste para reordenar. Adicione materiais/próteses solicitados (opcional)."
+                description="Campos 36 a 56 da guia — materiais, órteses e próteses realizados (opcional)."
                 action={
                   <Button type="button" size="sm" onClick={addOpme}>
                     <Plus className="h-4 w-4" /> Adicionar OPME
@@ -1890,6 +1890,7 @@ function EmitirPage() {
                   { label: "Profissional", done: profissionalOk },
                   { label: "Dados clínicos", done: clinicoOk },
                   { label: "Procedimentos", done: procedimentosOk },
+                  { label: "Executante", done: executanteOk },
                   { label: "OPME (opcional)", done: opmeOk },
                 ]}
                 note={
