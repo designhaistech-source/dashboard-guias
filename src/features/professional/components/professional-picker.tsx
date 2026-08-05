@@ -1,18 +1,19 @@
-import type { ReactNode } from "react";
+import { useMemo, useRef, useState, type ReactNode } from "react";
+import { Check, ChevronDown } from "lucide-react";
 
 import { Field, SelectField } from "@/components/form-field";
 import { Input } from "@/components/ui/input";
 import { useTouchedFields } from "@/hooks/use-touched-fields";
+import { cn } from "@/lib/utils";
 
 import { COUNCILS, MANUAL_PROFESSIONAL_ID, PROFESSIONALS } from "../data/professionals";
-import { isManual, type ProfessionalValue } from "../lib/professional";
+import type { ProfessionalValue } from "../lib/professional";
 import {
   maskCouncilNumber,
   maskProfessionalName,
   validateProfessional,
   type ProfessionalField,
 } from "../lib/professional-validation";
-
 
 interface ProfessionalPickerProps {
   value: ProfessionalValue;
@@ -28,75 +29,119 @@ interface ProfessionalPickerProps {
 }
 
 /**
- * UI única de seleção do profissional responsável.
- * Mostra apenas o seletor para profissionais cadastrados e libera os campos
- * de identificação somente no modo manual, evitando dados repetidos na tela.
+ * UI única de identificação do profissional responsável.
+ * O nome é um campo único com sugestões: escolher um profissional cadastrado
+ * preenche conselho, número e especialidade; digitar livremente vale como
+ * preenchimento manual, sem duplicar seletor + campo de nome.
  */
 export function ProfessionalPicker({ value, onChange, children, labels }: ProfessionalPickerProps) {
-  const manual = isManual(value);
   const { markTouched, errorFor, resetTouched } = useTouchedFields<ProfessionalField>();
   const errors = validateProfessional(value);
+  const [open, setOpen] = useState(false);
+  const blurTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const handleSelect = (id: string) => {
-    resetTouched();
+  const suggestions = useMemo(() => {
+    const query = value.nome.trim().toLowerCase();
+    const matches = PROFESSIONALS.filter((p) => p.nome.toLowerCase().includes(query));
+    return query && matches.length === 0 ? PROFESSIONALS : matches;
+  }, [value.nome]);
+
+  const selectProfessional = (id: string) => {
     const found = PROFESSIONALS.find((p) => p.id === id);
+    if (!found) return;
+    resetTouched();
+    onChange({ ...found });
+    setOpen(false);
+  };
+
+  const handleNameChange = (raw: string) => {
+    const nome = maskProfessionalName(raw);
+    const found = PROFESSIONALS.find((p) => p.nome.toLowerCase() === nome.trim().toLowerCase());
     if (found) {
       onChange({ ...found });
       return;
     }
-    onChange({
-      id: MANUAL_PROFESSIONAL_ID,
-      nome: "",
-      conselho: COUNCILS[0],
-      numero: "",
-      especialidade: "",
-    });
+    onChange({ ...value, id: MANUAL_PROFESSIONAL_ID, nome });
   };
-
 
   return (
     <div className="space-y-4">
-      <div className="grid gap-4 lg:grid-cols-2">
-        <SelectField
-          id="profissional-select"
-          label="Selecionar profissional"
-          placeholder="Escolha o profissional"
-          value={value.id}
-          onValueChange={handleSelect}
-          options={[
-            ...PROFESSIONALS.map((p) => ({
-              value: p.id,
-              label: p.nome,
-            })),
-            { value: MANUAL_PROFESSIONAL_ID, label: "Outro (informar manualmente)" },
-          ]}
-          hint={
-            manual
-              ? "Informe os dados do profissional nos campos abaixo."
-              : "Dados preenchidos automaticamente — ajuste se precisar."
-          }
-
-        />
-
-        {children}
-      </div>
-
       <div className="grid gap-4 lg:grid-cols-2 xl:grid-cols-[1fr_140px_160px_200px]">
         <Field
           id="profissional-nome"
           label={labels?.nome ?? "Nome do profissional"}
           required
           error={errorFor("nome", errors.nome)}
-          hint="Nome e sobrenome, sem números."
+          hint="Digite para buscar um profissional cadastrado ou informe um novo nome."
+          className="relative"
         >
-          <Input
-            value={value.nome}
-            onChange={(e) => onChange({ ...value, nome: maskProfessionalName(e.target.value) })}
-            onBlur={() => markTouched("nome")}
-            autoComplete="name"
-            inputMode="text"
-            maxLength={70}
-          />
+          <div className="relative">
+            <Input
+              value={value.nome}
+              onChange={(e) => {
+                handleNameChange(e.target.value);
+                setOpen(true);
+              }}
+              onFocus={() => setOpen(true)}
+              onBlur={() => {
+                markTouched("nome");
+                blurTimer.current = setTimeout(() => setOpen(false), 120);
+              }}
+              onKeyDown={(e) => {
+                if (e.key === "Escape") setOpen(false);
+              }}
+              role="combobox"
+              aria-expanded={open}
+              aria-autocomplete="list"
+              aria-controls="profissional-nome-sugestoes"
+              autoComplete="off"
+              inputMode="text"
+              maxLength={70}
+              className="pr-9"
+            />
+            <ChevronDown
+              aria-hidden
+              className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground"
+            />
+            {open && suggestions.length > 0 && (
+              <ul
+                id="profissional-nome-sugestoes"
+                role="listbox"
+                aria-label="Profissionais cadastrados"
+                className="absolute z-50 mt-1 max-h-56 w-full overflow-y-auto rounded-md border border-border bg-popover p-1 shadow-md"
+              >
+                {suggestions.map((p) => {
+                  const active = p.id === value.id;
+                  return (
+                    <li key={p.id}>
+                      <button /* ds-allow: opção de lista de sugestões */
+                        type="button"
+                        role="option"
+                        aria-selected={active}
+                        onMouseDown={(e) => e.preventDefault()}
+                        onClick={() => {
+                          if (blurTimer.current) clearTimeout(blurTimer.current);
+                          selectProfessional(p.id);
+                        }}
+                        className={cn(
+                          "flex w-full items-center gap-2 rounded-sm px-2 py-1.5 text-left text-sm hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:bg-accent",
+                          active && "bg-accent/60",
+                        )}
+                      >
+                        <Check className={cn("h-4 w-4 shrink-0", active ? "opacity-100" : "opacity-0")} />
+                        <span className="min-w-0">
+                          <span className="block truncate">{p.nome}</span>
+                          <span className="block truncate text-xs text-muted-foreground">
+                            {p.conselho} {p.numero} · {p.especialidade}
+                          </span>
+                        </span>
+                      </button>
+                    </li>
+                  );
+                })}
+              </ul>
+            )}
+          </div>
         </Field>
         <SelectField
           id="profissional-conselho"
@@ -134,7 +179,8 @@ export function ProfessionalPicker({ value, onChange, children, labels }: Profes
           />
         </Field>
       </div>
+
+      {children && <div className="grid gap-4 lg:grid-cols-2">{children}</div>}
     </div>
   );
 }
-
