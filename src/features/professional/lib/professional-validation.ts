@@ -25,16 +25,13 @@ export function maskProfessionalName(input: string): string {
 }
 
 /**
- * Máscara do campo 17: `NNNNNN/UF`. Aceita até 8 dígitos e força a UF em
- * maiúsculas, inserindo a barra automaticamente durante a digitação.
+ * Máscara do campo 17 (Número do Conselho): apenas dígitos, até 15 caracteres.
+ * A UF do conselho é o campo 18, informado separadamente.
  */
 export function maskCouncilNumber(input: string): string {
-  const raw = input.toUpperCase().replace(/[^0-9A-Z]/g, "");
-  const digits = raw.replace(/[^0-9]/g, "").slice(0, 8);
-  const letters = raw.replace(/[^A-Z]/g, "").slice(0, 2);
-  if (!digits) return letters;
-  return letters ? `${digits}/${letters}` : digits;
+  return input.replace(/\D/g, "").slice(0, 15);
 }
+
 
 const professionalSchema = z.object({
   nome: z
@@ -54,12 +51,11 @@ const professionalSchema = z.object({
   numero: z
     .string()
     .trim()
-    .regex(/^\d{4,8}\/[A-Z]{2}$/, {
-      message: "Use o formato 0000/UF (4 a 8 dígitos + UF).",
-    })
-    .refine((v) => (UFS as readonly string[]).includes(v.slice(-2)), {
-      message: "UF inválida.",
+    .min(1, { message: "Informe o número de registro no conselho." })
+    .regex(/^\d{1,15}$/, {
+      message: "Use apenas números (ex.: 13955).",
     }),
+
 });
 
 /** Erros por campo (vazio quando tudo válido). */
