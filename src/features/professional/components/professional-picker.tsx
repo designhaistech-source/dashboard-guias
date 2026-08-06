@@ -233,18 +233,19 @@ export function ProfessionalPicker({ value, onChange, children, labels }: Profes
           label={labels?.numero ?? "Número do conselho"}
           required
           error={errorFor("numero", errors.numero)}
-          hint="Formato 0000/UF."
+          hint="Somente números. Ex.: 13955."
         >
           <Input
             ref={numeroRef}
             value={value.numero}
             onChange={(e) => onChange({ ...value, numero: maskCouncilNumber(e.target.value) })}
             onBlur={() => markTouched("numero")}
-            placeholder="0000/UF"
-            inputMode="text"
-            maxLength={11}
+            placeholder="13955"
+            inputMode="numeric"
+            maxLength={15}
           />
         </Field>
+
 
         <Field id="profissional-especialidade" label="Especialidade">
           <Input
