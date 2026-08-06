@@ -54,6 +54,7 @@ import { AppModal } from "@/components/app-modal";
 import {
   MANUAL_PROFESSIONAL_ID,
   ProfessionalPicker,
+  UFS,
   councilLabel,
   defaultProfessionalValue,
   isProfessionalValid,
@@ -61,6 +62,7 @@ import {
   validateProfessional,
   type ProfessionalValue,
 } from "@/features/professional";
+
 import { AihGuideForm, ApacGuideForm, InternacaoGuideForm } from "@/features/guides";
 
 
