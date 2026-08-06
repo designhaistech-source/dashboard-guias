@@ -1503,6 +1503,7 @@ function EmitirPage() {
                   </Field>
                   <SelectField
                     label="12 - Atendimento a RN"
+                    required
                     labelClassName="text-xs font-medium text-muted-foreground"
                     value={pacienteRn}
                     onValueChange={setPacienteRn}
