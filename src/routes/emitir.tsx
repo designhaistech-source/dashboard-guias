@@ -1625,7 +1625,7 @@ function EmitirPage() {
 
 
                 <Grid cols={2}>
-                  <Field label="13 - Código na Operadora">
+                  <Field label="13 - Código na Operadora" required>
                     <Input
                       value={codigoSolicitante}
                       onChange={(e) => setCodigoSolicitante(e.target.value)}
