@@ -1632,7 +1632,7 @@ function EmitirPage() {
                       placeholder="Código do contrato"
                     />
                   </Field>
-                  <Field label="14 - Nome do Contratado">
+                  <Field label="14 - Nome do Contratado" required>
                     <Input
                       value={contratadoSolicitante}
                       onChange={(e) => setContratadoSolicitante(e.target.value)}
