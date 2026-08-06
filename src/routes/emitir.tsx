@@ -242,7 +242,11 @@ type ExecutedItem = {
 };
 type Kit = { id: string; name: string; specialty?: string; procedures: Omit<Procedure, "id">[] };
 
-const CHARACTER_OPTIONS = ["Eletivo", "Urgência", "Emergência"];
+// Tabela de domínio nº 23 — Caráter do atendimento (String, tamanho 1)
+const CHARACTER_OPTIONS = [
+  { value: "1", label: "1 - Eletivo" },
+  { value: "2", label: "2 - Urgência/Emergência" },
+];
 
 const GUIDE_SHORT: Record<GuideKind, string> = {
   sadt: "SADT",
