@@ -3120,7 +3120,7 @@ function GuiaLivePreview(props: {
               <FieldBox n="16" label="Conselho Profissional" value={medicoCrm ? medicoConselho : ""} width={90} />
               <FieldBox n="17" label="Número no Conselho" value={medicoCrm} width={140} />
               <FieldBox n="18" label="UF" value={conselhoUf} width={50} />
-              <FieldBox n="19" label="Código CBO" value={codigoCbo || medicoEspecialidade} width={140} />
+              <FieldBox n="19" label="Código CBO" value={codigoCbo} width={140} />
               <FieldBox n="20" label="Assinatura do Profissional Solicitante" value="" image={assinaturaSolicitante} width={220} />
             </FieldRow>
 
