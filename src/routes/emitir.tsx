@@ -332,7 +332,7 @@ function EmitirPage() {
     }
   }, [guideKind]);
 
-  const [character, setCharacter] = useState("Eletivo");
+  const [character, setCharacter] = useState("1");
   const [operadora, setOperadora] = useState("");
   const [registroAns, setRegistroAns] = useState("");
 
@@ -1671,11 +1671,19 @@ function EmitirPage() {
                       options={UFS.map((uf) => ({ value: uf, label: uf }))}
                     />
 
-                    <Field label="19 - Código CBO">
+                    <Field
+                      label="19 - Código CBO"
+                      required
+                      hint="Código na Classificação Brasileira de Ocupações do solicitante (tabela de domínio nº 24). 6 dígitos. Ex.: 223810."
+                    >
                       <Input
+                        inputMode="numeric"
+                        maxLength={6}
                         value={codigoCbo}
-                        onChange={(e) => setCodigoCbo(e.target.value)}
-                        placeholder="225125"
+                        onChange={(e) =>
+                          setCodigoCbo(e.target.value.replace(/\D/g, "").slice(0, 6))
+                        }
+                        placeholder="223810"
                       />
                     </Field>
                   </Grid>
@@ -1686,7 +1694,7 @@ function EmitirPage() {
                     label="20 - Assinatura do Profissional Solicitante"
                     value={assinaturaSolicitante}
                     onChange={setAssinaturaSolicitante}
-                    hint="Opcional: desenhe ou envie a assinatura para sair impressa no campo 20. Deixe em branco para assinar à mão no papel."
+                    hint="Obrigatório na guia: assinatura do profissional solicitante. Desenhe ou envie a imagem para sair impressa no campo 20, ou assine à mão no papel."
 
                   />
                 </div>
@@ -1718,9 +1726,10 @@ function EmitirPage() {
                   <SelectField
                     label="21 - Caráter do Atendimento"
                     required
+                    hint="Código conforme tabela de domínio nº 23. Ex.: 1 (Eletivo)."
                     value={character}
                     onValueChange={setCharacter}
-                    options={CHARACTER_OPTIONS.map((c) => ({ value: c, label: c }))}
+                    options={CHARACTER_OPTIONS}
                   />
                   <Field label="22 - Data da Solicitação" required>
                     <Input
