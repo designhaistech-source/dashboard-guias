@@ -9,7 +9,26 @@ export interface Professional {
   especialidade: string;
 }
 
-export const COUNCILS = ["CRM", "CRO", "CREFITO", "COREN"] as const;
+/**
+ * Campo 16 da guia TISS (Conselho Profissional) — siglas da tabela de domínio
+ * nº 26. Preenchimento obrigatório na guia SP/SADT.
+ */
+export const COUNCILS = [
+  "CRM",
+  "CRO",
+  "CRF",
+  "COREN",
+  "CREFITO",
+  "CRN",
+  "CRP",
+  "CRFa",
+  "CRBM",
+  "CRESS",
+  "CREF",
+  "CRBio",
+  "CRTR",
+  "Outros",
+] as const;
 
 export const PROFESSIONALS: Professional[] = [
   {

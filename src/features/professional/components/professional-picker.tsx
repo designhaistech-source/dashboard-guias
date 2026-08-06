@@ -218,6 +218,8 @@ export function ProfessionalPicker({ value, onChange, children, labels }: Profes
         <SelectField
           id="profissional-conselho"
           label={labels?.conselho ?? "Conselho"}
+          required
+          hint="Tabela de domínio nº 26."
           value={value.conselho}
           onValueChange={(conselho) => {
             markTouched("conselho");
