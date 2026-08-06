@@ -51,12 +51,11 @@ const professionalSchema = z.object({
   numero: z
     .string()
     .trim()
-    .regex(/^\d{4,8}\/[A-Z]{2}$/, {
-      message: "Use o formato 0000/UF (4 a 8 dígitos + UF).",
-    })
-    .refine((v) => (UFS as readonly string[]).includes(v.slice(-2)), {
-      message: "UF inválida.",
+    .min(1, { message: "Informe o número de registro no conselho." })
+    .regex(/^\d{1,15}$/, {
+      message: "Use apenas números (ex.: 13955).",
     }),
+
 });
 
 /** Erros por campo (vazio quando tudo válido). */
