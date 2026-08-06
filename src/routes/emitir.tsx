@@ -1271,7 +1271,7 @@ function EmitirPage() {
                       />
                     </Field>
 
-                    <Field label="2 - Nº Guia no Prestador">
+                    <Field label="2 - Nº Guia no Prestador" required>
                       <Input
                         value={numeroGuia === "—" ? "" : numeroGuia}
                         onChange={(e) => setNumeroGuia(e.target.value || "—")}
