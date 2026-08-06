@@ -1657,13 +1657,16 @@ function EmitirPage() {
 
                 <div className="mt-5">
                   <Grid cols={3}>
-                    <Field label="18 - UF">
-                      <Input
-                        value={conselhoUf}
-                        onChange={(e) => setConselhoUf(e.target.value.toUpperCase().slice(0, 2))}
-                        placeholder="RN"
-                      />
-                    </Field>
+                    <SelectField
+                      id="conselho-uf"
+                      label="18 - UF"
+                      required
+                      hint="Sigla da UF do conselho do profissional solicitante (tabela de domínio nº 59). Ex.: RN."
+                      value={conselhoUf}
+                      onValueChange={setConselhoUf}
+                      options={UFS.map((uf) => ({ value: uf, label: uf }))}
+                    />
+
                     <Field label="19 - Código CBO">
                       <Input
                         value={codigoCbo}
