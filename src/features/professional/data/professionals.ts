@@ -4,7 +4,7 @@ export interface Professional {
   nome: string;
   /** Sigla do conselho profissional (CRM, CRO, ...). */
   conselho: string;
-  /** Número do conselho com UF, ex.: "1234/RN". */
+  /** Campo 17 — número de registro no conselho (somente dígitos), ex.: "13955". */
   numero: string;
   especialidade: string;
 }
@@ -35,28 +35,28 @@ export const PROFESSIONALS: Professional[] = [
     id: "m1",
     nome: "Dra. Ana Beatriz Lima",
     conselho: "CRM",
-    numero: "1234/RN",
+    numero: "13955",
     especialidade: "Cardiologia",
   },
   {
     id: "m2",
     nome: "Dr. Carlos Eduardo Rocha",
     conselho: "CRM",
-    numero: "4521/RN",
+    numero: "45217",
     especialidade: "Ortopedia",
   },
   {
     id: "m3",
     nome: "Dra. Mariana Torres",
     conselho: "CRM",
-    numero: "7788/RN",
+    numero: "77881",
     especialidade: "Clínica médica",
   },
   {
     id: "m4",
     nome: "Dr. Rafael Nogueira",
     conselho: "CRM",
-    numero: "9012/PB",
+    numero: "90124",
     especialidade: "Neurologia",
   },
 ];
