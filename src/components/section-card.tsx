@@ -1,5 +1,5 @@
 import * as React from "react";
-import { CheckCircle2 } from "lucide-react";
+import { CheckCircle2, ChevronDown } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 
@@ -17,6 +17,10 @@ export interface SectionCardProps {
   done?: boolean;
   /** Ações alinhadas à direita do cabeçalho. */
   actions?: React.ReactNode;
+  /** Permite recolher/expandir o conteúdo da seção. */
+  collapsible?: boolean;
+  /** Inicia a seção recolhida (apenas com `collapsible`). */
+  defaultCollapsed?: boolean;
   className?: string;
   /** Classe extra para o texto auxiliar (permite reduzir o destaque). */
   descriptionClassName?: string;
@@ -25,6 +29,7 @@ export interface SectionCardProps {
   bodyClassName?: string;
   children?: React.ReactNode;
 }
+
 
 /**
  * Card de etapa/seção padronizado para os formulários longos
