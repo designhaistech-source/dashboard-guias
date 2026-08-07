@@ -230,7 +230,7 @@ type Procedure = {
   description: string;
   quantity: number;
   /** Campo 24 - Tabela: derivado do procedimento, nunca digitado pelo usuário. */
-  table: string;
+  table?: string;
 };
 type OpmeItem = { id: string; code: string; description: string; quantity: number };
 
