@@ -1241,8 +1241,12 @@ function EmitirPage() {
                   title="Convênio e atendimento"
                   description="Campos 1 a 7 da guia — operadora responsável, autorização e senha."
                 >
-                  <Grid cols={2}>
-                    <Field label="Operadora / Convênio" required>
+                  <Grid cols={12}>
+                    <Field
+                      label="Operadora / Convênio"
+                      required
+                      span="@md:col-span-4 @3xl:col-span-5"
+                    >
                       <Select value={operadora} onValueChange={(v) => { setOperadora(v); const op = OPERADORAS.find((o) => o.value === v); if (op) setRegistroAns(op.ans); }}>
                         <SelectTrigger>
                           <SelectValue placeholder="Selecione o convênio">
@@ -1283,58 +1287,64 @@ function EmitirPage() {
                       </Select>
                     </Field>
 
-                    <Field label="1 - Registro ANS">
+                    <Field label="1 - Registro ANS" span="@md:col-span-2 @3xl:col-span-3">
                       <Input
                         value={registroAns}
                         onChange={(e) => setRegistroAns(e.target.value)}
                         placeholder="000000"
+                        inputMode="numeric"
+                        maxLength={6}
+                        className="max-w-[10rem] font-mono"
                       />
                     </Field>
                   </Grid>
 
 
-                  <div className="mt-5 space-y-4 border-t pt-5">
+                  <div className="mt-4 space-y-3 border-t pt-4">
                     <p className="text-eyebrow">
                       Autorização e senha
                     </p>
-                    <Grid cols={3}>
-                      <Field label="3 - Número da Guia Principal">
+                    <Grid cols={12}>
+                      <Field label="3 - Número da Guia Principal" span="@md:col-span-3 @3xl:col-span-4">
                         <Input
                           value={guiaPrincipal}
                           onChange={(e) => setGuiaPrincipal(e.target.value)}
-                          placeholder="Guia de internação vinculada"
+                          placeholder="Guia vinculada"
                         />
                       </Field>
-                      <Field label="4 - Data da Autorização">
-                        <Input
-                          type="date"
-                          value={dataAutorizacao}
-                          onChange={(e) => setDataAutorizacao(e.target.value)}
-                        />
-                      </Field>
-                      <Field label="5 - Senha">
-                        <Input
-                          value={senha}
-                          onChange={(e) => setSenha(e.target.value)}
-                          placeholder="Senha emitida pela operadora"
-                        />
-                      </Field>
-                      <Field label="6 - Data de Validade da Senha">
-                        <Input
-                          type="date"
-                          value={validadeSenha}
-                          onChange={(e) => setValidadeSenha(e.target.value)}
-                        />
-                      </Field>
-                      <Field label="7 - Número da Guia Atribuído pela Operadora">
+                      <Field label="7 - Número da Guia Atribuído pela Operadora" span="@md:col-span-3 @3xl:col-span-4">
                         <Input
                           value={guiaOperadora}
                           onChange={(e) => setGuiaOperadora(e.target.value)}
                           placeholder="Informado pela operadora"
                         />
                       </Field>
+                      <Field label="5 - Senha" span="@md:col-span-3 @3xl:col-span-4">
+                        <Input
+                          value={senha}
+                          onChange={(e) => setSenha(e.target.value)}
+                          placeholder="Senha da operadora"
+                        />
+                      </Field>
+                      <Field label="4 - Data da Autorização" span="@md:col-span-3 @3xl:col-span-3">
+                        <Input
+                          type="date"
+                          value={dataAutorizacao}
+                          onChange={(e) => setDataAutorizacao(e.target.value)}
+                          className="max-w-[11rem]"
+                        />
+                      </Field>
+                      <Field label="6 - Data de Validade da Senha" span="@md:col-span-3 @3xl:col-span-3">
+                        <Input
+                          type="date"
+                          value={validadeSenha}
+                          onChange={(e) => setValidadeSenha(e.target.value)}
+                          className="max-w-[11rem]"
+                        />
+                      </Field>
                     </Grid>
                   </div>
+
 
                 </Section>
               ) : (
@@ -2889,16 +2899,18 @@ function Section({
 }
 
 
-function Grid({ cols, children }: { cols: 2 | 3; children: React.ReactNode }) {
+function Grid({ cols, children }: { cols: 2 | 3 | 12; children: React.ReactNode }) {
+  const colsClass =
+    cols === 2
+      ? "@md:grid-cols-2"
+      : cols === 3
+        ? "@md:grid-cols-2 @3xl:grid-cols-3"
+        : // Grade de 12 colunas: permite campos curtos (datas, códigos) ocuparem
+          // apenas a largura necessária, deixando a seção mais compacta.
+          "@md:grid-cols-6 @3xl:grid-cols-12";
   return (
     <div className="@container">
-      <div
-        className={`grid gap-4 ${
-          cols === 2 ? "@md:grid-cols-2" : "@md:grid-cols-2 @3xl:grid-cols-3"
-        }`}
-      >
-        {children}
-      </div>
+      <div className={`grid items-start gap-x-4 gap-y-3 ${colsClass}`}>{children}</div>
     </div>
   );
 }
@@ -2908,15 +2920,20 @@ function Field({
   label,
   required,
   hint,
+  span,
+  className,
   children,
 }: {
   label: string;
   required?: boolean;
   hint?: string;
+  /** Classes de col-span (container queries) quando usado em `Grid cols={12}`. */
+  span?: string;
+  className?: string;
   children: React.ReactNode;
 }) {
   return (
-    <div className="space-y-1.5">
+    <div className={cn("min-w-0 space-y-1.5", span, className)}>
       <Label className="text-xs font-medium text-muted-foreground">
         {label} {required && <span className="text-destructive">*</span>}
       </Label>
