@@ -359,7 +359,9 @@ function EmitirPage() {
   const [validadeSenha, setValidadeSenha] = useState("");
   const [guiaOperadora, setGuiaOperadora] = useState("");
 
-  // Solicitante (13, 14, 18, 19) — todos derivados dos cadastros do sistema.
+  // Solicitante (13, 14) — derivados do cadastro do estabelecimento.
+  const codigoSolicitante = operatorEstablishmentCode(operadora);
+  const contratadoSolicitante = ESTABLISHMENT.nome;
   const [assinaturaSolicitante, setAssinaturaSolicitante] = useState("");
   /** Campo 56 — até 10 datas de realização de procedimentos em série. */
   const [serieDates, setSerieDates] = useState<string[]>([""]);
