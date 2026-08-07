@@ -2101,22 +2101,23 @@ function EmitirPage() {
 
 
                   {/* Rótulos das colunas (campos 25 a 28) — visíveis no desktop */}
-                  <div className="hidden @3xl:grid @3xl:grid-cols-[24px_minmax(0,1fr)_116px_72px_72px_36px] items-end gap-2 text-xs font-medium text-muted-foreground">
+                  <div className="hidden @3xl:grid @3xl:grid-cols-[24px_minmax(0,1fr)_112px_96px_104px_36px] items-end gap-2 text-xs font-medium text-muted-foreground">
                     <div />
-                    <div className="truncate" title="26 - Descrição do procedimento">
+                    <div className="whitespace-nowrap">
                       26 - Descrição <span className="text-destructive">*</span>
                     </div>
-                    <div className="truncate" title="25 - Código do Procedimento ou Item Assistencial">
+                    <div className="whitespace-nowrap">
                       25 - Código
                     </div>
-                    <div className="truncate text-center" title="27 - Quantidade Solicitada">
-                      27 - Qtde. Solic. <span className="text-destructive">*</span>
+                    <div className="whitespace-nowrap text-center">
+                      27 - Qtde. <span className="text-destructive">*</span>
                     </div>
-                    <div className="truncate text-center" title="28 - Quantidade Autorizada (operadora)">
-                      28 - Qtde. Aut.
+                    <div className="whitespace-nowrap text-center">
+                      28 - Autorizada
                     </div>
                     <div />
                   </div>
+
 
 
                   <div className="space-y-3 @3xl:space-y-2">
@@ -2128,7 +2129,7 @@ function EmitirPage() {
                         onDragOver={onDragOver}
                         onDrop={() => onDrop(p.id)}
                         className={cn(
-                          "rounded-lg border p-3 @3xl:grid @3xl:grid-cols-[24px_minmax(0,1fr)_116px_72px_72px_36px] @3xl:items-center @3xl:gap-2 @3xl:rounded-none @3xl:border-0 @3xl:p-0",
+                          "rounded-lg border p-3 @3xl:grid @3xl:grid-cols-[24px_minmax(0,1fr)_112px_96px_104px_36px] @3xl:items-center @3xl:gap-2 @3xl:rounded-none @3xl:border-0 @3xl:p-0",
                           dragId === p.id && "opacity-50",
                         )}
                       >
