@@ -983,7 +983,7 @@ function EmitirPage() {
     toast.success("Beneficiário encontrado", { description: found.nome });
   }
   const profissionalOk = profissionalValido;
-  const executanteOk = Boolean(contratadoExecutante.trim());
+  
   const atendimentoOk = Boolean(tipoAtendimento.trim());
   const realizadosOk = executedItems.some((i) => i.description.trim() || i.code.trim());
   const executantesOk = executantes.some((e) => e.name.trim() && e.councilNumber.trim());
