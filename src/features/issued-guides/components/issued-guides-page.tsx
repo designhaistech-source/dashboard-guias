@@ -146,7 +146,7 @@ export function IssuedGuidesPage() {
               id="filtro-busca-guias"
               label="Buscar"
               labelClassName="invisible"
-              className="sm:col-span-2 lg:col-span-1"
+              className="sm:col-span-2 lg:col-span-2 xl:col-span-1"
             >
               <SearchInput
                 placeholder="Buscar por nº da guia, paciente ou procedimento"
