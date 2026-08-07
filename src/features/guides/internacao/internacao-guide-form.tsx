@@ -335,13 +335,7 @@ export function InternacaoGuideForm({
           <Field label="1 - Registro ANS" required>
             <Input value={ans} onChange={(e) => setAns(e.target.value)} placeholder="000000" />
           </Field>
-          <Field label="2 - Nº Guia no Prestador" required>
-            <Input
-              value={guiaPrestador}
-              onChange={(e) => setGuiaPrestador(e.target.value)}
-              placeholder="Número no prestador"
-            />
-          </Field>
+          {/* Campo 2 (Nº Guia no Prestador) é gerado pelo sistema ao salvar a guia. */}
           <Field label="3 - Número da Guia Atribuído pela Operadora">
             <Input
               value={guiaOperadora}
