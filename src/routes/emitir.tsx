@@ -2188,38 +2188,6 @@ function EmitirPage() {
               </Section>
 
 
-              {/* Dados do Contratado Executante */}
-              <Section
-                number={stepNumber("executante")}
-                done={executanteOk}
-                icon={<Building2 className="h-4 w-4" />}
-                title="Dados do Contratado Executante"
-                description="Campos 29 a 31 da guia — identificação do contratado executante."
-              >
-                <Grid cols={3}>
-                  <Field label="29 - Código na Operadora">
-                    <Input
-                      value={codigoExecutante}
-                      onChange={(e) => setCodigoExecutante(e.target.value)}
-                      placeholder="Código do contrato"
-                    />
-                  </Field>
-                  <Field label="30 - Nome do Contratado">
-                    <Input
-                      value={contratadoExecutante}
-                      onChange={(e) => setContratadoExecutante(e.target.value)}
-                      placeholder="Prestador que executa"
-                    />
-                  </Field>
-                  <Field label="31 - Código CNES">
-                    <Input
-                      value={cnesExecutante}
-                      onChange={(e) => setCnesExecutante(e.target.value)}
-                      placeholder="0000000"
-                    />
-                  </Field>
-                </Grid>
-              </Section>
 
               {/* Dados do Atendimento */}
               <Section
