@@ -3048,7 +3048,7 @@ function GuiaLivePreview(props: {
               </div>
               <div className="border-l border-foreground px-2 py-1 flex flex-col justify-center">
                 <div className="text-[8px] font-bold">2 - Nº Guia no Prestador</div>
-                <div className="font-mono font-bold text-[11px] mt-0.5">{numeroGuia !== "—" ? numeroGuia : "\u00A0"}</div>
+                <div className="font-mono font-bold text-[11px] mt-0.5">{numeroGuia || "\u00A0"}</div>
               </div>
             </div>
 
