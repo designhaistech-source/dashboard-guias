@@ -2677,7 +2677,7 @@ function EmitirPage() {
                   { label: "Beneficiário", done: pacienteOk },
                   { label: "Profissional", done: profissionalOk },
                   { label: "Dados da Solicitação", done: clinicoOk && procedimentosOk },
-                  { label: "Executante", done: executanteOk },
+                  
                   { label: "Atendimento", done: atendimentoOk },
                   { label: "Execução", done: realizadosOk },
                   { label: "Profissional executante", done: executantesOk },
