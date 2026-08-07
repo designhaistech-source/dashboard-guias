@@ -372,10 +372,15 @@ function EmitirPage() {
   /** Campo 68 — assinatura do contratado. */
   const [assinaturaContratado, setAssinaturaContratado] = useState("");
 
-  // Contratado executante (29, 30, 31)
-  const [codigoExecutante, setCodigoExecutante] = useState("");
-  const [contratadoExecutante, setContratadoExecutante] = useState("");
-  const [cnesExecutante, setCnesExecutante] = useState("");
+  /**
+   * Contratado executante (campos 29, 30 e 31): derivados do cadastro do
+   * estabelecimento executor. Não são exibidos na emissão, mas seguem para o
+   * PDF/XML da guia TISS.
+   */
+  const codigoExecutante = operatorEstablishmentCode(operadora);
+  const contratadoExecutante = ESTABLISHMENT.nome;
+  const cnesExecutante = ESTABLISHMENT.cnes;
+
 
   // Dados do atendimento (32 a 35)
   const [tipoAtendimento, setTipoAtendimento] = useState("");
