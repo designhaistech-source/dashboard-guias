@@ -2436,14 +2436,6 @@ function EmitirPage() {
                   )}
                 </div>
 
-                <div className="mt-5 border-t pt-5">
-                  <SignatureField
-                    label="57 - Assinatura do Beneficiário ou Responsável"
-                    value={assinaturaBeneficiario}
-                    onChange={setAssinaturaBeneficiario}
-                    hint="Opcional: desenhe ou envie a assinatura para sair impressa no campo 57. Deixe em branco para assinar à mão no papel."
-                  />
-                </div>
               </Section>
 
               {/* Observação / Justificativa */}
