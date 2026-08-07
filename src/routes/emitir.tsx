@@ -367,12 +367,13 @@ function EmitirPage() {
   const [assinaturaSolicitante, setAssinaturaSolicitante] = useState("");
   /** Campo 56 — até 10 datas de realização de procedimentos em série. */
   const [serieDates, setSerieDates] = useState<string[]>([""]);
-  /** Campo 66 — assinatura do responsável pela autorização. */
-  const [assinaturaAutorizacao, setAssinaturaAutorizacao] = useState("");
-  /** Campo 67 — assinatura do beneficiário ou responsável (quadro final). */
-  const [assinaturaBeneficiarioFinal, setAssinaturaBeneficiarioFinal] = useState("");
-  /** Campo 68 — assinatura do contratado. */
-  const [assinaturaContratado, setAssinaturaContratado] = useState("");
+  /**
+   * Campos 66 a 68 — assinaturas não são coletadas na emissão (assinadas à mão
+   * no papel); permanecem vazias na guia para preservar a compatibilidade TISS.
+   */
+  const assinaturaAutorizacao = "";
+  const assinaturaBeneficiarioFinal = "";
+  const assinaturaContratado = "";
 
   /**
    * Contratado executante (campos 29, 30 e 31): derivados do cadastro do
@@ -2717,14 +2718,14 @@ function EmitirPage() {
                 </FormField>
               </Section>
 
-              {/* Valores totais e assinaturas */}
+              {/* Valores totais */}
 
               <Section
                 number={stepNumber("financeiro")}
                 done={financeiroOk}
                 icon={<FileText className="h-4 w-4" />}
-                title="Valores Totais e Assinaturas"
-                description="Campos 59 a 68 — totais do quadro financeiro e assinaturas da guia."
+                title="Valores Totais"
+                description="Campos 59 a 65 — totais do quadro financeiro da guia."
               >
                 <div className="space-y-6 @container">
                   <div className="grid gap-4 @sm:grid-cols-2 @3xl:grid-cols-3">
@@ -2784,27 +2785,6 @@ function EmitirPage() {
                       {formatMoney(totalGeral)}
                     </span>
 
-                  </div>
-
-                  <div className="grid gap-4 @3xl:grid-cols-3">
-                    <SignatureField
-                      label="66 - Assinatura do Responsável pela Autorização"
-                      value={assinaturaAutorizacao}
-                      onChange={setAssinaturaAutorizacao}
-                      hint="Opcional: deixe em branco para assinar à mão no papel."
-                    />
-                    <SignatureField
-                      label="67 - Assinatura do Beneficiário ou Responsável"
-                      value={assinaturaBeneficiarioFinal}
-                      onChange={setAssinaturaBeneficiarioFinal}
-                      hint="Opcional: deixe em branco para assinar à mão no papel."
-                    />
-                    <SignatureField
-                      label="68 - Assinatura do Contratado"
-                      value={assinaturaContratado}
-                      onChange={setAssinaturaContratado}
-                      hint="Opcional: deixe em branco para assinar à mão no papel."
-                    />
                   </div>
                 </div>
               </Section>
