@@ -993,7 +993,7 @@ function EmitirPage() {
 
   const convenioOk =
     convenioId === "tiss"
-      ? Boolean(operadora.trim() && character.trim())
+      ? Boolean(operadora.trim())
       : Boolean(susEstabelecimento.trim());
   const especificoOk =
     guideKind === "internacao"
@@ -1902,7 +1902,6 @@ function EmitirPage() {
                 <Grid cols={2}>
                   <SelectField
                     label="21 - Caráter do Atendimento"
-                    required
                     hint="Código conforme tabela de domínio nº 23. Ex.: 1 (Eletivo)."
                     value={character}
                     onValueChange={setCharacter}
