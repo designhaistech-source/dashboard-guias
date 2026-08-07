@@ -87,7 +87,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { cn } from "@/lib/utils";
 import { Combobox } from "@/components/ui/combobox";
 import { CID_OPTIONS } from "@/lib/cid";
-import { TUSS, TUSS_OPTIONS } from "@/lib/tuss";
+import { TUSS, TUSS_OPTIONS, resolveTissTable } from "@/lib/tuss";
 import { nextGuiaNumber } from "@/lib/guia-number";
 import convenioHumanasAsset from "@/assets/convenio-humanas-real.png.asset.json";
 import convenioUnimedAsset from "@/assets/convenio-unimed-real.png.asset.json";
