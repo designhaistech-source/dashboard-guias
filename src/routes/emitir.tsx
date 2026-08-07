@@ -59,7 +59,7 @@ import { AppModal } from "@/components/app-modal";
 import {
   MANUAL_PROFESSIONAL_ID,
   ProfessionalPicker,
-  UFS,
+  ProfessionalRegistryField,
   councilLabel,
   defaultProfessionalValue,
   isProfessionalValid,
@@ -67,6 +67,7 @@ import {
   validateProfessional,
   type ProfessionalValue,
 } from "@/features/professional";
+import { ESTABLISHMENT, operatorEstablishmentCode } from "@/features/establishment";
 
 import { AihGuideForm, ApacGuideForm, InternacaoGuideForm } from "@/features/guides";
 
@@ -358,11 +359,9 @@ function EmitirPage() {
   const [validadeSenha, setValidadeSenha] = useState("");
   const [guiaOperadora, setGuiaOperadora] = useState("");
 
-  // Solicitante (13, 14, 18, 19)
-  const [codigoSolicitante, setCodigoSolicitante] = useState("");
-  const [contratadoSolicitante, setContratadoSolicitante] = useState("");
-  const [conselhoUf, setConselhoUf] = useState("RN");
-  const [codigoCbo, setCodigoCbo] = useState("");
+  // Solicitante (13, 14) — derivados do cadastro do estabelecimento.
+  const codigoSolicitante = operatorEstablishmentCode(operadora);
+  const contratadoSolicitante = ESTABLISHMENT.nome;
   const [assinaturaSolicitante, setAssinaturaSolicitante] = useState("");
   /** Campo 56 — até 10 datas de realização de procedimentos em série. */
   const [serieDates, setSerieDates] = useState<string[]>([""]);
@@ -398,6 +397,9 @@ function EmitirPage() {
   const medicoNome = profissional.nome;
   const medicoCrm = councilLabel(profissional);
   const medicoEspecialidade = profissional.especialidade;
+  /** Campos 18 e 19 vêm do cadastro do profissional (sem digitação na guia). */
+  const conselhoUf = profissional.uf;
+  const codigoCbo = profissional.cbo;
   /** Campos 15, 16 e 17 precisam estar válidos antes de imprimir ou gerar o PDF. */
   const profissionalErrors = validateProfessional(profissional);
   const profissionalValido = isProfessionalValid(profissional);
@@ -438,7 +440,6 @@ function EmitirPage() {
     | {
         profissional: ProfessionalValue;
         estabelecimento: string;
-        uf: string;
       }
     | null
   >(null);
@@ -448,7 +449,6 @@ function EmitirPage() {
     prefPrestador.trim() && ("prestador" as PrefField),
     prefMatricula.trim() && ("matricula" as PrefField),
     prefEstabelecimento.trim() && ("estabelecimento" as PrefField),
-    prefUf.trim() && ("uf" as PrefField),
   ].filter(Boolean) as PrefField[];
 
   const prefValue = (field: PrefField) =>
@@ -478,7 +478,6 @@ function EmitirPage() {
     setPrefsUndo({
       profissional,
       estabelecimento: susEstabelecimento,
-      uf: conselhoUf,
     });
     if (prefSelection.prestador || prefSelection.matricula) {
       applyPrefsToProfissional(
@@ -489,7 +488,6 @@ function EmitirPage() {
     if (prefSelection.estabelecimento && prefEstabelecimento.trim()) {
       setSusEstabelecimento(prefEstabelecimento);
     }
-    if (prefSelection.uf && prefUf.trim()) setConselhoUf(prefUf);
     setPrefsStatus("applied");
     toast.success(
       `${selectedPrefFields.length} ${selectedPrefFields.length === 1 ? "campo aplicado" : "campos aplicados"} a esta guia`,
@@ -501,7 +499,6 @@ function EmitirPage() {
     if (!prefsUndo) return;
     setProfissional(prefsUndo.profissional);
     setSusEstabelecimento(prefsUndo.estabelecimento);
-    setConselhoUf(prefsUndo.uf);
     setPrefsUndo(null);
     setPrefsStatus("review");
     toast.success("Aplicação desfeita");
@@ -1672,7 +1669,7 @@ function EmitirPage() {
                 done={profissionalOk}
                 icon={<Stethoscope className="h-4 w-4" />}
                 title="Dados do Solicitante"
-                description="Campos 13 a 20 da guia — contratado e profissional solicitante."
+                description="Campos 13 a 20 — preenchidos pelos cadastros do estabelecimento e do profissional."
                 action={
                   <Button
                     type="button"
@@ -1774,64 +1771,43 @@ function EmitirPage() {
                 )}
 
 
-                <Grid cols={2}>
-                  <Field label="13 - Código na Operadora" required>
+                <Grid cols={12}>
+                  <Field
+                    label="13 - Código na Operadora"
+                    span="@md:col-span-2 @3xl:col-span-3"
+                    hint={
+                      operadora
+                        ? undefined
+                        : "Selecione a operadora para preencher."
+                    }
+                  >
                     <Input
                       value={codigoSolicitante}
-                      onChange={(e) => setCodigoSolicitante(e.target.value)}
-                      placeholder="Código do contrato"
+                      readOnly
+                      aria-readonly
+                      tabIndex={-1}
+                      placeholder="—"
+                      className="bg-muted/50 font-mono text-foreground"
                     />
                   </Field>
-                  <Field label="14 - Nome do Contratado">
+                  <Field label="14 - Nome do Contratado" span="@md:col-span-4 @3xl:col-span-9">
                     <Input
                       value={contratadoSolicitante}
-                      onChange={(e) => setContratadoSolicitante(e.target.value)}
-                      placeholder="Clínica, consultório ou hospital"
+                      readOnly
+                      aria-readonly
+                      tabIndex={-1}
+                      className="bg-muted/50 text-foreground"
                     />
                   </Field>
                 </Grid>
 
-                <div className="mt-5 border-t pt-5">
-                  <ProfessionalPicker
+                <div className="mt-4 border-t pt-4">
+                  <ProfessionalRegistryField
                     value={profissional}
                     onChange={setProfissional}
-                    labels={{
-                      nome: "15 - Nome do Profissional Solicitante",
-                      conselho: "16 - Conselho Profissional",
-                      numero: "17 - Número no Conselho",
-                    }}
                   />
                 </div>
 
-                <div className="mt-5">
-                  <Grid cols={3}>
-                    <SelectField
-                      id="conselho-uf"
-                      label="18 - UF"
-                      required
-                      hint="Sigla da UF do conselho do profissional solicitante (tabela de domínio nº 59). Ex.: RN."
-                      value={conselhoUf}
-                      onValueChange={setConselhoUf}
-                      options={UFS.map((uf) => ({ value: uf, label: uf }))}
-                    />
-
-                    <Field
-                      label="19 - Código CBO"
-                      required
-                      hint="Código na Classificação Brasileira de Ocupações do solicitante (tabela de domínio nº 24). 6 dígitos. Ex.: 223810."
-                    >
-                      <Input
-                        inputMode="numeric"
-                        maxLength={6}
-                        value={codigoCbo}
-                        onChange={(e) =>
-                          setCodigoCbo(e.target.value.replace(/\D/g, "").slice(0, 6))
-                        }
-                        placeholder="223810"
-                      />
-                    </Field>
-                  </Grid>
-                </div>
 
                 <div className="mt-5 border-t pt-5">
                   <SignatureField

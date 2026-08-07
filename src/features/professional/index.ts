@@ -1,3 +1,4 @@
+export { ProfessionalRegistryField } from "./components/professional-registry-field";
 export { ProfessionalPicker } from "./components/professional-picker";
 export {
   COUNCILS,
