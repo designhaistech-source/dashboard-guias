@@ -248,6 +248,8 @@ type ExecutedItem = {
   endTime: string;
   code: string;
   description: string;
+  /** Campo 39 - Tabela: derivado do procedimento, nunca digitado pelo usuário. */
+  table?: string;
   quantity: number;
   via: string;
   technique: string;
