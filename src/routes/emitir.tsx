@@ -973,13 +973,16 @@ function EmitirPage() {
     setSubmitting(true);
     setTimeout(() => {
       setSubmitting(false);
+      // O campo 2 é gerado aqui, no momento da criação/salvamento da guia.
+      const numero = nextGuiaNumber(operadora);
+      setNumeroGuia(numero);
       setPreview({
-        numero: numeroGuia,
+        numero,
         tipo: guideLabel,
         createdAt: new Date().toLocaleString("pt-BR"),
       });
       toast.success("Guia gerada com sucesso", {
-        description: `Nº ${numeroGuia} — ${guideLabel}`,
+        description: `Nº ${numero} — ${guideLabel}`,
       });
     }, 700);
   };
@@ -993,7 +996,7 @@ function EmitirPage() {
     setIndicacaoClinica("");
     setObservacoes("");
     setProcedures([{ id: crypto.randomUUID(), code: "", description: "", quantity: 1 }]);
-    setNumeroGuia(`G-${Math.floor(Math.random() * 900000 + 100000)}`);
+    setNumeroGuia("");
     toast.info("Formulário limpo");
   };
 
