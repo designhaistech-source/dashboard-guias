@@ -372,10 +372,15 @@ function EmitirPage() {
   /** Campo 68 — assinatura do contratado. */
   const [assinaturaContratado, setAssinaturaContratado] = useState("");
 
-  // Contratado executante (29, 30, 31)
-  const [codigoExecutante, setCodigoExecutante] = useState("");
-  const [contratadoExecutante, setContratadoExecutante] = useState("");
-  const [cnesExecutante, setCnesExecutante] = useState("");
+  /**
+   * Contratado executante (campos 29, 30 e 31): derivados do cadastro do
+   * estabelecimento executor. Não são exibidos na emissão, mas seguem para o
+   * PDF/XML da guia TISS.
+   */
+  const codigoExecutante = operatorEstablishmentCode(operadora);
+  const contratadoExecutante = ESTABLISHMENT.nome;
+  const cnesExecutante = ESTABLISHMENT.cnes;
+
 
   // Dados do atendimento (32 a 35)
   const [tipoAtendimento, setTipoAtendimento] = useState("");
@@ -923,7 +928,7 @@ function EmitirPage() {
     "paciente",
     "profissional",
     "clinico",
-    "executante",
+    
     "atendimento",
     "realizados",
     "executantes",
@@ -978,7 +983,7 @@ function EmitirPage() {
     toast.success("Beneficiário encontrado", { description: found.nome });
   }
   const profissionalOk = profissionalValido;
-  const executanteOk = Boolean(contratadoExecutante.trim());
+  
   const atendimentoOk = Boolean(tipoAtendimento.trim());
   const realizadosOk = executedItems.some((i) => i.description.trim() || i.code.trim());
   const executantesOk = executantes.some((e) => e.name.trim() && e.councilNumber.trim());
@@ -2183,38 +2188,6 @@ function EmitirPage() {
               </Section>
 
 
-              {/* Dados do Contratado Executante */}
-              <Section
-                number={stepNumber("executante")}
-                done={executanteOk}
-                icon={<Building2 className="h-4 w-4" />}
-                title="Dados do Contratado Executante"
-                description="Campos 29 a 31 da guia — identificação do contratado executante."
-              >
-                <Grid cols={3}>
-                  <Field label="29 - Código na Operadora">
-                    <Input
-                      value={codigoExecutante}
-                      onChange={(e) => setCodigoExecutante(e.target.value)}
-                      placeholder="Código do contrato"
-                    />
-                  </Field>
-                  <Field label="30 - Nome do Contratado">
-                    <Input
-                      value={contratadoExecutante}
-                      onChange={(e) => setContratadoExecutante(e.target.value)}
-                      placeholder="Prestador que executa"
-                    />
-                  </Field>
-                  <Field label="31 - Código CNES">
-                    <Input
-                      value={cnesExecutante}
-                      onChange={(e) => setCnesExecutante(e.target.value)}
-                      placeholder="0000000"
-                    />
-                  </Field>
-                </Grid>
-              </Section>
 
               {/* Dados do Atendimento */}
               <Section
@@ -2704,7 +2677,7 @@ function EmitirPage() {
                   { label: "Beneficiário", done: pacienteOk },
                   { label: "Profissional", done: profissionalOk },
                   { label: "Dados da Solicitação", done: clinicoOk && procedimentosOk },
-                  { label: "Executante", done: executanteOk },
+                  
                   { label: "Atendimento", done: atendimentoOk },
                   { label: "Execução", done: realizadosOk },
                   { label: "Profissional executante", done: executantesOk },
