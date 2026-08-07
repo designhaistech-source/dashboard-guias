@@ -351,8 +351,6 @@ function EmitirPage() {
   const [assinaturaSolicitante, setAssinaturaSolicitante] = useState("");
   /** Campo 56 — até 10 datas de realização de procedimentos em série. */
   const [serieDates, setSerieDates] = useState<string[]>([""]);
-  /** Campo 57 — assinatura do beneficiário ou responsável. */
-  const [assinaturaBeneficiario, setAssinaturaBeneficiario] = useState("");
   /** Campo 66 — assinatura do responsável pela autorização. */
   const [assinaturaAutorizacao, setAssinaturaAutorizacao] = useState("");
   /** Campo 67 — assinatura do beneficiário ou responsável (quadro final). */
