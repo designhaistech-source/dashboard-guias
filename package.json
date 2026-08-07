@@ -21,7 +21,8 @@
     "qa:visual": "python3 scripts/visual/check-comparecimento-visual.py",
     "qa:visual:update": "python3 scripts/visual/check-comparecimento-visual.py --update",
     "qa:visual:tabs": "python3 scripts/visual/check-tabs-cross-route.py",
-    "qa:visual:tabs:update": "python3 scripts/visual/check-tabs-cross-route.py --update"
+    "qa:visual:tabs:update": "python3 scripts/visual/check-tabs-cross-route.py --update",
+    "qa:proc-headers": "python3 e2e/procedimentos-solicitados-headers.spec.py"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",

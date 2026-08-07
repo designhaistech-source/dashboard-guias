@@ -2101,22 +2101,26 @@ function EmitirPage() {
 
 
                   {/* Rótulos das colunas (campos 25 a 28) — visíveis no desktop */}
-                  <div className="hidden @3xl:grid @3xl:grid-cols-[1.5rem_minmax(0,1fr)_7rem_6rem_6.5rem_2.25rem] items-end gap-2 text-xs font-medium text-muted-foreground">
+                  <div
+                    data-testid="proc-solic-headers"
+                    className="hidden @3xl:grid @3xl:grid-cols-[1.5rem_minmax(0,1fr)_7rem_6rem_6.5rem_2.25rem] items-end gap-2 text-xs font-medium text-muted-foreground"
+                  >
                     <div />
-                    <div className="whitespace-nowrap">
+                    <div className="whitespace-nowrap" data-testid="proc-solic-header-26">
                       26 - Descrição <span className="text-destructive">*</span>
                     </div>
-                    <div className="whitespace-nowrap">
+                    <div className="whitespace-nowrap" data-testid="proc-solic-header-25">
                       25 - Código
                     </div>
-                    <div className="whitespace-nowrap text-center">
+                    <div className="whitespace-nowrap text-center" data-testid="proc-solic-header-27">
                       27 - Qtde. <span className="text-destructive">*</span>
                     </div>
-                    <div className="whitespace-nowrap text-center">
+                    <div className="whitespace-nowrap text-center" data-testid="proc-solic-header-28">
                       28 - Autorizada
                     </div>
                     <div />
                   </div>
+
 
 
 
