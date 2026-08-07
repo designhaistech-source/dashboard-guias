@@ -302,12 +302,8 @@ export function IssuedGuidesPage() {
                               >
                                 <Eye className="h-4 w-4" />
                               </Button>
-                              <RowActions
-                                guide={guide}
-                                onDownload={handleDownload}
-                                onReprint={handleReprint}
-                                onDuplicate={handleDuplicate}
-                              />
+                              <RowActions guide={guide} onDownload={handleDownload} />
+
                             </div>
                           </DataTableCell>
                         </DataTableRow>
