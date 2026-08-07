@@ -247,12 +247,8 @@ export function IssuedGuidesPage() {
                         <Eye className="h-4 w-4" aria-hidden="true" />
                         Visualizar
                       </Button>
-                      <RowActions
-                        guide={guide}
-                        onDownload={handleDownload}
-                        onReprint={handleReprint}
-                        onDuplicate={handleDuplicate}
-                      />
+                      <RowActions guide={guide} onDownload={handleDownload} />
+
                     </DataTableCardActions>
                   </DataTableCard>
                 ))}
@@ -306,12 +302,8 @@ export function IssuedGuidesPage() {
                               >
                                 <Eye className="h-4 w-4" />
                               </Button>
-                              <RowActions
-                                guide={guide}
-                                onDownload={handleDownload}
-                                onReprint={handleReprint}
-                                onDuplicate={handleDuplicate}
-                              />
+                              <RowActions guide={guide} onDownload={handleDownload} />
+
                             </div>
                           </DataTableCell>
                         </DataTableRow>
@@ -346,7 +338,7 @@ interface ActionProps {
   onDuplicate: (guide: IssuedGuide) => void;
 }
 
-function RowActions({ guide, onDownload, onReprint, onDuplicate }: ActionProps) {
+function RowActions({ guide, onDownload }: Pick<ActionProps, "guide" | "onDownload">) {
   return (
     <div className="inline-flex items-center gap-0.5 icon-optical">
       <Button
@@ -358,27 +350,10 @@ function RowActions({ guide, onDownload, onReprint, onDuplicate }: ActionProps) 
       >
         <Download className="h-4 w-4" />
       </Button>
-      <Button
-        variant="ghost"
-        size="icon"
-        aria-label={`Reimprimir guia ${guide.numero}`}
-        className="h-7 w-7 text-muted-foreground hover:text-foreground"
-        onClick={() => onReprint(guide)}
-      >
-        <Printer className="h-4 w-4" />
-      </Button>
-      <Button
-        variant="ghost"
-        size="icon"
-        aria-label={`Duplicar guia ${guide.numero}`}
-        className="h-7 w-7 text-muted-foreground hover:text-foreground"
-        onClick={() => onDuplicate(guide)}
-      >
-        <Copy className="h-4 w-4" />
-      </Button>
     </div>
   );
 }
+
 
 function StatusBadge({ status }: { status: IssuedGuideStatus }) {
   if (status === "Autorizada")
