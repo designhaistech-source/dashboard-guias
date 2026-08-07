@@ -224,7 +224,14 @@ const CONVENIOS: {
 ];
 
 
-type Procedure = { id: string; code: string; description: string; quantity: number };
+type Procedure = {
+  id: string;
+  code: string;
+  description: string;
+  quantity: number;
+  /** Campo 24 - Tabela: derivado do procedimento, nunca digitado pelo usuário. */
+  table: string;
+};
 type OpmeItem = { id: string; code: string; description: string; quantity: number };
 
 /** Quadro "Procedimentos e exames realizados" (campos 36 a 47) da guia SP/SADT. */
