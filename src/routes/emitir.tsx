@@ -3123,7 +3123,7 @@ function GuiaLivePreview(props: {
               {rows.map((p, i) => (
                 <div key={i} className="grid grid-cols-[38px_60px_140px_1fr_60px_60px] text-[10px] border-b last:border-b-0 border-border min-h-[16px]">
                   <div className="px-1 py-0.5 border-r border-border font-mono">{i + 1} -</div>
-                  <div className="px-1 py-0.5 border-r border-border font-mono">{p ? "22" : ""}</div>
+                  <div className="px-1 py-0.5 border-r border-border font-mono">{p ? (p.table ?? resolveTissTable(p.code)) : ""}</div>
                   <div className="px-1 py-0.5 border-r border-border font-mono">{p?.code ?? ""}</div>
                   <div className="px-1 py-0.5 border-r border-border truncate">{p?.description ?? ""}</div>
                   <div className="px-1 py-0.5 border-r border-border text-center font-mono">{p?.quantity ?? ""}</div>
