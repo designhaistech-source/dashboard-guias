@@ -82,7 +82,7 @@ export function ProfessionalPicker({ value, onChange, children, labels }: Profes
     resetTouched();
     setManualMode(true);
     setOpen(false);
-    onChange({ id: MANUAL_PROFESSIONAL_ID, nome: "", conselho: "CRM", numero: "", especialidade: "" });
+    onChange({ id: MANUAL_PROFESSIONAL_ID, nome: "", conselho: "CRM", numero: "", especialidade: "", uf: "RN", cbo: "" });
     requestAnimationFrame(() => nomeRef.current?.focus());
   };
 

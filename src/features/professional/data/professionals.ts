@@ -7,6 +7,10 @@ export interface Professional {
   /** Campo 17 — número de registro no conselho (somente dígitos), ex.: "13955". */
   numero: string;
   especialidade: string;
+  /** Campo 18 — UF do conselho profissional (tabela de domínio nº 59). */
+  uf: string;
+  /** Campo 19 — Código CBO (tabela de domínio nº 24), 6 dígitos. */
+  cbo: string;
 }
 
 /**
@@ -37,6 +41,8 @@ export const PROFESSIONALS: Professional[] = [
     conselho: "CRM",
     numero: "13955",
     especialidade: "Cardiologia",
+    uf: "RN",
+    cbo: "225120",
   },
   {
     id: "m2",
@@ -44,6 +50,8 @@ export const PROFESSIONALS: Professional[] = [
     conselho: "CRM",
     numero: "45217",
     especialidade: "Ortopedia",
+    uf: "RN",
+    cbo: "225270",
   },
   {
     id: "m3",
@@ -51,6 +59,8 @@ export const PROFESSIONALS: Professional[] = [
     conselho: "CRM",
     numero: "77881",
     especialidade: "Clínica médica",
+    uf: "RN",
+    cbo: "225125",
   },
   {
     id: "m4",
@@ -58,6 +68,8 @@ export const PROFESSIONALS: Professional[] = [
     conselho: "CRM",
     numero: "90124",
     especialidade: "Neurologia",
+    uf: "PB",
+    cbo: "225180",
   },
 ];
 
