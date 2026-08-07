@@ -59,7 +59,7 @@ import { AppModal } from "@/components/app-modal";
 import {
   MANUAL_PROFESSIONAL_ID,
   ProfessionalPicker,
-  UFS,
+  ProfessionalRegistryField,
   councilLabel,
   defaultProfessionalValue,
   isProfessionalValid,
@@ -67,6 +67,7 @@ import {
   validateProfessional,
   type ProfessionalValue,
 } from "@/features/professional";
+import { ESTABLISHMENT, operatorEstablishmentCode } from "@/features/establishment";
 
 import { AihGuideForm, ApacGuideForm, InternacaoGuideForm } from "@/features/guides";
 
@@ -358,11 +359,7 @@ function EmitirPage() {
   const [validadeSenha, setValidadeSenha] = useState("");
   const [guiaOperadora, setGuiaOperadora] = useState("");
 
-  // Solicitante (13, 14, 18, 19)
-  const [codigoSolicitante, setCodigoSolicitante] = useState("");
-  const [contratadoSolicitante, setContratadoSolicitante] = useState("");
-  const [conselhoUf, setConselhoUf] = useState("RN");
-  const [codigoCbo, setCodigoCbo] = useState("");
+  // Solicitante (13, 14, 18, 19) — todos derivados dos cadastros do sistema.
   const [assinaturaSolicitante, setAssinaturaSolicitante] = useState("");
   /** Campo 56 — até 10 datas de realização de procedimentos em série. */
   const [serieDates, setSerieDates] = useState<string[]>([""]);
@@ -398,6 +395,9 @@ function EmitirPage() {
   const medicoNome = profissional.nome;
   const medicoCrm = councilLabel(profissional);
   const medicoEspecialidade = profissional.especialidade;
+  /** Campos 18 e 19 vêm do cadastro do profissional (sem digitação na guia). */
+  const conselhoUf = profissional.uf;
+  const codigoCbo = profissional.cbo;
   /** Campos 15, 16 e 17 precisam estar válidos antes de imprimir ou gerar o PDF. */
   const profissionalErrors = validateProfessional(profissional);
   const profissionalValido = isProfessionalValid(profissional);
@@ -438,7 +438,6 @@ function EmitirPage() {
     | {
         profissional: ProfessionalValue;
         estabelecimento: string;
-        uf: string;
       }
     | null
   >(null);
@@ -448,7 +447,6 @@ function EmitirPage() {
     prefPrestador.trim() && ("prestador" as PrefField),
     prefMatricula.trim() && ("matricula" as PrefField),
     prefEstabelecimento.trim() && ("estabelecimento" as PrefField),
-    prefUf.trim() && ("uf" as PrefField),
   ].filter(Boolean) as PrefField[];
 
   const prefValue = (field: PrefField) =>
@@ -478,7 +476,6 @@ function EmitirPage() {
     setPrefsUndo({
       profissional,
       estabelecimento: susEstabelecimento,
-      uf: conselhoUf,
     });
     if (prefSelection.prestador || prefSelection.matricula) {
       applyPrefsToProfissional(
@@ -489,7 +486,6 @@ function EmitirPage() {
     if (prefSelection.estabelecimento && prefEstabelecimento.trim()) {
       setSusEstabelecimento(prefEstabelecimento);
     }
-    if (prefSelection.uf && prefUf.trim()) setConselhoUf(prefUf);
     setPrefsStatus("applied");
     toast.success(
       `${selectedPrefFields.length} ${selectedPrefFields.length === 1 ? "campo aplicado" : "campos aplicados"} a esta guia`,
@@ -501,7 +497,6 @@ function EmitirPage() {
     if (!prefsUndo) return;
     setProfissional(prefsUndo.profissional);
     setSusEstabelecimento(prefsUndo.estabelecimento);
-    setConselhoUf(prefsUndo.uf);
     setPrefsUndo(null);
     setPrefsStatus("review");
     toast.success("Aplicação desfeita");
