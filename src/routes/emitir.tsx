@@ -2160,6 +2160,8 @@ function EmitirPage() {
                 icon={<ClipboardList className="h-4 w-4" />}
                 title="Dados da Execução / Procedimentos e Exames Realizados"
                 description="Campos 36 a 47 da guia — execução dos procedimentos realizados."
+                collapsible
+                defaultCollapsed
                 action={
                   <div className="flex flex-wrap gap-2">
                     <Button
@@ -2826,6 +2828,8 @@ function Section({
   title,
   description,
   action,
+  collapsible,
+  defaultCollapsed,
   children,
 }: {
   number?: number;
@@ -2834,6 +2838,8 @@ function Section({
   title: React.ReactNode;
   description?: string;
   action?: React.ReactNode;
+  collapsible?: boolean;
+  defaultCollapsed?: boolean;
   children: React.ReactNode;
 }) {
   return (
@@ -2844,6 +2850,8 @@ function Section({
       icon={icon}
       done={done}
       actions={action}
+      collapsible={collapsible}
+      defaultCollapsed={defaultCollapsed}
     >
       {children}
     </BaseSectionCard>

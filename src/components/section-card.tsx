@@ -1,5 +1,5 @@
 import * as React from "react";
-import { CheckCircle2 } from "lucide-react";
+import { CheckCircle2, ChevronDown } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 
@@ -17,6 +17,10 @@ export interface SectionCardProps {
   done?: boolean;
   /** Ações alinhadas à direita do cabeçalho. */
   actions?: React.ReactNode;
+  /** Permite recolher/expandir o conteúdo da seção. */
+  collapsible?: boolean;
+  /** Inicia a seção recolhida (apenas com `collapsible`). */
+  defaultCollapsed?: boolean;
   className?: string;
   /** Classe extra para o texto auxiliar (permite reduzir o destaque). */
   descriptionClassName?: string;
@@ -25,6 +29,7 @@ export interface SectionCardProps {
   bodyClassName?: string;
   children?: React.ReactNode;
 }
+
 
 /**
  * Card de etapa/seção padronizado para os formulários longos
@@ -41,12 +46,20 @@ export function SectionCard({
   icon,
   done,
   actions,
+  collapsible,
+  defaultCollapsed,
   className,
   descriptionClassName,
   bodyClassName,
   innerRef,
   children,
 }: SectionCardProps) {
+  const [collapsed, setCollapsed] = React.useState(
+    Boolean(collapsible && defaultCollapsed),
+  );
+  const open = !collapsible || !collapsed;
+  const bodyId = React.useId();
+
   return (
     <section id={id} className={cn("scroll-mt-4", className)}>
       <div ref={innerRef} className="rounded-2xl border border-border bg-card shadow-xs">
@@ -80,14 +93,35 @@ export function SectionCard({
               )}
             </div>
           </div>
-          {actions && (
+          {(actions || collapsible) && (
             <div className="flex w-full flex-wrap items-center gap-2 lg:w-auto lg:shrink-0 lg:justify-end">
               {actions}
+              {collapsible && (
+                <button
+                  type="button"
+                  onClick={() => setCollapsed((v) => !v)}
+                  aria-expanded={open}
+                  aria-controls={bodyId}
+                  className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-border text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                >
+                  <ChevronDown
+                    className={cn(
+                      "h-4 w-4 transition-transform",
+                      open && "rotate-180",
+                    )}
+                  />
+                  <span className="sr-only">
+                    {open ? "Recolher seção" : "Expandir seção"}
+                  </span>
+                </button>
+              )}
             </div>
           )}
         </div>
-        {children && (
-          <div className={cn("space-y-4 px-5 pb-5", bodyClassName)}>{children}</div>
+        {children && open && (
+          <div id={bodyId} className={cn("space-y-4 px-5 pb-5", bodyClassName)}>
+            {children}
+          </div>
         )}
       </div>
     </section>
