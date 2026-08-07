@@ -1249,8 +1249,9 @@ function EmitirPage() {
                     <Field
                       label="Operadora / Convênio"
                       required
-                      span="@md:col-span-4 @3xl:col-span-5"
+                      span="@md:col-span-8 @3xl:col-span-8"
                     >
+
                       <Select value={operadora} onValueChange={(v) => { setOperadora(v); const op = OPERADORAS.find((o) => o.value === v); if (op) setRegistroAns(op.ans); }}>
                         <SelectTrigger>
                           <SelectValue placeholder="Selecione o convênio">
@@ -1291,16 +1292,17 @@ function EmitirPage() {
                       </Select>
                     </Field>
 
-                    <Field label="1 - Registro ANS" span="@md:col-span-2 @3xl:col-span-3">
+                    <Field label="1 - Registro ANS" span="@md:col-span-4 @3xl:col-span-4">
                       <Input
                         value={registroAns}
                         onChange={(e) => setRegistroAns(e.target.value)}
                         placeholder="000000"
                         inputMode="numeric"
                         maxLength={6}
-                        className="max-w-[10rem] font-mono"
+                        className="font-mono"
                       />
                     </Field>
+
                   </Grid>
 
 
@@ -1327,7 +1329,7 @@ function EmitirPage() {
                     <CollapsibleContent className="pt-4">
                       <Grid cols={12}>
                         {guideKind === "internacao" && (
-                          <Field label="3 - Número da Guia Principal" span="@md:col-span-3 @3xl:col-span-4">
+                          <Field label="3 - Número da Guia Principal" span="@md:col-span-6 @3xl:col-span-4">
                             <Input
                               value={guiaPrincipal}
                               onChange={(e) => setGuiaPrincipal(e.target.value)}
@@ -1335,30 +1337,28 @@ function EmitirPage() {
                             />
                           </Field>
                         )}
-                        <Field label="4 - Data da Autorização" span="@md:col-span-3 @3xl:col-span-3">
+                        <Field label="4 - Data da Autorização" span="@md:col-span-4 @3xl:col-span-4">
                           <Input
                             type="date"
                             value={dataAutorizacao}
                             onChange={(e) => setDataAutorizacao(e.target.value)}
-                            className="max-w-[11rem]"
                           />
                         </Field>
-                        <Field label="5 - Senha" span="@md:col-span-3 @3xl:col-span-4">
+                        <Field label="5 - Senha" span="@md:col-span-4 @3xl:col-span-4">
                           <Input
                             value={senha}
                             onChange={(e) => setSenha(e.target.value)}
                             placeholder="Senha de autorização"
                           />
                         </Field>
-                        <Field label="6 - Data de Validade da Senha" span="@md:col-span-3 @3xl:col-span-3">
+                        <Field label="6 - Data de Validade da Senha" span="@md:col-span-4 @3xl:col-span-4">
                           <Input
                             type="date"
                             value={validadeSenha}
                             onChange={(e) => setValidadeSenha(e.target.value)}
-                            className="max-w-[11rem]"
                           />
                         </Field>
-                        <Field label="7 - Número da Guia Atribuído pela Operadora" span="@md:col-span-3 @3xl:col-span-4">
+                        <Field label="7 - Número da Guia Atribuído pela Operadora" span="@md:col-span-6 @3xl:col-span-4">
                           <Input
                             value={guiaOperadora}
                             onChange={(e) => setGuiaOperadora(e.target.value)}
