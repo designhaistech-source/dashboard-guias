@@ -2246,68 +2246,7 @@ function EmitirPage() {
                               placeholder="Descrição do procedimento realizado"
                             />
                           </Field>
-                          <Field label="42 - Qtde.">
-                            <Input
-                              type="number"
-                              min={1}
-                              value={item.quantity}
-                              onChange={(e) =>
-                                updateExecuted(item.id, {
-                                  quantity: Math.max(1, Number(e.target.value) || 1),
-                                })
-                              }
-                            />
-                          </Field>
-                          <SelectField
-                            label="43 - Via"
-                            labelClassName="text-xs font-medium text-muted-foreground"
-                            value={item.via}
-                            onValueChange={(v) => updateExecuted(item.id, { via: v })}
-                            placeholder="Selecione"
-                            options={["Única", "Mesma via", "Diferentes vias"].map((o) => ({
-                              value: o,
-                              label: o,
-                            }))}
-                          />
-                          <SelectField
-                            label="44 - Tec."
-                            labelClassName="text-xs font-medium text-muted-foreground"
-                            value={item.technique}
-                            onValueChange={(v) => updateExecuted(item.id, { technique: v })}
-                            placeholder="Selecione"
-                            options={["Convencional", "Videolaparoscopia"].map((o) => ({
-                              value: o,
-                              label: o,
-                            }))}
-                          />
-                          <Field label="45 - Fator Red./Acresc.">
-                            <Input
-                              value={item.reductionFactor}
-                              onChange={(e) =>
-                                updateExecuted(item.id, { reductionFactor: e.target.value })
-                              }
-                              placeholder="1,00"
-                              className="font-mono"
-                            />
-                          </Field>
-                          <Field label="46 - Valor Unitário (R$)">
-                            <Input
-                              value={item.unitValue}
-                              onChange={(e) =>
-                                updateExecuted(item.id, { unitValue: e.target.value })
-                              }
-                              placeholder="0,00"
-                              className="font-mono"
-                            />
-                          </Field>
-                          <Field label="47 - Valor Total (R$)">
-                            <Input
-                              value={formatMoney(executedItemTotal(item))}
-                              readOnly
-                              disabled
-                              className="font-mono"
-                            />
-                          </Field>
+                        
                         </Grid>
                       </div>
                     ))}
@@ -2931,10 +2870,12 @@ function Grid({ cols, children }: { cols: 2 | 3; children: React.ReactNode }) {
 function Field({
   label,
   required,
+  hint,
   children,
 }: {
   label: string;
   required?: boolean;
+  hint?: string;
   children: React.ReactNode;
 }) {
   return (
@@ -2943,6 +2884,7 @@ function Field({
         {label} {required && <span className="text-destructive">*</span>}
       </Label>
       {children}
+      {hint && <p className="text-[11px] text-muted-foreground">{hint}</p>}
     </div>
   );
 }
