@@ -1292,16 +1292,17 @@ function EmitirPage() {
                       </Select>
                     </Field>
 
-                    <Field label="1 - Registro ANS" span="@md:col-span-2 @3xl:col-span-3">
+                    <Field label="1 - Registro ANS" span="@md:col-span-4 @3xl:col-span-4">
                       <Input
                         value={registroAns}
                         onChange={(e) => setRegistroAns(e.target.value)}
                         placeholder="000000"
                         inputMode="numeric"
                         maxLength={6}
-                        className="max-w-[10rem] font-mono"
+                        className="font-mono"
                       />
                     </Field>
+
                   </Grid>
 
 
