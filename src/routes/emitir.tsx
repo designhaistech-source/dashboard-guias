@@ -367,12 +367,13 @@ function EmitirPage() {
   const [assinaturaSolicitante, setAssinaturaSolicitante] = useState("");
   /** Campo 56 — até 10 datas de realização de procedimentos em série. */
   const [serieDates, setSerieDates] = useState<string[]>([""]);
-  /** Campo 66 — assinatura do responsável pela autorização. */
-  const [assinaturaAutorizacao, setAssinaturaAutorizacao] = useState("");
-  /** Campo 67 — assinatura do beneficiário ou responsável (quadro final). */
-  const [assinaturaBeneficiarioFinal, setAssinaturaBeneficiarioFinal] = useState("");
-  /** Campo 68 — assinatura do contratado. */
-  const [assinaturaContratado, setAssinaturaContratado] = useState("");
+  /**
+   * Campos 66 a 68 — assinaturas não são coletadas na emissão (assinadas à mão
+   * no papel); permanecem vazias na guia para preservar a compatibilidade TISS.
+   */
+  const assinaturaAutorizacao = "";
+  const assinaturaBeneficiarioFinal = "";
+  const assinaturaContratado = "";
 
   /**
    * Contratado executante (campos 29, 30 e 31): derivados do cadastro do
