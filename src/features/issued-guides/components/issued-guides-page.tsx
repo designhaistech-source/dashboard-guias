@@ -20,7 +20,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { EmptyState } from "@/components/data-state";
 import { FilterCard } from "@/components/filter-card";
-import { Field, SearchInput } from "@/components/form-field";
+import { SearchInput } from "@/components/form-field";
 import { Input } from "@/components/ui/input";
 import { Combobox } from "@/components/ui/combobox";
 import { PageHeader } from "@/components/page-header";
