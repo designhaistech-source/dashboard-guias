@@ -158,7 +158,8 @@ export function InternacaoGuideForm({
 }: InternacaoGuideFormProps) {
   // 1 a 6 — identificação da guia e autorização
   const [ans, setAns] = useState(registroAns);
-  const [guiaPrestador, setGuiaPrestador] = useState(numeroGuia);
+  /** Campo 2 — gerado pelo sistema; apenas repassado para a pré-visualização. */
+  const guiaPrestador = numeroGuia;
   const [guiaOperadora, setGuiaOperadora] = useState("");
   const [dataAutorizacao, setDataAutorizacao] = useState("");
   const [senha, setSenha] = useState("");
