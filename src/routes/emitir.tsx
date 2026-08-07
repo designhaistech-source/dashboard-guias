@@ -756,13 +756,27 @@ function EmitirPage() {
 
   // Procedimentos e exames realizados (campos 36 a 47)
   const [executedItems, setExecutedItems] = useState<ExecutedItem[]>([]);
+  /**
+   * Campos 37/38 (horários) só são exigidos quando o tipo de atendimento
+   * envolve registro de horário (urgência/emergência, remoção, internado).
+   */
+  const requiresExecutionTime = [
+    "Urgência / emergência",
+    "Remoção",
+    "SADT internado",
+  ].includes(tipoAtendimento);
+  /** Permite registrar horários manualmente mesmo quando não obrigatórios. */
+  const [showExecutionTime, setShowExecutionTime] = useState(false);
+  const executionTimeVisible = requiresExecutionTime || showExecutionTime;
   const newExecutedItem = (patch: Partial<ExecutedItem> = {}): ExecutedItem => ({
     id: crypto.randomUUID(),
-    date: "",
+    // Campo 36 - Data: preenchida automaticamente com a data de realização.
+    date: new Date().toISOString().slice(0, 10),
     startTime: "",
     endTime: "",
     code: "",
     description: "",
+    table: "",
     quantity: 1,
     via: "",
     technique: "",
@@ -789,10 +803,12 @@ function EmitirPage() {
         newExecutedItem({
           code: p.code,
           description: p.description,
+          table: p.table ?? resolveTissTable(p.code),
           quantity: p.quantity ?? 1,
         }),
       ),
     ]);
+
     toast.success(`${filled.length} procedimento(s) copiado(s) dos solicitados`);
   };
 
