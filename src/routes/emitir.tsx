@@ -384,9 +384,17 @@ function EmitirPage() {
 
   // Dados do atendimento (32 a 35)
   const [tipoAtendimento, setTipoAtendimento] = useState("");
-  const [indicacaoAcidente, setIndicacaoAcidente] = useState("");
+  /** Campo 33 — padrão TISS "Não acidente"; alterável quando necessário. */
+  const [indicacaoAcidente, setIndicacaoAcidente] = useState("Não acidente");
   const [tipoConsulta, setTipoConsulta] = useState("");
-  const [motivoEncerramento, setMotivoEncerramento] = useState("");
+  /**
+   * Campo 35 — condicional (ex.: óbito). Não é exibido na emissão; segue na
+   * guia apenas quando preenchido por fluxos específicos.
+   */
+  const [motivoEncerramento] = useState("");
+  /** Campo 34 só se aplica quando o atendimento é uma consulta (regra TISS). */
+  const isConsulta = tipoAtendimento === "Consulta";
+
 
 
   /**
