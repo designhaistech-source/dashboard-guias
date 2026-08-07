@@ -394,6 +394,7 @@ function History_Section({ extraRows }: { extraRows: Row[] }) {
             <DataTableCardFields
               fields={[
                 { label: "ID da guia", value: `ID ${r.id}`, hideLabel: true },
+                { label: "Nº Guia no Prestador", value: r.guiaPrestador ?? "—" },
                 { label: "Data de envio", value: r.date, hideLabel: true },
               ]}
             />
