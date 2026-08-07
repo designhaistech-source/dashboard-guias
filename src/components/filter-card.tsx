@@ -62,7 +62,7 @@ export function FilterCard({
   activeCount,
   toggleLabel = "Filtros",
   variant = "inline",
-  barColumnsClassName = "lg:grid-cols-4 xl:grid-cols-[minmax(9rem,1fr)_7.5rem_7.5rem_9rem_8rem_auto] xl:gap-4",
+  barColumnsClassName = "lg:grid-cols-4 xl:grid-cols-[minmax(9rem,1fr)_7.5rem_7.5rem_10rem_8.5rem_auto] xl:gap-4",
   title,
   description,
   open: openProp,
