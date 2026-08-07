@@ -2974,7 +2974,7 @@ function EmitirPage() {
             </Button>
             <Button
               variant="outline"
-              onClick={() => navigate({ to: "/emitidas" })}
+              onClick={() => navigate({ to: "/guias-emitidas" })}
             >
               <FileText className="h-4 w-4" /> Ver em Guias emitidas
             </Button>
