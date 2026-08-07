@@ -351,8 +351,6 @@ function EmitirPage() {
   const [assinaturaSolicitante, setAssinaturaSolicitante] = useState("");
   /** Campo 56 — até 10 datas de realização de procedimentos em série. */
   const [serieDates, setSerieDates] = useState<string[]>([""]);
-  /** Campo 57 — assinatura do beneficiário ou responsável. */
-  const [assinaturaBeneficiario, setAssinaturaBeneficiario] = useState("");
   /** Campo 66 — assinatura do responsável pela autorização. */
   const [assinaturaAutorizacao, setAssinaturaAutorizacao] = useState("");
   /** Campo 67 — assinatura do beneficiário ou responsável (quadro final). */
@@ -2436,14 +2434,6 @@ function EmitirPage() {
                   )}
                 </div>
 
-                <div className="mt-5 border-t pt-5">
-                  <SignatureField
-                    label="57 - Assinatura do Beneficiário ou Responsável"
-                    value={assinaturaBeneficiario}
-                    onChange={setAssinaturaBeneficiario}
-                    hint="Opcional: desenhe ou envie a assinatura para sair impressa no campo 57. Deixe em branco para assinar à mão no papel."
-                  />
-                </div>
               </Section>
 
               {/* Observação / Justificativa */}
