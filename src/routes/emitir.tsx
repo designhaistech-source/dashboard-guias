@@ -58,6 +58,7 @@ import { Field as FormField, SelectField } from "@/components/form-field";
 import { AppModal } from "@/components/app-modal";
 import {
   MANUAL_PROFESSIONAL_ID,
+  PROFESSIONALS,
   ProfessionalPicker,
   ProfessionalRegistryField,
   councilLabel,
@@ -816,6 +817,7 @@ function EmitirPage() {
   /** Quadro "Identificação do(a) profissional executante" (campos 48 a 55). */
   type ExecutanteItem = {
     id: string;
+    /** Campo 48 — gerado automaticamente pelo sistema (contingência). */
     seqRef: string;
     participation: string;
     operatorCode: string;
@@ -824,26 +826,49 @@ function EmitirPage() {
     councilNumber: string;
     uf: string;
     cbo: string;
+    /** Id do cadastro selecionado; vazio quando ainda não escolhido. */
+    professionalId: string;
   };
+  const emptyExecutante = (seq: number): ExecutanteItem => ({
+    id: crypto.randomUUID(),
+    seqRef: String(seq),
+    participation: "",
+    operatorCode: "",
+    name: "",
+    council: "",
+    councilNumber: "",
+    uf: "",
+    cbo: "",
+    professionalId: "",
+  });
   const [executantes, setExecutantes] = useState<ExecutanteItem[]>([]);
-  const addExecutante = () =>
-    setExecutantes((l) => [
-      ...l,
-      {
-        id: crypto.randomUUID(),
-        seqRef: String(l.length + 1),
-        participation: "",
-        operatorCode: "",
-        name: "",
-        council: "",
-        councilNumber: "",
-        uf: "",
-        cbo: "",
-      },
-    ]);
+  const addExecutante = () => setExecutantes((l) => [...l, emptyExecutante(l.length + 1)]);
   const updateExecutante = (id: string, patch: Partial<ExecutanteItem>) =>
     setExecutantes((l) => l.map((x) => (x.id === id ? { ...x, ...patch } : x)));
-  const removeExecutante = (id: string) => setExecutantes((l) => l.filter((x) => x.id !== id));
+  /** Seleção do profissional executante — preenche 50 e 52 a 55 automaticamente. */
+  const selectExecutanteProfessional = (id: string, professionalId: string) => {
+    const found = PROFESSIONALS.find((p) => p.id === professionalId);
+    if (!found) return;
+    updateExecutante(id, {
+      professionalId,
+      name: found.nome,
+      council: found.conselho,
+      councilNumber: found.numero,
+      uf: found.uf,
+      cbo: found.cbo,
+      operatorCode: operatorEstablishmentCode(operadora) || found.numero,
+    });
+  };
+  const removeExecutante = (id: string) =>
+    // Campo 48 é re-sequenciado pelo sistema após remoções.
+    setExecutantes((l) =>
+      l.filter((x) => x.id !== id).map((x, i) => ({ ...x, seqRef: String(i + 1) })),
+    );
+  /** Campo 49 — exibido só com múltiplos executantes ou honorários profissionais. */
+  const [showParticipation, setShowParticipation] = useState(false);
+  const participationVisible = executantes.length > 1 || showParticipation;
+  /** Campo 56 — exibido apenas quando o procedimento realizado é seriado. */
+  const [showSerieDates, setShowSerieDates] = useState(false);
 
 
 
@@ -2520,7 +2545,7 @@ function EmitirPage() {
                 done={executantesOk}
                 icon={<Stethoscope className="h-4 w-4" />}
                 title="Identificação do(a) Profissional Executante"
-                description="Campos 48 a 55 da guia — equipe que executou os procedimentos."
+                description="Selecione o profissional — conselho, número, UF e CBO são preenchidos automaticamente."
                 collapsible
                 defaultCollapsed
                 action={
@@ -2533,168 +2558,172 @@ function EmitirPage() {
                   <EmptyState
                     size="sm"
                     title="Nenhum profissional executante"
-                    description="Adicione os profissionais que participaram da execução."
+                    description="Adicione o profissional que executou os procedimentos."
                     icon={<Stethoscope className="h-8 w-8" />}
                   />
                 ) : (
                   <div className="space-y-3">
                     {executantes.map((ex, idx) => (
-                      <div key={ex.id} className="rounded-md border p-3">
-                        <div className="mb-2 flex items-center justify-between">
-                          <span className="text-xs font-medium text-muted-foreground">
-                            Profissional {idx + 1}
-                          </span>
-                          <Button
-                            type="button"
-                            variant="ghost"
-                            size="icon"
-                            onClick={() => removeExecutante(ex.id)}
-                            aria-label={`Remover profissional executante ${idx + 1}`}
-                          >
-                            <Trash2 className="h-4 w-4 text-destructive" />
-                          </Button>
+                      <div key={ex.id} className="rounded-md border p-3 @container">
+                        <div className="grid grid-cols-1 items-end gap-3 @md:grid-cols-12">
+                          <div className={participationVisible ? "@md:col-span-7" : "@md:col-span-11"}>
+                            <SelectField
+                              label={`51 - Profissional executante ${executantes.length > 1 ? idx + 1 : ""}`.trim()}
+                              labelClassName="text-xs font-medium text-muted-foreground"
+                              value={ex.professionalId}
+                              onValueChange={(v) => selectExecutanteProfessional(ex.id, v)}
+                              placeholder="Selecione o profissional"
+                              options={PROFESSIONALS.map((p) => ({
+                                value: p.id,
+                                label: `${p.nome} — ${p.conselho} ${p.numero}/${p.uf}`,
+                              }))}
+                            />
+                          </div>
+                          {participationVisible && (
+                            <div className="@md:col-span-4">
+                              <SelectField
+                                label="49 - Grau Part."
+                                labelClassName="text-xs font-medium text-muted-foreground"
+                                value={ex.participation}
+                                onValueChange={(v) => updateExecutante(ex.id, { participation: v })}
+                                placeholder="Selecione"
+                                options={[
+                                  "Cirurgião",
+                                  "Primeiro Auxiliar",
+                                  "Segundo Auxiliar",
+                                  "Terceiro Auxiliar",
+                                  "Instrumentador",
+                                  "Anestesista",
+                                  "Auxiliar de Anestesista",
+                                  "Consultor",
+                                  "Perfusionista",
+                                  "Pediatra",
+                                  "Clínico",
+                                ].map((o) => ({ value: o, label: o }))}
+                              />
+                            </div>
+                          )}
+                          <div className="flex justify-end @md:col-span-1">
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => removeExecutante(ex.id)}
+                              aria-label={`Remover profissional executante ${idx + 1}`}
+                            >
+                              <Trash2 className="h-4 w-4 text-destructive" />
+                            </Button>
+                          </div>
                         </div>
-                        <Grid cols={3}>
-                          <Field label="48 - Seq. Ref.">
-                            <Input
-                              value={ex.seqRef}
-                              onChange={(e) =>
-                                updateExecutante(ex.id, { seqRef: e.target.value })
-                              }
-                              className="font-mono"
-                              placeholder="1"
-                            />
-                          </Field>
-                          <SelectField
-                            label="49 - Grau Part."
-                            labelClassName="text-xs font-medium text-muted-foreground"
-                            value={ex.participation}
-                            onValueChange={(v) => updateExecutante(ex.id, { participation: v })}
-                            placeholder="Selecione"
-                            options={[
-                              "Cirurgião",
-                              "Primeiro Auxiliar",
-                              "Segundo Auxiliar",
-                              "Terceiro Auxiliar",
-                              "Instrumentador",
-                              "Anestesista",
-                              "Auxiliar de Anestesista",
-                              "Consultor",
-                              "Perfusionista",
-                              "Pediatra",
-                              "Clínico",
-                            ].map((o) => ({ value: o, label: o }))}
-                          />
-                          <Field label="50 - Código na Operadora / CPF">
-                            <Input
-                              value={ex.operatorCode}
-                              onChange={(e) =>
-                                updateExecutante(ex.id, { operatorCode: e.target.value })
-                              }
-                              className="font-mono"
-                              placeholder="000.000.000-00"
-                            />
-                          </Field>
-                          <Field label="51 - Nome do Profissional">
-                            <Input
-                              value={ex.name}
-                              onChange={(e) => updateExecutante(ex.id, { name: e.target.value })}
-                              placeholder="Nome completo"
-                            />
-                          </Field>
-                          <SelectField
-                            label="52 - Conselho Profissional"
-                            labelClassName="text-xs font-medium text-muted-foreground"
-                            value={ex.council}
-                            onValueChange={(v) => updateExecutante(ex.id, { council: v })}
-                            placeholder="Selecione"
-                            options={["CRM", "CRO", "COREN", "CRF", "CREFITO", "Outros"].map(
-                              (o) => ({ value: o, label: o }),
-                            )}
-                          />
-                          <Field label="53 - Número no Conselho">
-                            <Input
-                              value={ex.councilNumber}
-                              onChange={(e) =>
-                                updateExecutante(ex.id, { councilNumber: e.target.value })
-                              }
-                              className="font-mono"
-                              placeholder="000000"
-                            />
-                          </Field>
-                          <Field label="54 - UF">
-                            <Input
-                              value={ex.uf}
-                              onChange={(e) =>
-                                updateExecutante(ex.id, { uf: e.target.value.toUpperCase() })
-                              }
-                              maxLength={2}
-                              className="font-mono uppercase"
-                              placeholder="RN"
-                            />
-                          </Field>
-                          <Field label="55 - Código CBO">
-                            <Input
-                              value={ex.cbo}
-                              onChange={(e) => updateExecutante(ex.id, { cbo: e.target.value })}
-                              className="font-mono"
-                              placeholder="225125"
-                            />
-                          </Field>
-                        </Grid>
+
+                        {ex.professionalId && (
+                          <dl className="mt-3 grid grid-cols-2 gap-x-4 gap-y-2 rounded-md bg-muted/40 p-3 text-xs @md:grid-cols-4">
+                            {[
+                              { label: "50 - Cód. na Operadora / CPF", value: ex.operatorCode },
+                              { label: "52 - Conselho", value: ex.council },
+                              { label: "53 - Nº no Conselho", value: ex.councilNumber },
+                              { label: "54 - UF", value: ex.uf },
+                              { label: "55 - Código CBO", value: ex.cbo },
+                            ].map((f) => (
+                              <div key={f.label}>
+                                <dt className="text-muted-foreground">{f.label}</dt>
+                                <dd className="font-mono text-foreground">{f.value || "—"}</dd>
+                              </div>
+                            ))}
+                          </dl>
+                        )}
                       </div>
                     ))}
                   </div>
                 )}
 
-                <div className="mt-5 border-t pt-5 @container">
-                  <p className="mb-3 text-xs font-medium text-muted-foreground">
-                    56 - Data de Realização de Procedimentos em Série
-                  </p>
-                  <div className="grid grid-cols-1 gap-3 @sm:grid-cols-2 @2xl:grid-cols-3">
-                    {serieDates.map((d, i) => (
-                      <Field key={i} label={`${i + 1}ª data`}>
-                        <div className="flex items-center gap-2">
-                          <Input
-                            type="date"
-                            value={d}
-                            onChange={(e) =>
-                              setSerieDates((l) =>
-                                l.map((v, j) => (j === i ? e.target.value : v)),
-                              )
-                            }
-                          />
-                          {serieDates.length > 1 && (
-                            <Button
-                              type="button"
-                              variant="ghost"
-                              size="icon"
-                              aria-label={`Remover ${i + 1}ª data`}
-                              onClick={() =>
-                                setSerieDates((l) => l.filter((_, j) => j !== i))
-                              }
-                            >
-                              <Trash2 className="h-4 w-4" />
-                            </Button>
-                          )}
-                        </div>
-                      </Field>
-                    ))}
-                  </div>
-                  {serieDates.length < 10 && (
+                {executantes.length === 1 && !showParticipation && (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    className="mt-3"
+                    onClick={() => setShowParticipation(true)}
+                  >
+                    Informar grau de participação (49)
+                  </Button>
+                )}
+
+                <div className="mt-4 border-t pt-4 @container">
+                  {!showSerieDates ? (
                     <Button
                       type="button"
                       variant="outline"
                       size="sm"
-                      className="mt-3"
-                      onClick={() => setSerieDates((l) => [...l, ""])}
+                      onClick={() => setShowSerieDates(true)}
                     >
-                      <Plus className="h-4 w-4" /> Adicionar data
+                      Procedimento seriado — informar datas (56)
                     </Button>
+                  ) : (
+                    <>
+                      <div className="mb-3 flex items-center justify-between gap-2">
+                        <p className="text-xs font-medium text-muted-foreground">
+                          56 - Data de Realização de Procedimentos em Série
+                        </p>
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => {
+                            setShowSerieDates(false);
+                            setSerieDates([""]);
+                          }}
+                        >
+                          Ocultar
+                        </Button>
+                      </div>
+                      <div className="grid grid-cols-1 gap-3 @sm:grid-cols-2 @2xl:grid-cols-4">
+                        {serieDates.map((d, i) => (
+                          <Field key={i} label={`${i + 1}ª data`}>
+                            <div className="flex items-center gap-2">
+                              <Input
+                                type="date"
+                                value={d}
+                                onChange={(e) =>
+                                  setSerieDates((l) =>
+                                    l.map((v, j) => (j === i ? e.target.value : v)),
+                                  )
+                                }
+                              />
+                              {serieDates.length > 1 && (
+                                <Button
+                                  type="button"
+                                  variant="ghost"
+                                  size="icon"
+                                  aria-label={`Remover ${i + 1}ª data`}
+                                  onClick={() =>
+                                    setSerieDates((l) => l.filter((_, j) => j !== i))
+                                  }
+                                >
+                                  <Trash2 className="h-4 w-4" />
+                                </Button>
+                              )}
+                            </div>
+                          </Field>
+                        ))}
+                      </div>
+                      {serieDates.length < 10 && (
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          className="mt-3"
+                          onClick={() => setSerieDates((l) => [...l, ""])}
+                        >
+                          <Plus className="h-4 w-4" /> Adicionar data
+                        </Button>
+                      )}
+                    </>
                   )}
                 </div>
 
               </Section>
+
 
               {/* Observação / Justificativa */}
 
