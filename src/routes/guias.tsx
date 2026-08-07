@@ -67,6 +67,7 @@ import { Chip } from "@/components/ui/chip";
 import { CameraCaptureDialog } from "@/components/camera-capture-dialog";
 import { ProcedureCodeModal } from "@/components/procedure-code-modal";
 import { cn } from "@/lib/utils";
+import { formatGuiaNumber } from "@/lib/guia-number";
 
 
 
