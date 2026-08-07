@@ -345,6 +345,8 @@ function EmitirPage() {
   const [registroAns, setRegistroAns] = useState("");
 
   // Campos TISS de autorização/senha (3 a 7)
+  const [autorizacaoOpen, setAutorizacaoOpen] = useState(false);
+
   const [guiaPrincipal, setGuiaPrincipal] = useState("");
   const [dataAutorizacao, setDataAutorizacao] = useState("");
   const [senha, setSenha] = useState("");
