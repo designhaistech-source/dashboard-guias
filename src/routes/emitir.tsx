@@ -58,6 +58,7 @@ import { Field as FormField, SelectField } from "@/components/form-field";
 import { AppModal } from "@/components/app-modal";
 import {
   MANUAL_PROFESSIONAL_ID,
+  PROFESSIONALS,
   ProfessionalPicker,
   ProfessionalRegistryField,
   councilLabel,
