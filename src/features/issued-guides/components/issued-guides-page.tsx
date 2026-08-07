@@ -249,11 +249,11 @@ export function IssuedGuidesPage() {
                       <DataTableRow className="hover:bg-transparent">
                         <DataTableHead className="w-[13%]">Nº da guia</DataTableHead>
                         <DataTableHead className="w-[15%]">Data de emissão</DataTableHead>
-                        <DataTableHead className="w-[20%]">Paciente</DataTableHead>
+                        <DataTableHead className="w-[18%]">Paciente</DataTableHead>
                         <DataTableHead className="w-[14%]">Operadora</DataTableHead>
                         <DataTableHead className="w-[12%]">Tipo de guia</DataTableHead>
                         <DataTableHead className="w-[12%]">Status</DataTableHead>
-                        <DataTableHead className="w-[14%] whitespace-nowrap text-right">Ações</DataTableHead>
+                        <DataTableHead className="w-[16%] whitespace-nowrap text-right">Ações</DataTableHead>
                       </DataTableRow>
                     </DataTableHeader>
                     <DataTableBody>
@@ -280,7 +280,7 @@ export function IssuedGuidesPage() {
                             <StatusBadge status={guide.status} />
                           </DataTableCell>
                           <DataTableCell className="whitespace-nowrap text-right">
-                            <div className="inline-flex items-center gap-1 icon-optical text-muted-foreground">
+                            <div className="inline-flex items-center gap-0.5 icon-optical text-muted-foreground">
                               <Button
                                 variant="ghost"
                                 size="icon"
@@ -331,7 +331,7 @@ interface ActionProps {
 
 function RowActions({ guide, onDownload, onReprint, onDuplicate }: ActionProps) {
   return (
-    <div className="inline-flex items-center gap-1 icon-optical">
+    <div className="inline-flex items-center gap-0.5 icon-optical">
       <Button
         variant="ghost"
         size="icon"
