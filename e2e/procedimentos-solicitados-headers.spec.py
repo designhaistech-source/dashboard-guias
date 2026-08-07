@@ -102,9 +102,10 @@ async def open_form(page) -> None:
     raise AssertionError("Formulário SP/SADT não renderizou após selecionar o tipo de guia")
 
 
-async def check_case(page, width: int, zoom: float, text_size: int) -> list[str]:
+async def check_case(page, width: int, zoom: float, text_size: int, browser_name: str) -> list[str]:
     failures: list[str] = []
-    label = f"{width}px @ zoom {int(zoom * 100)}% / texto {text_size}px"
+    label = f"{browser_name} · {width}px @ zoom {int(zoom * 100)}% / texto {text_size}px"
+
 
     # Zoom de página reduz o viewport lógico (comportamento real do navegador).
     await page.set_viewport_size({"width": max(320, round(width / zoom)), "height": 1000})
