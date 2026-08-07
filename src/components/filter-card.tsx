@@ -19,10 +19,18 @@ export interface FilterCardProps {
   toggleLabel?: string;
   /**
    * `inline` (padrão): campos em linha, recolhidos apenas no mobile.
+   * `bar`: barra de filtros em grid — todos os controles alinhados pela
+   * mesma linha-base, com a busca ocupando a maior largura.
    * `panel`: painel com cabeçalho, campos empilhados e rodapé de ações,
    * controlado externamente (usado no dashboard).
    */
-  variant?: "inline" | "panel";
+  variant?: "inline" | "bar" | "panel";
+  /**
+   * Template de colunas do grid no desktop (apenas `variant="bar"`).
+   * Ex.: `lg:grid-cols-[minmax(0,1fr)_9.5rem_9.5rem_12rem_11rem_auto]`.
+   */
+  barColumnsClassName?: string;
+
   /** Título do painel (apenas `variant="panel"`). */
   title?: string;
   /** Texto auxiliar do painel (apenas `variant="panel"`). */
