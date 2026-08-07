@@ -428,7 +428,7 @@ function History_Section({ extraRows }: { extraRows: Row[] }) {
       <div className="overflow-hidden rounded-xl border border-border bg-card">
         <DataTableDesktop>
 
-          <DataTableRoot className="min-w-[880px]">
+          <DataTableRoot className="min-w-[1000px]">
             <DataTableHeader>
               <DataTableRow className="hover:bg-transparent">
                 <DataTableHead>Arquivo</DataTableHead>
