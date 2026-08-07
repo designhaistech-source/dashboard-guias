@@ -451,6 +451,9 @@ function History_Section({ extraRows }: { extraRows: Row[] }) {
                     </div>
                   </DataTableCell>
                   <DataTableCell className="text-muted-foreground">{r.id}</DataTableCell>
+                  <DataTableCell className="whitespace-nowrap font-mono text-muted-foreground">
+                    {r.guiaPrestador ?? "—"}
+                  </DataTableCell>
                   <DataTableCell className="max-w-[200px] truncate sm:max-w-[260px]">{r.patient}</DataTableCell>
                   <DataTableCell>
                     <TypeBadge type={r.type} />
