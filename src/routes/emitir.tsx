@@ -2282,7 +2282,7 @@ function EmitirPage() {
                 done={realizadosOk}
                 icon={<ClipboardList className="h-4 w-4" />}
                 title="Dados da Execução / Procedimentos e Exames Realizados"
-                description="Campos 36 a 47 da guia — execução dos procedimentos realizados."
+                description="Campos 36 a 47 da guia — busque o procedimento realizado; os demais dados são automáticos."
                 collapsible
                 defaultCollapsed
                 action={
