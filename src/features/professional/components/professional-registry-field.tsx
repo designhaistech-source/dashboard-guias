@@ -1,8 +1,9 @@
 import { Lock } from "lucide-react";
 
-import { Field, SelectField } from "@/components/form-field";
+import { SelectField } from "@/components/form-field";
 import { Input } from "@/components/ui/input";
-import { Grid } from "@/components/form-field";
+import { Label } from "@/components/ui/label";
+import { cn } from "@/lib/utils";
 
 import { PROFESSIONALS } from "../data/professionals";
 import type { ProfessionalValue } from "../lib/professional";
@@ -33,16 +34,17 @@ function ReadOnlyField({
   mono?: boolean;
 }) {
   return (
-    <Field label={label} span={span}>
+    <div className={cn("min-w-0 space-y-1.5", span)}>
+      <Label className="text-xs font-medium text-muted-foreground">{label}</Label>
       <Input
         value={value}
         readOnly
         aria-readonly
         tabIndex={-1}
         placeholder="—"
-        className={`bg-muted/50 text-foreground ${mono ? "font-mono" : ""}`}
+        className={cn("bg-muted/50 text-foreground", mono && "font-mono")}
       />
-    </Field>
+    </div>
   );
 }
 
@@ -60,8 +62,8 @@ export function ProfessionalRegistryField({
   const selected = PROFESSIONALS.find((p) => p.id === value.id);
 
   return (
-    <div className="space-y-3">
-      <Grid cols={12}>
+    <div className="@container space-y-3">
+      <div className="grid items-start gap-x-4 gap-y-3 @md:grid-cols-6 @3xl:grid-cols-12">
         <SelectField
           id="profissional-cadastrado"
           label={labels?.nome ?? "15 - Nome do Profissional Solicitante"}
@@ -81,39 +83,39 @@ export function ProfessionalRegistryField({
         />
 
         <ReadOnlyField
-          label={labels?.conselho ?? "16 - Conselho Profissional"}
+          label={labels?.conselho ?? "16 - Conselho"}
           value={value.conselho}
-          span="@md:col-span-3 @3xl:col-span-2"
+          span="@md:col-span-2 @3xl:col-span-2"
         />
         <ReadOnlyField
-          label={labels?.numero ?? "17 - Número no Conselho"}
+          label={labels?.numero ?? "17 - Nº no Conselho"}
           value={value.numero}
-          span="@md:col-span-3 @3xl:col-span-2"
+          span="@md:col-span-2 @3xl:col-span-2"
           mono
         />
         <ReadOnlyField
           label="Especialidade"
           value={value.especialidade}
-          span="@md:col-span-6 @3xl:col-span-3"
+          span="@md:col-span-2 @3xl:col-span-3"
         />
         <ReadOnlyField
           label={labels?.uf ?? "18 - UF"}
           value={value.uf}
-          span="@md:col-span-3 @3xl:col-span-2"
+          span="@md:col-span-2 @3xl:col-span-2"
         />
         <ReadOnlyField
           label={labels?.cbo ?? "19 - Código CBO"}
           value={value.cbo}
-          span="@md:col-span-3 @3xl:col-span-2"
+          span="@md:col-span-2 @3xl:col-span-2"
           mono
         />
-      </Grid>
+      </div>
 
       <p className="flex items-start gap-1.5 text-xs leading-relaxed text-muted-foreground">
         <Lock className="mt-0.5 h-3.5 w-3.5 shrink-0" aria-hidden="true" />
         <span>
-          Campos 16 a 19 e especialidade vêm do cadastro do profissional. Para alterá-los,
-          edite o cadastro.
+          Conselho, registro, especialidade, UF e CBO vêm do cadastro do profissional. Para
+          alterá-los, edite o cadastro.
         </span>
       </p>
     </div>
