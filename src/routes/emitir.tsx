@@ -3169,7 +3169,7 @@ function GuiaLivePreview(props: {
                   <div className="px-1 py-0.5 border-r border-border font-mono">{i + 1}-</div>
                   <div className="px-1 py-0.5 border-r border-border font-mono">{p ? fmtDate(dataSolicitacao) : ""}</div>
                   <div className="px-1 py-0.5 border-r border-border"></div>
-                  <div className="px-1 py-0.5 border-r border-border text-center font-mono">{p ? "22" : ""}</div>
+                  <div className="px-1 py-0.5 border-r border-border text-center font-mono">{p ? (p.table ?? resolveTissTable(p.code)) : ""}</div>
                   <div className="px-1 py-0.5 border-r border-border font-mono truncate">{p?.code ?? ""}</div>
                   <div className="px-1 py-0.5 border-r border-border truncate">{p?.description ?? ""}</div>
                   <div className="px-1 py-0.5 border-r border-border text-center font-mono">{p?.quantity ?? ""}</div>
