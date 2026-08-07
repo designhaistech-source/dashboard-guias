@@ -15,10 +15,12 @@ Estratégia:
        de cada rótulo, e recusa `text-overflow: ellipsis` ou quebra de linha;
      - layout de cards (rótulos ocultos): valida que os rótulos completos
        aparecem dentro dos cards;
-     - valida que a tabela não gera rolagem horizontal.
+      - valida que a tabela não gera rolagem horizontal.
+  5. Toda a matriz roda em Chromium, Firefox e WebKit.
 
 Uso:
     python3 e2e/procedimentos-solicitados-headers.spec.py
+    BROWSERS=chromium,firefox python3 e2e/procedimentos-solicitados-headers.spec.py
     BASE_URL=http://localhost:8080 python3 e2e/procedimentos-solicitados-headers.spec.py
 """
 
@@ -30,6 +32,13 @@ from playwright.async_api import async_playwright
 
 BASE_URL = os.environ.get("BASE_URL", "http://localhost:8080").rstrip("/")
 
+# Engines de renderização: Blink, Gecko e WebKit.
+BROWSERS = [
+    b.strip()
+    for b in os.environ.get("BROWSERS", "chromium,firefox,webkit").split(",")
+    if b.strip()
+]
+
 # Larguras físicas representativas: mobile, tablet, laptop, desktop, wide.
 WIDTHS = [390, 768, 1024, 1280, 1440, 1920]
 
@@ -38,6 +47,7 @@ PAGE_ZOOMS = [1.0, 1.25, 1.5, 2.0]
 
 # Zoom apenas de texto (font-size da raiz em px; 16 = padrão).
 TEXT_SIZES = [16, 20, 24]
+
 
 # Rótulos completos esperados no fallback de cards (telas estreitas).
 CARD_LABELS = [
@@ -102,9 +112,10 @@ async def open_form(page) -> None:
     raise AssertionError("Formulário SP/SADT não renderizou após selecionar o tipo de guia")
 
 
-async def check_case(page, width: int, zoom: float, text_size: int) -> list[str]:
+async def check_case(page, width: int, zoom: float, text_size: int, browser_name: str) -> list[str]:
     failures: list[str] = []
-    label = f"{width}px @ zoom {int(zoom * 100)}% / texto {text_size}px"
+    label = f"{browser_name} · {width}px @ zoom {int(zoom * 100)}% / texto {text_size}px"
+
 
     # Zoom de página reduz o viewport lógico (comportamento real do navegador).
     await page.set_viewport_size({"width": max(320, round(width / zoom)), "height": 1000})
@@ -144,28 +155,41 @@ async def check_case(page, width: int, zoom: float, text_size: int) -> list[str]
     return failures
 
 
-async def main() -> int:
-    all_failures: list[str] = []
-    async with async_playwright() as p:
-        browser = await p.chromium.launch(headless=True)
-        context = await browser.new_context(viewport={"width": 1280, "height": 1000})
-        page = await context.new_page()
+async def run_browser(p, name: str) -> list[str]:
+    print(f"\n== {name} ==")
+    browser = await p[name].launch(headless=True)
+    context = await browser.new_context(viewport={"width": 1280, "height": 1000})
+    page = await context.new_page()
+    failures: list[str] = []
+    try:
         await open_form(page)
-
         for text_size in TEXT_SIZES:
             for zoom in PAGE_ZOOMS:
                 for width in WIDTHS:
-                    all_failures += await check_case(page, width, zoom, text_size)
-
+                    failures += await check_case(page, width, zoom, text_size, name)
+    finally:
         await browser.close()
+    return failures
+
+
+async def main() -> int:
+    all_failures: list[str] = []
+    async with async_playwright() as p:
+        for name in BROWSERS:
+            all_failures += await run_browser(p, name)
 
     if all_failures:
         print("\nFALHAS:")
         for f in all_failures:
             print(f" - {f}")
         return 1
-    print("\nTodos os rótulos de 'Procedimentos solicitados' exibidos por completo.")
+    print(
+        "\nTodos os rótulos de 'Procedimentos solicitados' exibidos por completo em "
+        + ", ".join(BROWSERS)
+        + "."
+    )
     return 0
+
 
 
 if __name__ == "__main__":
