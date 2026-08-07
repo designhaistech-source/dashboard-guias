@@ -253,7 +253,7 @@ export function IssuedGuidesPage() {
                         <DataTableHead>Operadora</DataTableHead>
                         <DataTableHead>Tipo de guia</DataTableHead>
                         <DataTableHead>Status</DataTableHead>
-                        <DataTableHead className="text-right">Ações</DataTableHead>
+                        <DataTableHead className="w-px whitespace-nowrap text-right">Ações</DataTableHead>
                       </DataTableRow>
                     </DataTableHeader>
                     <DataTableBody>
@@ -279,7 +279,7 @@ export function IssuedGuidesPage() {
                           <DataTableCell>
                             <StatusBadge status={guide.status} />
                           </DataTableCell>
-                          <DataTableCell className="text-right">
+                          <DataTableCell className="w-px whitespace-nowrap text-right">
                             <div className="inline-flex items-center gap-1 icon-optical text-muted-foreground">
                               <Button
                                 variant="ghost"
