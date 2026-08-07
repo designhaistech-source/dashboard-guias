@@ -15,10 +15,12 @@ Estratégia:
        de cada rótulo, e recusa `text-overflow: ellipsis` ou quebra de linha;
      - layout de cards (rótulos ocultos): valida que os rótulos completos
        aparecem dentro dos cards;
-     - valida que a tabela não gera rolagem horizontal.
+      - valida que a tabela não gera rolagem horizontal.
+  5. Toda a matriz roda em Chromium, Firefox e WebKit.
 
 Uso:
     python3 e2e/procedimentos-solicitados-headers.spec.py
+    BROWSERS=chromium,firefox python3 e2e/procedimentos-solicitados-headers.spec.py
     BASE_URL=http://localhost:8080 python3 e2e/procedimentos-solicitados-headers.spec.py
 """
 
@@ -30,6 +32,13 @@ from playwright.async_api import async_playwright
 
 BASE_URL = os.environ.get("BASE_URL", "http://localhost:8080").rstrip("/")
 
+# Engines de renderização: Blink, Gecko e WebKit.
+BROWSERS = [
+    b.strip()
+    for b in os.environ.get("BROWSERS", "chromium,firefox,webkit").split(",")
+    if b.strip()
+]
+
 # Larguras físicas representativas: mobile, tablet, laptop, desktop, wide.
 WIDTHS = [390, 768, 1024, 1280, 1440, 1920]
 
@@ -38,6 +47,7 @@ PAGE_ZOOMS = [1.0, 1.25, 1.5, 2.0]
 
 # Zoom apenas de texto (font-size da raiz em px; 16 = padrão).
 TEXT_SIZES = [16, 20, 24]
+
 
 # Rótulos completos esperados no fallback de cards (telas estreitas).
 CARD_LABELS = [
