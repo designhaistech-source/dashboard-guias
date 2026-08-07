@@ -1277,14 +1277,6 @@ function EmitirPage() {
                         placeholder="000000"
                       />
                     </Field>
-
-                    <Field label="2 - Nº Guia no Prestador" required>
-                      <Input
-                        value={numeroGuia === "—" ? "" : numeroGuia}
-                        onChange={(e) => setNumeroGuia(e.target.value || "—")}
-                        placeholder="Gerado automaticamente ao emitir"
-                      />
-                    </Field>
                   </Grid>
 
 
