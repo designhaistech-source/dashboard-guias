@@ -1769,64 +1769,43 @@ function EmitirPage() {
                 )}
 
 
-                <Grid cols={2}>
-                  <Field label="13 - Código na Operadora" required>
+                <Grid cols={12}>
+                  <Field
+                    label="13 - Código na Operadora"
+                    span="@md:col-span-2 @3xl:col-span-3"
+                    hint={
+                      operadora
+                        ? undefined
+                        : "Selecione a operadora para preencher."
+                    }
+                  >
                     <Input
                       value={codigoSolicitante}
-                      onChange={(e) => setCodigoSolicitante(e.target.value)}
-                      placeholder="Código do contrato"
+                      readOnly
+                      aria-readonly
+                      tabIndex={-1}
+                      placeholder="—"
+                      className="bg-muted/50 font-mono text-foreground"
                     />
                   </Field>
-                  <Field label="14 - Nome do Contratado">
+                  <Field label="14 - Nome do Contratado" span="@md:col-span-4 @3xl:col-span-9">
                     <Input
                       value={contratadoSolicitante}
-                      onChange={(e) => setContratadoSolicitante(e.target.value)}
-                      placeholder="Clínica, consultório ou hospital"
+                      readOnly
+                      aria-readonly
+                      tabIndex={-1}
+                      className="bg-muted/50 text-foreground"
                     />
                   </Field>
                 </Grid>
 
-                <div className="mt-5 border-t pt-5">
-                  <ProfessionalPicker
+                <div className="mt-4 border-t pt-4">
+                  <ProfessionalRegistryField
                     value={profissional}
                     onChange={setProfissional}
-                    labels={{
-                      nome: "15 - Nome do Profissional Solicitante",
-                      conselho: "16 - Conselho Profissional",
-                      numero: "17 - Número no Conselho",
-                    }}
                   />
                 </div>
 
-                <div className="mt-5">
-                  <Grid cols={3}>
-                    <SelectField
-                      id="conselho-uf"
-                      label="18 - UF"
-                      required
-                      hint="Sigla da UF do conselho do profissional solicitante (tabela de domínio nº 59). Ex.: RN."
-                      value={conselhoUf}
-                      onValueChange={setConselhoUf}
-                      options={UFS.map((uf) => ({ value: uf, label: uf }))}
-                    />
-
-                    <Field
-                      label="19 - Código CBO"
-                      required
-                      hint="Código na Classificação Brasileira de Ocupações do solicitante (tabela de domínio nº 24). 6 dígitos. Ex.: 223810."
-                    >
-                      <Input
-                        inputMode="numeric"
-                        maxLength={6}
-                        value={codigoCbo}
-                        onChange={(e) =>
-                          setCodigoCbo(e.target.value.replace(/\D/g, "").slice(0, 6))
-                        }
-                        placeholder="223810"
-                      />
-                    </Field>
-                  </Grid>
-                </div>
 
                 <div className="mt-5 border-t pt-5">
                   <SignatureField
