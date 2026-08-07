@@ -1872,10 +1872,10 @@ function EmitirPage() {
                           </div>
                         </div>
 
-                        {/* Tabela (campo 24), somente leitura */}
-                        <div className="hidden @3xl:block text-center font-mono text-sm text-muted-foreground">
-                          22
-                        </div>
+                        {/*
+                          Campo 24 - Tabela não é exibido: o sistema o resolve a partir do
+                          procedimento escolhido e o envia na guia (PDF/XML).
+                        */}
 
                         {/* Código do procedimento ou item assistencial (campo 25) */}
                         <FormField
@@ -1886,7 +1886,12 @@ function EmitirPage() {
                         >
                           <Input
                             value={p.code}
-                            onChange={(e) => updateProcedure(p.id, { code: e.target.value })}
+                            onChange={(e) =>
+                              updateProcedure(p.id, {
+                                code: e.target.value,
+                                table: resolveTissTable(e.target.value),
+                              })
+                            }
                             aria-label="25 - Código do Procedimento ou Item Assistencial"
                             placeholder="Código TUSS"
                             className="font-mono"
@@ -1911,6 +1916,8 @@ function EmitirPage() {
                               updateProcedure(p.id, {
                                 code: item ? item.codigo : "",
                                 description: item ? item.descricao : "",
+                                // Campo 24 recuperado junto do procedimento selecionado.
+                                table: item ? resolveTissTable(item.codigo) : "",
                               });
                             }}
                             options={TUSS_OPTIONS}
