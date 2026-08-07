@@ -993,7 +993,7 @@ function EmitirPage() {
 
   const convenioOk =
     convenioId === "tiss"
-      ? Boolean(operadora.trim() && character.trim())
+      ? Boolean(operadora.trim())
       : Boolean(susEstabelecimento.trim());
   const especificoOk =
     guideKind === "internacao"
