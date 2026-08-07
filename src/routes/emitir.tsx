@@ -1300,50 +1300,71 @@ function EmitirPage() {
                   </Grid>
 
 
-                  <div className="mt-4 space-y-3 border-t pt-4">
-                    <p className="text-eyebrow">
-                      Autorização e senha
-                    </p>
-                    <Grid cols={12}>
-                      <Field label="3 - Número da Guia Principal" span="@md:col-span-3 @3xl:col-span-4">
-                        <Input
-                          value={guiaPrincipal}
-                          onChange={(e) => setGuiaPrincipal(e.target.value)}
-                          placeholder="Guia vinculada"
+                  <Collapsible
+                    open={autorizacaoOpen}
+                    onOpenChange={setAutorizacaoOpen}
+                    className="mt-4 border-t pt-4"
+                  >
+                    <CollapsibleTrigger asChild>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        className="w-full justify-between sm:w-auto"
+                        aria-expanded={autorizacaoOpen}
+                      >
+                        <span>Autorização da Operadora (Opcional)</span>
+                        <ChevronRight
+                          className={`transition-transform ${autorizacaoOpen ? "rotate-90" : ""}`}
+                          aria-hidden
                         />
-                      </Field>
-                      <Field label="7 - Número da Guia Atribuído pela Operadora" span="@md:col-span-3 @3xl:col-span-4">
-                        <Input
-                          value={guiaOperadora}
-                          onChange={(e) => setGuiaOperadora(e.target.value)}
-                          placeholder="Informado pela operadora"
-                        />
-                      </Field>
-                      <Field label="5 - Senha" span="@md:col-span-3 @3xl:col-span-4">
-                        <Input
-                          value={senha}
-                          onChange={(e) => setSenha(e.target.value)}
-                          placeholder="Senha da operadora"
-                        />
-                      </Field>
-                      <Field label="4 - Data da Autorização" span="@md:col-span-3 @3xl:col-span-3">
-                        <Input
-                          type="date"
-                          value={dataAutorizacao}
-                          onChange={(e) => setDataAutorizacao(e.target.value)}
-                          className="max-w-[11rem]"
-                        />
-                      </Field>
-                      <Field label="6 - Data de Validade da Senha" span="@md:col-span-3 @3xl:col-span-3">
-                        <Input
-                          type="date"
-                          value={validadeSenha}
-                          onChange={(e) => setValidadeSenha(e.target.value)}
-                          className="max-w-[11rem]"
-                        />
-                      </Field>
-                    </Grid>
-                  </div>
+                      </Button>
+                    </CollapsibleTrigger>
+                    <CollapsibleContent className="pt-4">
+                      <Grid cols={12}>
+                        {guideKind === "internacao" && (
+                          <Field label="3 - Número da Guia Principal" span="@md:col-span-3 @3xl:col-span-4">
+                            <Input
+                              value={guiaPrincipal}
+                              onChange={(e) => setGuiaPrincipal(e.target.value)}
+                              placeholder="Número da guia a vincular"
+                            />
+                          </Field>
+                        )}
+                        <Field label="4 - Data da Autorização" span="@md:col-span-3 @3xl:col-span-3">
+                          <Input
+                            type="date"
+                            value={dataAutorizacao}
+                            onChange={(e) => setDataAutorizacao(e.target.value)}
+                            className="max-w-[11rem]"
+                          />
+                        </Field>
+                        <Field label="5 - Senha" span="@md:col-span-3 @3xl:col-span-4">
+                          <Input
+                            value={senha}
+                            onChange={(e) => setSenha(e.target.value)}
+                            placeholder="Senha de autorização"
+                          />
+                        </Field>
+                        <Field label="6 - Data de Validade da Senha" span="@md:col-span-3 @3xl:col-span-3">
+                          <Input
+                            type="date"
+                            value={validadeSenha}
+                            onChange={(e) => setValidadeSenha(e.target.value)}
+                            className="max-w-[11rem]"
+                          />
+                        </Field>
+                        <Field label="7 - Número da Guia Atribuído pela Operadora" span="@md:col-span-3 @3xl:col-span-4">
+                          <Input
+                            value={guiaOperadora}
+                            onChange={(e) => setGuiaOperadora(e.target.value)}
+                            placeholder="Número informado pela operadora"
+                          />
+                        </Field>
+                      </Grid>
+                    </CollapsibleContent>
+                  </Collapsible>
+
 
 
                 </Section>
