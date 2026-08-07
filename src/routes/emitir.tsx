@@ -370,11 +370,11 @@ function EmitirPage() {
   const [motivoEncerramento, setMotivoEncerramento] = useState("");
 
 
-  // nº da guia — gerado somente no cliente para evitar hydration mismatch
-  const [numeroGuia, setNumeroGuia] = useState<string>("—");
-  useEffect(() => {
-    setNumeroGuia(`G-${Math.floor(Math.random() * 900000 + 100000)}`);
-  }, []);
+  /**
+   * Campo 2 — Nº Guia no Prestador. Não é informado pelo usuário: o sistema
+   * gera a numeração sequencial por operadora ao criar/salvar a guia.
+   */
+  const [numeroGuia, setNumeroGuia] = useState<string>("");
 
   // Profissional solicitante (UI compartilhada em Emitir guia e Solicitar OPME)
   const [profissional, setProfissional] = useState<ProfessionalValue>(
