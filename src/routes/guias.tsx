@@ -88,20 +88,25 @@ type Row = {
   date: string;
   status: "Concluído" | "Erro";
   warn?: boolean;
+  /** Operadora responsável pela guia (define a sequência de numeração). */
+  operadora?: string;
+  /** Campo 2 — Nº Guia no Prestador, gerado pelo sistema ao criar a guia. */
+  guiaPrestador?: string;
 };
 
 const rows: Row[] = [
-  { file: "guia_001_paciente_silva.pdf", id: 1042, patient: "Ana Beatriz Silva Rodrigues", type: "SADT", date: "06/07/2026, 14:32", status: "Concluído" },
-  { file: "guia_002_exame_ressonancia.pdf", id: 1041, patient: "Carlos Eduardo Mendes", type: "SADT", date: "06/07/2026, 11:15", status: "Concluído" },
+  { file: "guia_001_paciente_silva.pdf", id: 1042, patient: "Ana Beatriz Silva Rodrigues", type: "SADT", date: "06/07/2026, 14:32", status: "Concluído", operadora: "Humanas", guiaPrestador: formatGuiaNumber("Humanas", 128) },
+  { file: "guia_002_exame_ressonancia.pdf", id: 1041, patient: "Carlos Eduardo Mendes", type: "SADT", date: "06/07/2026, 11:15", status: "Concluído", operadora: "Unimed", guiaPrestador: formatGuiaNumber("Unimed", 341) },
   { file: "documento_ilegivel.jpg", id: 1040, patient: "—", type: "Não válido", date: "05/07/2026, 18:07", status: "Erro" },
-  { file: "encaminhamento_cardio.pdf", id: 1039, patient: "Juliana Ferreira Costa", type: "Encaminhamento", date: "05/07/2026, 16:44", status: "Concluído" },
-  { file: "guia_004_consulta.png", id: 1038, patient: "Roberto Almeida Souza", type: "SADT", date: "05/07/2026, 10:28", status: "Concluído", warn: true },
-  { file: "guia_005_fisioterapia.pdf", id: 1037, patient: "Patrícia Oliveira Lima", type: "SADT", date: "04/07/2026, 15:53", status: "Concluído" },
+  { file: "encaminhamento_cardio.pdf", id: 1039, patient: "Juliana Ferreira Costa", type: "Encaminhamento", date: "05/07/2026, 16:44", status: "Concluído", operadora: "CAURN", guiaPrestador: formatGuiaNumber("CAURN", 57) },
+  { file: "guia_004_consulta.png", id: 1038, patient: "Roberto Almeida Souza", type: "SADT", date: "05/07/2026, 10:28", status: "Concluído", warn: true, operadora: "Humanas", guiaPrestador: formatGuiaNumber("Humanas", 127) },
+  { file: "guia_005_fisioterapia.pdf", id: 1037, patient: "Patrícia Oliveira Lima", type: "SADT", date: "04/07/2026, 15:53", status: "Concluído", operadora: "Unimed", guiaPrestador: formatGuiaNumber("Unimed", 340) },
   { file: "scan_borrado_003.jpg", id: 1036, patient: "—", type: "Não válido", date: "04/07/2026, 13:21", status: "Erro" },
-  { file: "encaminhamento_neuro.pdf", id: 1035, patient: "Fernando Batista Nogueira", type: "Encaminhamento", date: "03/07/2026, 17:09", status: "Concluído", warn: true },
-  { file: "guia_007_laboratorio.pdf", id: 1034, patient: "Mariana Santos Pereira", type: "SADT", date: "03/07/2026, 09:47", status: "Concluído" },
-  { file: "guia_008_ultrassom.png", id: 1033, patient: "Lucas Henrique Barbosa", type: "SADT", date: "02/07/2026, 19:12", status: "Concluído" },
+  { file: "encaminhamento_neuro.pdf", id: 1035, patient: "Fernando Batista Nogueira", type: "Encaminhamento", date: "03/07/2026, 17:09", status: "Concluído", warn: true, operadora: "CAURN", guiaPrestador: formatGuiaNumber("CAURN", 56) },
+  { file: "guia_007_laboratorio.pdf", id: 1034, patient: "Mariana Santos Pereira", type: "SADT", date: "03/07/2026, 09:47", status: "Concluído", operadora: "Humanas", guiaPrestador: formatGuiaNumber("Humanas", 126) },
+  { file: "guia_008_ultrassom.png", id: 1033, patient: "Lucas Henrique Barbosa", type: "SADT", date: "02/07/2026, 19:12", status: "Concluído", operadora: "Unimed", guiaPrestador: formatGuiaNumber("Unimed", 339) },
 ];
+
 
 function Page() {
   const [extraRows, setExtraRows] = useState<Row[]>([]);
