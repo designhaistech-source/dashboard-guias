@@ -1839,24 +1839,32 @@ function EmitirPage() {
                     )}
                   </span>
                 }
-                description="Campos 21 a 28 da guia — solicitação, indicação clínica e procedimentos solicitados."
+                description="Campos 21 a 28 — data e códigos preenchidos automaticamente pelo sistema."
 
               >
                 <Grid cols={2}>
                   <SelectField
                     label="21 - Caráter do Atendimento"
+                    required
                     hint="Código conforme tabela de domínio nº 23. Ex.: 1 (Eletivo)."
                     value={character}
                     onValueChange={setCharacter}
                     options={CHARACTER_OPTIONS}
                   />
-                  <Field label="22 - Data da Solicitação" required>
+                  <Field
+                    label="22 - Data da Solicitação"
+                    hint="Preenchida com a data de emissão da guia."
+                  >
                     <Input
                       type="date"
                       value={dataSolicitacao}
-                      onChange={(e) => setDataSolicitacao(e.target.value)}
+                      readOnly
+                      aria-readonly
+                      tabIndex={-1}
+                      className="bg-muted/50 font-mono text-foreground"
                     />
                   </Field>
+
                 </Grid>
 
 
@@ -1931,25 +1939,25 @@ function EmitirPage() {
                   </div>
 
                   <p className="text-xs text-muted-foreground">
-                    Busque pela descrição — o código TUSS e a tabela de referência são
-                    preenchidos automaticamente. O campo <strong>28 - Qtde. Aut.</strong> é
-                    preenchido pela operadora.
+                    Busque por <strong>descrição ou código TUSS</strong> (campo 26) — o
+                    código (25) e a tabela (24) são preenchidos automaticamente. A{" "}
+                    <strong>quantidade autorizada (28)</strong> é informada pela operadora.
                   </p>
 
 
                   {/* Rótulos das colunas (campos 25 a 28) — visíveis no desktop */}
-                  <div className="hidden @3xl:grid @3xl:grid-cols-[28px_128px_minmax(0,1fr)_80px_80px_40px] items-end gap-3 text-xs font-medium text-muted-foreground">
+                  <div className="hidden @3xl:grid @3xl:grid-cols-[24px_minmax(0,1fr)_116px_72px_72px_36px] items-end gap-2 text-xs font-medium text-muted-foreground">
                     <div />
-                    <div className="truncate" title="25 - Código do Procedimento ou Item Assistencial">
-                      25 - Código do Procedimento ou Item Assistencial <span className="text-destructive">*</span>
-                    </div>
-                    <div className="truncate" title="26 - Descrição">
+                    <div className="truncate" title="26 - Descrição do procedimento">
                       26 - Descrição <span className="text-destructive">*</span>
                     </div>
-                    <div className="truncate text-center" title="27 - Qtde. Solic.">
+                    <div className="truncate" title="25 - Código do Procedimento ou Item Assistencial">
+                      25 - Código
+                    </div>
+                    <div className="truncate text-center" title="27 - Quantidade Solicitada">
                       27 - Qtde. Solic. <span className="text-destructive">*</span>
                     </div>
-                    <div className="truncate text-center" title="28 - Qtde. Aut.">
+                    <div className="truncate text-center" title="28 - Quantidade Autorizada (operadora)">
                       28 - Qtde. Aut.
                     </div>
                     <div />
@@ -1965,7 +1973,7 @@ function EmitirPage() {
                         onDragOver={onDragOver}
                         onDrop={() => onDrop(p.id)}
                         className={cn(
-                          "rounded-lg border p-3 @3xl:grid @3xl:grid-cols-[28px_128px_minmax(0,1fr)_80px_80px_40px] @3xl:items-center @3xl:gap-3 @3xl:rounded-none @3xl:border-0 @3xl:p-0",
+                          "rounded-lg border p-3 @3xl:grid @3xl:grid-cols-[24px_minmax(0,1fr)_116px_72px_72px_36px] @3xl:items-center @3xl:gap-2 @3xl:rounded-none @3xl:border-0 @3xl:p-0",
                           dragId === p.id && "opacity-50",
                         )}
                       >
@@ -1996,33 +2004,12 @@ function EmitirPage() {
                           procedimento escolhido e o envia na guia (PDF/XML).
                         */}
 
-                        {/* Código do procedimento ou item assistencial (campo 25) */}
+                        {/* Descrição (campo 26) — busca única por descrição ou código TUSS */}
                         <FormField
-                          label="25 - Código do Procedimento ou Item Assistencial"
+                          label="26 - Descrição (buscar por descrição ou código TUSS)"
                           required
                           labelClassName="@3xl:hidden"
                           className="min-w-0 @3xl:space-y-0"
-                        >
-                          <Input
-                            value={p.code}
-                            onChange={(e) =>
-                              updateProcedure(p.id, {
-                                code: e.target.value,
-                                table: resolveTissTable(e.target.value),
-                              })
-                            }
-                            aria-label="25 - Código do Procedimento ou Item Assistencial"
-                            placeholder="Código TUSS"
-                            className="font-mono"
-                          />
-                        </FormField>
-
-                        {/* Descrição (campo 26) */}
-                        <FormField
-                          label="26 - Descrição"
-                          required
-                          labelClassName="@3xl:hidden"
-                          className="mt-3 min-w-0 @3xl:mt-0 @3xl:space-y-0"
                         >
                           <Combobox
                             value={
@@ -2033,17 +2020,34 @@ function EmitirPage() {
                             onChange={(codigo) => {
                               const item = TUSS.find((t) => t.codigo === codigo);
                               updateProcedure(p.id, {
+                                // Campos 25 e 24 preenchidos a partir da seleção.
                                 code: item ? item.codigo : "",
                                 description: item ? item.descricao : "",
-                                // Campo 24 recuperado junto do procedimento selecionado.
                                 table: item ? resolveTissTable(item.codigo) : "",
                               });
                             }}
                             options={TUSS_OPTIONS}
-                            placeholder={p.description || "Buscar procedimento (TUSS)"}
-                            searchPlaceholder="Digite o código ou a descrição..."
+                            placeholder={p.description || "Buscar procedimento (descrição ou código)"}
+                            searchPlaceholder="Digite a descrição ou o código TUSS..."
                             emptyMessage="Nenhum procedimento encontrado."
                             clearable
+                          />
+                        </FormField>
+
+                        {/* Código do procedimento (campo 25) — somente leitura */}
+                        <FormField
+                          label="25 - Código"
+                          labelClassName="@3xl:hidden"
+                          className="mt-3 min-w-0 @3xl:mt-0 @3xl:space-y-0"
+                        >
+                          <Input
+                            value={p.code}
+                            readOnly
+                            aria-readonly
+                            tabIndex={-1}
+                            aria-label="25 - Código do Procedimento ou Item Assistencial"
+                            placeholder="—"
+                            className="bg-muted/50 font-mono text-foreground"
                           />
                         </FormField>
 
@@ -2068,14 +2072,19 @@ function EmitirPage() {
                           />
                         </FormField>
 
-                        {/* Quantidade autorizada pela operadora (campo 28) */}
-                        <div className="hidden @3xl:block text-center text-sm text-muted-foreground">
+                        {/* Quantidade autorizada pela operadora (campo 28) — somente leitura */}
+                        <div
+                          className="hidden @3xl:flex h-9 items-center justify-center rounded-md border bg-muted/50 text-sm text-muted-foreground"
+                          aria-label="28 - Quantidade Autorizada (preenchida pela operadora)"
+                          title="Preenchida pela operadora"
+                        >
                           —
                         </div>
-                        <p className="mt-3 text-xs text-muted-foreground @3xl:hidden">
-                          Tabela (campo 24): <span className="font-mono">22</span> · quantidade autorizada
-                          (campo 28) preenchida pela operadora
+                        <p className="mt-2 text-xs text-muted-foreground @3xl:hidden">
+                          28 - Qtde. Aut.: preenchida pela operadora
                         </p>
+
+
 
 
                         <div className="hidden @3xl:flex @3xl:justify-end">
