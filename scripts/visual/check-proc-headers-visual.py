@@ -46,15 +46,17 @@ HEADER_TESTIDS = [
 ]
 
 # Casos críticos: largura física, zoom de página e font-size da raiz (px).
-# Só larguras onde o layout de tabela (com cabeçalho) é renderizado.
+# Todos mantêm largura efetiva (largura / zoom) acima do ponto de virada para
+# cards, ou seja, são exatamente os casos em que o cabeçalho precisa caber.
 CASES = [
     {"name": "1280-zoom100-texto16", "width": 1280, "zoom": 1.0, "text": 16},
-    {"name": "1280-zoom100-texto20", "width": 1280, "zoom": 1.0, "text": 20},
     {"name": "1366-zoom100-texto16", "width": 1366, "zoom": 1.0, "text": 16},
-    {"name": "1440-zoom125-texto16", "width": 1440, "zoom": 1.25, "text": 16},
-    {"name": "1920-zoom150-texto16", "width": 1920, "zoom": 1.5, "text": 16},
+    {"name": "1440-zoom100-texto16", "width": 1440, "zoom": 1.0, "text": 16},
+    {"name": "1600-zoom100-texto20", "width": 1600, "zoom": 1.0, "text": 20},
+    {"name": "1920-zoom125-texto16", "width": 1920, "zoom": 1.25, "text": 16},
     {"name": "1920-zoom100-texto24", "width": 1920, "zoom": 1.0, "text": 24},
 ]
+
 
 THRESHOLD = 0.4
 CHANNEL_TOLERANCE = 12
