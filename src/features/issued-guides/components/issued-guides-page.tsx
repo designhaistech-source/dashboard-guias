@@ -135,11 +135,19 @@ export function IssuedGuidesPage() {
 
           <FilterCard
             id="issued-guides-filters"
+            variant="bar"
             activeCount={activeCount}
             onClear={() => setFilters(EMPTY_FILTERS)}
             clearDisabled={activeCount === 0}
           >
-            <div className="w-full min-w-0 sm:col-span-2 lg:w-auto lg:flex-1 lg:min-w-[240px]">
+            {/* Busca ocupa a maior largura; o label invisível mantém todos os
+                controles alinhados pela mesma linha-base. */}
+            <Field
+              id="filtro-busca-guias"
+              label="Buscar"
+              labelClassName="invisible"
+              className="sm:col-span-2 lg:col-span-2 xl:col-span-1"
+            >
               <SearchInput
                 placeholder="Buscar por nº da guia, paciente ou procedimento"
                 aria-label="Buscar guias emitidas"
@@ -148,32 +156,25 @@ export function IssuedGuidesPage() {
                 onChange={(event) => setFilter("query", event.target.value)}
                 onClear={() => setFilter("query", "")}
               />
-            </div>
-            <Field
-              id="filtro-data-inicio"
-              label="De"
-              className="w-full min-w-0 lg:w-[160px]"
-            >
+            </Field>
+            <Field id="filtro-data-inicio" label="De">
               <Input
                 type="date"
                 value={filters.from}
                 onChange={(event) => setFilter("from", event.target.value)}
               />
             </Field>
-            <Field
-              id="filtro-data-fim"
-              label="Até"
-              className="w-full min-w-0 lg:w-[160px]"
-            >
+            <Field id="filtro-data-fim" label="Até">
               <Input
                 type="date"
                 value={filters.to}
                 onChange={(event) => setFilter("to", event.target.value)}
               />
             </Field>
-            <div className="w-full min-w-0 lg:w-[200px]">
+            <Field id="filtro-operadora" label="Operadora" labelClassName="invisible">
               <Combobox
                 aria-label="Operadora"
+                className="h-10 sm:h-9"
                 options={ISSUED_GUIDE_OPERADORAS.map((name) => ({
                   value: name,
                   label: name,
@@ -184,10 +185,11 @@ export function IssuedGuidesPage() {
                 searchPlaceholder="Buscar operadora..."
                 clearable
               />
-            </div>
-            <div className="w-full min-w-0 lg:w-[180px]">
+            </Field>
+            <Field id="filtro-status" label="Status" labelClassName="invisible">
               <Combobox
                 aria-label="Status"
+                className="h-10 sm:h-9"
                 options={ISSUED_GUIDE_STATUSES.map((status) => ({
                   value: status,
                   label: status,
@@ -198,8 +200,9 @@ export function IssuedGuidesPage() {
                 searchPlaceholder="Buscar status..."
                 clearable
               />
-            </div>
+            </Field>
           </FilterCard>
+
 
           <p className="text-sm text-muted-foreground" aria-live="polite">
             {rows.length === 1

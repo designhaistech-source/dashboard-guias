@@ -19,10 +19,18 @@ export interface FilterCardProps {
   toggleLabel?: string;
   /**
    * `inline` (padrão): campos em linha, recolhidos apenas no mobile.
+   * `bar`: barra de filtros em grid — todos os controles alinhados pela
+   * mesma linha-base, com a busca ocupando a maior largura.
    * `panel`: painel com cabeçalho, campos empilhados e rodapé de ações,
    * controlado externamente (usado no dashboard).
    */
-  variant?: "inline" | "panel";
+  variant?: "inline" | "bar" | "panel";
+  /**
+   * Template de colunas do grid no desktop (apenas `variant="bar"`).
+   * Ex.: `lg:grid-cols-[minmax(0,1fr)_9.5rem_9.5rem_12rem_11rem_auto]`.
+   */
+  barColumnsClassName?: string;
+
   /** Título do painel (apenas `variant="panel"`). */
   title?: string;
   /** Texto auxiliar do painel (apenas `variant="panel"`). */
@@ -54,6 +62,7 @@ export function FilterCard({
   activeCount,
   toggleLabel = "Filtros",
   variant = "inline",
+  barColumnsClassName = "lg:grid-cols-4 xl:grid-cols-[minmax(9rem,1fr)_7.5rem_7.5rem_10rem_8.5rem_auto] xl:gap-4",
   title,
   description,
   open: openProp,
@@ -71,23 +80,27 @@ export function FilterCard({
   };
 
   const isPanel = variant === "panel";
+  const isBar = variant === "bar";
   const showToggle = !hideToggle;
 
   const clearButton = onClear ? (
     <Button
       type="button"
       variant="outline"
-      size="sm"
+      size={isBar ? "default" : "sm"}
       onClick={onClear}
       disabled={clearDisabled}
       className={cn(
         "w-full justify-center lg:w-auto",
-        !isPanel && "sm:col-span-2",
+        // Na barra o botão acompanha a altura dos campos e alinha pela base.
+        isBar && "h-10 sm:col-span-2 sm:h-9 lg:col-span-1",
+        !isPanel && !isBar && "sm:col-span-2",
       )}
     >
       {clearLabel}
     </Button>
   ) : null;
+
 
   if (isPanel && !open) {
     return showToggle ? (
@@ -160,6 +173,22 @@ export function FilterCard({
             </div>
           )}
         </section>
+      ) : isBar ? (
+        <div
+          id={id}
+          className={cn(
+            // Barra de filtros: 1 coluna no mobile, 2 no tablet e uma única
+            // linha no desktop. `items-end` alinha todos os controles pela
+            // mesma linha-base, mesmo quando alguns têm label acima.
+            "grid grid-cols-1 items-end gap-4 rounded-2xl border border-border bg-card p-4 shadow-xs sm:grid-cols-2 sm:gap-5 sm:p-5",
+            barColumnsClassName,
+            open ? "grid" : "hidden lg:grid",
+            className,
+          )}
+        >
+          {children}
+          {clearButton}
+        </div>
       ) : (
         <div
           id={id}
@@ -173,6 +202,7 @@ export function FilterCard({
           {clearButton}
         </div>
       )}
+
     </div>
   );
 }
