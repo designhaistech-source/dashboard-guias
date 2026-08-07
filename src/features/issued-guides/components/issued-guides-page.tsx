@@ -232,11 +232,12 @@ export function IssuedGuidesPage() {
                     />
                     <DataTableCardFields
                       fields={[
-                        { label: "Data de emissão", value: formatIssuedAt(guide.issuedAt) },
-                        { label: "Operadora", value: guide.operadora },
                         { label: "Tipo de guia", value: guide.type },
+                        { label: "Operadora", value: guide.operadora },
+                        { label: "Data de emissão", value: formatIssuedAt(guide.issuedAt) },
                         { label: "Valor total", value: formatCurrency(guide.total) },
                       ]}
+
                     />
                     <DataTableCardActions>
                       <Button
@@ -260,10 +261,10 @@ export function IssuedGuidesPage() {
                     <DataTableHeader>
                       <DataTableRow className="hover:bg-transparent">
                         <DataTableHead className="w-[13%]">Nº da guia</DataTableHead>
-                        <DataTableHead className="w-[15%]">Data de emissão</DataTableHead>
                         <DataTableHead className="w-[18%]">Paciente</DataTableHead>
-                        <DataTableHead className="w-[14%]">Operadora</DataTableHead>
                         <DataTableHead className="w-[12%]">Tipo de guia</DataTableHead>
+                        <DataTableHead className="w-[14%]">Operadora</DataTableHead>
+                        <DataTableHead className="w-[15%]">Data de emissão</DataTableHead>
                         <DataTableHead className="w-[12%]">Status</DataTableHead>
                         <DataTableHead className="w-[16%] whitespace-nowrap text-right">Ações</DataTableHead>
                       </DataTableRow>
@@ -274,23 +275,24 @@ export function IssuedGuidesPage() {
                           <DataTableCell className="whitespace-nowrap font-mono">
                             {guide.numero}
                           </DataTableCell>
-                          <DataTableCell className="whitespace-nowrap text-muted-foreground">
-                            {formatIssuedAt(guide.issuedAt)}
-                          </DataTableCell>
                           <DataTableCell className="truncate">
                             {guide.patient}
-                          </DataTableCell>
-                          <DataTableCell className="truncate text-muted-foreground">
-                            {guide.operadora}
                           </DataTableCell>
                           <DataTableCell>
                             <Badge variant="info-soft" size="sm">
                               {guide.type}
                             </Badge>
                           </DataTableCell>
+                          <DataTableCell className="truncate text-muted-foreground">
+                            {guide.operadora}
+                          </DataTableCell>
+                          <DataTableCell className="whitespace-nowrap text-muted-foreground">
+                            {formatIssuedAt(guide.issuedAt)}
+                          </DataTableCell>
                           <DataTableCell>
                             <StatusBadge status={guide.status} />
                           </DataTableCell>
+
                           <DataTableCell className="whitespace-nowrap text-right">
                             <div className="inline-flex items-center gap-0.5 icon-optical text-muted-foreground">
                               <Button
