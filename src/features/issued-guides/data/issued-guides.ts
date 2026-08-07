@@ -12,6 +12,11 @@ export type IssuedGuideType =
   | "APAC (SUS)"
   | "AIH (SUS)";
 
+export interface IssuedGuideSection {
+  title: string;
+  items: { label: string; value: string }[];
+}
+
 export interface IssuedGuide {
   /** Campo 2 — Nº da guia no prestador, gerado pelo sistema. */
   numero: string;
@@ -27,6 +32,8 @@ export interface IssuedGuide {
   procedure: string;
   /** Valor total da guia (campo 65). */
   total: number;
+  /** Conteúdo completo da guia gerada, agrupado por seção. */
+  sections?: IssuedGuideSection[];
 }
 
 /** Histórico fictício de guias emitidas (dados sintéticos de protótipo). */
