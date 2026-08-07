@@ -88,6 +88,7 @@ import { cn } from "@/lib/utils";
 import { Combobox } from "@/components/ui/combobox";
 import { CID_OPTIONS } from "@/lib/cid";
 import { TUSS, TUSS_OPTIONS } from "@/lib/tuss";
+import { nextGuiaNumber } from "@/lib/guia-number";
 import convenioHumanasAsset from "@/assets/convenio-humanas-real.png.asset.json";
 import convenioUnimedAsset from "@/assets/convenio-unimed-real.png.asset.json";
 import convenioCaurnAsset from "@/assets/convenio-caurn-real.png.asset.json";
@@ -370,11 +371,11 @@ function EmitirPage() {
   const [motivoEncerramento, setMotivoEncerramento] = useState("");
 
 
-  // nº da guia — gerado somente no cliente para evitar hydration mismatch
-  const [numeroGuia, setNumeroGuia] = useState<string>("—");
-  useEffect(() => {
-    setNumeroGuia(`G-${Math.floor(Math.random() * 900000 + 100000)}`);
-  }, []);
+  /**
+   * Campo 2 — Nº Guia no Prestador. Não é informado pelo usuário: o sistema
+   * gera a numeração sequencial por operadora ao criar/salvar a guia.
+   */
+  const [numeroGuia, setNumeroGuia] = useState<string>("");
 
   // Profissional solicitante (UI compartilhada em Emitir guia e Solicitar OPME)
   const [profissional, setProfissional] = useState<ProfessionalValue>(
@@ -973,13 +974,16 @@ function EmitirPage() {
     setSubmitting(true);
     setTimeout(() => {
       setSubmitting(false);
+      // O campo 2 é gerado aqui, no momento da criação/salvamento da guia.
+      const numero = nextGuiaNumber(operadora);
+      setNumeroGuia(numero);
       setPreview({
-        numero: numeroGuia,
+        numero,
         tipo: guideLabel,
         createdAt: new Date().toLocaleString("pt-BR"),
       });
       toast.success("Guia gerada com sucesso", {
-        description: `Nº ${numeroGuia} — ${guideLabel}`,
+        description: `Nº ${numero} — ${guideLabel}`,
       });
     }, 700);
   };
@@ -993,7 +997,7 @@ function EmitirPage() {
     setIndicacaoClinica("");
     setObservacoes("");
     setProcedures([{ id: crypto.randomUUID(), code: "", description: "", quantity: 1 }]);
-    setNumeroGuia(`G-${Math.floor(Math.random() * 900000 + 100000)}`);
+    setNumeroGuia("");
     toast.info("Formulário limpo");
   };
 
@@ -1272,14 +1276,6 @@ function EmitirPage() {
                         value={registroAns}
                         onChange={(e) => setRegistroAns(e.target.value)}
                         placeholder="000000"
-                      />
-                    </Field>
-
-                    <Field label="2 - Nº Guia no Prestador" required>
-                      <Input
-                        value={numeroGuia === "—" ? "" : numeroGuia}
-                        onChange={(e) => setNumeroGuia(e.target.value || "—")}
-                        placeholder="Gerado automaticamente ao emitir"
                       />
                     </Field>
                   </Grid>
@@ -3052,7 +3048,7 @@ function GuiaLivePreview(props: {
               </div>
               <div className="border-l border-foreground px-2 py-1 flex flex-col justify-center">
                 <div className="text-[8px] font-bold">2 - Nº Guia no Prestador</div>
-                <div className="font-mono font-bold text-[11px] mt-0.5">{numeroGuia !== "—" ? numeroGuia : "\u00A0"}</div>
+                <div className="font-mono font-bold text-[11px] mt-0.5">{numeroGuia || "\u00A0"}</div>
               </div>
             </div>
 

@@ -158,7 +158,8 @@ export function InternacaoGuideForm({
 }: InternacaoGuideFormProps) {
   // 1 a 6 — identificação da guia e autorização
   const [ans, setAns] = useState(registroAns);
-  const [guiaPrestador, setGuiaPrestador] = useState(numeroGuia);
+  /** Campo 2 — gerado pelo sistema; apenas repassado para a pré-visualização. */
+  const guiaPrestador = numeroGuia;
   const [guiaOperadora, setGuiaOperadora] = useState("");
   const [dataAutorizacao, setDataAutorizacao] = useState("");
   const [senha, setSenha] = useState("");
@@ -272,7 +273,7 @@ export function InternacaoGuideForm({
   const updateItem = (id: string, patch: Partial<RequestedItem>) =>
     setItems((prev) => prev.map((i) => (i.id === id ? { ...i, ...patch } : i)));
 
-  const guiaOk = Boolean(ans && guiaPrestador && dataAutorizacao);
+  const guiaOk = Boolean(ans && dataAutorizacao);
   const beneficiarioOk = Boolean(carteira && nomeBeneficiario);
   const solicitanteOk = Boolean(
     codigoSolicitante && nomeContratado && conselho && numeroConselho && cbo,
@@ -335,13 +336,7 @@ export function InternacaoGuideForm({
           <Field label="1 - Registro ANS" required>
             <Input value={ans} onChange={(e) => setAns(e.target.value)} placeholder="000000" />
           </Field>
-          <Field label="2 - Nº Guia no Prestador" required>
-            <Input
-              value={guiaPrestador}
-              onChange={(e) => setGuiaPrestador(e.target.value)}
-              placeholder="Número no prestador"
-            />
-          </Field>
+          {/* Campo 2 (Nº Guia no Prestador) é gerado pelo sistema ao salvar a guia. */}
           <Field label="3 - Número da Guia Atribuído pela Operadora">
             <Input
               value={guiaOperadora}
