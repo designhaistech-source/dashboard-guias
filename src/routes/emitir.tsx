@@ -2889,16 +2889,18 @@ function Section({
 }
 
 
-function Grid({ cols, children }: { cols: 2 | 3; children: React.ReactNode }) {
+function Grid({ cols, children }: { cols: 2 | 3 | 12; children: React.ReactNode }) {
+  const colsClass =
+    cols === 2
+      ? "@md:grid-cols-2"
+      : cols === 3
+        ? "@md:grid-cols-2 @3xl:grid-cols-3"
+        : // Grade de 12 colunas: permite campos curtos (datas, códigos) ocuparem
+          // apenas a largura necessária, deixando a seção mais compacta.
+          "@md:grid-cols-6 @3xl:grid-cols-12";
   return (
     <div className="@container">
-      <div
-        className={`grid gap-4 ${
-          cols === 2 ? "@md:grid-cols-2" : "@md:grid-cols-2 @3xl:grid-cols-3"
-        }`}
-      >
-        {children}
-      </div>
+      <div className={`grid items-start gap-x-4 gap-y-3 ${colsClass}`}>{children}</div>
     </div>
   );
 }
@@ -2908,15 +2910,20 @@ function Field({
   label,
   required,
   hint,
+  span,
+  className,
   children,
 }: {
   label: string;
   required?: boolean;
   hint?: string;
+  /** Classes de col-span (container queries) quando usado em `Grid cols={12}`. */
+  span?: string;
+  className?: string;
   children: React.ReactNode;
 }) {
   return (
-    <div className="space-y-1.5">
+    <div className={cn("min-w-0 space-y-1.5", span, className)}>
       <Label className="text-xs font-medium text-muted-foreground">
         {label} {required && <span className="text-destructive">*</span>}
       </Label>
