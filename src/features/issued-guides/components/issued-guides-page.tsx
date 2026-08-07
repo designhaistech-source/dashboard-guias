@@ -244,16 +244,16 @@ export function IssuedGuidesPage() {
 
               <div className="overflow-hidden rounded-xl border border-border bg-card">
                 <DataTableDesktop>
-                  <DataTableRoot className="min-w-[820px]">
+                  <DataTableRoot className="w-full min-w-[820px] table-fixed">
                     <DataTableHeader>
                       <DataTableRow className="hover:bg-transparent">
-                        <DataTableHead>Nº da guia</DataTableHead>
-                        <DataTableHead>Data de emissão</DataTableHead>
-                        <DataTableHead>Paciente</DataTableHead>
-                        <DataTableHead>Operadora</DataTableHead>
-                        <DataTableHead>Tipo de guia</DataTableHead>
-                        <DataTableHead>Status</DataTableHead>
-                        <DataTableHead className="w-px whitespace-nowrap text-right">Ações</DataTableHead>
+                        <DataTableHead className="w-[13%]">Nº da guia</DataTableHead>
+                        <DataTableHead className="w-[15%]">Data de emissão</DataTableHead>
+                        <DataTableHead className="w-[20%]">Paciente</DataTableHead>
+                        <DataTableHead className="w-[14%]">Operadora</DataTableHead>
+                        <DataTableHead className="w-[12%]">Tipo de guia</DataTableHead>
+                        <DataTableHead className="w-[12%]">Status</DataTableHead>
+                        <DataTableHead className="w-[14%] whitespace-nowrap text-right">Ações</DataTableHead>
                       </DataTableRow>
                     </DataTableHeader>
                     <DataTableBody>
@@ -265,10 +265,10 @@ export function IssuedGuidesPage() {
                           <DataTableCell className="whitespace-nowrap text-muted-foreground">
                             {formatIssuedAt(guide.issuedAt)}
                           </DataTableCell>
-                          <DataTableCell className="max-w-[220px] truncate">
+                          <DataTableCell className="truncate">
                             {guide.patient}
                           </DataTableCell>
-                          <DataTableCell className="whitespace-nowrap text-muted-foreground">
+                          <DataTableCell className="truncate text-muted-foreground">
                             {guide.operadora}
                           </DataTableCell>
                           <DataTableCell>
@@ -279,7 +279,7 @@ export function IssuedGuidesPage() {
                           <DataTableCell>
                             <StatusBadge status={guide.status} />
                           </DataTableCell>
-                          <DataTableCell className="w-px whitespace-nowrap text-right">
+                          <DataTableCell className="whitespace-nowrap text-right">
                             <div className="inline-flex items-center gap-1 icon-optical text-muted-foreground">
                               <Button
                                 variant="ghost"
