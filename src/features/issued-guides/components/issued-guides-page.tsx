@@ -247,12 +247,8 @@ export function IssuedGuidesPage() {
                         <Eye className="h-4 w-4" aria-hidden="true" />
                         Visualizar
                       </Button>
-                      <RowActions
-                        guide={guide}
-                        onDownload={handleDownload}
-                        onReprint={handleReprint}
-                        onDuplicate={handleDuplicate}
-                      />
+                      <RowActions guide={guide} onDownload={handleDownload} />
+
                     </DataTableCardActions>
                   </DataTableCard>
                 ))}
