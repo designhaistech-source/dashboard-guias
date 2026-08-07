@@ -816,6 +816,7 @@ function EmitirPage() {
   /** Quadro "Identificação do(a) profissional executante" (campos 48 a 55). */
   type ExecutanteItem = {
     id: string;
+    /** Campo 48 — gerado automaticamente pelo sistema (contingência). */
     seqRef: string;
     participation: string;
     operatorCode: string;
@@ -824,26 +825,49 @@ function EmitirPage() {
     councilNumber: string;
     uf: string;
     cbo: string;
+    /** Id do cadastro selecionado; vazio quando ainda não escolhido. */
+    professionalId: string;
   };
+  const emptyExecutante = (seq: number): ExecutanteItem => ({
+    id: crypto.randomUUID(),
+    seqRef: String(seq),
+    participation: "",
+    operatorCode: "",
+    name: "",
+    council: "",
+    councilNumber: "",
+    uf: "",
+    cbo: "",
+    professionalId: "",
+  });
   const [executantes, setExecutantes] = useState<ExecutanteItem[]>([]);
-  const addExecutante = () =>
-    setExecutantes((l) => [
-      ...l,
-      {
-        id: crypto.randomUUID(),
-        seqRef: String(l.length + 1),
-        participation: "",
-        operatorCode: "",
-        name: "",
-        council: "",
-        councilNumber: "",
-        uf: "",
-        cbo: "",
-      },
-    ]);
+  const addExecutante = () => setExecutantes((l) => [...l, emptyExecutante(l.length + 1)]);
   const updateExecutante = (id: string, patch: Partial<ExecutanteItem>) =>
     setExecutantes((l) => l.map((x) => (x.id === id ? { ...x, ...patch } : x)));
-  const removeExecutante = (id: string) => setExecutantes((l) => l.filter((x) => x.id !== id));
+  /** Seleção do profissional executante — preenche 50 e 52 a 55 automaticamente. */
+  const selectExecutanteProfessional = (id: string, professionalId: string) => {
+    const found = PROFESSIONALS.find((p) => p.id === professionalId);
+    if (!found) return;
+    updateExecutante(id, {
+      professionalId,
+      name: found.nome,
+      council: found.conselho,
+      councilNumber: found.numero,
+      uf: found.uf,
+      cbo: found.cbo,
+      operatorCode: operatorEstablishmentCode(operadora) || found.numero,
+    });
+  };
+  const removeExecutante = (id: string) =>
+    // Campo 48 é re-sequenciado pelo sistema após remoções.
+    setExecutantes((l) =>
+      l.filter((x) => x.id !== id).map((x, i) => ({ ...x, seqRef: String(i + 1) })),
+    );
+  /** Campo 49 — exibido só com múltiplos executantes ou honorários profissionais. */
+  const [showParticipation, setShowParticipation] = useState(false);
+  const participationVisible = executantes.length > 1 || showParticipation;
+  /** Campo 56 — exibido apenas quando o procedimento realizado é seriado. */
+  const [showSerieDates, setShowSerieDates] = useState(false);
 
 
 
