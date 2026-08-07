@@ -2769,7 +2769,7 @@ function EmitirPage() {
               cnesExecutante={cnesExecutante}
               tipoAtendimento={tipoAtendimento}
               indicacaoAcidente={indicacaoAcidente}
-              tipoConsulta={tipoConsulta}
+              tipoConsulta={isConsulta ? tipoConsulta : ""}
               motivoEncerramento={motivoEncerramento}
               pacienteValidadeCarteira={pacienteValidadeCarteira}
               pacienteCns={pacienteCns}
