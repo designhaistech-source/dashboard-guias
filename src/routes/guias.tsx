@@ -433,6 +433,7 @@ function History_Section({ extraRows }: { extraRows: Row[] }) {
               <DataTableRow className="hover:bg-transparent">
                 <DataTableHead>Arquivo</DataTableHead>
                 <DataTableHead>ID da guia</DataTableHead>
+                <DataTableHead>Nº Guia no Prestador</DataTableHead>
                 <DataTableHead>Paciente</DataTableHead>
                 <DataTableHead>Tipo de guia</DataTableHead>
                 <DataTableHead>Data de envio</DataTableHead>
