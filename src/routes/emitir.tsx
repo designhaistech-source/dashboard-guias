@@ -2785,27 +2785,6 @@ function EmitirPage() {
                     </span>
 
                   </div>
-
-                  <div className="grid gap-4 @3xl:grid-cols-3">
-                    <SignatureField
-                      label="66 - Assinatura do Responsável pela Autorização"
-                      value={assinaturaAutorizacao}
-                      onChange={setAssinaturaAutorizacao}
-                      hint="Opcional: deixe em branco para assinar à mão no papel."
-                    />
-                    <SignatureField
-                      label="67 - Assinatura do Beneficiário ou Responsável"
-                      value={assinaturaBeneficiarioFinal}
-                      onChange={setAssinaturaBeneficiarioFinal}
-                      hint="Opcional: deixe em branco para assinar à mão no papel."
-                    />
-                    <SignatureField
-                      label="68 - Assinatura do Contratado"
-                      value={assinaturaContratado}
-                      onChange={setAssinaturaContratado}
-                      hint="Opcional: deixe em branco para assinar à mão no papel."
-                    />
-                  </div>
                 </div>
               </Section>
 
