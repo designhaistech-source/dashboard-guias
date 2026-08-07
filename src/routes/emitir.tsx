@@ -1812,18 +1812,15 @@ function EmitirPage() {
                   </div>
 
                   <p className="text-xs text-muted-foreground">
-                    Busque pela descrição — o código TUSS é preenchido automaticamente. O campo{" "}
-                    <strong>24 - Tabela</strong> é fixo (22) e o campo <strong>28 - Qtde. Aut.</strong>{" "}
-                    é preenchido pela operadora.
+                    Busque pela descrição — o código TUSS e a tabela de referência são
+                    preenchidos automaticamente. O campo <strong>28 - Qtde. Aut.</strong> é
+                    preenchido pela operadora.
                   </p>
 
 
-                  {/* Rótulos das colunas (campos 24 a 28) — visíveis no desktop */}
-                  <div className="hidden @3xl:grid @3xl:grid-cols-[28px_56px_128px_minmax(0,1fr)_80px_80px_40px] items-end gap-3 text-xs font-medium text-muted-foreground">
+                  {/* Rótulos das colunas (campos 25 a 28) — visíveis no desktop */}
+                  <div className="hidden @3xl:grid @3xl:grid-cols-[28px_128px_minmax(0,1fr)_80px_80px_40px] items-end gap-3 text-xs font-medium text-muted-foreground">
                     <div />
-                    <div className="truncate text-center" title="24 - Tabela">
-                      24 - Tabela
-                    </div>
                     <div className="truncate" title="25 - Código do Procedimento ou Item Assistencial">
                       25 - Código do Procedimento ou Item Assistencial <span className="text-destructive">*</span>
                     </div>
