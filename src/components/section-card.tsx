@@ -125,8 +125,5 @@ export function SectionCard({
         )}
       </div>
     </section>
-
-      </div>
-    </section>
   );
 }
