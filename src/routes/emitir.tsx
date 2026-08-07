@@ -1,50 +1,3 @@
-                <div className="mt-5 border-t pt-5 @container">
-                  <p className="mb-3 text-xs font-medium text-muted-foreground">
-                    56 - Data de Realização de Procedimentos em Série
-                  </p>
-                  <div className="grid grid-cols-1 gap-3 @sm:grid-cols-2 @2xl:grid-cols-3">
-                    {serieDates.map((d, i) => (
-                      <Field key={i} label={`${i + 1}ª data`}>
-                        <div className="flex items-center gap-2">
-                          <Input
-                            type="date"
-                            value={d}
-                            onChange={(e) =>
-                              setSerieDates((l) =>
-                                l.map((v, j) => (j === i ? e.target.value : v)),
-                              )
-                            }
-                          />
-                          {serieDates.length > 1 && (
-                            <Button
-                              type="button"
-                              variant="ghost"
-                              size="icon"
-                              aria-label={`Remover ${i + 1}ª data`}
-                              onClick={() =>
-                                setSerieDates((l) => l.filter((_, j) => j !== i))
-                              }
-                            >
-                              <Trash2 className="h-4 w-4" />
-                            </Button>
-                          )}
-                        </div>
-                      </Field>
-                    ))}
-                  </div>
-                  {serieDates.length < 10 && (
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      className="mt-3"
-                      onClick={() => setSerieDates((l) => [...l, ""])}
-                    >
-                      <Plus className="h-4 w-4" /> Adicionar data
-                    </Button>
-                  )}
-                </div>
-
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import {
@@ -2438,21 +2391,47 @@ function EmitirPage() {
                   <p className="mb-3 text-xs font-medium text-muted-foreground">
                     56 - Data de Realização de Procedimentos em Série
                   </p>
-                  <div className="grid grid-cols-2 gap-3 @sm:grid-cols-3 @2xl:grid-cols-5">
+                  <div className="grid grid-cols-1 gap-3 @sm:grid-cols-2 @2xl:grid-cols-3">
                     {serieDates.map((d, i) => (
                       <Field key={i} label={`${i + 1}ª data`}>
-                        <Input
-                          type="date"
-                          value={d}
-                          onChange={(e) =>
-                            setSerieDates((l) =>
-                              l.map((v, j) => (j === i ? e.target.value : v)),
-                            )
-                          }
-                        />
+                        <div className="flex items-center gap-2">
+                          <Input
+                            type="date"
+                            value={d}
+                            onChange={(e) =>
+                              setSerieDates((l) =>
+                                l.map((v, j) => (j === i ? e.target.value : v)),
+                              )
+                            }
+                          />
+                          {serieDates.length > 1 && (
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="icon"
+                              aria-label={`Remover ${i + 1}ª data`}
+                              onClick={() =>
+                                setSerieDates((l) => l.filter((_, j) => j !== i))
+                              }
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          )}
+                        </div>
                       </Field>
                     ))}
                   </div>
+                  {serieDates.length < 10 && (
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      className="mt-3"
+                      onClick={() => setSerieDates((l) => [...l, ""])}
+                    >
+                      <Plus className="h-4 w-4" /> Adicionar data
+                    </Button>
+                  )}
                 </div>
 
                 <div className="mt-5 border-t pt-5">
