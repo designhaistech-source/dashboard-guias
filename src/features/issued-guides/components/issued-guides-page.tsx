@@ -4,6 +4,7 @@ import {
   Clock3,
   Copy,
   Download,
+  ExternalLink,
   Eye,
   FileText,
   Printer,
@@ -39,7 +40,6 @@ import {
   DataTableRow,
 } from "@/components/data-table";
 import {
-  ISSUED_GUIDES,
   ISSUED_GUIDE_OPERADORAS,
   ISSUED_GUIDE_STATUSES,
   formatCurrency,
@@ -47,6 +47,11 @@ import {
   type IssuedGuide,
   type IssuedGuideStatus,
 } from "../data/issued-guides";
+import {
+  downloadIssuedGuide,
+  openIssuedGuideDocument,
+  useIssuedGuides,
+} from "../data/issued-guides-store";
 
 const EMPTY_FILTERS = {
   query: "",
@@ -64,12 +69,13 @@ export function IssuedGuidesPage() {
   const navigate = useNavigate();
   const [filters, setFilters] = useState(EMPTY_FILTERS);
   const [detail, setDetail] = useState<IssuedGuide | null>(null);
+  const guides = useIssuedGuides();
 
   const activeCount = Object.values(filters).filter(Boolean).length;
 
   const rows = useMemo(() => {
     const query = filters.query.trim().toLowerCase();
-    return ISSUED_GUIDES.filter((guide) => {
+    return guides.filter((guide) => {
       if (
         query &&
         !`${guide.numero} ${guide.patient} ${guide.procedure}`
@@ -86,13 +92,20 @@ export function IssuedGuidesPage() {
       if (filters.to && day > filters.to) return false;
       return true;
     });
-  }, [filters]);
+  }, [filters, guides]);
 
   const setFilter = (key: keyof typeof EMPTY_FILTERS, value: string) =>
     setFilters((prev) => ({ ...prev, [key]: value }));
 
-  const handleDownload = (guide: IssuedGuide) =>
-    toast.success(`PDF da guia ${guide.numero} baixado.`);
+  const handleDownload = (guide: IssuedGuide) => {
+    downloadIssuedGuide(guide);
+    toast.success(`Download da guia ${guide.numero} iniciado.`);
+  };
+  const handleOpenDocument = (guide: IssuedGuide) => {
+    if (!openIssuedGuideDocument(guide)) {
+      toast.error("Não foi possível abrir a guia — libere os pop-ups do navegador.");
+    }
+  };
   const handleReprint = (guide: IssuedGuide) =>
     toast.success(`Guia ${guide.numero} enviada para reimpressão.`);
   const handleDuplicate = (guide: IssuedGuide) => {
@@ -317,6 +330,7 @@ export function IssuedGuidesPage() {
         onDownload={handleDownload}
         onReprint={handleReprint}
         onDuplicate={handleDuplicate}
+        onOpenDocument={handleOpenDocument}
       />
     </div>
   );
@@ -395,9 +409,11 @@ function IssuedGuideModal({
   onDownload,
   onReprint,
   onDuplicate,
+  onOpenDocument,
 }: {
   guide: IssuedGuide | null;
   onClose: () => void;
+  onOpenDocument: (guide: IssuedGuide) => void;
 } & Omit<ActionProps, "guide">) {
   return (
     <AppModal
@@ -423,6 +439,10 @@ function IssuedGuideModal({
             <Button variant="outline" onClick={() => onReprint(guide)}>
               <Printer className="h-4 w-4" aria-hidden="true" />
               Reimprimir
+            </Button>
+            <Button variant="outline" onClick={() => onOpenDocument(guide)}>
+              <ExternalLink className="h-4 w-4" aria-hidden="true" />
+              Abrir guia completa
             </Button>
             <Button onClick={() => onDownload(guide)}>
               <Download className="h-4 w-4" aria-hidden="true" />
@@ -456,6 +476,24 @@ function IssuedGuideModal({
           <DetailItem label="Valor total" value={formatCurrency(guide.total)} mono />
         </dl>
       )}
+
+      {guide?.sections?.length ? (
+        <div className="mt-6 space-y-4 border-t border-border pt-4">
+          <h3 className="text-sm font-semibold text-foreground">Guia completa gerada</h3>
+          {guide.sections.map((section) => (
+            <div key={section.title}>
+              <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                {section.title}
+              </p>
+              <dl className="mt-2 grid gap-3 sm:grid-cols-2">
+                {section.items.map((item) => (
+                  <DetailItem key={item.label} label={item.label} value={item.value || "—"} />
+                ))}
+              </dl>
+            </div>
+          ))}
+        </div>
+      ) : null}
     </AppModal>
   );
 }

@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import {
   FileText,
@@ -96,6 +96,11 @@ import { Combobox } from "@/components/ui/combobox";
 import { CID_OPTIONS } from "@/lib/cid";
 import { TUSS, TUSS_OPTIONS, resolveTissTable } from "@/lib/tuss";
 import { nextGuiaNumber } from "@/lib/guia-number";
+import {
+  addIssuedGuide,
+  downloadIssuedGuide,
+  type IssuedGuide,
+} from "@/features/issued-guides";
 import convenioHumanasAsset from "@/assets/convenio-humanas-real.png.asset.json";
 import convenioUnimedAsset from "@/assets/convenio-unimed-real.png.asset.json";
 import convenioCaurnAsset from "@/assets/convenio-caurn-real.png.asset.json";
@@ -316,6 +321,7 @@ const SPECIALTY_KITS: Kit[] = [
 ];
 
 function EmitirPage() {
+  const navigate = useNavigate();
   // Hub — convênio + tipo de guia
   const [convenioId, setConvenioId] = useState<ConvenioId>("tiss");
   const convenio = useMemo(
@@ -637,6 +643,8 @@ function EmitirPage() {
     tipo: string;
     createdAt: string;
   }>(null);
+  /** Guia salva como emitida na última geração — usada nas ações de sucesso. */
+  const [issuedGuide, setIssuedGuide] = useState<IssuedGuide | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
   const addProcedure = () =>
@@ -1071,6 +1079,92 @@ function EmitirPage() {
     return missing;
   };
 
+  /** Monta a guia emitida a partir do formulário, no formato do sistema. */
+  const buildIssuedGuide = (numero: string, issuedAt: Date): IssuedGuide => {
+    const filledProcedures = procedures.filter(
+      (p) => p.code.trim() && p.description.trim(),
+    );
+    const issuedType: IssuedGuide["type"] =
+      guideKind === "internacao"
+        ? "Internação"
+        : guideKind === "apac"
+          ? "APAC (SUS)"
+          : guideKind === "aih"
+            ? "AIH (SUS)"
+            : "SP/SADT";
+
+    return {
+      numero,
+      issuedAt: issuedAt.toISOString(),
+      patient: pacienteNome,
+      operadora: convenioId === "sus" ? susEstabelecimento || "SUS" : operadora,
+      type: issuedType,
+      status: "Emitida",
+      professional: `${medicoNome}${medicoCrm ? ` (${profissional.conselho} ${medicoCrm})` : ""}`,
+      procedure: filledProcedures[0]
+        ? `${filledProcedures[0].code} — ${filledProcedures[0].description}`
+        : "—",
+      total: totalGeral,
+      sections: [
+        {
+          title: "Convênio e atendimento",
+          items: [
+            { label: "Convênio", value: convenio.label },
+            { label: "Tipo de guia", value: guideLabel },
+            { label: "Registro ANS", value: registroAns },
+            { label: "Caráter do atendimento", value: character },
+            { label: "Tipo de atendimento", value: tipoAtendimento },
+            { label: "Indicação de acidente", value: indicacaoAcidente },
+          ],
+        },
+        {
+          title: "Beneficiário",
+          items: [
+            { label: "Nome", value: pacienteNome },
+            { label: "Nº da carteira", value: pacienteCarteira },
+            { label: "CNS", value: pacienteCns },
+            { label: "Nascimento", value: pacienteNascimento },
+            { label: "CPF", value: pacienteCpf },
+            { label: "Sexo", value: pacienteSexo },
+          ],
+        },
+        {
+          title: "Solicitante",
+          items: [
+            { label: "Profissional", value: medicoNome },
+            { label: "Conselho / número", value: `${profissional.conselho} ${medicoCrm}`.trim() },
+            { label: "UF do conselho", value: conselhoUf },
+            { label: "CBO", value: codigoCbo },
+            { label: "Contratado solicitante", value: contratadoSolicitante },
+            { label: "Data da solicitação", value: dataSolicitacao },
+          ],
+        },
+        {
+          title: "Dados clínicos",
+          items: [
+            { label: "CID principal", value: cidPrincipal },
+            { label: "Indicação clínica", value: indicacaoClinica },
+            { label: "Observações", value: observacoes },
+          ],
+        },
+        {
+          title: "Procedimentos solicitados",
+          items: filledProcedures.map((p, index) => ({
+            label: `Procedimento ${index + 1}`,
+            value: `${p.code} — ${p.description} (qtde. ${p.quantity})`,
+          })),
+        },
+        {
+          title: "Totais",
+          items: [
+            { label: "Total de procedimentos", value: formatMoney(totalProcedimentos) },
+            { label: "Total geral", value: formatMoney(totalGeral) },
+          ],
+        },
+      ],
+    };
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const missing = validate();
@@ -1086,12 +1180,16 @@ function EmitirPage() {
       // O campo 2 é gerado aqui, no momento da criação/salvamento da guia.
       const numero = nextGuiaNumber(operadora);
       setNumeroGuia(numero);
+      const issuedAt = new Date();
+      // A guia é salva automaticamente como emitida — sem passo manual de salvar.
+      const saved = addIssuedGuide(buildIssuedGuide(numero, issuedAt));
+      setIssuedGuide(saved);
       setPreview({
         numero,
         tipo: guideLabel,
-        createdAt: new Date().toLocaleString("pt-BR"),
+        createdAt: issuedAt.toLocaleString("pt-BR"),
       });
-      toast.success("Guia gerada com sucesso", {
+      toast.success("Guia gerada e salva em Guias emitidas", {
         description: `Nº ${numero} — ${guideLabel}`,
       });
     }, 700);
@@ -2826,7 +2924,7 @@ function EmitirPage() {
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <CheckCircle2 className="h-5 w-5 text-primary" />
-              Guia gerada com sucesso
+              Guia gerada e salva automaticamente
             </DialogTitle>
           </DialogHeader>
           {preview && (
@@ -2875,11 +2973,21 @@ function EmitirPage() {
               <Printer className="h-4 w-4" /> Imprimir
             </Button>
             <Button
-              disabled={!profissionalValido}
-              aria-describedby={profissionalValido ? undefined : "print-disabled-hint"}
-              onClick={() => toast.success("Download iniciado")}
+              variant="outline"
+              onClick={() => navigate({ to: "/guias-emitidas" })}
             >
-              <Download className="h-4 w-4" /> Baixar PDF
+              <FileText className="h-4 w-4" /> Ver em Guias emitidas
+            </Button>
+            <Button
+              disabled={!profissionalValido || !issuedGuide}
+              aria-describedby={profissionalValido ? undefined : "print-disabled-hint"}
+              onClick={() => {
+                if (!issuedGuide) return;
+                downloadIssuedGuide(issuedGuide);
+                toast.success("Download da guia iniciado");
+              }}
+            >
+              <Download className="h-4 w-4" /> Baixar guia
             </Button>
           </DialogFooter>
 
