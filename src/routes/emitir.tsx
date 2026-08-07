@@ -2717,14 +2717,14 @@ function EmitirPage() {
                 </FormField>
               </Section>
 
-              {/* Valores totais e assinaturas */}
+              {/* Valores totais */}
 
               <Section
                 number={stepNumber("financeiro")}
                 done={financeiroOk}
                 icon={<FileText className="h-4 w-4" />}
-                title="Valores Totais e Assinaturas"
-                description="Campos 59 a 68 — totais do quadro financeiro e assinaturas da guia."
+                title="Valores Totais"
+                description="Campos 59 a 65 — totais do quadro financeiro da guia."
               >
                 <div className="space-y-6 @container">
                   <div className="grid gap-4 @sm:grid-cols-2 @3xl:grid-cols-3">
