@@ -2263,6 +2263,8 @@ function EmitirPage() {
                 icon={<Stethoscope className="h-4 w-4" />}
                 title="Identificação do(a) Profissional Executante"
                 description="Campos 48 a 55 da guia — equipe que executou os procedimentos."
+                collapsible
+                defaultCollapsed
                 action={
                   <Button type="button" size="sm" onClick={addExecutante}>
                     <Plus className="h-4 w-4" /> Adicionar profissional
