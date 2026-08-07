@@ -686,7 +686,12 @@ function EmitirPage() {
 
   const applyKit = (kit: Kit) => {
     setProcedures(
-      kit.procedures.map((p) => ({ id: crypto.randomUUID(), ...p })),
+      kit.procedures.map((p) => ({
+        id: crypto.randomUUID(),
+        ...p,
+        // Campo 24 resolvido automaticamente também ao aplicar um kit.
+        table: resolveTissTable(p.code),
+      })),
     );
     toast.success(`Kit "${kit.name}" aplicado (${kit.procedures.length} procedimentos)`);
   };
