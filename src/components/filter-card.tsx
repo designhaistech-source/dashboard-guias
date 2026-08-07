@@ -173,6 +173,22 @@ export function FilterCard({
             </div>
           )}
         </section>
+      ) : isBar ? (
+        <div
+          id={id}
+          className={cn(
+            // Barra de filtros: 1 coluna no mobile, 2 no tablet e uma única
+            // linha no desktop. `items-end` alinha todos os controles pela
+            // mesma linha-base, mesmo quando alguns têm label acima.
+            "grid grid-cols-1 items-end gap-4 rounded-2xl border border-border bg-card p-4 shadow-xs sm:grid-cols-2 sm:gap-5 sm:p-5",
+            barColumnsClassName,
+            open ? "grid" : "hidden lg:grid",
+            className,
+          )}
+        >
+          {children}
+          {clearButton}
+        </div>
       ) : (
         <div
           id={id}
@@ -186,6 +202,7 @@ export function FilterCard({
           {clearButton}
         </div>
       )}
+
     </div>
   );
 }
