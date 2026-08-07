@@ -879,12 +879,13 @@ function EmitirPage() {
     parseMoney(item.unitValue) * (item.quantity || 0);
   const totalProcedimentos = executedItems.reduce((sum, i) => sum + executedItemTotal(i), 0);
 
-  // Totais do quadro financeiro (campos 49 a 54)
-  const [totalTaxas, setTotalTaxas] = useState("");
-  const [totalMateriais, setTotalMateriais] = useState("");
-  const [totalOpme, setTotalOpme] = useState("");
-  const [totalMedicamentos, setTotalMedicamentos] = useState("");
-  const [totalGases, setTotalGases] = useState("");
+  // Totais do quadro financeiro (campos 60 a 64): calculados automaticamente
+  // a partir dos itens informados; não são preenchidos na emissão.
+  const totalTaxas = "";
+  const totalMateriais = "";
+  const totalOpme = "";
+  const totalMedicamentos = "";
+  const totalGases = "";
   const totalGeral =
     totalProcedimentos +
     parseMoney(totalTaxas) +
@@ -985,7 +986,7 @@ function EmitirPage() {
     "realizados",
     "executantes",
     "observacao",
-    "financeiro",
+    
     "opme",
   ];
 
@@ -1040,7 +1041,7 @@ function EmitirPage() {
   const realizadosOk = executedItems.some((i) => i.description.trim() || i.code.trim());
   const executantesOk = executantes.some((e) => e.name.trim() && e.councilNumber.trim());
   const observacaoOk = Boolean(observacoes.trim());
-  const financeiroOk = totalGeral > 0;
+  
 
 
 
@@ -2746,76 +2747,8 @@ function EmitirPage() {
                 </FormField>
               </Section>
 
-              {/* Valores totais */}
-
-              <Section
-                number={stepNumber("financeiro")}
-                done={financeiroOk}
-                icon={<FileText className="h-4 w-4" />}
-                title="Valores Totais"
-                description="Campos 59 a 65 — totais do quadro financeiro da guia."
-              >
-                <div className="space-y-6 @container">
-                  <div className="grid gap-4 @sm:grid-cols-2 @3xl:grid-cols-3">
-                    <FormField label="59 - Total de Procedimentos (R$)" hint="Calculado a partir dos procedimentos realizados (campo 47).">
-                      <Input value={formatMoney(totalProcedimentos)} disabled className="font-mono text-right" />
-                    </FormField>
-                    <FormField label="60 - Total de Taxas e Aluguéis (R$)">
-                      <Input
-                        value={totalTaxas}
-                        onChange={(e) => setTotalTaxas(e.target.value)}
-                        placeholder="0,00"
-                        inputMode="decimal"
-                        className="font-mono text-right"
-                      />
-                    </FormField>
-                    <FormField label="61 - Total de Materiais (R$)">
-                      <Input
-                        value={totalMateriais}
-                        onChange={(e) => setTotalMateriais(e.target.value)}
-                        placeholder="0,00"
-                        inputMode="decimal"
-                        className="font-mono text-right"
-                      />
-                    </FormField>
-                    <FormField label="62 - Total de OPME (R$)">
-                      <Input
-                        value={totalOpme}
-                        onChange={(e) => setTotalOpme(e.target.value)}
-                        placeholder="0,00"
-                        inputMode="decimal"
-                        className="font-mono text-right"
-                      />
-                    </FormField>
-                    <FormField label="63 - Total de Medicamentos (R$)">
-                      <Input
-                        value={totalMedicamentos}
-                        onChange={(e) => setTotalMedicamentos(e.target.value)}
-                        placeholder="0,00"
-                        inputMode="decimal"
-                        className="font-mono text-right"
-                      />
-                    </FormField>
-                    <FormField label="64 - Total de Gases Medicinais (R$)">
-                      <Input
-                        value={totalGases}
-                        onChange={(e) => setTotalGases(e.target.value)}
-                        placeholder="0,00"
-                        inputMode="decimal"
-                        className="font-mono text-right"
-                      />
-                    </FormField>
-                  </div>
-
-                  <div className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-border bg-muted/40 px-4 py-3">
-                    <span className="text-sm font-medium text-foreground">65 - Total Geral (R$)</span>
-                    <span className="font-mono text-sm font-semibold text-foreground">
-                      {formatMoney(totalGeral)}
-                    </span>
-
-                  </div>
-                </div>
-              </Section>
+              {/* Campos 59 a 65: totais calculados automaticamente pelo sistema
+                  e enviados no XML/PDF da guia, sem exibição na emissão. */}
 
 
 
@@ -2841,7 +2774,7 @@ function EmitirPage() {
                   { label: "Execução", done: realizadosOk },
                   { label: "Profissional executante", done: executantesOk },
                   { label: "Observação (opcional)", done: observacaoOk },
-                  { label: "Valores e assinaturas", done: financeiroOk },
+                  
 
 
                   
