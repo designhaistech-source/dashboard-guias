@@ -20,7 +20,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { EmptyState } from "@/components/data-state";
 import { FilterCard } from "@/components/filter-card";
-import { Field, SearchInput } from "@/components/form-field";
+import { SearchInput } from "@/components/form-field";
 import { Input } from "@/components/ui/input";
 import { Combobox } from "@/components/ui/combobox";
 import { PageHeader } from "@/components/page-header";
@@ -133,21 +133,15 @@ export function IssuedGuidesPage() {
             }
           />
 
+          {/* Mesma estrutura de filtros da tela "Extrair dados da guia":
+              campos em linha, sem labels acima, com placeholders. */}
           <FilterCard
             id="issued-guides-filters"
-            variant="bar"
             activeCount={activeCount}
             onClear={() => setFilters(EMPTY_FILTERS)}
             clearDisabled={activeCount === 0}
           >
-            {/* Busca ocupa a maior largura; o label invisível mantém todos os
-                controles alinhados pela mesma linha-base. */}
-            <Field
-              id="filtro-busca-guias"
-              label="Buscar"
-              labelClassName="invisible"
-              className="sm:col-span-2 lg:col-span-2 xl:col-span-1"
-            >
+            <div className="w-full min-w-0 sm:col-span-2 lg:w-auto lg:flex-1 lg:min-w-[240px]">
               <SearchInput
                 placeholder="Buscar por nº da guia, paciente ou procedimento"
                 aria-label="Buscar guias emitidas"
@@ -156,40 +150,10 @@ export function IssuedGuidesPage() {
                 onChange={(event) => setFilter("query", event.target.value)}
                 onClear={() => setFilter("query", "")}
               />
-            </Field>
-            <Field id="filtro-data-inicio" label="De">
-              <Input
-                type="date"
-                value={filters.from}
-                onChange={(event) => setFilter("from", event.target.value)}
-              />
-            </Field>
-            <Field id="filtro-data-fim" label="Até">
-              <Input
-                type="date"
-                value={filters.to}
-                onChange={(event) => setFilter("to", event.target.value)}
-              />
-            </Field>
-            <Field id="filtro-operadora" label="Operadora" labelClassName="invisible">
-              <Combobox
-                aria-label="Operadora"
-                className="h-10 sm:h-9"
-                options={ISSUED_GUIDE_OPERADORAS.map((name) => ({
-                  value: name,
-                  label: name,
-                }))}
-                value={filters.operadora}
-                onChange={(value) => setFilter("operadora", value)}
-                placeholder="Todas as operadoras"
-                searchPlaceholder="Buscar operadora..."
-                clearable
-              />
-            </Field>
-            <Field id="filtro-status" label="Status" labelClassName="invisible">
+            </div>
+            <div className="w-full min-w-0 lg:w-[180px]">
               <Combobox
                 aria-label="Status"
-                className="h-10 sm:h-9"
                 options={ISSUED_GUIDE_STATUSES.map((status) => ({
                   value: status,
                   label: status,
@@ -200,8 +164,39 @@ export function IssuedGuidesPage() {
                 searchPlaceholder="Buscar status..."
                 clearable
               />
-            </Field>
+            </div>
+            <div className="w-full min-w-0 lg:w-[200px]">
+              <Combobox
+                aria-label="Operadora"
+                options={ISSUED_GUIDE_OPERADORAS.map((name) => ({
+                  value: name,
+                  label: name,
+                }))}
+                value={filters.operadora}
+                onChange={(value) => setFilter("operadora", value)}
+                placeholder="Todas as operadoras"
+                searchPlaceholder="Buscar operadora..."
+                clearable
+              />
+            </div>
+            <div className="w-full min-w-0 lg:w-[160px]">
+              <Input
+                type="date"
+                aria-label="Data início"
+                value={filters.from}
+                onChange={(event) => setFilter("from", event.target.value)}
+              />
+            </div>
+            <div className="w-full min-w-0 lg:w-[160px]">
+              <Input
+                type="date"
+                aria-label="Data fim"
+                value={filters.to}
+                onChange={(event) => setFilter("to", event.target.value)}
+              />
+            </div>
           </FilterCard>
+
 
 
           <p className="text-sm text-muted-foreground" aria-live="polite">
