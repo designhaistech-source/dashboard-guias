@@ -144,28 +144,41 @@ async def check_case(page, width: int, zoom: float, text_size: int) -> list[str]
     return failures
 
 
-async def main() -> int:
-    all_failures: list[str] = []
-    async with async_playwright() as p:
-        browser = await p.chromium.launch(headless=True)
-        context = await browser.new_context(viewport={"width": 1280, "height": 1000})
-        page = await context.new_page()
+async def run_browser(p, name: str) -> list[str]:
+    print(f"\n== {name} ==")
+    browser = await p[name].launch(headless=True)
+    context = await browser.new_context(viewport={"width": 1280, "height": 1000})
+    page = await context.new_page()
+    failures: list[str] = []
+    try:
         await open_form(page)
-
         for text_size in TEXT_SIZES:
             for zoom in PAGE_ZOOMS:
                 for width in WIDTHS:
-                    all_failures += await check_case(page, width, zoom, text_size)
-
+                    failures += await check_case(page, width, zoom, text_size, name)
+    finally:
         await browser.close()
+    return failures
+
+
+async def main() -> int:
+    all_failures: list[str] = []
+    async with async_playwright() as p:
+        for name in BROWSERS:
+            all_failures += await run_browser(p, name)
 
     if all_failures:
         print("\nFALHAS:")
         for f in all_failures:
             print(f" - {f}")
         return 1
-    print("\nTodos os rótulos de 'Procedimentos solicitados' exibidos por completo.")
+    print(
+        "\nTodos os rótulos de 'Procedimentos solicitados' exibidos por completo em "
+        + ", ".join(BROWSERS)
+        + "."
+    )
     return 0
+
 
 
 if __name__ == "__main__":
