@@ -87,7 +87,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { cn } from "@/lib/utils";
 import { Combobox } from "@/components/ui/combobox";
 import { CID_OPTIONS } from "@/lib/cid";
-import { TUSS, TUSS_OPTIONS } from "@/lib/tuss";
+import { TUSS, TUSS_OPTIONS, resolveTissTable } from "@/lib/tuss";
 import { nextGuiaNumber } from "@/lib/guia-number";
 import convenioHumanasAsset from "@/assets/convenio-humanas-real.png.asset.json";
 import convenioUnimedAsset from "@/assets/convenio-unimed-real.png.asset.json";
@@ -224,7 +224,14 @@ const CONVENIOS: {
 ];
 
 
-type Procedure = { id: string; code: string; description: string; quantity: number };
+type Procedure = {
+  id: string;
+  code: string;
+  description: string;
+  quantity: number;
+  /** Campo 24 - Tabela: derivado do procedimento, nunca digitado pelo usuário. */
+  table?: string;
+};
 type OpmeItem = { id: string; code: string; description: string; quantity: number };
 
 /** Quadro "Procedimentos e exames realizados" (campos 36 a 47) da guia SP/SADT. */
@@ -679,7 +686,12 @@ function EmitirPage() {
 
   const applyKit = (kit: Kit) => {
     setProcedures(
-      kit.procedures.map((p) => ({ id: crypto.randomUUID(), ...p })),
+      kit.procedures.map((p) => ({
+        id: crypto.randomUUID(),
+        ...p,
+        // Campo 24 resolvido automaticamente também ao aplicar um kit.
+        table: resolveTissTable(p.code),
+      })),
     );
     toast.success(`Kit "${kit.name}" aplicado (${kit.procedures.length} procedimentos)`);
   };
@@ -1805,18 +1817,15 @@ function EmitirPage() {
                   </div>
 
                   <p className="text-xs text-muted-foreground">
-                    Busque pela descrição — o código TUSS é preenchido automaticamente. O campo{" "}
-                    <strong>24 - Tabela</strong> é fixo (22) e o campo <strong>28 - Qtde. Aut.</strong>{" "}
-                    é preenchido pela operadora.
+                    Busque pela descrição — o código TUSS e a tabela de referência são
+                    preenchidos automaticamente. O campo <strong>28 - Qtde. Aut.</strong> é
+                    preenchido pela operadora.
                   </p>
 
 
-                  {/* Rótulos das colunas (campos 24 a 28) — visíveis no desktop */}
-                  <div className="hidden @3xl:grid @3xl:grid-cols-[28px_56px_128px_minmax(0,1fr)_80px_80px_40px] items-end gap-3 text-xs font-medium text-muted-foreground">
+                  {/* Rótulos das colunas (campos 25 a 28) — visíveis no desktop */}
+                  <div className="hidden @3xl:grid @3xl:grid-cols-[28px_128px_minmax(0,1fr)_80px_80px_40px] items-end gap-3 text-xs font-medium text-muted-foreground">
                     <div />
-                    <div className="truncate text-center" title="24 - Tabela">
-                      24 - Tabela
-                    </div>
                     <div className="truncate" title="25 - Código do Procedimento ou Item Assistencial">
                       25 - Código do Procedimento ou Item Assistencial <span className="text-destructive">*</span>
                     </div>
@@ -1842,7 +1851,7 @@ function EmitirPage() {
                         onDragOver={onDragOver}
                         onDrop={() => onDrop(p.id)}
                         className={cn(
-                          "rounded-lg border p-3 @3xl:grid @3xl:grid-cols-[28px_56px_128px_minmax(0,1fr)_80px_80px_40px] @3xl:items-center @3xl:gap-3 @3xl:rounded-none @3xl:border-0 @3xl:p-0",
+                          "rounded-lg border p-3 @3xl:grid @3xl:grid-cols-[28px_128px_minmax(0,1fr)_80px_80px_40px] @3xl:items-center @3xl:gap-3 @3xl:rounded-none @3xl:border-0 @3xl:p-0",
                           dragId === p.id && "opacity-50",
                         )}
                       >
@@ -1868,10 +1877,10 @@ function EmitirPage() {
                           </div>
                         </div>
 
-                        {/* Tabela (campo 24), somente leitura */}
-                        <div className="hidden @3xl:block text-center font-mono text-sm text-muted-foreground">
-                          22
-                        </div>
+                        {/*
+                          Campo 24 - Tabela não é exibido: o sistema o resolve a partir do
+                          procedimento escolhido e o envia na guia (PDF/XML).
+                        */}
 
                         {/* Código do procedimento ou item assistencial (campo 25) */}
                         <FormField
@@ -1882,7 +1891,12 @@ function EmitirPage() {
                         >
                           <Input
                             value={p.code}
-                            onChange={(e) => updateProcedure(p.id, { code: e.target.value })}
+                            onChange={(e) =>
+                              updateProcedure(p.id, {
+                                code: e.target.value,
+                                table: resolveTissTable(e.target.value),
+                              })
+                            }
                             aria-label="25 - Código do Procedimento ou Item Assistencial"
                             placeholder="Código TUSS"
                             className="font-mono"
@@ -1907,6 +1921,8 @@ function EmitirPage() {
                               updateProcedure(p.id, {
                                 code: item ? item.codigo : "",
                                 description: item ? item.descricao : "",
+                                // Campo 24 recuperado junto do procedimento selecionado.
+                                table: item ? resolveTissTable(item.codigo) : "",
                               });
                             }}
                             options={TUSS_OPTIONS}
@@ -3107,7 +3123,7 @@ function GuiaLivePreview(props: {
               {rows.map((p, i) => (
                 <div key={i} className="grid grid-cols-[38px_60px_140px_1fr_60px_60px] text-[10px] border-b last:border-b-0 border-border min-h-[16px]">
                   <div className="px-1 py-0.5 border-r border-border font-mono">{i + 1} -</div>
-                  <div className="px-1 py-0.5 border-r border-border font-mono">{p ? "22" : ""}</div>
+                  <div className="px-1 py-0.5 border-r border-border font-mono">{p ? (p.table ?? resolveTissTable(p.code)) : ""}</div>
                   <div className="px-1 py-0.5 border-r border-border font-mono">{p?.code ?? ""}</div>
                   <div className="px-1 py-0.5 border-r border-border truncate">{p?.description ?? ""}</div>
                   <div className="px-1 py-0.5 border-r border-border text-center font-mono">{p?.quantity ?? ""}</div>
@@ -3153,7 +3169,7 @@ function GuiaLivePreview(props: {
                   <div className="px-1 py-0.5 border-r border-border font-mono">{i + 1}-</div>
                   <div className="px-1 py-0.5 border-r border-border font-mono">{p ? fmtDate(dataSolicitacao) : ""}</div>
                   <div className="px-1 py-0.5 border-r border-border"></div>
-                  <div className="px-1 py-0.5 border-r border-border text-center font-mono">{p ? "22" : ""}</div>
+                  <div className="px-1 py-0.5 border-r border-border text-center font-mono">{p ? (p.table ?? resolveTissTable(p.code)) : ""}</div>
                   <div className="px-1 py-0.5 border-r border-border font-mono truncate">{p?.code ?? ""}</div>
                   <div className="px-1 py-0.5 border-r border-border truncate">{p?.description ?? ""}</div>
                   <div className="px-1 py-0.5 border-r border-border text-center font-mono">{p?.quantity ?? ""}</div>

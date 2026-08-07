@@ -1,7 +1,27 @@
 export interface TussItem {
   codigo: string;
   descricao: string;
+  /** Campo TISS 24/39 — tabela de referência do procedimento (domínio nº 87). */
+  tabela?: string;
 }
+
+/** Tabela 22 — Terminologia Unificada da Saúde Suplementar (TUSS). */
+export const TISS_TABLE_TUSS = "22";
+/** Tabela 00 — tabela própria da operadora (usada quando o código não é TUSS). */
+export const TISS_TABLE_OPERADORA = "00";
+
+/**
+ * Resolve o campo 24 - Tabela a partir do procedimento escolhido.
+ * O usuário nunca informa esse valor: ele é derivado do código selecionado.
+ */
+export function resolveTissTable(codigo: string): string {
+  const code = codigo.trim();
+  if (!code) return "";
+  const item = TUSS.find((t) => t.codigo === code);
+  if (item?.tabela) return item.tabela;
+  return item ? TISS_TABLE_TUSS : TISS_TABLE_OPERADORA;
+}
+
 
 /** Amostra da tabela TUSS usada para autocomplete (dados mockados). */
 export const TUSS: TussItem[] = [
