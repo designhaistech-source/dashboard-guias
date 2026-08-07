@@ -1367,8 +1367,6 @@ function EmitirPage() {
                         </Field>
                       </Grid>
                     </CollapsibleContent>
-
-                    </CollapsibleContent>
                   </Collapsible>
 
 
