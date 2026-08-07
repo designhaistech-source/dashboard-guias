@@ -19,7 +19,10 @@ import {
   Pencil,
   Package,
   Eye,
+  Loader2,
+  Search,
 } from "lucide-react";
+import { lookupBeneficiary, normalizeCarteira } from "@/features/beneficiaries";
 import { toast } from "sonner";
 import {
   appTabsIconClass,
@@ -569,6 +572,11 @@ function EmitirPage() {
   const [pacienteNascimento, setPacienteNascimento] = useState("");
   const [pacienteSexo, setPacienteSexo] = useState("F");
   const [pacienteValidadeCarteira, setPacienteValidadeCarteira] = useState("");
+  /** Estado da consulta do beneficiário pelo campo 8 (Número da Carteira). */
+  const [beneficiarioStatus, setBeneficiarioStatus] = useState<
+    "idle" | "loading" | "found" | "not-found"
+  >("idle");
+  const [carteiraConsultada, setCarteiraConsultada] = useState("");
   const [pacienteCns, setPacienteCns] = useState("");
   const [pacienteRn, setPacienteRn] = useState("N");
 
@@ -942,6 +950,36 @@ function EmitirPage() {
           ? Boolean(aihCaraterEntry && aihMotivo.trim())
           : true;
   const pacienteOk = Boolean(pacienteNome.trim() && pacienteCarteira.trim());
+
+  /**
+   * Consulta o beneficiário pela carteira e preenche nome, CNS e validade
+   * quando existirem no cadastro (campos 9, 10 e 11 da guia TISS).
+   */
+  async function buscarBeneficiario() {
+    const digits = normalizeCarteira(pacienteCarteira);
+    if (!digits) {
+      setBeneficiarioStatus("idle");
+      setCarteiraConsultada("");
+      return;
+    }
+    if (digits === carteiraConsultada && beneficiarioStatus !== "idle") return;
+
+    setBeneficiarioStatus("loading");
+    const found = await lookupBeneficiary(digits);
+    setCarteiraConsultada(digits);
+
+    if (!found) {
+      setBeneficiarioStatus("not-found");
+      return;
+    }
+
+    setPacienteNome(found.nome);
+    setPacienteCns(found.cns ?? "");
+    setPacienteValidadeCarteira(found.validadeCarteira ?? "");
+    if (found.cpf) setPacienteCpf(found.cpf);
+    setBeneficiarioStatus("found");
+    toast.success("Beneficiário encontrado", { description: found.nome });
+  }
   const profissionalOk = profissionalValido;
   const executanteOk = Boolean(contratadoExecutante.trim());
   const atendimentoOk = Boolean(tipoAtendimento.trim());
@@ -1007,6 +1045,10 @@ function EmitirPage() {
   const handleReset = () => {
     setPacienteNome("");
     setPacienteCarteira("");
+    setPacienteCns("");
+    setPacienteValidadeCarteira("");
+    setBeneficiarioStatus("idle");
+    setCarteiraConsultada("");
     setPacienteCpf("");
     setPacienteNascimento("");
     setCidPrincipal("");
@@ -1519,38 +1561,71 @@ function EmitirPage() {
                 title="Dados do Beneficiário"
                 description="Campos 8 a 12 da guia — identificação do beneficiário na operadora."
               >
-                <Grid cols={2}>
-                  <Field label="8 - Número da Carteira" required>
-                    <Input
-                      value={pacienteCarteira}
-                      onChange={(e) => setPacienteCarteira(e.target.value)}
-                      placeholder="0000 0000 0000 0000"
-                    />
+                <Grid cols={12}>
+                  <Field
+                    label="8 - Número da Carteira"
+                    required
+                    span="@md:col-span-3 @3xl:col-span-5"
+                    hint={
+                      beneficiarioStatus === "not-found"
+                        ? "Beneficiário não encontrado — informe o nome manualmente."
+                        : "Informe a carteira para buscar o beneficiário."
+                    }
+                  >
+                    <div className="flex gap-2">
+                      <Input
+                        value={pacienteCarteira}
+                        onChange={(e) => setPacienteCarteira(e.target.value)}
+                        onBlur={() => buscarBeneficiario()}
+                        placeholder="0000 0000 0000 0000"
+                        inputMode="numeric"
+                        className="font-mono"
+                      />
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="icon"
+                        aria-label="Buscar beneficiário"
+                        disabled={beneficiarioStatus === "loading"}
+                        onClick={() => buscarBeneficiario()}
+                      >
+                        {beneficiarioStatus === "loading" ? (
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                        ) : (
+                          <Search className="h-4 w-4" />
+                        )}
+                      </Button>
+                    </div>
                   </Field>
-                  <Field label="9 - Validade da Carteira">
-                    <Input
-                      type="date"
-                      value={pacienteValidadeCarteira}
-                      onChange={(e) => setPacienteValidadeCarteira(e.target.value)}
-                    />
-                  </Field>
-                  <Field label="10 - Nome" required>
+
+                  <Field
+                    label="10 - Nome"
+                    required
+                    span="@md:col-span-3 @3xl:col-span-4"
+                    hint={
+                      beneficiarioStatus === "found"
+                        ? "Preenchido pelo cadastro do beneficiário."
+                        : undefined
+                    }
+                  >
                     <Input
                       value={pacienteNome}
                       onChange={(e) => setPacienteNome(e.target.value)}
                       placeholder="Nome completo"
+                      readOnly={beneficiarioStatus === "found"}
+                      aria-readonly={beneficiarioStatus === "found"}
+                      className={
+                        beneficiarioStatus === "found"
+                          ? "bg-muted/50 text-foreground"
+                          : undefined
+                      }
                     />
                   </Field>
-                  <Field label="11 - Cartão Nacional de Saúde">
-                    <Input
-                      value={pacienteCns}
-                      onChange={(e) => setPacienteCns(e.target.value)}
-                      placeholder="000 0000 0000 0000"
-                    />
-                  </Field>
+
                   <SelectField
                     label="12 - Atendimento a RN"
                     required
+                    className="@md:col-span-6 @3xl:col-span-3"
                     labelClassName="text-xs font-medium text-muted-foreground"
                     value={pacienteRn}
                     onValueChange={setPacienteRn}
@@ -1559,6 +1634,34 @@ function EmitirPage() {
                       { value: "S", label: "Sim" },
                     ]}
                   />
+
+                  {/* 9 e 11 são condicionais: só aparecem quando existem no cadastro. */}
+                  {pacienteValidadeCarteira && (
+                    <Field
+                      label="9 - Validade da Carteira"
+                      span="@md:col-span-3 @3xl:col-span-4"
+                    >
+                      <Input
+                        type="date"
+                        value={pacienteValidadeCarteira}
+                        onChange={(e) => setPacienteValidadeCarteira(e.target.value)}
+                      />
+                    </Field>
+                  )}
+
+                  {pacienteCns && (
+                    <Field
+                      label="11 - Cartão Nacional de Saúde"
+                      span="@md:col-span-3 @3xl:col-span-4"
+                    >
+                      <Input
+                        value={pacienteCns}
+                        onChange={(e) => setPacienteCns(e.target.value)}
+                        placeholder="000 0000 0000 0000"
+                        className="font-mono"
+                      />
+                    </Field>
+                  )}
                 </Grid>
 
               </Section>
