@@ -248,6 +248,8 @@ type ExecutedItem = {
   endTime: string;
   code: string;
   description: string;
+  /** Campo 39 - Tabela: derivado do procedimento, nunca digitado pelo usuário. */
+  table?: string;
   quantity: number;
   via: string;
   technique: string;
@@ -754,13 +756,27 @@ function EmitirPage() {
 
   // Procedimentos e exames realizados (campos 36 a 47)
   const [executedItems, setExecutedItems] = useState<ExecutedItem[]>([]);
+  /**
+   * Campos 37/38 (horários) só são exigidos quando o tipo de atendimento
+   * envolve registro de horário (urgência/emergência, remoção, internado).
+   */
+  const requiresExecutionTime = [
+    "Urgência / emergência",
+    "Remoção",
+    "SADT internado",
+  ].includes(tipoAtendimento);
+  /** Permite registrar horários manualmente mesmo quando não obrigatórios. */
+  const [showExecutionTime, setShowExecutionTime] = useState(false);
+  const executionTimeVisible = requiresExecutionTime || showExecutionTime;
   const newExecutedItem = (patch: Partial<ExecutedItem> = {}): ExecutedItem => ({
     id: crypto.randomUUID(),
-    date: "",
+    // Campo 36 - Data: preenchida automaticamente com a data de realização.
+    date: new Date().toISOString().slice(0, 10),
     startTime: "",
     endTime: "",
     code: "",
     description: "",
+    table: "",
     quantity: 1,
     via: "",
     technique: "",
@@ -787,10 +803,12 @@ function EmitirPage() {
         newExecutedItem({
           code: p.code,
           description: p.description,
+          table: p.table ?? resolveTissTable(p.code),
           quantity: p.quantity ?? 1,
         }),
       ),
     ]);
+
     toast.success(`${filled.length} procedimento(s) copiado(s) dos solicitados`);
   };
 
@@ -2264,7 +2282,7 @@ function EmitirPage() {
                 done={realizadosOk}
                 icon={<ClipboardList className="h-4 w-4" />}
                 title="Dados da Execução / Procedimentos e Exames Realizados"
-                description="Campos 36 a 47 da guia — execução dos procedimentos realizados."
+                description="Campos 36 a 47 da guia — busque o procedimento realizado; os demais dados são automáticos."
                 collapsible
                 defaultCollapsed
                 action={
@@ -2292,9 +2310,47 @@ function EmitirPage() {
                   />
                 ) : (
                   <div className="space-y-3">
+                    <p className="text-xs text-muted-foreground">
+                      Busque por <strong>descrição ou código TUSS</strong> (campo 41) — o código
+                      (40) e a tabela (39) são preenchidos automaticamente. A{" "}
+                      <strong>data (36)</strong> vem da realização e pode ser ajustada.
+                    </p>
+
+                    {/* Rótulos das colunas — visíveis no desktop */}
+                    <div
+                      className={cn(
+                        "hidden items-end gap-2 text-xs font-medium text-muted-foreground @3xl:grid",
+                        executionTimeVisible
+                          ? "@3xl:grid-cols-[minmax(0,1fr)_120px_64px_130px_92px_92px_36px]"
+                          : "@3xl:grid-cols-[minmax(0,1fr)_120px_64px_130px_36px]",
+                      )}
+                    >
+                      <div className="truncate">
+                        41 - Descrição <span className="text-destructive">*</span>
+                      </div>
+                      <div className="truncate">40 - Código</div>
+                      <div className="truncate text-center">42 - Qtde.</div>
+                      <div className="truncate">36 - Data</div>
+                      {executionTimeVisible && (
+                        <>
+                          <div className="truncate">37 - Hora Ini.</div>
+                          <div className="truncate">38 - Hora Fim</div>
+                        </>
+                      )}
+                      <div />
+                    </div>
+
                     {executedItems.map((item, idx) => (
-                      <div key={item.id} className="rounded-md border p-3">
-                        <div className="mb-2 flex items-center justify-between">
+                      <div
+                        key={item.id}
+                        className={cn(
+                          "rounded-lg border p-3 @3xl:items-center @3xl:gap-2 @3xl:rounded-none @3xl:border-0 @3xl:p-0",
+                          executionTimeVisible
+                            ? "@3xl:grid @3xl:grid-cols-[minmax(0,1fr)_120px_64px_130px_92px_92px_36px]"
+                            : "@3xl:grid @3xl:grid-cols-[minmax(0,1fr)_120px_64px_130px_36px]",
+                        )}
+                      >
+                        <div className="mb-2 flex items-center justify-between @3xl:hidden">
                           <span className="text-xs font-medium text-muted-foreground">
                             Procedimento {idx + 1}
                           </span>
@@ -2308,56 +2364,152 @@ function EmitirPage() {
                             <Trash2 className="h-4 w-4 text-destructive" />
                           </Button>
                         </div>
-                        <Grid cols={3}>
-                          <Field label="36 - Data">
-                            <Input
-                              type="date"
-                              value={item.date}
-                              onChange={(e) => updateExecuted(item.id, { date: e.target.value })}
-                            />
-                          </Field>
-                          <Field label="37 - Hora Inicial">
-                            <Input
-                              type="time"
-                              value={item.startTime}
-                              onChange={(e) =>
-                                updateExecuted(item.id, { startTime: e.target.value })
-                              }
-                            />
-                          </Field>
-                          <Field label="38 - Hora Final">
-                            <Input
-                              type="time"
-                              value={item.endTime}
-                              onChange={(e) => updateExecuted(item.id, { endTime: e.target.value })}
-                            />
-                          </Field>
-                          <Field label="39 - Tabela">
-                            <Input value="22" readOnly disabled className="font-mono" />
-                          </Field>
-                          <Field label="40 - Código do Procedimento">
-                            <Input
-                              value={item.code}
-                              onChange={(e) => updateExecuted(item.id, { code: e.target.value })}
-                              placeholder="00000000"
-                              className="font-mono"
-                            />
-                          </Field>
-                          <Field label="41 - Descrição">
-                            <Input
-                              value={item.description}
-                              onChange={(e) =>
-                                updateExecuted(item.id, { description: e.target.value })
-                              }
-                              placeholder="Descrição do procedimento realizado"
-                            />
-                          </Field>
-                        
-                        </Grid>
+
+                        {/* Descrição (campo 41) — busca única por descrição ou código TUSS */}
+                        <FormField
+                          label="41 - Descrição (buscar por descrição ou código TUSS)"
+                          required
+                          labelClassName="@3xl:hidden"
+                          className="min-w-0 @3xl:space-y-0"
+                        >
+                          <Combobox
+                            value={
+                              TUSS.some((t) => t.descricao === item.description)
+                                ? TUSS.find((t) => t.descricao === item.description)!.codigo
+                                : ""
+                            }
+                            onChange={(codigo) => {
+                              const tuss = TUSS.find((t) => t.codigo === codigo);
+                              updateExecuted(item.id, {
+                                // Campos 40 e 39 preenchidos a partir da seleção.
+                                code: tuss ? tuss.codigo : "",
+                                description: tuss ? tuss.descricao : "",
+                                table: tuss ? resolveTissTable(tuss.codigo) : "",
+                              });
+                            }}
+                            options={TUSS_OPTIONS}
+                            placeholder={
+                              item.description || "Buscar procedimento (descrição ou código)"
+                            }
+                            searchPlaceholder="Digite a descrição ou o código TUSS..."
+                            emptyMessage="Nenhum procedimento encontrado."
+                            clearable
+                          />
+                        </FormField>
+
+                        {/* Código do procedimento (campo 40) — somente leitura */}
+                        <FormField
+                          label="40 - Código"
+                          labelClassName="@3xl:hidden"
+                          className="mt-3 min-w-0 @3xl:mt-0 @3xl:space-y-0"
+                        >
+                          <Input
+                            value={item.code}
+                            readOnly
+                            aria-readonly
+                            tabIndex={-1}
+                            aria-label="40 - Código do Procedimento"
+                            placeholder="—"
+                            className="bg-muted/50 font-mono text-foreground"
+                          />
+                        </FormField>
+
+                        {/* Quantidade (campo 42) */}
+                        <FormField
+                          label="42 - Qtde."
+                          labelClassName="@3xl:hidden"
+                          className="mt-3 @3xl:mt-0 @3xl:space-y-0"
+                        >
+                          <Input
+                            type="number"
+                            min={1}
+                            aria-label="42 - Quantidade realizada"
+                            className="text-center"
+                            value={item.quantity}
+                            onChange={(e) =>
+                              updateExecuted(item.id, {
+                                quantity: Math.max(1, Number(e.target.value) || 1),
+                              })
+                            }
+                          />
+                        </FormField>
+
+                        {/* Data (campo 36) — automática, editável quando necessário */}
+                        <FormField
+                          label="36 - Data"
+                          labelClassName="@3xl:hidden"
+                          className="mt-3 @3xl:mt-0 @3xl:space-y-0"
+                        >
+                          <Input
+                            type="date"
+                            aria-label="36 - Data da realização"
+                            value={item.date}
+                            onChange={(e) => updateExecuted(item.id, { date: e.target.value })}
+                          />
+                        </FormField>
+
+                        {executionTimeVisible && (
+                          <>
+                            <FormField
+                              label="37 - Hora Inicial"
+                              labelClassName="@3xl:hidden"
+                              className="mt-3 @3xl:mt-0 @3xl:space-y-0"
+                            >
+                              <Input
+                                type="time"
+                                aria-label="37 - Hora Inicial"
+                                value={item.startTime}
+                                onChange={(e) =>
+                                  updateExecuted(item.id, { startTime: e.target.value })
+                                }
+                              />
+                            </FormField>
+                            <FormField
+                              label="38 - Hora Final"
+                              labelClassName="@3xl:hidden"
+                              className="mt-3 @3xl:mt-0 @3xl:space-y-0"
+                            >
+                              <Input
+                                type="time"
+                                aria-label="38 - Hora Final"
+                                value={item.endTime}
+                                onChange={(e) =>
+                                  updateExecuted(item.id, { endTime: e.target.value })
+                                }
+                              />
+                            </FormField>
+                          </>
+                        )}
+
+                        <div className="hidden @3xl:flex @3xl:justify-center">
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => removeExecuted(item.id)}
+                            aria-label={`Remover procedimento realizado ${idx + 1}`}
+                          >
+                            <Trash2 className="h-4 w-4 text-destructive" />
+                          </Button>
+                        </div>
                       </div>
                     ))}
+
+                    {!requiresExecutionTime && (
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setShowExecutionTime((v) => !v)}
+                      >
+                        {showExecutionTime
+                          ? "Ocultar horários (37/38)"
+                          : "Registrar horários (37/38)"}
+                      </Button>
+                    )}
                   </div>
                 )}
+
 
               </Section>
 
