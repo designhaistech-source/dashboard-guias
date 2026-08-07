@@ -62,6 +62,7 @@ export function FilterCard({
   activeCount,
   toggleLabel = "Filtros",
   variant = "inline",
+  barColumnsClassName = "lg:grid-cols-[minmax(0,1fr)_9.5rem_9.5rem_12rem_11rem_auto]",
   title,
   description,
   open: openProp,
@@ -79,23 +80,27 @@ export function FilterCard({
   };
 
   const isPanel = variant === "panel";
+  const isBar = variant === "bar";
   const showToggle = !hideToggle;
 
   const clearButton = onClear ? (
     <Button
       type="button"
       variant="outline"
-      size="sm"
+      size={isBar ? "default" : "sm"}
       onClick={onClear}
       disabled={clearDisabled}
       className={cn(
         "w-full justify-center lg:w-auto",
-        !isPanel && "sm:col-span-2",
+        // Na barra o botão acompanha a altura dos campos e alinha pela base.
+        isBar && "h-10 sm:col-span-2 sm:h-9 lg:col-span-1",
+        !isPanel && !isBar && "sm:col-span-2",
       )}
     >
       {clearLabel}
     </Button>
   ) : null;
+
 
   if (isPanel && !open) {
     return showToggle ? (
