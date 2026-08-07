@@ -1249,7 +1249,7 @@ function EmitirPage() {
                     <Field
                       label="Operadora / Convênio"
                       required
-                      span="@md:col-span-8 @3xl:col-span-8"
+                      span="@md:col-span-6 @3xl:col-span-7"
                     >
 
                       <Select value={operadora} onValueChange={(v) => { setOperadora(v); const op = OPERADORAS.find((o) => o.value === v); if (op) setRegistroAns(op.ans); }}>
@@ -1292,7 +1292,7 @@ function EmitirPage() {
                       </Select>
                     </Field>
 
-                    <Field label="1 - Registro ANS" span="@md:col-span-4 @3xl:col-span-4">
+                    <Field label="1 - Registro ANS" span="@md:col-span-6 @3xl:col-span-5">
                       <Input
                         value={registroAns}
                         onChange={(e) => setRegistroAns(e.target.value)}
