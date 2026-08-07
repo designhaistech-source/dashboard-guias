@@ -928,7 +928,7 @@ function EmitirPage() {
     "paciente",
     "profissional",
     "clinico",
-    "executante",
+    
     "atendimento",
     "realizados",
     "executantes",
