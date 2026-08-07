@@ -2101,7 +2101,7 @@ function EmitirPage() {
 
 
                   {/* Rótulos das colunas (campos 25 a 28) — visíveis no desktop */}
-                  <div className="hidden @3xl:grid @3xl:grid-cols-[24px_minmax(0,1fr)_112px_96px_104px_36px] items-end gap-2 text-xs font-medium text-muted-foreground">
+                  <div className="hidden @3xl:grid @3xl:grid-cols-[1.5rem_minmax(0,1fr)_7rem_6rem_6.5rem_2.25rem] items-end gap-2 text-xs font-medium text-muted-foreground">
                     <div />
                     <div className="whitespace-nowrap">
                       26 - Descrição <span className="text-destructive">*</span>
@@ -2129,7 +2129,7 @@ function EmitirPage() {
                         onDragOver={onDragOver}
                         onDrop={() => onDrop(p.id)}
                         className={cn(
-                          "rounded-lg border p-3 @3xl:grid @3xl:grid-cols-[24px_minmax(0,1fr)_112px_96px_104px_36px] @3xl:items-center @3xl:gap-2 @3xl:rounded-none @3xl:border-0 @3xl:p-0",
+                          "rounded-lg border p-3 @3xl:grid @3xl:grid-cols-[1.5rem_minmax(0,1fr)_7rem_6rem_6.5rem_2.25rem] @3xl:items-center @3xl:gap-2 @3xl:rounded-none @3xl:border-0 @3xl:p-0",
                           dragId === p.id && "opacity-50",
                         )}
                       >
