@@ -2486,7 +2486,7 @@ function EmitirPage() {
                         </div>
 
                         {/* Linha 2 — código, quantidade, data e horários lado a lado */}
-                        <div className="mt-2 flex flex-wrap items-end gap-2">
+                        <div className="mt-4 flex flex-wrap items-end gap-x-3 gap-y-4">
                           <FormField label="40 - Código" className="w-[110px] shrink-0">
                             <Input
                               value={item.code}
