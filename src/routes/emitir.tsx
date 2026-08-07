@@ -2195,13 +2195,13 @@ function EmitirPage() {
                 done={atendimentoOk}
                 icon={<ClipboardList className="h-4 w-4" />}
                 title="Dados do Atendimento"
-                description="Campos 32 a 35 da guia — características do atendimento executado."
+                description="Campos 32 a 34 da guia — exibidos conforme o tipo de atendimento."
               >
-                <Grid cols={3}>
-
+                <Grid cols={isConsulta ? 3 : 2}>
                   <SelectField
                     label="32 - Tipo de Atendimento"
                     labelClassName="text-xs font-medium text-muted-foreground"
+                    required
                     value={tipoAtendimento}
                     onValueChange={setTipoAtendimento}
                     placeholder="Selecione"
@@ -2217,11 +2217,13 @@ function EmitirPage() {
                     ].map((o) => ({ value: o, label: o }))}
                   />
                   <SelectField
-                    label="33 - Indicação de Acidente (acidente ou doença relacionada)"
+                    label="33 - Indicação de Acidente"
                     labelClassName="text-xs font-medium text-muted-foreground"
+                    required
                     value={indicacaoAcidente}
                     onValueChange={setIndicacaoAcidente}
                     placeholder="Selecione"
+                    hint="Preenchido com “Não acidente”; altere apenas quando houver acidente ou doença relacionada."
                     options={[
                       "Acidente de trabalho",
                       "Acidente de trânsito",
@@ -2229,35 +2231,24 @@ function EmitirPage() {
                       "Não acidente",
                     ].map((o) => ({ value: o, label: o }))}
                   />
-                  <SelectField
-                    label="34 - Tipo de Consulta"
-                    labelClassName="text-xs font-medium text-muted-foreground"
-                    value={tipoConsulta}
-                    onValueChange={setTipoConsulta}
-                    placeholder="Selecione"
-                    options={["Primeira consulta", "Seguimento", "Pré-natal", "Por encaminhamento"].map(
-                      (o) => ({ value: o, label: o }),
-                    )}
-                  />
-                  <SelectField
-                    label="35 - Motivo de Encerramento do Atendimento"
-                    labelClassName="text-xs font-medium text-muted-foreground"
-                    value={motivoEncerramento}
-                    onValueChange={setMotivoEncerramento}
-                    placeholder="Selecione"
-                    options={[
-                      "Retorno",
-                      "Retorno por complicação",
-                      "Alta curado",
-                      "Alta melhorado",
-                      "Alta a pedido",
-                      "Alta com previsão de retorno",
-                      "Alta administrativa",
-                      "Óbito",
-                    ].map((o) => ({ value: o, label: o }))}
-                  />
+                  {isConsulta && (
+                    <SelectField
+                      label="34 - Tipo de Consulta"
+                      labelClassName="text-xs font-medium text-muted-foreground"
+                      value={tipoConsulta}
+                      onValueChange={setTipoConsulta}
+                      placeholder="Selecione"
+                      options={[
+                        "Primeira consulta",
+                        "Seguimento",
+                        "Pré-natal",
+                        "Por encaminhamento",
+                      ].map((o) => ({ value: o, label: o }))}
+                    />
+                  )}
                 </Grid>
               </Section>
+
 
               {/* Dados da Execução — Procedimentos e Exames Realizados */}
               <Section
