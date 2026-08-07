@@ -1850,13 +1850,20 @@ function EmitirPage() {
                     onValueChange={setCharacter}
                     options={CHARACTER_OPTIONS}
                   />
-                  <Field label="22 - Data da Solicitação" required>
+                  <Field
+                    label="22 - Data da Solicitação"
+                    hint="Preenchida com a data de emissão da guia."
+                  >
                     <Input
                       type="date"
                       value={dataSolicitacao}
-                      onChange={(e) => setDataSolicitacao(e.target.value)}
+                      readOnly
+                      aria-readonly
+                      tabIndex={-1}
+                      className="bg-muted/50 font-mono text-foreground"
                     />
                   </Field>
+
                 </Grid>
 
 
