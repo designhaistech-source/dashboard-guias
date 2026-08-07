@@ -20,6 +20,7 @@ const ROUTE_META: Record<string, RouteMeta> = {
   "/": { label: "Dashboard" },
   "/dashboard": { label: "Dashboard" },
   "/emitir": { label: "Emitir guia" },
+  "/guias-emitidas": { label: "Guias emitidas" },
   "/guias": { label: "Extrair dados da guia" },
   "/procedimentos": { label: "Buscar procedimento" },
   "/prescricao": { label: "Emitir prescrição" },

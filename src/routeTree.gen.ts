@@ -14,6 +14,7 @@ import { Route as ProcedimentosRouteImport } from './routes/procedimentos'
 import { Route as PrescricaoRouteImport } from './routes/prescricao'
 import { Route as PerfilRouteImport } from './routes/perfil'
 import { Route as OpmeRouteImport } from './routes/opme'
+import { Route as GuiasEmitidasRouteImport } from './routes/guias-emitidas'
 import { Route as GuiasRouteImport } from './routes/guias'
 import { Route as EmitirRouteImport } from './routes/emitir'
 import { Route as DocumentosRouteImport } from './routes/documentos'
@@ -48,6 +49,11 @@ const PerfilRoute = PerfilRouteImport.update({
 const OpmeRoute = OpmeRouteImport.update({
   id: '/opme',
   path: '/opme',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GuiasEmitidasRoute = GuiasEmitidasRouteImport.update({
+  id: '/guias-emitidas',
+  path: '/guias-emitidas',
   getParentRoute: () => rootRouteImport,
 } as any)
 const GuiasRoute = GuiasRouteImport.update({
@@ -111,6 +117,7 @@ export interface FileRoutesByFullPath {
   '/documentos': typeof DocumentosRoute
   '/emitir': typeof EmitirRoute
   '/guias': typeof GuiasRoute
+  '/guias-emitidas': typeof GuiasEmitidasRoute
   '/opme': typeof OpmeRoute
   '/perfil': typeof PerfilRoute
   '/prescricao': typeof PrescricaoRoute
@@ -128,6 +135,7 @@ export interface FileRoutesByTo {
   '/documentos': typeof DocumentosRoute
   '/emitir': typeof EmitirRoute
   '/guias': typeof GuiasRoute
+  '/guias-emitidas': typeof GuiasEmitidasRoute
   '/opme': typeof OpmeRoute
   '/perfil': typeof PerfilRoute
   '/prescricao': typeof PrescricaoRoute
@@ -146,6 +154,7 @@ export interface FileRoutesById {
   '/documentos': typeof DocumentosRoute
   '/emitir': typeof EmitirRoute
   '/guias': typeof GuiasRoute
+  '/guias-emitidas': typeof GuiasEmitidasRoute
   '/opme': typeof OpmeRoute
   '/perfil': typeof PerfilRoute
   '/prescricao': typeof PrescricaoRoute
@@ -165,6 +174,7 @@ export interface FileRouteTypes {
     | '/documentos'
     | '/emitir'
     | '/guias'
+    | '/guias-emitidas'
     | '/opme'
     | '/perfil'
     | '/prescricao'
@@ -182,6 +192,7 @@ export interface FileRouteTypes {
     | '/documentos'
     | '/emitir'
     | '/guias'
+    | '/guias-emitidas'
     | '/opme'
     | '/perfil'
     | '/prescricao'
@@ -199,6 +210,7 @@ export interface FileRouteTypes {
     | '/documentos'
     | '/emitir'
     | '/guias'
+    | '/guias-emitidas'
     | '/opme'
     | '/perfil'
     | '/prescricao'
@@ -217,6 +229,7 @@ export interface RootRouteChildren {
   DocumentosRoute: typeof DocumentosRoute
   EmitirRoute: typeof EmitirRoute
   GuiasRoute: typeof GuiasRoute
+  GuiasEmitidasRoute: typeof GuiasEmitidasRoute
   OpmeRoute: typeof OpmeRoute
   PerfilRoute: typeof PerfilRoute
   PrescricaoRoute: typeof PrescricaoRoute
@@ -260,6 +273,13 @@ declare module '@tanstack/react-router' {
       path: '/opme'
       fullPath: '/opme'
       preLoaderRoute: typeof OpmeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/guias-emitidas': {
+      id: '/guias-emitidas'
+      path: '/guias-emitidas'
+      fullPath: '/guias-emitidas'
+      preLoaderRoute: typeof GuiasEmitidasRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/guias': {
@@ -345,6 +365,7 @@ const rootRouteChildren: RootRouteChildren = {
   DocumentosRoute: DocumentosRoute,
   EmitirRoute: EmitirRoute,
   GuiasRoute: GuiasRoute,
+  GuiasEmitidasRoute: GuiasEmitidasRoute,
   OpmeRoute: OpmeRoute,
   PerfilRoute: PerfilRoute,
   PrescricaoRoute: PrescricaoRoute,
