@@ -1249,8 +1249,9 @@ function EmitirPage() {
                     <Field
                       label="Operadora / Convênio"
                       required
-                      span="@md:col-span-4 @3xl:col-span-5"
+                      span="@md:col-span-8 @3xl:col-span-8"
                     >
+
                       <Select value={operadora} onValueChange={(v) => { setOperadora(v); const op = OPERADORAS.find((o) => o.value === v); if (op) setRegistroAns(op.ans); }}>
                         <SelectTrigger>
                           <SelectValue placeholder="Selecione o convênio">
