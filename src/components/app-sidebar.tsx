@@ -72,6 +72,7 @@ import { useTheme } from "@/lib/theme";
 export type ItemKey =
   | "dashboard"
   | "emitir"
+  | "emitidas"
   | "extrair"
   | "guias"
   | "procedimento"
@@ -223,6 +224,15 @@ function SidebarNav({
           to="/emitir"
           active={activeKey === "emitir"}
           hint="Preencha e gere novas guias médicas (SADT, consultas, encaminhamentos)."
+          collapsed={collapsed}
+          onNavigate={onNavigate}
+        />
+        <SidebarItem
+          icon={BookMarked}
+          label="Guias emitidas"
+          to="/guias-emitidas"
+          active={activeKey === "emitidas"}
+          hint="Histórico de todas as guias emitidas, com busca e filtros."
           collapsed={collapsed}
           onNavigate={onNavigate}
         />
