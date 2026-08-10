@@ -795,7 +795,13 @@ function EmitirPage() {
     unitValue: "",
     ...patch,
   });
-  const addExecuted = () => setExecutedItems((l) => [...l, newExecutedItem()]);
+  /** Abertura controlada da seção de execução (abre ao adicionar/copiar itens). */
+  const [execOpen, setExecOpen] = useState(false);
+  const addExecuted = () => {
+    setExecutedItems((l) => [...l, newExecutedItem()]);
+    setExecOpen(true);
+  };
+
   const updateExecuted = (id: string, patch: Partial<ExecutedItem>) =>
     setExecutedItems((l) => l.map((x) => (x.id === id ? { ...x, ...patch } : x)));
   const removeExecuted = (id: string) =>
