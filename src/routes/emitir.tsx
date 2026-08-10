@@ -2417,7 +2417,7 @@ function EmitirPage() {
                 number={stepNumber("realizados")}
                 done={realizadosOk}
                 icon={<ClipboardList className="h-4 w-4" />}
-                title={T.execucao}
+                title="Dados da Execução"
                 description="Campos 36 a 47 da guia — busque o procedimento realizado; os demais dados são automáticos."
                 collapsible
                 defaultCollapsed
