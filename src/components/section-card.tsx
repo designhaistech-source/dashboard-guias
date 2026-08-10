@@ -53,6 +53,8 @@ export function SectionCard({
   actions,
   collapsible,
   defaultCollapsed,
+  open: openProp,
+  onOpenChange,
   className,
   descriptionClassName,
   bodyClassName,
@@ -62,8 +64,15 @@ export function SectionCard({
   const [collapsed, setCollapsed] = React.useState(
     Boolean(collapsible && defaultCollapsed),
   );
-  const open = !collapsible || !collapsed;
+  const open = !collapsible || (openProp ?? !collapsed);
   const bodyId = React.useId();
+
+  function toggle() {
+    const next = !open;
+    if (openProp === undefined) setCollapsed(!next);
+    onOpenChange?.(next);
+  }
+
 
   return (
     <section id={id} className={cn("scroll-mt-4", className)}>
