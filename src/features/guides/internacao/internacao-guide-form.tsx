@@ -6,9 +6,11 @@ import {
   ClipboardList,
   FileText,
   Hospital,
+  Loader2,
   Plus,
   Eye,
   Save,
+  Search,
   Stethoscope,
   Trash2,
   User,
@@ -39,6 +41,7 @@ import {
 } from "@/components/ui/collapsible";
 import { AppModal } from "@/components/app-modal";
 import { InternacaoGuidePreview } from "./internacao-guide-preview";
+import { lookupBeneficiary, normalizeCarteira } from "@/features/beneficiaries";
 import { CID_OPTIONS } from "@/lib/cid";
 import { TUSS, TUSS_OPTIONS } from "@/lib/tuss";
 
@@ -138,12 +141,15 @@ function Field({
   label,
   required,
   span,
+  hint,
   children,
 }: {
   label: string;
   required?: boolean;
   /** Classes de coluna aplicadas quando o Grid usa 12 colunas. */
   span?: string;
+  /** Texto auxiliar exibido abaixo do campo. */
+  hint?: React.ReactNode;
   children: React.ReactNode;
 }) {
   return (
@@ -152,6 +158,7 @@ function Field({
         {label} {required && <span className="text-destructive">*</span>}
       </Label>
       {children}
+      {hint && <p className="text-[11px] leading-snug text-muted-foreground">{hint}</p>}
     </div>
   );
 }
@@ -206,10 +213,45 @@ export function InternacaoGuideForm({
 
   // 7 a 11 — beneficiário
   const [carteira, setCarteira] = useState("");
+  /** 8 — condicional no TISS: preenchido pelo cadastro e enviado quando aplicável. */
   const [validadeCarteira, setValidadeCarteira] = useState("");
   const [atendimentoRn, setAtendimentoRn] = useState("N");
   const [nomeBeneficiario, setNomeBeneficiario] = useState("");
   const [cns, setCns] = useState("");
+  const [beneficiarioStatus, setBeneficiarioStatus] = useState<
+    "idle" | "loading" | "found" | "not-found"
+  >("idle");
+  const [carteiraConsultada, setCarteiraConsultada] = useState("");
+
+  /**
+   * Consulta o beneficiário pela carteira (campo 7) e preenche automaticamente
+   * nome (10), CNS (11) e validade da carteira (8) quando existirem no cadastro.
+   */
+  async function buscarBeneficiario() {
+    const digits = normalizeCarteira(carteira);
+    if (!digits) {
+      setBeneficiarioStatus("idle");
+      setCarteiraConsultada("");
+      return;
+    }
+    if (digits === carteiraConsultada && beneficiarioStatus !== "idle") return;
+
+    setBeneficiarioStatus("loading");
+    const found = await lookupBeneficiary(digits);
+    setCarteiraConsultada(digits);
+
+    if (!found) {
+      setBeneficiarioStatus("not-found");
+      return;
+    }
+
+    setNomeBeneficiario(found.nome);
+    setCns(found.cns ?? "");
+    setValidadeCarteira(found.validadeCarteira ?? "");
+    setBeneficiarioStatus("found");
+    toast.success("Beneficiário encontrado", { description: found.nome });
+  }
+
 
   // 12 a 18 — contratado solicitante
   const [codigoSolicitante, setCodigoSolicitante] = useState("");
@@ -514,41 +556,96 @@ export function InternacaoGuideForm({
         title="Beneficiário"
         description="Campos 7 a 11 — identificação do beneficiário na operadora."
       >
-        <Grid cols={3}>
-          <Field label="7 - Número da Carteira" required>
+        <Grid cols={12}>
+          <Field
+            label="7 - Número da Carteira"
+            required
+            span="@md:col-span-6 @3xl:col-span-5"
+            hint={
+              beneficiarioStatus === "not-found"
+                ? "Beneficiário não encontrado — informe o nome manualmente."
+                : "Informe a carteira para buscar o beneficiário."
+            }
+          >
+            <div className="flex gap-2">
+              <Input
+                value={carteira}
+                onChange={(e) => setCarteira(e.target.value)}
+                onBlur={() => buscarBeneficiario()}
+                placeholder="0000 0000 0000 0000"
+                inputMode="numeric"
+                maxLength={20}
+                className="font-mono"
+              />
+              <Button
+                type="button"
+                variant="outline"
+                size="icon"
+                aria-label="Buscar beneficiário"
+                disabled={beneficiarioStatus === "loading"}
+                onClick={() => buscarBeneficiario()}
+              >
+                {beneficiarioStatus === "loading" ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <Search className="h-4 w-4" />
+                )}
+              </Button>
+            </div>
+          </Field>
+
+          <Field
+            label="10 - Nome"
+            required
+            span="@md:col-span-6 @3xl:col-span-4"
+            hint={
+              beneficiarioStatus === "found"
+                ? "Preenchido pelo cadastro do beneficiário."
+                : undefined
+            }
+          >
             <Input
-              value={carteira}
-              onChange={(e) => setCarteira(e.target.value)}
-              placeholder="Número da carteira"
+              value={nomeBeneficiario}
+              onChange={(e) => setNomeBeneficiario(e.target.value)}
+              placeholder="Nome completo do beneficiário"
+              maxLength={70}
+              readOnly={beneficiarioStatus === "found"}
+              aria-readonly={beneficiarioStatus === "found"}
+              className={
+                beneficiarioStatus === "found" ? "bg-muted/50 text-foreground" : undefined
+              }
             />
           </Field>
-          <Field label="8 - Validade da Carteira">
-            <Input
-              type="date"
-              value={validadeCarteira}
-              onChange={(e) => setValidadeCarteira(e.target.value)}
-            />
-          </Field>
+
           <SelectField
             label="9 - Atendimento a RN"
             required
+            className="@md:col-span-6 @3xl:col-span-3"
             labelClassName="text-xs font-medium text-muted-foreground"
             value={atendimentoRn}
             onValueChange={setAtendimentoRn}
             options={SIM_NAO_OPTIONS}
           />
-          <Field label="10 - Nome" required>
-            <Input
-              value={nomeBeneficiario}
-              onChange={(e) => setNomeBeneficiario(e.target.value)}
-              placeholder="Nome completo do beneficiário"
-            />
-          </Field>
-          <Field label="11 - Cartão Nacional de Saúde">
-            <Input value={cns} onChange={(e) => setCns(e.target.value)} placeholder="000 0000 0000 0000" />
-          </Field>
+
+          {/* 8 e 11 são condicionais: só aparecem quando existem no cadastro. */}
+          {cns && (
+            <Field
+              label="11 - Cartão Nacional de Saúde"
+              span="@md:col-span-6 @3xl:col-span-4"
+              hint="Preenchido pelo cadastro do beneficiário."
+            >
+              <Input
+                value={cns}
+                onChange={(e) => setCns(e.target.value)}
+                placeholder="000 0000 0000 0000"
+                maxLength={15}
+                className="font-mono"
+              />
+            </Field>
+          )}
         </Grid>
       </SectionCard>
+
 
       {/* 12 a 18 */}
       <SectionCard
