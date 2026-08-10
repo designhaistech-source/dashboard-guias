@@ -1831,7 +1831,7 @@ function EmitirPage() {
                 number={stepNumber("profissional")}
                 done={profissionalOk}
                 icon={<Stethoscope className="h-4 w-4" />}
-                title={T.solicitante}
+                title="Dados do Solicitante"
                 description="Campos 13 a 20 — preenchidos pelos cadastros do estabelecimento e do profissional."
                 action={
                   <Button
