@@ -38,13 +38,16 @@ export function FormActionBar({
   return (
     <div className={cn("space-y-3", className)}>
       {hasSteps && (
-        <div className="rounded-xl border border-border bg-card/95 px-4 py-3 shadow-xs">
+        <div
+          data-testid="form-steps"
+          className="rounded-xl border border-border bg-card/95 px-4 py-3 shadow-xs"
+        >
           {stepsLabel && (
             <p className="mb-2 text-xs font-semibold text-foreground">
               {stepsLabel}
             </p>
           )}
-          <div className="flex flex-wrap items-center gap-2">
+          <div data-testid="form-steps-list" className="flex flex-wrap items-center gap-2">
             {steps!.map((step) => (
               <StatusPill key={step.label} done={step.done} label={step.label} />
             ))}

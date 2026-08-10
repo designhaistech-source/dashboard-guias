@@ -24,7 +24,9 @@
     "qa:visual:tabs:update": "python3 scripts/visual/check-tabs-cross-route.py --update",
     "qa:proc-headers": "python3 e2e/procedimentos-solicitados-headers.spec.py",
     "qa:visual:proc-headers": "python3 scripts/visual/check-proc-headers-visual.py",
-    "qa:visual:proc-headers:update": "python3 scripts/visual/check-proc-headers-visual.py --update"
+    "qa:visual:proc-headers:update": "python3 scripts/visual/check-proc-headers-visual.py --update",
+    "qa:visual:sadt-steps": "python3 scripts/visual/check-sadt-steps-visual.py",
+    "qa:visual:sadt-steps:update": "python3 scripts/visual/check-sadt-steps-visual.py --update"
 
   },
   "dependencies": {
