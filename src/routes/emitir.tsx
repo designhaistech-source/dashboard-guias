@@ -3527,10 +3527,11 @@ function GuiaLivePreview(props: {
 
             <SectionBar>Dados da Execução / Procedimentos e Exames Realizados</SectionBar>
             <div className="border-b border-foreground">
-              <div className="grid grid-cols-[24px_80px_100px_50px_70px_1fr_40px_40px_40px_60px_70px_70px] text-[8px] font-bold border-b border-foreground bg-surface-subtle">
+              <div className="grid grid-cols-[24px_80px_50px_50px_50px_70px_1fr_40px_40px_40px_60px_70px_70px] text-[8px] font-bold border-b border-foreground bg-surface-subtle">
                 <div className="px-1 py-0.5 border-r border-foreground">&nbsp;</div>
                 <div className="px-1 py-0.5 border-r border-foreground">36 - Data</div>
-                <div className="px-1 py-0.5 border-r border-foreground">37 - Hora Inicial / 38 - Hora Final</div>
+                <div className="px-1 py-0.5 border-r border-foreground">37 - Hora Inicial</div>
+                <div className="px-1 py-0.5 border-r border-foreground">38 - Hora Final</div>
                 <div className="px-1 py-0.5 border-r border-foreground text-center">39 - Tabela</div>
                 <div className="px-1 py-0.5 border-r border-foreground">40 - Código do Procedimento</div>
                 <div className="px-1 py-0.5 border-r border-foreground">41 - Descrição</div>
@@ -3542,10 +3543,12 @@ function GuiaLivePreview(props: {
                 <div className="px-1 py-0.5 text-center">47 - Valor Total (R$)</div>
               </div>
               {execRows.map((p, i) => (
-                <div key={i} className="grid grid-cols-[24px_80px_100px_50px_70px_1fr_40px_40px_40px_60px_70px_70px] text-[10px] border-b last:border-b-0 border-border min-h-[16px]">
+                <div key={i} className="grid grid-cols-[24px_80px_50px_50px_50px_70px_1fr_40px_40px_40px_60px_70px_70px] text-[10px] border-b last:border-b-0 border-border min-h-[16px]">
                   <div className="px-1 py-0.5 border-r border-border font-mono">{i + 1}-</div>
                   <div className="px-1 py-0.5 border-r border-border font-mono">{p ? fmtDate(dataSolicitacao) : ""}</div>
-                  <div className="px-1 py-0.5 border-r border-border"></div>
+                  <div className="px-1 py-0.5 border-r border-border font-mono text-center"></div>
+                  <div className="px-1 py-0.5 border-r border-border font-mono text-center"></div>
+
                   <div className="px-1 py-0.5 border-r border-border text-center font-mono">{p ? (p.table ?? resolveTissTable(p.code)) : ""}</div>
                   <div className="px-1 py-0.5 border-r border-border font-mono truncate">{p?.code ?? ""}</div>
                   <div className="px-1 py-0.5 border-r border-border truncate">{p?.description ?? ""}</div>
