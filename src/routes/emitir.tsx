@@ -2414,7 +2414,8 @@ function EmitirPage() {
                     />
                   )}
                 </Grid>
-                <Grid cols={isConsulta ? 3 : 2} className="mt-4">
+                <div className="mt-4">
+                <Grid cols={isConsulta ? 3 : 2}>
                   <SelectField
                     label="35 - Motivo de Encerramento do Atendimento"
                     value={motivoEncerramento}
