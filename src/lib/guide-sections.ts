@@ -7,7 +7,7 @@
  * Alterar um rótulo aqui propaga a mudança para todas as superfícies.
  */
 export const SADT_SECTION_TITLES = {
-  convenio: "Convênio e atendimento",
+  convenio: "Convênio",
   estabelecimento: "Estabelecimento (SUS)",
   beneficiario: "Beneficiário",
   solicitante: "Solicitante",
