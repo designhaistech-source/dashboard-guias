@@ -473,7 +473,7 @@ export function InternacaoGuideForm({
             </Select>
           </Field>
 
-          <Field label="1 - Registro ANS" required span="@md:col-span-6 @3xl:col-span-5">
+          <Field label="1 - Registro ANS" span="@md:col-span-6 @3xl:col-span-5">
             <Input
               value={ans}
               onChange={(e) => setAns(e.target.value)}
