@@ -3107,6 +3107,8 @@ function Section({
   action,
   collapsible,
   defaultCollapsed,
+  open,
+  onOpenChange,
   children,
 }: {
   number?: number;
@@ -3117,6 +3119,8 @@ function Section({
   action?: React.ReactNode;
   collapsible?: boolean;
   defaultCollapsed?: boolean;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
   children: React.ReactNode;
 }) {
   return (
@@ -3129,6 +3133,8 @@ function Section({
       actions={action}
       collapsible={collapsible}
       defaultCollapsed={defaultCollapsed}
+      open={open}
+      onOpenChange={onOpenChange}
     >
       {children}
     </BaseSectionCard>
