@@ -59,6 +59,8 @@ export const TUSS: TussItem[] = [
 
 export const TUSS_OPTIONS = TUSS.map((t) => ({
   value: t.codigo,
-  label: `${t.codigo} — ${t.descricao}`,
-  description: t.descricao,
+  label: t.descricao,
+  description: `TUSS ${t.codigo}`,
+  // A busca considera apenas a descrição (não o código TUSS).
+  searchText: t.descricao,
 }));
