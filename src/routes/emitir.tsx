@@ -830,10 +830,17 @@ function EmitirPage() {
   });
   /** Abertura controlada da seção de execução (abre ao adicionar/copiar itens). */
   const [execOpen, setExecOpen] = useState(false);
+  /**
+   * Abertura do bloco "Dados cirúrgicos (opcional)" por procedimento realizado
+   * (campos 43 e 44). Recolhido por padrão — não há fonte confiável para
+   * identificar automaticamente procedimentos cirúrgicos.
+   */
+  const [surgicalOpen, setSurgicalOpen] = useState<Record<string, boolean>>({});
   const addExecuted = () => {
     setExecutedItems((l) => [...l, newExecutedItem()]);
     setExecOpen(true);
   };
+
 
   const updateExecuted = (id: string, patch: Partial<ExecutedItem>) =>
     setExecutedItems((l) => l.map((x) => (x.id === id ? { ...x, ...patch } : x)));
@@ -2634,7 +2641,62 @@ function EmitirPage() {
                             </Button>
                           )}
                         </div>
+
+                        {/* Campos 43 e 44 — opcionais, apenas para procedimento cirúrgico */}
+                        <Collapsible
+                          open={Boolean(surgicalOpen[item.id])}
+                          onOpenChange={(o) =>
+                            setSurgicalOpen((s) => ({ ...s, [item.id]: o }))
+                          }
+                          className="mt-4 border-t pt-3"
+                        >
+                          <CollapsibleTrigger asChild>
+                            <Button
+                              type="button"
+                              variant="outline"
+                              size="sm"
+                              className="w-full justify-between sm:w-auto"
+                              aria-expanded={Boolean(surgicalOpen[item.id])}
+                            >
+                              <span>Dados cirúrgicos (opcional)</span>
+                              <ChevronRight
+                                className={`transition-transform ${surgicalOpen[item.id] ? "rotate-90" : ""}`}
+                                aria-hidden
+                              />
+                            </Button>
+                          </CollapsibleTrigger>
+                          <CollapsibleContent className="pt-3">
+                            <p className="mb-2 text-xs text-muted-foreground">
+                              Preencher apenas para procedimento cirúrgico.
+                            </p>
+                            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                              <SelectField
+                                label="43 - Via"
+                                hint="Via de acesso"
+                                value={item.via}
+                                onValueChange={(v) => updateExecuted(item.id, { via: v })}
+                                placeholder="Selecione"
+                                options={["Única", "Mesma via", "Diferentes vias"].map((v) => ({
+                                  value: v,
+                                  label: v,
+                                }))}
+                              />
+                              <SelectField
+                                label="44 - Tec."
+                                hint="Técnica utilizada"
+                                value={item.technique}
+                                onValueChange={(v) => updateExecuted(item.id, { technique: v })}
+                                placeholder="Selecione"
+                                options={["Convencional", "Vídeo", "Robótica"].map((v) => ({
+                                  value: v,
+                                  label: v,
+                                }))}
+                              />
+                            </div>
+                          </CollapsibleContent>
+                        </Collapsible>
                       </div>
+
                     ))}
                   </div>
 
