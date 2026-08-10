@@ -354,39 +354,142 @@ export function InternacaoGuideForm({
         done={guiaOk}
         icon={<Building2 className="h-4 w-4" />}
         title="Convênio"
-        description="Campos 1 a 6 — identificação da guia, autorização e senha."
+        description="Campos 1 a 6 — operadora responsável, autorização e senha."
       >
-        <Grid cols={3}>
-          <Field label="1 - Registro ANS" required>
-            <Input value={ans} onChange={(e) => setAns(e.target.value)} placeholder="000000" />
+        <Grid cols={12}>
+          <Field
+            label="Operadora / Convênio"
+            required
+            span="@md:col-span-6 @3xl:col-span-7"
+          >
+            <Select
+              value={operadoraValue}
+              onValueChange={(v) => {
+                setOperadoraValue(v);
+                const op = operadoras.find((o) => o.value === v);
+                if (op) {
+                  setAns(op.ans);
+                  onOperadoraChange?.(v, op.ans);
+                }
+              }}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Selecione o convênio">
+                  {(() => {
+                    const selected = operadoras.find((o) => o.value === operadoraValue);
+                    if (!selected) return null;
+                    return (
+                      <span className="flex min-w-0 items-center gap-2">
+                        {selected.logo && (
+                          <img
+                            src={selected.logo}
+                            alt=""
+                            aria-hidden
+                            loading="lazy"
+                            className="h-4 w-auto max-w-[56px] shrink-0 object-contain"
+                          />
+                        )}
+                        <span className="truncate">{selected.label}</span>
+                      </span>
+                    );
+                  })()}
+                </SelectValue>
+              </SelectTrigger>
+              <SelectContent>
+                {operadoras.map((o) => (
+                  <SelectItem key={o.value} value={o.value}>
+                    <span className="flex min-w-0 items-center gap-2">
+                      {o.logo && (
+                        <img
+                          src={o.logo}
+                          alt=""
+                          aria-hidden
+                          loading="lazy"
+                          className="h-4 w-auto max-w-[56px] shrink-0 object-contain"
+                        />
+                      )}
+                      <span className="truncate">{o.label}</span>
+                    </span>
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </Field>
-          {/* Campo 2 (Nº Guia no Prestador) é gerado pelo sistema ao salvar a guia. */}
-          <Field label="3 - Número da Guia Atribuído pela Operadora">
+
+          <Field label="1 - Registro ANS" required span="@md:col-span-6 @3xl:col-span-5">
             <Input
-              value={guiaOperadora}
-              onChange={(e) => setGuiaOperadora(e.target.value)}
-              placeholder="Informado pela operadora"
-            />
-          </Field>
-          <Field label="4 - Data da Autorização" required>
-            <Input
-              type="date"
-              value={dataAutorizacao}
-              onChange={(e) => setDataAutorizacao(e.target.value)}
-            />
-          </Field>
-          <Field label="5 - Senha">
-            <Input value={senha} onChange={(e) => setSenha(e.target.value)} placeholder="Senha" />
-          </Field>
-          <Field label="6 - Data de Validade da Senha">
-            <Input
-              type="date"
-              value={validadeSenha}
-              onChange={(e) => setValidadeSenha(e.target.value)}
+              value={ans}
+              onChange={(e) => setAns(e.target.value)}
+              placeholder="000000"
+              inputMode="numeric"
+              maxLength={6}
+              className="font-mono"
             />
           </Field>
         </Grid>
+
+        {/* Campo 2 (Nº Guia no Prestador) é gerado pelo sistema ao salvar a guia. */}
+        <Collapsible
+          open={autorizacaoOpen}
+          onOpenChange={setAutorizacaoOpen}
+          className="mt-4 border-t pt-4"
+        >
+          <CollapsibleTrigger asChild>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              className="w-full justify-between sm:w-auto"
+              aria-expanded={autorizacaoOpen}
+            >
+              <span>Autorização da Operadora (Opcional)</span>
+              <ChevronRight
+                className={`transition-transform ${autorizacaoOpen ? "rotate-90" : ""}`}
+                aria-hidden
+              />
+            </Button>
+          </CollapsibleTrigger>
+          <CollapsibleContent className="pt-4">
+            <Grid cols={12}>
+              <Field
+                label="3 - Número da Guia Atribuído pela Operadora"
+                span="@md:col-span-6 @3xl:col-span-6"
+              >
+                <Input
+                  value={guiaOperadora}
+                  onChange={(e) => setGuiaOperadora(e.target.value)}
+                  placeholder="Informado pela operadora"
+                />
+              </Field>
+              <Field label="4 - Data da Autorização" span="@md:col-span-6 @3xl:col-span-3">
+                <Input
+                  type="date"
+                  value={dataAutorizacao}
+                  onChange={(e) => setDataAutorizacao(e.target.value)}
+                />
+              </Field>
+              <Field label="5 - Senha" span="@md:col-span-6 @3xl:col-span-3">
+                <Input
+                  value={senha}
+                  onChange={(e) => setSenha(e.target.value)}
+                  placeholder="Senha de autorização"
+                />
+              </Field>
+              <Field
+                label="6 - Data de Validade da Senha"
+                span="@md:col-span-6 @3xl:col-span-3"
+              >
+                <Input
+                  type="date"
+                  value={validadeSenha}
+                  onChange={(e) => setValidadeSenha(e.target.value)}
+                />
+              </Field>
+            </Grid>
+          </CollapsibleContent>
+        </Collapsible>
       </SectionCard>
+
 
       {/* 7 a 11 */}
       <SectionCard
