@@ -1564,7 +1564,7 @@ function EmitirPage() {
                           <Input
                             value={guiaOperadora}
                             onChange={(e) => setGuiaOperadora(e.target.value)}
-                            placeholder="Número informado pela operadora"
+                            placeholder="Informado pela operadora"
                           />
                         </Field>
                       </Grid>
