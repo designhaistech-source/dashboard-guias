@@ -2804,8 +2804,8 @@ function EmitirPage() {
                   ...(guideKind === "apac" ? [{ label: "APAC", done: especificoOk }] : []),
                   ...(guideKind === "aih" ? [{ label: "AIH", done: especificoOk }] : []),
                   { label: "Beneficiário", done: pacienteOk },
-                  { label: "Profissional", done: profissionalOk },
-                  { label: "Dados da Solicitação", done: clinicoOk && procedimentosOk },
+                  { label: "Solicitante", done: profissionalOk },
+                  { label: "Solicitação", done: clinicoOk && procedimentosOk },
                   
                   { label: "Atendimento", done: atendimentoOk },
                   { label: "Execução", done: realizadosOk },
