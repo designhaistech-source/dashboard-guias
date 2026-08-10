@@ -830,10 +830,17 @@ function EmitirPage() {
   });
   /** Abertura controlada da seção de execução (abre ao adicionar/copiar itens). */
   const [execOpen, setExecOpen] = useState(false);
+  /**
+   * Abertura do bloco "Dados cirúrgicos (opcional)" por procedimento realizado
+   * (campos 43 e 44). Recolhido por padrão — não há fonte confiável para
+   * identificar automaticamente procedimentos cirúrgicos.
+   */
+  const [surgicalOpen, setSurgicalOpen] = useState<Record<string, boolean>>({});
   const addExecuted = () => {
     setExecutedItems((l) => [...l, newExecutedItem()]);
     setExecOpen(true);
   };
+
 
   const updateExecuted = (id: string, patch: Partial<ExecutedItem>) =>
     setExecutedItems((l) => l.map((x) => (x.id === id ? { ...x, ...patch } : x)));
