@@ -21,6 +21,11 @@ export interface SectionCardProps {
   collapsible?: boolean;
   /** Inicia a seção recolhida (apenas com `collapsible`). */
   defaultCollapsed?: boolean;
+  /** Controla externamente o estado aberto/fechado (apenas com `collapsible`). */
+  open?: boolean;
+  /** Notifica mudanças de abertura quando controlado ou não. */
+  onOpenChange?: (open: boolean) => void;
+
   className?: string;
   /** Classe extra para o texto auxiliar (permite reduzir o destaque). */
   descriptionClassName?: string;
