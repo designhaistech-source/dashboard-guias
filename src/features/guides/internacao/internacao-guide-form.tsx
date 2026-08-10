@@ -144,6 +144,14 @@ function Field({
 }
 
 
+export interface OperadoraOption {
+  value: string;
+  label: string;
+  logo?: string;
+  /** Registro ANS (campo 1) da operadora. */
+  ans: string;
+}
+
 export interface InternacaoGuideFormProps {
   /** Número sequencial da guia no prestador (campo 2). */
   numeroGuia: string;
@@ -151,7 +159,12 @@ export interface InternacaoGuideFormProps {
   registroAns: string;
   /** Slot do cabeçalho (seleção da operadora, pré-visualização etc.). */
   header?: React.ReactNode;
-  /** Card de seleção de operadora reaproveitado da tela de emissão. */
+  /** Operadora / convênio selecionado na seção Convênio. */
+  operadora?: string;
+  /** Operadoras disponíveis para seleção. */
+  operadoras?: readonly OperadoraOption[];
+  /** Notifica a seleção de operadora (valor + registro ANS). */
+  onOperadoraChange?: (value: string, ans: string) => void;
   onSubmitGuide?: () => void;
 }
 
@@ -163,6 +176,9 @@ export function InternacaoGuideForm({
   numeroGuia,
   registroAns,
   header,
+  operadora,
+  operadoras = [],
+  onOperadoraChange,
 }: InternacaoGuideFormProps) {
   // 1 a 6 — identificação da guia e autorização
   const [ans, setAns] = useState(registroAns);
