@@ -2389,6 +2389,9 @@ function EmitirPage() {
               >
                 <Grid cols={2}>
                   <SelectField
+                    className={ATENDIMENTO_FIELD_CLASS}
+                    labelClassName={ATENDIMENTO_LABEL_CLASS}
+                    triggerClassName={ATENDIMENTO_TRIGGER_CLASS}
                     label="32 - Tipo de Atendimento"
                     required
                     value={tipoAtendimento}
@@ -2406,6 +2409,9 @@ function EmitirPage() {
                     ].map((o) => ({ value: o, label: o }))}
                   />
                   <SelectField
+                    className={ATENDIMENTO_FIELD_CLASS}
+                    labelClassName={ATENDIMENTO_LABEL_CLASS}
+                    triggerClassName={ATENDIMENTO_TRIGGER_CLASS}
                     label="33 - Indicação de Acidente"
                     required
                     value={indicacaoAcidente}
@@ -2421,6 +2427,9 @@ function EmitirPage() {
                   />
                   {isConsulta && (
                     <SelectField
+                      className={ATENDIMENTO_FIELD_CLASS}
+                      labelClassName={ATENDIMENTO_LABEL_CLASS}
+                      triggerClassName={ATENDIMENTO_TRIGGER_CLASS}
                       label="34 - Tipo de Consulta"
                       value={tipoConsulta}
                       onValueChange={setTipoConsulta}
@@ -2434,6 +2443,9 @@ function EmitirPage() {
                     />
                   )}
                   <SelectField
+                    className={ATENDIMENTO_FIELD_CLASS}
+                    labelClassName={ATENDIMENTO_LABEL_CLASS}
+                    triggerClassName={ATENDIMENTO_TRIGGER_CLASS}
                     label="35 - Motivo de Encerramento do Atendimento"
                     value={motivoEncerramento}
                     onValueChange={setMotivoEncerramento}
