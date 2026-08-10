@@ -2439,11 +2439,7 @@ function EmitirPage() {
                     onValueChange={setMotivoEncerramento}
                     placeholder="Selecione"
                     hint="Preencher somente em caso de óbito."
-                    options={[
-                      { value: "21", label: "21 - Óbito com declaração fornecida pelo médico assistente" },
-                      { value: "22", label: "22 - Óbito com declaração fornecida pelo IML" },
-                      { value: "23", label: "23 - Óbito com declaração fornecida pelo SVO" },
-                    ]}
+                    options={[...MOTIVO_ENCERRAMENTO_OBITO]}
                   />
                 </Grid>
               </Section>
