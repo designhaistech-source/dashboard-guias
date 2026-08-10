@@ -64,8 +64,8 @@ export function Field({
         <label
           htmlFor={id}
           className={cn(
-            // Escala única: 13px no mobile → 14px do sm para cima, sempre com quebra segura.
-            "flex min-w-0 flex-wrap items-center gap-x-1 gap-y-0.5 text-[13px] font-medium leading-snug text-foreground break-words hyphens-auto sm:text-sm",
+            // Escala única: 12px em todas as telas, peso medium e cor muted.
+            "flex min-w-0 flex-wrap items-center gap-x-1 gap-y-0.5 text-xs font-medium leading-snug text-muted-foreground break-words hyphens-auto",
             labelClassName,
           )}
         >
