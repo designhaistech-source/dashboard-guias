@@ -41,6 +41,7 @@ import {
 } from "@/components/ui/collapsible";
 import { AppModal } from "@/components/app-modal";
 import { InternacaoGuidePreview } from "./internacao-guide-preview";
+import { lookupBeneficiary, normalizeCarteira } from "@/features/beneficiaries";
 import { CID_OPTIONS } from "@/lib/cid";
 import { TUSS, TUSS_OPTIONS } from "@/lib/tuss";
 
