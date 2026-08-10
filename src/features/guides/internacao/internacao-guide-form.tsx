@@ -329,7 +329,7 @@ export function InternacaoGuideForm({
         number={1}
         done={guiaOk}
         icon={<Building2 className="h-4 w-4" />}
-        title="Dados da Guia e Autorização"
+        title="Convênio"
         description="Campos 1 a 6 — identificação da guia, autorização e senha."
       >
         <Grid cols={3}>
