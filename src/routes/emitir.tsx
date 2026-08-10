@@ -2427,6 +2427,7 @@ function EmitirPage() {
                       { value: "23", label: "23 - Óbito com declaração fornecida pelo SVO" },
                     ]}
                   />
+                </Grid>
               </Section>
 
 
