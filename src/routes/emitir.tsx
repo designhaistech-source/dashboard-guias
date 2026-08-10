@@ -2365,7 +2365,7 @@ function EmitirPage() {
                 done={atendimentoOk}
                 icon={<ClipboardList className="h-4 w-4" />}
                 title="Dados do Atendimento"
-                description="Campos 32 a 34 da guia — exibidos conforme o tipo de atendimento."
+                description="Campos 32 a 35 da guia — exibidos conforme o tipo de atendimento."
               >
                 <Grid cols={isConsulta ? 3 : 2}>
                   <SelectField
