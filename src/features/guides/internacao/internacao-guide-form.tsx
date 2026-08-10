@@ -212,10 +212,45 @@ export function InternacaoGuideForm({
 
   // 7 a 11 — beneficiário
   const [carteira, setCarteira] = useState("");
+  /** 8 — condicional no TISS: preenchido pelo cadastro e enviado quando aplicável. */
   const [validadeCarteira, setValidadeCarteira] = useState("");
   const [atendimentoRn, setAtendimentoRn] = useState("N");
   const [nomeBeneficiario, setNomeBeneficiario] = useState("");
   const [cns, setCns] = useState("");
+  const [beneficiarioStatus, setBeneficiarioStatus] = useState<
+    "idle" | "loading" | "found" | "not-found"
+  >("idle");
+  const [carteiraConsultada, setCarteiraConsultada] = useState("");
+
+  /**
+   * Consulta o beneficiário pela carteira (campo 7) e preenche automaticamente
+   * nome (10), CNS (11) e validade da carteira (8) quando existirem no cadastro.
+   */
+  async function buscarBeneficiario() {
+    const digits = normalizeCarteira(carteira);
+    if (!digits) {
+      setBeneficiarioStatus("idle");
+      setCarteiraConsultada("");
+      return;
+    }
+    if (digits === carteiraConsultada && beneficiarioStatus !== "idle") return;
+
+    setBeneficiarioStatus("loading");
+    const found = await lookupBeneficiary(digits);
+    setCarteiraConsultada(digits);
+
+    if (!found) {
+      setBeneficiarioStatus("not-found");
+      return;
+    }
+
+    setNomeBeneficiario(found.nome);
+    setCns(found.cns ?? "");
+    setValidadeCarteira(found.validadeCarteira ?? "");
+    setBeneficiarioStatus("found");
+    toast.success("Beneficiário encontrado", { description: found.nome });
+  }
+
 
   // 12 a 18 — contratado solicitante
   const [codigoSolicitante, setCodigoSolicitante] = useState("");
