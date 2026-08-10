@@ -138,12 +138,15 @@ function Field({
   label,
   required,
   span,
+  hint,
   children,
 }: {
   label: string;
   required?: boolean;
   /** Classes de coluna aplicadas quando o Grid usa 12 colunas. */
   span?: string;
+  /** Texto auxiliar exibido abaixo do campo. */
+  hint?: React.ReactNode;
   children: React.ReactNode;
 }) {
   return (
@@ -152,6 +155,7 @@ function Field({
         {label} {required && <span className="text-destructive">*</span>}
       </Label>
       {children}
+      {hint && <p className="text-[11px] leading-snug text-muted-foreground">{hint}</p>}
     </div>
   );
 }
