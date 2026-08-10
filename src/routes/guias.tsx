@@ -67,6 +67,7 @@ import { Chip } from "@/components/ui/chip";
 import { CameraCaptureDialog } from "@/components/camera-capture-dialog";
 import { ProcedureCodeModal } from "@/components/procedure-code-modal";
 import { cn } from "@/lib/utils";
+import { SADT_SECTION_TITLES as T } from "@/lib/guide-sections";
 import { formatGuiaNumber } from "@/lib/guia-number";
 
 
@@ -635,11 +636,11 @@ function GuideDetailsModal({ row, onClose }: { row: Row | null; onClose: () => v
 
             <div className={`${mobileTab === "dados" ? "block" : "hidden"} space-y-6 min-w-0 lg:block`}>
               <DetailCard title="Cabeçalho" icon={<Info className="h-5 w-5 text-primary" />} items={details.header} />
-              <DetailCard title="Beneficiário" icon={<Info className="h-5 w-5 text-primary" />} items={details.beneficiary} />
+              <DetailCard title={T.beneficiario} icon={<Info className="h-5 w-5 text-primary" />} items={details.beneficiary} />
               <DetailCard title="Prestador solicitante" icon={<Info className="h-5 w-5 text-primary" />} items={details.solicitante} />
               <DetailCard title="Prestador executante" icon={<Info className="h-5 w-5 text-primary" />} items={details.executante} />
 
-              <SectionCard title="Procedimentos solicitados">
+              <SectionCard title={T.procedimentos}>
                 <ProcedureTable
                   columns={["Tabela", "Código", "Descrição"]}
                   rows={details.procedimentosSolicitados.map((p) => [p.tabela, p.codigo, p.descricao])}

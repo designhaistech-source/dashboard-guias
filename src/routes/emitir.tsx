@@ -96,6 +96,7 @@ import { Combobox } from "@/components/ui/combobox";
 import { CID_OPTIONS } from "@/lib/cid";
 import { TUSS, TUSS_OPTIONS, resolveTissTable } from "@/lib/tuss";
 import { nextGuiaNumber } from "@/lib/guia-number";
+import { SADT_SECTION_TITLES as T } from "@/lib/guide-sections";
 import {
   addIssuedGuide,
   downloadIssuedGuide,
@@ -1107,7 +1108,7 @@ function EmitirPage() {
       total: totalGeral,
       sections: [
         {
-          title: "Convênio e atendimento",
+          title: T.convenio,
           items: [
             { label: "Convênio", value: convenio.label },
             { label: "Tipo de guia", value: guideLabel },
@@ -1118,7 +1119,7 @@ function EmitirPage() {
           ],
         },
         {
-          title: "Beneficiário",
+          title: T.beneficiario,
           items: [
             { label: "Nome", value: pacienteNome },
             { label: "Nº da carteira", value: pacienteCarteira },
@@ -1129,7 +1130,7 @@ function EmitirPage() {
           ],
         },
         {
-          title: "Solicitante",
+          title: T.solicitante,
           items: [
             { label: "Profissional", value: medicoNome },
             { label: "Conselho / número", value: `${profissional.conselho} ${medicoCrm}`.trim() },
@@ -1140,7 +1141,7 @@ function EmitirPage() {
           ],
         },
         {
-          title: "Dados clínicos",
+          title: T.clinico,
           items: [
             { label: "CID principal", value: cidPrincipal },
             { label: "Indicação clínica", value: indicacaoClinica },
@@ -1148,14 +1149,14 @@ function EmitirPage() {
           ],
         },
         {
-          title: "Procedimentos solicitados",
+          title: T.procedimentos,
           items: filledProcedures.map((p, index) => ({
             label: `Procedimento ${index + 1}`,
             value: `${p.code} — ${p.description} (qtde. ${p.quantity})`,
           })),
         },
         {
-          title: "Totais",
+          title: T.totais,
           items: [
             { label: "Total de procedimentos", value: formatMoney(totalProcedimentos) },
             { label: "Total geral", value: formatMoney(totalGeral) },
@@ -1437,7 +1438,7 @@ function EmitirPage() {
                   number={stepNumber("convenio")}
                   done={convenioOk}
                   icon={<Building2 className="h-4 w-4" />}
-                  title="Convênio e atendimento"
+                  title={T.convenio}
                   description="Campos 1 a 7 da guia — operadora responsável, autorização e senha."
                 >
                   <Grid cols={12}>
@@ -1572,7 +1573,7 @@ function EmitirPage() {
                   number={stepNumber("convenio")}
                   done={convenioOk}
                   icon={<Building2 className="h-4 w-4" />}
-                  title="Estabelecimento (SUS)"
+                  title={T.estabelecimento}
                   description="Unidade executante e identificação DATASUS."
                 >
                   <Grid cols={2}>
@@ -1711,7 +1712,7 @@ function EmitirPage() {
                 number={stepNumber("paciente")}
                 done={pacienteOk}
                 icon={<User className="h-4 w-4" />}
-                title="Dados do Beneficiário"
+                title={T.beneficiario}
                 description="Campos 8 a 12 da guia — identificação do beneficiário na operadora."
               >
                 <Grid cols={12}>
@@ -1824,7 +1825,7 @@ function EmitirPage() {
                 number={stepNumber("profissional")}
                 done={profissionalOk}
                 icon={<Stethoscope className="h-4 w-4" />}
-                title="Dados do Solicitante"
+                title={T.solicitante}
                 description="Campos 13 a 20 — preenchidos pelos cadastros do estabelecimento e do profissional."
                 action={
                   <Button
@@ -1987,7 +1988,7 @@ function EmitirPage() {
                 icon={<FileText className="h-4 w-4" />}
                 title={
                   <span className="flex items-center gap-2 whitespace-nowrap">
-                    Dados da Solicitação
+                    {T.solicitacao}
                     {guideKind && (
                       <Badge variant="secondary" className="font-medium">
                         {GUIDE_SHORT[guideKind]}
@@ -2349,7 +2350,7 @@ function EmitirPage() {
                 number={stepNumber("atendimento")}
                 done={atendimentoOk}
                 icon={<ClipboardList className="h-4 w-4" />}
-                title="Dados do Atendimento"
+                title={T.atendimento}
                 description="Campos 32 a 34 da guia — exibidos conforme o tipo de atendimento."
               >
                 <Grid cols={isConsulta ? 3 : 2}>
@@ -2410,7 +2411,7 @@ function EmitirPage() {
                 number={stepNumber("realizados")}
                 done={realizadosOk}
                 icon={<ClipboardList className="h-4 w-4" />}
-                title="Dados da Execução / Procedimentos e Exames Realizados"
+                title={T.execucao}
                 description="Campos 36 a 47 da guia — busque o procedimento realizado; os demais dados são automáticos."
                 collapsible
                 defaultCollapsed
@@ -2581,7 +2582,7 @@ function EmitirPage() {
                 number={stepNumber("executantes")}
                 done={executantesOk}
                 icon={<Stethoscope className="h-4 w-4" />}
-                title="Identificação do(a) Profissional Executante"
+                title={T.executante}
                 description="Selecione o profissional — conselho, número, UF e CBO são preenchidos automaticamente."
                 collapsible
                 defaultCollapsed
@@ -2768,7 +2769,7 @@ function EmitirPage() {
                 number={stepNumber("observacao")}
                 done={observacaoOk}
                 icon={<FileText className="h-4 w-4" />}
-                title="Observação / Justificativa"
+                title={T.observacao}
                 description="Campo 58 — informações complementares ou justificativa clínica (opcional)."
               >
                 <FormField
@@ -2795,7 +2796,7 @@ function EmitirPage() {
                 stepsLabel="Etapas preenchidas"
                 steps={[
                   {
-                    label: convenioId === "tiss" ? "Convênio" : "Estabelecimento",
+                    label: convenioId === "tiss" ? T.convenio : T.estabelecimento,
                     done: convenioOk,
                   },
                   ...(guideKind === "internacao"
@@ -2803,14 +2804,14 @@ function EmitirPage() {
                     : []),
                   ...(guideKind === "apac" ? [{ label: "APAC", done: especificoOk }] : []),
                   ...(guideKind === "aih" ? [{ label: "AIH", done: especificoOk }] : []),
-                  { label: "Beneficiário", done: pacienteOk },
-                  { label: "Solicitante", done: profissionalOk },
-                  { label: "Solicitação", done: clinicoOk && procedimentosOk },
+                  { label: T.beneficiario, done: pacienteOk },
+                  { label: T.solicitante, done: profissionalOk },
+                  { label: T.solicitacao, done: clinicoOk && procedimentosOk },
                   
-                  { label: "Atendimento", done: atendimentoOk },
-                  { label: "Execução", done: realizadosOk },
-                  { label: "Profissional executante", done: executantesOk },
-                  { label: "Observação (opcional)", done: observacaoOk },
+                  { label: T.atendimento, done: atendimentoOk },
+                  { label: T.execucao, done: realizadosOk },
+                  { label: T.executante, done: executantesOk },
+                  { label: `${T.observacao} (opcional)`, done: observacaoOk },
                   
 
 
