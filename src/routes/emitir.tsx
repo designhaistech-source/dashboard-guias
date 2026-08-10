@@ -1790,8 +1790,8 @@ function EmitirPage() {
                     value={pacienteRn}
                     onValueChange={setPacienteRn}
                     options={[
-                      { value: "N", label: "Não" },
-                      { value: "S", label: "Sim" },
+                      { value: "S", label: "S - Sim" },
+                      { value: "N", label: "N - Não" },
                     ]}
                   />
 
