@@ -1988,7 +1988,7 @@ function EmitirPage() {
                 icon={<FileText className="h-4 w-4" />}
                 title={
                   <span className="flex items-center gap-2 whitespace-nowrap">
-                    Dados da Solicitação
+                    {T.solicitacao}
                     {guideKind && (
                       <Badge variant="secondary" className="font-medium">
                         {GUIDE_SHORT[guideKind]}
