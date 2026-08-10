@@ -399,12 +399,21 @@ function EmitirPage() {
   const [indicacaoAcidente, setIndicacaoAcidente] = useState("Não acidente");
   const [tipoConsulta, setTipoConsulta] = useState("");
   /**
-   * Campo 35 — condicional (ex.: óbito). Não é exibido na emissão; segue na
-   * guia apenas quando preenchido por fluxos específicos.
+   * Campo 35 — condicional: só se aplica em caso de óbito (domínio TISS nº 39).
+   * Qualquer valor fora dos códigos de óbito é descartado para que a guia saia
+   * com o campo em branco nos atendimentos normais.
    */
   const [motivoEncerramento, setMotivoEncerramento] = useState("");
   /** Campo 34 só se aplica quando o atendimento é uma consulta (regra TISS). */
   const isConsulta = tipoAtendimento === "Consulta";
+
+  // Limpa o campo 35 quando o tipo de atendimento muda ou quando o código
+  // armazenado não corresponde a um motivo de óbito.
+  React.useEffect(() => {
+    setMotivoEncerramento((current) =>
+      MOTIVO_ENCERRAMENTO_OBITO.some((o) => o.value === current) ? current : "",
+    );
+  }, [tipoAtendimento]);
 
 
 
