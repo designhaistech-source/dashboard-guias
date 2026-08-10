@@ -113,7 +113,7 @@ export function SectionCard({
               {collapsible && (
                 <button
                   type="button"
-                  onClick={() => setCollapsed((v) => !v)}
+                  onClick={toggle}
                   aria-expanded={open}
                   aria-controls={bodyId}
                   className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-border text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
