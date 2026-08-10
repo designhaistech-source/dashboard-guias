@@ -2095,7 +2095,7 @@ function EmitirPage() {
                   </div>
 
                   <p className="text-xs text-muted-foreground">
-                    Busque por <strong>descrição ou código TUSS</strong> (campo 26) — o
+                    Busque por <strong>descrição</strong> (campo 26) — o
                     código (25) e a tabela (24) são preenchidos automaticamente. A{" "}
                     <strong>quantidade autorizada (28)</strong> é informada pela operadora.
                   </p>
@@ -2165,9 +2165,9 @@ function EmitirPage() {
                           procedimento escolhido e o envia na guia (PDF/XML).
                         */}
 
-                        {/* Descrição (campo 26) — busca única por descrição ou código TUSS */}
+                        {/* Descrição (campo 26) — busca única por descrição */}
                         <FormField
-                          label="26 - Descrição (buscar por descrição ou código TUSS)"
+                          label="26 - Descrição (buscar por descrição)"
                           required
                           labelClassName="@3xl:hidden"
                           className="min-w-0 @3xl:space-y-0"
@@ -2188,8 +2188,8 @@ function EmitirPage() {
                               });
                             }}
                             options={TUSS_OPTIONS}
-                            placeholder={p.description || "Buscar procedimento (descrição ou código)"}
-                            searchPlaceholder="Digite a descrição ou o código TUSS..."
+                            placeholder={p.description || "Buscar procedimento pela descrição"}
+                            searchPlaceholder="Digite a descrição do procedimento..."
                             emptyMessage="Nenhum procedimento encontrado."
                             clearable
                           />
@@ -2438,7 +2438,7 @@ function EmitirPage() {
                 ) : (
                   <div className="space-y-2">
                     <p className="text-xs text-muted-foreground">
-                      Busque por <strong>descrição ou código TUSS</strong> (campo 41) — o código
+                      Busque por <strong>descrição</strong> (campo 41) — o código
                       (40) e a tabela (39) são preenchidos automaticamente. A{" "}
                       <strong>data (36)</strong> vem da realização e pode ser ajustada.
                     </p>
@@ -2469,9 +2469,9 @@ function EmitirPage() {
                               }}
                               options={TUSS_OPTIONS}
                               placeholder={
-                                item.description || "Buscar procedimento (descrição ou código)"
+                                item.description || "Buscar procedimento pela descrição"
                               }
-                              searchPlaceholder="Digite a descrição ou o código TUSS..."
+                              searchPlaceholder="Digite a descrição do procedimento..."
                               emptyMessage="Nenhum procedimento encontrado."
                               clearable
                             />
