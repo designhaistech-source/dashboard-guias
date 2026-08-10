@@ -826,7 +826,9 @@ function EmitirPage() {
       ),
     ]);
 
+    setExecOpen(true);
     toast.success(`${filled.length} procedimento(s) copiado(s) dos solicitados`);
+
   };
 
   /** Quadro "Identificação do(a) profissional executante" (campos 48 a 55). */
