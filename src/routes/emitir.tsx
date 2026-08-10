@@ -131,6 +131,19 @@ const MOTIVO_ENCERRAMENTO_OBITO: readonly { value: string; label: string }[] = [
 ];
 
 /**
+ * Classes compartilhadas pelos campos 32–35 (Dados do Atendimento).
+ * Garantem altura de célula uniforme, labels alinhados no topo (reservando
+ * espaço para rótulos de duas linhas) e hints ancorados na base da célula,
+ * mantendo o espaçamento vertical/horizontal idêntico entre os campos.
+ */
+const ATENDIMENTO_FIELD_CLASS =
+  "flex h-full flex-col gap-1.5 space-y-0 sm:gap-2 [&>p]:mt-auto";
+const ATENDIMENTO_LABEL_CLASS = "min-h-[2rem] items-start sm:min-h-[1.125rem]";
+const ATENDIMENTO_TRIGGER_CLASS = "h-10 w-full";
+
+
+
+/**
  * Validação das preferências do prestador. O padrão de matrícula aceita
  * "CRM 123456/RN" (conselho + UF) ou uma matrícula numérica do SUS.
  */
@@ -2389,6 +2402,9 @@ function EmitirPage() {
               >
                 <Grid cols={2}>
                   <SelectField
+                    className={ATENDIMENTO_FIELD_CLASS}
+                    labelClassName={ATENDIMENTO_LABEL_CLASS}
+                    triggerClassName={ATENDIMENTO_TRIGGER_CLASS}
                     label="32 - Tipo de Atendimento"
                     required
                     value={tipoAtendimento}
@@ -2406,6 +2422,9 @@ function EmitirPage() {
                     ].map((o) => ({ value: o, label: o }))}
                   />
                   <SelectField
+                    className={ATENDIMENTO_FIELD_CLASS}
+                    labelClassName={ATENDIMENTO_LABEL_CLASS}
+                    triggerClassName={ATENDIMENTO_TRIGGER_CLASS}
                     label="33 - Indicação de Acidente"
                     required
                     value={indicacaoAcidente}
@@ -2421,6 +2440,9 @@ function EmitirPage() {
                   />
                   {isConsulta && (
                     <SelectField
+                      className={ATENDIMENTO_FIELD_CLASS}
+                      labelClassName={ATENDIMENTO_LABEL_CLASS}
+                      triggerClassName={ATENDIMENTO_TRIGGER_CLASS}
                       label="34 - Tipo de Consulta"
                       value={tipoConsulta}
                       onValueChange={setTipoConsulta}
@@ -2434,6 +2456,9 @@ function EmitirPage() {
                     />
                   )}
                   <SelectField
+                    className={ATENDIMENTO_FIELD_CLASS}
+                    labelClassName={ATENDIMENTO_LABEL_CLASS}
+                    triggerClassName={ATENDIMENTO_TRIGGER_CLASS}
                     label="35 - Motivo de Encerramento do Atendimento"
                     value={motivoEncerramento}
                     onValueChange={setMotivoEncerramento}
