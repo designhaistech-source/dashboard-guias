@@ -1560,7 +1560,7 @@ function EmitirPage() {
                             onChange={(e) => setValidadeSenha(e.target.value)}
                           />
                         </Field>
-                        <Field label="7 - Número da Guia Atribuído pela Operadora" span="@md:col-span-6 @3xl:col-span-4">
+                        <Field label="7 - Informado pela operadora" span="@md:col-span-6 @3xl:col-span-4">
                           <Input
                             value={guiaOperadora}
                             onChange={(e) => setGuiaOperadora(e.target.value)}
