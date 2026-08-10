@@ -409,7 +409,7 @@ function EmitirPage() {
 
   // Limpa o campo 35 quando o tipo de atendimento muda ou quando o código
   // armazenado não corresponde a um motivo de óbito.
-  React.useEffect(() => {
+  useEffect(() => {
     setMotivoEncerramento((current) =>
       MOTIVO_ENCERRAMENTO_OBITO.some((o) => o.value === current) ? current : "",
     );
