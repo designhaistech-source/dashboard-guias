@@ -1336,6 +1336,12 @@ function EmitirPage() {
             <InternacaoGuideForm
               numeroGuia={numeroGuia}
               registroAns={registroAns}
+              operadora={operadora}
+              operadoras={OPERADORAS}
+              onOperadoraChange={(value, ans) => {
+                setOperadora(value);
+                setRegistroAns(ans);
+              }}
               header={
                 <div className="flex items-center gap-3">
                   <div className="w-1 h-8 bg-primary rounded-full" />
