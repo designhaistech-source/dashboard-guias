@@ -2425,7 +2425,9 @@ function EmitirPage() {
                 title="Dados da Execução"
                 description="Campos 36 a 47 da guia — busque o procedimento realizado; os demais dados são automáticos."
                 collapsible
-                defaultCollapsed
+                open={execOpen}
+                onOpenChange={setExecOpen}
+
                 action={
                   <div className="flex flex-wrap gap-2">
                     <Button
