@@ -859,7 +859,13 @@ function EmitirPage() {
     professionalId: "",
   });
   const [executantes, setExecutantes] = useState<ExecutanteItem[]>([]);
-  const addExecutante = () => setExecutantes((l) => [...l, emptyExecutante(l.length + 1)]);
+  /** Abertura controlada da seção de profissionais executantes. */
+  const [execProfOpen, setExecProfOpen] = useState(false);
+  const addExecutante = () => {
+    setExecutantes((l) => [...l, emptyExecutante(l.length + 1)]);
+    setExecProfOpen(true);
+  };
+
   const updateExecutante = (id: string, patch: Partial<ExecutanteItem>) =>
     setExecutantes((l) => l.map((x) => (x.id === id ? { ...x, ...patch } : x)));
   /** Seleção do profissional executante — preenche 50 e 52 a 55 automaticamente. */
