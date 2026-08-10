@@ -120,6 +120,17 @@ const UF_LIST = [
 ] as const;
 
 /**
+ * Campo 35 — Motivo de Encerramento do Atendimento (domínio TISS nº 39).
+ * Apenas os códigos de óbito são oferecidos: o campo é preenchido somente
+ * nesses casos e permanece vazio nos atendimentos normais.
+ */
+const MOTIVO_ENCERRAMENTO_OBITO: readonly { value: string; label: string }[] = [
+  { value: "21", label: "21 - Óbito com declaração fornecida pelo médico assistente" },
+  { value: "22", label: "22 - Óbito com declaração fornecida pelo IML" },
+  { value: "23", label: "23 - Óbito com declaração fornecida pelo SVO" },
+];
+
+/**
  * Validação das preferências do prestador. O padrão de matrícula aceita
  * "CRM 123456/RN" (conselho + UF) ou uma matrícula numérica do SUS.
  */
