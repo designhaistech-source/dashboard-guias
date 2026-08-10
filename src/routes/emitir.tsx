@@ -1621,14 +1621,12 @@ function EmitirPage() {
                     <SelectField
                       label="Tipo de internação"
                       required
-                      labelClassName="text-xs font-medium text-muted-foreground"
                       value={internacaoTipo}
                       onValueChange={setInternacaoTipo}
                       options={["Clínica", "Cirúrgica", "Obstétrica", "Pediátrica", "Psiquiátrica"].map((o) => ({ value: o, label: o }))}
                     />
                     <SelectField
                       label="Regime"
-                      labelClassName="text-xs font-medium text-muted-foreground"
                       value={internacaoRegime}
                       onValueChange={setInternacaoRegime}
                       options={["Hospitalar", "Hospital-dia", "Domiciliar"].map((o) => ({ value: o, label: o }))}
@@ -1645,7 +1643,6 @@ function EmitirPage() {
                     </Field>
                     <SelectField
                       label="Acomodação"
-                      labelClassName="text-xs font-medium text-muted-foreground"
                       value={internacaoAcomodacao}
                       onValueChange={setInternacaoAcomodacao}
                       options={["Enfermaria", "Apartamento", "UTI"].map((o) => ({ value: o, label: o }))}
@@ -1674,7 +1671,6 @@ function EmitirPage() {
                     <SelectField
                       label="Tipo de APAC"
                       required
-                      labelClassName="text-xs font-medium text-muted-foreground"
                       value={apacTipo}
                       onValueChange={setApacTipo}
                       options={["Inicial", "Continuidade", "Única"].map((o) => ({ value: o, label: o }))}
@@ -1696,7 +1692,6 @@ function EmitirPage() {
                     <SelectField
                       label="Caráter da internação"
                       required
-                      labelClassName="text-xs font-medium text-muted-foreground"
                       value={aihCaraterEntry}
                       onValueChange={setAihCaraterEntry}
                       options={["Eletivo", "Urgência"].map((o) => ({ value: o, label: o }))}
@@ -1786,7 +1781,6 @@ function EmitirPage() {
                     label="12 - Atendimento a RN"
                     required
                     className="@md:col-span-6 @3xl:col-span-3"
-                    labelClassName="text-xs font-medium text-muted-foreground"
                     value={pacienteRn}
                     onValueChange={setPacienteRn}
                     options={[
@@ -2362,7 +2356,6 @@ function EmitirPage() {
                 <Grid cols={isConsulta ? 3 : 2}>
                   <SelectField
                     label="32 - Tipo de Atendimento"
-                    labelClassName="text-xs font-medium text-muted-foreground"
                     required
                     value={tipoAtendimento}
                     onValueChange={setTipoAtendimento}
@@ -2380,7 +2373,6 @@ function EmitirPage() {
                   />
                   <SelectField
                     label="33 - Indicação de Acidente"
-                    labelClassName="text-xs font-medium text-muted-foreground"
                     required
                     value={indicacaoAcidente}
                     onValueChange={setIndicacaoAcidente}
@@ -2396,7 +2388,6 @@ function EmitirPage() {
                   {isConsulta && (
                     <SelectField
                       label="34 - Tipo de Consulta"
-                      labelClassName="text-xs font-medium text-muted-foreground"
                       value={tipoConsulta}
                       onValueChange={setTipoConsulta}
                       placeholder="Selecione"
@@ -2613,7 +2604,6 @@ function EmitirPage() {
                           <div className={participationVisible ? "@md:col-span-7" : "@md:col-span-11"}>
                             <SelectField
                               label={`51 - Profissional executante ${executantes.length > 1 ? idx + 1 : ""}`.trim()}
-                              labelClassName="text-xs font-medium text-muted-foreground"
                               value={ex.professionalId}
                               onValueChange={(v) => selectExecutanteProfessional(ex.id, v)}
                               placeholder="Selecione o profissional"
@@ -2627,7 +2617,6 @@ function EmitirPage() {
                             <div className="@md:col-span-4">
                               <SelectField
                                 label="49 - Grau Part."
-                                labelClassName="text-xs font-medium text-muted-foreground"
                                 value={ex.participation}
                                 onValueChange={(v) => updateExecutante(ex.id, { participation: v })}
                                 placeholder="Selecione"

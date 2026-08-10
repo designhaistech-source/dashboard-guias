@@ -69,7 +69,6 @@ export function ProfessionalRegistryField({
           label={labels?.nome ?? "15 - Nome do Profissional Solicitante"}
           required
           className="@md:col-span-6 @3xl:col-span-5"
-          labelClassName="text-xs font-medium text-muted-foreground"
           value={selected ? selected.id : ""}
           onValueChange={(id) => {
             const found = PROFESSIONALS.find((p) => p.id === id);

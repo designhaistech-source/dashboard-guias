@@ -331,7 +331,6 @@ export function ApacGuideForm({ header }: ApacGuideFormProps) {
           <SelectField
             label="7 - Sexo"
             required
-            labelClassName="text-xs font-medium text-muted-foreground"
             value={sexo}
             onValueChange={setSexo}
             options={SEXO_OPTIONS}
@@ -339,7 +338,6 @@ export function ApacGuideForm({ header }: ApacGuideFormProps) {
           />
           <SelectField
             label="8 - Raça / Cor"
-            labelClassName="text-xs font-medium text-muted-foreground"
             value={racaCor}
             onValueChange={setRacaCor}
             options={RACA_COR_OPTIONS}
@@ -401,7 +399,6 @@ export function ApacGuideForm({ header }: ApacGuideFormProps) {
           </Field>
           <SelectField
             label="16 - UF"
-            labelClassName="text-xs font-medium text-muted-foreground"
             value={uf}
             onValueChange={setUf}
             options={UF_OPTIONS}
@@ -625,7 +622,6 @@ export function ApacGuideForm({ header }: ApacGuideFormProps) {
           </Field>
           <SelectField
             label="43 - Documento"
-            labelClassName="text-xs font-medium text-muted-foreground"
             value={documentoSolicitanteTipo}
             onValueChange={setDocumentoSolicitanteTipo}
             options={DOCUMENTO_OPTIONS}
@@ -676,7 +672,6 @@ export function ApacGuideForm({ header }: ApacGuideFormProps) {
           </Field>
           <SelectField
             label="48 - Documento"
-            labelClassName="text-xs font-medium text-muted-foreground"
             value={documentoAutorizadorTipo}
             onValueChange={setDocumentoAutorizadorTipo}
             options={DOCUMENTO_OPTIONS}

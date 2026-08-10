@@ -127,7 +127,7 @@ export function SignatureField({
   return (
     <div className={cn("min-w-0 space-y-2", className)}>
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <span className="text-sm font-medium leading-snug text-foreground">
+        <span className="text-xs font-medium leading-snug text-muted-foreground">
           {label}
         </span>
         <div className="flex items-center gap-1.5">
