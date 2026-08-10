@@ -402,7 +402,7 @@ function EmitirPage() {
    * Campo 35 — condicional (ex.: óbito). Não é exibido na emissão; segue na
    * guia apenas quando preenchido por fluxos específicos.
    */
-  const [motivoEncerramento] = useState("");
+  const [motivoEncerramento, setMotivoEncerramento] = useState("");
   /** Campo 34 só se aplica quando o atendimento é uma consulta (regra TISS). */
   const isConsulta = tipoAtendimento === "Consulta";
 
@@ -2365,7 +2365,7 @@ function EmitirPage() {
                 done={atendimentoOk}
                 icon={<ClipboardList className="h-4 w-4" />}
                 title="Dados do Atendimento"
-                description="Campos 32 a 34 da guia — exibidos conforme o tipo de atendimento."
+                description="Campos 32 a 35 da guia — exibidos conforme o tipo de atendimento."
               >
                 <Grid cols={isConsulta ? 3 : 2}>
                   <SelectField
@@ -2414,6 +2414,22 @@ function EmitirPage() {
                     />
                   )}
                 </Grid>
+                <div className="mt-4">
+                <Grid cols={isConsulta ? 3 : 2}>
+                  <SelectField
+                    label="35 - Motivo de Encerramento do Atendimento"
+                    value={motivoEncerramento}
+                    onValueChange={setMotivoEncerramento}
+                    placeholder="Selecione"
+                    hint="Preencher somente em caso de óbito."
+                    options={[
+                      { value: "21", label: "21 - Óbito com declaração fornecida pelo médico assistente" },
+                      { value: "22", label: "22 - Óbito com declaração fornecida pelo IML" },
+                      { value: "23", label: "23 - Óbito com declaração fornecida pelo SVO" },
+                    ]}
+                  />
+                </Grid>
+                </div>
               </Section>
 
 
