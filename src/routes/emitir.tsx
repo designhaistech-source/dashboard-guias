@@ -2413,9 +2413,6 @@ function EmitirPage() {
                       ].map((o) => ({ value: o, label: o }))}
                     />
                   )}
-                </Grid>
-                <div className="mt-4">
-                <Grid cols={isConsulta ? 3 : 2}>
                   <SelectField
                     label="35 - Motivo de Encerramento do Atendimento"
                     value={motivoEncerramento}
@@ -2429,7 +2426,6 @@ function EmitirPage() {
                     ]}
                   />
                 </Grid>
-                </div>
               </Section>
 
 
