@@ -18,6 +18,8 @@ export interface ComboboxOption {
   value: string;
   label: string;
   description?: string;
+  /** Texto usado na busca; por padrão considera label + value. */
+  searchText?: string;
   disabled?: boolean;
 }
 
@@ -138,7 +140,7 @@ export function Combobox({
                 return (
                   <CommandItem
                     key={opt.value}
-                    value={`${opt.label} ${opt.value}`}
+                    value={opt.searchText ?? `${opt.label} ${opt.value}`}
                     disabled={opt.disabled}
                     onSelect={() => {
                       onChange?.(opt.value);
@@ -281,7 +283,7 @@ export function MultiSelect({
                 return (
                   <CommandItem
                     key={opt.value}
-                    value={`${opt.label} ${opt.value}`}
+                    value={opt.searchText ?? `${opt.label} ${opt.value}`}
                     disabled={opt.disabled}
                     onSelect={() => toggle(opt.value)}
                     className="flex items-center gap-2"
