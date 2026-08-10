@@ -3175,12 +3175,12 @@ function Section({
 function Grid({ cols, children }: { cols: 2 | 3 | 12; children: React.ReactNode }) {
   const colsClass =
     cols === 2
-      ? "@md:grid-cols-2"
+      ? "grid-cols-1 @md:grid-cols-2"
       : cols === 3
-        ? "@md:grid-cols-2 @3xl:grid-cols-3"
+        ? "grid-cols-1 @md:grid-cols-2 @3xl:grid-cols-3"
         : // Grade de 12 colunas: permite campos curtos (datas, códigos) ocuparem
           // apenas a largura necessária, deixando a seção mais compacta.
-          "@md:grid-cols-6 @3xl:grid-cols-12";
+          "grid-cols-1 @md:grid-cols-6 @3xl:grid-cols-12";
   return (
     <div className="@container">
       <div className={`grid items-start gap-x-4 gap-y-3 ${colsClass}`}>{children}</div>
