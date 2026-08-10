@@ -103,12 +103,16 @@ function newItem(): RequestedItem {
   };
 }
 
-function Grid({ cols, children }: { cols: 2 | 3; children: React.ReactNode }) {
+function Grid({ cols, children }: { cols: 2 | 3 | 12; children: React.ReactNode }) {
   return (
     <div className="@container">
       <div
         className={`grid gap-4 ${
-          cols === 2 ? "@md:grid-cols-2" : "@md:grid-cols-2 @3xl:grid-cols-3"
+          cols === 12
+            ? "@md:grid-cols-12"
+            : cols === 2
+              ? "@md:grid-cols-2"
+              : "@md:grid-cols-2 @3xl:grid-cols-3"
         }`}
       >
         {children}
@@ -120,14 +124,17 @@ function Grid({ cols, children }: { cols: 2 | 3; children: React.ReactNode }) {
 function Field({
   label,
   required,
+  span,
   children,
 }: {
   label: string;
   required?: boolean;
+  /** Classes de coluna aplicadas quando o Grid usa 12 colunas. */
+  span?: string;
   children: React.ReactNode;
 }) {
   return (
-    <div className="space-y-1.5">
+    <div className={`min-w-0 space-y-1.5 ${span ?? ""}`}>
       <Label className="text-xs font-medium text-muted-foreground">
         {label} {required && <span className="text-destructive">*</span>}
       </Label>
@@ -135,6 +142,7 @@ function Field({
     </div>
   );
 }
+
 
 export interface InternacaoGuideFormProps {
   /** Número sequencial da guia no prestador (campo 2). */
