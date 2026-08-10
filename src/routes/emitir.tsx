@@ -2588,7 +2588,7 @@ function EmitirPage() {
                 number={stepNumber("executantes")}
                 done={executantesOk}
                 icon={<Stethoscope className="h-4 w-4" />}
-                title={T.executante}
+                title="Identificação do(s) Profissional(is) Executante(s)"
                 description="Selecione o profissional — conselho, número, UF e CBO são preenchidos automaticamente."
                 collapsible
                 defaultCollapsed
