@@ -2598,7 +2598,9 @@ function EmitirPage() {
                 title="Identificação do(s) Profissional(is) Executante(s)"
                 description="Selecione o profissional — conselho, número, UF e CBO são preenchidos automaticamente."
                 collapsible
-                defaultCollapsed
+                open={execProfOpen}
+                onOpenChange={setExecProfOpen}
+
                 action={
                   <Button type="button" size="sm" onClick={addExecutante}>
                     <Plus className="h-4 w-4" /> Adicionar profissional
