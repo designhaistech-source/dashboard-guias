@@ -2367,7 +2367,7 @@ function EmitirPage() {
                 title="Dados do Atendimento"
                 description="Campos 32 a 35 da guia — exibidos conforme o tipo de atendimento."
               >
-                <Grid cols={isConsulta ? 3 : 2}>
+                <Grid cols={2}>
                   <SelectField
                     label="32 - Tipo de Atendimento"
                     required
