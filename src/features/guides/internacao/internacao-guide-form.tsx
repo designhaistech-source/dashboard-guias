@@ -621,7 +621,6 @@ export function InternacaoGuideForm({
             label="9 - Atendimento a RN"
             required
             className="@md:col-span-6 @3xl:col-span-3"
-            labelClassName="text-xs font-medium text-muted-foreground"
             value={atendimentoRn}
             onValueChange={setAtendimentoRn}
             options={SIM_NAO_OPTIONS}
@@ -680,7 +679,6 @@ export function InternacaoGuideForm({
           <SelectField
             label="15 - Conselho Profissional"
             required
-            labelClassName="text-xs font-medium text-muted-foreground"
             value={conselho}
             onValueChange={setConselho}
             options={CONSELHO_OPTIONS}
@@ -738,7 +736,6 @@ export function InternacaoGuideForm({
           <SelectField
             label="22 - Caráter do Atendimento"
             required
-            labelClassName="text-xs font-medium text-muted-foreground"
             value={carater}
             onValueChange={setCarater}
             options={CARATER_OPTIONS}
@@ -746,7 +743,6 @@ export function InternacaoGuideForm({
           <SelectField
             label="23 - Tipo de Internação"
             required
-            labelClassName="text-xs font-medium text-muted-foreground"
             value={tipoInternacao}
             onValueChange={setTipoInternacao}
             options={TIPO_INTERNACAO_OPTIONS}
@@ -754,7 +750,6 @@ export function InternacaoGuideForm({
           <SelectField
             label="24 - Regime de Internação"
             required
-            labelClassName="text-xs font-medium text-muted-foreground"
             value={regimeInternacao}
             onValueChange={setRegimeInternacao}
             options={REGIME_INTERNACAO_OPTIONS}
@@ -770,7 +765,6 @@ export function InternacaoGuideForm({
           <SelectField
             label="26 - Previsão de Uso de OPME"
             required
-            labelClassName="text-xs font-medium text-muted-foreground"
             value={previsaoOpme}
             onValueChange={setPrevisaoOpme}
             options={SIM_NAO_OPTIONS}
@@ -778,7 +772,6 @@ export function InternacaoGuideForm({
           <SelectField
             label="27 - Previsão de Uso de Quimioterápico"
             required
-            labelClassName="text-xs font-medium text-muted-foreground"
             value={previsaoQuimio}
             onValueChange={setPrevisaoQuimio}
             options={SIM_NAO_OPTIONS}
@@ -845,7 +838,6 @@ export function InternacaoGuideForm({
           <SelectField
             label="33 - Indicação de Acidente"
             required
-            labelClassName="text-xs font-medium text-muted-foreground"
             value={indicacaoAcidente}
             onValueChange={setIndicacaoAcidente}
             options={ACIDENTE_OPTIONS}
@@ -984,7 +976,6 @@ export function InternacaoGuideForm({
           </Field>
           <SelectField
             label="41 - Tipo da Acomodação Autorizada"
-            labelClassName="text-xs font-medium text-muted-foreground"
             value={acomodacaoAutorizada}
             onValueChange={setAcomodacaoAutorizada}
             options={ACOMODACAO_OPTIONS}

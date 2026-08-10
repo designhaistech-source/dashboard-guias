@@ -379,7 +379,6 @@ export function AihGuideForm({ header }: AihGuideFormProps) {
           <SelectField
             label="9 - Sexo"
             required
-            labelClassName="text-xs font-medium text-muted-foreground"
             value={sexo}
             onValueChange={setSexo}
             options={SEXO_OPTIONS}
@@ -387,7 +386,6 @@ export function AihGuideForm({ header }: AihGuideFormProps) {
           />
           <SelectField
             label="10 - Raça / Cor"
-            labelClassName="text-xs font-medium text-muted-foreground"
             value={racaCor}
             onValueChange={setRacaCor}
             options={RACA_COR_OPTIONS}
@@ -474,7 +472,6 @@ export function AihGuideForm({ header }: AihGuideFormProps) {
           </Field>
           <SelectField
             label="18 - UF"
-            labelClassName="text-xs font-medium text-muted-foreground"
             value={uf}
             onValueChange={setUf}
             options={UF_OPTIONS}
@@ -592,7 +589,6 @@ export function AihGuideForm({ header }: AihGuideFormProps) {
           <SelectField
             label="29 - Clínica"
             required
-            labelClassName="text-xs font-medium text-muted-foreground"
             value={clinica}
             onValueChange={setClinica}
             options={CLINICA_OPTIONS}
@@ -601,7 +597,6 @@ export function AihGuideForm({ header }: AihGuideFormProps) {
           <SelectField
             label="30 - Caráter da Internação"
             required
-            labelClassName="text-xs font-medium text-muted-foreground"
             value={caraterInternacao}
             onValueChange={setCaraterInternacao}
             options={CARATER_OPTIONS}
@@ -609,7 +604,6 @@ export function AihGuideForm({ header }: AihGuideFormProps) {
           />
           <SelectField
             label="31 - Documento"
-            labelClassName="text-xs font-medium text-muted-foreground"
             value={documentoSolicitanteTipo}
             onValueChange={setDocumentoSolicitanteTipo}
             options={DOCUMENTO_OPTIONS}
@@ -658,7 +652,6 @@ export function AihGuideForm({ header }: AihGuideFormProps) {
         <Grid cols={3}>
           <SelectField
             label="36 a 38 - Tipo de Causa Externa"
-            labelClassName="text-xs font-medium text-muted-foreground"
             value={causaExterna}
             onValueChange={setCausaExterna}
             options={CAUSA_EXTERNA_OPTIONS}
@@ -714,7 +707,6 @@ export function AihGuideForm({ header }: AihGuideFormProps) {
           </Field>
           <SelectField
             label="45 - Vínculo com a Previdência"
-            labelClassName="text-xs font-medium text-muted-foreground"
             value={vinculoPrevidencia}
             onValueChange={setVinculoPrevidencia}
             options={VINCULO_OPTIONS}
@@ -756,7 +748,6 @@ export function AihGuideForm({ header }: AihGuideFormProps) {
           </Field>
           <SelectField
             label="48 - Documento"
-            labelClassName="text-xs font-medium text-muted-foreground"
             value={documentoAutorizadorTipo}
             onValueChange={setDocumentoAutorizadorTipo}
             options={DOCUMENTO_OPTIONS}
