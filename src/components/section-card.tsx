@@ -21,6 +21,11 @@ export interface SectionCardProps {
   collapsible?: boolean;
   /** Inicia a seção recolhida (apenas com `collapsible`). */
   defaultCollapsed?: boolean;
+  /** Controla externamente o estado aberto/fechado (apenas com `collapsible`). */
+  open?: boolean;
+  /** Notifica mudanças de abertura quando controlado ou não. */
+  onOpenChange?: (open: boolean) => void;
+
   className?: string;
   /** Classe extra para o texto auxiliar (permite reduzir o destaque). */
   descriptionClassName?: string;
@@ -48,6 +53,8 @@ export function SectionCard({
   actions,
   collapsible,
   defaultCollapsed,
+  open: openProp,
+  onOpenChange,
   className,
   descriptionClassName,
   bodyClassName,
@@ -57,8 +64,15 @@ export function SectionCard({
   const [collapsed, setCollapsed] = React.useState(
     Boolean(collapsible && defaultCollapsed),
   );
-  const open = !collapsible || !collapsed;
+  const open = !collapsible || (openProp ?? !collapsed);
   const bodyId = React.useId();
+
+  function toggle() {
+    const next = !open;
+    if (openProp === undefined) setCollapsed(!next);
+    onOpenChange?.(next);
+  }
+
 
   return (
     <section id={id} className={cn("scroll-mt-4", className)}>
@@ -99,7 +113,7 @@ export function SectionCard({
               {collapsible && (
                 <button
                   type="button"
-                  onClick={() => setCollapsed((v) => !v)}
+                  onClick={toggle}
                   aria-expanded={open}
                   aria-controls={bodyId}
                   className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-border text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"

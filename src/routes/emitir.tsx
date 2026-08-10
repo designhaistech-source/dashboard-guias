@@ -795,7 +795,13 @@ function EmitirPage() {
     unitValue: "",
     ...patch,
   });
-  const addExecuted = () => setExecutedItems((l) => [...l, newExecutedItem()]);
+  /** Abertura controlada da seção de execução (abre ao adicionar/copiar itens). */
+  const [execOpen, setExecOpen] = useState(false);
+  const addExecuted = () => {
+    setExecutedItems((l) => [...l, newExecutedItem()]);
+    setExecOpen(true);
+  };
+
   const updateExecuted = (id: string, patch: Partial<ExecutedItem>) =>
     setExecutedItems((l) => l.map((x) => (x.id === id ? { ...x, ...patch } : x)));
   const removeExecuted = (id: string) =>
@@ -820,7 +826,9 @@ function EmitirPage() {
       ),
     ]);
 
+    setExecOpen(true);
     toast.success(`${filled.length} procedimento(s) copiado(s) dos solicitados`);
+
   };
 
   /** Quadro "Identificação do(a) profissional executante" (campos 48 a 55). */
@@ -851,7 +859,13 @@ function EmitirPage() {
     professionalId: "",
   });
   const [executantes, setExecutantes] = useState<ExecutanteItem[]>([]);
-  const addExecutante = () => setExecutantes((l) => [...l, emptyExecutante(l.length + 1)]);
+  /** Abertura controlada da seção de profissionais executantes. */
+  const [execProfOpen, setExecProfOpen] = useState(false);
+  const addExecutante = () => {
+    setExecutantes((l) => [...l, emptyExecutante(l.length + 1)]);
+    setExecProfOpen(true);
+  };
+
   const updateExecutante = (id: string, patch: Partial<ExecutanteItem>) =>
     setExecutantes((l) => l.map((x) => (x.id === id ? { ...x, ...patch } : x)));
   /** Seleção do profissional executante — preenche 50 e 52 a 55 automaticamente. */
@@ -2411,7 +2425,9 @@ function EmitirPage() {
                 title="Dados da Execução"
                 description="Campos 36 a 47 da guia — busque o procedimento realizado; os demais dados são automáticos."
                 collapsible
-                defaultCollapsed
+                open={execOpen}
+                onOpenChange={setExecOpen}
+
                 action={
                   <div className="flex flex-wrap gap-2">
                     <Button
@@ -2582,7 +2598,9 @@ function EmitirPage() {
                 title="Identificação do(s) Profissional(is) Executante(s)"
                 description="Selecione o profissional — conselho, número, UF e CBO são preenchidos automaticamente."
                 collapsible
-                defaultCollapsed
+                open={execProfOpen}
+                onOpenChange={setExecProfOpen}
+
                 action={
                   <Button type="button" size="sm" onClick={addExecutante}>
                     <Plus className="h-4 w-4" /> Adicionar profissional
@@ -3091,6 +3109,8 @@ function Section({
   action,
   collapsible,
   defaultCollapsed,
+  open,
+  onOpenChange,
   children,
 }: {
   number?: number;
@@ -3101,6 +3121,8 @@ function Section({
   action?: React.ReactNode;
   collapsible?: boolean;
   defaultCollapsed?: boolean;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
   children: React.ReactNode;
 }) {
   return (
@@ -3113,6 +3135,8 @@ function Section({
       actions={action}
       collapsible={collapsible}
       defaultCollapsed={defaultCollapsed}
+      open={open}
+      onOpenChange={onOpenChange}
     >
       {children}
     </BaseSectionCard>
