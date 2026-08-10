@@ -402,7 +402,7 @@ function EmitirPage() {
    * Campo 35 — condicional (ex.: óbito). Não é exibido na emissão; segue na
    * guia apenas quando preenchido por fluxos específicos.
    */
-  const [motivoEncerramento] = useState("");
+  const [motivoEncerramento, setMotivoEncerramento] = useState("");
   /** Campo 34 só se aplica quando o atendimento é uma consulta (regra TISS). */
   const isConsulta = tipoAtendimento === "Consulta";
 
