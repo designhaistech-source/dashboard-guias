@@ -553,7 +553,7 @@ export function InternacaoGuideForm({
         number={2}
         done={beneficiarioOk}
         icon={<User className="h-4 w-4" />}
-        title="Beneficiário"
+        title="Dados do Beneficiário"
         description="Campos 7 a 11 — identificação do beneficiário na operadora."
       >
         <Grid cols={12}>
