@@ -312,7 +312,7 @@ export function InternacaoGuideForm({
   const updateItem = (id: string, patch: Partial<RequestedItem>) =>
     setItems((prev) => prev.map((i) => (i.id === id ? { ...i, ...patch } : i)));
 
-  const guiaOk = Boolean(ans && dataAutorizacao);
+  const guiaOk = Boolean(operadoraValue && ans);
   const beneficiarioOk = Boolean(carteira && nomeBeneficiario);
   const solicitanteOk = Boolean(
     codigoSolicitante && nomeContratado && conselho && numeroConselho && cbo,
