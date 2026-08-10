@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import {
   BedDouble,
   Building2,
+  ChevronRight,
   ClipboardList,
   FileText,
   Hospital,
@@ -24,6 +25,18 @@ import { Textarea } from "@/components/ui/textarea";
 import { Combobox } from "@/components/ui/combobox";
 import { EmptyState } from "@/components/data-state";
 import { SelectField } from "@/components/form-field";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
 import { AppModal } from "@/components/app-modal";
 import { InternacaoGuidePreview } from "./internacao-guide-preview";
 import { CID_OPTIONS } from "@/lib/cid";
@@ -181,6 +194,8 @@ export function InternacaoGuideForm({
   onOperadoraChange,
 }: InternacaoGuideFormProps) {
   // 1 a 6 — identificação da guia e autorização
+  const [operadoraValue, setOperadoraValue] = useState(operadora ?? "");
+  const [autorizacaoOpen, setAutorizacaoOpen] = useState(false);
   const [ans, setAns] = useState(registroAns);
   /** Campo 2 — gerado pelo sistema; apenas repassado para a pré-visualização. */
   const guiaPrestador = numeroGuia;
