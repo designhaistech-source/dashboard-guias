@@ -2414,6 +2414,19 @@ function EmitirPage() {
                     />
                   )}
                 </Grid>
+                <Grid cols={isConsulta ? 3 : 2} className="mt-4">
+                  <SelectField
+                    label="35 - Motivo de Encerramento do Atendimento"
+                    value={motivoEncerramento}
+                    onValueChange={setMotivoEncerramento}
+                    placeholder="Selecione"
+                    hint="Preencher somente em caso de óbito."
+                    options={[
+                      { value: "21", label: "21 - Óbito com declaração fornecida pelo médico assistente" },
+                      { value: "22", label: "22 - Óbito com declaração fornecida pelo IML" },
+                      { value: "23", label: "23 - Óbito com declaração fornecida pelo SVO" },
+                    ]}
+                  />
               </Section>
 
 
