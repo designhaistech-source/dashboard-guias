@@ -1255,8 +1255,6 @@ function EmitirPage() {
     setPacienteCarteira("");
     setPacienteCns("");
     setPacienteValidadeCarteira("");
-    setBeneficiarioStatus("idle");
-    setCarteiraConsultada("");
     setPacienteCpf("");
     setPacienteNascimento("");
     setCidPrincipal("");
