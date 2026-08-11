@@ -234,7 +234,7 @@ export function DataTableCardFields({
     <dl
       className={cn(
         "grid gap-2 text-xs text-muted-foreground",
-        columns === 2 ? "grid-cols-2" : "grid-cols-1",
+        columns === 2 ? "grid-cols-1 min-[380px]:grid-cols-2" : "grid-cols-1",
         className,
       )}
     >
