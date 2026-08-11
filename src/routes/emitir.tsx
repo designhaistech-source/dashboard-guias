@@ -306,6 +306,22 @@ const ACIDENTE_DEFAULT = "9";
 const acidenteLabel = (code: string) =>
   ACIDENTE_OPTIONS.find((o) => o.value === code)?.label ?? "";
 
+/** Campo 32 — Tabela de Domínio nº 50 (Tipo de Atendimento): código de 2 caracteres. */
+const TIPO_ATENDIMENTO_OPTIONS: { value: string; label: string }[] = [
+  { value: "01", label: "01 - Remoção" },
+  { value: "02", label: "02 - Pequena cirurgia" },
+  { value: "03", label: "03 - Outras terapias" },
+  { value: "04", label: "04 - Consulta" },
+  { value: "08", label: "08 - Quimioterapia" },
+  { value: "09", label: "09 - Radioterapia" },
+  { value: "10", label: "10 - Terapia Renal Substitutiva (TRS)" },
+  { value: "13", label: "13 - Pequeno atendimento (sutura, gesso e outros)" },
+  { value: "23", label: "23 - Exame" },
+];
+const tipoAtendimentoLabel = (code: string) =>
+  TIPO_ATENDIMENTO_OPTIONS.find((o) => o.value === code)?.label ?? "";
+
+
 
 
 const GUIDE_SHORT: Record<GuideKind, string> = {
@@ -442,7 +458,7 @@ function EmitirPage() {
    */
   const [motivoEncerramento, setMotivoEncerramento] = useState("");
   /** Campo 34 só se aplica quando o atendimento é uma consulta (regra TISS). */
-  const isConsulta = tipoAtendimento === "Consulta";
+  const isConsulta = tipoAtendimento === "04";
 
   // Limpa o campo 35 quando o tipo de atendimento muda ou quando o código
   // armazenado não corresponde a um motivo de óbito.
@@ -812,11 +828,10 @@ function EmitirPage() {
    * Campos 37/38 (horários) só são exigidos quando o tipo de atendimento
    * envolve registro de horário (urgência/emergência, remoção, internado).
    */
-  const requiresExecutionTime = [
-    "Urgência / emergência",
-    "Remoção",
-    "SADT internado",
-  ].includes(tipoAtendimento);
+  // Códigos da Tabela 50: 01 - Remoção, 02 - Pequena cirurgia,
+  // 13 - Pequeno atendimento.
+  const requiresExecutionTime = ["01", "02", "13"].includes(tipoAtendimento);
+
   /** Permite registrar horários manualmente mesmo quando não obrigatórios. */
   const [showExecutionTime, setShowExecutionTime] = useState(false);
   const executionTimeVisible = requiresExecutionTime || showExecutionTime;
@@ -1146,7 +1161,7 @@ function EmitirPage() {
             { label: "Tipo de guia", value: guideLabel },
             { label: "Registro ANS", value: registroAns },
             { label: "Caráter do atendimento", value: character },
-            { label: "Tipo de atendimento", value: tipoAtendimento },
+            { label: "Tipo de atendimento", value: tipoAtendimentoLabel(tipoAtendimento) },
             { label: "Indicação de acidente", value: acidenteLabel(indicacaoAcidente) },
           ],
         },
@@ -2346,16 +2361,8 @@ function EmitirPage() {
                     value={tipoAtendimento}
                     onValueChange={setTipoAtendimento}
                     placeholder="Selecione"
-                    options={[
-                      "Remoção",
-                      "Pequena cirurgia",
-                      "Terapias",
-                      "Consulta",
-                      "Exame",
-                      "Atendimento domiciliar",
-                      "Urgência / emergência",
-                      "SADT internado",
-                    ].map((o) => ({ value: o, label: o }))}
+                    options={TIPO_ATENDIMENTO_OPTIONS}
+
                   />
                   <SelectField
                     className={ATENDIMENTO_FIELD_CLASS}
