@@ -2240,21 +2240,6 @@ function EmitirPage() {
                       </div>
                     ))}
                   </div>
-
-
-
-                  {filledProceduresCount > 1 && (
-                    <div className="flex items-center justify-end gap-2 pt-2 border-t">
-                      <Checkbox
-                        id="split-guides"
-                        checked={splitInGuides}
-                        onCheckedChange={(c) => setSplitInGuides(!!c)}
-                      />
-                      <Label htmlFor="split-guides" className="text-sm cursor-pointer">
-                        Solicitar os exames em {filledProceduresCount} guias separadas
-                      </Label>
-                    </div>
-                  )}
                 </div>
 
                 <div className="mt-5 border-t pt-4">
