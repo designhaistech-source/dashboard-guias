@@ -262,7 +262,6 @@ export function IssuedGuidesPage() {
                         { label: "Tipo de guia", value: guide.type },
                         { label: "Operadora", value: guide.operadora },
                         { label: "Data de emissão", value: formatIssuedAt(guide.issuedAt) },
-                        { label: "Valor total", value: formatCurrency(guide.total) },
                       ]}
                     />
                     <DataTableCardActions>
