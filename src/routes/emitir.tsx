@@ -419,8 +419,8 @@ function EmitirPage() {
 
   // Dados do atendimento (32 a 35)
   const [tipoAtendimento, setTipoAtendimento] = useState("");
-  /** Campo 33 — padrão TISS "Não acidente"; alterável quando necessário. */
-  const [indicacaoAcidente, setIndicacaoAcidente] = useState("Não acidente");
+  /** Campo 33 — padrão TISS "9 - Não acidente"; alterável quando necessário. */
+  const [indicacaoAcidente, setIndicacaoAcidente] = useState(ACIDENTE_DEFAULT);
   const [tipoConsulta, setTipoConsulta] = useState("");
   /**
    * Campo 35 — condicional: só se aplica em caso de óbito (domínio TISS nº 39).
