@@ -2,6 +2,8 @@ export { ProfessionalRegistryField } from "./components/professional-registry-fi
 export { ProfessionalPicker } from "./components/professional-picker";
 export {
   COUNCILS,
+  COUNCIL_CODES,
+  councilCode,
   MANUAL_PROFESSIONAL_ID,
   PROFESSIONALS,
   type Professional,
