@@ -1754,9 +1754,9 @@ function EmitirPage() {
                   >
                     <Input
                       value={pacienteCarteira}
-                      onChange={(e) => setPacienteCarteira(e.target.value)}
-                      placeholder="0000 0000 0000 0000"
-                      inputMode="numeric"
+                      onChange={(e) => setPacienteCarteira(e.target.value.slice(0, 20))}
+                      placeholder="Número da carteira"
+                      maxLength={20}
                       className="font-mono"
                     />
                   </Field>
