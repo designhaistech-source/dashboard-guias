@@ -82,10 +82,28 @@ export function IssuedGuidesPage() {
   const setFilter = (key: keyof typeof EMPTY_FILTERS, value: string) =>
     setFilters((prev) => ({ ...prev, [key]: value }));
 
-  const handleDownload = (guide: IssuedGuide) => {
-    downloadIssuedGuide(guide);
-    toast.success(`Download da guia ${guide.numero} iniciado.`);
-  };
+  // A guia baixada precisa ser o documento completo preenchido: renderizamos a
+  // pré-visualização fora da tela e enviamos esse markup para o diálogo de
+  // impressão/salvar em PDF do navegador.
+  const [printTarget, setPrintTarget] = useState<IssuedGuide | null>(null);
+  const printAreaRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!printTarget) return;
+    const frame = window.requestAnimationFrame(() => {
+      const markup = printAreaRef.current?.innerHTML;
+      if (markup) {
+        printGuideMarkup(markup, `Guia ${printTarget.numero} — Guias+`);
+        toast.success(`Guia ${printTarget.numero} pronta para salvar em PDF.`);
+      } else {
+        toast.error("Não foi possível gerar a guia completa.");
+      }
+      setPrintTarget(null);
+    });
+    return () => window.cancelAnimationFrame(frame);
+  }, [printTarget]);
+
+  const handleDownload = (guide: IssuedGuide) => setPrintTarget(guide);
 
   return (
     <div className="flex min-h-screen w-full bg-background text-foreground">
