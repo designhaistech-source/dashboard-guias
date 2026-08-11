@@ -3393,7 +3393,7 @@ function GuiaLivePreview(props: {
               <FieldBoxDate n="9" label="Validade da Carteira" {...dd(pacienteValidadeCarteira)} width={170} />
               <FieldBox n="10" label="Nome" value={pacienteNome} grow />
               <FieldBox n="11" label="Cartão Nacional de Saúde" value={pacienteCns} width={200} />
-              <FieldBox n="12" label="Atendimento a RN" value={pacienteRn === "S" ? "Sim" : "Não"} width={90} />
+              <FieldBox n="12" label="Atendimento a RN" value={pacienteRn === "S" ? "S" : "N"} width={90} />
             </FieldRow>
 
             <SectionBar>Dados do Solicitante</SectionBar>
