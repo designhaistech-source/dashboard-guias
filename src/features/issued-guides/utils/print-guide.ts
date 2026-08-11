@@ -65,13 +65,7 @@ export async function printGuideMarkup(markup: string, title: string) {
     <meta charset="utf-8" />
     <title>${escapeHtml(title)}</title>
     <style>${css}</style>
-    <style>
-      @page { size: landscape; margin: ${PAGE_MARGIN_MM}mm; }
-      html, body { margin: 0; padding: 0; background: #fff; }
-      .print-guard { padding: ${EDGE_GUARD_PX}px; overflow: hidden; }
-      .print-scale { width: ${SHEET_WIDTH_PX}px; }
-      * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-    </style>
+    <style>${PRINT_SHEET_CSS}</style>
   </head>
   <body><div class="print-guard"><div class="print-scale">${markup}</div></div></body>
 </html>`);
@@ -87,14 +81,11 @@ export async function printGuideMarkup(markup: string, title: string) {
     // nominal da folha, evitando corte nas laterais.
     const rect = sheet.getBoundingClientRect();
     const naturalWidth = Math.ceil(
-      Math.max(sheet.scrollWidth, rect.width, SHEET_WIDTH_PX),
+      Math.max(sheet.scrollWidth, rect.width, GUIDE_SHEET_WIDTH_PX),
     );
     const naturalHeight = Math.ceil(Math.max(sheet.scrollHeight, rect.height)) || 1;
-    const scale = Math.min(
-      1,
-      PRINT_CONTENT_WIDTH_PX / naturalWidth,
-      PRINT_CONTENT_HEIGHT_PX / naturalHeight,
-    );
+    const scale = getGuideSheetScale(naturalWidth, naturalHeight);
+
     sheet.style.zoom = String(scale);
     await new Promise((resolve) => window.setTimeout(resolve, 100));
   }
