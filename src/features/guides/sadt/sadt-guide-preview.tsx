@@ -25,10 +25,10 @@ export interface SadtPreviewOpmeItem {
 
 export function SadtGuidePreview(props: {
   numeroGuia: string;
-  guideKind: GuideKind | null;
+  guideKind?: string | null;
   guideLabel: string;
   guideHeaderTitle: string;
-  convenioId: ConvenioId;
+  convenioId?: string;
   operadora: string;
   operadoraLogo?: string;
   registroAns: string;
@@ -48,8 +48,8 @@ export function SadtGuidePreview(props: {
   cidPrincipal: string;
   indicacaoClinica: string;
   observacoes: string;
-  procedures: Procedure[];
-  opmeItems: OpmeItem[];
+  procedures: SadtPreviewProcedure[];
+  opmeItems: SadtPreviewOpmeItem[];
   internacaoTipo: string;
   internacaoRegime: string;
   internacaoDias: number;
