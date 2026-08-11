@@ -295,6 +295,19 @@ const CHARACTER_OPTIONS = [
   { value: "2", label: "2 - Urgência/Emergência" },
 ];
 
+/** Campo 33 — TUSS 36 (Indicador de Acidente): valor armazenado é o código de 1 caractere. */
+const ACIDENTE_OPTIONS: { value: string; label: string }[] = [
+  { value: "0", label: "Trabalho" },
+  { value: "1", label: "Trânsito" },
+  { value: "2", label: "Outros" },
+  { value: "9", label: "Não acidente" },
+];
+const ACIDENTE_DEFAULT = "9";
+const acidenteLabel = (code: string) =>
+  ACIDENTE_OPTIONS.find((o) => o.value === code)?.label ?? "";
+
+
+
 const GUIDE_SHORT: Record<GuideKind, string> = {
   sadt: "SADT",
   internacao: "Internação",
@@ -419,8 +432,8 @@ function EmitirPage() {
 
   // Dados do atendimento (32 a 35)
   const [tipoAtendimento, setTipoAtendimento] = useState("");
-  /** Campo 33 — padrão TISS "Não acidente"; alterável quando necessário. */
-  const [indicacaoAcidente, setIndicacaoAcidente] = useState("Não acidente");
+  /** Campo 33 — padrão TISS "9 - Não acidente"; alterável quando necessário. */
+  const [indicacaoAcidente, setIndicacaoAcidente] = useState(ACIDENTE_DEFAULT);
   const [tipoConsulta, setTipoConsulta] = useState("");
   /**
    * Campo 35 — condicional: só se aplica em caso de óbito (domínio TISS nº 39).
@@ -1134,7 +1147,7 @@ function EmitirPage() {
             { label: "Registro ANS", value: registroAns },
             { label: "Caráter do atendimento", value: character },
             { label: "Tipo de atendimento", value: tipoAtendimento },
-            { label: "Indicação de acidente", value: indicacaoAcidente },
+            { label: "Indicação de acidente", value: acidenteLabel(indicacaoAcidente) },
           ],
         },
         {
@@ -2354,12 +2367,7 @@ function EmitirPage() {
                     onValueChange={setIndicacaoAcidente}
                     placeholder="Selecione"
                     hint="Preenchido com “Não acidente”; altere apenas quando houver acidente ou doença relacionada."
-                    options={[
-                      "Acidente de trabalho",
-                      "Acidente de trânsito",
-                      "Outros acidentes",
-                      "Não acidente",
-                    ].map((o) => ({ value: o, label: o }))}
+                    options={ACIDENTE_OPTIONS}
                   />
                   {isConsulta && (
                     <SelectField
