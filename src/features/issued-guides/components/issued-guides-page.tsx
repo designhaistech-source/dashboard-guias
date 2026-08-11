@@ -7,6 +7,7 @@ import { AppBreadcrumb } from "@/components/app-breadcrumb";
 import { AppSidebar } from "@/components/app-sidebar";
 import { AppModal } from "@/components/app-modal";
 import { IssuedGuidePreview } from "./issued-guide-preview";
+import { ScaledGuideSheet } from "./scaled-guide-sheet";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { EmptyState } from "@/components/data-state";
