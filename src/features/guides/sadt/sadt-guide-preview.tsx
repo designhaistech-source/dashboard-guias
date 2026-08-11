@@ -9,6 +9,7 @@ import {
 } from "@/features/guides/components/guide-print-primitives";
 import { councilCode } from "@/features/professional";
 import { resolveTissTable } from "@/lib/tuss";
+import guiasPlusLogo from "@/assets/guiasplus-logo.png.asset.json";
 
 export interface SadtPreviewProcedure {
   code: string;
