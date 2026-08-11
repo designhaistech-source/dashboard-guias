@@ -69,6 +69,7 @@ export function IssuedGuidesPage() {
         return false;
       }
       if (filters.operadora && guide.operadora !== filters.operadora) return false;
+      if (filters.type && guide.type !== filters.type) return false;
 
       const day = guide.issuedAt.slice(0, 10);
       if (filters.from && day < filters.from) return false;
