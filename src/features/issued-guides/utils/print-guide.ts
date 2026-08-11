@@ -7,14 +7,19 @@
 /** Largura fixa da folha da guia (modelo oficial), usada para escalar. */
 const SHEET_WIDTH_PX = 1100;
 const MM_TO_PX = 96 / 25.4;
-const PAGE_MARGIN_MM = 6;
+/** Margem física da página, em mm (ajuste fino contra corte de borda). */
+const PAGE_MARGIN_MM = 8;
+/** Folga extra, em px CSS, para a borda de 1px da guia nunca tocar o limite. */
+const EDGE_GUARD_PX = 4;
 /* Menor área útil entre A4 paisagem (297x210mm) e Letter paisagem
    (279,4x215,9mm): escalando pela interseção, a guia nunca corta a lateral
    nem quebra em duas páginas, qualquer que seja o papel escolhido no diálogo.
    Fator de folga contra arredondamento do navegador. */
-const SAFETY = 0.96;
-const PRINT_CONTENT_WIDTH_PX = (279.4 - PAGE_MARGIN_MM * 2) * MM_TO_PX * SAFETY;
-const PRINT_CONTENT_HEIGHT_PX = (210 - PAGE_MARGIN_MM * 2) * MM_TO_PX * SAFETY;
+const SAFETY = 0.97;
+const PRINT_CONTENT_WIDTH_PX =
+  (279.4 - PAGE_MARGIN_MM * 2) * MM_TO_PX * SAFETY - EDGE_GUARD_PX * 2;
+const PRINT_CONTENT_HEIGHT_PX =
+  (210 - PAGE_MARGIN_MM * 2) * MM_TO_PX * SAFETY - EDGE_GUARD_PX * 2;
 
 /**
  * Coleta todo o CSS da aplicação já resolvido em texto. Copiar apenas as tags
@@ -71,13 +76,14 @@ export async function printGuideMarkup(markup: string, title: string) {
     <title>${escapeHtml(title)}</title>
     <style>${css}</style>
     <style>
-      @page { size: landscape; margin: 6mm; }
+      @page { size: landscape; margin: ${PAGE_MARGIN_MM}mm; }
       html, body { margin: 0; padding: 0; background: #fff; }
+      .print-guard { padding: ${EDGE_GUARD_PX}px; overflow: hidden; }
       .print-scale { width: ${SHEET_WIDTH_PX}px; }
       * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
     </style>
   </head>
-  <body><div class="print-scale">${markup}</div></body>
+  <body><div class="print-guard"><div class="print-scale">${markup}</div></div></body>
 </html>`);
   doc.close();
 
@@ -89,8 +95,11 @@ export async function printGuideMarkup(markup: string, title: string) {
   if (sheet) {
     // scrollWidth/Height capturam bordas e conteúdo que estouram a largura
     // nominal da folha, evitando corte nas laterais.
-    const naturalWidth = Math.max(sheet.scrollWidth, SHEET_WIDTH_PX);
-    const naturalHeight = sheet.scrollHeight || 1;
+    const rect = sheet.getBoundingClientRect();
+    const naturalWidth = Math.ceil(
+      Math.max(sheet.scrollWidth, rect.width, SHEET_WIDTH_PX),
+    );
+    const naturalHeight = Math.ceil(Math.max(sheet.scrollHeight, rect.height)) || 1;
     const scale = Math.min(
       1,
       PRINT_CONTENT_WIDTH_PX / naturalWidth,
