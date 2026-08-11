@@ -979,9 +979,8 @@ function EmitirPage() {
     setDragOpmeId(null);
   };
 
-  // Separar em guias
-  const [splitInGuides, setSplitInGuides] = useState(false);
-  const filledProceduresCount = procedures.filter((p) => p.code.trim() && p.description.trim()).length;
+
+
 
   // Autosave do rascunho + indicador "salvo HH:MM" no cabeçalho.
   const { savedAt } = useDraftAutosave({
