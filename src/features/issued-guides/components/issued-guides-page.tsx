@@ -344,7 +344,8 @@ export function IssuedGuidesPage() {
       {printTarget && (
         <div
           aria-hidden="true"
-          className="pointer-events-none fixed left-[-10000px] top-0 w-[820px]"
+          className="pointer-events-none fixed left-[-10000px] top-0 w-[1100px]"
+
         >
           <div ref={printAreaRef}>
             <IssuedGuidePreview guide={printTarget} />
