@@ -1,15 +1,5 @@
 import { useMemo, useState } from "react";
-import {
-  CheckCircle2,
-  Clock3,
-  Copy,
-  Download,
-  ExternalLink,
-  Eye,
-  FileText,
-  Printer,
-  XCircle,
-} from "lucide-react";
+import { CheckCircle2, Clock3, Download, Eye, FileText, XCircle } from "lucide-react";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { toast } from "sonner";
 
@@ -284,9 +274,6 @@ export function IssuedGuidesPage() {
         guide={detail}
         onClose={() => setDetail(null)}
         onDownload={handleDownload}
-        onReprint={handleReprint}
-        onDuplicate={handleDuplicate}
-        onOpenDocument={handleOpenDocument}
       />
     </div>
   );
@@ -295,8 +282,6 @@ export function IssuedGuidesPage() {
 interface ActionProps {
   guide: IssuedGuide;
   onDownload: (guide: IssuedGuide) => void;
-  onReprint: (guide: IssuedGuide) => void;
-  onDuplicate: (guide: IssuedGuide) => void;
 }
 
 function RowActions({ guide, onDownload }: Pick<ActionProps, "guide" | "onDownload">) {
@@ -345,13 +330,9 @@ function IssuedGuideModal({
   guide,
   onClose,
   onDownload,
-  onReprint,
-  onDuplicate,
-  onOpenDocument,
 }: {
   guide: IssuedGuide | null;
   onClose: () => void;
-  onOpenDocument: (guide: IssuedGuide) => void;
 } & Omit<ActionProps, "guide">) {
   return (
     <AppModal
