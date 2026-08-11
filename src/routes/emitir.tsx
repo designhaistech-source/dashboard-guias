@@ -306,6 +306,22 @@ const ACIDENTE_DEFAULT = "9";
 const acidenteLabel = (code: string) =>
   ACIDENTE_OPTIONS.find((o) => o.value === code)?.label ?? "";
 
+/** Campo 32 — Tabela de Domínio nº 50 (Tipo de Atendimento): código de 2 caracteres. */
+const TIPO_ATENDIMENTO_OPTIONS: { value: string; label: string }[] = [
+  { value: "01", label: "01 - Remoção" },
+  { value: "02", label: "02 - Pequena cirurgia" },
+  { value: "03", label: "03 - Outras terapias" },
+  { value: "04", label: "04 - Consulta" },
+  { value: "08", label: "08 - Quimioterapia" },
+  { value: "09", label: "09 - Radioterapia" },
+  { value: "10", label: "10 - Terapia Renal Substitutiva (TRS)" },
+  { value: "13", label: "13 - Pequeno atendimento (sutura, gesso e outros)" },
+  { value: "23", label: "23 - Exame" },
+];
+const tipoAtendimentoLabel = (code: string) =>
+  TIPO_ATENDIMENTO_OPTIONS.find((o) => o.value === code)?.label ?? "";
+
+
 
 
 const GUIDE_SHORT: Record<GuideKind, string> = {
