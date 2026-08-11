@@ -297,10 +297,10 @@ const CHARACTER_OPTIONS = [
 
 /** Campo 33 — TUSS 36 (Indicador de Acidente): valor armazenado é o código de 1 caractere. */
 const ACIDENTE_OPTIONS: { value: string; label: string }[] = [
-  { value: "0", label: "Trabalho" },
-  { value: "1", label: "Trânsito" },
-  { value: "2", label: "Outros" },
-  { value: "9", label: "Não acidente" },
+  { value: "0", label: "0 - Trabalho" },
+  { value: "1", label: "1 - Trânsito" },
+  { value: "2", label: "2 - Outros" },
+  { value: "9", label: "9 - Não acidente" },
 ];
 const ACIDENTE_DEFAULT = "9";
 const acidenteLabel = (code: string) =>
