@@ -55,6 +55,7 @@ import {
 } from "@/components/ui/select";
 import { Field as FormField, SelectField } from "@/components/form-field";
 import { AppModal } from "@/components/app-modal";
+import { ScaledGuideSheet } from "@/components/scaled-guide-sheet";
 import {
   MANUAL_PROFESSIONAL_ID,
   PROFESSIONALS,
