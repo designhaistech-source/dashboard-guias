@@ -79,6 +79,15 @@ async def open_guide_modal(page) -> None:
     await expect(page.get_by_role("button", name="Baixar PDF").first).to_be_visible(
         timeout=10_000
     )
+    # Aguarda a medição/escala inicial da folha (ResizeObserver + layout effect).
+    await page.wait_for_function(
+        """() => {
+          const s = document.querySelector('.overflow-y-auto section')?.closest('.overflow-y-auto');
+          const sheet = s?.querySelector('[style*=\"width\"]');
+          return !!sheet && sheet.offsetWidth > 0;
+        }""",
+        timeout=10_000,
+    )
 
 
 async def scroller_handle(page):
