@@ -71,7 +71,7 @@ export async function printGuideMarkup(markup: string, title: string) {
     <title>${escapeHtml(title)}</title>
     <style>${css}</style>
     <style>
-      @page { size: A4 landscape; margin: 6mm; }
+      @page { size: landscape; margin: 6mm; }
       html, body { margin: 0; padding: 0; background: #fff; }
       .print-scale { width: ${SHEET_WIDTH_PX}px; }
       * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
@@ -93,8 +93,8 @@ export async function printGuideMarkup(markup: string, title: string) {
     const naturalHeight = sheet.scrollHeight || 1;
     const scale = Math.min(
       1,
-      A4_LANDSCAPE_CONTENT_WIDTH_PX / naturalWidth,
-      A4_LANDSCAPE_CONTENT_HEIGHT_PX / naturalHeight,
+      PRINT_CONTENT_WIDTH_PX / naturalWidth,
+      PRINT_CONTENT_HEIGHT_PX / naturalHeight,
     );
     sheet.style.zoom = String(scale);
     await new Promise((resolve) => window.setTimeout(resolve, 100));
