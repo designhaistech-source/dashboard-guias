@@ -390,12 +390,16 @@ function IssuedGuideModal({
           aria-label={`Pré-visualização da guia ${guide.numero}`}
           className="overflow-hidden rounded-xl border border-border"
         >
-          <div className="flex items-center justify-between border-b border-border bg-muted/40 px-4 py-2.5">
-            <p className="text-eyebrow">Guia preenchida · modelo {guide.type}</p>
-            <span className="text-[10px] text-muted-foreground">Role para ver todos os campos</span>
+          <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border bg-muted/40 px-4 py-2.5">
+            <p className="text-eyebrow min-w-0">Guia preenchida · modelo {guide.type}</p>
+            <span className="text-[10px] text-muted-foreground">
+              Documento ajustado à largura da tela
+            </span>
           </div>
-          <div className="max-h-[70dvh] overflow-auto">
-            <IssuedGuidePreview guide={guide} />
+          <div className="max-h-[70dvh] overflow-y-auto overflow-x-hidden">
+            <ScaledGuideSheet>
+              <IssuedGuidePreview guide={guide} />
+            </ScaledGuideSheet>
           </div>
         </section>
       )}
