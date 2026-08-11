@@ -7,14 +7,19 @@
 /** Largura fixa da folha da guia (modelo oficial), usada para escalar. */
 const SHEET_WIDTH_PX = 1100;
 const MM_TO_PX = 96 / 25.4;
-const PAGE_MARGIN_MM = 6;
+/** Margem física da página, em mm (ajuste fino contra corte de borda). */
+const PAGE_MARGIN_MM = 8;
+/** Folga extra, em px CSS, para a borda de 1px da guia nunca tocar o limite. */
+const EDGE_GUARD_PX = 4;
 /* Menor área útil entre A4 paisagem (297x210mm) e Letter paisagem
    (279,4x215,9mm): escalando pela interseção, a guia nunca corta a lateral
    nem quebra em duas páginas, qualquer que seja o papel escolhido no diálogo.
    Fator de folga contra arredondamento do navegador. */
-const SAFETY = 0.96;
-const PRINT_CONTENT_WIDTH_PX = (279.4 - PAGE_MARGIN_MM * 2) * MM_TO_PX * SAFETY;
-const PRINT_CONTENT_HEIGHT_PX = (210 - PAGE_MARGIN_MM * 2) * MM_TO_PX * SAFETY;
+const SAFETY = 0.97;
+const PRINT_CONTENT_WIDTH_PX =
+  (279.4 - PAGE_MARGIN_MM * 2) * MM_TO_PX * SAFETY - EDGE_GUARD_PX * 2;
+const PRINT_CONTENT_HEIGHT_PX =
+  (210 - PAGE_MARGIN_MM * 2) * MM_TO_PX * SAFETY - EDGE_GUARD_PX * 2;
 
 /**
  * Coleta todo o CSS da aplicação já resolvido em texto. Copiar apenas as tags
