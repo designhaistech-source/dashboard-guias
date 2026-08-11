@@ -76,6 +76,8 @@ export function IssuedGuidesPage() {
     const query = filters.query.trim().toLowerCase();
     return guides
       .filter((guide) => {
+        // Temporariamente apenas guias SP/SADT são listadas.
+        if (guide.type !== "SP/SADT") return false;
         if (
           query &&
           !`${guide.numero} ${guide.patient} ${guide.procedure}`.toLowerCase().includes(query)
