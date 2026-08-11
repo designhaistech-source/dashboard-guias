@@ -112,15 +112,24 @@ export function IssuedGuidesPage() {
     const frame = window.requestAnimationFrame(() => {
       const markup = printAreaRef.current?.innerHTML;
       if (markup) {
-        printGuideMarkup(markup, `Guia ${printTarget.numero} — Guias+`);
-        toast.success(`Guia ${printTarget.numero} pronta para salvar em PDF.`);
+        void printGuideMarkup(markup, `Guia ${printTarget.numero} — Guias+`).then(
+          (ok) => {
+            if (ok) {
+              toast.success(`Guia ${printTarget.numero} pronta para salvar em PDF.`);
+            } else {
+              toast.error("Não foi possível gerar a guia completa.");
+            }
+            setPrintTarget(null);
+          },
+        );
       } else {
         toast.error("Não foi possível gerar a guia completa.");
+        setPrintTarget(null);
       }
-      setPrintTarget(null);
     });
     return () => window.cancelAnimationFrame(frame);
   }, [printTarget]);
+
 
   const handleDownload = (guide: IssuedGuide) => setPrintTarget(guide);
 
