@@ -1161,7 +1161,7 @@ function EmitirPage() {
             { label: "Tipo de guia", value: guideLabel },
             { label: "Registro ANS", value: registroAns },
             { label: "Caráter do atendimento", value: character },
-            { label: "Tipo de atendimento", value: tipoAtendimento },
+            { label: "Tipo de atendimento", value: tipoAtendimentoLabel(tipoAtendimento) },
             { label: "Indicação de acidente", value: acidenteLabel(indicacaoAcidente) },
           ],
         },
