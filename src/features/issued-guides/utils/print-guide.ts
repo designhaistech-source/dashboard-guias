@@ -6,8 +6,8 @@
 
 /** Largura fixa da folha da guia (modelo oficial), usada para escalar em A4. */
 const SHEET_WIDTH_PX = 1100;
-/** Largura útil de uma folha A4 retrato com margens de 6mm, em pixels CSS. */
-const A4_CONTENT_WIDTH_PX = (210 - 12) * (96 / 25.4);
+/** Largura útil de uma folha A4 paisagem com margens de 6mm, em pixels CSS. */
+const A4_LANDSCAPE_CONTENT_WIDTH_PX = (297 - 12) * (96 / 25.4);
 
 /**
  * Coleta todo o CSS da aplicação já resolvido em texto. Copiar apenas as tags
@@ -43,7 +43,7 @@ async function collectCssText(): Promise<string> {
 
 export async function printGuideMarkup(markup: string, title: string) {
   const css = await collectCssText();
-  const scale = Math.min(1, A4_CONTENT_WIDTH_PX / SHEET_WIDTH_PX);
+  const scale = Math.min(1, A4_LANDSCAPE_CONTENT_WIDTH_PX / SHEET_WIDTH_PX);
 
   const iframe = document.createElement("iframe");
   iframe.setAttribute("aria-hidden", "true");
@@ -65,7 +65,7 @@ export async function printGuideMarkup(markup: string, title: string) {
     <title>${escapeHtml(title)}</title>
     <style>${css}</style>
     <style>
-      @page { size: A4 portrait; margin: 6mm; }
+      @page { size: A4 landscape; margin: 6mm; }
       html, body { margin: 0; padding: 0; background: #fff; }
       .print-scale {
         width: ${SHEET_WIDTH_PX}px;
