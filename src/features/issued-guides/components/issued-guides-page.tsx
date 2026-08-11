@@ -423,6 +423,9 @@ function IssuedGuideModal({
         guide ? `${guide.type} · emitida em ${formatIssuedAt(guide.issuedAt)}` : undefined
       }
       size="xl"
+      className="w-[95vw] max-w-[1200px]"
+      headerClassName="gap-0.5 px-4 py-3 sm:px-4 sm:py-3"
+      bodyClassName="p-0 sm:p-0"
       footer={
         guide ? (
           <div className="flex flex-col gap-2 sm:flex-row sm:justify-end">
@@ -437,24 +440,17 @@ function IssuedGuideModal({
       {guide && (
         <section
           aria-label={`Pré-visualização da guia ${guide.numero}`}
-          className="overflow-hidden rounded-xl border border-border"
+          className="w-full"
         >
-          <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border bg-muted/40 px-4 py-2.5">
-            <p className="text-eyebrow min-w-0">Guia preenchida · modelo {guide.type}</p>
-            <span className="text-[10px] text-muted-foreground">
-              Documento ajustado à largura da tela
-            </span>
-          </div>
-          <div className="max-h-[70dvh] overflow-y-auto overflow-x-hidden">
-            <ScaledGuideSheet>
-              <IssuedGuidePreview guide={guide} />
-            </ScaledGuideSheet>
-          </div>
+          <ScaledGuideSheet>
+            <IssuedGuidePreview guide={guide} />
+          </ScaledGuideSheet>
         </section>
       )}
     </AppModal>
   );
 }
+
 
 function DetailItem({
   label,
