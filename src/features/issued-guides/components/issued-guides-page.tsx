@@ -1,16 +1,6 @@
 import { useMemo, useState } from "react";
-import {
-  CheckCircle2,
-  Clock3,
-  Copy,
-  Download,
-  ExternalLink,
-  Eye,
-  FileText,
-  Printer,
-  XCircle,
-} from "lucide-react";
-import { Link, useNavigate } from "@tanstack/react-router";
+import { CheckCircle2, Clock3, Download, Eye, FileText, XCircle } from "lucide-react";
+import { Link } from "@tanstack/react-router";
 import { toast } from "sonner";
 
 import { AppBreadcrumb } from "@/components/app-breadcrumb";
@@ -47,11 +37,7 @@ import {
   type IssuedGuide,
   type IssuedGuideStatus,
 } from "../data/issued-guides";
-import {
-  downloadIssuedGuide,
-  openIssuedGuideDocument,
-  useIssuedGuides,
-} from "../data/issued-guides-store";
+import { downloadIssuedGuide, useIssuedGuides } from "../data/issued-guides-store";
 
 const EMPTY_FILTERS = {
   query: "",
@@ -65,7 +51,6 @@ const EMPTY_FILTERS = {
  * guia", que trata do processamento de guias digitalizadas.
  */
 export function IssuedGuidesPage() {
-  const navigate = useNavigate();
   const [filters, setFilters] = useState(EMPTY_FILTERS);
   const [detail, setDetail] = useState<IssuedGuide | null>(null);
   const guides = useIssuedGuides();
@@ -96,17 +81,6 @@ export function IssuedGuidesPage() {
   const handleDownload = (guide: IssuedGuide) => {
     downloadIssuedGuide(guide);
     toast.success(`Download da guia ${guide.numero} iniciado.`);
-  };
-  const handleOpenDocument = (guide: IssuedGuide) => {
-    if (!openIssuedGuideDocument(guide)) {
-      toast.error("Não foi possível abrir a guia — libere os pop-ups do navegador.");
-    }
-  };
-  const handleReprint = (guide: IssuedGuide) =>
-    toast.success(`Guia ${guide.numero} enviada para reimpressão.`);
-  const handleDuplicate = (guide: IssuedGuide) => {
-    toast.success(`Guia ${guide.numero} duplicada — revise os dados e emita.`);
-    navigate({ to: "/emitir" });
   };
 
   return (
@@ -284,9 +258,6 @@ export function IssuedGuidesPage() {
         guide={detail}
         onClose={() => setDetail(null)}
         onDownload={handleDownload}
-        onReprint={handleReprint}
-        onDuplicate={handleDuplicate}
-        onOpenDocument={handleOpenDocument}
       />
     </div>
   );
@@ -295,8 +266,6 @@ export function IssuedGuidesPage() {
 interface ActionProps {
   guide: IssuedGuide;
   onDownload: (guide: IssuedGuide) => void;
-  onReprint: (guide: IssuedGuide) => void;
-  onDuplicate: (guide: IssuedGuide) => void;
 }
 
 function RowActions({ guide, onDownload }: Pick<ActionProps, "guide" | "onDownload">) {
@@ -345,13 +314,9 @@ function IssuedGuideModal({
   guide,
   onClose,
   onDownload,
-  onReprint,
-  onDuplicate,
-  onOpenDocument,
 }: {
   guide: IssuedGuide | null;
   onClose: () => void;
-  onOpenDocument: (guide: IssuedGuide) => void;
 } & Omit<ActionProps, "guide">) {
   return (
     <AppModal
@@ -368,18 +333,6 @@ function IssuedGuideModal({
       footer={
         guide ? (
           <div className="flex flex-col gap-2 sm:flex-row sm:justify-end">
-            <Button variant="outline" onClick={() => onDuplicate(guide)}>
-              <Copy className="h-4 w-4" aria-hidden="true" />
-              Duplicar
-            </Button>
-            <Button variant="outline" onClick={() => onReprint(guide)}>
-              <Printer className="h-4 w-4" aria-hidden="true" />
-              Reimprimir
-            </Button>
-            <Button variant="outline" onClick={() => onOpenDocument(guide)}>
-              <ExternalLink className="h-4 w-4" aria-hidden="true" />
-              Abrir guia completa
-            </Button>
             <Button onClick={() => onDownload(guide)}>
               <Download className="h-4 w-4" aria-hidden="true" />
               Baixar PDF
