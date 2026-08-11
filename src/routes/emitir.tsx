@@ -2362,16 +2362,8 @@ function EmitirPage() {
                     value={tipoAtendimento}
                     onValueChange={setTipoAtendimento}
                     placeholder="Selecione"
-                    options={[
-                      "Remoção",
-                      "Pequena cirurgia",
-                      "Terapias",
-                      "Consulta",
-                      "Exame",
-                      "Atendimento domiciliar",
-                      "Urgência / emergência",
-                      "SADT internado",
-                    ].map((o) => ({ value: o, label: o }))}
+                    options={TIPO_ATENDIMENTO_OPTIONS}
+
                   />
                   <SelectField
                     className={ATENDIMENTO_FIELD_CLASS}
