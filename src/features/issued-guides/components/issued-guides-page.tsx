@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { CheckCircle2, Clock3, Download, Eye, FileText, XCircle } from "lucide-react";
-import { Link, useNavigate } from "@tanstack/react-router";
+import { Link } from "@tanstack/react-router";
 import { toast } from "sonner";
 
 import { AppBreadcrumb } from "@/components/app-breadcrumb";
@@ -37,11 +37,7 @@ import {
   type IssuedGuide,
   type IssuedGuideStatus,
 } from "../data/issued-guides";
-import {
-  downloadIssuedGuide,
-  openIssuedGuideDocument,
-  useIssuedGuides,
-} from "../data/issued-guides-store";
+import { downloadIssuedGuide, useIssuedGuides } from "../data/issued-guides-store";
 
 const EMPTY_FILTERS = {
   query: "",
@@ -55,7 +51,6 @@ const EMPTY_FILTERS = {
  * guia", que trata do processamento de guias digitalizadas.
  */
 export function IssuedGuidesPage() {
-  const navigate = useNavigate();
   const [filters, setFilters] = useState(EMPTY_FILTERS);
   const [detail, setDetail] = useState<IssuedGuide | null>(null);
   const guides = useIssuedGuides();
