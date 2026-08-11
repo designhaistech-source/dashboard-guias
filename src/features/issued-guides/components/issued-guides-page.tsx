@@ -43,7 +43,7 @@ import {
 import {
   ISSUED_GUIDE_OPERADORAS,
   ISSUED_GUIDE_TYPES,
-  formatCurrency,
+  
   formatIssuedAt,
   type IssuedGuide,
   type IssuedGuideStatus,
