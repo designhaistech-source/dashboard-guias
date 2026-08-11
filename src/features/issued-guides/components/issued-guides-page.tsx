@@ -235,7 +235,7 @@ export function IssuedGuidesPage() {
 
               <div className="overflow-hidden rounded-xl border border-border bg-card">
                 <DataTableDesktop>
-                  <DataTableRoot className="w-full min-w-[820px] table-fixed">
+                  <DataTableRoot className="w-full min-w-[720px] table-fixed">
                     <DataTableHeader>
                       <DataTableRow className="hover:bg-transparent">
                         <DataTableHead className="w-[15%]">Nº da guia</DataTableHead>
