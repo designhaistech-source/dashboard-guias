@@ -156,6 +156,16 @@ export const ISSUED_GUIDE_OPERADORAS = [
   "CAURN",
 ] as const;
 
+/** Tipos de guia disponíveis no sistema (usados no filtro e na emissão). */
+export const ISSUED_GUIDE_TYPES: IssuedGuideType[] = [
+  "SP/SADT",
+  "Internação",
+  "APAC (SUS)",
+  "AIH (SUS)",
+];
+
+
+
 export const ISSUED_GUIDE_STATUSES: IssuedGuideStatus[] = [
   "Emitida",
   "Autorizada",
