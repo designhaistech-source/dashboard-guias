@@ -55,6 +55,7 @@ import {
 } from "@/components/ui/select";
 import { Field as FormField, SelectField } from "@/components/form-field";
 import { AppModal } from "@/components/app-modal";
+import { ScaledGuideSheet } from "@/components/scaled-guide-sheet";
 import {
   MANUAL_PROFESSIONAL_ID,
   PROFESSIONALS,
@@ -2904,13 +2905,14 @@ function EmitirPage() {
       </main>
 
       <Dialog open={previewOpen && canPreview} onOpenChange={setPreviewOpen}>
-        <DialogContent className="max-w-[1200px] w-[95vw] max-h-[95vh] overflow-auto">
+        <DialogContent className="max-w-[1200px] w-[95vw] max-h-[95vh] overflow-y-auto overflow-x-hidden">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <Eye className="h-5 w-5 text-primary" /> Pré-visualização da guia
             </DialogTitle>
           </DialogHeader>
           {guideKind && (
+            <ScaledGuideSheet>
             <GuiaLivePreview
               numeroGuia={numeroGuia}
               guideKind={guideKind}
@@ -2981,6 +2983,7 @@ function EmitirPage() {
 
               fullSize
             />
+            </ScaledGuideSheet>
           )}
         </DialogContent>
       </Dialog>
