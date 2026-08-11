@@ -4,14 +4,17 @@
  * saia idêntica à pré-visualização preenchida.
  */
 
-/** Largura fixa da folha da guia (modelo oficial), usada para escalar em A4. */
+/** Largura fixa da folha da guia (modelo oficial), usada para escalar. */
 const SHEET_WIDTH_PX = 1100;
 const MM_TO_PX = 96 / 25.4;
-/** Área útil de uma folha A4 paisagem com margens de 6mm, em pixels CSS. */
-/* Fator de folga: sem ele o arredondamento do navegador corta a lateral direita
-   e joga a última linha para uma segunda página. */
-const A4_LANDSCAPE_CONTENT_WIDTH_PX = (297 - 12) * MM_TO_PX * 0.96;
-const A4_LANDSCAPE_CONTENT_HEIGHT_PX = (210 - 12) * MM_TO_PX * 0.96;
+const PAGE_MARGIN_MM = 6;
+/* Menor área útil entre A4 paisagem (297x210mm) e Letter paisagem
+   (279,4x215,9mm): escalando pela interseção, a guia nunca corta a lateral
+   nem quebra em duas páginas, qualquer que seja o papel escolhido no diálogo.
+   Fator de folga contra arredondamento do navegador. */
+const SAFETY = 0.96;
+const PRINT_CONTENT_WIDTH_PX = (279.4 - PAGE_MARGIN_MM * 2) * MM_TO_PX * SAFETY;
+const PRINT_CONTENT_HEIGHT_PX = (210 - PAGE_MARGIN_MM * 2) * MM_TO_PX * SAFETY;
 
 /**
  * Coleta todo o CSS da aplicação já resolvido em texto. Copiar apenas as tags
@@ -68,7 +71,7 @@ export async function printGuideMarkup(markup: string, title: string) {
     <title>${escapeHtml(title)}</title>
     <style>${css}</style>
     <style>
-      @page { size: A4 landscape; margin: 6mm; }
+      @page { size: landscape; margin: 6mm; }
       html, body { margin: 0; padding: 0; background: #fff; }
       .print-scale { width: ${SHEET_WIDTH_PX}px; }
       * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
@@ -90,8 +93,8 @@ export async function printGuideMarkup(markup: string, title: string) {
     const naturalHeight = sheet.scrollHeight || 1;
     const scale = Math.min(
       1,
-      A4_LANDSCAPE_CONTENT_WIDTH_PX / naturalWidth,
-      A4_LANDSCAPE_CONTENT_HEIGHT_PX / naturalHeight,
+      PRINT_CONTENT_WIDTH_PX / naturalWidth,
+      PRINT_CONTENT_HEIGHT_PX / naturalHeight,
     );
     sheet.style.zoom = String(scale);
     await new Promise((resolve) => window.setTimeout(resolve, 100));
