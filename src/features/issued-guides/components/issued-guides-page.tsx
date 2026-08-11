@@ -142,7 +142,7 @@ export function IssuedGuidesPage() {
           <AppBreadcrumb />
           <PageHeader
             title="Guias emitidas"
-            description="Histórico de todas as guias geradas no Guias+. Consulte, baixe, reimprima ou duplique uma emissão."
+            description="Consulte o histórico, visualize e faça o download das guias geradas no Guias+."
             actions={
               <Button asChild size="sm">
                 <Link to="/emitir">
