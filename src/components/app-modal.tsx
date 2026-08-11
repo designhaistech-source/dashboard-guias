@@ -33,6 +33,7 @@ export interface AppModalProps {
   /** Renderiza o conteúdo sem o corpo rolável padrão. */
   unstyledBody?: boolean;
   className?: string;
+  headerClassName?: string;
   bodyClassName?: string;
   toolbarClassName?: string;
   footerClassName?: string;
@@ -60,6 +61,7 @@ export function AppModal({
   size = "md",
   unstyledBody = false,
   className,
+  headerClassName,
   bodyClassName,
   toolbarClassName,
   footerClassName,
@@ -77,7 +79,7 @@ export function AppModal({
         hideCloseButton={hideCloseButton}
         role={role}
       >
-        <DialogHeader>
+        <DialogHeader className={headerClassName}>
           <div className="flex items-center gap-2">
             {icon && <span className="shrink-0 text-primary">{icon}</span>}
             <DialogTitle>{title}</DialogTitle>
