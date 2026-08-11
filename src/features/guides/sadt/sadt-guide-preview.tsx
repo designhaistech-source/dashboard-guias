@@ -23,67 +23,71 @@ export interface SadtPreviewOpmeItem {
   quantity?: number;
 }
 
-export function SadtGuidePreview(props: {
-  numeroGuia: string;
+export interface SadtGuidePreviewProps {
+  numeroGuia?: string;
   guideKind?: string | null;
-  guideLabel: string;
-  guideHeaderTitle: string;
+  guideLabel?: string;
+  guideHeaderTitle?: string;
   convenioId?: string;
-  operadora: string;
+  operadora?: string;
   operadoraLogo?: string;
-  registroAns: string;
-  character: string;
-  dataSolicitacao: string;
-  susEstabelecimento: string;
-  susCnes: string;
-  pacienteNome: string;
-  pacienteCarteira: string;
-  pacienteCpf: string;
-  pacienteNascimento: string;
-  pacienteSexo: string;
-  medicoNome: string;
-  medicoCrm: string;
-  medicoConselho: string;
-  medicoEspecialidade: string;
-  cidPrincipal: string;
-  indicacaoClinica: string;
-  observacoes: string;
-  procedures: SadtPreviewProcedure[];
-  opmeItems: SadtPreviewOpmeItem[];
-  internacaoTipo: string;
-  internacaoRegime: string;
-  internacaoDias: number;
-  internacaoAcomodacao: string;
-  apacCompetencia: string;
-  apacTipo: string;
-  aihMotivo: string;
-  aihCaraterEntry: string;
-  guiaPrincipal: string;
-  dataAutorizacao: string;
-  senha: string;
-  validadeSenha: string;
-  guiaOperadora: string;
-  codigoSolicitante: string;
-  contratadoSolicitante: string;
-  conselhoUf: string;
-  codigoCbo: string;
-  codigoExecutante: string;
-  contratadoExecutante: string;
-  cnesExecutante: string;
-  tipoAtendimento: string;
-  indicacaoAcidente: string;
-  tipoConsulta: string;
-  motivoEncerramento: string;
-  pacienteValidadeCarteira: string;
-  pacienteCns: string;
-  pacienteRn: string;
-  assinaturaSolicitante: string;
+  registroAns?: string;
+  character?: string;
+  dataSolicitacao?: string;
+  susEstabelecimento?: string;
+  susCnes?: string;
+  pacienteNome?: string;
+  pacienteCarteira?: string;
+  pacienteCpf?: string;
+  pacienteNascimento?: string;
+  pacienteSexo?: string;
+  medicoNome?: string;
+  medicoCrm?: string;
+  medicoConselho?: string;
+  medicoEspecialidade?: string;
+  cidPrincipal?: string;
+  indicacaoClinica?: string;
+  observacoes?: string;
+  procedures?: SadtPreviewProcedure[];
+  opmeItems?: SadtPreviewOpmeItem[];
+  internacaoTipo?: string;
+  internacaoRegime?: string;
+  internacaoDias?: number;
+  internacaoAcomodacao?: string;
+  apacCompetencia?: string;
+  apacTipo?: string;
+  aihMotivo?: string;
+  aihCaraterEntry?: string;
+  guiaPrincipal?: string;
+  dataAutorizacao?: string;
+  senha?: string;
+  validadeSenha?: string;
+  guiaOperadora?: string;
+  codigoSolicitante?: string;
+  contratadoSolicitante?: string;
+  conselhoUf?: string;
+  codigoCbo?: string;
+  codigoExecutante?: string;
+  contratadoExecutante?: string;
+  cnesExecutante?: string;
+  tipoAtendimento?: string;
+  indicacaoAcidente?: string;
+  tipoConsulta?: string;
+  motivoEncerramento?: string;
+  pacienteValidadeCarteira?: string;
+  pacienteCns?: string;
+  pacienteRn?: string;
+  assinaturaSolicitante?: string;
   totais?: string[];
   assinaturaAutorizacao?: string;
   assinaturaBeneficiarioFinal?: string;
   assinaturaContratado?: string;
   fullSize?: boolean;
-}) {
+}
+
+export function SadtGuidePreview(input: SadtGuidePreviewProps) {
+  const props = input as Required<SadtGuidePreviewProps>;
+
   const {
     numeroGuia, operadora, operadoraLogo,
     registroAns, character, dataSolicitacao,
