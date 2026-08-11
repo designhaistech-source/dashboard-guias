@@ -391,8 +391,8 @@ function EmitirPage() {
   const [validadeSenha, setValidadeSenha] = useState("");
   const [guiaOperadora, setGuiaOperadora] = useState("");
 
-  // Solicitante (13, 14) — derivados do cadastro do estabelecimento.
-  const codigoSolicitante = operatorEstablishmentCode(operadora);
+  // Solicitante — campo 13 informado manualmente (não há cadastro prestador x operadora).
+  const [codigoSolicitante, setCodigoSolicitante] = useState("");
   const contratadoSolicitante = ESTABLISHMENT.nome;
   const [assinaturaSolicitante, setAssinaturaSolicitante] = useState("");
   /** Campo 56 — até 10 datas de realização de procedimentos em série. */
@@ -1916,19 +1916,12 @@ function EmitirPage() {
                   <Field
                     label="13 - Código na Operadora"
                     span="@md:col-span-2 @3xl:col-span-3"
-                    hint={
-                      operadora
-                        ? undefined
-                        : "Selecione a operadora para preencher."
-                    }
                   >
                     <Input
                       value={codigoSolicitante}
-                      readOnly
-                      aria-readonly
-                      tabIndex={-1}
-                      placeholder="—"
-                      className="bg-muted/50 font-mono text-foreground"
+                      onChange={(e) => setCodigoSolicitante(e.target.value)}
+                      placeholder="Informe o código na operadora"
+                      className="font-mono"
                     />
                   </Field>
                   <Field label="14 - Nome do Contratado" span="@md:col-span-4 @3xl:col-span-9">
