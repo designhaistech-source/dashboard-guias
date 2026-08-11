@@ -87,17 +87,6 @@ export function IssuedGuidesPage() {
     downloadIssuedGuide(guide);
     toast.success(`Download da guia ${guide.numero} iniciado.`);
   };
-  const handleOpenDocument = (guide: IssuedGuide) => {
-    if (!openIssuedGuideDocument(guide)) {
-      toast.error("Não foi possível abrir a guia — libere os pop-ups do navegador.");
-    }
-  };
-  const handleReprint = (guide: IssuedGuide) =>
-    toast.success(`Guia ${guide.numero} enviada para reimpressão.`);
-  const handleDuplicate = (guide: IssuedGuide) => {
-    toast.success(`Guia ${guide.numero} duplicada — revise os dados e emita.`);
-    navigate({ to: "/emitir" });
-  };
 
   return (
     <div className="flex min-h-screen w-full bg-background text-foreground">
