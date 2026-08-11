@@ -5,7 +5,6 @@ import {
   SectionBar,
   splitDate,
 } from "@/features/guides/components/guide-print-primitives";
-import guiasPlusLogo from "@/assets/guiasplus-logo.png.asset.json";
 
 export interface InternacaoPreviewItem {
   table: string;
@@ -95,7 +94,7 @@ export function InternacaoGuidePreview(props: InternacaoGuidePreviewProps) {
             {/* Cabeçalho */}
             <div className="grid grid-cols-[140px_1fr_260px] border-b border-foreground">
               <div className="flex items-center justify-center border-r border-foreground px-2 py-2">
-                <img src={guiasPlusLogo.url} alt="Guias+" className="max-h-10 max-w-[120px] object-contain" />
+                <span className="text-[9px] text-muted-foreground italic">Logo da Operadora</span>
               </div>
               <div className="flex items-center justify-center px-2 py-2 text-center">
                 <div className="font-bold text-[13px] uppercase leading-tight">
