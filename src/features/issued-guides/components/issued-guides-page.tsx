@@ -66,28 +66,35 @@ const EMPTY_FILTERS = {
 export function IssuedGuidesPage() {
   const [filters, setFilters] = useState(EMPTY_FILTERS);
   const [detail, setDetail] = useState<IssuedGuide | null>(null);
+  // Ordenação por data de emissão: por padrão, da mais recente para a mais antiga.
+  const [sortDirection, setSortDirection] = useState<"asc" | "desc">("desc");
   const guides = useIssuedGuides();
 
   const activeCount = Object.values(filters).filter(Boolean).length;
 
   const rows = useMemo(() => {
     const query = filters.query.trim().toLowerCase();
-    return guides.filter((guide) => {
-      if (
-        query &&
-        !`${guide.numero} ${guide.patient} ${guide.procedure}`.toLowerCase().includes(query)
-      ) {
-        return false;
-      }
-      if (filters.operadora && guide.operadora !== filters.operadora) return false;
-      if (filters.type && guide.type !== filters.type) return false;
+    return guides
+      .filter((guide) => {
+        if (
+          query &&
+          !`${guide.numero} ${guide.patient} ${guide.procedure}`.toLowerCase().includes(query)
+        ) {
+          return false;
+        }
+        if (filters.operadora && guide.operadora !== filters.operadora) return false;
+        if (filters.type && guide.type !== filters.type) return false;
 
-      const day = guide.issuedAt.slice(0, 10);
-      if (filters.from && day < filters.from) return false;
-      if (filters.to && day > filters.to) return false;
-      return true;
-    });
-  }, [filters, guides]);
+        const day = guide.issuedAt.slice(0, 10);
+        if (filters.from && day < filters.from) return false;
+        if (filters.to && day > filters.to) return false;
+        return true;
+      })
+      .sort((a, b) => {
+        const diff = new Date(a.issuedAt).getTime() - new Date(b.issuedAt).getTime();
+        return sortDirection === "desc" ? -diff : diff;
+      });
+  }, [filters, guides, sortDirection]);
 
   const setFilter = (key: keyof typeof EMPTY_FILTERS, value: string) =>
     setFilters((prev) => ({ ...prev, [key]: value }));
