@@ -36,6 +36,9 @@ DEVICES = [
     {"name": "Android (Pixel 8)", "ua": ANDROID_UA, "viewport": {"width": 412, "height": 915}},
     # Altura reduzida: força a guia a exceder o modal e exercita a rolagem.
     {"name": "iOS (tela curta)", "ua": IOS_UA, "viewport": {"width": 390, "height": 520}},
+    # Paisagem: escala maior + pouca altura => rolagem obrigatória.
+    {"name": "iOS (paisagem)", "ua": IOS_UA, "viewport": {"width": 844, "height": 390}},
+    {"name": "Android (paisagem)", "ua": ANDROID_UA, "viewport": {"width": 915, "height": 412}},
 ]
 
 # Orçamento de responsividade: um frame de animação deve ocorrer rapidamente
