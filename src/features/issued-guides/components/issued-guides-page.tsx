@@ -49,7 +49,7 @@ import {
   type IssuedGuideStatus,
 } from "../data/issued-guides";
 import { useIssuedGuides } from "../data/issued-guides-store";
-import { printGuideMarkup } from "../utils/print-guide";
+import { PRINT_FAILURE_MESSAGES, printGuideMarkup } from "../utils/print-guide";
 
 const EMPTY_FILTERS = {
   query: "",
@@ -270,7 +270,11 @@ export function IssuedGuidesPage() {
                         <Eye className="h-4 w-4" aria-hidden="true" />
                         Visualizar
                       </Button>
-                      <RowActions guide={guide} onDownload={handleDownload} />
+                      <RowActions
+                        guide={guide}
+                        onDownload={handleDownload}
+                        isDownloading={printTarget !== null}
+                      />
                     </DataTableCardActions>
                   </DataTableCard>
                 ))}
@@ -341,7 +345,11 @@ export function IssuedGuidesPage() {
                               >
                                 <Eye className="h-4 w-4" />
                               </Button>
-                              <RowActions guide={guide} onDownload={handleDownload} />
+                              <RowActions
+                        guide={guide}
+                        onDownload={handleDownload}
+                        isDownloading={printTarget !== null}
+                      />
                             </div>
                           </DataTableCell>
                         </DataTableRow>
@@ -383,7 +391,11 @@ interface ActionProps {
   onDownload: (guide: IssuedGuide) => void;
 }
 
-function RowActions({ guide, onDownload }: Pick<ActionProps, "guide" | "onDownload">) {
+function RowActions({
+  guide,
+  onDownload,
+  isDownloading = false,
+}: Pick<ActionProps, "guide" | "onDownload"> & { isDownloading?: boolean }) {
   return (
     <div className="inline-flex items-center gap-0.5 icon-optical">
       <Button
@@ -392,6 +404,7 @@ function RowActions({ guide, onDownload }: Pick<ActionProps, "guide" | "onDownlo
         aria-label={`Baixar PDF da guia ${guide.numero}`}
         className="h-7 w-7 text-muted-foreground hover:text-foreground"
         onClick={() => onDownload(guide)}
+        disabled={isDownloading}
       >
         <Download className="h-4 w-4" />
       </Button>
