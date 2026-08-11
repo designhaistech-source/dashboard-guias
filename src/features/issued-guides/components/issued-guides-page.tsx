@@ -263,7 +263,7 @@ export function IssuedGuidesPage() {
                                 ? "Ordenar por data de emissão: mais antigas primeiro"
                                 : "Ordenar por data de emissão: mais recentes primeiro"
                             }
-                            className="inline-flex items-center gap-1 rounded-sm text-left font-medium text-foreground transition-colors hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                            className="inline-flex items-center gap-1 whitespace-nowrap rounded-sm text-left text-inherit transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                           >
                             Data de emissão
                             {sortDirection === "desc" ? (
