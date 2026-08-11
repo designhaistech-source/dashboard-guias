@@ -218,18 +218,36 @@ export function IssuedGuidesPage() {
                 clearable
               />
             </div>
-            <div className="w-full min-w-0 lg:w-[160px]">
+            <div className="flex w-full min-w-0 items-center gap-2 lg:w-[200px]">
+              <label
+                htmlFor="issued-guides-from"
+                className="shrink-0 text-xs font-medium text-muted-foreground"
+              >
+                De
+              </label>
               <Input
+                id="issued-guides-from"
                 type="date"
-                aria-label="Data início"
+                placeholder="dd/mm/aaaa"
+                aria-label="Data de emissão inicial"
+                max={filters.to || undefined}
                 value={filters.from}
                 onChange={(event) => setFilter("from", event.target.value)}
               />
             </div>
-            <div className="w-full min-w-0 lg:w-[160px]">
+            <div className="flex w-full min-w-0 items-center gap-2 lg:w-[200px]">
+              <label
+                htmlFor="issued-guides-to"
+                className="shrink-0 text-xs font-medium text-muted-foreground"
+              >
+                Até
+              </label>
               <Input
+                id="issued-guides-to"
                 type="date"
-                aria-label="Data fim"
+                placeholder="dd/mm/aaaa"
+                aria-label="Data de emissão final"
+                min={filters.from || undefined}
                 value={filters.to}
                 onChange={(event) => setFilter("to", event.target.value)}
               />
