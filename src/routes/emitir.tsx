@@ -296,7 +296,7 @@ const CHARACTER_OPTIONS = [
 ];
 
 /** Campo 33 — TUSS 36 (Indicador de Acidente): valor armazenado é o código de 1 caractere. */
-const ACIDENTE_OPTIONS: readonly { value: string; label: string }[] = [
+const ACIDENTE_OPTIONS: { value: string; label: string }[] = [
   { value: "0", label: "Trabalho" },
   { value: "1", label: "Trânsito" },
   { value: "2", label: "Outros" },
@@ -1147,7 +1147,7 @@ function EmitirPage() {
             { label: "Registro ANS", value: registroAns },
             { label: "Caráter do atendimento", value: character },
             { label: "Tipo de atendimento", value: tipoAtendimento },
-            { label: "Indicação de acidente", value: indicacaoAcidente },
+            { label: "Indicação de acidente", value: acidenteLabel(indicacaoAcidente) },
           ],
         },
         {
