@@ -2354,12 +2354,7 @@ function EmitirPage() {
                     onValueChange={setIndicacaoAcidente}
                     placeholder="Selecione"
                     hint="Preenchido com “Não acidente”; altere apenas quando houver acidente ou doença relacionada."
-                    options={[
-                      "Acidente de trabalho",
-                      "Acidente de trânsito",
-                      "Outros acidentes",
-                      "Não acidente",
-                    ].map((o) => ({ value: o, label: o }))}
+                    options={ACIDENTE_OPTIONS}
                   />
                   {isConsulta && (
                     <SelectField
