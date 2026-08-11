@@ -7,6 +7,7 @@ import {
   type InternacaoGuidePreviewProps,
 } from "@/features/guides";
 import { SadtGuidePreview } from "@/features/guides/sadt/sadt-guide-preview";
+import { operadoraLogoUrl } from "@/features/guides/data/operadora-logos";
 import { ESTABLISHMENT } from "@/features/establishment";
 import { formatCurrency, type IssuedGuide } from "../data/issued-guides";
 
@@ -157,6 +158,7 @@ export function IssuedGuidePreview({ guide }: { guide: IssuedGuide }) {
       numeroGuia={guide.numero}
       guideLabel="SP/SADT"
       operadora={guide.operadora}
+      operadoraLogo={operadoraLogoUrl(guide.operadora)}
       registroAns={derived.registroAns}
       character="E"
       dataSolicitacao={derived.dataIso}
