@@ -146,7 +146,7 @@ export function SadtGuidePreview(input: SadtGuidePreviewProps) {
                 {operadoraLogo ? (
                   <img src={operadoraLogo} alt={operadora} className="max-h-10 max-w-[120px] object-contain" />
                 ) : (
-                  <span className="text-[9px] text-muted-foreground italic">Logo da Empresa</span>
+                  <img src={guiasPlusLogo.url} alt="Guias+" className="max-h-10 max-w-[120px] object-contain" />
                 )}
               </div>
               <div className="flex items-center justify-center px-2 py-2 text-center">
