@@ -2982,6 +2982,7 @@ function EmitirPage() {
 
               fullSize
             />
+            </ScaledGuideSheet>
           )}
         </DialogContent>
       </Dialog>
