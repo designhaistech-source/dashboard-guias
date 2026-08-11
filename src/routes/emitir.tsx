@@ -1934,7 +1934,7 @@ function EmitirPage() {
                     <Input
                       value={codigoSolicitante}
                       onChange={(e) => setCodigoSolicitante(e.target.value)}
-                      placeholder="Informe o código na operadora"
+                      placeholder="Código"
                       className="font-mono"
                     />
                   </Field>
