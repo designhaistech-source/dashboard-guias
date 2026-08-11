@@ -49,7 +49,7 @@ import {
   type IssuedGuideStatus,
 } from "../data/issued-guides";
 import { useIssuedGuides } from "../data/issued-guides-store";
-import { printGuideMarkup } from "../utils/print-guide";
+import { PRINT_FAILURE_MESSAGES, printGuideMarkup } from "../utils/print-guide";
 
 const EMPTY_FILTERS = {
   query: "",
@@ -106,32 +106,54 @@ export function IssuedGuidesPage() {
   // impressão/salvar em PDF do navegador.
   const [printTarget, setPrintTarget] = useState<IssuedGuide | null>(null);
   const printAreaRef = useRef<HTMLDivElement>(null);
+  const lastGuideRef = useRef<IssuedGuide | null>(null);
 
   useEffect(() => {
     if (!printTarget) return;
+    let cancelled = false;
+    const toastId = toast.loading(`Gerando PDF da guia ${printTarget.numero}…`);
+
     const frame = window.requestAnimationFrame(() => {
-      const markup = printAreaRef.current?.innerHTML;
-      if (markup) {
-        void printGuideMarkup(markup, `Guia ${printTarget.numero} — Guias+`).then(
-          (ok) => {
-            if (ok) {
-              toast.success(`Guia ${printTarget.numero} pronta para salvar em PDF.`);
-            } else {
-              toast.error("Não foi possível gerar a guia completa.");
-            }
-            setPrintTarget(null);
-          },
-        );
-      } else {
-        toast.error("Não foi possível gerar a guia completa.");
-        setPrintTarget(null);
-      }
+      const markup = printAreaRef.current?.innerHTML ?? "";
+
+      void printGuideMarkup(markup, `Guia ${printTarget.numero} — Guias+`)
+        .then((result) => {
+          if (cancelled) return;
+          if (result.ok) {
+            toast.success(`Guia ${printTarget.numero} pronta para salvar em PDF.`, {
+              id: toastId,
+            });
+          } else {
+            toast.error(PRINT_FAILURE_MESSAGES[result.reason], {
+              id: toastId,
+              action: {
+                label: "Tentar novamente",
+                onClick: () => setPrintTarget(lastGuideRef.current),
+              },
+            });
+          }
+        })
+        .catch(() => {
+          if (cancelled) return;
+          toast.error(PRINT_FAILURE_MESSAGES.unknown, { id: toastId });
+        })
+        .finally(() => {
+          if (!cancelled) setPrintTarget(null);
+        });
     });
-    return () => window.cancelAnimationFrame(frame);
+
+    return () => {
+      cancelled = true;
+      window.cancelAnimationFrame(frame);
+    };
   }, [printTarget]);
 
+  const handleDownload = (guide: IssuedGuide) => {
+    if (printTarget) return; // evita downloads duplicados enquanto gera
+    lastGuideRef.current = guide;
+    setPrintTarget(guide);
+  };
 
-  const handleDownload = (guide: IssuedGuide) => setPrintTarget(guide);
 
   return (
     <div className="flex min-h-screen w-full bg-background text-foreground">
@@ -248,7 +270,11 @@ export function IssuedGuidesPage() {
                         <Eye className="h-4 w-4" aria-hidden="true" />
                         Visualizar
                       </Button>
-                      <RowActions guide={guide} onDownload={handleDownload} />
+                      <RowActions
+                        guide={guide}
+                        onDownload={handleDownload}
+                        isDownloading={printTarget !== null}
+                      />
                     </DataTableCardActions>
                   </DataTableCard>
                 ))}
@@ -319,7 +345,11 @@ export function IssuedGuidesPage() {
                               >
                                 <Eye className="h-4 w-4" />
                               </Button>
-                              <RowActions guide={guide} onDownload={handleDownload} />
+                              <RowActions
+                        guide={guide}
+                        onDownload={handleDownload}
+                        isDownloading={printTarget !== null}
+                      />
                             </div>
                           </DataTableCell>
                         </DataTableRow>
@@ -361,7 +391,11 @@ interface ActionProps {
   onDownload: (guide: IssuedGuide) => void;
 }
 
-function RowActions({ guide, onDownload }: Pick<ActionProps, "guide" | "onDownload">) {
+function RowActions({
+  guide,
+  onDownload,
+  isDownloading = false,
+}: Pick<ActionProps, "guide" | "onDownload"> & { isDownloading?: boolean }) {
   return (
     <div className="inline-flex items-center gap-0.5 icon-optical">
       <Button
@@ -370,6 +404,7 @@ function RowActions({ guide, onDownload }: Pick<ActionProps, "guide" | "onDownlo
         aria-label={`Baixar PDF da guia ${guide.numero}`}
         className="h-7 w-7 text-muted-foreground hover:text-foreground"
         onClick={() => onDownload(guide)}
+        disabled={isDownloading}
       >
         <Download className="h-4 w-4" />
       </Button>
