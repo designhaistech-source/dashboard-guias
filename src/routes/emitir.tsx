@@ -295,6 +295,19 @@ const CHARACTER_OPTIONS = [
   { value: "2", label: "2 - Urgência/Emergência" },
 ];
 
+/** Campo 33 — TUSS 36 (Indicador de Acidente): valor armazenado é o código de 1 caractere. */
+const ACIDENTE_OPTIONS: readonly { value: string; label: string }[] = [
+  { value: "0", label: "Trabalho" },
+  { value: "1", label: "Trânsito" },
+  { value: "2", label: "Outros" },
+  { value: "9", label: "Não acidente" },
+];
+const ACIDENTE_DEFAULT = "9";
+const acidenteLabel = (code: string) =>
+  ACIDENTE_OPTIONS.find((o) => o.value === code)?.label ?? "";
+
+
+
 const GUIDE_SHORT: Record<GuideKind, string> = {
   sadt: "SADT",
   internacao: "Internação",
