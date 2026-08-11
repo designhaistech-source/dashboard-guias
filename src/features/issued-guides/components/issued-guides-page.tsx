@@ -42,8 +42,7 @@ import {
 } from "@/components/data-table";
 import {
   ISSUED_GUIDE_OPERADORAS,
-  ISSUED_GUIDE_STATUSES,
-  formatCurrency,
+    formatCurrency,
   formatIssuedAt,
   type IssuedGuide,
   type IssuedGuideStatus,
@@ -59,7 +58,6 @@ const EMPTY_FILTERS = {
   from: "",
   to: "",
   operadora: "",
-  status: "",
 };
 
 /**
@@ -86,7 +84,6 @@ export function IssuedGuidesPage() {
         return false;
       }
       if (filters.operadora && guide.operadora !== filters.operadora) return false;
-      if (filters.status && guide.status !== filters.status) return false;
 
       const day = guide.issuedAt.slice(0, 10);
       if (filters.from && day < filters.from) return false;
@@ -152,20 +149,6 @@ export function IssuedGuidesPage() {
                 onClear={() => setFilter("query", "")}
               />
             </div>
-            <div className="w-full min-w-0 lg:w-[180px]">
-              <Combobox
-                aria-label="Status"
-                options={ISSUED_GUIDE_STATUSES.map((status) => ({
-                  value: status,
-                  label: status,
-                }))}
-                value={filters.status}
-                onChange={(value) => setFilter("status", value)}
-                placeholder="Todos os status"
-                searchPlaceholder="Buscar status..."
-                clearable
-              />
-            </div>
             <div className="w-full min-w-0 lg:w-[200px]">
               <Combobox
                 aria-label="Operadora"
@@ -210,7 +193,7 @@ export function IssuedGuidesPage() {
             <div className="rounded-2xl border border-border bg-card shadow-xs">
               <EmptyState
                 title="Nenhuma guia emitida encontrada"
-                description="Ajuste a busca ou os filtros de período, operadora e status para ver outras emissões."
+                description="Ajuste a busca ou os filtros de período e operadora para ver outras emissões."
               />
             </div>
           ) : (
@@ -224,7 +207,6 @@ export function IssuedGuidesPage() {
                         <span className="truncate font-mono">{guide.numero}</span>
                       }
                       subtitle={guide.patient}
-                      trailing={<StatusBadge status={guide.status} />}
                     />
                     <DataTableCardFields
                       fields={[
@@ -256,13 +238,12 @@ export function IssuedGuidesPage() {
                   <DataTableRoot className="w-full min-w-[820px] table-fixed">
                     <DataTableHeader>
                       <DataTableRow className="hover:bg-transparent">
-                        <DataTableHead className="w-[13%]">Nº da guia</DataTableHead>
-                        <DataTableHead className="w-[18%]">Paciente</DataTableHead>
-                        <DataTableHead className="w-[12%]">Tipo de guia</DataTableHead>
-                        <DataTableHead className="w-[14%]">Operadora</DataTableHead>
-                        <DataTableHead className="w-[15%]">Data de emissão</DataTableHead>
-                        <DataTableHead className="w-[12%]">Status</DataTableHead>
-                        <DataTableHead className="w-[16%] whitespace-nowrap text-right">Ações</DataTableHead>
+                        <DataTableHead className="w-[15%]">Nº da guia</DataTableHead>
+                        <DataTableHead className="w-[24%]">Paciente</DataTableHead>
+                        <DataTableHead className="w-[14%]">Tipo de guia</DataTableHead>
+                        <DataTableHead className="w-[18%]">Operadora</DataTableHead>
+                        <DataTableHead className="w-[16%]">Data de emissão</DataTableHead>
+                        <DataTableHead className="w-[13%] whitespace-nowrap text-right">Ações</DataTableHead>
                       </DataTableRow>
                     </DataTableHeader>
                     <DataTableBody>
@@ -284,9 +265,6 @@ export function IssuedGuidesPage() {
                           </DataTableCell>
                           <DataTableCell className="whitespace-nowrap text-muted-foreground">
                             {formatIssuedAt(guide.issuedAt)}
-                          </DataTableCell>
-                          <DataTableCell>
-                            <StatusBadge status={guide.status} />
                           </DataTableCell>
 
                           <DataTableCell className="whitespace-nowrap text-right">
