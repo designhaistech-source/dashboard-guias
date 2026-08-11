@@ -1774,7 +1774,7 @@ function EmitirPage() {
                   <Field
                     label="8 - Número da Carteira"
                     required
-                    span="@md:col-span-3 @3xl:col-span-5"
+                    span="@md:col-span-6 @3xl:col-span-5"
                     hint={
                       beneficiarioStatus === "not-found"
                         ? "Beneficiário não encontrado — informe o nome manualmente."
@@ -1807,10 +1807,23 @@ function EmitirPage() {
                     </div>
                   </Field>
 
+                  {/* 9 e 11 são condicionados no TISS: sem asterisco, preenchimento manual. */}
+                  <Field
+                    label="9 - Validade da Carteira"
+                    span="@md:col-span-6 @3xl:col-span-3"
+                    hint="Formato dd/mm/aaaa."
+                  >
+                    <Input
+                      type="date"
+                      value={pacienteValidadeCarteira}
+                      onChange={(e) => setPacienteValidadeCarteira(e.target.value)}
+                    />
+                  </Field>
+
                   <Field
                     label="10 - Nome"
                     required
-                    span="@md:col-span-3 @3xl:col-span-4"
+                    span="@md:col-span-6 @3xl:col-span-4"
                     hint={
                       beneficiarioStatus === "found"
                         ? "Preenchido pelo cadastro do beneficiário."
@@ -1831,10 +1844,25 @@ function EmitirPage() {
                     />
                   </Field>
 
+                  <Field
+                    label="11 - Cartão Nacional de Saúde (CNS)"
+                    span="@md:col-span-6 @3xl:col-span-8"
+                    hint="Até 15 caracteres."
+                  >
+                    <Input
+                      value={pacienteCns}
+                      onChange={(e) => setPacienteCns(e.target.value)}
+                      placeholder="000000000000000"
+                      inputMode="numeric"
+                      maxLength={15}
+                      className="font-mono"
+                    />
+                  </Field>
+
                   <SelectField
                     label="12 - Atendimento a RN"
                     required
-                    className="@md:col-span-6 @3xl:col-span-3"
+                    className="@md:col-span-6 @3xl:col-span-4"
                     value={pacienteRn}
                     onValueChange={setPacienteRn}
                     options={[
@@ -1842,35 +1870,8 @@ function EmitirPage() {
                       { value: "N", label: "N - Não" },
                     ]}
                   />
-
-                  {/* 9 e 11 são condicionais: só aparecem quando existem no cadastro. */}
-                  {pacienteValidadeCarteira && (
-                    <Field
-                      label="9 - Validade da Carteira"
-                      span="@md:col-span-3 @3xl:col-span-4"
-                    >
-                      <Input
-                        type="date"
-                        value={pacienteValidadeCarteira}
-                        onChange={(e) => setPacienteValidadeCarteira(e.target.value)}
-                      />
-                    </Field>
-                  )}
-
-                  {pacienteCns && (
-                    <Field
-                      label="11 - Cartão Nacional de Saúde"
-                      span="@md:col-span-3 @3xl:col-span-4"
-                    >
-                      <Input
-                        value={pacienteCns}
-                        onChange={(e) => setPacienteCns(e.target.value)}
-                        placeholder="000 0000 0000 0000"
-                        className="font-mono"
-                      />
-                    </Field>
-                  )}
                 </Grid>
+
 
               </Section>
 
