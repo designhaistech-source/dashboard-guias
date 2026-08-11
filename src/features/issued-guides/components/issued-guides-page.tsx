@@ -388,57 +388,17 @@ function IssuedGuideModal({
       {guide && (
         <section
           aria-label={`Pré-visualização da guia ${guide.numero}`}
-          className="mb-6 overflow-hidden rounded-xl border border-border"
+          className="overflow-hidden rounded-xl border border-border"
         >
           <div className="flex items-center justify-between border-b border-border bg-muted/40 px-4 py-2.5">
             <p className="text-eyebrow">Guia preenchida · modelo {guide.type}</p>
             <span className="text-[10px] text-muted-foreground">Role para ver todos os campos</span>
           </div>
-          <div className="max-h-[55dvh] overflow-auto">
+          <div className="max-h-[70dvh] overflow-auto">
             <IssuedGuidePreview guide={guide} />
           </div>
         </section>
       )}
-
-      {guide && (
-        <dl className="grid gap-4 sm:grid-cols-2">
-          <DetailItem label="Nº da guia no prestador" value={guide.numero} mono />
-          <DetailItem label="Status" value={<StatusBadge status={guide.status} />} />
-          <DetailItem label="Paciente" value={guide.patient} />
-          <DetailItem label="Operadora" value={guide.operadora} />
-          <DetailItem label="Tipo de guia" value={guide.type} />
-          <DetailItem label="Data de emissão" value={formatIssuedAt(guide.issuedAt)} />
-          <DetailItem
-            label="Profissional solicitante"
-            value={guide.professional}
-            className="sm:col-span-2"
-          />
-          <DetailItem
-            label="Procedimento principal"
-            value={guide.procedure}
-            className="sm:col-span-2"
-          />
-          <DetailItem label="Valor total" value={formatCurrency(guide.total)} mono />
-        </dl>
-      )}
-
-      {guide?.sections?.length ? (
-        <div className="mt-6 space-y-4 border-t border-border pt-4">
-          <h3 className="text-sm font-semibold text-foreground">Guia completa gerada</h3>
-          {guide.sections.map((section) => (
-            <div key={section.title}>
-              <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-                {section.title}
-              </p>
-              <dl className="mt-2 grid gap-3 sm:grid-cols-2">
-                {section.items.map((item) => (
-                  <DetailItem key={item.label} label={item.label} value={item.value || "—"} />
-                ))}
-              </dl>
-            </div>
-          ))}
-        </div>
-      ) : null}
     </AppModal>
   );
 }
