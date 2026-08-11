@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { CheckCircle2, Clock3, Download, Eye, FileText, XCircle } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import { toast } from "sonner";
@@ -38,7 +38,8 @@ import {
   type IssuedGuide,
   type IssuedGuideStatus,
 } from "../data/issued-guides";
-import { downloadIssuedGuide, useIssuedGuides } from "../data/issued-guides-store";
+import { useIssuedGuides } from "../data/issued-guides-store";
+import { printGuideMarkup } from "../utils/print-guide";
 
 const EMPTY_FILTERS = {
   query: "",
@@ -81,10 +82,28 @@ export function IssuedGuidesPage() {
   const setFilter = (key: keyof typeof EMPTY_FILTERS, value: string) =>
     setFilters((prev) => ({ ...prev, [key]: value }));
 
-  const handleDownload = (guide: IssuedGuide) => {
-    downloadIssuedGuide(guide);
-    toast.success(`Download da guia ${guide.numero} iniciado.`);
-  };
+  // A guia baixada precisa ser o documento completo preenchido: renderizamos a
+  // pré-visualização fora da tela e enviamos esse markup para o diálogo de
+  // impressão/salvar em PDF do navegador.
+  const [printTarget, setPrintTarget] = useState<IssuedGuide | null>(null);
+  const printAreaRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!printTarget) return;
+    const frame = window.requestAnimationFrame(() => {
+      const markup = printAreaRef.current?.innerHTML;
+      if (markup) {
+        printGuideMarkup(markup, `Guia ${printTarget.numero} — Guias+`);
+        toast.success(`Guia ${printTarget.numero} pronta para salvar em PDF.`);
+      } else {
+        toast.error("Não foi possível gerar a guia completa.");
+      }
+      setPrintTarget(null);
+    });
+    return () => window.cancelAnimationFrame(frame);
+  }, [printTarget]);
+
+  const handleDownload = (guide: IssuedGuide) => setPrintTarget(guide);
 
   return (
     <div className="flex min-h-screen w-full bg-background text-foreground">
@@ -273,6 +292,17 @@ export function IssuedGuidesPage() {
         onClose={() => setDetail(null)}
         onDownload={handleDownload}
       />
+
+      {printTarget && (
+        <div
+          aria-hidden="true"
+          className="pointer-events-none fixed left-[-10000px] top-0 w-[820px]"
+        >
+          <div ref={printAreaRef}>
+            <IssuedGuidePreview guide={printTarget} />
+          </div>
+        </div>
+      )}
     </div>
   );
 }
