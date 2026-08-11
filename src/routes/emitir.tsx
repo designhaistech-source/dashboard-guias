@@ -1775,36 +1775,14 @@ function EmitirPage() {
                     label="8 - Número da Carteira"
                     required
                     span="@md:col-span-6 @3xl:col-span-5"
-                    hint={
-                      beneficiarioStatus === "not-found"
-                        ? "Beneficiário não encontrado — informe o nome manualmente."
-                        : "Informe a carteira para buscar o beneficiário."
-                    }
                   >
-                    <div className="flex gap-2">
-                      <Input
-                        value={pacienteCarteira}
-                        onChange={(e) => setPacienteCarteira(e.target.value)}
-                        onBlur={() => buscarBeneficiario()}
-                        placeholder="0000 0000 0000 0000"
-                        inputMode="numeric"
-                        className="font-mono"
-                      />
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="icon"
-                        aria-label="Buscar beneficiário"
-                        disabled={beneficiarioStatus === "loading"}
-                        onClick={() => buscarBeneficiario()}
-                      >
-                        {beneficiarioStatus === "loading" ? (
-                          <Loader2 className="h-4 w-4 animate-spin" />
-                        ) : (
-                          <Search className="h-4 w-4" />
-                        )}
-                      </Button>
-                    </div>
+                    <Input
+                      value={pacienteCarteira}
+                      onChange={(e) => setPacienteCarteira(e.target.value)}
+                      placeholder="0000 0000 0000 0000"
+                      inputMode="numeric"
+                      className="font-mono"
+                    />
                   </Field>
 
                   {/* 9 e 11 são condicionados no TISS: sem asterisco, preenchimento manual. */}
@@ -1824,25 +1802,14 @@ function EmitirPage() {
                     label="10 - Nome"
                     required
                     span="@md:col-span-6 @3xl:col-span-4"
-                    hint={
-                      beneficiarioStatus === "found"
-                        ? "Preenchido pelo cadastro do beneficiário."
-                        : undefined
-                    }
                   >
                     <Input
                       value={pacienteNome}
                       onChange={(e) => setPacienteNome(e.target.value)}
                       placeholder="Nome completo"
-                      readOnly={beneficiarioStatus === "found"}
-                      aria-readonly={beneficiarioStatus === "found"}
-                      className={
-                        beneficiarioStatus === "found"
-                          ? "bg-muted/50 text-foreground"
-                          : undefined
-                      }
                     />
                   </Field>
+
 
                   <Field
                     label="11 - Cartão Nacional de Saúde (CNS)"
