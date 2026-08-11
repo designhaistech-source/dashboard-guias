@@ -10,3 +10,5 @@ export { AihGuideForm } from "./aih/aih-guide-form";
 export type { AihGuideFormProps } from "./aih/aih-guide-form";
 export { AihGuidePreview } from "./aih/aih-guide-preview";
 export type { AihGuidePreviewProps } from "./aih/aih-guide-preview";
+export { SadtGuidePreview } from "./sadt/sadt-guide-preview";
+export type { SadtGuidePreviewProps } from "./sadt/sadt-guide-preview";
