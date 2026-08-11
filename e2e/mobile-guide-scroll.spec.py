@@ -83,7 +83,7 @@ async def open_guide_modal(page) -> None:
     await page.wait_for_function(
         """() => {
           const s = document.querySelector('.overflow-y-auto section')?.closest('.overflow-y-auto');
-          const sheet = s?.querySelector('[style*=\"width\"]');
+          const sheet = s?.querySelector('[style*="width"]');
           return !!sheet && sheet.offsetWidth > 0;
         }""",
         timeout=10_000,
