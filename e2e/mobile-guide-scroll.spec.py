@@ -3,10 +3,10 @@ E2E: abre o modal de visualização de uma guia emitida em viewports móveis
 (iOS/Android), rola até o fim com gestos de toque e valida que:
 
 1. O fallback de escala por `transform` é aplicado (sem `zoom` no mobile);
-2. O container do modal é realmente rolável (altura reservada corretamente);
+2. O container do modal rola de fato quando a guia excede a altura disponível;
 3. A rolagem chega ao fim e o rodapé da guia fica visível — nada é cortado;
-4. Não há travamento: a página continua respondendo (rAF) durante e após
-   a rolagem, dentro de um orçamento de tempo.
+4. Não há travamento: a página continua respondendo (rAF) durante e após a
+   rolagem, dentro de um orçamento de tempo.
 
 Uso:
     BASE_URL=https://<seu-projeto>.lovable.app python3 e2e/mobile-guide-scroll.spec.py
@@ -32,15 +32,38 @@ ANDROID_UA = (
 )
 
 DEVICES = [
-    {"name": "iOS (iPhone)", "ua": IOS_UA, "viewport": {"width": 390, "height": 844}},
-    {"name": "Android (Pixel)", "ua": ANDROID_UA, "viewport": {"width": 412, "height": 915}},
+    {"name": "iOS (iPhone 14)", "ua": IOS_UA, "viewport": {"width": 390, "height": 844}},
+    {"name": "Android (Pixel 8)", "ua": ANDROID_UA, "viewport": {"width": 412, "height": 915}},
+    # Altura reduzida: força a guia a exceder o modal e exercita a rolagem.
+    {"name": "iOS (tela curta)", "ua": IOS_UA, "viewport": {"width": 390, "height": 520}},
 ]
 
 # Orçamento de responsividade: um frame de animação deve ocorrer rapidamente
-# mesmo imediatamente após a rolagem. Valor folgado para CI lento.
+# mesmo imediatamente após a rolagem. Valor folgado para ambientes de CI lentos.
 FRAME_BUDGET_MS = 1_500
-# Tolerância de rolagem residual (px) para arredondamentos de sub-pixel.
-SCROLL_TOLERANCE_PX = 4
+# Tolerância (px) para arredondamentos de sub-pixel na rolagem/medidas.
+TOLERANCE_PX = 4
+
+# Localiza o container rolável do modal e a folha escalada da guia.
+MODAL_METRICS_JS = """() => {
+  const scroller = document.querySelector('.overflow-y-auto section')?.closest('.overflow-y-auto')
+    ?? Array.from(document.querySelectorAll('.overflow-y-auto')).pop();
+  if (!scroller) return null;
+  // A folha é o filho com largura fixa dentro do container de escala.
+  const sheet = scroller.querySelector('[style*="width"]');
+  if (!sheet) return null;
+  const style = getComputedStyle(sheet);
+  const rect = sheet.getBoundingClientRect();
+  return {
+    transform: style.transform,
+    zoom: style.zoom,
+    naturalWidth: sheet.offsetWidth,
+    naturalHeight: sheet.offsetHeight,
+    renderedHeight: Math.round(rect.height),
+    scrollHeight: scroller.scrollHeight,
+    clientHeight: scroller.clientHeight,
+  };
+}"""
 
 
 async def open_guide_modal(page) -> None:
@@ -52,43 +75,21 @@ async def open_guide_modal(page) -> None:
     view_button = page.get_by_role("button", name="Visualizar").first
     await view_button.wait_for(state="visible", timeout=15_000)
     await view_button.click()
-    await expect(page.get_by_role("dialog").first).to_be_visible(timeout=10_000)
-
-
-async def scale_mode(page) -> dict:
-    """Lê como a guia foi escalada (transform vs zoom) e as medidas usadas."""
-    return await page.evaluate(
-        """() => {
-          const dialog = document.querySelector('[role="dialog"]');
-          const sheet = dialog?.querySelector('[style*="width"]');
-          if (!sheet) return null;
-          const style = getComputedStyle(sheet);
-          return {
-            transform: style.transform,
-            zoom: style.zoom,
-            naturalWidth: sheet.offsetWidth,
-            naturalHeight: sheet.offsetHeight,
-            renderedHeight: Math.round(sheet.getBoundingClientRect().height),
-          };
-        }"""
+    # O botão de download só existe dentro do modal aberto.
+    await expect(page.get_by_role("button", name="Baixar PDF").first).to_be_visible(
+        timeout=10_000
     )
 
 
-async def find_scroller(page):
-    """Retorna o elemento rolável do modal (o que contém a guia)."""
+async def scroller_handle(page):
+    """Retorna o elemento rolável do modal."""
     handle = await page.evaluate_handle(
-        """() => {
-          const dialog = document.querySelector('[role="dialog"]');
-          const nodes = dialog ? Array.from(dialog.querySelectorAll('*')) : [];
-          const scrollers = nodes.filter((el) => el.scrollHeight - el.clientHeight > 8);
-          // O maior scroller é o container da guia.
-          scrollers.sort((a, b) => b.scrollHeight - a.scrollHeight);
-          return scrollers[0] ?? null;
-        }"""
+        """() => document.querySelector('.overflow-y-auto section')?.closest('.overflow-y-auto')
+             ?? Array.from(document.querySelectorAll('.overflow-y-auto')).pop() ?? null"""
     )
     element = handle.as_element()
     if element is None:
-        raise AssertionError("Modal da guia não possui container rolável")
+        raise AssertionError("Modal da guia não possui container de rolagem")
     return element
 
 
@@ -102,28 +103,28 @@ async def frame_latency_ms(page) -> float:
     )
 
 
-async def swipe_to_bottom(page, element) -> int:
-    """Rola com gestos de toque até o fim, retornando o número de gestos."""
-    box = await element.bounding_box()
+async def swipe_to_bottom(page, scroller) -> int:
+    """Rola com toque + scroll incremental até o fim; retorna gestos usados."""
+    box = await scroller.bounding_box()
     if box is None:
-        raise AssertionError("Container rolável sem bounding box")
+        raise AssertionError("Container de rolagem sem bounding box")
 
-    start_x = box["x"] + box["width"] / 2
-    start_y = box["y"] + box["height"] * 0.8
-    end_y = box["y"] + box["height"] * 0.2
+    touch_x = box["x"] + box["width"] / 2
+    touch_y = box["y"] + box["height"] * 0.6
+    step = max(80, int(box["height"] * 0.6))
     gestures = 0
 
-    for _ in range(80):
-        metrics = await element.evaluate(
+    for _ in range(120):
+        metrics = await scroller.evaluate(
             "(el) => ({ top: el.scrollTop, height: el.scrollHeight, client: el.clientHeight })"
         )
-        if metrics["top"] + metrics["client"] >= metrics["height"] - SCROLL_TOLERANCE_PX:
+        if metrics["top"] + metrics["client"] >= metrics["height"] - TOLERANCE_PX:
             break
 
-        await page.touchscreen.tap(start_x, start_y)
-        await element.evaluate(
-            "(el, delta) => el.scrollBy({ top: delta, behavior: 'instant' })",
-            int(box["height"] * 0.6),
+        # Toque real (ativa o caminho de scroll móvel) + deslocamento determinístico.
+        await page.touchscreen.tap(touch_x, touch_y)
+        await scroller.evaluate(
+            "(el, delta) => el.scrollBy({ top: delta, behavior: 'instant' })", step
         )
         gestures += 1
 
@@ -131,35 +132,41 @@ async def swipe_to_bottom(page, element) -> int:
         assert latency < FRAME_BUDGET_MS, (
             f"Rolagem travou: frame levou {latency:.0f}ms (limite {FRAME_BUDGET_MS}ms)"
         )
-        _ = end_y  # gesto simulado usa apenas o ponto inicial + scrollBy
 
     return gestures
 
 
-async def assert_bottom_reached(element) -> None:
-    metrics = await element.evaluate(
+async def assert_bottom_reached(scroller) -> None:
+    metrics = await scroller.evaluate(
         "(el) => ({ top: el.scrollTop, height: el.scrollHeight, client: el.clientHeight })"
     )
     remaining = metrics["height"] - (metrics["top"] + metrics["client"])
-    assert remaining <= SCROLL_TOLERANCE_PX, (
+    assert remaining <= TOLERANCE_PX, (
         f"Não foi possível rolar até o fim: faltaram {remaining}px"
     )
 
 
-async def assert_footer_visible(page, element) -> None:
-    """A última linha da guia deve estar dentro da área visível do scroller."""
-    visible = await element.evaluate(
+async def assert_end_of_guide_visible(scroller) -> None:
+    """O fim da folha da guia deve estar dentro da área visível do scroller."""
+    result = await scroller.evaluate(
         """(el) => {
           const sheet = el.querySelector('[style*="width"]');
-          const last = sheet?.lastElementChild ?? sheet;
-          if (!last) return false;
-          const a = last.getBoundingClientRect();
+          if (!sheet) return { ok: false, reason: 'folha não encontrada' };
+          const a = sheet.getBoundingClientRect();
           const b = el.getBoundingClientRect();
-          // Tolerância de 2px para sub-pixel.
-          return a.bottom <= b.bottom + 2 && a.bottom > b.top;
+          return {
+            ok: a.bottom <= b.bottom + 2 && a.bottom > b.top,
+            overflowBottom: Math.round(a.bottom - b.bottom),
+            overflowRight: Math.round(a.right - b.right),
+          };
         }"""
     )
-    assert visible, "O fim da guia não ficou visível — conteúdo cortado"
+    assert result["ok"], (
+        f"O fim da guia não ficou visível — conteúdo cortado ({result})"
+    )
+    assert result["overflowRight"] <= TOLERANCE_PX, (
+        f"Guia cortada na lateral: {result['overflowRight']}px além do container"
+    )
 
 
 async def run_device(browser, device) -> None:
@@ -176,28 +183,35 @@ async def run_device(browser, device) -> None:
 
     await open_guide_modal(page)
 
-    mode = await scale_mode(page)
-    assert mode, "Guia não encontrada no modal"
-    assert mode["transform"] not in ("none", None), (
-        f"{device['name']}: esperado fallback transform, obtido transform={mode['transform']}"
+    metrics = await page.evaluate(MODAL_METRICS_JS)
+    assert metrics, f"{device['name']}: guia não encontrada no modal"
+    assert metrics["transform"] not in ("none", None), (
+        f"{device['name']}: esperado fallback transform no mobile, "
+        f"obtido transform={metrics['transform']}"
     )
-    assert mode["zoom"] in ("1", "normal", "", None), (
-        f"{device['name']}: `zoom` não deve ser usado no mobile (zoom={mode['zoom']})"
+    assert metrics["zoom"] in ("1", "normal", "", None), (
+        f"{device['name']}: `zoom` não deve ser usado no mobile (zoom={metrics['zoom']})"
+    )
+    # A altura reservada precisa acompanhar a escala, senão o pai não rola.
+    assert metrics["scrollHeight"] >= metrics["renderedHeight"] - TOLERANCE_PX, (
+        f"{device['name']}: altura reservada insuficiente "
+        f"({metrics['scrollHeight']}px para {metrics['renderedHeight']}px de guia)"
     )
 
-    scroller = await find_scroller(page)
+    scroller = await scroller_handle(page)
     gestures = await swipe_to_bottom(page, scroller)
     await assert_bottom_reached(scroller)
-    await assert_footer_visible(page, scroller)
+    await assert_end_of_guide_visible(scroller)
 
     latency = await frame_latency_ms(page)
-    assert latency < FRAME_BUDGET_MS, f"{device['name']}: página travada após rolagem"
+    assert latency < FRAME_BUDGET_MS, f"{device['name']}: página travada após a rolagem"
     assert not errors, f"{device['name']}: erros de runtime — {errors}"
 
+    scrollable = metrics["scrollHeight"] - metrics["clientHeight"]
     print(
-        f"OK — {device['name']}: {gestures} gestos até o fim, "
-        f"guia {mode['naturalWidth']}x{mode['naturalHeight']}px renderizada em "
-        f"{mode['renderedHeight']}px, frame final {latency:.0f}ms"
+        f"OK — {device['name']}: guia {metrics['naturalWidth']}x{metrics['naturalHeight']}px "
+        f"renderizada em {metrics['renderedHeight']}px, {scrollable}px roláveis, "
+        f"{gestures} gestos até o fim, frame final {latency:.0f}ms"
     )
     await context.close()
 
