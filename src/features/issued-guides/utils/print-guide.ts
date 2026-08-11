@@ -86,10 +86,13 @@ export async function printGuideMarkup(markup: string, title: string) {
   // alta que a área útil e, sem isso, o PDF sairia em duas páginas.
   const sheet = doc.querySelector<HTMLElement>(".print-scale");
   if (sheet) {
+    // scrollWidth/Height capturam bordas e conteúdo que estouram a largura
+    // nominal da folha, evitando corte nas laterais.
+    const naturalWidth = Math.max(sheet.scrollWidth, SHEET_WIDTH_PX);
     const naturalHeight = sheet.scrollHeight || 1;
     const scale = Math.min(
       1,
-      A4_LANDSCAPE_CONTENT_WIDTH_PX / SHEET_WIDTH_PX,
+      A4_LANDSCAPE_CONTENT_WIDTH_PX / naturalWidth,
       A4_LANDSCAPE_CONTENT_HEIGHT_PX / naturalHeight,
     );
     sheet.style.zoom = String(scale);
