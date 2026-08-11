@@ -138,6 +138,17 @@ export function IssuedGuidesPage() {
                 clearable
               />
             </div>
+            <div className="w-full min-w-0 lg:w-[190px]">
+              <Combobox
+                aria-label="Tipo de guia"
+                options={ISSUED_GUIDE_TYPES.map((type) => ({ value: type, label: type }))}
+                value={filters.type}
+                onChange={(value) => setFilter("type", value)}
+                placeholder="Todos os tipos de guia"
+                searchPlaceholder="Buscar tipo..."
+                clearable
+              />
+            </div>
             <div className="w-full min-w-0 lg:w-[160px]">
               <Input
                 type="date"
