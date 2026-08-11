@@ -19,10 +19,8 @@ import {
   Pencil,
   Package,
   Eye,
-  Loader2,
-  Search,
 } from "lucide-react";
-import { lookupBeneficiary, normalizeCarteira } from "@/features/beneficiaries";
+
 import { toast } from "sonner";
 import {
   appTabsIconClass,
