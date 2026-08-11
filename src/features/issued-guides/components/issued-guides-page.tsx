@@ -80,7 +80,7 @@ export function IssuedGuidesPage() {
         if (guide.type !== "SP/SADT") return false;
         if (
           query &&
-          !`${guide.numero} ${guide.patient} ${guide.procedure}`.toLowerCase().includes(query)
+          !`${guide.numero} ${guide.patient}`.toLowerCase().includes(query)
         ) {
           return false;
         }
@@ -163,7 +163,7 @@ export function IssuedGuidesPage() {
           >
             <div className="w-full min-w-0 sm:col-span-2 lg:w-auto lg:flex-1 lg:min-w-[240px]">
               <SearchInput
-                placeholder="Buscar por nº da guia, paciente ou procedimento"
+                placeholder="Buscar por nº da guia ou paciente"
                 aria-label="Buscar guias emitidas"
                 value={filters.query}
                 clearable
