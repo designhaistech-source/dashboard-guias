@@ -626,11 +626,6 @@ function EmitirPage() {
   const [pacienteNascimento, setPacienteNascimento] = useState("");
   const [pacienteSexo, setPacienteSexo] = useState("F");
   const [pacienteValidadeCarteira, setPacienteValidadeCarteira] = useState("");
-  /** Estado da consulta do beneficiário pelo campo 8 (Número da Carteira). */
-  const [beneficiarioStatus, setBeneficiarioStatus] = useState<
-    "idle" | "loading" | "found" | "not-found"
-  >("idle");
-  const [carteiraConsultada, setCarteiraConsultada] = useState("");
   const [pacienteCns, setPacienteCns] = useState("");
   const [pacienteRn, setPacienteRn] = useState("N");
 
