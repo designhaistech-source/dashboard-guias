@@ -6,8 +6,12 @@
 
 /** Largura fixa da folha da guia (modelo oficial), usada para escalar em A4. */
 const SHEET_WIDTH_PX = 1100;
-/** Largura útil de uma folha A4 paisagem com margens de 6mm, em pixels CSS. */
-const A4_LANDSCAPE_CONTENT_WIDTH_PX = (297 - 12) * (96 / 25.4);
+const MM_TO_PX = 96 / 25.4;
+/** Área útil de uma folha A4 paisagem com margens de 6mm, em pixels CSS. */
+const A4_LANDSCAPE_CONTENT_WIDTH_PX = (297 - 12) * MM_TO_PX;
+/* Fator de folga: sem ele o arredondamento do navegador joga a última linha
+   para uma segunda página. */
+const A4_LANDSCAPE_CONTENT_HEIGHT_PX = (210 - 12) * MM_TO_PX * 0.97;
 
 /**
  * Coleta todo o CSS da aplicação já resolvido em texto. Copiar apenas as tags
@@ -43,7 +47,6 @@ async function collectCssText(): Promise<string> {
 
 export async function printGuideMarkup(markup: string, title: string) {
   const css = await collectCssText();
-  const scale = Math.min(1, A4_LANDSCAPE_CONTENT_WIDTH_PX / SHEET_WIDTH_PX);
 
   const iframe = document.createElement("iframe");
   iframe.setAttribute("aria-hidden", "true");
@@ -67,11 +70,9 @@ export async function printGuideMarkup(markup: string, title: string) {
     <style>
       @page { size: A4 landscape; margin: 6mm; }
       html, body { margin: 0; padding: 0; background: #fff; }
-      .print-scale {
-        width: ${SHEET_WIDTH_PX}px;
-        transform: scale(${scale});
-        transform-origin: top left;
-      }
+      /* `zoom` reflui o layout (Chrome e Safari), então a folha reduzida não
+         gera uma segunda página em branco como aconteceria com `transform`. */
+      .print-scale { width: ${SHEET_WIDTH_PX}px; }
       * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
     </style>
   </head>
@@ -80,6 +81,20 @@ export async function printGuideMarkup(markup: string, title: string) {
   doc.close();
 
   await waitForImages(doc);
+
+  // Escala considerando também a altura: em paisagem a folha da guia é mais
+  // alta que a área útil e, sem isso, o PDF sairia em duas páginas.
+  const sheet = doc.querySelector<HTMLElement>(".print-scale");
+  if (sheet) {
+    const naturalHeight = sheet.scrollHeight || 1;
+    const scale = Math.min(
+      1,
+      A4_LANDSCAPE_CONTENT_WIDTH_PX / SHEET_WIDTH_PX,
+      A4_LANDSCAPE_CONTENT_HEIGHT_PX / naturalHeight,
+    );
+    sheet.style.zoom = String(scale);
+    await new Promise((resolve) => window.setTimeout(resolve, 100));
+  }
 
   iframe.contentWindow?.focus();
   iframe.contentWindow?.print();
