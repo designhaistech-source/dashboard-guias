@@ -2092,9 +2092,16 @@ function EmitirPage() {
                     <div className="whitespace-nowrap text-center" data-testid="proc-solic-header-27">
                       27 - Qtde. <span className="text-destructive">*</span>
                     </div>
-                    <div className="whitespace-nowrap text-center" data-testid="proc-solic-header-28">
+                    <div
+                      className="flex items-center justify-center gap-1 whitespace-nowrap text-center"
+                      data-testid="proc-solic-header-28"
+                    >
                       28 - Autorizada
+                      <InfoHint label="Sobre o campo 28 - Autorizada">
+                        Quantidade informada pela operadora após a análise da solicitação.
+                      </InfoHint>
                     </div>
+
                     <div />
                   </div>
 
