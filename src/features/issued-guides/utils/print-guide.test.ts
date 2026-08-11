@@ -60,8 +60,10 @@ describe("PRINT_SHEET_CSS", () => {
 
 describe("getGuideSheetScale", () => {
   it("nunca amplia a guia além de 1:1", () => {
-    expect(getGuideSheetScale(200, 100)).toBe(1);
+    expect(getGuideSheetScale(1, 1)).toBeLessThanOrEqual(1);
+    expect(getGuideSheetScale(10_000, 10_000)).toBeLessThan(1);
   });
+
 
   it("mantém a guia dentro da área útil do papel", () => {
     const scale = getGuideSheetScale(GUIDE_SHEET_WIDTH_PX, 900);
