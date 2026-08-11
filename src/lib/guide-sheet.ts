@@ -51,6 +51,26 @@ export function getGuideSheetScale(naturalWidth: number, naturalHeight: number) 
 }
 
 /**
+ * Escala do modal. Reproduz a proporção exata da página exportada: a área útil
+ * do papel é mapeada na largura disponível em tela, então a guia aparece na
+ * mesma posição/escala relativa do PDF (inclusive quando a altura é o limite).
+ */
+export function getPreviewSheetScale(
+  availableWidth: number,
+  naturalWidth: number,
+  naturalHeight: number,
+) {
+  if (!availableWidth) return 1;
+  const printScale = getGuideSheetScale(naturalWidth, naturalHeight);
+  const pageToScreen = Math.min(
+    1,
+    availableWidth / (PRINT_CONTENT_WIDTH_PX + PRINT_EDGE_GUARD_PX * 2),
+  );
+  return printScale * pageToScreen;
+}
+
+
+/**
  * CSS de impressão. Reproduz o container do modal (`ScaledGuideSheet`): mesma
  * largura natural, mesma origem de transformação e sem estouro horizontal.
  */

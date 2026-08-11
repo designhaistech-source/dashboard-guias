@@ -1,6 +1,10 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 
-import { GUIDE_SHEET_WIDTH_PX } from "@/lib/guide-sheet";
+import {
+  GUIDE_SHEET_WIDTH_PX,
+  PRINT_EDGE_GUARD_PX,
+  getPreviewSheetScale,
+} from "@/lib/guide-sheet";
 
 /**
  * Ajusta o modelo impresso da guia (largura fixa compartilhada com o gerador de
@@ -46,15 +50,17 @@ export function ScaledGuideSheet({ children }: { children: React.ReactNode }) {
     if (!container) return;
 
     const update = () => {
-      const available = container.clientWidth;
+      // clientWidth inclui o padding de guarda; usamos apenas a área de conteúdo.
+      const available = container.clientWidth - PRINT_EDGE_GUARD_PX * 2;
       if (!available) return;
-      const next = Math.min(1, available / SHEET_WIDTH);
-      setScale(next);
       const content = contentRef.current;
-      if (content) {
-        // offsetHeight ignora o transform, então reflete a altura natural.
-        setHeight(Math.ceil(content.offsetHeight * next));
-      }
+      // offsetWidth/offsetHeight ignoram o transform: são as medidas naturais.
+      const naturalWidth = content?.offsetWidth || SHEET_WIDTH;
+      const naturalHeight = content?.offsetHeight || 0;
+      // Mesma escala relativa da página exportada (ver getPreviewSheetScale).
+      const next = getPreviewSheetScale(available, naturalWidth, naturalHeight);
+      setScale(next);
+      if (naturalHeight) setHeight(Math.ceil(naturalHeight * next));
     };
 
     update();
@@ -68,6 +74,7 @@ export function ScaledGuideSheet({ children }: { children: React.ReactNode }) {
     <div
       ref={containerRef}
       className="w-full overflow-x-hidden bg-muted [-webkit-overflow-scrolling:touch] [overscroll-behavior:contain]"
+      style={{ padding: PRINT_EDGE_GUARD_PX }}
     >
       {useTransform ? (
         // Altura reservada explicitamente para o pai continuar rolável.
