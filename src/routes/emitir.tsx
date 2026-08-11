@@ -828,11 +828,10 @@ function EmitirPage() {
    * Campos 37/38 (horários) só são exigidos quando o tipo de atendimento
    * envolve registro de horário (urgência/emergência, remoção, internado).
    */
-  const requiresExecutionTime = [
-    "Urgência / emergência",
-    "Remoção",
-    "SADT internado",
-  ].includes(tipoAtendimento);
+  // Códigos da Tabela 50: 01 - Remoção, 02 - Pequena cirurgia,
+  // 13 - Pequeno atendimento.
+  const requiresExecutionTime = ["01", "02", "13"].includes(tipoAtendimento);
+
   /** Permite registrar horários manualmente mesmo quando não obrigatórios. */
   const [showExecutionTime, setShowExecutionTime] = useState(false);
   const executionTimeVisible = requiresExecutionTime || showExecutionTime;
