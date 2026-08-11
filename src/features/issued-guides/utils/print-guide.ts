@@ -76,13 +76,14 @@ export async function printGuideMarkup(markup: string, title: string) {
     <title>${escapeHtml(title)}</title>
     <style>${css}</style>
     <style>
-      @page { size: landscape; margin: 6mm; }
+      @page { size: landscape; margin: ${PAGE_MARGIN_MM}mm; }
       html, body { margin: 0; padding: 0; background: #fff; }
+      .print-guard { padding: ${EDGE_GUARD_PX}px; overflow: hidden; }
       .print-scale { width: ${SHEET_WIDTH_PX}px; }
       * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
     </style>
   </head>
-  <body><div class="print-scale">${markup}</div></body>
+  <body><div class="print-guard"><div class="print-scale">${markup}</div></div></body>
 </html>`);
   doc.close();
 
@@ -94,8 +95,11 @@ export async function printGuideMarkup(markup: string, title: string) {
   if (sheet) {
     // scrollWidth/Height capturam bordas e conteúdo que estouram a largura
     // nominal da folha, evitando corte nas laterais.
-    const naturalWidth = Math.max(sheet.scrollWidth, SHEET_WIDTH_PX);
-    const naturalHeight = sheet.scrollHeight || 1;
+    const rect = sheet.getBoundingClientRect();
+    const naturalWidth = Math.ceil(
+      Math.max(sheet.scrollWidth, rect.width, SHEET_WIDTH_PX),
+    );
+    const naturalHeight = Math.ceil(Math.max(sheet.scrollHeight, rect.height)) || 1;
     const scale = Math.min(
       1,
       PRINT_CONTENT_WIDTH_PX / naturalWidth,
