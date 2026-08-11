@@ -38,7 +38,8 @@ import {
   type IssuedGuide,
   type IssuedGuideStatus,
 } from "../data/issued-guides";
-import { downloadIssuedGuide, useIssuedGuides } from "../data/issued-guides-store";
+import { useIssuedGuides } from "../data/issued-guides-store";
+import { printGuideMarkup } from "../utils/print-guide";
 
 const EMPTY_FILTERS = {
   query: "",
