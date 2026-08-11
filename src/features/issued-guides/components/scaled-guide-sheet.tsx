@@ -20,7 +20,9 @@ export function ScaledGuideSheet({ children }: { children: React.ReactNode }) {
 
     const update = () => {
       const available = container.clientWidth;
-      const next = Math.min(1, available / SHEET_WIDTH);
+      // offsetWidth ignora o transform, então serve como largura natural.
+      const natural = content.offsetWidth || SHEET_WIDTH;
+      const next = Math.min(1, available / natural);
       setScale(next);
       setHeight(content.offsetHeight * next);
     };
@@ -38,7 +40,8 @@ export function ScaledGuideSheet({ children }: { children: React.ReactNode }) {
         <div
           ref={contentRef}
           style={{
-            width: SHEET_WIDTH,
+            width: "max-content",
+            minWidth: SHEET_WIDTH,
             transform: `scale(${scale})`,
             transformOrigin: "top left",
           }}
