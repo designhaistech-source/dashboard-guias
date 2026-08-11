@@ -368,18 +368,6 @@ function IssuedGuideModal({
       footer={
         guide ? (
           <div className="flex flex-col gap-2 sm:flex-row sm:justify-end">
-            <Button variant="outline" onClick={() => onDuplicate(guide)}>
-              <Copy className="h-4 w-4" aria-hidden="true" />
-              Duplicar
-            </Button>
-            <Button variant="outline" onClick={() => onReprint(guide)}>
-              <Printer className="h-4 w-4" aria-hidden="true" />
-              Reimprimir
-            </Button>
-            <Button variant="outline" onClick={() => onOpenDocument(guide)}>
-              <ExternalLink className="h-4 w-4" aria-hidden="true" />
-              Abrir guia completa
-            </Button>
             <Button onClick={() => onDownload(guide)}>
               <Download className="h-4 w-4" aria-hidden="true" />
               Baixar PDF
