@@ -236,7 +236,27 @@ export function IssuedGuidesPage() {
                         <DataTableHead className="w-[24%]">Paciente</DataTableHead>
                         <DataTableHead className="w-[14%]">Tipo de guia</DataTableHead>
                         <DataTableHead className="w-[18%]">Operadora</DataTableHead>
-                        <DataTableHead className="w-[16%]">Data de emissão</DataTableHead>
+                        <DataTableHead className="w-[16%]">
+                          <button
+                            type="button"
+                            onClick={() =>
+                              setSortDirection((prev) => (prev === "desc" ? "asc" : "desc"))
+                            }
+                            aria-label={
+                              sortDirection === "desc"
+                                ? "Ordenar por data de emissão: mais antigas primeiro"
+                                : "Ordenar por data de emissão: mais recentes primeiro"
+                            }
+                            className="inline-flex items-center gap-1 rounded-sm text-left font-medium text-foreground transition-colors hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                          >
+                            Data de emissão
+                            {sortDirection === "desc" ? (
+                              <ArrowDown className="size-3.5 shrink-0" aria-hidden="true" />
+                            ) : (
+                              <ArrowUp className="size-3.5 shrink-0" aria-hidden="true" />
+                            )}
+                          </button>
+                        </DataTableHead>
                         <DataTableHead className="w-[13%] whitespace-nowrap text-right">
                           Ações
                         </DataTableHead>
