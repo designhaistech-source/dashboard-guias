@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 
 import { GUIDE_SHEET_WIDTH_PX } from "@/lib/guide-sheet";
 
@@ -9,10 +9,37 @@ import { GUIDE_SHEET_WIDTH_PX } from "@/lib/guide-sheet";
  */
 const SHEET_WIDTH = GUIDE_SHEET_WIDTH_PX;
 
+/**
+ * `zoom` refaz o layout e mantém o container rolável, mas em WebKit móvel
+ * (iOS) o recálculo durante a rolagem causa travamentos. Nesses casos usamos
+ * `transform: scale()` com altura medida — o scroll continua nativo e suave.
+ */
+function prefersTransformFallback(): boolean {
+  if (typeof window === "undefined") return false;
+  const supportsZoom =
+    typeof CSS !== "undefined" &&
+    typeof CSS.supports === "function" &&
+    CSS.supports("zoom", "0.5");
+  if (!supportsZoom) return true;
+
+  const ua = window.navigator.userAgent;
+  const isAppleTouch =
+    /iP(hone|ad|od)/.test(ua) ||
+    (/Macintosh/.test(ua) && window.navigator.maxTouchPoints > 1);
+  const isAndroid = /Android/.test(ua);
+  return isAppleTouch || isAndroid;
+}
 
 export function ScaledGuideSheet({ children }: { children: React.ReactNode }) {
   const containerRef = useRef<HTMLDivElement>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
   const [scale, setScale] = useState(1);
+  const [useTransform, setUseTransform] = useState(false);
+  const [height, setHeight] = useState<number | undefined>(undefined);
+
+  useLayoutEffect(() => {
+    setUseTransform(prefersTransformFallback());
+  }, []);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -21,21 +48,47 @@ export function ScaledGuideSheet({ children }: { children: React.ReactNode }) {
     const update = () => {
       const available = container.clientWidth;
       if (!available) return;
-      setScale(Math.min(1, available / SHEET_WIDTH));
+      const next = Math.min(1, available / SHEET_WIDTH);
+      setScale(next);
+      const content = contentRef.current;
+      if (content) {
+        // offsetHeight ignora o transform, então reflete a altura natural.
+        setHeight(Math.ceil(content.offsetHeight * next));
+      }
     };
 
     update();
     const observer = new ResizeObserver(update);
     observer.observe(container);
+    if (contentRef.current) observer.observe(contentRef.current);
     return () => observer.disconnect();
-  }, []);
+  }, [useTransform]);
 
   return (
-    <div ref={containerRef} className="w-full overflow-x-hidden bg-muted">
-      {/* `zoom` refaz o layout (ao contrário de `transform`), então a altura do
-          documento acompanha a escala e o container pai continua rolável. */}
-      <div style={{ zoom: scale, width: SHEET_WIDTH }}>{children}</div>
+    <div
+      ref={containerRef}
+      className="w-full overflow-x-hidden bg-muted [-webkit-overflow-scrolling:touch] [overscroll-behavior:contain]"
+    >
+      {useTransform ? (
+        // Altura reservada explicitamente para o pai continuar rolável.
+        <div style={{ height }}>
+          <div
+            ref={contentRef}
+            style={{
+              width: SHEET_WIDTH,
+              transform: `scale(${scale})`,
+              transformOrigin: "top left",
+              willChange: "transform",
+            }}
+          >
+            {children}
+          </div>
+        </div>
+      ) : (
+        <div ref={contentRef} style={{ zoom: scale, width: SHEET_WIDTH }}>
+          {children}
+        </div>
+      )}
     </div>
   );
 }
-
