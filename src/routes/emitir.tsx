@@ -38,6 +38,7 @@ import { SignatureField } from "@/components/signature-field";
 import { useDraftAutosave } from "@/hooks/use-draft-autosave";
 
 import { FormActionBar } from "@/components/form-action-bar";
+import { InfoHint } from "@/components/info-hint";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
