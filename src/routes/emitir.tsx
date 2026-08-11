@@ -1069,35 +1069,6 @@ function EmitirPage() {
           : true;
   const pacienteOk = Boolean(pacienteNome.trim() && pacienteCarteira.trim());
 
-  /**
-   * Consulta o beneficiário pela carteira e preenche nome, CNS e validade
-   * quando existirem no cadastro (campos 9, 10 e 11 da guia TISS).
-   */
-  async function buscarBeneficiario() {
-    const digits = normalizeCarteira(pacienteCarteira);
-    if (!digits) {
-      setBeneficiarioStatus("idle");
-      setCarteiraConsultada("");
-      return;
-    }
-    if (digits === carteiraConsultada && beneficiarioStatus !== "idle") return;
-
-    setBeneficiarioStatus("loading");
-    const found = await lookupBeneficiary(digits);
-    setCarteiraConsultada(digits);
-
-    if (!found) {
-      setBeneficiarioStatus("not-found");
-      return;
-    }
-
-    setPacienteNome(found.nome);
-    setPacienteCns(found.cns ?? "");
-    setPacienteValidadeCarteira(found.validadeCarteira ?? "");
-    if (found.cpf) setPacienteCpf(found.cpf);
-    setBeneficiarioStatus("found");
-    toast.success("Beneficiário encontrado", { description: found.nome });
-  }
   const profissionalOk = profissionalValido;
   
   const atendimentoOk = Boolean(tipoAtendimento.trim());
