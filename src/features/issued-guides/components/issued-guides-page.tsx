@@ -32,6 +32,7 @@ import {
 } from "@/components/data-table";
 import {
   ISSUED_GUIDE_OPERADORAS,
+  ISSUED_GUIDE_TYPES,
   formatCurrency,
   formatIssuedAt,
   type IssuedGuide,
@@ -44,6 +45,7 @@ const EMPTY_FILTERS = {
   from: "",
   to: "",
   operadora: "",
+  type: "",
 };
 
 /**
@@ -67,6 +69,7 @@ export function IssuedGuidesPage() {
         return false;
       }
       if (filters.operadora && guide.operadora !== filters.operadora) return false;
+      if (filters.type && guide.type !== filters.type) return false;
 
       const day = guide.issuedAt.slice(0, 10);
       if (filters.from && day < filters.from) return false;
@@ -132,6 +135,17 @@ export function IssuedGuidesPage() {
                 onChange={(value) => setFilter("operadora", value)}
                 placeholder="Todas as operadoras"
                 searchPlaceholder="Buscar operadora..."
+                clearable
+              />
+            </div>
+            <div className="w-full min-w-0 lg:w-[190px]">
+              <Combobox
+                aria-label="Tipo de guia"
+                options={ISSUED_GUIDE_TYPES.map((type) => ({ value: type, label: type }))}
+                value={filters.type}
+                onChange={(value) => setFilter("type", value)}
+                placeholder="Todos os tipos de guia"
+                searchPlaceholder="Buscar tipo..."
                 clearable
               />
             </div>
