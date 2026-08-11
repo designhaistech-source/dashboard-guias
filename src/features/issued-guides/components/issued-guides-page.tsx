@@ -32,6 +32,7 @@ import {
 } from "@/components/data-table";
 import {
   ISSUED_GUIDE_OPERADORAS,
+  ISSUED_GUIDE_TYPES,
   formatCurrency,
   formatIssuedAt,
   type IssuedGuide,
@@ -44,6 +45,7 @@ const EMPTY_FILTERS = {
   from: "",
   to: "",
   operadora: "",
+  type: "",
 };
 
 /**
