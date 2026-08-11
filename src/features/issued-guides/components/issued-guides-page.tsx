@@ -42,7 +42,7 @@ import {
 } from "@/components/data-table";
 import {
   ISSUED_GUIDE_OPERADORAS,
-    formatCurrency,
+  formatCurrency,
   formatIssuedAt,
   type IssuedGuide,
   type IssuedGuideStatus,
@@ -77,9 +77,7 @@ export function IssuedGuidesPage() {
     return guides.filter((guide) => {
       if (
         query &&
-        !`${guide.numero} ${guide.patient} ${guide.procedure}`
-          .toLowerCase()
-          .includes(query)
+        !`${guide.numero} ${guide.patient} ${guide.procedure}`.toLowerCase().includes(query)
       ) {
         return false;
       }
@@ -181,12 +179,8 @@ export function IssuedGuidesPage() {
             </div>
           </FilterCard>
 
-
-
           <p className="text-sm text-muted-foreground" aria-live="polite">
-            {rows.length === 1
-              ? "1 guia encontrada"
-              : `${rows.length} guias encontradas`}
+            {rows.length === 1 ? "1 guia encontrada" : `${rows.length} guias encontradas`}
           </p>
 
           {rows.length === 0 ? (
@@ -203,9 +197,7 @@ export function IssuedGuidesPage() {
                 {rows.map((guide) => (
                   <DataTableCard key={guide.numero}>
                     <DataTableCardHeader
-                      title={
-                        <span className="truncate font-mono">{guide.numero}</span>
-                      }
+                      title={<span className="truncate font-mono">{guide.numero}</span>}
                       subtitle={guide.patient}
                     />
                     <DataTableCardFields
@@ -215,19 +207,13 @@ export function IssuedGuidesPage() {
                         { label: "Data de emissão", value: formatIssuedAt(guide.issuedAt) },
                         { label: "Valor total", value: formatCurrency(guide.total) },
                       ]}
-
                     />
                     <DataTableCardActions>
-                      <Button
-                        variant="secondary"
-                        size="sm"
-                        onClick={() => setDetail(guide)}
-                      >
+                      <Button variant="secondary" size="sm" onClick={() => setDetail(guide)}>
                         <Eye className="h-4 w-4" aria-hidden="true" />
                         Visualizar
                       </Button>
                       <RowActions guide={guide} onDownload={handleDownload} />
-
                     </DataTableCardActions>
                   </DataTableCard>
                 ))}
@@ -243,7 +229,9 @@ export function IssuedGuidesPage() {
                         <DataTableHead className="w-[14%]">Tipo de guia</DataTableHead>
                         <DataTableHead className="w-[18%]">Operadora</DataTableHead>
                         <DataTableHead className="w-[16%]">Data de emissão</DataTableHead>
-                        <DataTableHead className="w-[13%] whitespace-nowrap text-right">Ações</DataTableHead>
+                        <DataTableHead className="w-[13%] whitespace-nowrap text-right">
+                          Ações
+                        </DataTableHead>
                       </DataTableRow>
                     </DataTableHeader>
                     <DataTableBody>
@@ -252,9 +240,7 @@ export function IssuedGuidesPage() {
                           <DataTableCell className="whitespace-nowrap font-mono">
                             {guide.numero}
                           </DataTableCell>
-                          <DataTableCell className="truncate">
-                            {guide.patient}
-                          </DataTableCell>
+                          <DataTableCell className="truncate">{guide.patient}</DataTableCell>
                           <DataTableCell>
                             <Badge variant="info-soft" size="sm">
                               {guide.type}
@@ -279,7 +265,6 @@ export function IssuedGuidesPage() {
                                 <Eye className="h-4 w-4" />
                               </Button>
                               <RowActions guide={guide} onDownload={handleDownload} />
-
                             </div>
                           </DataTableCell>
                         </DataTableRow>
@@ -330,7 +315,6 @@ function RowActions({ guide, onDownload }: Pick<ActionProps, "guide" | "onDownlo
   );
 }
 
-
 function StatusBadge({ status }: { status: IssuedGuideStatus }) {
   if (status === "Autorizada")
     return (
@@ -378,9 +362,7 @@ function IssuedGuideModal({
       icon={<FileText className="h-4 w-4" aria-hidden="true" />}
       title={guide ? `Guia ${guide.numero}` : "Guia emitida"}
       description={
-        guide
-          ? `${guide.type} · emitida em ${formatIssuedAt(guide.issuedAt)}`
-          : undefined
+        guide ? `${guide.type} · emitida em ${formatIssuedAt(guide.issuedAt)}` : undefined
       }
       size="xl"
       footer={
@@ -428,10 +410,7 @@ function IssuedGuideModal({
           <DetailItem label="Paciente" value={guide.patient} />
           <DetailItem label="Operadora" value={guide.operadora} />
           <DetailItem label="Tipo de guia" value={guide.type} />
-          <DetailItem
-            label="Data de emissão"
-            value={formatIssuedAt(guide.issuedAt)}
-          />
+          <DetailItem label="Data de emissão" value={formatIssuedAt(guide.issuedAt)} />
           <DetailItem
             label="Profissional solicitante"
             value={guide.professional}
@@ -480,14 +459,8 @@ function DetailItem({
 }) {
   return (
     <div className={className}>
-      <dt className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-        {label}
-      </dt>
-      <dd
-        className={`mt-1 text-sm text-foreground ${mono ? "font-mono" : ""}`}
-      >
-        {value}
-      </dd>
+      <dt className="text-xs font-medium uppercase tracking-wide text-muted-foreground">{label}</dt>
+      <dd className={`mt-1 text-sm text-foreground ${mono ? "font-mono" : ""}`}>{value}</dd>
     </div>
   );
 }
