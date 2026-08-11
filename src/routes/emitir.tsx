@@ -60,6 +60,7 @@ import {
   PROFESSIONALS,
   ProfessionalPicker,
   ProfessionalRegistryField,
+  councilCode,
   councilLabel,
   defaultProfessionalValue,
   isProfessionalValid,
