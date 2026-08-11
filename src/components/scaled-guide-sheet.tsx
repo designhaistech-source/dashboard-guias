@@ -50,7 +50,8 @@ export function ScaledGuideSheet({ children }: { children: React.ReactNode }) {
     if (!container) return;
 
     const update = () => {
-      const available = container.clientWidth;
+      // clientWidth inclui o padding de guarda; usamos apenas a área de conteúdo.
+      const available = container.clientWidth - PRINT_EDGE_GUARD_PX * 2;
       if (!available) return;
       const content = contentRef.current;
       // offsetWidth/offsetHeight ignoram o transform: são as medidas naturais.
