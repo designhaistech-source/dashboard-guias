@@ -292,6 +292,17 @@ export function IssuedGuidesPage() {
         onClose={() => setDetail(null)}
         onDownload={handleDownload}
       />
+
+      {printTarget && (
+        <div
+          aria-hidden="true"
+          className="pointer-events-none fixed left-[-10000px] top-0 w-[820px]"
+        >
+          <div ref={printAreaRef}>
+            <IssuedGuidePreview guide={printTarget} />
+          </div>
+        </div>
+      )}
     </div>
   );
 }
