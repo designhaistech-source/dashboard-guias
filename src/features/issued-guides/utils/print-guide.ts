@@ -9,7 +9,9 @@ const SHEET_WIDTH_PX = 1100;
 const MM_TO_PX = 96 / 25.4;
 /** Área útil de uma folha A4 paisagem com margens de 6mm, em pixels CSS. */
 const A4_LANDSCAPE_CONTENT_WIDTH_PX = (297 - 12) * MM_TO_PX;
-const A4_LANDSCAPE_CONTENT_HEIGHT_PX = (210 - 12) * MM_TO_PX;
+/* Fator de folga: sem ele o arredondamento do navegador joga a última linha
+   para uma segunda página. */
+const A4_LANDSCAPE_CONTENT_HEIGHT_PX = (210 - 12) * MM_TO_PX * 0.97;
 
 /**
  * Coleta todo o CSS da aplicação já resolvido em texto. Copiar apenas as tags
