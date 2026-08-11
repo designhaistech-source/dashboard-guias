@@ -39,21 +39,24 @@ export const COUNCILS = [
  * O sistema exibe a sigla ao usuário e envia o código na guia.
  */
 export const COUNCIL_CODES: Record<string, string> = {
-  CRO: "01",
-  CRM: "02",
+  CRESS: "01",
+  COREN: "02",
   CRF: "03",
-  COREN: "04",
+  CREFONO: "04",
+  CRFa: "04",
   CREFITO: "05",
-  CRN: "06",
-  CRP: "07",
-  CRFa: "08",
-  CRBM: "09",
-  CRESS: "10",
-  CREF: "11",
-  CRBio: "12",
-  CRTR: "13",
-  Outros: "15",
+  CRM: "06",
+  CRN: "07",
+  CRO: "08",
+  CRP: "09",
+  Outros: "10",
+  CRBio: "11",
+  CRBM: "12",
+  CREF: "13",
+  CRMV: "14",
+  CRTR: "15",
 };
+
 
 /** Retorna o código de 2 dígitos do conselho (tabela 26) a partir da sigla. */
 export function councilCode(sigla: string): string {
