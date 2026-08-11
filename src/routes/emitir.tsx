@@ -458,7 +458,7 @@ function EmitirPage() {
    */
   const [motivoEncerramento, setMotivoEncerramento] = useState("");
   /** Campo 34 só se aplica quando o atendimento é uma consulta (regra TISS). */
-  const isConsulta = tipoAtendimento === "Consulta";
+  const isConsulta = tipoAtendimento === "04";
 
   // Limpa o campo 35 quando o tipo de atendimento muda ou quando o código
   // armazenado não corresponde a um motivo de óbito.
