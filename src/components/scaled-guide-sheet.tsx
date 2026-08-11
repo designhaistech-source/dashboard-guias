@@ -72,9 +72,8 @@ export function ScaledGuideSheet({ children }: { children: React.ReactNode }) {
   return (
     <div
       ref={containerRef}
-      className="w-full overflow-x-hidden bg-muted"
+      className="w-full overflow-x-hidden bg-muted [-webkit-overflow-scrolling:touch] [overscroll-behavior:contain]"
       style={{ padding: PRINT_EDGE_GUARD_PX }}
-      data-unused=" [-webkit-overflow-scrolling:touch] [overscroll-behavior:contain]"
     >
       {useTransform ? (
         // Altura reservada explicitamente para o pai continuar rolável.
