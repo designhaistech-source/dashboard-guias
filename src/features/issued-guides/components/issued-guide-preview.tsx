@@ -54,7 +54,7 @@ export function IssuedGuidePreview({ guide }: { guide: IssuedGuide }) {
           cidPrincipal: derived.cid,
           procedimentos: [derived.procedimento],
           observacoes: `Guia ${guide.status.toLowerCase()} · total ${formatCurrency(guide.total)}`,
-        } satisfies Partial<InternacaoGuidePreviewProps> as InternacaoGuidePreviewProps)}
+        } as unknown as InternacaoGuidePreviewProps)}
       />
     );
   }
@@ -106,7 +106,7 @@ export function IssuedGuidePreview({ guide }: { guide: IssuedGuide }) {
           validadeFim: "",
           estabelecimentoExecutante: ESTABLISHMENT.nome,
           cnesExecutante: ESTABLISHMENT.cnes,
-        } satisfies Partial<ApacGuidePreviewProps> as ApacGuidePreviewProps)}
+        } as unknown as ApacGuidePreviewProps)}
       />
     );
   }
@@ -146,7 +146,7 @@ export function IssuedGuidePreview({ guide }: { guide: IssuedGuide }) {
           dataSolicitacao: derived.dataIso,
           numeroAih: guide.numero,
           dataAutorizacao: guide.status === "Autorizada" ? derived.dataIso : "",
-        } satisfies Partial<AihGuidePreviewProps> as AihGuidePreviewProps)}
+        } as unknown as AihGuidePreviewProps)}
       />
     );
   }
