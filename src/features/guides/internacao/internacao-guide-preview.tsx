@@ -5,6 +5,7 @@ import {
   SectionBar,
   splitDate,
 } from "@/features/guides/components/guide-print-primitives";
+import guiasPlusLogo from "@/assets/guiasplus-logo.png.asset.json";
 
 export interface InternacaoPreviewItem {
   table: string;
