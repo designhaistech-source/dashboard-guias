@@ -16,6 +16,7 @@ import { toast } from "sonner";
 import { AppBreadcrumb } from "@/components/app-breadcrumb";
 import { AppSidebar } from "@/components/app-sidebar";
 import { AppModal } from "@/components/app-modal";
+import { IssuedGuidePreview } from "./issued-guide-preview";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { EmptyState } from "@/components/data-state";
@@ -403,7 +404,7 @@ function IssuedGuideModal({
           ? `${guide.type} · emitida em ${formatIssuedAt(guide.issuedAt)}`
           : undefined
       }
-      size="lg"
+      size="xl"
       footer={
         guide ? (
           <div className="flex flex-col gap-2 sm:flex-row sm:justify-end">
@@ -427,6 +428,21 @@ function IssuedGuideModal({
         ) : undefined
       }
     >
+      {guide && (
+        <section
+          aria-label={`Pré-visualização da guia ${guide.numero}`}
+          className="mb-6 overflow-hidden rounded-xl border border-border"
+        >
+          <div className="flex items-center justify-between border-b border-border bg-muted/40 px-4 py-2.5">
+            <p className="text-eyebrow">Guia preenchida · modelo {guide.type}</p>
+            <span className="text-[10px] text-muted-foreground">Role para ver todos os campos</span>
+          </div>
+          <div className="max-h-[55dvh] overflow-auto">
+            <IssuedGuidePreview guide={guide} />
+          </div>
+        </section>
+      )}
+
       {guide && (
         <dl className="grid gap-4 sm:grid-cols-2">
           <DetailItem label="Nº da guia no prestador" value={guide.numero} mono />
