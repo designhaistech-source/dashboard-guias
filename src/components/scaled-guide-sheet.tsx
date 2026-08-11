@@ -1,11 +1,14 @@
 import { useEffect, useRef, useState } from "react";
 
+import { GUIDE_SHEET_WIDTH_PX } from "@/lib/guide-sheet";
+
 /**
- * Ajusta o modelo impresso da guia (largura fixa de 1100px) à largura
- * disponível, evitando corte de conteúdo em telas menores. Em telas largas o
- * documento é exibido em escala 1:1.
+ * Ajusta o modelo impresso da guia (largura fixa compartilhada com o gerador de
+ * PDF) à largura disponível, evitando corte de conteúdo em telas menores. Em
+ * telas largas o documento é exibido em escala 1:1.
  */
-const SHEET_WIDTH = 1100;
+const SHEET_WIDTH = GUIDE_SHEET_WIDTH_PX;
+
 
 export function ScaledGuideSheet({ children }: { children: React.ReactNode }) {
   const containerRef = useRef<HTMLDivElement>(null);
