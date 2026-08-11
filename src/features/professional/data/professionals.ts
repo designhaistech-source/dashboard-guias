@@ -34,6 +34,32 @@ export const COUNCILS = [
   "Outros",
 ] as const;
 
+/**
+ * Códigos de 2 dígitos da tabela de domínio TISS nº 26 (campos 16 e 52).
+ * O sistema exibe a sigla ao usuário e envia o código na guia.
+ */
+export const COUNCIL_CODES: Record<string, string> = {
+  CRO: "01",
+  CRM: "02",
+  CRF: "03",
+  COREN: "04",
+  CREFITO: "05",
+  CRN: "06",
+  CRP: "07",
+  CRFa: "08",
+  CRBM: "09",
+  CRESS: "10",
+  CREF: "11",
+  CRBio: "12",
+  CRTR: "13",
+  Outros: "15",
+};
+
+/** Retorna o código de 2 dígitos do conselho (tabela 26) a partir da sigla. */
+export function councilCode(sigla: string): string {
+  return COUNCIL_CODES[sigla] ?? "";
+}
+
 export const PROFESSIONALS: Professional[] = [
   {
     id: "m1",
