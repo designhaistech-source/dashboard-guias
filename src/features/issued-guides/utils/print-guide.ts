@@ -70,8 +70,6 @@ export async function printGuideMarkup(markup: string, title: string) {
     <style>
       @page { size: A4 landscape; margin: 6mm; }
       html, body { margin: 0; padding: 0; background: #fff; }
-      /* zoom reflui o layout (Chrome e Safari), então a folha reduzida não
-         gera uma segunda página em branco como aconteceria com transform. */
       .print-scale { width: ${SHEET_WIDTH_PX}px; }
       * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
     </style>
