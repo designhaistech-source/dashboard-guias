@@ -109,29 +109,50 @@ export function IssuedGuidesPage() {
 
   useEffect(() => {
     if (!printTarget) return;
+    let cancelled = false;
+    const toastId = toast.loading(`Gerando PDF da guia ${printTarget.numero}…`);
+
     const frame = window.requestAnimationFrame(() => {
-      const markup = printAreaRef.current?.innerHTML;
-      if (markup) {
-        void printGuideMarkup(markup, `Guia ${printTarget.numero} — Guias+`).then(
-          (ok) => {
-            if (ok) {
-              toast.success(`Guia ${printTarget.numero} pronta para salvar em PDF.`);
-            } else {
-              toast.error("Não foi possível gerar a guia completa.");
-            }
-            setPrintTarget(null);
-          },
-        );
-      } else {
-        toast.error("Não foi possível gerar a guia completa.");
-        setPrintTarget(null);
-      }
+      const markup = printAreaRef.current?.innerHTML ?? "";
+
+      void printGuideMarkup(markup, `Guia ${printTarget.numero} — Guias+`)
+        .then((result) => {
+          if (cancelled) return;
+          if (result.ok) {
+            toast.success(`Guia ${printTarget.numero} pronta para salvar em PDF.`, {
+              id: toastId,
+            });
+          } else {
+            toast.error(PRINT_FAILURE_MESSAGES[result.reason], {
+              id: toastId,
+              action: {
+                label: "Tentar novamente",
+                onClick: () => setPrintTarget(guide­Ref.current),
+              },
+            });
+          }
+        })
+        .catch(() => {
+          if (cancelled) return;
+          toast.error(PRINT_FAILURE_MESSAGES.unknown, { id: toastId });
+        })
+        .finally(() => {
+          if (!cancelled) setPrintTarget(null);
+        });
     });
-    return () => window.cancelAnimationFrame(frame);
+
+    return () => {
+      cancelled = true;
+      window.cancelAnimationFrame(frame);
+    };
   }, [printTarget]);
 
+  const handleDownload = (guide: IssuedGuide) => {
+    if (printTarget) return; // evita downloads duplicados enquanto gera
+    guide­Ref.current = guide;
+    setPrintTarget(guide);
+  };
 
-  const handleDownload = (guide: IssuedGuide) => setPrintTarget(guide);
 
   return (
     <div className="flex min-h-screen w-full bg-background text-foreground">
