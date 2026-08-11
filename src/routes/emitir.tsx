@@ -60,6 +60,7 @@ import {
   PROFESSIONALS,
   ProfessionalPicker,
   ProfessionalRegistryField,
+  councilCode,
   councilLabel,
   defaultProfessionalValue,
   isProfessionalValid,
@@ -3388,7 +3389,7 @@ function GuiaLivePreview(props: {
             </FieldRow>
             <FieldRow>
               <FieldBox n="15" label="Nome do Profissional Solicitante" value={medicoNome} grow />
-              <FieldBox n="16" label="Conselho Profissional" value={medicoCrm ? medicoConselho : ""} width={90} />
+              <FieldBox n="16" label="Conselho Profissional" value={medicoCrm ? councilCode(medicoConselho) : ""} width={90} />
               <FieldBox n="17" label="Número no Conselho" value={medicoCrm} width={140} />
               <FieldBox n="18" label="UF" value={conselhoUf} width={50} />
               <FieldBox n="19" label="Código CBO" value={codigoCbo} width={140} />
@@ -3495,7 +3496,7 @@ function GuiaLivePreview(props: {
                   <div className="px-1 py-0.5 border-r border-border"></div>
                   <div className="px-1 py-0.5 border-r border-border"></div>
                   <div className="px-1 py-0.5 border-r border-border truncate">{i === 0 ? medicoNome : ""}</div>
-                  <div className="px-1 py-0.5 border-r border-border">{i === 0 && medicoCrm ? medicoConselho : ""}</div>
+                  <div className="px-1 py-0.5 border-r border-border font-mono">{i === 0 && medicoCrm ? councilCode(medicoConselho) : ""}</div>
                   <div className="px-1 py-0.5 border-r border-border font-mono">{i === 0 ? medicoCrm : ""}</div>
                   <div className="px-1 py-0.5 border-r border-border"></div>
                   <div className="px-1 py-0.5"></div>
