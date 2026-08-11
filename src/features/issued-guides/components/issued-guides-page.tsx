@@ -106,6 +106,7 @@ export function IssuedGuidesPage() {
   // impressão/salvar em PDF do navegador.
   const [printTarget, setPrintTarget] = useState<IssuedGuide | null>(null);
   const printAreaRef = useRef<HTMLDivElement>(null);
+  const lastGuideRef = useRef<IssuedGuide | null>(null);
 
   useEffect(() => {
     if (!printTarget) return;
@@ -127,7 +128,7 @@ export function IssuedGuidesPage() {
               id: toastId,
               action: {
                 label: "Tentar novamente",
-                onClick: () => setPrintTarget(guide­Ref.current),
+                onClick: () => setPrintTarget(lastGuideRef.current),
               },
             });
           }
@@ -149,7 +150,7 @@ export function IssuedGuidesPage() {
 
   const handleDownload = (guide: IssuedGuide) => {
     if (printTarget) return; // evita downloads duplicados enquanto gera
-    guide­Ref.current = guide;
+    lastGuideRef.current = guide;
     setPrintTarget(guide);
   };
 
