@@ -43,23 +43,53 @@ async function collectCssText(): Promise<string> {
   return chunks.join("\n");
 }
 
-export async function printGuideMarkup(markup: string, title: string) {
-  const css = await collectCssText();
+/** Motivos possíveis de falha, usados para escolher a mensagem ao usuário. */
+export type PrintFailureReason =
+  | "empty-markup"
+  | "iframe-blocked"
+  | "print-blocked"
+  | "unknown";
 
-  const iframe = document.createElement("iframe");
-  iframe.setAttribute("aria-hidden", "true");
-  iframe.style.cssText =
-    "position:fixed;right:0;bottom:0;width:0;height:0;border:0;visibility:hidden;";
-  document.body.appendChild(iframe);
+export type PrintGuideResult =
+  | { ok: true }
+  | { ok: false; reason: PrintFailureReason };
 
-  const doc = iframe.contentDocument;
-  if (!doc) {
-    iframe.remove();
-    return false;
-  }
+export const PRINT_FAILURE_MESSAGES: Record<PrintFailureReason, string> = {
+  "empty-markup":
+    "Não foi possível montar a guia completa. Abra a visualização da guia e tente novamente.",
+  "iframe-blocked":
+    "O navegador bloqueou a geração do PDF. Verifique as permissões do site e tente novamente.",
+  "print-blocked":
+    "O navegador impediu a abertura do diálogo de impressão. Permita janelas e diálogos para este site e tente novamente.",
+  unknown:
+    "Falha inesperada ao gerar o PDF da guia. Tente novamente em alguns instantes.",
+};
 
-  doc.open();
-  doc.write(`<!doctype html>
+export async function printGuideMarkup(
+  markup: string,
+  title: string,
+): Promise<PrintGuideResult> {
+  if (!markup.trim()) return { ok: false, reason: "empty-markup" };
+
+  let iframe: HTMLIFrameElement | null = null;
+
+  try {
+    const css = await collectCssText();
+
+    iframe = document.createElement("iframe");
+    iframe.setAttribute("aria-hidden", "true");
+    iframe.style.cssText =
+      "position:fixed;right:0;bottom:0;width:0;height:0;border:0;visibility:hidden;";
+    document.body.appendChild(iframe);
+
+    const doc = iframe.contentDocument;
+    if (!doc) {
+      iframe.remove();
+      return { ok: false, reason: "iframe-blocked" };
+    }
+
+    doc.open();
+    doc.write(`<!doctype html>
 <html lang="pt-BR">
   <head>
     <meta charset="utf-8" />
@@ -69,14 +99,18 @@ export async function printGuideMarkup(markup: string, title: string) {
   </head>
   <body><div class="print-guard"><div class="print-scale">${markup}</div></div></body>
 </html>`);
-  doc.close();
+    doc.close();
 
-  await waitForImages(doc);
+    await waitForImages(doc);
 
-  // Escala considerando também a altura: em paisagem a folha da guia é mais
-  // alta que a área útil e, sem isso, o PDF sairia em duas páginas.
-  const sheet = doc.querySelector<HTMLElement>(".print-scale");
-  if (sheet) {
+    // Escala considerando também a altura: em paisagem a folha da guia é mais
+    // alta que a área útil e, sem isso, o PDF sairia em duas páginas.
+    const sheet = doc.querySelector<HTMLElement>(".print-scale");
+    if (!sheet) {
+      iframe.remove();
+      return { ok: false, reason: "empty-markup" };
+    }
+
     // scrollWidth/Height capturam bordas e conteúdo que estouram a largura
     // nominal da folha, evitando corte nas laterais.
     const rect = sheet.getBoundingClientRect();
@@ -84,17 +118,32 @@ export async function printGuideMarkup(markup: string, title: string) {
       Math.max(sheet.scrollWidth, rect.width, GUIDE_SHEET_WIDTH_PX),
     );
     const naturalHeight = Math.ceil(Math.max(sheet.scrollHeight, rect.height)) || 1;
-    const scale = getGuideSheetScale(naturalWidth, naturalHeight);
-
-    sheet.style.zoom = String(scale);
+    sheet.style.zoom = String(getGuideSheetScale(naturalWidth, naturalHeight));
     await new Promise((resolve) => window.setTimeout(resolve, 100));
-  }
 
-  iframe.contentWindow?.focus();
-  iframe.contentWindow?.print();
-  window.setTimeout(() => iframe.remove(), 1500);
-  return true;
+    const frameWindow = iframe.contentWindow;
+    if (!frameWindow || typeof frameWindow.print !== "function") {
+      iframe.remove();
+      return { ok: false, reason: "print-blocked" };
+    }
+
+    try {
+      frameWindow.focus();
+      frameWindow.print();
+    } catch {
+      iframe.remove();
+      return { ok: false, reason: "print-blocked" };
+    }
+
+    const frameToRemove = iframe;
+    window.setTimeout(() => frameToRemove.remove(), 1500);
+    return { ok: true };
+  } catch {
+    iframe?.remove();
+    return { ok: false, reason: "unknown" };
+  }
 }
+
 
 /** Evita imprimir antes de logos/imagens da guia terminarem de carregar. */
 async function waitForImages(doc: Document) {
