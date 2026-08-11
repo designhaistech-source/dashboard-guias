@@ -53,7 +53,7 @@ export function IssuedGuidePreview({ guide }: { guide: IssuedGuide }) {
           diariasSolicitadas: 2,
           indicacaoClinica: guide.procedure,
           cid1: derived.cid,
-          procedimentos: [derived.procedimento],
+          items: [derived.procedimento],
           observacoes: `Guia ${guide.status.toLowerCase()} · total ${formatCurrency(guide.total)}`,
         } as unknown as InternacaoGuidePreviewProps)}
       />
