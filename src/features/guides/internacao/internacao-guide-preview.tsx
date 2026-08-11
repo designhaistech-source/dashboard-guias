@@ -68,7 +68,7 @@ export interface InternacaoGuidePreviewProps {
  * com os quadros e a numeração 1 a 49 na ordem do formulário oficial.
  */
 export function InternacaoGuidePreview(props: InternacaoGuidePreviewProps) {
-  const rows = Array.from({ length: 6 }, (_, i) => props.items[i]);
+  const rows = Array.from({ length: 6 }, (_, i) => props.items?.[i]);
 
   return (
     <div className={props.fullSize ? "" : "rounded-xl border bg-card shadow-sm overflow-hidden"}>
