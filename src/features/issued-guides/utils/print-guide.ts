@@ -8,10 +8,10 @@
 const SHEET_WIDTH_PX = 1100;
 const MM_TO_PX = 96 / 25.4;
 /** Área útil de uma folha A4 paisagem com margens de 6mm, em pixels CSS. */
-const A4_LANDSCAPE_CONTENT_WIDTH_PX = (297 - 12) * MM_TO_PX;
-/* Fator de folga: sem ele o arredondamento do navegador joga a última linha
-   para uma segunda página. */
-const A4_LANDSCAPE_CONTENT_HEIGHT_PX = (210 - 12) * MM_TO_PX * 0.97;
+/* Fator de folga: sem ele o arredondamento do navegador corta a lateral direita
+   e joga a última linha para uma segunda página. */
+const A4_LANDSCAPE_CONTENT_WIDTH_PX = (297 - 12) * MM_TO_PX * 0.96;
+const A4_LANDSCAPE_CONTENT_HEIGHT_PX = (210 - 12) * MM_TO_PX * 0.96;
 
 /**
  * Coleta todo o CSS da aplicação já resolvido em texto. Copiar apenas as tags
@@ -86,10 +86,13 @@ export async function printGuideMarkup(markup: string, title: string) {
   // alta que a área útil e, sem isso, o PDF sairia em duas páginas.
   const sheet = doc.querySelector<HTMLElement>(".print-scale");
   if (sheet) {
+    // scrollWidth/Height capturam bordas e conteúdo que estouram a largura
+    // nominal da folha, evitando corte nas laterais.
+    const naturalWidth = Math.max(sheet.scrollWidth, SHEET_WIDTH_PX);
     const naturalHeight = sheet.scrollHeight || 1;
     const scale = Math.min(
       1,
-      A4_LANDSCAPE_CONTENT_WIDTH_PX / SHEET_WIDTH_PX,
+      A4_LANDSCAPE_CONTENT_WIDTH_PX / naturalWidth,
       A4_LANDSCAPE_CONTENT_HEIGHT_PX / naturalHeight,
     );
     sheet.style.zoom = String(scale);
