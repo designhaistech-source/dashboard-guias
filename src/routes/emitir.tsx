@@ -3067,7 +3067,7 @@ function EmitirPage() {
               </span>
             </p>
           )}
-          <DialogFooter className="gap-2 sm:gap-2">
+          <DialogFooter className="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:justify-end sm:gap-2 [&>button]:w-full [&>button]:justify-center sm:[&>button]:w-auto">
             <Button
               variant="outline"
               disabled={!profissionalValido}
