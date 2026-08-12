@@ -74,6 +74,8 @@ interface ComboboxProps {
   disabled?: boolean;
   invalid?: boolean;
   clearable?: boolean;
+  /** Rótulo de uma opção no topo da lista que limpa a seleção (ex.: "Todas as operadoras"). */
+  allOptionLabel?: string;
   className?: string;
   id?: string;
   "aria-describedby"?: string;
