@@ -2410,12 +2410,7 @@ function EmitirPage() {
                       value={tipoConsulta}
                       onValueChange={setTipoConsulta}
                       placeholder="Selecione"
-                      options={[
-                        "Primeira consulta",
-                        "Seguimento",
-                        "Pré-natal",
-                        "Por encaminhamento",
-                      ].map((o) => ({ value: o, label: o }))}
+                      options={[...TIPO_CONSULTA_OPTIONS]}
                     />
                   )}
                   <SelectField
