@@ -496,10 +496,10 @@ function EmitirPage() {
   const isConsulta = tipoAtendimento === "04";
 
   // Limpa o campo 35 quando o tipo de atendimento muda ou quando o código
-  // armazenado não corresponde a um motivo de óbito.
+  // armazenado não pertence ao domínio.
   useEffect(() => {
     setMotivoEncerramento((current) =>
-      MOTIVO_ENCERRAMENTO_OBITO.some((o) => o.value === current) ? current : "",
+      MOTIVO_ENCERRAMENTO_OPTIONS.some((o) => o.value === current) ? current : "",
     );
   }, [tipoAtendimento]);
 
