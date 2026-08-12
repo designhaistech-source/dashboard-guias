@@ -34,7 +34,18 @@ function prefersTransformFallback(): boolean {
   return isAppleTouch || isAndroid;
 }
 
-export function ScaledGuideSheet({ children }: { children: React.ReactNode }) {
+export function ScaledGuideSheet({
+  children,
+  /**
+   * `print`: reproduz a proporção exata da página exportada (usado onde o
+   * usuário compara com o PDF). `width`: ocupa toda a largura disponível,
+   * evitando sobra lateral na pré-visualização em tela.
+   */
+  fit = "print",
+}: {
+  children: React.ReactNode;
+  fit?: "print" | "width";
+}) {
   const containerRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
   const [scale, setScale] = useState(1);
@@ -58,7 +69,10 @@ export function ScaledGuideSheet({ children }: { children: React.ReactNode }) {
       const naturalWidth = content?.offsetWidth || SHEET_WIDTH;
       const naturalHeight = content?.offsetHeight || 0;
       // Mesma escala relativa da página exportada (ver getPreviewSheetScale).
-      const next = getPreviewSheetScale(available, naturalWidth, naturalHeight);
+      const next =
+        fit === "width"
+          ? Math.min(1, available / naturalWidth)
+          : getPreviewSheetScale(available, naturalWidth, naturalHeight);
       setScale(next);
       if (naturalHeight) setHeight(Math.ceil(naturalHeight * next));
     };
@@ -68,7 +82,7 @@ export function ScaledGuideSheet({ children }: { children: React.ReactNode }) {
     observer.observe(container);
     if (contentRef.current) observer.observe(contentRef.current);
     return () => observer.disconnect();
-  }, [useTransform]);
+  }, [useTransform, fit]);
 
   return (
     <div
