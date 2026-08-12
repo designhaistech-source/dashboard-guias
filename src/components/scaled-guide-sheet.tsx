@@ -65,9 +65,14 @@ export function ScaledGuideSheet({
       const available = container.clientWidth - PRINT_EDGE_GUARD_PX * 2;
       if (!available) return;
       const content = contentRef.current;
-      // offsetWidth/offsetHeight ignoram o transform: são as medidas naturais.
-      const naturalWidth = content?.offsetWidth || SHEET_WIDTH;
-      const naturalHeight = content?.offsetHeight || 0;
+      // scrollWidth cobre conteúdo que excede a largura fixa da folha (tabelas
+      // largas); offset* ignoram o transform, sendo as medidas naturais.
+      const naturalWidth = Math.max(
+        content?.scrollWidth || 0,
+        content?.offsetWidth || 0,
+        SHEET_WIDTH,
+      );
+      const naturalHeight = content?.scrollHeight || content?.offsetHeight || 0;
       // Mesma escala relativa da página exportada (ver getPreviewSheetScale).
       const next =
         fit === "width"
@@ -96,7 +101,8 @@ export function ScaledGuideSheet({
           <div
             ref={contentRef}
             style={{
-              width: SHEET_WIDTH,
+              width: "max-content",
+              minWidth: SHEET_WIDTH,
               transform: `scale(${scale})`,
               transformOrigin: "top left",
               willChange: "transform",
@@ -106,7 +112,10 @@ export function ScaledGuideSheet({
           </div>
         </div>
       ) : (
-        <div ref={contentRef} style={{ zoom: scale, width: SHEET_WIDTH }}>
+        <div
+          ref={contentRef}
+          style={{ zoom: scale, width: "max-content", minWidth: SHEET_WIDTH }}
+        >
           {children}
         </div>
       )}
