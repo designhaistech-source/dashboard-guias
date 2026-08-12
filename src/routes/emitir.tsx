@@ -3031,42 +3031,45 @@ function EmitirPage() {
               Guia gerada e salva automaticamente
             </DialogTitle>
           </DialogHeader>
-          {preview && (
-            <div className="space-y-3 text-sm">
-              <Row label="Número da guia" value={preview.numero} mono />
-              <Row label="Convênio" value={convenio.label} />
-              <Row label="Tipo" value={preview.tipo} />
-              <Row label="Paciente" value={pacienteNome} />
-              <Row label="Operadora" value={operadora} />
-              <Row label="Emitida em" value={preview.createdAt} />
-              <Row
-                label="Procedimentos"
-                value={String(
-                  procedures.filter((p) => p.code.trim() && p.description.trim()).length,
-                )}
-              />
-            </div>
-          )}
-          {!profissionalValido && (
-            <p
-              id="print-disabled-hint"
-              role="alert"
-              className="flex items-start gap-2 rounded-md border border-destructive/40 bg-destructive/10 p-3 text-xs text-destructive"
-            >
-              <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" aria-hidden />
-              <span>
-                Corrija os campos 15, 16 e 17 (Dados do Solicitante) antes de imprimir ou
-                gerar o PDF:{" "}
-                {[
-                  profissionalErrors.nome && `15 — ${profissionalErrors.nome}`,
-                  profissionalErrors.conselho && `16 — ${profissionalErrors.conselho}`,
-                  profissionalErrors.numero && `17 — ${profissionalErrors.numero}`,
-                ]
-                  .filter(Boolean)
-                  .join(" ")}
-              </span>
-            </p>
-          )}
+          <DialogBody className="space-y-4">
+            {preview && (
+              <div className="space-y-3 text-sm">
+                <Row label="Número da guia" value={preview.numero} mono />
+                <Row label="Convênio" value={convenio.label} />
+                <Row label="Tipo" value={preview.tipo} />
+                <Row label="Paciente" value={pacienteNome} />
+                <Row label="Operadora" value={operadora} />
+                <Row label="Emitida em" value={preview.createdAt} />
+                <Row
+                  label="Procedimentos"
+                  value={String(
+                    procedures.filter((p) => p.code.trim() && p.description.trim()).length,
+                  )}
+                />
+              </div>
+            )}
+            {!profissionalValido && (
+              <p
+                id="print-disabled-hint"
+                role="alert"
+                className="flex items-start gap-2 rounded-md border border-destructive/40 bg-destructive/10 p-3 text-xs text-destructive"
+              >
+                <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" aria-hidden />
+                <span>
+                  Corrija os campos 15, 16 e 17 (Dados do Solicitante) antes de imprimir ou
+                  gerar o PDF:{" "}
+                  {[
+                    profissionalErrors.nome && `15 — ${profissionalErrors.nome}`,
+                    profissionalErrors.conselho && `16 — ${profissionalErrors.conselho}`,
+                    profissionalErrors.numero && `17 — ${profissionalErrors.numero}`,
+                  ]
+                    .filter(Boolean)
+                    .join(" ")}
+                </span>
+              </p>
+            )}
+          </DialogBody>
+
           <DialogFooter className="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:justify-end sm:gap-2 [&>button]:w-full [&>button]:justify-center sm:[&>button]:w-auto">
             <Button
               variant="outline"
