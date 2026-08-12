@@ -2627,10 +2627,7 @@ function EmitirPage() {
                                 value={item.via}
                                 onValueChange={(v) => updateExecuted(item.id, { via: v })}
                                 placeholder="Selecione"
-                                options={["Única", "Mesma via", "Diferentes vias"].map((v) => ({
-                                  value: v,
-                                  label: v,
-                                }))}
+                                options={VIA_ACESSO_OPTIONS}
                               />
                               <SelectField
                                 label="44 - Tec."
