@@ -120,15 +120,36 @@ const UF_LIST = [
   "PR","PE","PI","RJ","RN","RS","RO","RR","SC","SP","SE","TO",
 ] as const;
 
-/**
- * Campo 35 — Motivo de Encerramento do Atendimento (domínio TISS nº 39).
- * Apenas os códigos de óbito são oferecidos: o campo é preenchido somente
- * nesses casos e permanece vazio nos atendimentos normais.
- */
-const MOTIVO_ENCERRAMENTO_OBITO: readonly { value: string; label: string }[] = [
-  { value: "21", label: "21 - Óbito com declaração fornecida pelo médico assistente" },
-  { value: "22", label: "22 - Óbito com declaração fornecida pelo IML" },
-  { value: "23", label: "23 - Óbito com declaração fornecida pelo SVO" },
+/** Campo 35 — Motivo de Encerramento do Atendimento (domínio TISS nº 39). */
+const MOTIVO_ENCERRAMENTO_OPTIONS: readonly { value: string; label: string }[] = [
+  { value: "11", label: "11 - Alta Curado" },
+  { value: "12", label: "12 - Alta Melhorado" },
+  { value: "14", label: "14 - Alta a pedido" },
+  { value: "15", label: "15 - Alta com previsão de retorno para acompanhamento do paciente" },
+  { value: "16", label: "16 - Alta por Evasão" },
+  { value: "18", label: "18 - Alta por outros motivos" },
+  { value: "19", label: "19 - Alta de Paciente Agudo em Psiquiatria" },
+  { value: "21", label: "21 - Permanência, por características próprias da doença" },
+  { value: "22", label: "22 - Permanência, por intercorrência" },
+  { value: "23", label: "23 - Permanência, por impossibilidade sócio-familiar" },
+  { value: "24", label: "24 - Permanência, por Processo de doação de órgãos, tecidos e células - doador vivo" },
+  { value: "25", label: "25 - Permanência, por Processo de doação de órgãos, tecidos e células - doador morto" },
+  { value: "26", label: "26 - Permanência, por mudança de Procedimento" },
+  { value: "27", label: "27 - Permanência, por reoperação" },
+  { value: "28", label: "28 - Permanência, outros motivos" },
+  { value: "31", label: "31 - Transferido para outro estabelecimento" },
+  { value: "32", label: "32 - Transferência para Internação Domiciliar" },
+  { value: "41", label: "41 - Óbito com declaração de Óbito fornecida pelo médico assistente" },
+  { value: "42", label: "42 - Óbito com declaração de Óbito fornecida pelo Instituto Médico Legal - IML" },
+  { value: "43", label: "43 - Óbito com declaração de Óbito fornecida pelo Serviço de Verificação de Óbito - SVO" },
+  { value: "51", label: "51 - Encerramento Administrativo" },
+  { value: "61", label: "61 - Alta da mãe/puérpera e do recém-nascido" },
+  { value: "62", label: "62 - Alta da mãe/puérpera e permanência do recém-nascido" },
+  { value: "63", label: "63 - Alta da mãe/puérpera e óbito do recém-nascido" },
+  { value: "64", label: "64 - Alta da mãe/puérpera com óbito fetal" },
+  { value: "65", label: "65 - Óbito da gestante e do concepto" },
+  { value: "66", label: "66 - Óbito da mãe/puérpera e alta do recém-nascido" },
+  { value: "67", label: "67 - Óbito da mãe/puérpera e permanência do recém-nascido" },
 ];
 
 /**
