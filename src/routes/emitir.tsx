@@ -2652,10 +2652,7 @@ function EmitirPage() {
                                 value={item.technique}
                                 onValueChange={(v) => updateExecuted(item.id, { technique: v })}
                                 placeholder="Selecione"
-                                options={["Convencional", "Vídeo", "Robótica"].map((v) => ({
-                                  value: v,
-                                  label: v,
-                                }))}
+                                options={TECNICA_OPTIONS}
                               />
                             </div>
                           </CollapsibleContent>
