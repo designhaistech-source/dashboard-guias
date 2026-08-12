@@ -91,6 +91,7 @@ export function Combobox({
   disabled,
   invalid,
   clearable,
+  allOptionLabel,
   className,
   id,
   ...aria
