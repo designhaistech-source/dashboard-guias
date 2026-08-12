@@ -2912,7 +2912,7 @@ function EmitirPage() {
             </DialogTitle>
           </DialogHeader>
           {guideKind && (
-            <ScaledGuideSheet>
+            <ScaledGuideSheet fit="width">
             <GuiaLivePreview
               numeroGuia={numeroGuia}
               guideKind={guideKind}
