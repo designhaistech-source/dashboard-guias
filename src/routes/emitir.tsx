@@ -160,6 +160,15 @@ const MOTIVO_ENCERRAMENTO_OPTIONS: readonly { value: string; label: string }[] =
   { value: "67", label: "67 - Óbito da mãe/puérpera e permanência do recém-nascido" },
 ];
 
+/** Campo 43 - Via de acesso (domínio TISS nº 61). */
+const VIA_ACESSO_OPTIONS = [
+  { value: "1", label: "1 - Única" },
+  { value: "2", label: "2 - Mesma via" },
+  { value: "3", label: "3 - Diferentes vias" },
+];
+
+
+
 /**
  * Classes compartilhadas pelos campos 32–35 (Dados do Atendimento).
  * Garantem altura de célula uniforme, labels alinhados no topo (reservando
@@ -2627,10 +2636,7 @@ function EmitirPage() {
                                 value={item.via}
                                 onValueChange={(v) => updateExecuted(item.id, { via: v })}
                                 placeholder="Selecione"
-                                options={["Única", "Mesma via", "Diferentes vias"].map((v) => ({
-                                  value: v,
-                                  label: v,
-                                }))}
+                                options={VIA_ACESSO_OPTIONS}
                               />
                               <SelectField
                                 label="44 - Tec."
