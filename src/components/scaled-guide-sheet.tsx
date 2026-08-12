@@ -101,7 +101,8 @@ export function ScaledGuideSheet({
           <div
             ref={contentRef}
             style={{
-              width: SHEET_WIDTH,
+              width: "max-content",
+              minWidth: SHEET_WIDTH,
               transform: `scale(${scale})`,
               transformOrigin: "top left",
               willChange: "transform",
@@ -111,7 +112,10 @@ export function ScaledGuideSheet({
           </div>
         </div>
       ) : (
-        <div ref={contentRef} style={{ zoom: scale, width: SHEET_WIDTH }}>
+        <div
+          ref={contentRef}
+          style={{ zoom: scale, width: "max-content", minWidth: SHEET_WIDTH }}
+        >
           {children}
         </div>
       )}
