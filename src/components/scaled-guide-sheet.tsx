@@ -69,7 +69,10 @@ export function ScaledGuideSheet({
       const naturalWidth = content?.offsetWidth || SHEET_WIDTH;
       const naturalHeight = content?.offsetHeight || 0;
       // Mesma escala relativa da página exportada (ver getPreviewSheetScale).
-      const next = getPreviewSheetScale(available, naturalWidth, naturalHeight);
+      const next =
+        fit === "width"
+          ? Math.min(1, available / naturalWidth)
+          : getPreviewSheetScale(available, naturalWidth, naturalHeight);
       setScale(next);
       if (naturalHeight) setHeight(Math.ceil(naturalHeight * next));
     };
@@ -79,7 +82,7 @@ export function ScaledGuideSheet({
     observer.observe(container);
     if (contentRef.current) observer.observe(contentRef.current);
     return () => observer.disconnect();
-  }, [useTransform]);
+  }, [useTransform, fit]);
 
   return (
     <div
