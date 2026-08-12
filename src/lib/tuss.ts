@@ -5,21 +5,42 @@ export interface TussItem {
   tabela?: string;
 }
 
-/** Tabela 22 — Terminologia Unificada da Saúde Suplementar (TUSS). */
+/** Tabela 22 — Procedimentos e eventos em saúde (TUSS). */
 export const TISS_TABLE_TUSS = "22";
-/** Tabela 00 — tabela própria da operadora (usada quando o código não é TUSS). */
+/** Tabela 00 — tabela própria das operadoras. */
 export const TISS_TABLE_OPERADORA = "00";
+/** Tabela 18 — Diárias, taxas e gases medicinais. */
+export const TISS_TABLE_DIARIAS = "18";
+/** Tabela 19 — Materiais e OPME. */
+export const TISS_TABLE_OPME = "19";
+/** Tabela 20 — Medicamentos. */
+export const TISS_TABLE_MEDICAMENTOS = "20";
 
 /**
- * Resolve o campo 24 - Tabela a partir do procedimento escolhido.
+ * Tabelas de domínio da ANS (domínio nº 87) usadas nos campos 24 e 39 da guia.
+ * Serve como referência canônica dos códigos aceitos.
+ */
+export const TISS_DOMAIN_87: Readonly<Record<string, string>> = {
+  "00": "Tabela própria das operadoras",
+  "18": "Diárias, taxas e gases medicinais",
+  "19": "Materiais e Órteses, Próteses e Materiais Especiais (OPME)",
+  "20": "Medicamentos",
+  "22": "Procedimentos e eventos em saúde",
+  "98": "Tabela Própria de Pacotes",
+};
+
+/**
+ * Resolve os campos 24/39 - Tabela a partir do procedimento escolhido.
  * O usuário nunca informa esse valor: ele é derivado do código selecionado.
+ * Quando o código não existe na base de procedimentos, retorna vazio — a
+ * tabela nunca é inferida ou inventada.
  */
 export function resolveTissTable(codigo: string): string {
   const code = codigo.trim();
   if (!code) return "";
   const item = TUSS.find((t) => t.codigo === code);
-  if (item?.tabela) return item.tabela;
-  return item ? TISS_TABLE_TUSS : TISS_TABLE_OPERADORA;
+  if (!item) return "";
+  return item.tabela ?? TISS_TABLE_TUSS;
 }
 
 
@@ -54,7 +75,7 @@ export const TUSS: TussItem[] = [
   { codigo: "31005099", descricao: "Herniorrafia inguinal unilateral" },
   { codigo: "50000110", descricao: "Sessão de fisioterapia motora" },
   { codigo: "50000462", descricao: "Sessão de fonoaudiologia" },
-  { codigo: "60000105", descricao: "Diária de internação em apartamento" },
+  { codigo: "60000105", descricao: "Diária de internação em apartamento", tabela: TISS_TABLE_DIARIAS },
 ];
 
 export const TUSS_OPTIONS = TUSS.map((t) => ({
