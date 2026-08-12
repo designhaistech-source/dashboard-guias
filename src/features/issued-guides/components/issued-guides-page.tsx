@@ -204,6 +204,7 @@ export function IssuedGuidesPage() {
                 onChange={(value) => setFilter("operadora", value)}
                 placeholder="Todas as operadoras"
                 searchPlaceholder="Buscar operadora..."
+                allOptionLabel="Todas as operadoras"
                 clearable
               />
             </div>
@@ -215,6 +216,7 @@ export function IssuedGuidesPage() {
                 onChange={(value) => setFilter("type", value)}
                 placeholder="Todos os tipos de guia"
                 searchPlaceholder="Buscar tipo..."
+                allOptionLabel="Todos os tipos de guia"
                 clearable
               />
             </div>
