@@ -3024,7 +3024,7 @@ function EmitirPage() {
       </Dialog>
 
       <Dialog open={!!preview} onOpenChange={(o) => !o && setPreview(null)}>
-        <DialogContent className="max-w-md">
+        <DialogContent className="w-[calc(100vw-2rem)] max-w-lg overflow-x-hidden">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <CheckCircle2 className="h-5 w-5 text-primary" />
@@ -3067,7 +3067,7 @@ function EmitirPage() {
               </span>
             </p>
           )}
-          <DialogFooter className="gap-2 sm:gap-2">
+          <DialogFooter className="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:justify-end sm:gap-2 [&>button]:w-full [&>button]:justify-center sm:[&>button]:w-auto">
             <Button
               variant="outline"
               disabled={!profissionalValido}
@@ -3275,10 +3275,15 @@ function Field({
 
 function Row({ label, value, mono }: { label: string; value: string; mono?: boolean }) {
   return (
-    <div className="flex justify-between gap-4 border-b pb-2 last:border-0 last:pb-0">
+    <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-0.5 border-b pb-2 last:border-0 last:pb-0">
       <span className="text-muted-foreground">{label}</span>
-      <span className={`font-medium text-right ${mono ? "font-mono" : ""}`}>{value || "—"}</span>
+      <span
+        className={`min-w-0 flex-1 break-words text-right font-medium ${mono ? "font-mono" : ""}`}
+      >
+        {value || "—"}
+      </span>
     </div>
   );
 }
+
 
