@@ -211,12 +211,14 @@ export function IssuedGuidesPage() {
             <div className="w-full min-w-0 lg:w-[190px]">
               <Combobox
                 aria-label="Tipo de guia"
-                options={ISSUED_GUIDE_TYPES.map((type) => ({ value: type, label: type }))}
+                options={[
+                  { value: "", label: "Todos os tipos de guia" },
+                  ...ISSUED_GUIDE_TYPES.map((type) => ({ value: type, label: type })),
+                ]}
                 value={filters.type}
                 onChange={(value) => setFilter("type", value)}
                 placeholder="Todos os tipos de guia"
                 searchPlaceholder="Buscar tipo..."
-                allOptionLabel="Todos os tipos de guia"
                 clearable
               />
             </div>
