@@ -34,7 +34,18 @@ function prefersTransformFallback(): boolean {
   return isAppleTouch || isAndroid;
 }
 
-export function ScaledGuideSheet({ children }: { children: React.ReactNode }) {
+export function ScaledGuideSheet({
+  children,
+  /**
+   * `print`: reproduz a proporção exata da página exportada (usado onde o
+   * usuário compara com o PDF). `width`: ocupa toda a largura disponível,
+   * evitando sobra lateral na pré-visualização em tela.
+   */
+  fit = "print",
+}: {
+  children: React.ReactNode;
+  fit?: "print" | "width";
+}) {
   const containerRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
   const [scale, setScale] = useState(1);
