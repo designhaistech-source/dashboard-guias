@@ -494,7 +494,7 @@ function IssuedGuideModal({
           aria-label={`Pré-visualização da guia ${guide.numero}`}
           className="w-full"
         >
-          <ScaledGuideSheet>
+          <ScaledGuideSheet fit="width">
             <IssuedGuidePreview guide={guide} />
           </ScaledGuideSheet>
         </section>
