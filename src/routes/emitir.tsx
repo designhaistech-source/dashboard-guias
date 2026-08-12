@@ -121,6 +121,14 @@ const UF_LIST = [
 ] as const;
 
 /** Campo 35 — Motivo de Encerramento do Atendimento (domínio TISS nº 39). */
+/** Tipo de consulta (campo 34) conforme domínio TISS. */
+const TIPO_CONSULTA_OPTIONS: readonly { value: string; label: string }[] = [
+  { value: "1", label: "1 - Primeira Consulta" },
+  { value: "2", label: "2 - Retorno" },
+  { value: "3", label: "3 - Pré-natal" },
+  { value: "4", label: "4 - Por encaminhamento" },
+];
+
 const MOTIVO_ENCERRAMENTO_OPTIONS: readonly { value: string; label: string }[] = [
   { value: "11", label: "11 - Alta Curado" },
   { value: "12", label: "12 - Alta Melhorado" },
