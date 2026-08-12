@@ -167,6 +167,14 @@ const VIA_ACESSO_OPTIONS = [
   { value: "3", label: "3 - Diferentes vias" },
 ];
 
+/** Campo 44 - Técnica utilizada (domínio TISS nº 48). */
+const TECNICA_OPTIONS = [
+  { value: "1", label: "1 - Convencional" },
+  { value: "2", label: "2 - Vídeo" },
+  { value: "3", label: "3 - Robótica" },
+];
+
+
 
 
 /**
@@ -2644,10 +2652,7 @@ function EmitirPage() {
                                 value={item.technique}
                                 onValueChange={(v) => updateExecuted(item.id, { technique: v })}
                                 placeholder="Selecione"
-                                options={["Convencional", "Vídeo", "Robótica"].map((v) => ({
-                                  value: v,
-                                  label: v,
-                                }))}
+                                options={TECNICA_OPTIONS}
                               />
                             </div>
                           </CollapsibleContent>
