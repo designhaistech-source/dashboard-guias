@@ -75,7 +75,7 @@ export const TUSS: TussItem[] = [
   { codigo: "31005099", descricao: "Herniorrafia inguinal unilateral" },
   { codigo: "50000110", descricao: "Sessão de fisioterapia motora" },
   { codigo: "50000462", descricao: "Sessão de fonoaudiologia" },
-  { codigo: "60000105", descricao: "Diária de internação em apartamento" },
+  { codigo: "60000105", descricao: "Diária de internação em apartamento", tabela: TISS_TABLE_DIARIAS },
 ];
 
 export const TUSS_OPTIONS = TUSS.map((t) => ({
