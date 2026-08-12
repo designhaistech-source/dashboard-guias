@@ -74,6 +74,8 @@ interface ComboboxProps {
   disabled?: boolean;
   invalid?: boolean;
   clearable?: boolean;
+  /** Rótulo de uma opção no topo da lista que limpa a seleção (ex.: "Todas as operadoras"). */
+  allOptionLabel?: string;
   className?: string;
   id?: string;
   "aria-describedby"?: string;
@@ -89,6 +91,7 @@ export function Combobox({
   disabled,
   invalid,
   clearable,
+  allOptionLabel,
   className,
   id,
   ...aria
@@ -135,6 +138,21 @@ export function Combobox({
           <CommandList>
             <CommandEmpty>{emptyMessage}</CommandEmpty>
             <CommandGroup>
+              {allOptionLabel && (
+                <CommandItem
+                  value={allOptionLabel}
+                  onSelect={() => {
+                    onChange?.("");
+                    setOpen(false);
+                  }}
+                  className="flex items-center gap-2"
+                >
+                  <Check
+                    className={cn("h-4 w-4", !value ? "opacity-100" : "opacity-0")}
+                  />
+                  <span className="truncate">{allOptionLabel}</span>
+                </CommandItem>
+              )}
               {options.map((opt) => {
                 const active = opt.value === value;
                 return (
