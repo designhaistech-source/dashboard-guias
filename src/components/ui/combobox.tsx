@@ -138,6 +138,21 @@ export function Combobox({
           <CommandList>
             <CommandEmpty>{emptyMessage}</CommandEmpty>
             <CommandGroup>
+              {allOptionLabel && (
+                <CommandItem
+                  value={allOptionLabel}
+                  onSelect={() => {
+                    onChange?.("");
+                    setOpen(false);
+                  }}
+                  className="flex items-center gap-2"
+                >
+                  <Check
+                    className={cn("h-4 w-4", !value ? "opacity-100" : "opacity-0")}
+                  />
+                  <span className="truncate">{allOptionLabel}</span>
+                </CommandItem>
+              )}
               {options.map((opt) => {
                 const active = opt.value === value;
                 return (
