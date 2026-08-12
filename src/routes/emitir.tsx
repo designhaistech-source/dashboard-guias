@@ -174,6 +174,24 @@ const TECNICA_OPTIONS = [
   { value: "3", label: "3 - Robótica" },
 ];
 
+/** TISS domínio 35 — Grau de participação do profissional executante (campo 49). */
+const GRAU_PARTICIPACAO_OPTIONS = [
+  { value: "00", label: "00 - Cirurgião" },
+  { value: "01", label: "01 - Primeiro Auxiliar" },
+  { value: "02", label: "02 - Segundo Auxiliar" },
+  { value: "03", label: "03 - Terceiro Auxiliar" },
+  { value: "04", label: "04 - Quarto Auxiliar" },
+  { value: "05", label: "05 - Instrumentador" },
+  { value: "06", label: "06 - Anestesista" },
+  { value: "07", label: "07 - Auxiliar de Anestesista" },
+  { value: "08", label: "08 - Consultor" },
+  { value: "09", label: "09 - Perfusionista" },
+  { value: "10", label: "10 - Pediatra na sala de parto" },
+  { value: "11", label: "11 - Auxiliar SADT" },
+  { value: "12", label: "12 - Clínico" },
+  { value: "13", label: "13 - Intensivista" },
+];
+
 
 
 
