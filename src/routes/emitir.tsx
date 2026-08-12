@@ -2140,7 +2140,7 @@ function EmitirPage() {
                         onDragOver={onDragOver}
                         onDrop={() => onDrop(p.id)}
                         className={cn(
-                          "rounded-lg border p-3 @3xl:grid @3xl:grid-cols-[1.5rem_minmax(0,1fr)_7rem_6rem_6.5rem_2.25rem] @3xl:items-center @3xl:gap-2 @3xl:rounded-none @3xl:border-0 @3xl:p-0",
+                          "rounded-lg border p-3 @3xl:grid @3xl:grid-cols-[1.5rem_minmax(0,1fr)_7rem_6rem_2.25rem] @3xl:items-center @3xl:gap-2 @3xl:rounded-none @3xl:border-0 @3xl:p-0",
                           dragId === p.id && "opacity-50",
                         )}
                       >
