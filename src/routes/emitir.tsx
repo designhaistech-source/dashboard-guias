@@ -2715,19 +2715,7 @@ function EmitirPage() {
                                 value={ex.participation}
                                 onValueChange={(v) => updateExecutante(ex.id, { participation: v })}
                                 placeholder="Selecione"
-                                options={[
-                                  "Cirurgião",
-                                  "Primeiro Auxiliar",
-                                  "Segundo Auxiliar",
-                                  "Terceiro Auxiliar",
-                                  "Instrumentador",
-                                  "Anestesista",
-                                  "Auxiliar de Anestesista",
-                                  "Consultor",
-                                  "Perfusionista",
-                                  "Pediatra",
-                                  "Clínico",
-                                ].map((o) => ({ value: o, label: o }))}
+                                options={GRAU_PARTICIPACAO_OPTIONS}
                               />
                             </div>
                           )}
