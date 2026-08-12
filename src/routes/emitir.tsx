@@ -2248,17 +2248,8 @@ function EmitirPage() {
                           />
                         </FormField>
 
-                        {/* Quantidade autorizada pela operadora (campo 28) — somente leitura */}
-                        <div
-                          className="hidden @3xl:flex h-9 items-center justify-center rounded-md border bg-muted/50 text-sm text-muted-foreground"
-                          aria-label="28 - Quantidade Autorizada (preenchida pela operadora)"
-                          title="Preenchida pela operadora"
-                        >
-                          —
-                        </div>
-                        <p className="mt-2 text-xs text-muted-foreground @3xl:hidden">
-                          28 - Qtde. Aut.: preenchida pela operadora
-                        </p>
+
+
 
 
 
