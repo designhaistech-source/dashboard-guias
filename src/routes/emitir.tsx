@@ -2017,7 +2017,7 @@ function EmitirPage() {
                   />
                   <Field
                     label="22 - Data da Solicitação"
-                    hint="Preenchida com a data de emissão da guia."
+                    hint="Data em que o profissional realizou a solicitação"
                   >
                     <Input
                       type="date"
