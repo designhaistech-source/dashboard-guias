@@ -2418,8 +2418,8 @@ function EmitirPage() {
                     value={motivoEncerramento}
                     onValueChange={setMotivoEncerramento}
                     placeholder="Selecione"
-                    hint="Preencher somente em caso de óbito."
-                    options={[...MOTIVO_ENCERRAMENTO_OBITO]}
+                    hint="Preencher no encerramento do atendimento."
+                    options={[...MOTIVO_ENCERRAMENTO_OPTIONS]}
                   />
                 </Grid>
               </Section>
