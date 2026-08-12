@@ -38,7 +38,6 @@ import { SignatureField } from "@/components/signature-field";
 import { useDraftAutosave } from "@/hooks/use-draft-autosave";
 
 import { FormActionBar } from "@/components/form-action-bar";
-import { InfoHint } from "@/components/info-hint";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -2104,15 +2103,14 @@ function EmitirPage() {
 
                   <p className="text-xs text-muted-foreground">
                     Busque por <strong>descrição</strong> (campo 26) — o
-                    código (25) e a tabela (24) são preenchidos automaticamente. A{" "}
-                    <strong>quantidade autorizada (28)</strong> é informada pela operadora.
+                    código (25) e a tabela (24) são preenchidos automaticamente.
                   </p>
 
 
-                  {/* Rótulos das colunas (campos 25 a 28) — visíveis no desktop */}
+                  {/* Rótulos das colunas (campos 25 a 27) — visíveis no desktop */}
                   <div
                     data-testid="proc-solic-headers"
-                    className="hidden @3xl:grid @3xl:grid-cols-[1.5rem_minmax(0,1fr)_7rem_6rem_6.5rem_2.25rem] items-end gap-2 text-xs font-medium text-muted-foreground"
+                    className="hidden @3xl:grid @3xl:grid-cols-[1.5rem_minmax(0,1fr)_7rem_6rem_2.25rem] items-end gap-2 text-xs font-medium text-muted-foreground"
                   >
                     <div />
                     <div className="whitespace-nowrap" data-testid="proc-solic-header-26">
@@ -2124,18 +2122,10 @@ function EmitirPage() {
                     <div className="whitespace-nowrap text-center" data-testid="proc-solic-header-27">
                       27 - Qtde. <span className="text-destructive">*</span>
                     </div>
-                    <div
-                      className="flex items-center justify-center gap-1 whitespace-nowrap text-center"
-                      data-testid="proc-solic-header-28"
-                    >
-                      28 - Autorizada
-                      <InfoHint label="Sobre o campo 28 - Autorizada">
-                        Quantidade informada pela operadora após a análise da solicitação.
-                      </InfoHint>
-                    </div>
 
                     <div />
                   </div>
+
 
 
 
@@ -2149,7 +2139,7 @@ function EmitirPage() {
                         onDragOver={onDragOver}
                         onDrop={() => onDrop(p.id)}
                         className={cn(
-                          "rounded-lg border p-3 @3xl:grid @3xl:grid-cols-[1.5rem_minmax(0,1fr)_7rem_6rem_6.5rem_2.25rem] @3xl:items-center @3xl:gap-2 @3xl:rounded-none @3xl:border-0 @3xl:p-0",
+                          "rounded-lg border p-3 @3xl:grid @3xl:grid-cols-[1.5rem_minmax(0,1fr)_7rem_6rem_2.25rem] @3xl:items-center @3xl:gap-2 @3xl:rounded-none @3xl:border-0 @3xl:p-0",
                           dragId === p.id && "opacity-50",
                         )}
                       >
@@ -2248,17 +2238,8 @@ function EmitirPage() {
                           />
                         </FormField>
 
-                        {/* Quantidade autorizada pela operadora (campo 28) — somente leitura */}
-                        <div
-                          className="hidden @3xl:flex h-9 items-center justify-center rounded-md border bg-muted/50 text-sm text-muted-foreground"
-                          aria-label="28 - Quantidade Autorizada (preenchida pela operadora)"
-                          title="Preenchida pela operadora"
-                        >
-                          —
-                        </div>
-                        <p className="mt-2 text-xs text-muted-foreground @3xl:hidden">
-                          28 - Qtde. Aut.: preenchida pela operadora
-                        </p>
+
+
 
 
 

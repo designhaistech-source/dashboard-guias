@@ -79,7 +79,7 @@ export const TISS_SADT_FIELDS: Readonly<Record<number, string>> = {
 };
 
 /** Field numbers that intentionally have no rendered label (signature drawn by hand on print). */
-export const TISS_FIELDS_WITHOUT_LABEL: readonly number[] = [20];
+export const TISS_FIELDS_WITHOUT_LABEL: readonly number[] = [20, 28];
 
 /** Builds the canonical rendered label, e.g. `1 - Registro ANS`. */
 export function formatTissLabel(field: number): string {
