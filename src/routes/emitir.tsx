@@ -3,7 +3,7 @@ import { useEffect, useMemo, useState } from "react";
 import {
   FileText,
   Plus,
-  CalendarDays,
+  Calendar,
   Trash2,
   Save,
   Printer,
@@ -2102,7 +2102,7 @@ function EmitirPage() {
                   >
                     <div className="relative">
                       {/* Chrome esconde o ícone nativo em inputs readonly; recriamos com lucide. */}
-                      <CalendarDays
+                      <Calendar
                         className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground"
                         aria-hidden="true"
                       />
