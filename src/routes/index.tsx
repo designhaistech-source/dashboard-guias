@@ -10,6 +10,7 @@ import {
   Activity,
   X,
   SlidersHorizontal,
+  Wallet,
 } from "lucide-react";
 import {
   AreaChart,
@@ -752,6 +753,7 @@ function DashboardPage() {
   const sparkTotal = toSpark(dailyData.map((d) => d.guias));
   const sparkHoje = toSpark(dailyData.map((d) => d.guias));
   const sparkMedia = toSpark(dailyData.map((d) => d.guias));
+  const sparkValor = toSpark(dailyData.map((d) => d.guias));
   const sparkTipos = toSpark(typeData.map((t) => t.value));
 
   return (
@@ -915,10 +917,18 @@ function DashboardPage() {
 
 
           {/* KPIs */}
-          <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
             <Kpi icon={FileText} label="Total extraídas" value={String(total)} hint={activeFilters.length > 0 ? "com filtros aplicados" : "no período"} tone="primary" spark={sparkTotal} />
             <Kpi icon={Activity} label="Extraídas hoje" value={String(metrics.today)} hint="guias de hoje" tone="success" trend="up" spark={sparkHoje} />
             <Kpi icon={TrendingUp} label="Média por dia" value={String(dailyAvg)} hint="guias/dia no período" tone="info" spark={sparkMedia} />
+            <Kpi
+              icon={Wallet}
+              label="Valor total"
+              value={metrics.totalValue.toLocaleString("pt-BR", { style: "currency", currency: "BRL", maximumFractionDigits: 0 })}
+              hint="somatório das guias"
+              tone="info"
+              spark={sparkValor}
+            />
             <Kpi icon={Layers} label="Tipos diferentes" value={String(metrics.distinctTypes)} hint="categorias de guia" tone="purple" spark={sparkTipos} />
           </div>
 
