@@ -2103,7 +2103,6 @@ function EmitirPage() {
                       type="date"
                       value={dataSolicitacao}
                       onChange={(e) => setDataSolicitacao(e.target.value)}
-                      className="font-mono"
                     />
                   </Field>
 
