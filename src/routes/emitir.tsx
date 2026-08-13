@@ -1262,7 +1262,7 @@ function EmitirPage() {
             { label: "UF do conselho", value: conselhoUf },
             { label: "CBO", value: codigoCbo },
             { label: "Contratado solicitante", value: contratadoSolicitante },
-            { label: "Data da solicitação", value: dataSolicitacao },
+            { label: "Data da solicitação", value: fmtDate(dataSolicitacao) },
           ],
         },
         {
