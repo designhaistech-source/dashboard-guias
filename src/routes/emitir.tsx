@@ -2099,14 +2099,21 @@ function EmitirPage() {
                     label="22 - Data da Solicitação"
                     hint="Data em que o profissional realizou a solicitação"
                   >
-                    <Input
-                      type="date"
-                      value={dataSolicitacao}
-                      readOnly
-                      aria-readonly
-                      tabIndex={-1}
-                      className="bg-muted/50 font-mono text-foreground"
-                    />
+                    <div className="relative">
+                      {/* Chrome esconde o ícone nativo em inputs readonly; recriamos com lucide. */}
+                      <CalendarDays
+                        className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground"
+                        aria-hidden="true"
+                      />
+                      <Input
+                        type="date"
+                        value={dataSolicitacao}
+                        readOnly
+                        aria-readonly
+                        tabIndex={-1}
+                        className="bg-muted/50 font-mono text-foreground"
+                      />
+                    </div>
                   </Field>
 
                 </Grid>
