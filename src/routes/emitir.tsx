@@ -72,6 +72,7 @@ import { ESTABLISHMENT, operatorEstablishmentCode } from "@/features/establishme
 
 import { AihGuideForm, ApacGuideForm, InternacaoGuideForm } from "@/features/guides";
 import { SadtGuidePreview as GuiaLivePreview } from "@/features/guides/sadt/sadt-guide-preview";
+import { fmtDate } from "@/features/guides/components/guide-print-primitives";
 
 
 
@@ -1262,7 +1263,7 @@ function EmitirPage() {
             { label: "UF do conselho", value: conselhoUf },
             { label: "CBO", value: codigoCbo },
             { label: "Contratado solicitante", value: contratadoSolicitante },
-            { label: "Data da solicitação", value: dataSolicitacao },
+            { label: "Data da solicitação", value: fmtDate(dataSolicitacao) },
           ],
         },
         {
@@ -2103,7 +2104,6 @@ function EmitirPage() {
                       type="date"
                       value={dataSolicitacao}
                       onChange={(e) => setDataSolicitacao(e.target.value)}
-                      className="font-mono"
                     />
                   </Field>
 
