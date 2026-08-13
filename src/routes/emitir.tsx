@@ -1852,7 +1852,7 @@ function EmitirPage() {
                     <Input
                       value={pacienteCarteira}
                       onChange={(e) => setPacienteCarteira(e.target.value.slice(0, 20))}
-                      placeholder="Número da carteira"
+                      placeholder="0000 0000 0000 0000"
                       maxLength={20}
                       className="font-mono"
                     />
