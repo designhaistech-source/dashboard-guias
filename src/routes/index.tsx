@@ -42,6 +42,14 @@ import { Input } from "@/components/ui/input";
 import { Combobox } from "@/components/ui/combobox";
 import { Chip } from "@/components/ui/chip";
 import { Badge } from "@/components/ui/badge";
+import {
+  DASHBOARD_GUIDES,
+  PRESTADORES,
+  filterGuides,
+  buildMetrics,
+  GUIDE_TYPES,
+  type DashboardMetrics,
+} from "@/features/dashboard/data/mock-guides";
 
 
 
@@ -77,50 +85,11 @@ export const Route = createFileRoute("/")({
 
 type Range = "7d" | "30d" | "90d";
 
-const dailyData30: { day: string; guias: number; meta: number }[] = [
-  { day: "01", guias: 4 }, { day: "02", guias: 6 }, { day: "03", guias: 3 },
-  { day: "04", guias: 8 }, { day: "05", guias: 5 }, { day: "06", guias: 9 },
-  { day: "07", guias: 11 }, { day: "08", guias: 7 }, { day: "09", guias: 12 },
-  { day: "10", guias: 10 }, { day: "11", guias: 14 }, { day: "12", guias: 8 },
-  { day: "13", guias: 6 }, { day: "14", guias: 9 }, { day: "15", guias: 13 },
-  { day: "16", guias: 11 }, { day: "17", guias: 15 }, { day: "18", guias: 9 },
-  { day: "19", guias: 12 }, { day: "20", guias: 7 }, { day: "21", guias: 10 },
-  { day: "22", guias: 14 }, { day: "23", guias: 16 }, { day: "24", guias: 11 },
-  { day: "25", guias: 13 }, { day: "26", guias: 9 }, { day: "27", guias: 12 },
-  { day: "28", guias: 15 }, { day: "29", guias: 14 }, { day: "30", guias: 18 },
-].map((d) => ({ ...d, meta: 10 }));
+const prestadoresList = PRESTADORES;
 
-const typeData = [
-  { name: "Consulta", value: 89, color: "var(--primary)" },
-  { name: "SP/SADT", value: 78, color: "var(--purple)" },
-  { name: "Internação", value: 41, color: "var(--cat-6)" },
-  { name: "Honorários", value: 26, color: "var(--success)" },
-  { name: "Odontológica", value: 18, color: "var(--warning)" },
-];
+/** Sparkline a partir dos últimos pontos de uma série. */
+const toSpark = (values: number[]) => values.slice(-10).map((v) => ({ v }));
 
-const prestadoresList = [
-  "Clínica São Lucas",
-  "Hospital Santa Marta",
-  "Laboratório Diagnóstico+",
-  "Centro Médico Vida",
-  "Instituto Cardio",
-  "UBS Central",
-];
-
-const procedures = [
-  { code: "10101012", name: "Consulta em consultório", count: 64, trend: 12 },
-  { code: "40901408", name: "Hemograma completo", count: 47, trend: 8 },
-  { code: "40802089", name: "Ultrassonografia abdominal", count: 39, trend: -3 },
-  { code: "31602045", name: "Eletrocardiograma", count: 31, trend: 5 },
-  { code: "40803115", name: "Ressonância magnética", count: 22, trend: -1 },
-  { code: "20203020", name: "Curativo grau II", count: 17, trend: 4 },
-].sort((a, b) => b.count - a.count);
-
-// Sparkline data per KPI
-const sparkTotal = dailyData30.slice(-10).map((d) => ({ v: d.guias }));
-const sparkHoje = [3, 5, 4, 6, 8, 7, 10, 9, 12, 14].map((v) => ({ v }));
-const sparkMedia = [6, 7, 7, 8, 8, 9, 8, 9, 8, 8].map((v) => ({ v }));
-const sparkTipos = [3, 3, 4, 4, 4, 5, 5, 5, 5, 5].map((v) => ({ v }));
 
 async function captureChartPng(selector: string, scale = 2): Promise<{ dataUrl: string; w: number; h: number } | null> {
   const container = document.querySelector(selector) as HTMLElement | null;
@@ -201,7 +170,8 @@ async function captureChartPng(selector: string, scale = 2): Promise<{ dataUrl: 
   }
 }
 
-async function generateReportPdf(range: Range, dailyAvg: number, total: number) {
+async function generateReportPdf(range: Range, metrics: DashboardMetrics) {
+  const { dailyAvg, total, types: typeData, procedures } = metrics;
   try {
     const doc = new jsPDF({ unit: "pt", format: "a4" });
     const pageWidth = doc.internal.pageSize.getWidth();
@@ -362,7 +332,7 @@ async function generateReportPdf(range: Range, dailyAvg: number, total: number) 
       head: [["Indicador", "Valor"]],
       body: [
         ["Total extraídas", String(total)],
-        ["Extraídas hoje", "14"],
+        ["Extraídas hoje", String(metrics.today)],
         ["Média por dia", String(dailyAvg)],
         ["Tipos diferentes", String(typeData.length)],
       ],
@@ -693,15 +663,10 @@ function DashboardPage() {
     Number(draft.valorMin) > Number(draft.valorMax);
   const hasErrors = dateRangeInvalid || valueRangeInvalid;
 
-  const TOTAL_GUIAS = 252;
-  const previewCount = useMemo(() => {
-    if (hasErrors) return null;
-    const filled = Object.values(draft).filter((v) => v.trim() !== "").length;
-    if (filled === 0) return TOTAL_GUIAS;
-    // simulação: cada filtro reduz ~22% do resultado, mín 1
-    const factor = Math.pow(0.78, filled);
-    return Math.max(1, Math.round(TOTAL_GUIAS * factor));
-  }, [draft, hasErrors]);
+  const previewCount = useMemo(
+    () => (hasErrors ? null : filterGuides(DASHBOARD_GUIDES, draft).length),
+    [draft, hasErrors],
+  );
 
   const applyPreset = (preset: "hoje" | "7d" | "30d" | "valorAlto") => {
     const today = new Date();
@@ -775,11 +740,19 @@ function DashboardPage() {
   }, [filtersOpen]);
 
 
-  const total = useMemo(() => typeData.reduce((s, t) => s + t.value, 0), []);
-  const dailyAvg = useMemo(
-    () => Math.round(dailyData30.reduce((s, d) => s + d.guias, 0) / dailyData30.length),
-    [],
+  const metrics = useMemo(
+    () => buildMetrics(filterGuides(DASHBOARD_GUIDES, filters)),
+    [filters],
   );
+  const total = metrics.total;
+  const dailyAvg = metrics.dailyAvg;
+  const typeData = metrics.types;
+  const procedures = metrics.procedures;
+  const dailyData = metrics.daily;
+  const sparkTotal = toSpark(dailyData.map((d) => d.guias));
+  const sparkHoje = toSpark(dailyData.map((d) => d.guias));
+  const sparkMedia = toSpark(dailyData.map((d) => d.guias));
+  const sparkTipos = toSpark(typeData.map((t) => t.value));
 
   return (
     <div className="flex min-h-screen w-full bg-background text-foreground">
@@ -810,7 +783,7 @@ function DashboardPage() {
                     </Badge>
                   )}
                 </Button>
-                <Button size="sm" onClick={() => generateReportPdf(range, dailyAvg, total)}>
+                <Button size="sm" onClick={() => generateReportPdf(range, metrics)}>
                   <Download className="h-4 w-4" />
                   Gerar relatório
                 </Button>
@@ -921,7 +894,7 @@ function DashboardPage() {
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                 <FilterField label="Beneficiário" value={draft.beneficiarioNome} onChange={(v) => setDraft((d) => ({ ...d, beneficiarioNome: v }))} />
                 <FilterField label="Nº guia" value={draft.numGuiaPrestador} onChange={(v) => setDraft((d) => ({ ...d, numGuiaPrestador: v }))} />
-                <FilterSelect label="Tipo de guia" value={draft.tipoGuia} onChange={(v) => setDraft((d) => ({ ...d, tipoGuia: v }))} options={typeData.map((t) => t.name)} />
+                <FilterSelect label="Tipo de guia" value={draft.tipoGuia} onChange={(v) => setDraft((d) => ({ ...d, tipoGuia: v }))} options={GUIDE_TYPES.map((t) => t.name)} />
                 <FilterSelect label="Prestador" value={draft.prestadorSolicitante} onChange={(v) => setDraft((d) => ({ ...d, prestadorSolicitante: v }))} options={prestadoresList} />
                 <FilterField label="Procedimento" value={draft.procDescricao} onChange={(v) => setDraft((d) => ({ ...d, procDescricao: v }))} />
                 <FilterField label="Código proc." value={draft.procCodigo} onChange={(v) => setDraft((d) => ({ ...d, procCodigo: v }))} />
@@ -943,10 +916,10 @@ function DashboardPage() {
 
           {/* KPIs */}
           <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
-            <Kpi icon={FileText} label="Total extraídas" value="252" hint="no período" tone="primary" spark={sparkTotal} />
-            <Kpi icon={Activity} label="Extraídas hoje" value="14" hint="+4 vs. ontem" tone="success" trend="up" spark={sparkHoje} />
+            <Kpi icon={FileText} label="Total extraídas" value={String(total)} hint={activeFilters.length > 0 ? "com filtros aplicados" : "no período"} tone="primary" spark={sparkTotal} />
+            <Kpi icon={Activity} label="Extraídas hoje" value={String(metrics.today)} hint="guias de hoje" tone="success" trend="up" spark={sparkHoje} />
             <Kpi icon={TrendingUp} label="Média por dia" value={String(dailyAvg)} hint="guias/dia no período" tone="info" spark={sparkMedia} />
-            <Kpi icon={Layers} label="Tipos diferentes" value="5" hint="categorias de guia" tone="purple" spark={sparkTipos} />
+            <Kpi icon={Layers} label="Tipos diferentes" value={String(metrics.distinctTypes)} hint="categorias de guia" tone="purple" spark={sparkTipos} />
           </div>
 
           {/* Charts row */}
@@ -963,7 +936,7 @@ function DashboardPage() {
             >
               <div className="h-72" data-chart="daily">
                 <ResponsiveContainer width="100%" height="100%">
-                  <AreaChart data={dailyData30} margin={{ top: 10, right: 10, left: -10, bottom: 0 }}>
+                  <AreaChart data={dailyData} margin={{ top: 10, right: 10, left: -10, bottom: 0 }}>
                     <defs>
                       <linearGradient id="gradPrimary" x1="0" y1="0" x2="0" y2="1">
                         <stop offset="0%" stopColor="var(--primary)" stopOpacity={0.45} />
@@ -1034,7 +1007,7 @@ function DashboardPage() {
                 </div>
                 <ul className="space-y-2 text-sm">
                   {typeData.map((d, i) => {
-                    const pct = (d.value / total) * 100;
+                    const pct = total > 0 ? (d.value / total) * 100 : 0;
                     const isActive = activeType === i;
                     return (
                       <li
