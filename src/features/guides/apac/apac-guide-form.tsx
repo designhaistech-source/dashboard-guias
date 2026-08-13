@@ -5,7 +5,6 @@ import {
   Eye,
   FileText,
   Plus,
-  Save,
   ShieldCheck,
   Stethoscope,
   Trash2,

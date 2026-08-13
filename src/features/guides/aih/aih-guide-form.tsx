@@ -4,7 +4,6 @@ import {
   Building2,
   Eye,
   FileText,
-  Save,
   ShieldCheck,
   Stethoscope,
   User,

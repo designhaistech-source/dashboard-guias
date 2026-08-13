@@ -9,7 +9,6 @@ import {
   Loader2,
   Plus,
   Eye,
-  Save,
   Search,
   Stethoscope,
   Trash2,
