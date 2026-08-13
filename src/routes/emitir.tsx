@@ -72,6 +72,7 @@ import { ESTABLISHMENT, operatorEstablishmentCode } from "@/features/establishme
 
 import { AihGuideForm, ApacGuideForm, InternacaoGuideForm } from "@/features/guides";
 import { SadtGuidePreview as GuiaLivePreview } from "@/features/guides/sadt/sadt-guide-preview";
+import { fmtDate } from "@/features/guides/components/guide-print-primitives";
 
 
 
