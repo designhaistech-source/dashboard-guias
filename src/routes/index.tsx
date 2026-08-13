@@ -47,6 +47,7 @@ import {
   PRESTADORES,
   filterGuides,
   buildMetrics,
+  GUIDE_TYPES,
   type DashboardMetrics,
 } from "@/features/dashboard/data/mock-guides";
 
@@ -893,7 +894,7 @@ function DashboardPage() {
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                 <FilterField label="Beneficiário" value={draft.beneficiarioNome} onChange={(v) => setDraft((d) => ({ ...d, beneficiarioNome: v }))} />
                 <FilterField label="Nº guia" value={draft.numGuiaPrestador} onChange={(v) => setDraft((d) => ({ ...d, numGuiaPrestador: v }))} />
-                <FilterSelect label="Tipo de guia" value={draft.tipoGuia} onChange={(v) => setDraft((d) => ({ ...d, tipoGuia: v }))} options={typeData.map((t) => t.name)} />
+                <FilterSelect label="Tipo de guia" value={draft.tipoGuia} onChange={(v) => setDraft((d) => ({ ...d, tipoGuia: v }))} options={GUIDE_TYPES.map((t) => t.name)} />
                 <FilterSelect label="Prestador" value={draft.prestadorSolicitante} onChange={(v) => setDraft((d) => ({ ...d, prestadorSolicitante: v }))} options={prestadoresList} />
                 <FilterField label="Procedimento" value={draft.procDescricao} onChange={(v) => setDraft((d) => ({ ...d, procDescricao: v }))} />
                 <FilterField label="Código proc." value={draft.procCodigo} onChange={(v) => setDraft((d) => ({ ...d, procCodigo: v }))} />
@@ -1006,7 +1007,7 @@ function DashboardPage() {
                 </div>
                 <ul className="space-y-2 text-sm">
                   {typeData.map((d, i) => {
-                    const pct = (d.value / total) * 100;
+                    const pct = total > 0 ? (d.value / total) * 100 : 0;
                     const isActive = activeType === i;
                     return (
                       <li
