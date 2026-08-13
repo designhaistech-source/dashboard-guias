@@ -10,7 +10,6 @@ import {
   Activity,
   X,
   SlidersHorizontal,
-  Wallet,
 } from "lucide-react";
 import {
   AreaChart,
@@ -509,8 +508,6 @@ type GuideFilters = {
   procDescricao: string;
   procReferencia: string; // "", "tuss", "sigtap"
   // Financeiro
-  valorMin: string;
-  valorMax: string;
   componenteFinanceiro: string; // "", "honorarios", "materiais", ...
   // Tipo (já existente conceitualmente)
   tipoGuia: string;
@@ -538,8 +535,6 @@ const emptyFilters: GuideFilters = {
   procCodigo: "",
   procDescricao: "",
   procReferencia: "",
-  valorMin: "",
-  valorMax: "",
   componenteFinanceiro: "",
   tipoGuia: "",
 };
@@ -629,8 +624,6 @@ const filterLabels: Record<keyof GuideFilters, string> = {
   procCodigo: "Código procedimento",
   procDescricao: "Descrição procedimento",
   procReferencia: "Referência",
-  valorMin: "Valor mín.",
-  valorMax: "Valor máx.",
   componenteFinanceiro: "Componente financeiro",
   tipoGuia: "Tipo de guia",
 };
@@ -658,18 +651,14 @@ function DashboardPage() {
     !!draft.dataAutorizacaoDe &&
     !!draft.dataAutorizacaoAte &&
     draft.dataAutorizacaoDe > draft.dataAutorizacaoAte;
-  const valueRangeInvalid =
-    draft.valorMin !== "" &&
-    draft.valorMax !== "" &&
-    Number(draft.valorMin) > Number(draft.valorMax);
-  const hasErrors = dateRangeInvalid || valueRangeInvalid;
+  const hasErrors = dateRangeInvalid;
 
   const previewCount = useMemo(
     () => (hasErrors ? null : filterGuides(DASHBOARD_GUIDES, draft).length),
     [draft, hasErrors],
   );
 
-  const applyPreset = (preset: "hoje" | "7d" | "30d" | "valorAlto") => {
+  const applyPreset = (preset: "hoje" | "7d" | "30d") => {
     const today = new Date();
     const iso = (d: Date) => d.toISOString().slice(0, 10);
     setDraft((d) => {
@@ -681,12 +670,8 @@ function DashboardPage() {
         const from = new Date(today); from.setDate(today.getDate() - 7);
         return { ...d, dataAutorizacaoDe: iso(from), dataAutorizacaoAte: iso(today) };
       }
-      if (preset === "30d") {
-        const from = new Date(today); from.setDate(today.getDate() - 30);
-        return { ...d, dataAutorizacaoDe: iso(from), dataAutorizacaoAte: iso(today) };
-      }
-      // valorAlto
-      return { ...d, valorMin: "1000", valorMax: "" };
+      const from = new Date(today); from.setDate(today.getDate() - 30);
+      return { ...d, dataAutorizacaoDe: iso(from), dataAutorizacaoAte: iso(today) };
     });
   };
 
@@ -753,7 +738,6 @@ function DashboardPage() {
   const sparkTotal = toSpark(dailyData.map((d) => d.guias));
   const sparkHoje = toSpark(dailyData.map((d) => d.guias));
   const sparkMedia = toSpark(dailyData.map((d) => d.guias));
-  const sparkValor = toSpark(dailyData.map((d) => d.guias));
   const sparkTipos = toSpark(typeData.map((t) => t.value));
 
   return (
@@ -869,11 +853,10 @@ function DashboardPage() {
                     { id: "hoje", label: "Hoje" },
                     { id: "7d", label: "Últimos 7 dias" },
                     { id: "30d", label: "Últimos 30 dias" },
-                    { id: "valorAlto", label: "Valor > R$ 1.000" },
                   ].map((p) => (
                     <Chip
                       key={p.id}
-                      onClick={() => applyPreset(p.id as "hoje" | "7d" | "30d" | "valorAlto")}
+                      onClick={() => applyPreset(p.id as "hoje" | "7d" | "30d")}
                       className="text-foreground hover:border-primary hover:bg-primary/5 hover:text-primary"
                     >
                       {p.label}
@@ -902,33 +885,15 @@ function DashboardPage() {
                 <FilterField label="Código proc." value={draft.procCodigo} onChange={(v) => setDraft((d) => ({ ...d, procCodigo: v }))} />
               </div>
 
-              <div>
-                <div className={filterGroupLabelClass}>Valor (R$)</div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-                  <FilterField label="Mínimo" type="number" error={valueRangeInvalid} value={draft.valorMin} onChange={(v) => setDraft((d) => ({ ...d, valorMin: v }))} />
-                  <FilterField label="Máximo" type="number" error={valueRangeInvalid} value={draft.valorMax} onChange={(v) => setDraft((d) => ({ ...d, valorMax: v }))} />
-                </div>
-                {valueRangeInvalid && (
-                  <p className="mt-1.5 text-xs text-destructive">O valor mínimo deve ser menor ou igual ao máximo.</p>
-                )}
-              </div>
             </FilterCard>
           )}
 
 
           {/* KPIs */}
-          <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+          <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             <Kpi icon={FileText} label="Total extraídas" value={String(total)} hint={activeFilters.length > 0 ? "com filtros aplicados" : "no período"} tone="primary" spark={sparkTotal} />
             <Kpi icon={Activity} label="Extraídas hoje" value={String(metrics.today)} hint="guias de hoje" tone="success" trend="up" spark={sparkHoje} />
             <Kpi icon={TrendingUp} label="Média por dia" value={String(dailyAvg)} hint="guias/dia no período" tone="info" spark={sparkMedia} />
-            <Kpi
-              icon={Wallet}
-              label="Valor total"
-              value={metrics.totalValue.toLocaleString("pt-BR", { style: "currency", currency: "BRL", maximumFractionDigits: 0 })}
-              hint="somatório das guias"
-              tone="info"
-              spark={sparkValor}
-            />
             <Kpi icon={Layers} label="Tipos diferentes" value={String(metrics.distinctTypes)} hint="categorias de guia" tone="purple" spark={sparkTipos} />
           </div>
 

@@ -117,8 +117,6 @@ export type DashboardFilterInput = {
   prestadorSolicitante: string;
   procDescricao: string;
   procCodigo: string;
-  valorMin: string;
-  valorMax: string;
 };
 
 const norm = (v: string) =>
@@ -128,9 +126,6 @@ export function filterGuides(
   guides: DashboardGuide[],
   f: DashboardFilterInput,
 ): DashboardGuide[] {
-  const min = f.valorMin.trim() === "" ? null : Number(f.valorMin);
-  const max = f.valorMax.trim() === "" ? null : Number(f.valorMax);
-
   return guides.filter((g) => {
     if (f.dataAutorizacaoDe && g.data < f.dataAutorizacaoDe) return false;
     if (f.dataAutorizacaoAte && g.data > f.dataAutorizacaoAte) return false;
@@ -144,8 +139,6 @@ export function filterGuides(
     if (f.procDescricao.trim() && !norm(g.procDescricao).includes(norm(f.procDescricao)))
       return false;
     if (f.procCodigo.trim() && !g.procCodigo.includes(f.procCodigo.trim())) return false;
-    if (min !== null && !Number.isNaN(min) && g.valorTotal < min) return false;
-    if (max !== null && !Number.isNaN(max) && g.valorTotal > max) return false;
     return true;
   });
 }
