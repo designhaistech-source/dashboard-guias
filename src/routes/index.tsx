@@ -42,6 +42,13 @@ import { Input } from "@/components/ui/input";
 import { Combobox } from "@/components/ui/combobox";
 import { Chip } from "@/components/ui/chip";
 import { Badge } from "@/components/ui/badge";
+import {
+  DASHBOARD_GUIDES,
+  PRESTADORES,
+  filterGuides,
+  buildMetrics,
+  type DashboardMetrics,
+} from "@/features/dashboard/data/mock-guides";
 
 
 
@@ -162,7 +169,8 @@ async function captureChartPng(selector: string, scale = 2): Promise<{ dataUrl: 
   }
 }
 
-async function generateReportPdf(range: Range, dailyAvg: number, total: number) {
+async function generateReportPdf(range: Range, metrics: DashboardMetrics) {
+  const { dailyAvg, total, types: typeData, procedures } = metrics;
   try {
     const doc = new jsPDF({ unit: "pt", format: "a4" });
     const pageWidth = doc.internal.pageSize.getWidth();
@@ -323,7 +331,7 @@ async function generateReportPdf(range: Range, dailyAvg: number, total: number) 
       head: [["Indicador", "Valor"]],
       body: [
         ["Total extraídas", String(total)],
-        ["Extraídas hoje", "14"],
+        ["Extraídas hoje", String(metrics.today)],
         ["Média por dia", String(dailyAvg)],
         ["Tipos diferentes", String(typeData.length)],
       ],
@@ -654,15 +662,10 @@ function DashboardPage() {
     Number(draft.valorMin) > Number(draft.valorMax);
   const hasErrors = dateRangeInvalid || valueRangeInvalid;
 
-  const TOTAL_GUIAS = 252;
-  const previewCount = useMemo(() => {
-    if (hasErrors) return null;
-    const filled = Object.values(draft).filter((v) => v.trim() !== "").length;
-    if (filled === 0) return TOTAL_GUIAS;
-    // simulação: cada filtro reduz ~22% do resultado, mín 1
-    const factor = Math.pow(0.78, filled);
-    return Math.max(1, Math.round(TOTAL_GUIAS * factor));
-  }, [draft, hasErrors]);
+  const previewCount = useMemo(
+    () => (hasErrors ? null : filterGuides(DASHBOARD_GUIDES, draft).length),
+    [draft, hasErrors],
+  );
 
   const applyPreset = (preset: "hoje" | "7d" | "30d" | "valorAlto") => {
     const today = new Date();
@@ -736,11 +739,19 @@ function DashboardPage() {
   }, [filtersOpen]);
 
 
-  const total = useMemo(() => typeData.reduce((s, t) => s + t.value, 0), []);
-  const dailyAvg = useMemo(
-    () => Math.round(dailyData30.reduce((s, d) => s + d.guias, 0) / dailyData30.length),
-    [],
+  const metrics = useMemo(
+    () => buildMetrics(filterGuides(DASHBOARD_GUIDES, filters)),
+    [filters],
   );
+  const total = metrics.total;
+  const dailyAvg = metrics.dailyAvg;
+  const typeData = metrics.types;
+  const procedures = metrics.procedures;
+  const dailyData = metrics.daily;
+  const sparkTotal = toSpark(dailyData.map((d) => d.guias));
+  const sparkHoje = toSpark(dailyData.map((d) => d.guias));
+  const sparkMedia = toSpark(dailyData.map((d) => d.guias));
+  const sparkTipos = toSpark(typeData.map((t) => t.value));
 
   return (
     <div className="flex min-h-screen w-full bg-background text-foreground">
@@ -771,7 +782,7 @@ function DashboardPage() {
                     </Badge>
                   )}
                 </Button>
-                <Button size="sm" onClick={() => generateReportPdf(range, dailyAvg, total)}>
+                <Button size="sm" onClick={() => generateReportPdf(range, metrics)}>
                   <Download className="h-4 w-4" />
                   Gerar relatório
                 </Button>
@@ -904,10 +915,10 @@ function DashboardPage() {
 
           {/* KPIs */}
           <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
-            <Kpi icon={FileText} label="Total extraídas" value="252" hint="no período" tone="primary" spark={sparkTotal} />
-            <Kpi icon={Activity} label="Extraídas hoje" value="14" hint="+4 vs. ontem" tone="success" trend="up" spark={sparkHoje} />
+            <Kpi icon={FileText} label="Total extraídas" value={String(total)} hint={activeFilters.length > 0 ? "com filtros aplicados" : "no período"} tone="primary" spark={sparkTotal} />
+            <Kpi icon={Activity} label="Extraídas hoje" value={String(metrics.today)} hint="guias de hoje" tone="success" trend="up" spark={sparkHoje} />
             <Kpi icon={TrendingUp} label="Média por dia" value={String(dailyAvg)} hint="guias/dia no período" tone="info" spark={sparkMedia} />
-            <Kpi icon={Layers} label="Tipos diferentes" value="5" hint="categorias de guia" tone="purple" spark={sparkTipos} />
+            <Kpi icon={Layers} label="Tipos diferentes" value={String(metrics.distinctTypes)} hint="categorias de guia" tone="purple" spark={sparkTipos} />
           </div>
 
           {/* Charts row */}
@@ -924,7 +935,7 @@ function DashboardPage() {
             >
               <div className="h-72" data-chart="daily">
                 <ResponsiveContainer width="100%" height="100%">
-                  <AreaChart data={dailyData30} margin={{ top: 10, right: 10, left: -10, bottom: 0 }}>
+                  <AreaChart data={dailyData} margin={{ top: 10, right: 10, left: -10, bottom: 0 }}>
                     <defs>
                       <linearGradient id="gradPrimary" x1="0" y1="0" x2="0" y2="1">
                         <stop offset="0%" stopColor="var(--primary)" stopOpacity={0.45} />
