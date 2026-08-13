@@ -926,7 +926,7 @@ function DashboardPage() {
               label="Valor total"
               value={metrics.totalValue.toLocaleString("pt-BR", { style: "currency", currency: "BRL", maximumFractionDigits: 0 })}
               hint="somatório das guias"
-              tone="warning"
+              tone="info"
               spark={sparkValor}
             />
             <Kpi icon={Layers} label="Tipos diferentes" value={String(metrics.distinctTypes)} hint="categorias de guia" tone="purple" spark={sparkTipos} />
