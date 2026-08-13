@@ -472,14 +472,18 @@ export function InternacaoGuideForm({
             </Select>
           </Field>
 
-          <Field label="1 - Registro ANS" span="@md:col-span-6 @3xl:col-span-5">
+          <Field
+            label="1 - Registro ANS"
+            span="@md:col-span-6 @3xl:col-span-5"
+            hint="Preenchido automaticamente pela operadora selecionada."
+          >
             <Input
               value={ans}
-              onChange={(e) => setAns(e.target.value)}
-              placeholder="000000"
-              inputMode="numeric"
-              maxLength={6}
-              className="font-mono"
+              readOnly
+              aria-readonly="true"
+              tabIndex={-1}
+              placeholder="—"
+              className="font-mono bg-muted text-muted-foreground cursor-default focus-visible:ring-0"
             />
           </Field>
         </Grid>
