@@ -9,7 +9,6 @@ import {
   Loader2,
   Plus,
   Eye,
-  Save,
   Search,
   Stethoscope,
   Trash2,
@@ -1069,9 +1068,6 @@ export function InternacaoGuideForm({
           </>
         }
       >
-        <Button type="button" variant="outline" size="sm">
-          <Save className="h-4 w-4" /> Salvar rascunho
-        </Button>
         <Button type="submit" size="sm" disabled={submitting}>
           <FileText className="h-4 w-4" />
           {submitting ? "Gerando..." : "Gerar guia"}

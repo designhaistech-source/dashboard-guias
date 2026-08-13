@@ -5,7 +5,6 @@ import {
   Eye,
   FileText,
   Plus,
-  Save,
   ShieldCheck,
   Stethoscope,
   Trash2,
@@ -770,9 +769,6 @@ export function ApacGuideForm({ header }: ApacGuideFormProps) {
           </>
         }
       >
-        <Button type="button" variant="outline" size="sm">
-          <Save className="h-4 w-4" /> Salvar rascunho
-        </Button>
         <Button type="submit" size="sm" disabled={submitting}>
           <FileText className="h-4 w-4" />
           {submitting ? "Gerando..." : "Gerar laudo"}
