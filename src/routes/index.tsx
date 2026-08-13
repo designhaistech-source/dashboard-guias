@@ -77,50 +77,11 @@ export const Route = createFileRoute("/")({
 
 type Range = "7d" | "30d" | "90d";
 
-const dailyData30: { day: string; guias: number; meta: number }[] = [
-  { day: "01", guias: 4 }, { day: "02", guias: 6 }, { day: "03", guias: 3 },
-  { day: "04", guias: 8 }, { day: "05", guias: 5 }, { day: "06", guias: 9 },
-  { day: "07", guias: 11 }, { day: "08", guias: 7 }, { day: "09", guias: 12 },
-  { day: "10", guias: 10 }, { day: "11", guias: 14 }, { day: "12", guias: 8 },
-  { day: "13", guias: 6 }, { day: "14", guias: 9 }, { day: "15", guias: 13 },
-  { day: "16", guias: 11 }, { day: "17", guias: 15 }, { day: "18", guias: 9 },
-  { day: "19", guias: 12 }, { day: "20", guias: 7 }, { day: "21", guias: 10 },
-  { day: "22", guias: 14 }, { day: "23", guias: 16 }, { day: "24", guias: 11 },
-  { day: "25", guias: 13 }, { day: "26", guias: 9 }, { day: "27", guias: 12 },
-  { day: "28", guias: 15 }, { day: "29", guias: 14 }, { day: "30", guias: 18 },
-].map((d) => ({ ...d, meta: 10 }));
+const prestadoresList = PRESTADORES;
 
-const typeData = [
-  { name: "Consulta", value: 89, color: "var(--primary)" },
-  { name: "SP/SADT", value: 78, color: "var(--purple)" },
-  { name: "Internação", value: 41, color: "var(--cat-6)" },
-  { name: "Honorários", value: 26, color: "var(--success)" },
-  { name: "Odontológica", value: 18, color: "var(--warning)" },
-];
+/** Sparkline a partir dos últimos pontos de uma série. */
+const toSpark = (values: number[]) => values.slice(-10).map((v) => ({ v }));
 
-const prestadoresList = [
-  "Clínica São Lucas",
-  "Hospital Santa Marta",
-  "Laboratório Diagnóstico+",
-  "Centro Médico Vida",
-  "Instituto Cardio",
-  "UBS Central",
-];
-
-const procedures = [
-  { code: "10101012", name: "Consulta em consultório", count: 64, trend: 12 },
-  { code: "40901408", name: "Hemograma completo", count: 47, trend: 8 },
-  { code: "40802089", name: "Ultrassonografia abdominal", count: 39, trend: -3 },
-  { code: "31602045", name: "Eletrocardiograma", count: 31, trend: 5 },
-  { code: "40803115", name: "Ressonância magnética", count: 22, trend: -1 },
-  { code: "20203020", name: "Curativo grau II", count: 17, trend: 4 },
-].sort((a, b) => b.count - a.count);
-
-// Sparkline data per KPI
-const sparkTotal = dailyData30.slice(-10).map((d) => ({ v: d.guias }));
-const sparkHoje = [3, 5, 4, 6, 8, 7, 10, 9, 12, 14].map((v) => ({ v }));
-const sparkMedia = [6, 7, 7, 8, 8, 9, 8, 9, 8, 8].map((v) => ({ v }));
-const sparkTipos = [3, 3, 4, 4, 4, 5, 5, 5, 5, 5].map((v) => ({ v }));
 
 async function captureChartPng(selector: string, scale = 2): Promise<{ dataUrl: string; w: number; h: number } | null> {
   const container = document.querySelector(selector) as HTMLElement | null;
