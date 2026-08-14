@@ -2500,22 +2500,16 @@ function EmitirPage() {
                     hint="Conforme tabela de domínio nº 76."
                     options={[...REGIME_ATENDIMENTO_OPTIONS]}
                   />
-                  <Field
+                  <SelectField
                     className={ATENDIMENTO_FIELD_CLASS}
+                    triggerClassName={ATENDIMENTO_TRIGGER_CLASS}
                     label="92 - Saúde Ocupacional"
-                    hint="Opcional — código de 2 dígitos conforme tabela de domínio nº 77; preencha apenas em atendimentos de saúde ocupacional."
-                  >
-                    <Input
-                      value={saudeOcupacional}
-                      onChange={(e) =>
-                        setSaudeOcupacional(e.target.value.replace(/\D/g, "").slice(0, 2))
-                      }
-                      placeholder="00"
-                      inputMode="numeric"
-                      maxLength={2}
-                      className="font-mono"
-                    />
-                  </Field>
+                    value={saudeOcupacional}
+                    onValueChange={setSaudeOcupacional}
+                    placeholder="Selecione"
+                    hint="Opcional — conforme tabela de domínio nº 77; preencha apenas em atendimentos de saúde ocupacional."
+                    options={[...SAUDE_OCUPACIONAL_OPTIONS]}
+                  />
                 </Grid>
               </Section>
 
