@@ -77,6 +77,8 @@ export interface SadtGuidePreviewProps {
   pacienteValidadeCarteira?: string;
   pacienteNomeSocial?: string;
   coberturaEspecial?: string;
+  regimeAtendimento?: string;
+  saudeOcupacional?: string;
   pacienteRn?: string;
   assinaturaSolicitante?: string;
   totais?: string[];
@@ -100,7 +102,7 @@ export function SadtGuidePreview(input: SadtGuidePreviewProps) {
     codigoExecutante, contratadoExecutante, cnesExecutante,
     tipoAtendimento, indicacaoAcidente, tipoConsulta, motivoEncerramento,
     pacienteValidadeCarteira, pacienteNomeSocial, pacienteRn, assinaturaSolicitante,
-    coberturaEspecial,
+    coberturaEspecial, regimeAtendimento, saudeOcupacional,
     totais = [], assinaturaAutorizacao = "", assinaturaBeneficiarioFinal = "",
     assinaturaContratado = "",
   } = props;
@@ -241,6 +243,8 @@ export function SadtGuidePreview(input: SadtGuidePreviewProps) {
               <FieldBox n="33" label="Indicação de Acidente (acidente ou doença relacionada)" value={indicacaoAcidente} width={200} />
               <FieldBox n="34" label="Tipo de Consulta" value={tipoConsulta} width={140} />
               <FieldBox n="35" label="Motivo de Encerramento do Atendimento" value={motivoEncerramento} grow />
+              <FieldBox n="91" label="Regime de atendimento" value={regimeAtendimento} width={170} />
+              <FieldBox n="92" label="Saúde Ocupacional" value={saudeOcupacional} width={150} />
             </FieldRow>
 
 

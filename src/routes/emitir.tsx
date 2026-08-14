@@ -743,6 +743,8 @@ function EmitirPage() {
   const [cidPrincipal, setCidPrincipal] = useState("");
   const [indicacaoClinica, setIndicacaoClinica] = useState("");
   const [coberturaEspecial, setCoberturaEspecial] = useState("");
+  const [regimeAtendimento, setRegimeAtendimento] = useState("");
+  const [saudeOcupacional, setSaudeOcupacional] = useState("");
   const [observacoes, setObservacoes] = useState("");
   const [dataSolicitacao, setDataSolicitacao] = useState(
     () => new Date().toISOString().slice(0, 10),
@@ -2428,7 +2430,7 @@ function EmitirPage() {
                 done={atendimentoOk}
                 icon={<ClipboardList className="h-4 w-4" />}
                 title="Dados do Atendimento"
-                description="Campos 32 a 35 da guia — exibidos conforme o tipo de atendimento."
+                description="Campos 32 a 35, 91 e 92 da guia — exibidos conforme o tipo de atendimento."
               >
                 <Grid cols={2}>
                   <SelectField
@@ -2478,6 +2480,41 @@ function EmitirPage() {
                     hint="Preencher no encerramento do atendimento."
                     options={[...MOTIVO_ENCERRAMENTO_OPTIONS]}
                   />
+                  <Field
+                    className={ATENDIMENTO_FIELD_CLASS}
+                    labelClassName={ATENDIMENTO_LABEL_CLASS}
+                    label="91 - Regime de atendimento"
+                    required
+                    hint="Código de 2 dígitos conforme tabela de domínio nº 76."
+                  >
+                    <Input
+                      value={regimeAtendimento}
+                      onChange={(e) =>
+                        setRegimeAtendimento(e.target.value.replace(/\D/g, "").slice(0, 2))
+                      }
+                      placeholder="00"
+                      inputMode="numeric"
+                      maxLength={2}
+                      className="font-mono"
+                    />
+                  </Field>
+                  <Field
+                    className={ATENDIMENTO_FIELD_CLASS}
+                    labelClassName={ATENDIMENTO_LABEL_CLASS}
+                    label="92 - Saúde Ocupacional"
+                    hint="Opcional — código de 2 dígitos conforme tabela de domínio nº 77; preencha apenas em atendimentos de saúde ocupacional."
+                  >
+                    <Input
+                      value={saudeOcupacional}
+                      onChange={(e) =>
+                        setSaudeOcupacional(e.target.value.replace(/\D/g, "").slice(0, 2))
+                      }
+                      placeholder="00"
+                      inputMode="numeric"
+                      maxLength={2}
+                      className="font-mono"
+                    />
+                  </Field>
                 </Grid>
               </Section>
 
@@ -3018,6 +3055,8 @@ function EmitirPage() {
               pacienteValidadeCarteira={pacienteValidadeCarteira}
               pacienteNomeSocial={pacienteNomeSocial}
               coberturaEspecial={coberturaEspecial}
+              regimeAtendimento={regimeAtendimento}
+              saudeOcupacional={saudeOcupacional}
               pacienteRn={pacienteRn}
               assinaturaSolicitante={assinaturaSolicitante}
               totais={[

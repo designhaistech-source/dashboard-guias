@@ -21,6 +21,8 @@ export const TISS_SADT_FIELDS: Readonly<Record<number, string>> = {
   12: "Atendimento a RN",
   89: "Nome Social",
   90: "Indicador de Cobertura Especial",
+  91: "Regime de atendimento",
+  92: "Saúde Ocupacional",
   13: "Código na Operadora",
   14: "Nome do Contratado",
   15: "Nome do Profissional Solicitante",
