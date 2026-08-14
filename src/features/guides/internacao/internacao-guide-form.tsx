@@ -577,7 +577,7 @@ export function InternacaoGuideForm({
             hint={
               beneficiarioStatus === "not-found"
                 ? "Beneficiário não encontrado — informe o nome manualmente."
-                : "Informe a carteira para buscar o beneficiário."
+                : "Informe o número da carteira do beneficiário"
             }
           >
             <div className="relative">
