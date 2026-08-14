@@ -244,7 +244,7 @@ export function SadtGuidePreview(input: SadtGuidePreviewProps) {
               <FieldBox n="34" label="Tipo de Consulta" value={tipoConsulta} width={140} />
               <FieldBox n="35" label="Motivo de Encerramento do Atendimento" value={motivoEncerramento} grow />
               <FieldBox n="91" label="Regime de atendimento" value={regimeAtendimento} width={170} />
-              <FieldBox n="92" label="Saúde Ocupacional" value={saudeOcupacional} width={150} />
+              <FieldBox n="92" label="Saúde Ocupacional" value={saudeOcupacional} width={170} />
             </FieldRow>
 
 

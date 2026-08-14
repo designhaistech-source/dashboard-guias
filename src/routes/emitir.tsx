@@ -3099,7 +3099,7 @@ function EmitirPage() {
               pacienteValidadeCarteira={pacienteValidadeCarteira}
               pacienteNomeSocial={pacienteNomeSocial}
               coberturaEspecial={coberturaEspecial}
-              regimeAtendimento={regimeAtendimento}
+              regimeAtendimento={regimeAtendimentoLabel}
               saudeOcupacional={saudeOcupacionalLabel}
               pacienteRn={pacienteRn}
               assinaturaSolicitante={assinaturaSolicitante}
