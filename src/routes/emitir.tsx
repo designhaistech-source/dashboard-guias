@@ -128,6 +128,15 @@ const COBERTURA_ESPECIAL_OPTIONS = [
   { value: "03", label: "03 - Pós-operatório" },
 ] as const;
 
+/** Campo 91 — Regime de atendimento (domínio TISS nº 76). */
+const REGIME_ATENDIMENTO_OPTIONS = [
+  { value: "01", label: "01 - Ambulatorial" },
+  { value: "02", label: "02 - Domiciliar" },
+  { value: "03", label: "03 - Internação" },
+  { value: "04", label: "04 - Pronto-socorro" },
+  { value: "05", label: "05 - Telessaúde" },
+] as const;
+
 /** Campo 35 — Motivo de Encerramento do Atendimento (domínio TISS nº 39). */
 /** Tipo de consulta (campo 34) conforme domínio TISS. */
 const TIPO_CONSULTA_OPTIONS: readonly { value: string; label: string }[] = [
