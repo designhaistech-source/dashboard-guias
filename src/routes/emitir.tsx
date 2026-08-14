@@ -2482,7 +2482,6 @@ function EmitirPage() {
                   />
                   <Field
                     className={ATENDIMENTO_FIELD_CLASS}
-                    labelClassName={ATENDIMENTO_LABEL_CLASS}
                     label="91 - Regime de atendimento"
                     required
                     hint="Código de 2 dígitos conforme tabela de domínio nº 76."
@@ -2500,7 +2499,6 @@ function EmitirPage() {
                   </Field>
                   <Field
                     className={ATENDIMENTO_FIELD_CLASS}
-                    labelClassName={ATENDIMENTO_LABEL_CLASS}
                     label="92 - Saúde Ocupacional"
                     hint="Opcional — código de 2 dígitos conforme tabela de domínio nº 77; preencha apenas em atendimentos de saúde ocupacional."
                   >
