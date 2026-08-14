@@ -9,7 +9,7 @@ import {
   Loader2,
   Plus,
   Eye,
-  Search,
+  
   Stethoscope,
   Trash2,
   User,
@@ -580,7 +580,7 @@ export function InternacaoGuideForm({
                 : "Informe a carteira para buscar o beneficiário."
             }
           >
-            <div className="flex gap-2">
+            <div className="relative">
               <Input
                 value={carteira}
                 onChange={(e) => setCarteira(e.target.value)}
@@ -590,20 +590,12 @@ export function InternacaoGuideForm({
                 maxLength={20}
                 className="font-mono"
               />
-              <Button
-                type="button"
-                variant="outline"
-                size="icon"
-                aria-label="Buscar beneficiário"
-                disabled={beneficiarioStatus === "loading"}
-                onClick={() => buscarBeneficiario()}
-              >
-                {beneficiarioStatus === "loading" ? (
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                ) : (
-                  <Search className="h-4 w-4" />
-                )}
-              </Button>
+              {beneficiarioStatus === "loading" && (
+                <Loader2
+                  aria-hidden
+                  className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 animate-spin text-muted-foreground"
+                />
+              )}
             </div>
           </Field>
 
