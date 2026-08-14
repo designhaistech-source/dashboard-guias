@@ -2489,23 +2489,17 @@ function EmitirPage() {
                     hint="Preencher no encerramento do atendimento."
                     options={[...MOTIVO_ENCERRAMENTO_OPTIONS]}
                   />
-                  <Field
+                  <SelectField
                     className={ATENDIMENTO_FIELD_CLASS}
+                    triggerClassName={ATENDIMENTO_TRIGGER_CLASS}
                     label="91 - Regime de atendimento"
                     required
-                    hint="Código de 2 dígitos conforme tabela de domínio nº 76."
-                  >
-                    <Input
-                      value={regimeAtendimento}
-                      onChange={(e) =>
-                        setRegimeAtendimento(e.target.value.replace(/\D/g, "").slice(0, 2))
-                      }
-                      placeholder="00"
-                      inputMode="numeric"
-                      maxLength={2}
-                      className="font-mono"
-                    />
-                  </Field>
+                    value={regimeAtendimento}
+                    onValueChange={setRegimeAtendimento}
+                    placeholder="Selecione"
+                    hint="Conforme tabela de domínio nº 76."
+                    options={[...REGIME_ATENDIMENTO_OPTIONS]}
+                  />
                   <Field
                     className={ATENDIMENTO_FIELD_CLASS}
                     label="92 - Saúde Ocupacional"
