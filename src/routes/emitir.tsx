@@ -147,6 +147,19 @@ const SAUDE_OCUPACIONAL_OPTIONS = [
   { value: "06", label: "06 - Promoção à saúde" },
 ] as const;
 
+/** Valor sentinela usado apenas no select para limpar o campo 92 (opcional). */
+const SAUDE_OCUPACIONAL_NONE = "none";
+
+/** Códigos aceitos no campo 92 (vazio = não informado). */
+const SAUDE_OCUPACIONAL_CODES = new Set(
+  SAUDE_OCUPACIONAL_OPTIONS.map((o) => o.value),
+);
+
+/** Campo 92 é opcional, mas quando informado precisa ser um código do domínio 77. */
+function isSaudeOcupacionalValid(value: string): boolean {
+  return value === "" || SAUDE_OCUPACIONAL_CODES.has(value);
+}
+
 
 
 /** Campo 35 — Motivo de Encerramento do Atendimento (domínio TISS nº 39). */
