@@ -76,6 +76,7 @@ export interface SadtGuidePreviewProps {
   motivoEncerramento?: string;
   pacienteValidadeCarteira?: string;
   pacienteNomeSocial?: string;
+  coberturaEspecial?: string;
   pacienteRn?: string;
   assinaturaSolicitante?: string;
   totais?: string[];
@@ -99,6 +100,7 @@ export function SadtGuidePreview(input: SadtGuidePreviewProps) {
     codigoExecutante, contratadoExecutante, cnesExecutante,
     tipoAtendimento, indicacaoAcidente, tipoConsulta, motivoEncerramento,
     pacienteValidadeCarteira, pacienteNomeSocial, pacienteRn, assinaturaSolicitante,
+    coberturaEspecial,
     totais = [], assinaturaAutorizacao = "", assinaturaBeneficiarioFinal = "",
     assinaturaContratado = "",
   } = props;
@@ -202,6 +204,7 @@ export function SadtGuidePreview(input: SadtGuidePreviewProps) {
               <FieldBox n="21" label="Caráter do Atendimento" value={character} width={140} />
               <FieldBoxDate n="22" label="Data da Solicitação" d={dataSol.d} m={dataSol.m} y={dataSol.y} width={180} />
               <FieldBox n="23" label="Indicação Clínica" value={`${cidPrincipal ? cidPrincipal + " · " : ""}${indicacaoClinica}`} grow />
+              <FieldBox n="90" label="Indicador de Cobertura Especial" value={coberturaEspecial} width={230} />
             </FieldRow>
 
             <div className="border-b border-foreground">

@@ -742,6 +742,7 @@ function EmitirPage() {
 
   const [cidPrincipal, setCidPrincipal] = useState("");
   const [indicacaoClinica, setIndicacaoClinica] = useState("");
+  const [coberturaEspecial, setCoberturaEspecial] = useState("");
   const [observacoes, setObservacoes] = useState("");
   const [dataSolicitacao, setDataSolicitacao] = useState(
     () => new Date().toISOString().slice(0, 10),
@@ -3016,6 +3017,7 @@ function EmitirPage() {
               motivoEncerramento={motivoEncerramento}
               pacienteValidadeCarteira={pacienteValidadeCarteira}
               pacienteNomeSocial={pacienteNomeSocial}
+              coberturaEspecial={coberturaEspecial}
               pacienteRn={pacienteRn}
               assinaturaSolicitante={assinaturaSolicitante}
               totais={[

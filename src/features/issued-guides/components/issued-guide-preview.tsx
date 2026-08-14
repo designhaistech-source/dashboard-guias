@@ -168,6 +168,7 @@ export function IssuedGuidePreview({ guide }: { guide: IssuedGuide }) {
       pacienteNascimento={derived.nascimentoIso}
       pacienteSexo={derived.sexo}
       pacienteNomeSocial=""
+      coberturaEspecial=""
       pacienteRn="N"
       medicoNome={derived.profissionalNome}
       medicoConselho={derived.conselho}
