@@ -643,6 +643,19 @@ export function InternacaoGuideForm({
             />
           </Field>
 
+          <Field
+            label="50 - Nome Social"
+            span="@md:col-span-6 @3xl:col-span-5"
+            hint="Condicionado — preencha quando requerido pelo beneficiário (Decreto nº 8.727/2016)."
+          >
+            <Input
+              value={nomeSocial}
+              onChange={(e) => setNomeSocial(e.target.value)}
+              placeholder="Nome social do beneficiário"
+              maxLength={70}
+            />
+          </Field>
+
           <SelectField
             label="9 - Atendimento a RN"
             required
