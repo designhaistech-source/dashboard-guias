@@ -217,6 +217,8 @@ export function InternacaoGuideForm({
   const [atendimentoRn, setAtendimentoRn] = useState("N");
   const [nomeBeneficiario, setNomeBeneficiario] = useState("");
   const [cns, setCns] = useState("");
+  /** 50 — condicional: preenchido quando requerido pelo beneficiário (Decreto 8.727/2016). */
+  const [nomeSocial, setNomeSocial] = useState("");
   const [beneficiarioStatus, setBeneficiarioStatus] = useState<
     "idle" | "loading" | "found" | "not-found"
   >("idle");
@@ -314,6 +316,7 @@ export function InternacaoGuideForm({
     atendimentoRn,
     nomeBeneficiario,
     cns,
+    nomeSocial,
     codigoSolicitante,
     nomeContratado,
     nomeProfissional,
@@ -637,6 +640,19 @@ export function InternacaoGuideForm({
               className={
                 beneficiarioStatus === "found" ? "bg-muted/50 text-foreground" : undefined
               }
+            />
+          </Field>
+
+          <Field
+            label="50 - Nome Social"
+            span="@md:col-span-6 @3xl:col-span-5"
+            hint="Condicionado — preencha quando requerido pelo beneficiário (Decreto nº 8.727/2016)."
+          >
+            <Input
+              value={nomeSocial}
+              onChange={(e) => setNomeSocial(e.target.value)}
+              placeholder="Nome social do beneficiário"
+              maxLength={70}
             />
           </Field>
 

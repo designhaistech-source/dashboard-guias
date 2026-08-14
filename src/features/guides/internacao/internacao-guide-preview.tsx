@@ -25,6 +25,8 @@ export interface InternacaoGuidePreviewProps {
   atendimentoRn: string;
   nomeBeneficiario: string;
   cns: string;
+  /** 50 - Nome social do beneficiário (condicional). */
+  nomeSocial?: string;
   codigoSolicitante: string;
   nomeContratado: string;
   nomeProfissional: string;
@@ -150,6 +152,7 @@ export function InternacaoGuidePreview(props: InternacaoGuidePreviewProps) {
                 width={110}
               />
               <FieldBox n="10" label="Nome" value={props.nomeBeneficiario} grow />
+              <FieldBox n="50" label="Nome Social" value={props.nomeSocial ?? ""} grow />
               <FieldBox n="11" label="Cartão Nacional de Saúde" value={props.cns} width={200} />
             </FieldRow>
 
