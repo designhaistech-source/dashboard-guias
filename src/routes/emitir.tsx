@@ -121,6 +121,13 @@ const UF_LIST = [
   "PR","PE","PI","RJ","RN","RS","RO","RR","SC","SP","SE","TO",
 ] as const;
 
+/** Campo 90 — Indicador de Cobertura Especial (domínio TISS nº 75). */
+const COBERTURA_ESPECIAL_OPTIONS = [
+  { value: "01", label: "01 - Gestante" },
+  { value: "02", label: "02 - Pré-operatório" },
+  { value: "03", label: "03 - Pós-operatório" },
+] as const;
+
 /** Campo 35 — Motivo de Encerramento do Atendimento (domínio TISS nº 39). */
 /** Tipo de consulta (campo 34) conforme domínio TISS. */
 const TIPO_CONSULTA_OPTIONS: readonly { value: string; label: string }[] = [
