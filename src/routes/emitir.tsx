@@ -1872,6 +1872,7 @@ function EmitirPage() {
                     label="8 - Número da Carteira"
                     required
                     span="@md:col-span-6 @3xl:col-span-5"
+                    hint="Informe o número da carteira do beneficiário"
                   >
                     <Input
                       value={pacienteCarteira}
