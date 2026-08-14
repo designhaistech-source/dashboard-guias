@@ -217,6 +217,8 @@ export function InternacaoGuideForm({
   const [atendimentoRn, setAtendimentoRn] = useState("N");
   const [nomeBeneficiario, setNomeBeneficiario] = useState("");
   const [cns, setCns] = useState("");
+  /** 50 — condicional: preenchido quando requerido pelo beneficiário (Decreto 8.727/2016). */
+  const [nomeSocial, setNomeSocial] = useState("");
   const [beneficiarioStatus, setBeneficiarioStatus] = useState<
     "idle" | "loading" | "found" | "not-found"
   >("idle");
