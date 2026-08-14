@@ -1216,7 +1216,11 @@ function EmitirPage() {
 
   const profissionalOk = profissionalValido;
   
-  const atendimentoOk = Boolean(tipoAtendimento.trim());
+  const saudeOcupacionalError = isSaudeOcupacionalValid(saudeOcupacional)
+    ? undefined
+    : "Selecione uma opção válida da tabela de domínio nº 77.";
+  const atendimentoOk =
+    Boolean(tipoAtendimento.trim()) && !saudeOcupacionalError;
   const realizadosOk = executedItems.some((i) => i.description.trim() || i.code.trim());
   const executantesOk = executantes.some((e) => e.name.trim() && e.councilNumber.trim());
   const observacaoOk = Boolean(observacoes.trim());
