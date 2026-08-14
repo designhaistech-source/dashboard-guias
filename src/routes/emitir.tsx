@@ -1222,6 +1222,9 @@ function EmitirPage() {
   /** Texto exato da opção selecionada no campo 92, para exibir na guia. */
   const saudeOcupacionalLabel =
     SAUDE_OCUPACIONAL_OPTIONS.find((o) => o.value === saudeOcupacional)?.label ?? "";
+  /** Texto exato da opção selecionada no campo 91, para exibir na guia. */
+  const regimeAtendimentoLabel =
+    REGIME_ATENDIMENTO_OPTIONS.find((o) => o.value === regimeAtendimento)?.label ?? "";
   const atendimentoOk =
     Boolean(tipoAtendimento.trim()) && !saudeOcupacionalError;
   const realizadosOk = executedItems.some((i) => i.description.trim() || i.code.trim());
@@ -2522,7 +2525,9 @@ function EmitirPage() {
                     options={[...MOTIVO_ENCERRAMENTO_OPTIONS]}
                   />
                   <SelectField
+                    id="campo-91-regime-atendimento"
                     className={ATENDIMENTO_FIELD_CLASS}
+                    labelClassName={ATENDIMENTO_LABEL_CLASS}
                     triggerClassName={ATENDIMENTO_TRIGGER_CLASS}
                     label="91 - Regime de atendimento"
                     required
@@ -2535,9 +2540,9 @@ function EmitirPage() {
                   <SelectField
                     id="campo-92-saude-ocupacional"
                     className={ATENDIMENTO_FIELD_CLASS}
+                    labelClassName={ATENDIMENTO_LABEL_CLASS}
                     triggerClassName={ATENDIMENTO_TRIGGER_CLASS}
                     label="92 - Saúde Ocupacional"
-                    optional
                     value={saudeOcupacional === "" ? SAUDE_OCUPACIONAL_NONE : saudeOcupacional}
                     onValueChange={(v) =>
                       setSaudeOcupacional(
@@ -2548,7 +2553,7 @@ function EmitirPage() {
                     }
                     placeholder="Selecione"
                     error={saudeOcupacionalError}
-                    hint="Opcional — conforme tabela de domínio nº 77; preencha apenas em atendimentos de saúde ocupacional."
+                    hint="Opcional — conforme tabela de domínio nº 77."
                     options={[
                       { value: SAUDE_OCUPACIONAL_NONE, label: "Não se aplica" },
                       ...SAUDE_OCUPACIONAL_OPTIONS,
@@ -3094,7 +3099,7 @@ function EmitirPage() {
               pacienteValidadeCarteira={pacienteValidadeCarteira}
               pacienteNomeSocial={pacienteNomeSocial}
               coberturaEspecial={coberturaEspecial}
-              regimeAtendimento={regimeAtendimento}
+              regimeAtendimento={regimeAtendimentoLabel}
               saudeOcupacional={saudeOcupacionalLabel}
               pacienteRn={pacienteRn}
               assinaturaSolicitante={assinaturaSolicitante}
