@@ -2120,22 +2120,15 @@ function EmitirPage() {
                   />
                 </Field>
 
-                <Field
+                <SelectField
                   label="90 - Indicador de Cobertura Especial"
-                  hint="Opcional — código de 2 dígitos conforme tabela de domínio nº 75. Preencha em atendimento ambulatorial de plano exclusivamente hospitalar, a gestantes ou no pré e pós-operatório."
+                  hint="Opcional — conforme tabela de domínio nº 75. Preencha em atendimento ambulatorial de plano exclusivamente hospitalar, a gestantes ou no pré e pós-operatório."
                   className="@md:max-w-xs"
-                >
-                  <Input
-                    value={coberturaEspecial}
-                    onChange={(e) =>
-                      setCoberturaEspecial(e.target.value.replace(/\D/g, "").slice(0, 2))
-                    }
-                    placeholder="00"
-                    inputMode="numeric"
-                    maxLength={2}
-                    className="font-mono"
-                  />
-                </Field>
+                  value={coberturaEspecial}
+                  onValueChange={setCoberturaEspecial}
+                  placeholder="Selecione"
+                  options={[...COBERTURA_ESPECIAL_OPTIONS]}
+                />
 
 
 
