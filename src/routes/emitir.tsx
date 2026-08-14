@@ -147,6 +147,19 @@ const SAUDE_OCUPACIONAL_OPTIONS = [
   { value: "06", label: "06 - Promoção à saúde" },
 ] as const;
 
+/** Valor sentinela usado apenas no select para limpar o campo 92 (opcional). */
+const SAUDE_OCUPACIONAL_NONE = "none";
+
+/** Códigos aceitos no campo 92 (vazio = não informado). */
+const SAUDE_OCUPACIONAL_CODES = new Set<string>(
+  SAUDE_OCUPACIONAL_OPTIONS.map((o) => o.value),
+);
+
+/** Campo 92 é opcional, mas quando informado precisa ser um código do domínio 77. */
+function isSaudeOcupacionalValid(value: string): boolean {
+  return value === "" || SAUDE_OCUPACIONAL_CODES.has(value);
+}
+
 
 
 /** Campo 35 — Motivo de Encerramento do Atendimento (domínio TISS nº 39). */
@@ -1203,7 +1216,11 @@ function EmitirPage() {
 
   const profissionalOk = profissionalValido;
   
-  const atendimentoOk = Boolean(tipoAtendimento.trim());
+  const saudeOcupacionalError = isSaudeOcupacionalValid(saudeOcupacional)
+    ? undefined
+    : "Selecione uma opção válida da tabela de domínio nº 77.";
+  const atendimentoOk =
+    Boolean(tipoAtendimento.trim()) && !saudeOcupacionalError;
   const realizadosOk = executedItems.some((i) => i.description.trim() || i.code.trim());
   const executantesOk = executantes.some((e) => e.name.trim() && e.councilNumber.trim());
   const observacaoOk = Boolean(observacoes.trim());
@@ -2513,14 +2530,26 @@ function EmitirPage() {
                     options={[...REGIME_ATENDIMENTO_OPTIONS]}
                   />
                   <SelectField
+                    id="campo-92-saude-ocupacional"
                     className={ATENDIMENTO_FIELD_CLASS}
                     triggerClassName={ATENDIMENTO_TRIGGER_CLASS}
                     label="92 - Saúde Ocupacional"
-                    value={saudeOcupacional}
-                    onValueChange={setSaudeOcupacional}
+                    optional
+                    value={saudeOcupacional === "" ? SAUDE_OCUPACIONAL_NONE : saudeOcupacional}
+                    onValueChange={(v) =>
+                      setSaudeOcupacional(
+                        v === SAUDE_OCUPACIONAL_NONE || !SAUDE_OCUPACIONAL_CODES.has(v)
+                          ? ""
+                          : v,
+                      )
+                    }
                     placeholder="Selecione"
+                    error={saudeOcupacionalError}
                     hint="Opcional — conforme tabela de domínio nº 77; preencha apenas em atendimentos de saúde ocupacional."
-                    options={[...SAUDE_OCUPACIONAL_OPTIONS]}
+                    options={[
+                      { value: SAUDE_OCUPACIONAL_NONE, label: "Não se aplica" },
+                      ...SAUDE_OCUPACIONAL_OPTIONS,
+                    ]}
                   />
                 </Grid>
               </Section>
