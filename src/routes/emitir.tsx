@@ -1219,6 +1219,9 @@ function EmitirPage() {
   const saudeOcupacionalError = isSaudeOcupacionalValid(saudeOcupacional)
     ? undefined
     : "Selecione uma opção válida da tabela de domínio nº 77.";
+  /** Texto exato da opção selecionada no campo 92, para exibir na guia. */
+  const saudeOcupacionalLabel =
+    SAUDE_OCUPACIONAL_OPTIONS.find((o) => o.value === saudeOcupacional)?.label ?? "";
   const atendimentoOk =
     Boolean(tipoAtendimento.trim()) && !saudeOcupacionalError;
   const realizadosOk = executedItems.some((i) => i.description.trim() || i.code.trim());
@@ -3092,7 +3095,7 @@ function EmitirPage() {
               pacienteNomeSocial={pacienteNomeSocial}
               coberturaEspecial={coberturaEspecial}
               regimeAtendimento={regimeAtendimento}
-              saudeOcupacional={saudeOcupacional}
+              saudeOcupacional={saudeOcupacionalLabel}
               pacienteRn={pacienteRn}
               assinaturaSolicitante={assinaturaSolicitante}
               totais={[
