@@ -2522,7 +2522,9 @@ function EmitirPage() {
                     options={[...MOTIVO_ENCERRAMENTO_OPTIONS]}
                   />
                   <SelectField
+                    id="campo-91-regime-atendimento"
                     className={ATENDIMENTO_FIELD_CLASS}
+                    labelClassName={ATENDIMENTO_LABEL_CLASS}
                     triggerClassName={ATENDIMENTO_TRIGGER_CLASS}
                     label="91 - Regime de atendimento"
                     required
@@ -2535,9 +2537,9 @@ function EmitirPage() {
                   <SelectField
                     id="campo-92-saude-ocupacional"
                     className={ATENDIMENTO_FIELD_CLASS}
+                    labelClassName={ATENDIMENTO_LABEL_CLASS}
                     triggerClassName={ATENDIMENTO_TRIGGER_CLASS}
                     label="92 - Saúde Ocupacional"
-                    optional
                     value={saudeOcupacional === "" ? SAUDE_OCUPACIONAL_NONE : saudeOcupacional}
                     onValueChange={(v) =>
                       setSaudeOcupacional(
@@ -2548,7 +2550,7 @@ function EmitirPage() {
                     }
                     placeholder="Selecione"
                     error={saudeOcupacionalError}
-                    hint="Opcional — conforme tabela de domínio nº 77; preencha apenas em atendimentos de saúde ocupacional."
+                    hint="Opcional — conforme tabela de domínio nº 77."
                     options={[
                       { value: SAUDE_OCUPACIONAL_NONE, label: "Não se aplica" },
                       ...SAUDE_OCUPACIONAL_OPTIONS,
