@@ -1882,6 +1882,21 @@ function EmitirPage() {
                     />
                   </Field>
 
+                  <Field
+                    label="89 - Nome Social"
+                    span="@md:col-span-6 @3xl:col-span-4"
+                    hint="Preencha apenas quando solicitado pelo beneficiário (Decreto nº 8.727/2016)."
+                  >
+                    <Input
+                      value={pacienteNomeSocial}
+                      onChange={(e) => setPacienteNomeSocial(e.target.value.slice(0, 70))}
+                      placeholder="Nome social do beneficiário"
+                      maxLength={70}
+                    />
+                  </Field>
+
+
+
 
                   <SelectField
                     label="12 - Atendimento a RN"
