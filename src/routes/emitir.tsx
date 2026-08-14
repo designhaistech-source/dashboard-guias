@@ -1840,7 +1840,7 @@ function EmitirPage() {
                 done={pacienteOk}
                 icon={<User className="h-4 w-4" />}
                 title="Dados do Beneficiário"
-                description="Campos 8 a 12 da guia — identificação do beneficiário na operadora."
+                description="Campos 8 a 12 e 89 da guia — identificação do beneficiário na operadora."
               >
                 <Grid cols={12}>
                   <Field
