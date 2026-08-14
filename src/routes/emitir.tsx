@@ -1887,7 +1887,7 @@ function EmitirPage() {
                   <Field
                     label="9 - Validade da Carteira"
                     span="@md:col-span-6 @3xl:col-span-3"
-                    hint="Formato dd/mm/aaaa."
+                    hint="Condicionado — informe quando a operadora exigir autorização prévia"
                   >
                     <Input
                       type="date"
