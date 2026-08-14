@@ -2530,14 +2530,26 @@ function EmitirPage() {
                     options={[...REGIME_ATENDIMENTO_OPTIONS]}
                   />
                   <SelectField
+                    id="campo-92-saude-ocupacional"
                     className={ATENDIMENTO_FIELD_CLASS}
                     triggerClassName={ATENDIMENTO_TRIGGER_CLASS}
                     label="92 - Saúde Ocupacional"
-                    value={saudeOcupacional}
-                    onValueChange={setSaudeOcupacional}
+                    optional
+                    value={saudeOcupacional === "" ? SAUDE_OCUPACIONAL_NONE : saudeOcupacional}
+                    onValueChange={(v) =>
+                      setSaudeOcupacional(
+                        v === SAUDE_OCUPACIONAL_NONE || !SAUDE_OCUPACIONAL_CODES.has(v)
+                          ? ""
+                          : v,
+                      )
+                    }
                     placeholder="Selecione"
+                    error={saudeOcupacionalError}
                     hint="Opcional — conforme tabela de domínio nº 77; preencha apenas em atendimentos de saúde ocupacional."
-                    options={[...SAUDE_OCUPACIONAL_OPTIONS]}
+                    options={[
+                      { value: SAUDE_OCUPACIONAL_NONE, label: "Não se aplica" },
+                      ...SAUDE_OCUPACIONAL_OPTIONS,
+                    ]}
                   />
                 </Grid>
               </Section>
