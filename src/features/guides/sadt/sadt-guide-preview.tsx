@@ -75,6 +75,7 @@ export interface SadtGuidePreviewProps {
   tipoConsulta?: string;
   motivoEncerramento?: string;
   pacienteValidadeCarteira?: string;
+  pacienteNomeSocial?: string;
   pacienteRn?: string;
   assinaturaSolicitante?: string;
   totais?: string[];
@@ -97,7 +98,7 @@ export function SadtGuidePreview(input: SadtGuidePreviewProps) {
     codigoSolicitante, contratadoSolicitante, conselhoUf, codigoCbo,
     codigoExecutante, contratadoExecutante, cnesExecutante,
     tipoAtendimento, indicacaoAcidente, tipoConsulta, motivoEncerramento,
-    pacienteValidadeCarteira, pacienteRn, assinaturaSolicitante,
+    pacienteValidadeCarteira, pacienteNomeSocial, pacienteRn, assinaturaSolicitante,
     totais = [], assinaturaAutorizacao = "", assinaturaBeneficiarioFinal = "",
     assinaturaContratado = "",
   } = props;
@@ -174,8 +175,11 @@ export function SadtGuidePreview(input: SadtGuidePreviewProps) {
             <FieldRow>
               <FieldBox n="8" label="Número da Carteira" value={pacienteCarteira} width={230} />
               <FieldBoxDate n="9" label="Validade da Carteira" {...dd(pacienteValidadeCarteira)} width={170} />
-              <FieldBox n="10" label="Nome" value={pacienteNome} grow />
+              <FieldBox n="89" label="Nome Social" value={pacienteNomeSocial} grow />
               <FieldBox n="12" label="Atendimento a RN" value={pacienteRn === "S" ? "S" : "N"} width={118} />
+            </FieldRow>
+            <FieldRow>
+              <FieldBox n="10" label="Nome" value={pacienteNome} grow />
             </FieldRow>
 
             <SectionBar>Dados do Solicitante</SectionBar>

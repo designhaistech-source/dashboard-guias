@@ -734,6 +734,7 @@ function EmitirPage() {
   const [pacienteNascimento, setPacienteNascimento] = useState("");
   const [pacienteSexo, setPacienteSexo] = useState("F");
   const [pacienteValidadeCarteira, setPacienteValidadeCarteira] = useState("");
+  const [pacienteNomeSocial, setPacienteNomeSocial] = useState("");
   const [pacienteRn, setPacienteRn] = useState("N");
 
 
@@ -1839,7 +1840,7 @@ function EmitirPage() {
                 done={pacienteOk}
                 icon={<User className="h-4 w-4" />}
                 title="Dados do Beneficiário"
-                description="Campos 8 a 12 da guia — identificação do beneficiário na operadora."
+                description="Campos 8 a 12 e 89 da guia — identificação do beneficiário na operadora."
               >
                 <Grid cols={12}>
                   <Field
@@ -1880,6 +1881,21 @@ function EmitirPage() {
                       placeholder="Nome completo"
                     />
                   </Field>
+
+                  <Field
+                    label="89 - Nome Social"
+                    span="@md:col-span-6 @3xl:col-span-4"
+                    hint="Preencha apenas quando solicitado pelo beneficiário (Decreto nº 8.727/2016)."
+                  >
+                    <Input
+                      value={pacienteNomeSocial}
+                      onChange={(e) => setPacienteNomeSocial(e.target.value.slice(0, 70))}
+                      placeholder="Nome social do beneficiário"
+                      maxLength={70}
+                    />
+                  </Field>
+
+
 
 
                   <SelectField
@@ -2981,6 +2997,7 @@ function EmitirPage() {
               tipoConsulta={isConsulta ? tipoConsulta : ""}
               motivoEncerramento={motivoEncerramento}
               pacienteValidadeCarteira={pacienteValidadeCarteira}
+              pacienteNomeSocial={pacienteNomeSocial}
               pacienteRn={pacienteRn}
               assinaturaSolicitante={assinaturaSolicitante}
               totais={[

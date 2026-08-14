@@ -19,6 +19,7 @@ export const TISS_SADT_FIELDS: Readonly<Record<number, string>> = {
   9: "Validade da Carteira",
   10: "Nome",
   12: "Atendimento a RN",
+  89: "Nome Social",
   13: "Código na Operadora",
   14: "Nome do Contratado",
   15: "Nome do Profissional Solicitante",
