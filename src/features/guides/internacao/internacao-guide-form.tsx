@@ -316,6 +316,7 @@ export function InternacaoGuideForm({
     atendimentoRn,
     nomeBeneficiario,
     cns,
+    nomeSocial,
     codigoSolicitante,
     nomeContratado,
     nomeProfissional,
