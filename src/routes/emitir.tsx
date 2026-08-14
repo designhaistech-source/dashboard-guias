@@ -128,6 +128,15 @@ const COBERTURA_ESPECIAL_OPTIONS = [
   { value: "03", label: "03 - Pós-operatório" },
 ] as const;
 
+/** Campo 91 — Regime de atendimento (domínio TISS nº 76). */
+const REGIME_ATENDIMENTO_OPTIONS = [
+  { value: "01", label: "01 - Ambulatorial" },
+  { value: "02", label: "02 - Domiciliar" },
+  { value: "03", label: "03 - Internação" },
+  { value: "04", label: "04 - Pronto-socorro" },
+  { value: "05", label: "05 - Telessaúde" },
+] as const;
+
 /** Campo 35 — Motivo de Encerramento do Atendimento (domínio TISS nº 39). */
 /** Tipo de consulta (campo 34) conforme domínio TISS. */
 const TIPO_CONSULTA_OPTIONS: readonly { value: string; label: string }[] = [
@@ -2480,23 +2489,17 @@ function EmitirPage() {
                     hint="Preencher no encerramento do atendimento."
                     options={[...MOTIVO_ENCERRAMENTO_OPTIONS]}
                   />
-                  <Field
+                  <SelectField
                     className={ATENDIMENTO_FIELD_CLASS}
+                    triggerClassName={ATENDIMENTO_TRIGGER_CLASS}
                     label="91 - Regime de atendimento"
                     required
-                    hint="Código de 2 dígitos conforme tabela de domínio nº 76."
-                  >
-                    <Input
-                      value={regimeAtendimento}
-                      onChange={(e) =>
-                        setRegimeAtendimento(e.target.value.replace(/\D/g, "").slice(0, 2))
-                      }
-                      placeholder="00"
-                      inputMode="numeric"
-                      maxLength={2}
-                      className="font-mono"
-                    />
-                  </Field>
+                    value={regimeAtendimento}
+                    onValueChange={setRegimeAtendimento}
+                    placeholder="Selecione"
+                    hint="Conforme tabela de domínio nº 76."
+                    options={[...REGIME_ATENDIMENTO_OPTIONS]}
+                  />
                   <Field
                     className={ATENDIMENTO_FIELD_CLASS}
                     label="92 - Saúde Ocupacional"
