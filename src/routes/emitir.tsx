@@ -151,7 +151,7 @@ const SAUDE_OCUPACIONAL_OPTIONS = [
 const SAUDE_OCUPACIONAL_NONE = "none";
 
 /** Códigos aceitos no campo 92 (vazio = não informado). */
-const SAUDE_OCUPACIONAL_CODES = new Set(
+const SAUDE_OCUPACIONAL_CODES = new Set<string>(
   SAUDE_OCUPACIONAL_OPTIONS.map((o) => o.value),
 );
 
