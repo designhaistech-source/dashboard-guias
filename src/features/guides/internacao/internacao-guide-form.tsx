@@ -533,6 +533,7 @@ export function InternacaoGuideForm({
                 <Input
                   value={senha}
                   onChange={(e) => setSenha(e.target.value)}
+                  maxLength={20}
                   placeholder="Senha de autorização"
                 />
               </Field>
