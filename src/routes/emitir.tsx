@@ -734,7 +734,6 @@ function EmitirPage() {
   const [pacienteNascimento, setPacienteNascimento] = useState("");
   const [pacienteSexo, setPacienteSexo] = useState("F");
   const [pacienteValidadeCarteira, setPacienteValidadeCarteira] = useState("");
-  const [pacienteCns, setPacienteCns] = useState("");
   const [pacienteRn, setPacienteRn] = useState("N");
 
 
@@ -1249,7 +1248,6 @@ function EmitirPage() {
           items: [
             { label: "Nome", value: pacienteNome },
             { label: "Nº da carteira", value: pacienteCarteira },
-            { label: "CNS", value: pacienteCns },
             { label: "Nascimento", value: pacienteNascimento },
             { label: "CPF", value: pacienteCpf },
             { label: "Sexo", value: pacienteSexo },
@@ -1325,7 +1323,6 @@ function EmitirPage() {
   const handleReset = () => {
     setPacienteNome("");
     setPacienteCarteira("");
-    setPacienteCns("");
     setPacienteValidadeCarteira("");
     setPacienteCpf("");
     setPacienteNascimento("");
@@ -1884,21 +1881,6 @@ function EmitirPage() {
                     />
                   </Field>
 
-
-                  <Field
-                    label="11 - Cartão Nacional de Saúde (CNS)"
-                    span="@md:col-span-6 @3xl:col-span-8"
-                    hint="Até 15 caracteres."
-                  >
-                    <Input
-                      value={pacienteCns}
-                      onChange={(e) => setPacienteCns(e.target.value)}
-                      placeholder="000000000000000"
-                      inputMode="numeric"
-                      maxLength={15}
-                      className="font-mono"
-                    />
-                  </Field>
 
                   <SelectField
                     label="12 - Atendimento a RN"
@@ -2999,7 +2981,6 @@ function EmitirPage() {
               tipoConsulta={isConsulta ? tipoConsulta : ""}
               motivoEncerramento={motivoEncerramento}
               pacienteValidadeCarteira={pacienteValidadeCarteira}
-              pacienteCns={pacienteCns}
               pacienteRn={pacienteRn}
               assinaturaSolicitante={assinaturaSolicitante}
               totais={[

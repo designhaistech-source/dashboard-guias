@@ -18,7 +18,6 @@ export const TISS_SADT_FIELDS: Readonly<Record<number, string>> = {
   8: "Número da Carteira",
   9: "Validade da Carteira",
   10: "Nome",
-  11: "Cartão Nacional de Saúde",
   12: "Atendimento a RN",
   13: "Código na Operadora",
   14: "Nome do Contratado",
