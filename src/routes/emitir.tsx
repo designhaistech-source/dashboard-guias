@@ -3092,7 +3092,7 @@ function EmitirPage() {
               pacienteNomeSocial={pacienteNomeSocial}
               coberturaEspecial={coberturaEspecial}
               regimeAtendimento={regimeAtendimento}
-              saudeOcupacional={saudeOcupacional}
+              saudeOcupacional={saudeOcupacionalLabel}
               pacienteRn={pacienteRn}
               assinaturaSolicitante={assinaturaSolicitante}
               totais={[
