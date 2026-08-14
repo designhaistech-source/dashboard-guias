@@ -742,6 +742,7 @@ function EmitirPage() {
 
   const [cidPrincipal, setCidPrincipal] = useState("");
   const [indicacaoClinica, setIndicacaoClinica] = useState("");
+  const [coberturaEspecial, setCoberturaEspecial] = useState("");
   const [observacoes, setObservacoes] = useState("");
   const [dataSolicitacao, setDataSolicitacao] = useState(
     () => new Date().toISOString().slice(0, 10),
@@ -2083,7 +2084,7 @@ function EmitirPage() {
                     )}
                   </span>
                 }
-                description="Campos 21 a 28 — data e códigos preenchidos automaticamente pelo sistema."
+                description="Campos 21 a 28 e 90 — data e códigos preenchidos automaticamente pelo sistema."
 
               >
                 <Grid cols={2}>
@@ -2116,6 +2117,24 @@ function EmitirPage() {
                     placeholder="Descreva a justificativa clínica do procedimento."
                   />
                 </Field>
+
+                <Field
+                  label="90 - Indicador de Cobertura Especial"
+                  hint="Opcional — código de 2 dígitos conforme tabela de domínio nº 75. Preencha em atendimento ambulatorial de plano exclusivamente hospitalar, a gestantes ou no pré e pós-operatório."
+                  className="@md:max-w-xs"
+                >
+                  <Input
+                    value={coberturaEspecial}
+                    onChange={(e) =>
+                      setCoberturaEspecial(e.target.value.replace(/\D/g, "").slice(0, 2))
+                    }
+                    placeholder="00"
+                    inputMode="numeric"
+                    maxLength={2}
+                    className="font-mono"
+                  />
+                </Field>
+
 
 
 
@@ -2998,6 +3017,7 @@ function EmitirPage() {
               motivoEncerramento={motivoEncerramento}
               pacienteValidadeCarteira={pacienteValidadeCarteira}
               pacienteNomeSocial={pacienteNomeSocial}
+              coberturaEspecial={coberturaEspecial}
               pacienteRn={pacienteRn}
               assinaturaSolicitante={assinaturaSolicitante}
               totais={[
