@@ -518,6 +518,7 @@ export function InternacaoGuideForm({
                 <Input
                   value={guiaOperadora}
                   onChange={(e) => setGuiaOperadora(e.target.value)}
+                  maxLength={20}
                   placeholder="Informado pela operadora"
                 />
               </Field>
