@@ -25,6 +25,8 @@ export interface InternacaoGuidePreviewProps {
   atendimentoRn: string;
   nomeBeneficiario: string;
   cns: string;
+  /** 50 - Nome social do beneficiário (condicional). */
+  nomeSocial?: string;
   codigoSolicitante: string;
   nomeContratado: string;
   nomeProfissional: string;
