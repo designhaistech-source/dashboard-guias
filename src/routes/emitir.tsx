@@ -2997,6 +2997,7 @@ function EmitirPage() {
               tipoConsulta={isConsulta ? tipoConsulta : ""}
               motivoEncerramento={motivoEncerramento}
               pacienteValidadeCarteira={pacienteValidadeCarteira}
+              pacienteNomeSocial={pacienteNomeSocial}
               pacienteRn={pacienteRn}
               assinaturaSolicitante={assinaturaSolicitante}
               totais={[
