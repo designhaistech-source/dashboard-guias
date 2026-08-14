@@ -1222,6 +1222,9 @@ function EmitirPage() {
   /** Texto exato da opção selecionada no campo 92, para exibir na guia. */
   const saudeOcupacionalLabel =
     SAUDE_OCUPACIONAL_OPTIONS.find((o) => o.value === saudeOcupacional)?.label ?? "";
+  /** Texto exato da opção selecionada no campo 91, para exibir na guia. */
+  const regimeAtendimentoLabel =
+    REGIME_ATENDIMENTO_OPTIONS.find((o) => o.value === regimeAtendimento)?.label ?? "";
   const atendimentoOk =
     Boolean(tipoAtendimento.trim()) && !saudeOcupacionalError;
   const realizadosOk = executedItems.some((i) => i.description.trim() || i.code.trim());
