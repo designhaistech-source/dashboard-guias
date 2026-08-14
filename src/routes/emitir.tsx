@@ -734,6 +734,7 @@ function EmitirPage() {
   const [pacienteNascimento, setPacienteNascimento] = useState("");
   const [pacienteSexo, setPacienteSexo] = useState("F");
   const [pacienteValidadeCarteira, setPacienteValidadeCarteira] = useState("");
+  const [pacienteNomeSocial, setPacienteNomeSocial] = useState("");
   const [pacienteRn, setPacienteRn] = useState("N");
 
 
