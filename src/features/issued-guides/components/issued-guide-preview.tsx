@@ -165,7 +165,6 @@ export function IssuedGuidePreview({ guide }: { guide: IssuedGuide }) {
       pacienteNome={guide.patient}
       pacienteCarteira={derived.carteira}
       pacienteValidadeCarteira={derived.validadeCarteira}
-      pacienteCns={derived.cns}
       pacienteNascimento={derived.nascimentoIso}
       pacienteSexo={derived.sexo}
       pacienteRn="N"
