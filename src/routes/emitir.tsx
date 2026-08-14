@@ -121,6 +121,13 @@ const UF_LIST = [
   "PR","PE","PI","RJ","RN","RS","RO","RR","SC","SP","SE","TO",
 ] as const;
 
+/** Campo 90 — Indicador de Cobertura Especial (domínio TISS nº 75). */
+const COBERTURA_ESPECIAL_OPTIONS = [
+  { value: "01", label: "01 - Gestante" },
+  { value: "02", label: "02 - Pré-operatório" },
+  { value: "03", label: "03 - Pós-operatório" },
+] as const;
+
 /** Campo 35 — Motivo de Encerramento do Atendimento (domínio TISS nº 39). */
 /** Tipo de consulta (campo 34) conforme domínio TISS. */
 const TIPO_CONSULTA_OPTIONS: readonly { value: string; label: string }[] = [
@@ -2120,22 +2127,15 @@ function EmitirPage() {
                   />
                 </Field>
 
-                <Field
+                <SelectField
                   label="90 - Indicador de Cobertura Especial"
-                  hint="Opcional — código de 2 dígitos conforme tabela de domínio nº 75. Preencha em atendimento ambulatorial de plano exclusivamente hospitalar, a gestantes ou no pré e pós-operatório."
+                  hint="Opcional — conforme tabela de domínio nº 75. Preencha em atendimento ambulatorial de plano exclusivamente hospitalar, a gestantes ou no pré e pós-operatório."
                   className="@md:max-w-xs"
-                >
-                  <Input
-                    value={coberturaEspecial}
-                    onChange={(e) =>
-                      setCoberturaEspecial(e.target.value.replace(/\D/g, "").slice(0, 2))
-                    }
-                    placeholder="00"
-                    inputMode="numeric"
-                    maxLength={2}
-                    className="font-mono"
-                  />
-                </Field>
+                  value={coberturaEspecial}
+                  onValueChange={setCoberturaEspecial}
+                  placeholder="Selecione"
+                  options={[...COBERTURA_ESPECIAL_OPTIONS]}
+                />
 
 
 
