@@ -137,6 +137,18 @@ const REGIME_ATENDIMENTO_OPTIONS = [
   { value: "05", label: "05 - Telessaúde" },
 ] as const;
 
+/** Campo 92 — Saúde Ocupacional (domínio TISS nº 77). */
+const SAUDE_OCUPACIONAL_OPTIONS = [
+  { value: "01", label: "01 - Admissional" },
+  { value: "02", label: "02 - Demissional" },
+  { value: "03", label: "03 - Periódico" },
+  { value: "04", label: "04 - Retorno ao trabalho" },
+  { value: "05", label: "05 - Mudança de função" },
+  { value: "06", label: "06 - Promoção à saúde" },
+] as const;
+
+
+
 /** Campo 35 — Motivo de Encerramento do Atendimento (domínio TISS nº 39). */
 /** Tipo de consulta (campo 34) conforme domínio TISS. */
 const TIPO_CONSULTA_OPTIONS: readonly { value: string; label: string }[] = [
