@@ -649,7 +649,7 @@ export function InternacaoGuideForm({
             options={SIM_NAO_OPTIONS}
           />
 
-          {/* 8 e 11 são condicionais: só aparecem quando existem no cadastro. */}
+          {/* 11 é condicional: só aparece quando existe no cadastro. */}
           {cns && (
             <Field
               label="11 - Cartão Nacional de Saúde"
