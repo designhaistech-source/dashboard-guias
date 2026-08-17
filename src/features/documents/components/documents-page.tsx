@@ -7,7 +7,6 @@ import {
   Download,
   BookmarkPlus,
   ShieldCheck,
-  
   User,
 } from "lucide-react";
 import { toast } from "sonner";
