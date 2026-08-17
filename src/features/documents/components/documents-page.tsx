@@ -19,6 +19,7 @@ import {
   appTabsTriggerClass,
 } from "@/components/app-tabs";
 import { AppBreadcrumb } from "@/components/app-breadcrumb";
+import { AppModal } from "@/components/app-modal";
 import { AppSidebar } from "@/components/app-sidebar";
 import { SiteFooter } from "@/components/site-footer";
 import { PageHeader } from "@/components/page-header";
@@ -121,6 +122,7 @@ function DocumentActions({
   onSaveTemplate?: () => void;
   signable?: boolean;
 }) {
+  const [signOpen, setSignOpen] = useState(false);
   const disabled = !paciente.trim();
   const temTexto = html.replace(/<[^>]+>/g, "").trim().length > 0;
 
@@ -139,7 +141,7 @@ function DocumentActions({
         { label: "Paciente", done: !disabled },
         { label: "Texto do documento", done: temTexto },
       ]}
-      note="Campos marcados com * são obrigatórios. O documento é validado antes da assinatura."
+      note="Campos marcados com * são obrigatórios. Para emissão eletrônica, o documento deve ser assinado com certificado digital ICP-Brasil."
     >
       {onSaveTemplate && (
         <Button type="button" variant="outline" size="sm" onClick={onSaveTemplate}>
@@ -151,7 +153,9 @@ function DocumentActions({
         type="button"
         variant="outline"
         size="sm"
-        onClick={() => toast.success("Documento baixado em PDF (simulação).")}
+        onClick={() =>
+          toast.success("Documento baixado em PDF sem assinatura digital (simulação).")
+        }
       >
         <Download className="icon-optical h-4 w-4" aria-hidden />
         Baixar PDF
@@ -161,16 +165,44 @@ function DocumentActions({
         Imprimir
       </Button>
       {signable && (
-        <Button
-          type="button"
-          size="sm"
-          onClick={() =>
-            toast.success("Solicitação de assinatura enviada ao VIDaaS (simulação).")
-          }
-        >
-          <ShieldCheck className="icon-optical h-4 w-4" aria-hidden />
-          Assinar com VIDaaS
-        </Button>
+        <>
+          <Button type="button" size="sm" onClick={() => setSignOpen(true)}>
+            <ShieldCheck className="icon-optical h-4 w-4" aria-hidden />
+            Assinar digitalmente
+          </Button>
+          <AppModal
+            open={signOpen}
+            onOpenChange={setSignOpen}
+            title="Assinar documento"
+            icon={<ShieldCheck className="h-5 w-5" aria-hidden />}
+            description="Para emitir este documento em formato eletrônico, é necessário assiná-lo utilizando um certificado digital ICP-Brasil."
+            size="sm"
+            footer={
+              <>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setSignOpen(false)}
+                >
+                  Cancelar
+                </Button>
+                <Button
+                  type="button"
+                  size="sm"
+                  onClick={() => {
+                    setSignOpen(false);
+                    toast.info(
+                      "Fluxo de assinatura digital ainda em definição (representação).",
+                    );
+                  }}
+                >
+                  Continuar para assinatura
+                </Button>
+              </>
+            }
+          />
+        </>
       )}
     </FormActionBar>
   );
