@@ -33,6 +33,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { CID10 } from "@/lib/cid";
 
 import { CidAutocomplete } from "./cid-autocomplete";
+import { DocumentEditorHeader } from "./document-editor-header";
 import { RichTextEditor } from "./rich-text-editor";
 import {
   DOCUMENT_VARIABLES,
@@ -334,7 +335,7 @@ function ReportsTab() {
       <SurfaceCard
         title="Dados do relatório"
         description="Identifique o paciente e o diagnóstico que será impresso no documento."
-        icon={<FileText className="h-4 w-4" aria-hidden />}
+        icon={<FileText className="icon-optical h-4 w-4" aria-hidden />}
         padding="lg"
         actions={<SavedIndicator savedAt={savedAt} />}
       >
@@ -370,17 +371,15 @@ function ReportsTab() {
         onChange={setHtml}
         placeholder="Redija o relatório médico..."
         header={
-          <>
-            <div className="min-w-0">
-              <h2 className="font-display text-base font-semibold tracking-tight text-foreground">
-                Relatório médico
-              </h2>
-              <p className="mt-0.5 text-xs text-muted-foreground">
+          <DocumentEditorHeader
+            title="Relatório médico"
+            meta={
+              <>
                 Paciente: {paciente || "—"}
                 {diagnostico && ` · ${cid} — ${diagnostico}`}
-              </p>
-            </div>
-          </>
+              </>
+            }
+          />
         }
       />
 
@@ -441,7 +440,7 @@ function CertificateTab() {
       <SurfaceCard
         title="Dados do atestado"
         description="O texto padrão é gerado automaticamente a partir destes campos."
-        icon={<Stethoscope className="h-4 w-4" aria-hidden />}
+        icon={<Stethoscope className="icon-optical h-4 w-4" aria-hidden />}
         padding="lg"
         actions={<SavedIndicator savedAt={savedAt} />}
       >
@@ -467,7 +466,7 @@ function CertificateTab() {
             <Field id="atestado-cidade" label="Cidade" optional>
               <Input
                 id="atestado-cidade"
-                placeholder="opcional"
+                placeholder="Cidade de emissão"
                 value={cidade}
                 onChange={(e) => setCidade(e.target.value)}
               />
@@ -481,27 +480,23 @@ function CertificateTab() {
         value={conteudo}
         onChange={setHtml}
         header={
-          <>
-            <div className="min-w-0">
-              <h2 className="font-display text-base font-semibold tracking-tight text-foreground">
-                Atestado médico
-              </h2>
-              <p className="mt-0.5 text-xs text-muted-foreground">
-                Paciente: {paciente || "—"} · {formatDateLong(data)}
-              </p>
-            </div>
-            <Button
-              type="button"
-              variant="ghost"
-              size="sm"
-              onClick={() => {
-                setHtml("");
-                toast.success("Texto padrão restaurado.");
-              }}
-            >
-              Restaurar texto padrão
-            </Button>
-          </>
+          <DocumentEditorHeader
+            title="Atestado médico"
+            meta={<>Paciente: {paciente || "—"} · {formatDateLong(data)}</>}
+            actions={
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                onClick={() => {
+                  setHtml("");
+                  toast.success("Texto padrão restaurado.");
+                }}
+              >
+                Restaurar texto padrão
+              </Button>
+            }
+          />
         }
       />
 
@@ -554,7 +549,7 @@ function AttendanceTab() {
       <SurfaceCard
         title="Dados da declaração"
         description="Informe o local e os horários de permanência do paciente no atendimento."
-        icon={<CalendarCheck className="h-4 w-4" aria-hidden />}
+        icon={<CalendarCheck className="icon-optical h-4 w-4" aria-hidden />}
         padding="lg"
         actions={<SavedIndicator savedAt={savedAt} />}
       >
@@ -572,7 +567,7 @@ function AttendanceTab() {
             <Field id="comp-cidade" label="Cidade" optional>
               <Input
                 id="comp-cidade"
-                placeholder="opcional"
+                placeholder="Cidade de emissão"
                 value={cidade}
                 onChange={(e) => setCidade(e.target.value)}
               />
@@ -610,27 +605,23 @@ function AttendanceTab() {
         value={conteudo}
         onChange={setHtml}
         header={
-          <>
-            <div className="min-w-0">
-              <h2 className="font-display text-base font-semibold tracking-tight text-foreground">
-                Declaração de comparecimento
-              </h2>
-              <p className="mt-0.5 text-xs text-muted-foreground">
-                Paciente: {paciente || "—"} · {formatDateLong(data)}
-              </p>
-            </div>
-            <Button
-              type="button"
-              variant="ghost"
-              size="sm"
-              onClick={() => {
-                setHtml("");
-                toast.success("Texto padrão restaurado.");
-              }}
-            >
-              Restaurar texto padrão
-            </Button>
-          </>
+          <DocumentEditorHeader
+            title="Declaração de comparecimento"
+            meta={<>Paciente: {paciente || "—"} · {formatDateLong(data)}</>}
+            actions={
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                onClick={() => {
+                  setHtml("");
+                  toast.success("Texto padrão restaurado.");
+                }}
+              >
+                Restaurar texto padrão
+              </Button>
+            }
+          />
         }
       />
 
