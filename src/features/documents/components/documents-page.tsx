@@ -121,6 +121,7 @@ function DocumentActions({
   onSaveTemplate?: () => void;
   signable?: boolean;
 }) {
+  const [signOpen, setSignOpen] = useState(false);
   const disabled = !paciente.trim();
   const temTexto = html.replace(/<[^>]+>/g, "").trim().length > 0;
 
@@ -139,7 +140,7 @@ function DocumentActions({
         { label: "Paciente", done: !disabled },
         { label: "Texto do documento", done: temTexto },
       ]}
-      note="Campos marcados com * são obrigatórios. O documento é validado antes da assinatura."
+      note="Campos marcados com * são obrigatórios. Para emissão eletrônica, o documento deve ser assinado com certificado digital ICP-Brasil."
     >
       {onSaveTemplate && (
         <Button type="button" variant="outline" size="sm" onClick={onSaveTemplate}>
