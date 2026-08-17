@@ -192,6 +192,7 @@ function DocumentActions({
             icon={<ShieldCheck className="h-5 w-5" aria-hidden />}
             description="Para emitir este documento em formato eletrônico, é necessário assiná-lo utilizando um certificado digital ICP-Brasil."
             size="sm"
+            unstyledBody
             footer={
               <>
                 <Button
