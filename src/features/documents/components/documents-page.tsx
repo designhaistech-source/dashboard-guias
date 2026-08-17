@@ -166,7 +166,22 @@ function DocumentActions({
       </Button>
       {signable && (
         <>
-          <Button type="button" size="sm" onClick={() => setSignOpen(true)}>
+          <Button
+            type="button"
+            size="sm"
+            aria-haspopup="dialog"
+            onClick={() => {
+              if (disabled) {
+                toast.error("Informe o paciente antes de assinar o documento.");
+                return;
+              }
+              if (!temTexto) {
+                toast.error("Escreva o texto do documento antes de assinar.");
+                return;
+              }
+              setSignOpen(true);
+            }}
+          >
             <ShieldCheck className="icon-optical h-4 w-4" aria-hidden />
             Assinar digitalmente
           </Button>
