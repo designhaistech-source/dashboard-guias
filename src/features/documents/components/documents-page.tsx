@@ -335,6 +335,7 @@ function ReportsTab() {
       <SurfaceCard
         title="Dados do relatório"
         description="Identifique o paciente e o diagnóstico que será impresso no documento."
+        icon={<FileText className="h-4 w-4" aria-hidden />}
         padding="lg"
         actions={<SavedIndicator savedAt={savedAt} />}
       >
@@ -372,9 +373,9 @@ function ReportsTab() {
         header={
           <>
             <div className="min-w-0">
-              <p className="font-display text-base font-semibold tracking-tight text-foreground">
+              <h2 className="font-display text-base font-semibold tracking-tight text-foreground">
                 Relatório médico
-              </p>
+              </h2>
               <p className="mt-0.5 text-xs text-muted-foreground">
                 Paciente: {paciente || "—"}
                 {diagnostico && ` · ${cid} — ${diagnostico}`}
@@ -441,6 +442,7 @@ function CertificateTab() {
       <SurfaceCard
         title="Dados do atestado"
         description="O texto padrão é gerado automaticamente a partir destes campos."
+        icon={<Stethoscope className="h-4 w-4" aria-hidden />}
         padding="lg"
         actions={<SavedIndicator savedAt={savedAt} />}
       >
@@ -482,9 +484,9 @@ function CertificateTab() {
         header={
           <>
             <div className="min-w-0">
-              <p className="font-display text-base font-semibold tracking-tight text-foreground">
+              <h2 className="font-display text-base font-semibold tracking-tight text-foreground">
                 Atestado médico
-              </p>
+              </h2>
               <p className="mt-0.5 text-xs text-muted-foreground">
                 Paciente: {paciente || "—"} · {formatDateLong(data)}
               </p>
@@ -553,6 +555,7 @@ function AttendanceTab() {
       <SurfaceCard
         title="Dados da declaração"
         description="Informe o local e os horários de permanência do paciente no atendimento."
+        icon={<CalendarCheck className="h-4 w-4" aria-hidden />}
         padding="lg"
         actions={<SavedIndicator savedAt={savedAt} />}
       >
@@ -610,9 +613,9 @@ function AttendanceTab() {
         header={
           <>
             <div className="min-w-0">
-              <p className="font-display text-base font-semibold tracking-tight text-foreground">
+              <h2 className="font-display text-base font-semibold tracking-tight text-foreground">
                 Declaração de comparecimento
-              </p>
+              </h2>
               <p className="mt-0.5 text-xs text-muted-foreground">
                 Paciente: {paciente || "—"} · {formatDateLong(data)}
               </p>
