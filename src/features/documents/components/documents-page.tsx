@@ -152,7 +152,9 @@ function DocumentActions({
         type="button"
         variant="outline"
         size="sm"
-        onClick={() => toast.success("Documento baixado em PDF (simulação).")}
+        onClick={() =>
+          toast.success("Documento baixado em PDF sem assinatura digital (simulação).")
+        }
       >
         <Download className="icon-optical h-4 w-4" aria-hidden />
         Baixar PDF
@@ -162,16 +164,44 @@ function DocumentActions({
         Imprimir
       </Button>
       {signable && (
-        <Button
-          type="button"
-          size="sm"
-          onClick={() =>
-            toast.success("Solicitação de assinatura enviada ao VIDaaS (simulação).")
-          }
-        >
-          <ShieldCheck className="icon-optical h-4 w-4" aria-hidden />
-          Assinar com VIDaaS
-        </Button>
+        <>
+          <Button type="button" size="sm" onClick={() => setSignOpen(true)}>
+            <ShieldCheck className="icon-optical h-4 w-4" aria-hidden />
+            Assinar digitalmente
+          </Button>
+          <AppModal
+            open={signOpen}
+            onOpenChange={setSignOpen}
+            title="Assinar documento"
+            icon={<ShieldCheck className="h-5 w-5" aria-hidden />}
+            description="Para emitir este documento em formato eletrônico, é necessário assiná-lo utilizando um certificado digital ICP-Brasil."
+            size="sm"
+            footer={
+              <>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setSignOpen(false)}
+                >
+                  Cancelar
+                </Button>
+                <Button
+                  type="button"
+                  size="sm"
+                  onClick={() => {
+                    setSignOpen(false);
+                    toast.info(
+                      "Fluxo de assinatura digital ainda em definição (representação).",
+                    );
+                  }}
+                >
+                  Continuar para assinatura
+                </Button>
+              </>
+            }
+          />
+        </>
       )}
     </FormActionBar>
   );
