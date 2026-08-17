@@ -2084,7 +2084,7 @@ function EmitirPage() {
                     label="20 - Assinatura do Profissional Solicitante"
                     value={assinaturaSolicitante}
                     onChange={setAssinaturaSolicitante}
-                    hint="Obrigatório na guia: assinatura do profissional solicitante. Desenhe ou envie a imagem para sair impressa no campo 20, ou assine à mão no papel."
+                    hint="A guia deve conter a assinatura do profissional solicitante. Insira a assinatura para que ela seja impressa no campo 20 ou deixe este campo em branco para assinar manualmente após a impressão."
 
                   />
                 </div>
