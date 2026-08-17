@@ -43,13 +43,29 @@ export function FieldBox({
         {n} - {label}
       </div>
       {image ? (
-        <img src={image} alt={label} className="h-6 w-auto max-w-full object-contain" />
+        // Assinatura: mantém proporção dentro da caixa e força a impressão da
+        // imagem (navegadores omitem imagens de fundo/escaladas sem isso).
+        <div className="flex h-6 w-full items-end justify-center overflow-hidden">
+          <img
+            src={image}
+            alt={label}
+            loading="eager"
+            decoding="sync"
+            className="max-h-full max-w-full object-contain object-bottom"
+            style={{
+              WebkitPrintColorAdjust: "exact",
+              printColorAdjust: "exact",
+              mixBlendMode: "multiply",
+            }}
+          />
+        </div>
       ) : (
         <div className="text-[10px] font-mono truncate min-h-[12px]">{value}</div>
       )}
     </div>
   );
 }
+
 
 export function FieldBoxDate({
   n,
