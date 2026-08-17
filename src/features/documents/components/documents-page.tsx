@@ -19,6 +19,7 @@ import {
   appTabsTriggerClass,
 } from "@/components/app-tabs";
 import { AppBreadcrumb } from "@/components/app-breadcrumb";
+import { AppModal } from "@/components/app-modal";
 import { AppSidebar } from "@/components/app-sidebar";
 import { SiteFooter } from "@/components/site-footer";
 import { PageHeader } from "@/components/page-header";
