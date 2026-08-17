@@ -84,4 +84,7 @@ html, body { margin: 0; padding: 0; background: #fff; }
   transform-origin: top left;
 }
 * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+/* Assinaturas: nunca esticar, nunca quebrar entre páginas. */
+img { max-width: 100%; max-height: 100%; break-inside: avoid; page-break-inside: avoid; }
+
 `;
