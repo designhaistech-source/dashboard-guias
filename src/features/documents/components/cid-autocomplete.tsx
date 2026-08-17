@@ -69,7 +69,7 @@ export function CidAutocomplete({
           aria-expanded={open}
           aria-label="Buscar CID-10"
           className={cn(
-            "flex h-9 w-full items-center justify-between gap-2 rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm transition-colors",
+            "flex h-10 w-full items-center justify-between gap-2 rounded-md border border-input bg-transparent px-3 py-2 text-base shadow-sm transition-colors sm:h-9 sm:text-sm",
             "hover:bg-accent/30 focus-visible:border-ring focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/40",
           )}
         >
