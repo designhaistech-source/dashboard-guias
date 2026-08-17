@@ -77,7 +77,7 @@ export function RichTextEditor({
   return (
     <div
       className={cn(
-        "overflow-hidden rounded-xl border border-border bg-card",
+        "overflow-hidden rounded-2xl border border-border bg-card shadow-xs",
         className,
       )}
     >
