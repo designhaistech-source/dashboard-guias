@@ -313,17 +313,6 @@ function ReportsTab() {
     if (template) setHtml(template.content);
   }
 
-  function improveWithAi() {
-    const plain = html.replace(/<[^>]+>/g, "").trim();
-    if (!plain) {
-      toast.error("Escreva o relatório antes de melhorar o texto.");
-      return;
-    }
-    setHtml(
-      `<p>${plain}</p><p>Conduta e orientações foram discutidas com o paciente, que demonstrou compreensão do plano terapêutico proposto. Recomenda-se reavaliação clínica conforme evolução.</p>`,
-    );
-    toast.success("Texto revisado com IA (simulação).");
-  }
 
   return (
     <>
