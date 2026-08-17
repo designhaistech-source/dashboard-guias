@@ -375,10 +375,6 @@ function ReportsTab() {
                 {diagnostico && ` · ${cid} — ${diagnostico}`}
               </p>
             </div>
-            <Button type="button" variant="ghost" size="sm" onClick={improveWithAi}>
-              <Sparkles className="icon-optical h-4 w-4" aria-hidden />
-              Melhorar texto com IA
-            </Button>
           </>
         }
       />
