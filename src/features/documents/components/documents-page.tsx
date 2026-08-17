@@ -7,7 +7,7 @@ import {
   Download,
   BookmarkPlus,
   ShieldCheck,
-  Sparkles,
+  
   User,
 } from "lucide-react";
 import { toast } from "sonner";
@@ -313,17 +313,6 @@ function ReportsTab() {
     if (template) setHtml(template.content);
   }
 
-  function improveWithAi() {
-    const plain = html.replace(/<[^>]+>/g, "").trim();
-    if (!plain) {
-      toast.error("Escreva o relatório antes de melhorar o texto.");
-      return;
-    }
-    setHtml(
-      `<p>${plain}</p><p>Conduta e orientações foram discutidas com o paciente, que demonstrou compreensão do plano terapêutico proposto. Recomenda-se reavaliação clínica conforme evolução.</p>`,
-    );
-    toast.success("Texto revisado com IA (simulação).");
-  }
 
   return (
     <>
@@ -375,10 +364,6 @@ function ReportsTab() {
                 {diagnostico && ` · ${cid} — ${diagnostico}`}
               </p>
             </div>
-            <Button type="button" variant="ghost" size="sm" onClick={improveWithAi}>
-              <Sparkles className="icon-optical h-4 w-4" aria-hidden />
-              Melhorar texto com IA
-            </Button>
           </>
         }
       />
