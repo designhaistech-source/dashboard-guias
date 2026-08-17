@@ -166,7 +166,22 @@ function DocumentActions({
       </Button>
       {signable && (
         <>
-          <Button type="button" size="sm" onClick={() => setSignOpen(true)}>
+          <Button
+            type="button"
+            size="sm"
+            aria-haspopup="dialog"
+            onClick={() => {
+              if (disabled) {
+                toast.error("Informe o paciente antes de assinar o documento.");
+                return;
+              }
+              if (!temTexto) {
+                toast.error("Escreva o texto do documento antes de assinar.");
+                return;
+              }
+              setSignOpen(true);
+            }}
+          >
             <ShieldCheck className="icon-optical h-4 w-4" aria-hidden />
             Assinar digitalmente
           </Button>
@@ -177,6 +192,7 @@ function DocumentActions({
             icon={<ShieldCheck className="h-5 w-5" aria-hidden />}
             description="Para emitir este documento em formato eletrônico, é necessário assiná-lo utilizando um certificado digital ICP-Brasil."
             size="sm"
+            unstyledBody
             footer={
               <>
                 <Button

@@ -81,6 +81,8 @@ const DialogContent = React.forwardRef<
       <DialogOverlay />
       <DialogPrimitive.Content
         ref={ref}
+        role="dialog"
+        aria-modal="true"
         className={cn(dialogContentVariants({ size }), className)}
         onOpenAutoFocus={(event) => {
           onOpenAutoFocus?.(event);

@@ -77,7 +77,7 @@ export function AppModal({
         className={className}
         initialFocusRef={initialFocusRef}
         hideCloseButton={hideCloseButton}
-        role={role}
+        {...(role ? { role } : {})}
       >
         <DialogHeader className={headerClassName}>
           <div className="flex items-center gap-2">
