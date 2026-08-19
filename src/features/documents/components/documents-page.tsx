@@ -539,7 +539,14 @@ function CertificateTab() {
         }
       />
 
-      <DocumentActions title="Atestado médico" html={conteudo} paciente={paciente} />
+      <DocumentActions
+        title="Atestado médico"
+        html={conteudo}
+        paciente={paciente}
+        onSaveTemplate={() =>
+          toast.success("Modelo de atestado salvo e disponível na lista (simulação).")
+        }
+      />
 
       {replacementDialog}
     </>
@@ -694,6 +701,11 @@ function AttendanceTab() {
         title="Declaração de comparecimento"
         html={conteudo}
         paciente={paciente}
+        onSaveTemplate={() =>
+          toast.success(
+            "Modelo de declaração salvo e disponível na lista (simulação).",
+          )
+        }
       />
 
       {replacementDialog}
