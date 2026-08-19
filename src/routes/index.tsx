@@ -41,7 +41,7 @@ import {
   Bar,
   LabelList,
   Sector,
-  ReferenceLine,
+  
 } from "recharts";
 
 import { AppBreadcrumb } from "@/components/app-breadcrumb";
@@ -679,31 +679,54 @@ const MONTH_ABBR = [
 ] as const;
 
 /**
- * Eixo X do gráfico diário: mostra apenas o dia para manter a leitura limpa e
- * acrescenta o mês abreviado no primeiro ponto e a cada virada de mês, para que
- * o período seja identificável mesmo atravessando meses.
+ * Ticks visíveis do eixo X do gráfico diário. Usa um passo fixo para evitar
+ * sobreposição e garante que o primeiro dia exibido de cada mês esteja entre os
+ * ticks, permitindo destacar a virada de mês diretamente no eixo.
  */
-function formatDailyTick(iso: string, index: number): string {
-  const [, month, day] = iso.split("-");
-  if (!month || !day) return iso;
-  const monthLabel = MONTH_ABBR[Number(month) - 1] ?? month;
-  const showMonth = index === 0 || day === "01";
-  return showMonth ? `${day} ${monthLabel}` : day;
+function dailyAxisTicks(data: { date: string }[], maxTicks = 14): string[] {
+  if (data.length === 0) return [];
+  const step = Math.max(1, Math.ceil(data.length / maxTicks));
+  const selected = new Set<string>();
+  for (let i = 0; i < data.length; i += step) selected.add(data[i]!.date);
+  selected.add(data[data.length - 1]!.date);
+  // Garante um tick no início de cada mês presente no período.
+  const seenMonths = new Set<string>();
+  for (const row of data) {
+    const month = row.date.slice(0, 7);
+    if (!seenMonths.has(month)) {
+      seenMonths.add(month);
+      selected.add(row.date);
+    }
+  }
+  return data.map((d) => d.date).filter((date) => selected.has(date));
 }
 
 /**
- * Datas de virada de mês (dia 01, exceto o primeiro ponto) usadas para desenhar
- * separadores verticais discretos no gráfico diário.
+ * Rótulo de cada tick: apenas o dia, exceto no primeiro tick de cada mês, que
+ * recebe o mês abreviado (ex.: "21 jul", "02 ago").
  */
-function monthBoundaries(data: { date: string }[]): { date: string; label: string }[] {
-  return data
-    .filter((d, i) => i > 0 && d.date.slice(8, 10) === "01")
-    .map((d) => {
-      const month = Number(d.date.slice(5, 7));
-      const monthLabel = MONTH_ABBR[month - 1] ?? d.date.slice(5, 7);
-      return { date: d.date, label: `${monthLabel}/${d.date.slice(2, 4)}` };
-    });
+function formatDailyTick(iso: string, monthStarts: Set<string>): string {
+  const [, month, day] = iso.split("-");
+  if (!month || !day) return iso;
+  if (!monthStarts.has(iso)) return day;
+  const monthLabel = MONTH_ABBR[Number(month) - 1] ?? month;
+  return `${day} ${monthLabel}`;
 }
+
+/** Primeiro tick exibido de cada mês, usado para destacar a virada de mês. */
+function monthStartTicks(ticks: string[]): Set<string> {
+  const seen = new Set<string>();
+  const starts = new Set<string>();
+  for (const tick of ticks) {
+    const month = tick.slice(0, 7);
+    if (!seen.has(month)) {
+      seen.add(month);
+      starts.add(tick);
+    }
+  }
+  return starts;
+}
+
 
 type ProcedureSortColumn = "code" | "name" | "count";
 type ProcedureSort = { column: ProcedureSortColumn; direction: "asc" | "desc" };
@@ -853,7 +876,8 @@ function DashboardPage() {
     );
   }, [procedures, procedureSort]);
   const dailyData = metrics.daily;
-  const monthMarks = useMemo(() => monthBoundaries(dailyData), [dailyData]);
+  const dailyTicks = useMemo(() => dailyAxisTicks(dailyData), [dailyData]);
+  const dailyMonthStarts = useMemo(() => monthStartTicks(dailyTicks), [dailyTicks]);
 
   const hasData = total > 0;
   const [generatingReport, setGeneratingReport] = useState(false);
@@ -1227,9 +1251,11 @@ function DashboardPage() {
                         tickLine={false}
                         axisLine={false}
                         tickMargin={6}
-                        interval="preserveStartEnd"
-                        minTickGap={18}
-                        tickFormatter={formatDailyTick}
+                        ticks={dailyTicks}
+                        interval={0}
+                        tickFormatter={(iso: string) =>
+                          formatDailyTick(iso, dailyMonthStarts)
+                        }
                         label={{
                           value: "Data",
                           position: "insideBottom",
@@ -1271,21 +1297,8 @@ function DashboardPage() {
                         activeDot={{ r: 5, strokeWidth: 2, stroke: "var(--card)" }}
                         isAnimationActive={false}
                       />
-                      {/* Separadores discretos de virada de mês */}
-                      {monthMarks.map((m) => (
-                        <ReferenceLine
-                          key={m.date}
-                          x={m.date}
-                          stroke="var(--border)"
-                          strokeDasharray="4 4"
-                          label={{
-                            value: m.label,
-                            position: "insideTopRight",
-                            fill: "var(--muted-foreground)",
-                            fontSize: 10,
-                          }}
-                        />
-                      ))}
+
+
                     </AreaChart>
                   </ResponsiveContainer>
                 </div>
