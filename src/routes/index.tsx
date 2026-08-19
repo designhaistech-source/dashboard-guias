@@ -112,9 +112,13 @@ function formatIsoDate(iso: string) {
 }
 
 /** Human label for the period actually filtered by the user. */
-function buildPeriodLabel(from: string, to: string) {
-  const de = from.trim();
-  const ate = to.trim();
+/**
+ * Rótulo legível do período exibido. Sem filtro de data, usa o intervalo real
+ * dos dados apresentados (primeiro e último dia com guias).
+ */
+function buildPeriodLabel(from: string, to: string, fallback?: { first?: string; last?: string }) {
+  const de = from.trim() || fallback?.first || "";
+  const ate = to.trim() || fallback?.last || "";
   if (de && ate) {
     return de === ate
       ? formatIsoDate(de)
@@ -124,6 +128,7 @@ function buildPeriodLabel(from: string, to: string) {
   if (ate) return `Até ${formatIsoDate(ate)}`;
   return "Todo o período";
 }
+
 
 const prestadoresList = PRESTADORES;
 
