@@ -15,7 +15,6 @@ import {
   Layers,
   Download,
   Activity,
-  X,
   SlidersHorizontal,
   ArrowUpRight,
   ArrowDownRight,
@@ -795,9 +794,6 @@ function DashboardPage() {
   const clearAllFilters = () => {
     setFilters(emptyFilters);
     toast.success("Filtros limpos.");
-  };
-  const removeFilter = (key: keyof GuideFilters) => {
-    setFilters((f) => ({ ...f, [key]: "" }));
   };
 
   const firstFieldRef = useRef<HTMLInputElement | null>(null);
