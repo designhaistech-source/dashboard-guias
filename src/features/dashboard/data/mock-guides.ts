@@ -3,7 +3,7 @@
  * these rows so the filter panel produces real, visible changes.
  */
 
-import { localIsoDaysAgo } from "@/lib/date";
+import { localIsoDaysAgo, toLocalIsoDate } from "@/lib/date";
 
 export type DashboardGuide = {
   id: string;
