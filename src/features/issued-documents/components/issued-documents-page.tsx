@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { ArrowDown, ArrowUp, Download, Eye, FileSpreadsheet, Printer } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import { toast } from "sonner";
@@ -31,11 +31,11 @@ import {
 } from "@/components/data-table";
 import { printDocumentHtml } from "@/features/documents";
 import {
-  ISSUED_DOCUMENTS,
   ISSUED_DOCUMENT_TYPES,
   formatIssuedDocumentDate,
   type IssuedDocument,
 } from "../data/issued-documents";
+import { listIssuedDocuments, subscribeIssuedDocuments } from "../data/issued-documents-store";
 
 const EMPTY_FILTERS = {
   query: "",
@@ -52,6 +52,15 @@ export function IssuedDocumentsPage() {
   const [filters, setFilters] = useState(EMPTY_FILTERS);
   const [detail, setDetail] = useState<IssuedDocument | null>(null);
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("desc");
+  const [documents, setDocuments] = useState<IssuedDocument[]>([]);
+
+  // Documentos emitidos ficam no armazenamento local do protótipo: lê após montar
+  // (evita divergência de hidratação) e acompanha novas emissões.
+  useEffect(() => {
+    const sync = () => setDocuments(listIssuedDocuments());
+    sync();
+    return subscribeIssuedDocuments(sync);
+  }, []);
 
   const activeCount = Object.values(filters).filter(Boolean).length;
 
@@ -60,7 +69,7 @@ export function IssuedDocumentsPage() {
 
   const rows = useMemo(() => {
     const query = filters.query.trim().toLowerCase();
-    return ISSUED_DOCUMENTS.filter((doc) => {
+    return documents.filter((doc) => {
       if (query && !doc.patient.toLowerCase().includes(query)) return false;
       if (filters.type && doc.type !== filters.type) return false;
 
@@ -72,7 +81,7 @@ export function IssuedDocumentsPage() {
       const diff = new Date(a.issuedAt).getTime() - new Date(b.issuedAt).getTime();
       return sortDirection === "desc" ? -diff : diff;
     });
-  }, [filters, sortDirection]);
+  }, [documents, filters, sortDirection]);
 
   const handlePrint = (doc: IssuedDocument) => {
     printDocumentHtml(doc.type, doc.patient, doc.body);

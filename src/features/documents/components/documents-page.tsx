@@ -8,9 +8,14 @@ import {
   BookmarkPlus,
   User,
   Loader2,
+  Send,
+  FilePlus2,
+  ExternalLink,
+  CheckCircle2,
+  Info,
 } from "lucide-react";
 import { AlertCircle } from "lucide-react";
-import { getRouteApi, useNavigate } from "@tanstack/react-router";
+import { getRouteApi, Link, useNavigate } from "@tanstack/react-router";
 import { toast } from "sonner";
 
 import {
@@ -21,6 +26,7 @@ import {
 } from "@/components/app-tabs";
 import { AppBreadcrumb } from "@/components/app-breadcrumb";
 import { AppSidebar } from "@/components/app-sidebar";
+import { AppModal } from "@/components/app-modal";
 import { SiteFooter } from "@/components/site-footer";
 import { PageHeader } from "@/components/page-header";
 import { FormActionBar } from "@/components/form-action-bar";
@@ -30,6 +36,11 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { CID10 } from "@/lib/cid";
+import type {
+  IssuedDocument,
+  IssuedDocumentType,
+} from "@/features/issued-documents/data/issued-documents";
+import { addIssuedDocument } from "@/features/issued-documents/data/issued-documents-store";
 
 import { improveDocumentText } from "../lib/improve-text.functions";
 
@@ -74,6 +85,11 @@ const documentsRoute = getRouteApi("/documentos");
 /** Página de documentos clínicos: relatórios, atestados e declarações. */
 export function DocumentsPage() {
   const { aba } = documentsRoute.useSearch();
+  // "Novo documento" limpa o formulário remontando a aba correspondente.
+  const [resetKeys, setResetKeys] = useState({ relatorios: 0, atestados: 0, comparecimento: 0 });
+  const resetTab = useCallback((tab: "relatorios" | "atestados" | "comparecimento") => {
+    setResetKeys((prev) => ({ ...prev, [tab]: prev[tab] + 1 }));
+  }, []);
   const navigate = useNavigate({ from: "/documentos" });
   const activeTab = aba ?? "relatorios";
 
@@ -120,13 +136,22 @@ export function DocumentsPage() {
             </TabsList>
 
             <TabsContent value="relatorios" className="space-y-6">
-              <ReportsTab />
+              <ReportsTab
+                key={`relatorios-${resetKeys.relatorios}`}
+                onNewDocument={() => resetTab("relatorios")}
+              />
             </TabsContent>
             <TabsContent value="atestados" className="space-y-6">
-              <CertificateTab />
+              <CertificateTab
+                key={`atestados-${resetKeys.atestados}`}
+                onNewDocument={() => resetTab("atestados")}
+              />
             </TabsContent>
             <TabsContent value="comparecimento" className="space-y-6">
-              <AttendanceTab />
+              <AttendanceTab
+                key={`comparecimento-${resetKeys.comparecimento}`}
+                onNewDocument={() => resetTab("comparecimento")}
+              />
             </TabsContent>
           </Tabs>
         </div>
@@ -211,13 +236,19 @@ function focusField(fieldId: string) {
 
 function DocumentActions({
   title,
+  type,
   html,
   paciente,
   pacienteFieldId,
   onSaveTemplate,
   issues = [],
+  issuedDoc,
+  onIssued,
+  onNewDocument,
 }: {
   title: string;
+  /** Tipo registrado em "Documentos emitidos". */
+  type: IssuedDocumentType;
   html: string;
   paciente: string;
   /** id do campo de paciente, para focar quando estiver vazio. */
@@ -225,10 +256,15 @@ function DocumentActions({
   onSaveTemplate?: () => void;
   /** Erros de validação com o campo culpado, exibidos inline e anunciados por leitor de tela. */
   issues?: FieldIssue[];
+  /** Documento já emitido nesta aba (formulário em modo somente leitura). */
+  issuedDoc: IssuedDocument | null;
+  onIssued: (doc: IssuedDocument) => void;
+  onNewDocument: () => void;
 }) {
   const disabled = !paciente.trim();
   const temTexto = html.replace(/<[^>]+>/g, "").trim().length > 0;
   const [downloading, setDownloading] = useState(false);
+  const [confirmOpen, setConfirmOpen] = useState(false);
   const summaryId = "document-actions-issues";
 
   const allIssues: FieldIssue[] = disabled
@@ -250,28 +286,25 @@ function DocumentActions({
     focusField(first.fieldId);
   }
 
-
-
-
-  function handlePrint() {
-    if (hasIssues) {
-      reportIssues();
-      return;
-    }
-    printHtml(title, paciente, html);
-  }
-
-  async function handleDownload() {
+  function handleIssue() {
     if (hasIssues) {
       reportIssues();
       return;
     }
     if (!temTexto) {
-      toast.error("Escreva o texto do documento antes de baixar o PDF.");
+      toast.error("Escreva o texto do documento antes de emitir.");
       return;
     }
+    const doc = addIssuedDocument({ type, patient: paciente.trim(), body: html });
+    onIssued(doc);
+    setConfirmOpen(true);
+  }
 
+  function handlePrint() {
+    printHtml(title, paciente, html);
+  }
 
+  async function handleDownload() {
     setDownloading(true);
     const toastId = toast.loading("Gerando PDF do documento…");
     try {
@@ -288,83 +321,159 @@ function DocumentActions({
     }
   }
 
-  return (
-    <FormActionBar
-      stepsLabel="Etapas preenchidas"
-      steps={[
-        { label: "Paciente", done: !disabled },
-        { label: "Texto do documento", done: temTexto },
-      ]}
-      note="Para ter validade, o documento deve ser impresso e assinado manualmente pelo médico."
-      banner={
-        hasIssues ? (
-          <div
-            id={summaryId}
-            role="alert"
-            className="rounded-md border border-destructive/40 bg-destructive/5 p-3 text-xs text-destructive sm:text-sm"
-          >
-            <p className="flex items-start gap-1.5 font-medium">
-              <AlertCircle className="icon-optical mt-0.5 h-4 w-4 shrink-0" aria-hidden />
-              <span>
-                {allIssues.length === 1
-                  ? "1 campo precisa de correção antes de emitir o documento:"
-                  : `${allIssues.length} campos precisam de correção antes de emitir o documento:`}
-              </span>
-            </p>
-            <ul className="mt-1.5 space-y-1 pl-6">
-              {allIssues.map((issue) => (
-                <li key={`${issue.fieldId}-${issue.message}`}>
-                  <Button
-                    type="button"
-                    variant="link"
-                    className="h-auto justify-start p-0 text-left text-xs text-destructive underline sm:text-sm"
-                    onClick={() => focusField(issue.fieldId)}
-                  >
-                    {issue.label}: {issue.message}
-                  </Button>
-                </li>
-              ))}
-            </ul>
-          </div>
-        ) : undefined
-      }
+  const downloadButton = (
+    <Button
+      type="button"
+      variant="outline"
+      size="sm"
+      onClick={handleDownload}
+      disabled={downloading}
+      aria-busy={downloading}
     >
-      {onSaveTemplate && (
-        <Button type="button" variant="outline" size="sm" onClick={onSaveTemplate}>
-          <BookmarkPlus className="icon-optical h-4 w-4" aria-hidden />
-          Salvar como modelo
-        </Button>
+      {downloading ? (
+        <Loader2 className="icon-optical h-4 w-4 animate-spin" aria-hidden />
+      ) : (
+        <Download className="icon-optical h-4 w-4" aria-hidden />
       )}
-      <Button
-        type="button"
-        variant="outline"
-        size="sm"
-        onClick={handleDownload}
-        disabled={downloading}
-        aria-busy={downloading}
-        aria-describedby={hasIssues ? summaryId : undefined}
+      {downloading ? "Gerando PDF…" : "Baixar PDF"}
+    </Button>
+  );
+
+  const printButton = (
+    <Button type="button" variant="outline" size="sm" onClick={handlePrint}>
+      <Printer className="icon-optical h-4 w-4" aria-hidden />
+      Imprimir
+    </Button>
+  );
+
+  const viewIssuedButton = (
+    <Button asChild type="button" variant="outline" size="sm">
+      <Link to="/documentos-emitidos">
+        <ExternalLink className="icon-optical h-4 w-4" aria-hidden />
+        Ver documento emitido
+      </Link>
+    </Button>
+  );
+
+  return (
+    <>
+      <FormActionBar
+        stepsLabel="Etapas preenchidas"
+        steps={[
+          { label: "Paciente", done: !disabled },
+          { label: "Texto do documento", done: temTexto },
+          { label: "Documento emitido", done: Boolean(issuedDoc) },
+        ]}
+        note={
+          issuedDoc
+            ? `Documento ${issuedDoc.id} emitido e salvo em “Documentos emitidos”. Para ter validade, imprima o documento e realize a assinatura manualmente.`
+            : "Para ter validade, imprima o documento e realize a assinatura manualmente."
+        }
+        banner={
+          issuedDoc ? (
+            <div
+              role="status"
+              className="rounded-md border border-border bg-muted/40 p-3 text-xs text-foreground sm:text-sm"
+            >
+              <p className="flex items-start gap-1.5 font-medium">
+                <CheckCircle2 className="icon-optical mt-0.5 h-4 w-4 shrink-0 text-success" aria-hidden />
+                <span>
+                  {type} {issuedDoc.id} já emitido — o formulário está em modo somente
+                  leitura. Use “Novo documento” para iniciar outra emissão.
+                </span>
+              </p>
+            </div>
+          ) : hasIssues ? (
+            <div
+              id={summaryId}
+              role="alert"
+              className="rounded-md border border-destructive/40 bg-destructive/5 p-3 text-xs text-destructive sm:text-sm"
+            >
+              <p className="flex items-start gap-1.5 font-medium">
+                <AlertCircle className="icon-optical mt-0.5 h-4 w-4 shrink-0" aria-hidden />
+                <span>
+                  {allIssues.length === 1
+                    ? "1 campo precisa de correção antes de emitir o documento:"
+                    : `${allIssues.length} campos precisam de correção antes de emitir o documento:`}
+                </span>
+              </p>
+              <ul className="mt-1.5 space-y-1 pl-6">
+                {allIssues.map((issue) => (
+                  <li key={`${issue.fieldId}-${issue.message}`}>
+                    <Button
+                      type="button"
+                      variant="link"
+                      className="h-auto justify-start p-0 text-left text-xs text-destructive underline sm:text-sm"
+                      onClick={() => focusField(issue.fieldId)}
+                    >
+                      {issue.label}: {issue.message}
+                    </Button>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ) : undefined
+        }
       >
-        {downloading ? (
-          <Loader2 className="icon-optical h-4 w-4 animate-spin" aria-hidden />
+        {issuedDoc ? (
+          <>
+            {viewIssuedButton}
+            <Button type="button" size="sm" onClick={onNewDocument}>
+              <FilePlus2 className="icon-optical h-4 w-4" aria-hidden />
+              Novo documento
+            </Button>
+          </>
         ) : (
-          <Download className="icon-optical h-4 w-4" aria-hidden />
+          <>
+            {onSaveTemplate && (
+              <Button type="button" variant="outline" size="sm" onClick={onSaveTemplate}>
+                <BookmarkPlus className="icon-optical h-4 w-4" aria-hidden />
+                Salvar como modelo
+              </Button>
+            )}
+            <Button
+              type="button"
+              size="sm"
+              onClick={handleIssue}
+              aria-describedby={hasIssues ? summaryId : undefined}
+            >
+              <Send className="icon-optical h-4 w-4" aria-hidden />
+              Emitir documento
+            </Button>
+          </>
         )}
-        {downloading ? "Gerando PDF…" : "Baixar PDF"}
-      </Button>
-      <Button
-        type="button"
-        size="sm"
-        onClick={handlePrint}
-        aria-describedby={hasIssues ? summaryId : undefined}
+      </FormActionBar>
+
+      <AppModal
+        open={confirmOpen}
+        onOpenChange={setConfirmOpen}
+        title="Documento emitido com sucesso"
+        description={
+          issuedDoc
+            ? `${type} ${issuedDoc.id} salvo em “Documentos emitidos”.`
+            : "Documento salvo em “Documentos emitidos”."
+        }
+        icon={<CheckCircle2 className="icon-optical h-4 w-4 text-success" aria-hidden />}
+        size="md"
+        footer={
+          <>
+            {downloadButton}
+            {printButton}
+            {viewIssuedButton}
+            <Button type="button" size="sm" onClick={() => setConfirmOpen(false)}>
+              Fechar
+            </Button>
+          </>
+        }
       >
-        <Printer className="icon-optical h-4 w-4" aria-hidden />
-        Imprimir
-      </Button>
-
-
-
-
-    </FormActionBar>
+        <p className="flex items-start gap-1.5 text-sm text-muted-foreground">
+          <Info className="icon-optical mt-0.5 h-4 w-4 shrink-0" aria-hidden />
+          <span>
+            Para ter validade, imprima o documento e realize a assinatura manualmente.
+          </span>
+        </p>
+      </AppModal>
+    </>
   );
 }
 
@@ -440,7 +549,8 @@ function CidFields({
 
 /* ---------------- Relatórios ---------------- */
 
-function ReportsTab() {
+function ReportsTab({ onNewDocument }: { onNewDocument: () => void }) {
+  const [issuedDoc, setIssuedDoc] = useState<IssuedDocument | null>(null);
   const [paciente, setPaciente] = useState("");
   const [cid, setCid] = useState("");
   const [diagnosticoSelecionado, setDiagnosticoSelecionado] = useState("");
@@ -554,8 +664,11 @@ function ReportsTab() {
   }
 
 
+  const locked = Boolean(issuedDoc);
+
   return (
     <>
+      <fieldset disabled={locked} className="min-w-0 space-y-6 border-0 p-0">
       <SurfaceCard
         title="Dados do relatório"
         description="Identifique o paciente e o diagnóstico que será impresso no documento."
@@ -618,6 +731,7 @@ function ReportsTab() {
 
       {staleNotice}
       <RichTextEditor
+        readOnly={locked}
         ariaLabel="Texto do relatório médico"
         pagePreview={{ title: "Relatório médico", paciente }}
         value={conteudo}
@@ -647,11 +761,17 @@ function ReportsTab() {
         }
       />
 
+      </fieldset>
+
       <DocumentActions
         title="Relatório médico"
         html={previewHtml}
         paciente={paciente}
         pacienteFieldId="relatorio-paciente"
+        type="Relatório"
+        issuedDoc={issuedDoc}
+        onIssued={setIssuedDoc}
+        onNewDocument={onNewDocument}
         issues={issues}
 
         onSaveTemplate={requestSaveTemplate}
@@ -665,7 +785,8 @@ function ReportsTab() {
 
 /* ---------------- Atestados ---------------- */
 
-function CertificateTab() {
+function CertificateTab({ onNewDocument }: { onNewDocument: () => void }) {
+  const [issuedDoc, setIssuedDoc] = useState<IssuedDocument | null>(null);
   const [paciente, setPaciente] = useState("");
   const [cid, setCid] = useState("");
   const [diagnosticoSelecionado, setDiagnosticoSelecionado] = useState("");
@@ -760,8 +881,11 @@ function CertificateTab() {
   }
 
 
+  const locked = Boolean(issuedDoc);
+
   return (
     <>
+      <fieldset disabled={locked} className="min-w-0 space-y-6 border-0 p-0">
       <SurfaceCard
         title="Dados do atestado"
         description="O texto padrão é gerado automaticamente a partir destes campos."
@@ -821,6 +945,7 @@ function CertificateTab() {
 
       {staleNotice}
       <RichTextEditor
+        readOnly={locked}
         ariaLabel="Texto do atestado"
         pagePreview={{ title: "Atestado médico", paciente }}
         value={conteudo}
@@ -853,11 +978,17 @@ function CertificateTab() {
         }
       />
 
+      </fieldset>
+
       <DocumentActions
         title="Atestado médico"
         html={previewHtml}
         paciente={paciente}
         pacienteFieldId="atestado-paciente"
+        type="Atestado"
+        issuedDoc={issuedDoc}
+        onIssued={setIssuedDoc}
+        onNewDocument={onNewDocument}
         issues={issues}
         onSaveTemplate={requestSaveTemplate}
       />
@@ -870,7 +1001,8 @@ function CertificateTab() {
 
 /* ---------------- Comparecimento ---------------- */
 
-function AttendanceTab() {
+function AttendanceTab({ onNewDocument }: { onNewDocument: () => void }) {
+  const [issuedDoc, setIssuedDoc] = useState<IssuedDocument | null>(null);
   const [paciente, setPaciente] = useState("");
   const [local, setLocal] = useState("");
   const [cidade, setCidade] = useState("");
@@ -976,8 +1108,11 @@ function AttendanceTab() {
   }
 
 
+  const locked = Boolean(issuedDoc);
+
   return (
     <>
+      <fieldset disabled={locked} className="min-w-0 space-y-6 border-0 p-0">
       <SurfaceCard
         title="Dados da declaração"
         description="Informe o local e os horários de permanência do paciente no atendimento."
@@ -1055,6 +1190,7 @@ function AttendanceTab() {
 
       {staleNotice}
       <RichTextEditor
+        readOnly={locked}
         ariaLabel="Texto da declaração de comparecimento"
         pagePreview={{ title: "Declaração de comparecimento", paciente }}
         value={conteudo}
@@ -1087,11 +1223,17 @@ function AttendanceTab() {
         }
       />
 
+      </fieldset>
+
       <DocumentActions
         title="Declaração de comparecimento"
         html={previewHtml}
         paciente={paciente}
         pacienteFieldId="comp-paciente"
+        type="Comparecimento"
+        issuedDoc={issuedDoc}
+        onIssued={setIssuedDoc}
+        onNewDocument={onNewDocument}
         issues={issues}
 
         onSaveTemplate={requestSaveTemplate}

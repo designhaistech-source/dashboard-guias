@@ -79,6 +79,8 @@ interface RichTextEditorProps {
   variableValues?: Readonly<Record<string, string>>;
   /** Quando informado, "Pré-visualizar" abre o documento paginado em A4 (só conferência). */
   pagePreview?: { title: string; paciente: string };
+  /** Documento já emitido: exibe o texto somente leitura, sem edição. */
+  readOnly?: boolean;
 }
 
 
@@ -101,6 +103,7 @@ export function RichTextEditor({
   pendingVariables,
   variableValues,
   pagePreview,
+  readOnly = false,
 }: RichTextEditorProps) {
   const [previewing, setPreviewing] = React.useState(false);
   const [pagePreviewOpen, setPagePreviewOpen] = React.useState(false);
@@ -114,7 +117,8 @@ export function RichTextEditor({
   const aiHintId = `${uid}-ai-hint`;
   const countId = `${uid}-count`;
 
-  const showVariables = Boolean(variables && variables.length > 0) && !previewing;
+  const showVariables =
+    Boolean(variables && variables.length > 0) && !previewing && !readOnly;
   const stats = React.useMemo(() => getTextStats(previewing ? (previewHtml ?? value) : value), [
     previewing,
     previewHtml,
@@ -187,6 +191,8 @@ export function RichTextEditor({
         </div>
       )}
       <div className="flex flex-wrap items-center gap-1 border-b border-border bg-muted/30 px-2 py-1.5">
+        {!readOnly && (
+          <>
         <Button
           type="button"
           variant="ghost"
@@ -238,7 +244,9 @@ export function RichTextEditor({
             })}
           </React.Fragment>
         ))}
-        {onImproveWithAi && (
+          </>
+        )}
+        {onImproveWithAi && !readOnly && (
           <>
             <span aria-hidden className="mx-1 h-5 w-px bg-border" />
             <TooltipProvider delayDuration={150}>
@@ -274,6 +282,7 @@ export function RichTextEditor({
         )}
         {canPreview && (
           <div className="ml-auto flex items-center gap-1">
+            {!readOnly && (
             <Button
               type="button"
               variant={previewing ? "ghost" : "secondary"}
@@ -285,6 +294,7 @@ export function RichTextEditor({
               <Pencil className="icon-optical h-3.5 w-3.5" aria-hidden />
               Editar
             </Button>
+            )}
             <Button
               type="button"
               variant={previewing || pagePreviewOpen ? "secondary" : "ghost"}
@@ -360,12 +370,12 @@ export function RichTextEditor({
         </p>
       )}
 
-      {previewing ? (
+      {previewing || readOnly ? (
         <div
           aria-label={`Pré-visualização — ${ariaLabel}`}
           role="region"
           className="min-h-64 bg-muted/20 px-4 py-3 text-sm leading-relaxed text-foreground"
-          dangerouslySetInnerHTML={{ __html: previewHtml ?? "" }}
+          dangerouslySetInnerHTML={{ __html: previewHtml ?? value }}
         />
       ) : (
       <div
