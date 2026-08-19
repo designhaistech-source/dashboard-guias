@@ -1298,20 +1298,13 @@ function DashboardPage() {
                         fontSize={11}
                         tickLine={false}
                         axisLine={false}
-                        tickMargin={6}
+                        tickMargin={4}
+                        height={40}
                         ticks={dailyTicks}
                         interval={0}
-                        tickFormatter={(iso: string) =>
-                          formatDailyTick(iso, dailyMonthStarts)
-                        }
-                        label={{
-                          value: "Data",
-                          position: "insideBottom",
-                          offset: -8,
-                          fill: "var(--muted-foreground)",
-                          fontSize: 11,
-                        }}
+                        tick={<DailyAxisTick monthStarts={dailyMonthStarts} />}
                       />
+
 
                       <YAxis
                         stroke="var(--muted-foreground)"
