@@ -39,6 +39,11 @@ import { RichTextEditor } from "./rich-text-editor";
 import { useTextReplacement } from "./use-text-replacement";
 import { useDocumentTemplates } from "./use-document-templates";
 import type { SavedDocumentTemplate } from "../data/document-templates";
+import {
+  pendingVariables as findPendingVariables,
+  resolveDocumentVariables,
+  VARIABLE_LABELS,
+} from "../data/document-variables";
 import { getDocumentDateStatus, todayIsoDate } from "../data/document-date";
 import {
   findCid,
@@ -458,6 +463,19 @@ function ReportsTab() {
     suggestName: () => (paciente.trim() ? `Relatório — ${paciente.trim()}` : ""),
   });
 
+  const variableValues = useMemo(
+    () => ({ paciente, data: todayIso(), cid, diagnostico }),
+    [paciente, cid, diagnostico],
+  );
+  const previewHtml = useMemo(
+    () => resolveDocumentVariables(html, variableValues),
+    [html, variableValues],
+  );
+  const pending = useMemo(
+    () => findPendingVariables(html, variableValues).map((v) => VARIABLE_LABELS[v] ?? v),
+    [html, variableValues],
+  );
+
   const pacienteError = useMemo(() => validatePaciente(paciente), [paciente]);
   const cidError = useMemo(() => validateCid(cid), [cid]);
 
@@ -538,6 +556,8 @@ function ReportsTab() {
         onImproveWithAi={improve}
         improving={improving}
         variables={DOCUMENT_VARIABLES}
+        previewHtml={previewHtml}
+        pendingVariables={pending}
         placeholder="Redija o relatório médico..."
         header={
           <DocumentEditorHeader
@@ -554,7 +574,7 @@ function ReportsTab() {
 
       <DocumentActions
         title="Relatório médico"
-        html={html}
+        html={previewHtml}
         paciente={paciente}
         pacienteFieldId="relatorio-paciente"
         issues={issues}
@@ -608,6 +628,19 @@ function CertificateTab() {
   const conteudo = html || gerado;
 
   const dataStatus = useMemo(() => getDocumentDateStatus(data), [data]);
+
+  const variableValues = useMemo(
+    () => ({ paciente, data, cid, diagnostico: diagnosticoSelecionado }),
+    [paciente, data, cid, diagnosticoSelecionado],
+  );
+  const previewHtml = useMemo(
+    () => resolveDocumentVariables(conteudo, variableValues),
+    [conteudo, variableValues],
+  );
+  const pending = useMemo(
+    () => findPendingVariables(conteudo, variableValues).map((v) => VARIABLE_LABELS[v] ?? v),
+    [conteudo, variableValues],
+  );
 
   const pacienteError = useMemo(() => validatePaciente(paciente), [paciente]);
   const cidError = useMemo(() => validateCid(cid), [cid]);
@@ -730,6 +763,8 @@ function CertificateTab() {
         onImproveWithAi={improve}
         improving={improving}
         variables={DOCUMENT_VARIABLES}
+        previewHtml={previewHtml}
+        pendingVariables={pending}
         header={
           <DocumentEditorHeader
             title="Atestado médico"
@@ -754,7 +789,7 @@ function CertificateTab() {
 
       <DocumentActions
         title="Atestado médico"
-        html={conteudo}
+        html={previewHtml}
         paciente={paciente}
         pacienteFieldId="atestado-paciente"
         issues={issues}
@@ -815,6 +850,16 @@ function AttendanceTab() {
           `Comparecimento registrado há ${days} dias. Confirme a data do atendimento antes de emitir.`,
       }),
     [data],
+  );
+
+  const variableValues = useMemo(() => ({ paciente, data }), [paciente, data]);
+  const previewHtml = useMemo(
+    () => resolveDocumentVariables(conteudo, variableValues),
+    [conteudo, variableValues],
+  );
+  const pending = useMemo(
+    () => findPendingVariables(conteudo, variableValues).map((v) => VARIABLE_LABELS[v] ?? v),
+    [conteudo, variableValues],
   );
 
   const pacienteError = useMemo(() => validatePaciente(paciente), [paciente]);
@@ -964,6 +1009,8 @@ function AttendanceTab() {
         onImproveWithAi={improve}
         improving={improving}
         variables={DOCUMENT_VARIABLES}
+        previewHtml={previewHtml}
+        pendingVariables={pending}
         header={
           <DocumentEditorHeader
             title="Declaração de comparecimento"
@@ -988,7 +1035,7 @@ function AttendanceTab() {
 
       <DocumentActions
         title="Declaração de comparecimento"
-        html={conteudo}
+        html={previewHtml}
         paciente={paciente}
         pacienteFieldId="comp-paciente"
         issues={issues}

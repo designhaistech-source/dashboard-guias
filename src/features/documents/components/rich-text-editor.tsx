@@ -13,6 +13,9 @@ import {
   Sparkles,
   Undo2,
   Redo2,
+  Eye,
+  Pencil,
+  AlertCircle,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -62,6 +65,10 @@ interface RichTextEditorProps {
   improving?: boolean;
   /** Variáveis inseríveis no texto (ex.: "@paciente"). */
   variables?: readonly string[];
+  /** Texto com as variáveis já substituídas, exibido no modo de pré-visualização. */
+  previewHtml?: string;
+  /** Variáveis usadas no texto que ainda não têm valor preenchido. */
+  pendingVariables?: readonly string[];
 }
 
 /**
@@ -79,7 +86,11 @@ export function RichTextEditor({
   onImproveWithAi,
   improving = false,
   variables,
+  previewHtml,
+  pendingVariables,
 }: RichTextEditorProps) {
+  const [previewing, setPreviewing] = React.useState(false);
+  const canPreview = typeof previewHtml === "string";
   const ref = React.useRef<HTMLDivElement>(null);
   const { canUndo, canRedo, undo, redo, record } = useEditorHistory(value, onChange, ref);
 
@@ -221,9 +232,35 @@ export function RichTextEditor({
             </TooltipProvider>
           </>
         )}
+        {canPreview && (
+          <div className="ml-auto flex items-center gap-1">
+            <Button
+              type="button"
+              variant={previewing ? "ghost" : "secondary"}
+              size="sm"
+              onClick={() => setPreviewing(false)}
+              aria-pressed={!previewing}
+              className="h-7 gap-1.5 px-2 text-xs"
+            >
+              <Pencil className="icon-optical h-3.5 w-3.5" aria-hidden />
+              Editar
+            </Button>
+            <Button
+              type="button"
+              variant={previewing ? "secondary" : "ghost"}
+              size="sm"
+              onClick={() => setPreviewing(true)}
+              aria-pressed={previewing}
+              className="h-7 gap-1.5 px-2 text-xs"
+            >
+              <Eye className="icon-optical h-3.5 w-3.5" aria-hidden />
+              Pré-visualizar
+            </Button>
+          </div>
+        )}
       </div>
 
-      {variables && variables.length > 0 && (
+      {variables && variables.length > 0 && !previewing && (
         <div className="flex flex-wrap items-center gap-1.5 border-b border-border px-4 py-2">
           <span id="rte-variables-hint" className="text-xs text-muted-foreground">
             Inserir variável:
@@ -242,13 +279,36 @@ export function RichTextEditor({
             </Button>
           ))}
           <span className="text-xs text-muted-foreground">
-            (substituída pelos dados do paciente na impressão)
+            {canPreview
+              ? "(veja o texto final em “Pré-visualizar”)"
+              : "(substituída pelos dados do paciente na impressão)"}
           </span>
         </div>
       )}
 
 
 
+      {previewing && pendingVariables && pendingVariables.length > 0 && (
+        <p
+          role="status"
+          className="flex items-start gap-1.5 border-b border-border bg-muted/40 px-4 py-2 text-xs text-muted-foreground"
+        >
+          <AlertCircle className="icon-optical mt-0.5 h-3.5 w-3.5 shrink-0" aria-hidden />
+          <span>
+            Sem valor preenchido: {pendingVariables.join(", ")}. No documento final aparecem
+            como linha em branco para preenchimento manual.
+          </span>
+        </p>
+      )}
+
+      {previewing ? (
+        <div
+          aria-label={`Pré-visualização — ${ariaLabel}`}
+          role="region"
+          className="min-h-64 bg-muted/20 px-4 py-3 text-sm leading-relaxed text-foreground"
+          dangerouslySetInnerHTML={{ __html: previewHtml ?? "" }}
+        />
+      ) : (
       <div
         ref={ref}
         role="textbox"
@@ -264,6 +324,7 @@ export function RichTextEditor({
         }}
         className="min-h-64 px-4 py-3 text-sm leading-relaxed text-foreground outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring empty:before:text-muted-foreground empty:before:content-[attr(data-placeholder)]"
       />
+      )}
     </div>
   );
 }
