@@ -37,6 +37,14 @@ import { DocumentEditorHeader } from "./document-editor-header";
 import { RichTextEditor } from "./rich-text-editor";
 import { useTextReplacement } from "./use-text-replacement";
 import { getDocumentDateStatus, todayIsoDate } from "../data/document-date";
+import {
+  validateCidade,
+  validateDiasAfastamento,
+  validateLocal,
+  validatePaciente,
+  validateTimeRange,
+} from "../data/document-validation";
+
 
 import {
   DOCUMENT_VARIABLES,
