@@ -306,7 +306,6 @@ function useEditorHistory(
         s.stack = [...s.stack.slice(0, s.index + 1), html].slice(-MAX_HISTORY);
         s.index = s.stack.length - 1;
       }
-      console.log("REC", origin, merge, JSON.stringify(s.stack));
       s.lastAt = now;
       s.lastOrigin = origin;
       forceUpdate();
