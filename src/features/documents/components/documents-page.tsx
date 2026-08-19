@@ -8,6 +8,7 @@ import {
   BookmarkPlus,
   User,
   Loader2,
+  Eye,
 } from "lucide-react";
 import { AlertCircle } from "lucide-react";
 import { getRouteApi, useNavigate } from "@tanstack/react-router";
@@ -34,6 +35,7 @@ import { CID10 } from "@/lib/cid";
 import { improveDocumentText } from "../lib/improve-text.functions";
 
 import { CidAutocomplete } from "./cid-autocomplete";
+import { DocumentPagePreview } from "./document-page-preview";
 import { DocumentEditorHeader } from "./document-editor-header";
 import { RichTextEditor } from "./rich-text-editor";
 import { useTextReplacement } from "./use-text-replacement";
