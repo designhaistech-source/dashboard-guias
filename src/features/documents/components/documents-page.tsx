@@ -339,12 +339,8 @@ function DocumentActions({
     </Button>
   );
 
-  const printButton = (
-    <Button type="button" variant="outline" size="sm" onClick={handlePrint}>
-      <Printer className="icon-optical h-4 w-4" aria-hidden />
-      Imprimir
-    </Button>
-  );
+
+
 
   const viewIssuedButton = (
     <Button asChild type="button" variant="outline" size="sm">
@@ -458,13 +454,16 @@ function DocumentActions({
         footer={
           <>
             {downloadButton}
-            {printButton}
-            {viewIssuedButton}
-            <Button type="button" size="sm" onClick={() => setConfirmOpen(false)}>
+            <Button type="button" variant="outline" size="sm" onClick={() => setConfirmOpen(false)}>
               Fechar
+            </Button>
+            <Button type="button" size="sm" onClick={handlePrint}>
+              <Printer className="icon-optical h-4 w-4" aria-hidden />
+              Imprimir
             </Button>
           </>
         }
+
       >
         <p className="flex items-start gap-1.5 text-sm text-muted-foreground">
           <Info className="icon-optical mt-0.5 h-4 w-4 shrink-0" aria-hidden />
