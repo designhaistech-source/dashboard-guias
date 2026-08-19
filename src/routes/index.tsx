@@ -537,7 +537,7 @@ function ChartTooltip({ active, payload, label, suffix, unit }: any) {
             {heading}
           </div>
           {iso && (
-            <div className="text-[10px] text-muted-foreground/80">{localTimeZoneLabel()}</div>
+            <div className="text-xs text-muted-foreground/80">{localTimeZoneLabel()}</div>
           )}
         </div>
       )}
@@ -586,8 +586,7 @@ const emptyFilters: GuideFilters = {
 
 
 /** Rótulo de grupo dentro do painel de filtros — único nível em caixa alta. */
-const filterGroupLabelClass =
-  "mb-2 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground";
+const filterGroupLabelClass = "mb-2 text-eyebrow";
 
 
 function FilterField({
@@ -1355,7 +1354,7 @@ function DashboardPage() {
                     <div className="metric-value text-foreground">
                       {activeType !== undefined ? typeData[activeType].value : total}
                     </div>
-                    <div className="max-w-[96px] text-[10px] leading-tight text-muted-foreground">
+                    <div className="max-w-[96px] text-xs leading-tight text-muted-foreground">
                       {activeType !== undefined
                         ? `guias de ${typeData[activeType].name}`
                         : "guias no período"}
