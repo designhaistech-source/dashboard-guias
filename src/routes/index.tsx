@@ -462,7 +462,7 @@ async function generateReportPdf(
     keepTogether(46);
     applyType(TYPE.body);
     const scopeLines = doc.splitTextToSize(
-      `Este relatório considera apenas as guias processadas (importadas e processadas pela leitura automática) no período selecionado: ${periodLabel}. Indicadores, gráficos e tabelas a seguir referem-se exclusivamente a essas guias.`,
+      `Este relatório considera apenas as guias processadas (importadas e lidas automaticamente) no período selecionado: ${periodLabel}. Indicadores, gráficos e tabelas a seguir referem-se exclusivamente a essas guias.`,
       contentW,
     );
     doc.text(scopeLines, margin, y);
