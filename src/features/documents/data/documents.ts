@@ -35,6 +35,53 @@ export const REPORT_TEMPLATES: ReportTemplate[] = [
   },
 ];
 
+/**
+ * Modelos padrão de atestado. Substituem o texto gerado pelos campos por uma
+ * redação alternativa; as variáveis são resolvidas na camada de variáveis.
+ */
+export const CERTIFICATE_TEMPLATES: ReportTemplate[] = [
+  {
+    value: "atestado-afastamento",
+    label: "Atestado de afastamento",
+    content:
+      "<p>Atesto, para os devidos fins, que o(a) paciente @paciente esteve sob meus cuidados médicos em @data e necessita de afastamento de suas atividades habituais.</p><p>Diagnóstico: @diagnostico (CID @cid).</p>",
+  },
+  {
+    value: "atestado-repouso",
+    label: "Atestado de repouso domiciliar",
+    content:
+      "<p>Atesto que o(a) paciente @paciente, avaliado(a) em @data, necessita de repouso domiciliar por recomendação médica.</p><p>Diagnóstico: @diagnostico (CID @cid).</p>",
+  },
+  {
+    value: "atestado-comparecimento-consulta",
+    label: "Atestado de aptidão",
+    content:
+      "<p>Atesto que o(a) paciente @paciente, avaliado(a) em @data, encontra-se apto(a) para suas atividades habituais, sem restrições no momento da avaliação.</p>",
+  },
+];
+
+/** Modelos padrão da declaração de comparecimento. */
+export const ATTENDANCE_TEMPLATES: ReportTemplate[] = [
+  {
+    value: "comparecimento-consulta",
+    label: "Comparecimento a consulta",
+    content:
+      "<p>Declaro, para os devidos fins, que o(a) Sr.(a) @paciente compareceu a consulta médica nesta unidade em @data.</p><p>Por ser verdade, firmo a presente declaração.</p>",
+  },
+  {
+    value: "comparecimento-exame",
+    label: "Comparecimento para exame",
+    content:
+      "<p>Declaro, para os devidos fins, que o(a) Sr.(a) @paciente compareceu a esta unidade em @data para realização de exames complementares.</p><p>Por ser verdade, firmo a presente declaração.</p>",
+  },
+  {
+    value: "comparecimento-acompanhante",
+    label: "Comparecimento como acompanhante",
+    content:
+      "<p>Declaro, para os devidos fins, que o(a) Sr.(a) @paciente compareceu a esta unidade em @data na condição de acompanhante do(a) paciente em atendimento.</p><p>Por ser verdade, firmo a presente declaração.</p>",
+  },
+];
+
 export const AFASTAMENTO_OPTIONS = [
   { value: "1", label: "1 dia" },
   { value: "2", label: "2 dias" },
