@@ -978,6 +978,9 @@ function DashboardPage() {
                 </div>
               }
             >
+              {!hasData ? (
+                emptyState
+              ) : (
               <div className="h-72" data-chart="daily">
                 <ResponsiveContainer width="100%" height="100%">
                   <AreaChart data={dailyData} margin={{ top: 10, right: 10, left: -10, bottom: 0 }}>
@@ -1009,9 +1012,13 @@ function DashboardPage() {
                   </AreaChart>
                 </ResponsiveContainer>
               </div>
+              )}
             </SurfaceCard>
 
             <SurfaceCard title="Por tipo de guia" description="Distribuição no período">
+              {!hasData ? (
+                emptyState
+              ) : (
               <div className="space-y-4">
                 <div className="relative h-44" data-chart="types">
                   <ResponsiveContainer width="100%" height="100%">
@@ -1081,6 +1088,7 @@ function DashboardPage() {
                   })}
                 </ul>
               </div>
+              )}
             </SurfaceCard>
           </div>
 
@@ -1089,6 +1097,9 @@ function DashboardPage() {
             title="Procedimentos mais realizados"
             description="Top códigos TUSS no período"
           >
+            {procedures.length === 0 ? (
+              emptyState
+            ) : (
             <div className="grid gap-6 lg:grid-cols-2">
               <div className="h-64" data-chart="procedures">
                 <ResponsiveContainer width="100%" height="100%">
@@ -1151,6 +1162,7 @@ function DashboardPage() {
                 </table>
               </div>
             </div>
+            )}
           </SurfaceCard>
 
         </div>
@@ -1214,13 +1226,6 @@ function Kpi({
     success: "bg-success/15 text-success",
     info: "bg-info/15 text-info",
     purple: "bg-purple/15 text-purple",
-  }[tone];
-
-  const toneStroke = {
-    primary: "var(--primary)",
-    success: "var(--success)",
-    info: "var(--info)",
-    purple: "var(--purple)",
   }[tone];
 
   return (
