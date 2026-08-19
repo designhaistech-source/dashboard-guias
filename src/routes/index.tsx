@@ -863,6 +863,12 @@ function DashboardPage() {
     [filters],
   );
 
+  /** Resolved after hydration: the server timezone differs from the browser's. */
+  const [timeZoneLabel, setTimeZoneLabel] = useState("");
+  useEffect(() => {
+    setTimeZoneLabel(localTimeZoneLabel());
+  }, []);
+
   const periodLabel = useMemo(
     () =>
       buildPeriodLabel(filters.dataAutorizacaoDe, filters.dataAutorizacaoAte, {
