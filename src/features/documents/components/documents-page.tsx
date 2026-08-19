@@ -36,6 +36,7 @@ import { CidAutocomplete } from "./cid-autocomplete";
 import { DocumentEditorHeader } from "./document-editor-header";
 import { RichTextEditor } from "./rich-text-editor";
 import { useTextReplacement } from "./use-text-replacement";
+import { getDocumentDateStatus, todayIsoDate } from "../data/document-date";
 
 import {
   DOCUMENT_VARIABLES,
