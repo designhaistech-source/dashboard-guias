@@ -36,6 +36,7 @@ import { CidAutocomplete } from "./cid-autocomplete";
 import { DocumentEditorHeader } from "./document-editor-header";
 import { RichTextEditor } from "./rich-text-editor";
 import { useTextReplacement } from "./use-text-replacement";
+import { getDocumentDateStatus, todayIsoDate } from "../data/document-date";
 
 import {
   DOCUMENT_VARIABLES,
@@ -152,17 +153,24 @@ function DocumentActions({
   html,
   paciente,
   onSaveTemplate,
+  blockReason,
 }: {
   title: string;
   html: string;
   paciente: string;
   onSaveTemplate?: () => void;
+  /** Motivo que impede a emissão (ex.: data do documento inválida). */
+  blockReason?: string;
 }) {
   const disabled = !paciente.trim();
   const temTexto = html.replace(/<[^>]+>/g, "").trim().length > 0;
   const [downloading, setDownloading] = useState(false);
 
   function handlePrint() {
+    if (blockReason) {
+      toast.error(blockReason);
+      return;
+    }
     if (disabled) {
       toast.error("Informe o paciente antes de imprimir.");
       return;
@@ -171,6 +179,10 @@ function DocumentActions({
   }
 
   async function handleDownload() {
+    if (blockReason) {
+      toast.error(blockReason);
+      return;
+    }
     if (disabled) {
       toast.error("Informe o paciente antes de baixar o PDF.");
       return;
@@ -179,6 +191,7 @@ function DocumentActions({
       toast.error("Escreva o texto do documento antes de baixar o PDF.");
       return;
     }
+
 
     setDownloading(true);
     const toastId = toast.loading("Gerando PDF do documento…");
@@ -450,6 +463,8 @@ function CertificateTab() {
 
   const conteudo = html || gerado;
 
+  const dataStatus = useMemo(() => getDocumentDateStatus(data), [data]);
+
   const { requestReplace, replacementDialog } = useTextReplacement(html, setHtml);
 
   const { improving, improve } = useImproveWithAi(
@@ -490,10 +505,16 @@ function CertificateTab() {
               onValueChange={setDias}
               options={AFASTAMENTO_OPTIONS}
             />
-            <Field id="atestado-data" label="Data do documento">
+            <Field
+              id="atestado-data"
+              label="Data do documento"
+              error={dataStatus.error}
+              hint={dataStatus.warning}
+            >
               <Input
                 id="atestado-data"
                 type="date"
+                max={todayIsoDate()}
                 value={data}
                 onChange={(e) => setData(e.target.value)}
               />
@@ -543,6 +564,7 @@ function CertificateTab() {
         title="Atestado médico"
         html={conteudo}
         paciente={paciente}
+        blockReason={dataStatus.error}
         onSaveTemplate={() =>
           toast.success("Modelo de atestado salvo e disponível na lista (simulação).")
         }
@@ -592,6 +614,17 @@ function AttendanceTab() {
 
   const conteudo = html || gerado;
 
+  const dataStatus = useMemo(
+    () =>
+      getDocumentDateStatus(data, {
+        future:
+          "Data futura não é permitida: a declaração só pode ser emitida após o comparecimento.",
+        retroactive: (days) =>
+          `Comparecimento registrado há ${days} dias. Confirme a data do atendimento antes de emitir.`,
+      }),
+    [data],
+  );
+
   const { requestReplace, replacementDialog } = useTextReplacement(html, setHtml);
 
   const { improving, improve } = useImproveWithAi(
@@ -640,10 +673,16 @@ function AttendanceTab() {
                 onChange={(e) => setCidade(e.target.value)}
               />
             </Field>
-            <Field id="comp-data" label="Data do comparecimento">
+            <Field
+              id="comp-data"
+              label="Data do comparecimento"
+              error={dataStatus.error}
+              hint={dataStatus.warning}
+            >
               <Input
                 id="comp-data"
                 type="date"
+                max={todayIsoDate()}
                 value={data}
                 onChange={(e) => setData(e.target.value)}
               />
@@ -701,6 +740,7 @@ function AttendanceTab() {
         title="Declaração de comparecimento"
         html={conteudo}
         paciente={paciente}
+        blockReason={dataStatus.error}
         onSaveTemplate={() =>
           toast.success(
             "Modelo de declaração salvo e disponível na lista (simulação).",
