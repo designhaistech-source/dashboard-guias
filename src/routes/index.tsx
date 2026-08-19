@@ -986,15 +986,26 @@ function DashboardPage() {
           />
 
 
-          {/* Período aplicado — sempre visível, sem abrir os filtros */}
-          <p className="flex items-center gap-2 text-sm text-muted-foreground" aria-live="polite">
-            <CalendarRange className="h-4 w-4 shrink-0" aria-hidden="true" />
+          {/* Recorte aplicado — sempre visível, sem abrir os filtros */}
+          <p className="flex items-start gap-2 text-sm text-muted-foreground" aria-live="polite">
+            <CalendarRange className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />
             <span>
-              Indicadores e gráficos do período:{" "}
-              <span className="font-medium text-foreground">{periodLabel}</span>{" "}
-              <span className="text-muted-foreground/80">{timeZoneLabel ? `• ${timeZoneLabel}` : ""}</span>
+              Dados exibidos:{" "}
+              <span className="font-medium text-foreground">{periodLabel}</span>
+              {" · "}Tipo de guia:{" "}
+              <span className="font-medium text-foreground">
+                {filters.tipoGuia.trim() || "Todos os tipos de guia"}
+              </span>
+              {" · "}Prestador:{" "}
+              <span className="font-medium text-foreground">
+                {filters.prestadorSolicitante.trim() || "Todos os prestadores"}
+              </span>
+              {timeZoneLabel ? (
+                <span className="text-muted-foreground/80">{` · ${timeZoneLabel}`}</span>
+              ) : null}
             </span>
           </p>
+
 
 
 
