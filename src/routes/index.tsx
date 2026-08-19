@@ -176,7 +176,8 @@ async function captureChartPng(
   document.body.appendChild(colorProbe);
   const resolveColor = (v: string) => {
     if (!v || v === "none" || v.startsWith("url(")) return v;
-    if (!/oklch|oklab|color\(/i.test(v)) return v;
+    if (!/oklch|oklab|color\(|var\(/i.test(v)) return v;
+    colorProbe.style.color = "";
     colorProbe.style.color = v;
     return window.getComputedStyle(colorProbe).color || v;
   };
@@ -195,6 +196,8 @@ async function captureChartPng(
       "opacity",
       "fill-opacity",
       "stroke-opacity",
+      "stop-color",
+      "stop-opacity",
       "font-size",
       "font-family",
       "font-weight",
@@ -203,7 +206,7 @@ async function captureChartPng(
     for (const p of props) {
       let v = cs.getPropertyValue(p);
       if (!v) continue;
-      if (p === "fill" || p === "stroke") v = resolveColor(v);
+      if (p === "fill" || p === "stroke" || p === "stop-color") v = resolveColor(v);
       style += `${p}:${v};`;
     }
     dst.setAttribute("style", style);
@@ -213,7 +216,22 @@ async function captureChartPng(
     const attrStroke = el.getAttribute("stroke");
     if (attrStroke) dst.setAttribute("stroke", resolveColor(attrStroke));
   });
+
+  // Gradient stops declared with CSS variables (e.g. stopColor="var(--purple)")
+  // lose their value once the SVG is rasterized off-DOM, so resolve them here.
+  const rootStyle = window.getComputedStyle(document.documentElement);
+  clone.querySelectorAll<SVGStopElement>("stop").forEach((stop) => {
+    const raw = stop.getAttribute("stop-color") ?? stop.style.stopColor ?? "";
+    const varName = raw.match(/var\(\s*(--[\w-]+)/)?.[1];
+    const value = varName ? rootStyle.getPropertyValue(varName).trim() : raw;
+    const resolved = resolveColor(value);
+    if (resolved) {
+      stop.setAttribute("stop-color", resolved);
+      stop.style.stopColor = resolved;
+    }
+  });
   colorProbe.remove();
+
 
   const xml = new XMLSerializer().serializeToString(clone);
   const svgBlob = new Blob([xml], { type: "image/svg+xml;charset=utf-8" });
@@ -239,7 +257,18 @@ async function captureChartPng(
   }
 }
 
-async function generateReportPdf(periodLabel: string, metrics: DashboardMetrics) {
+/** Extra context so the PDF matches the wording shown on the "Guias extraídas" tab. */
+type ReportContext = {
+  todayLabel: string;
+  todayComparison?: string;
+  averageComparison?: string;
+};
+
+async function generateReportPdf(
+  periodLabel: string,
+  metrics: DashboardMetrics,
+  context: ReportContext,
+) {
   const { dailyAvg, total, types: typeData, procedures } = metrics;
   try {
     const doc = new jsPDF({ unit: "pt", format: "a4" });
@@ -325,7 +354,7 @@ async function generateReportPdf(periodLabel: string, metrics: DashboardMetrics)
     }
 
     applyType(TYPE.title);
-    doc.text("Relatório de Visão Geral", titleX, 35);
+    doc.text("Relatório de Guias Extraídas", titleX, 35);
     applyType(TYPE.subtitle);
     // Wrap the metadata line so the timezone suffix is never clipped on the right edge.
     const metaLines = doc.splitTextToSize(
@@ -371,8 +400,13 @@ async function generateReportPdf(periodLabel: string, metrics: DashboardMetrics)
       }
     };
 
-    const sectionTitle = (text: string, keepNextH = 0) => {
-      const titleBlock = 28;
+    const sectionTitle = (text: string, keepNextH = 0, description?: string) => {
+      applyType(TYPE.subtitle);
+      const descLines = description
+        ? doc.splitTextToSize(description, pageWidth - margin * 2)
+        : [];
+      const titleBlock = 28 + descLines.length * 12;
+      // The title, its description and the following block always travel together.
       keepTogether(titleBlock + keepNextH);
       applyType(TYPE.sectionH);
       doc.text(text, margin, y);
@@ -380,8 +414,14 @@ async function generateReportPdf(periodLabel: string, metrics: DashboardMetrics)
       doc.setLineWidth(0.6);
       doc.line(margin, y + 4, pageWidth - margin, y + 4);
       y += 18;
+      if (descLines.length > 0) {
+        applyType(TYPE.subtitle);
+        doc.text(descLines, margin, y);
+        y += descLines.length * 12 + 2;
+      }
       applyType(TYPE.body);
     };
+
 
     // Fit image into a box preserving aspect ratio (contain).
     const fitSize = (img: { w: number; h: number }, maxW: number, maxH: number) => {
@@ -418,23 +458,56 @@ async function generateReportPdf(periodLabel: string, metrics: DashboardMetrics)
     // Approx height for an autoTable block (header + N rows + padding).
     const tableBlockH = (rows: number, rowH = 22, headH = 26) => headH + rows * rowH + 6;
 
+    // Nota de escopo: o relatório deve ser compreensível sem consultar o sistema.
+    keepTogether(46);
+    applyType(TYPE.body);
+    const scopeLines = doc.splitTextToSize(
+      `Este relatório considera apenas as guias extraídas (importadas e processadas pela leitura automática) no período selecionado: ${periodLabel}. Indicadores, gráficos e tabelas a seguir referem-se exclusivamente a essas guias.`,
+      contentW,
+    );
+    doc.text(scopeLines, margin, y);
+    y += scopeLines.length * 13 + 16;
+
     // KPIs
-    const kpiRows = 4;
-    sectionTitle("Indicadores", tableBlockH(kpiRows));
+    const kpiBody: string[][] = [
+      ["Total de guias extraídas", String(total), "Soma no período filtrado", "—"],
+      [
+        "Guias extraídas hoje",
+        String(metrics.today),
+        `Hoje, ${context.todayLabel}`,
+        context.todayComparison ?? "—",
+      ],
+      [
+        "Média diária de guias extraídas",
+        String(dailyAvg),
+        "Por dia no período filtrado",
+        context.averageComparison ?? "—",
+      ],
+      [
+        "Tipos de guias extraídas",
+        String(metrics.distinctTypes),
+        "Tipos distintos no período filtrado",
+        "—",
+      ],
+    ];
+    sectionTitle(
+      "Indicadores de guias extraídas",
+      tableBlockH(kpiBody.length, 26),
+      "Valores calculados sobre as guias extraídas no período filtrado.",
+    );
     autoTable(doc, {
       startY: y,
       margin: { left: margin, right: margin },
-      head: [["Indicador", "Valor"]],
-      body: [
-        ["Total de guias extraídas", String(total)],
-        ["Guias extraídas hoje", String(metrics.today)],
-        ["Média de guias por dia", String(dailyAvg)],
-        ["Tipos de guia", String(typeData.length)],
-      ],
+      head: [["Indicador", "Valor", "Contexto", "Comparação"]],
+      body: kpiBody,
       theme: "grid",
       headStyles: tableHeadStyles,
       bodyStyles: { font: FONT, fontStyle: "normal", textColor: TYPE.tableBody.color },
-      columnStyles: { 1: { halign: "right", cellWidth: 120 } },
+      columnStyles: {
+        1: { halign: "right", cellWidth: 55 },
+        2: { cellWidth: 150 },
+        3: { cellWidth: 130 },
+      },
       styles: tableStyleDefaults,
       tableWidth: contentW,
       rowPageBreak: "avoid",
@@ -445,25 +518,51 @@ async function generateReportPdf(periodLabel: string, metrics: DashboardMetrics)
     // Spacing token between sections / between a chart and the next block.
     const GAP = 18;
 
-    // Guias por dia — full width chart
+    // Guias extraídas por dia — full width chart
     const daily = await captureChartPng('[data-chart="daily"]');
     const dailyMaxH = Math.min(260, pageInnerH * 0.38);
-    sectionTitle("Guias extraídas por dia", dailyMaxH);
+    sectionTitle(
+      "Guias extraídas por dia",
+      dailyMaxH,
+      "Quantidade de guias extraídas por dia no período filtrado.",
+    );
     const dailyH = drawChart(daily, contentW, dailyMaxH);
     y += dailyH + GAP;
 
-    // Distribuição por tipo — donut full width on top, table below
+    // Guias extraídas por tipo — donut on top, table below
     const types = await captureChartPng('[data-chart="types"]');
     const donutMaxH = Math.min(200, pageInnerH * 0.32);
-    sectionTitle("Distribuição por tipo de guia", donutMaxH);
+    // Header + a couple of rows is enough to keep the group together without
+    // pushing the whole section to a new page and leaving a large blank area.
+    const typesTableH = tableBlockH(Math.min(2, typeData.length));
+    sectionTitle(
+      "Guias extraídas por tipo",
+      donutMaxH + GAP + typesTableH,
+      "Distribuição das guias extraídas no período filtrado. O centro do gráfico mostra o total de guias extraídas.",
+    );
     const donutW = Math.min(contentW, donutMaxH * (types ? types.w / types.h : 2));
-    const typesH = drawChart(types, donutW, donutMaxH, margin + (contentW - donutW) / 2);
+    const donutX = margin + (contentW - donutW) / 2;
+    const typesH = drawChart(types, donutW, donutMaxH, donutX);
+    if (typesH > 0) {
+      // The center total is an HTML overlay on screen, so it is redrawn here.
+      const cx = donutX + donutW / 2;
+      const cy = y + typesH / 2;
+      applyType(TYPE.sectionH);
+      doc.setFontSize(16);
+      doc.text(String(total), cx, cy - 1, { align: "center" });
+      applyType(TYPE.caption);
+      doc.text("guias extraídas", cx, cy + 12, { align: "center" });
+      applyType(TYPE.body);
+    }
     y += typesH + GAP;
+    // Never leave the table header stranded at the bottom of a page.
+    keepTogether(typesTableH);
+
     autoTable(doc, {
       startY: y,
       margin: { left: margin, right: margin },
       tableWidth: contentW,
-      head: [["Tipo", "Qtd.", "%"]],
+      head: [["Tipo de guia", "Guias extraídas", "% do total extraído"]],
       body: typeData.map((t) => [
         t.name,
         String(t.value),
@@ -473,8 +572,8 @@ async function generateReportPdf(periodLabel: string, metrics: DashboardMetrics)
       headStyles: tableHeadStyles,
       bodyStyles: { font: FONT, fontStyle: "normal", textColor: TYPE.tableBody.color },
       columnStyles: {
-        1: { halign: "right", cellWidth: 60 },
-        2: { halign: "right", cellWidth: 60 },
+        1: { halign: "right", cellWidth: 100 },
+        2: { halign: "right", cellWidth: 110 },
       },
       styles: tableStyleDefaults,
       rowPageBreak: "avoid",
@@ -485,26 +584,32 @@ async function generateReportPdf(periodLabel: string, metrics: DashboardMetrics)
     // Procedimentos — chart, then table (keep title with chart)
     const proc = await captureChartPng('[data-chart="procedures"]');
     const procMaxH = Math.min(280, pageInnerH * 0.42);
-    sectionTitle("Procedimentos mais realizados", procMaxH);
+    const procTableH = tableBlockH(Math.min(2, procedures.length));
+    sectionTitle(
+      "Procedimentos mais frequentes nas guias extraídas",
+      procMaxH + GAP + procTableH,
+      "Procedimentos mais frequentes nas guias extraídas no período filtrado.",
+    );
     const procDrawnH = drawChart(proc, contentW, procMaxH);
     y += procDrawnH + GAP;
     // Don't strand the table header alone after the chart.
-    keepTogether(tableBlockH(Math.min(3, procedures.length)));
+    keepTogether(procTableH);
 
     autoTable(doc, {
       startY: y,
       margin: { left: margin, right: margin },
       tableWidth: contentW,
-      head: [["Código TUSS", "Procedimento", "Quantidade"]],
+      head: [["Código TUSS", "Procedimento", "Ocorrências em guias extraídas"]],
       body: procedures.map((p) => [p.code, p.name, String(p.count)]),
       theme: "striped",
       headStyles: tableHeadStyles,
       bodyStyles: { font: FONT, fontStyle: "normal", textColor: TYPE.tableBody.color },
-      columnStyles: { 0: { cellWidth: 110 }, 2: { halign: "right", cellWidth: 60 } },
+      columnStyles: { 0: { cellWidth: 110 }, 2: { halign: "right", cellWidth: 150 } },
       styles: tableStyleDefaults,
       rowPageBreak: "avoid",
       showHead: "everyPage",
     });
+
 
     // "Gerado por" — bloco final, quebra página se não couber
     const lastY =
@@ -545,7 +650,7 @@ async function generateReportPdf(periodLabel: string, metrics: DashboardMetrics)
       });
     }
 
-    const filename = `relatorio-haisguias-${toLocalIsoDate(now)}.pdf`;
+    const filename = `relatorio-guias-extraidas-${toLocalIsoDate(now)}.pdf`;
     doc.save(filename);
     toast.success("Relatório PDF gerado com sucesso!");
   } catch (err) {
@@ -965,7 +1070,11 @@ function DashboardPage() {
     }
     setGeneratingReport(true);
     try {
-      await generateReportPdf(periodLabel, metrics);
+      await generateReportPdf(periodLabel, metrics, {
+        todayLabel,
+        todayComparison: todayTrend?.label,
+        averageComparison: weekTrend?.label,
+      });
     } finally {
       setGeneratingReport(false);
     }
