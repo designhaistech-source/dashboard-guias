@@ -970,6 +970,38 @@ function DashboardPage() {
   /** Reference date of the "today" KPI, shown discreetly in the card. */
   const todayLabel = formatIsoToBr(todayLocalIsoDate());
 
+  /** Number of days covered by the selected period. */
+  const dayCount = dailyData.length;
+
+  /**
+   * Compares the last 7 days against the 7 preceding days so the daily average
+   * card can describe its variation in plain language.
+   */
+  const weekTrend = useMemo<KpiTrend | undefined>(() => {
+    if (dailyData.length < 4) return undefined;
+    const window = Math.min(7, Math.floor(dailyData.length / 2));
+    const recent = dailyData.slice(-window);
+    const previous = dailyData.slice(-window * 2, -window);
+    if (previous.length === 0) return undefined;
+    const avg = (rows: typeof dailyData) =>
+      rows.reduce((sum, row) => sum + row.guias, 0) / rows.length;
+    const recentAvg = avg(recent);
+    const previousAvg = avg(previous);
+    const diff = Number((recentAvg - previousAvg).toFixed(1));
+    const period = `nos ${window} dias anteriores`;
+    if (diff === 0) {
+      return { direction: "flat", label: `Média igual à ${period.replace("nos", "dos")}` };
+    }
+    return {
+      direction: diff > 0 ? "up" : "down",
+      label: `${Math.abs(diff).toLocaleString("pt-BR")} ${
+        Math.abs(diff) === 1 ? "guia" : "guias"
+      } por dia ${diff > 0 ? "a mais" : "a menos"} que ${period}`,
+    };
+  }, [dailyData]);
+
+
+
 
   return (
     <div className="flex min-h-screen w-full bg-background text-foreground">
@@ -1145,10 +1177,41 @@ function DashboardPage() {
 
           {/* KPIs */}
           <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-            <Kpi icon={FileText} label="Total de guias extraídas" value={String(total)} hint="guias no período selecionado" tone="primary" />
-            <Kpi icon={Activity} label="Guias extraídas hoje" value={String(metrics.today)} meta={todayLabel} hint={todayTrend ? todayTrend.label : "guias extraídas nesta data"} tone="success" trend={todayTrend?.direction} />
-            <Kpi icon={TrendingUp} label="Média de guias por dia" value={String(dailyAvg)} hint="guias por dia no período selecionado" tone="info" />
-            <Kpi icon={Layers} label="Tipos de guia" value={String(metrics.distinctTypes)} hint="tipos diferentes no período selecionado" tone="purple" />
+            <Kpi
+              icon={FileText}
+              label="Total de guias extraídas"
+              value={String(total)}
+              meta={periodLabel}
+              hint={dayCount > 0 ? `Soma das guias extraídas em ${dayCount} ${dayCount === 1 ? "dia" : "dias"}` : "Nenhuma guia extraída no período"}
+              tone="primary"
+            />
+            <Kpi
+              icon={Activity}
+              label="Guias extraídas hoje"
+              value={String(metrics.today)}
+              meta={todayLabel}
+              hint={todayTrend ? todayTrend.label : "Guias extraídas nesta data"}
+              tone="success"
+              trend={todayTrend?.direction}
+            />
+            <Kpi
+              icon={TrendingUp}
+              label="Média de guias por dia"
+              value={String(dailyAvg)}
+              meta={periodLabel}
+              hint={weekTrend ? weekTrend.label : `Média diária considerando ${dayCount} ${dayCount === 1 ? "dia" : "dias"}`}
+              tone="info"
+              trend={weekTrend?.direction}
+            />
+            <Kpi
+              icon={Layers}
+              label="Tipos de guia"
+              value={String(metrics.distinctTypes)}
+              meta={periodLabel}
+              hint={`Tipos diferentes encontrados no período`}
+              tone="purple"
+            />
+
 
           </div>
 
