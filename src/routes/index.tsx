@@ -99,7 +99,7 @@ async function loadImageDataUrl(url: string): Promise<{ dataUrl: string; w: numb
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "HaisGuias — Dashboard" },
+      { title: "Visão geral — Guias+" },
       { name: "description", content: "Visão geral das guias médicas processadas." },
     ],
   }),
