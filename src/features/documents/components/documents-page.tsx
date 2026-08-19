@@ -9,6 +9,7 @@ import {
   User,
   Loader2,
 } from "lucide-react";
+import { AlertCircle } from "lucide-react";
 import { toast } from "sonner";
 
 import {
@@ -518,7 +519,8 @@ function ReportsTab() {
         title="Relatório médico"
         html={html}
         paciente={paciente}
-        blockReason={pacienteError ?? cidError}
+        pacienteFieldId="relatorio-paciente"
+        issues={reportIssues}
 
         onSaveTemplate={() => toast.success("Modelo salvo e disponível na lista (simulação).")}
       />
