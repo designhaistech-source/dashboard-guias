@@ -62,6 +62,7 @@ import {
   REPORT_TEMPLATES,
   AFASTAMENTO_OPTIONS,
   buildAtestado,
+  buildRelatorio,
   buildComparecimento,
   formatDateLong,
   printHtml,
