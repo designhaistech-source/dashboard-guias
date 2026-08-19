@@ -68,8 +68,25 @@ import {
   todayIso,
 } from "../data/documents";
 
+const documentsRoute = getRouteApi("/documentos");
+
 /** Página de documentos clínicos: relatórios, atestados e declarações. */
 export function DocumentsPage() {
+  const { aba } = documentsRoute.useSearch();
+  const navigate = useNavigate({ from: "/documentos" });
+  const activeTab = aba ?? "relatorios";
+
+  const handleTabChange = useCallback(
+    (value: string) => {
+      void navigate({
+        search: { aba: value as typeof aba },
+        replace: true,
+        resetScroll: false,
+      });
+    },
+    [navigate],
+  );
+
   return (
     <div className="flex min-h-screen w-full bg-background text-foreground">
       <AppSidebar activeKey="relatorios" />
