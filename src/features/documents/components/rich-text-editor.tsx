@@ -96,6 +96,17 @@ export function RichTextEditor({
   const ref = React.useRef<HTMLDivElement>(null);
   const { canUndo, canRedo, undo, redo, record } = useEditorHistory(value, onChange, ref);
   const { activeCommands, syncActiveCommands } = useActiveCommands(ref, previewing);
+  const uid = React.useId();
+  const variablesHintId = `${uid}-variables-hint`;
+  const aiHintId = `${uid}-ai-hint`;
+  const countId = `${uid}-count`;
+
+  const showVariables = Boolean(variables && variables.length > 0) && !previewing;
+  const stats = React.useMemo(() => getTextStats(previewing ? (previewHtml ?? value) : value), [
+    previewing,
+    previewHtml,
+    value,
+  ]);
 
   React.useEffect(() => {
     const el = ref.current;
@@ -223,7 +234,7 @@ export function RichTextEditor({
                     onClick={onImproveWithAi}
                     disabled={improving}
                     aria-busy={improving}
-                    aria-describedby="rte-ai-hint"
+                    aria-describedby={aiHintId}
                     className="h-7 gap-1.5 px-2 text-xs text-muted-foreground hover:text-foreground"
                   >
                     {improving ? (
@@ -234,7 +245,7 @@ export function RichTextEditor({
                     {improving ? "Melhorando..." : "Melhorar texto com IA"}
                   </Button>
                 </TooltipTrigger>
-                <TooltipContent id="rte-ai-hint" className="max-w-64 text-pretty">
+                <TooltipContent id={aiHintId} className="max-w-64 text-pretty">
                   A IA reescreve todo o texto do editor: corrige gramática, ajusta a
                   linguagem para o padrão clínico e organiza os parágrafos, sem inventar
                   informações clínicas. A substituição pede confirmação e pode ser revertida
@@ -272,12 +283,12 @@ export function RichTextEditor({
         )}
       </div>
 
-      {variables && variables.length > 0 && !previewing && (
+      {showVariables && (
         <div className="flex flex-wrap items-center gap-1.5 border-b border-border px-4 py-2">
-          <span id="rte-variables-hint" className="text-xs text-muted-foreground">
+          <span id={variablesHintId} className="text-xs text-muted-foreground">
             Inserir variável:
           </span>
-          {variables.map((variable) => (
+          {(variables ?? []).map((variable) => (
             <Button
               key={variable}
               type="button"
@@ -326,6 +337,7 @@ export function RichTextEditor({
         role="textbox"
         aria-multiline="true"
         aria-label={ariaLabel}
+        aria-describedby={cn(showVariables && variablesHintId, countId) || undefined}
         contentEditable
         suppressContentEditableWarning
         data-placeholder={placeholder}
@@ -341,6 +353,28 @@ export function RichTextEditor({
         className="min-h-64 px-4 py-3 text-sm leading-relaxed text-foreground outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring empty:before:text-muted-foreground empty:before:content-[attr(data-placeholder)]"
       />
       )}
+
+      <p
+        id={countId}
+        role="status"
+        className="flex flex-wrap items-center gap-x-3 gap-y-1 border-t border-border bg-muted/30 px-4 py-2 text-xs text-muted-foreground"
+      >
+        <span>
+          <span className="font-mono">{stats.characters.toLocaleString("pt-BR")}</span>{" "}
+          {stats.characters === 1 ? "caractere" : "caracteres"}
+        </span>
+        <span aria-hidden className="h-3 w-px bg-border" />
+        <span>
+          <span className="font-mono">{stats.words.toLocaleString("pt-BR")}</span>{" "}
+          {stats.words === 1 ? "palavra" : "palavras"}
+        </span>
+        <span aria-hidden className="h-3 w-px bg-border" />
+        <span>
+          Estimativa de impressão:{" "}
+          <span className="font-mono">{stats.pages}</span>{" "}
+          {stats.pages === 1 ? "página A4" : "páginas A4"}
+        </span>
+      </p>
     </div>
   );
 }
@@ -485,4 +519,21 @@ function useActiveCommands(ref: React.RefObject<HTMLDivElement | null>, previewi
   }, [previewing, syncActiveCommands]);
 
   return { activeCommands, syncActiveCommands };
+}
+
+/** Caracteres que caberiam em uma página A4 no corpo de texto usado na impressão. */
+const CHARS_PER_PAGE = 2400;
+
+/** Converte o HTML do editor em métricas de caracteres, palavras e páginas A4. */
+function getTextStats(html: string) {
+  const text = html
+    .replace(/<(br|\/p|\/div|\/li|\/h[1-6])[^>]*>/gi, " ")
+    .replace(/<[^>]+>/g, "")
+    .replace(/&nbsp;/gi, " ")
+    .replace(/&amp;/gi, "&")
+    .replace(/\s+/g, " ")
+    .trim();
+  const characters = text.length;
+  const words = text ? text.split(" ").length : 0;
+  return { characters, words, pages: Math.max(1, Math.ceil(characters / CHARS_PER_PAGE)) };
 }
