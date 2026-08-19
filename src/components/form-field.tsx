@@ -25,6 +25,12 @@ interface FieldProps {
   className?: string;
   labelClassName?: string;
   rightAdornment?: React.ReactNode;
+  /**
+   * Injeta `id`/`aria-*` no primeiro filho. Desligue quando o filho for um
+   * wrapper (ex.: `<div className="relative">`) e o controle real já declarar
+   * esses atributos — evita `id` duplicado e `htmlFor` apontando para um div.
+   */
+  injectChildProps?: boolean;
   children: React.ReactNode;
 }
 
@@ -43,12 +49,13 @@ export function Field({
   className,
   labelClassName,
   rightAdornment,
+  injectChildProps = true,
   children,
 }: FieldProps) {
   const messageId = id ? `${id}-msg` : undefined;
 
   // Injeta id + aria-describedby + aria-invalid no primeiro filho quando possível.
-  const child = React.isValidElement(children)
+  const child = injectChildProps && React.isValidElement(children)
     ? React.cloneElement(children as React.ReactElement<any>, {
         id: (children as React.ReactElement<any>).props.id ?? id,
         "aria-invalid":

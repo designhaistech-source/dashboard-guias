@@ -359,7 +359,7 @@ function PatientField({
   error?: string;
 }) {
   return (
-    <Field id={id} label="Paciente" required error={error}>
+    <Field id={id} label="Paciente" required error={error} injectChildProps={false}>
       <div className="relative">
         <User
           className="icon-optical pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground"
@@ -372,6 +372,8 @@ function PatientField({
           placeholder="Digite o nome do beneficiário..."
           value={value}
           onChange={(e) => onChange(e.target.value)}
+          aria-invalid={Boolean(error)}
+          aria-describedby={`${id}-msg`}
         />
       </div>
     </Field>
@@ -380,11 +382,14 @@ function PatientField({
 
 
 function CidFields({
+  id,
   cid,
   descricao,
   onChange,
   error,
 }: {
+  /** id único por aba, evitando duplicidade entre Relatórios/Atestados. */
+  id: string;
   cid: string;
   descricao: string;
   onChange: (codigo: string, descricao: string) => void;
@@ -392,17 +397,18 @@ function CidFields({
 }) {
   return (
     <Field
-      id="cid-codigo"
+      id={id}
       label="CID-10"
       error={error}
       hint="Busque pelo código ou pela descrição; o diagnóstico é preenchido automaticamente."
+      injectChildProps={false}
     >
       <CidAutocomplete
-        id="cid-codigo"
+        id={id}
         value={cid}
         description={descricao}
         invalid={Boolean(error)}
-        describedById="cid-codigo-msg"
+        describedById={`${id}-msg`}
         onSelect={(item) => onChange(item?.codigo ?? "", item?.descricao ?? "")}
       />
     </Field>
@@ -494,7 +500,7 @@ function ReportsTab() {
     () =>
       buildIssues([
         { fieldId: "relatorio-paciente", label: "Paciente", message: pacienteError },
-        { fieldId: "cid-codigo", label: "CID", message: cidError },
+        { fieldId: "relatorio-cid", label: "CID", message: cidError },
         { fieldId: "relatorio-data", label: "Data do documento", message: dataStatus.error },
         { fieldId: "relatorio-cidade", label: "Cidade", message: cidadeError },
       ]),
@@ -573,7 +579,7 @@ function ReportsTab() {
                 : "Use “Salvar como modelo” após redigir o texto para reaproveitá-lo depois."
             }
           />
-          <CidFields cid={cid} descricao={diagnosticoSelecionado} onChange={handleCid} error={cidError} />
+          <CidFields id="relatorio-cid" cid={cid} descricao={diagnosticoSelecionado} onChange={handleCid} error={cidError} />
           <div className="grid min-w-0 gap-4 sm:grid-cols-2 [&>*]:min-w-0">
             <Field
               id="relatorio-data"
@@ -715,7 +721,7 @@ function CertificateTab() {
     () =>
       buildIssues([
         { fieldId: "atestado-paciente", label: "Paciente", message: pacienteError },
-        { fieldId: "cid-codigo", label: "CID", message: cidError },
+        { fieldId: "atestado-cid", label: "CID", message: cidError },
         { fieldId: "atestado-dias", label: "Dias de afastamento", message: diasError },
         { fieldId: "atestado-data", label: "Data do documento", message: dataStatus.error },
         { fieldId: "atestado-cidade", label: "Cidade", message: cidadeError },
@@ -776,7 +782,7 @@ function CertificateTab() {
             onChange={setPaciente}
             error={pacienteError}
           />
-          <CidFields cid={cid} descricao={diagnosticoSelecionado} onChange={handleCid} error={cidError} />
+          <CidFields id="atestado-cid" cid={cid} descricao={diagnosticoSelecionado} onChange={handleCid} error={cidError} />
           <SavedTemplatesField
             id="atestado-modelo"
             templates={savedTemplates}
