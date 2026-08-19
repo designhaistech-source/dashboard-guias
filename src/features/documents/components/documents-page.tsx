@@ -752,7 +752,8 @@ function AttendanceTab() {
         title="Declaração de comparecimento"
         html={conteudo}
         paciente={paciente}
-        blockReason={dataStatus.error}
+        blockReason={blockReason}
+
         onSaveTemplate={() =>
           toast.success(
             "Modelo de declaração salvo e disponível na lista (simulação).",
