@@ -37,6 +37,7 @@ import { CidAutocomplete } from "./cid-autocomplete";
 import { DocumentEditorHeader } from "./document-editor-header";
 import { RichTextEditor } from "./rich-text-editor";
 import { useTextReplacement } from "./use-text-replacement";
+import { useGeneratedSync } from "./use-generated-sync";
 import { useDocumentTemplates } from "./use-document-templates";
 import type { SavedDocumentTemplate } from "../data/document-templates";
 import {
@@ -627,6 +628,8 @@ function CertificateTab() {
 
   const conteudo = html || gerado;
 
+  const { staleNotice } = useGeneratedSync({ generated: gerado, html, setHtml });
+
   const dataStatus = useMemo(() => getDocumentDateStatus(data), [data]);
 
   const variableValues = useMemo(
@@ -756,6 +759,7 @@ function CertificateTab() {
 
       </SurfaceCard>
 
+      {staleNotice}
       <RichTextEditor
         ariaLabel="Texto do atestado"
         value={conteudo}
@@ -840,6 +844,8 @@ function AttendanceTab() {
   );
 
   const conteudo = html || gerado;
+
+  const { staleNotice } = useGeneratedSync({ generated: gerado, html, setHtml });
 
   const dataStatus = useMemo(
     () =>
@@ -1002,6 +1008,7 @@ function AttendanceTab() {
 
       </SurfaceCard>
 
+      {staleNotice}
       <RichTextEditor
         ariaLabel="Texto da declaração de comparecimento"
         value={conteudo}
