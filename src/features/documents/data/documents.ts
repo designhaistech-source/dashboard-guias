@@ -11,6 +11,7 @@ export const DOCUMENT_VARIABLES = [
   "@cidade",
   "@cid",
   "@diagnostico",
+  "@emissao",
 ] as const;
 
 /** Modelos de relatório (dados fictícios de demonstração). */
@@ -168,7 +169,10 @@ interface ComparecimentoInput {
   paciente: string;
   local: string;
   cidade: string;
+  /** Data em que o paciente compareceu ao atendimento. */
   data: string;
+  /** Data em que a declaração é emitida (pode ser posterior ao comparecimento). */
+  emissao: string;
   entrada: string;
   saida: string;
 }
@@ -179,6 +183,7 @@ export function buildComparecimento({
   local,
   cidade,
   data,
+  emissao,
   entrada,
   saida,
 }: ComparecimentoInput): string {
@@ -190,7 +195,7 @@ export function buildComparecimento({
     `<p>Declaro, para os devidos fins, que o(a) Sr.(a) ${nome} compareceu a(o) ${estabelecimento} no dia ${formatDateShort(data)}.</p>`,
     `<p>O interessado esteve presente ${periodo}.</p>`,
     `<p>Por ser verdade, firmo a presente declaração.</p>`,
-    `<p>${formatLocalAndDate(cidade, data)}</p>`,
+    `<p>${formatLocalAndDate(cidade, emissao || data)}</p>`,
   ].join("");
 }
 
