@@ -701,6 +701,22 @@ function formatDailyTick(iso: string, index: number): string {
   return showMonth ? `${day} ${monthLabel}` : day;
 }
 
+/**
+ * Datas de virada de mês (dia 01, exceto o primeiro ponto) usadas para desenhar
+ * separadores verticais discretos no gráfico diário.
+ */
+function monthBoundaries(data: { date: string }[]): { date: string; label: string }[] {
+  return data
+    .filter((d, i) => i > 0 && d.date.slice(8, 10) === "01")
+    .map((d) => {
+      const month = Number(d.date.slice(5, 7));
+      const monthLabel = MONTH_ABBR[month - 1] ?? d.date.slice(5, 7);
+      return { date: d.date, label: `${monthLabel}/${d.date.slice(2, 4)}` };
+    });
+}
+
+
+
 
 
 const filterLabels: Record<keyof GuideFilters, string> = {
