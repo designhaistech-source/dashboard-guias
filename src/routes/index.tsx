@@ -112,9 +112,13 @@ function formatIsoDate(iso: string) {
 }
 
 /** Human label for the period actually filtered by the user. */
-function buildPeriodLabel(from: string, to: string) {
-  const de = from.trim();
-  const ate = to.trim();
+/**
+ * Rótulo legível do período exibido. Sem filtro de data, usa o intervalo real
+ * dos dados apresentados (primeiro e último dia com guias).
+ */
+function buildPeriodLabel(from: string, to: string, fallback?: { first?: string; last?: string }) {
+  const de = from.trim() || fallback?.first || "";
+  const ate = to.trim() || fallback?.last || "";
   if (de && ate) {
     return de === ate
       ? formatIsoDate(de)
@@ -124,6 +128,7 @@ function buildPeriodLabel(from: string, to: string) {
   if (ate) return `Até ${formatIsoDate(ate)}`;
   return "Todo o período";
 }
+
 
 const prestadoresList = PRESTADORES;
 
@@ -504,13 +509,22 @@ async function generateReportPdf(periodLabel: string, metrics: DashboardMetrics)
 
 
 
+/** Converte "yyyy-mm-dd" em "dd/mm/aaaa" para leitura de usuários finais. */
+function formatIsoToBr(iso?: string) {
+  if (!iso) return "";
+  const [y, m, d] = iso.split("-");
+  return y && m && d ? `${d}/${m}/${y}` : iso;
+}
+
 function ChartTooltip({ active, payload, label, suffix }: any) {
   if (!active || !payload?.length) return null;
+  const fullDate = formatIsoToBr(payload[0]?.payload?.date);
+  const heading = fullDate || (label !== undefined ? String(label) : "");
   return (
     <div className="rounded-lg border border-border bg-popover/95 px-3 py-2 shadow-md backdrop-blur">
-      {label !== undefined && (
+      {heading && (
         <div className="text-xs uppercase tracking-wider text-muted-foreground mb-1">
-          Dia {label}
+          {heading}
         </div>
       )}
       {payload.map((p: any) => (
@@ -526,6 +540,7 @@ function ChartTooltip({ active, payload, label, suffix }: any) {
     </div>
   );
 }
+
 
 /**
  * Filtros do dashboard. Contém apenas os campos que o painel expõe e que
@@ -801,9 +816,14 @@ function DashboardPage() {
     [filters],
   );
   const periodLabel = useMemo(
-    () => buildPeriodLabel(filters.dataAutorizacaoDe, filters.dataAutorizacaoAte),
-    [filters.dataAutorizacaoDe, filters.dataAutorizacaoAte],
+    () =>
+      buildPeriodLabel(filters.dataAutorizacaoDe, filters.dataAutorizacaoAte, {
+        first: metrics.daily[0]?.date,
+        last: metrics.daily[metrics.daily.length - 1]?.date,
+      }),
+    [filters.dataAutorizacaoDe, filters.dataAutorizacaoAte, metrics.daily],
   );
+
   const total = metrics.total;
   const dailyAvg = metrics.dailyAvg;
   const typeData = metrics.types;
@@ -1056,7 +1076,7 @@ function DashboardPage() {
               ) : (
               <div className="h-72" data-chart="daily">
                 <ResponsiveContainer width="100%" height="100%">
-                  <AreaChart data={dailyData} margin={{ top: 10, right: 10, left: -10, bottom: 0 }}>
+                  <AreaChart data={dailyData} margin={{ top: 10, right: 10, left: 6, bottom: 18 }}>
                     <defs>
                       <linearGradient id="gradPrimary" x1="0" y1="0" x2="0" y2="1">
                         <stop offset="0%" stopColor="var(--primary)" stopOpacity={0.45} />
@@ -1064,8 +1084,11 @@ function DashboardPage() {
                       </linearGradient>
                     </defs>
                     <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" vertical={false} />
-                    <XAxis dataKey="day" stroke="var(--muted-foreground)" fontSize={11} tickLine={false} axisLine={false} tickMargin={6} />
-                    <YAxis stroke="var(--muted-foreground)" fontSize={11} tickLine={false} axisLine={false} width={32} />
+                    <XAxis dataKey="day" stroke="var(--muted-foreground)" fontSize={11} tickLine={false} axisLine={false} tickMargin={6}
+                      label={{ value: "Data", position: "insideBottom", offset: -8, fill: "var(--muted-foreground)", fontSize: 11 }} />
+                    <YAxis stroke="var(--muted-foreground)" fontSize={11} tickLine={false} axisLine={false} width={44} allowDecimals={false}
+                      label={{ value: "Quantidade de guias", angle: -90, position: "insideLeft", fill: "var(--muted-foreground)", fontSize: 11, style: { textAnchor: "middle" } }} />
+
                     <RTooltip
                       content={<ChartTooltip />}
                       cursor={{ stroke: "var(--primary)", strokeOpacity: 0.25, strokeWidth: 1 }}
@@ -1088,7 +1111,11 @@ function DashboardPage() {
               )}
             </SurfaceCard>
 
-            <SurfaceCard title="Por tipo de guia" description="Distribuição no período">
+            <SurfaceCard
+              title="Guias por tipo"
+              description={`Distribuição das guias no período selecionado — ${periodLabel}`}
+            >
+
               {!hasData ? (
                 emptyState
               ) : (
@@ -1120,14 +1147,17 @@ function DashboardPage() {
                       <RTooltip content={<ChartTooltip />} />
                     </PieChart>
                   </ResponsiveContainer>
-                  <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center">
+                  <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center px-6 text-center">
                     <div className="metric-value text-foreground">
                       {activeType !== undefined ? typeData[activeType].value : total}
                     </div>
-                    <div className="text-xs uppercase tracking-wider text-muted-foreground">
-                      {activeType !== undefined ? typeData[activeType].name : "guias"}
+                    <div className="max-w-[96px] text-[10px] leading-tight text-muted-foreground">
+                      {activeType !== undefined
+                        ? `guias de ${typeData[activeType].name}`
+                        : "total de guias no período"}
                     </div>
                   </div>
+
                 </div>
                 <ul className="space-y-2 text-sm">
                   {typeData.map((d, i) => {
