@@ -1,8 +1,5 @@
 /** Tipos de documento clínico emitidos pela página "Relatórios e documentos". */
-export type IssuedDocumentType =
-  | "Relatório"
-  | "Atestado"
-  | "Comparecimento";
+export type IssuedDocumentType = "Relatório" | "Atestado" | "Comparecimento";
 
 export interface IssuedDocument {
   id: string;
