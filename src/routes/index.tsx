@@ -1004,19 +1004,25 @@ function DashboardPage() {
             <span>
               Dados exibidos:{" "}
               <span className="font-medium text-foreground">{periodLabel}</span>
-              {" · "}Tipo de guia:{" "}
-              <span className="font-medium text-foreground">
-                {filters.tipoGuia.trim() || "Todos os tipos de guia"}
-              </span>
-              {" · "}Prestador:{" "}
-              <span className="font-medium text-foreground">
-                {filters.prestadorSolicitante.trim() || "Todos os prestadores"}
-              </span>
-              {timeZoneLabel ? (
-                <span className="text-muted-foreground/80">{` · ${timeZoneLabel}`}</span>
+              {filters.tipoGuia.trim() ? (
+                <>
+                  {" · "}Tipo de guia:{" "}
+                  <span className="font-medium text-foreground">
+                    {filters.tipoGuia.trim()}
+                  </span>
+                </>
+              ) : null}
+              {filters.prestadorSolicitante.trim() ? (
+                <>
+                  {" · "}Prestador:{" "}
+                  <span className="font-medium text-foreground">
+                    {filters.prestadorSolicitante.trim()}
+                  </span>
+                </>
               ) : null}
             </span>
           </p>
+
 
 
 
