@@ -374,7 +374,7 @@ function IssuedDocumentModal({
             </Badge>
           </div>
           <article
-            className="space-y-3 rounded-xl border border-border bg-muted/20 p-5 text-sm leading-relaxed text-foreground [&_p]:mb-3"
+            className="space-y-3 rounded-xl border border-border bg-muted/30 p-5 text-sm leading-relaxed text-foreground [&_p]:mb-3"
             dangerouslySetInnerHTML={{ __html: doc.body }}
           />
           <p className="mt-4 text-xs text-muted-foreground">
