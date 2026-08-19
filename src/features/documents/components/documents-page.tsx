@@ -429,17 +429,21 @@ function ReportsTab() {
   const [cid, setCid] = useState("");
   const [diagnosticoSelecionado, setDiagnosticoSelecionado] = useState("");
   const [modelo, setModelo] = useState("");
+  const [data, setData] = useState(todayIso());
+  const [cidade, setCidade] = useState("");
   const [html, setHtml] = useState("");
 
   useDraftAutosave({
     key: "hg:documentos:relatorio",
-    data: { paciente, cid, diagnosticoSelecionado, modelo, html },
+    data: { paciente, cid, diagnosticoSelecionado, modelo, data, cidade, html },
     isEmpty: (d) => !d.paciente.trim() && !d.cid.trim() && !d.html.replace(/<[^>]+>/g, "").trim(),
     onRestore: (d) => {
       setPaciente(d.paciente ?? "");
       setCid(d.cid ?? "");
       setDiagnosticoSelecionado(d.diagnosticoSelecionado ?? "");
       setModelo(d.modelo ?? "");
+      setData(d.data ?? todayIso());
+      setCidade(d.cidade ?? "");
       setHtml(d.html ?? "");
     },
   });
@@ -465,8 +469,8 @@ function ReportsTab() {
   });
 
   const variableValues = useMemo(
-    () => ({ paciente, data: todayIso(), cid, diagnostico }),
-    [paciente, cid, diagnostico],
+    () => ({ paciente, data, cid, diagnostico }),
+    [paciente, data, cid, diagnostico],
   );
   const previewHtml = useMemo(
     () => resolveDocumentVariables(html, variableValues),
@@ -479,14 +483,18 @@ function ReportsTab() {
 
   const pacienteError = useMemo(() => validatePaciente(paciente), [paciente]);
   const cidError = useMemo(() => validateCid(cid), [cid]);
+  const cidadeError = useMemo(() => validateCidade(cidade), [cidade]);
+  const dataStatus = useMemo(() => getDocumentDateStatus(data), [data]);
 
   const issues = useMemo(
     () =>
       buildIssues([
         { fieldId: "relatorio-paciente", label: "Paciente", message: pacienteError },
         { fieldId: "cid-codigo", label: "CID", message: cidError },
+        { fieldId: "relatorio-data", label: "Data do documento", message: dataStatus.error },
+        { fieldId: "relatorio-cidade", label: "Cidade", message: cidadeError },
       ]),
-    [pacienteError, cidError],
+    [pacienteError, cidError, dataStatus.error, cidadeError],
   );
 
 
@@ -511,6 +519,21 @@ function ReportsTab() {
     setHtml,
     requestReplace,
   );
+
+  const modeloPadrao = REPORT_TEMPLATES[0];
+
+  function restoreDefault() {
+    requestReplace({
+      title: "Restaurar texto padrão?",
+      description: `O texto atual do relatório será substituído pelo modelo padrão “${modeloPadrao.label}”. Você poderá desfazer pelo aviso exibido após a troca.`,
+      confirmLabel: "Restaurar texto",
+      successMessage: "Texto padrão restaurado.",
+      apply: () => {
+        setModelo(modeloPadrao.value);
+        setHtml(modeloPadrao.content);
+      },
+    });
+  }
 
 
   return (
@@ -546,6 +569,31 @@ function ReportsTab() {
             }
           />
           <CidFields cid={cid} descricao={diagnosticoSelecionado} onChange={handleCid} error={cidError} />
+          <div className="grid min-w-0 gap-4 sm:grid-cols-2 [&>*]:min-w-0">
+            <Field
+              id="relatorio-data"
+              label="Data do documento"
+              error={dataStatus.error}
+              hint={dataStatus.warning}
+            >
+              <Input
+                id="relatorio-data"
+                type="date"
+                max={todayIsoDate()}
+                value={data}
+                onChange={(e) => setData(e.target.value)}
+              />
+            </Field>
+            <Field id="relatorio-cidade" label="Cidade" optional error={cidadeError}>
+              <Input
+                id="relatorio-cidade"
+                placeholder="Cidade de emissão"
+                maxLength={60}
+                value={cidade}
+                onChange={(e) => setCidade(e.target.value)}
+              />
+            </Field>
+          </div>
         </div>
       </SurfaceCard>
 
@@ -565,9 +613,14 @@ function ReportsTab() {
             title="Relatório médico"
             meta={
               <>
-                Paciente: {paciente || "—"}
+                Paciente: {paciente || "—"} · {formatDateLong(data)}
                 {diagnostico && ` · ${cid} — ${diagnostico}`}
               </>
+            }
+            actions={
+              <Button type="button" variant="ghost" size="sm" onClick={restoreDefault}>
+                Restaurar texto padrão
+              </Button>
             }
           />
         }
