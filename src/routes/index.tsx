@@ -1573,6 +1573,12 @@ function DashboardPage() {
                     </AreaChart>
                   </ResponsiveContainer>
                 </div>
+                {isMobile ? (
+                  <p className="mt-2 text-[11px] leading-snug text-muted-foreground">
+                    Eixo vertical: quantidade de guias · Eixo horizontal: dia do período
+                  </p>
+                ) : null}
+                </>
               )}
             </SurfaceCard>
 
