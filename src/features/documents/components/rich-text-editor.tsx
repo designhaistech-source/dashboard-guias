@@ -96,22 +96,16 @@ export function RichTextEditor({
   pendingVariables,
   variableValues,
 }: RichTextEditorProps) {
-  const [previewing, setPreviewing] = React.useState(false);
-  const canPreview = typeof previewHtml === "string";
   const ref = React.useRef<HTMLDivElement>(null);
   const { canUndo, canRedo, undo, redo, record } = useEditorHistory(value, onChange, ref);
-  const { activeCommands, syncActiveCommands } = useActiveCommands(ref, previewing);
+  const { activeCommands, syncActiveCommands } = useActiveCommands(ref, false);
   const uid = React.useId();
   const variablesHintId = `${uid}-variables-hint`;
   const aiHintId = `${uid}-ai-hint`;
   const countId = `${uid}-count`;
 
-  const showVariables = Boolean(variables && variables.length > 0) && !previewing;
-  const stats = React.useMemo(() => getTextStats(previewing ? (previewHtml ?? value) : value), [
-    previewing,
-    previewHtml,
-    value,
-  ]);
+  const showVariables = Boolean(variables && variables.length > 0);
+  const stats = React.useMemo(() => getTextStats(value), [value]);
 
   React.useEffect(() => {
     const el = ref.current;
