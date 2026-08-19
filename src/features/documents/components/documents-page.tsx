@@ -524,6 +524,7 @@ function CidFields({
   descricao,
   onChange,
   error,
+  readOnly,
 }: {
   /** id único por aba, evitando duplicidade entre Relatórios/Atestados. */
   id: string;
