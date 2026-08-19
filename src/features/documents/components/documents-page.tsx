@@ -659,6 +659,7 @@ function ReportsTab() {
         improving={improving}
         variables={DOCUMENT_VARIABLES}
         variableValues={tokenValues}
+        previewHtml={previewHtml}
         pendingVariables={pending}
         placeholder="Redija o relatório médico..."
         header={
@@ -860,6 +861,7 @@ function CertificateTab() {
         improving={improving}
         variables={DOCUMENT_VARIABLES}
         variableValues={tokenValues}
+        previewHtml={previewHtml}
         pendingVariables={pending}
         header={
           <DocumentEditorHeader
@@ -1092,6 +1094,7 @@ function AttendanceTab() {
         improving={improving}
         variables={["@paciente", "@data", "@cidade"]}
         variableValues={tokenValues}
+        previewHtml={previewHtml}
         pendingVariables={pending}
         header={
           <DocumentEditorHeader
