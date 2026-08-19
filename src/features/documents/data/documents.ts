@@ -5,7 +5,13 @@ export interface ReportTemplate {
 }
 
 /** Variáveis dinâmicas suportadas no corpo dos documentos. */
-export const DOCUMENT_VARIABLES = ["@paciente", "@data", "@cid", "@diagnostico"] as const;
+export const DOCUMENT_VARIABLES = [
+  "@paciente",
+  "@data",
+  "@cidade",
+  "@cid",
+  "@diagnostico",
+] as const;
 
 /** Modelos de relatório (dados fictícios de demonstração). */
 export const REPORT_TEMPLATES: ReportTemplate[] = [
