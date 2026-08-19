@@ -1318,7 +1318,7 @@ function DashboardPage() {
             />
             <Kpi
               icon={TrendingUp}
-              label="Média de guias por dia"
+              label="Média de guias extraídas por dia"
               value={String(dailyAvg)}
               tooltip={kpiTooltips.average}
               hint={weekTrend ? weekTrend.label : ""}
@@ -1327,7 +1327,7 @@ function DashboardPage() {
             />
             <Kpi
               icon={Layers}
-              label="Tipos de guia"
+              label="Tipos de guias extraídas"
               value={String(metrics.distinctTypes)}
               tooltip={kpiTooltips.types}
               hint="Tipos distintos no período"
