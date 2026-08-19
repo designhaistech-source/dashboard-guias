@@ -650,6 +650,26 @@ function formatFilterValue(key: keyof GuideFilters, value: string): string {
   return `${day}/${month}/${year}`;
 }
 
+const MONTH_ABBR = [
+  "jan", "fev", "mar", "abr", "mai", "jun",
+  "jul", "ago", "set", "out", "nov", "dez",
+] as const;
+
+/**
+ * Eixo X do gráfico diário: mostra apenas o dia para manter a leitura limpa e
+ * acrescenta o mês abreviado no primeiro ponto e a cada virada de mês, para que
+ * o período seja identificável mesmo atravessando meses.
+ */
+function formatDailyTick(iso: string, index: number): string {
+  const [, month, day] = iso.split("-");
+  if (!month || !day) return iso;
+  const monthLabel = MONTH_ABBR[Number(month) - 1] ?? month;
+  const showMonth = index === 0 || day === "01";
+  return showMonth ? `${day} ${monthLabel}` : day;
+}
+
+
+
 const filterLabels: Record<keyof GuideFilters, string> = {
   dataAutorizacaoDe: "Período de",
   dataAutorizacaoAte: "Período até",
