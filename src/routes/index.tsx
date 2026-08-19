@@ -988,38 +988,20 @@ function DashboardPage() {
             title="Visão geral"
             description="Acompanhe suas guias, documentos e atividades recentes."
             actions={
-              <>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setFiltersOpen((open) => !open)}
-                  aria-expanded={filtersOpen}
-                  aria-controls="dashboard-filters-panel"
-                  className="relative"
-                >
-                  <SlidersHorizontal className="h-4 w-4" />
-                  Filtros
-                  {activeFilters.length > 0 && (
-                    <Badge variant="secondary" size="sm">
-                      {activeFilters.length}
-                    </Badge>
-                  )}
-                </Button>
-                <Button
-                  size="sm"
-                  onClick={handleGenerateReport}
-                  disabled={!hasData || generatingReport}
-                  aria-busy={generatingReport}
-                  title={!hasData ? "Sem dados para gerar o relatório" : undefined}
-                >
-                  {generatingReport ? (
-                    <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
-                  ) : (
-                    <Download className="h-4 w-4" aria-hidden="true" />
-                  )}
-                  {generatingReport ? "Gerando…" : "Gerar relatório"}
-                </Button>
-              </>
+              <Button
+                size="sm"
+                onClick={handleGenerateReport}
+                disabled={!hasData || generatingReport}
+                aria-busy={generatingReport}
+                title={!hasData ? "Sem dados para gerar o relatório" : undefined}
+              >
+                {generatingReport ? (
+                  <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
+                ) : (
+                  <Download className="h-4 w-4" aria-hidden="true" />
+                )}
+                {generatingReport ? "Gerando…" : "Gerar relatório"}
+              </Button>
             }
           />
 
