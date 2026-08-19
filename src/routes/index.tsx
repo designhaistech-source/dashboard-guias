@@ -1047,78 +1047,115 @@ function DashboardPage() {
             </div>
           )}
 
-          {/* Barra de filtros compacta — aberta por padrão, igual a Guias emitidas */}
-          {filtersOpen && (
-          <FilterCard
-            id="dashboard-filters-panel"
-            variant="bar"
-            open
-            hideToggle
-            activeCount={activeFilters.length}
-            onClear={clearAllFilters}
-            clearDisabled={activeFilters.length === 0}
-            barColumnsClassName="lg:grid-cols-[10rem_10rem_minmax(0,1fr)_minmax(0,1fr)_auto] lg:gap-4"
+          {/* Container de filtros — cabeçalho próprio com expandir/recolher */}
+          <section
+            aria-label="Filtros"
+            className="rounded-2xl border border-border bg-card shadow-xs"
           >
-
-            <FilterField
-              label="Data inicial"
-              type="date"
-              error={dateRangeInvalid}
-              value={filters.dataAutorizacaoDe}
-              onChange={(v) => setFilter("dataAutorizacaoDe", v)}
-              inputRef={firstFieldRef}
-            />
-            <FilterField
-              label="Data final"
-              type="date"
-              error={dateRangeInvalid}
-              value={filters.dataAutorizacaoAte}
-              onChange={(v) => setFilter("dataAutorizacaoAte", v)}
-            />
-            <FilterSelect
-              label="Tipo de guia"
-              value={filters.tipoGuia}
-              onChange={(v) => setFilter("tipoGuia", v)}
-              options={GUIDE_TYPES.map((t) => t.name)}
-            />
-            <FilterSelect
-              label="Prestador solicitante"
-              value={filters.prestadorSolicitante}
-              onChange={(v) => setFilter("prestadorSolicitante", v)}
-              options={prestadoresList}
-            />
-          </FilterCard>
-          )}
-
-
-          {filtersOpen && (
-            <div className="space-y-2">
-              <div className="flex flex-wrap items-center gap-2">
-                <span className={filterGroupLabelClass + " mb-0"}>Períodos rápidos</span>
-                {[
-                  { id: "hoje", label: "Hoje" },
-                  { id: "7d", label: "Últimos 7 dias" },
-                  { id: "30d", label: "Últimos 30 dias" },
-                ].map((p) => (
-                  <Chip
-                    key={p.id}
-                    onClick={() => applyPreset(p.id as "hoje" | "7d" | "30d")}
-                    className="text-foreground hover:border-primary hover:bg-primary/5 hover:text-primary"
-                  >
-                    {p.label}
-                  </Chip>
-                ))}
+            <div className="flex items-center justify-between gap-3 px-4 py-3 sm:px-5">
+              <div className="flex items-center gap-2">
+                <SlidersHorizontal
+                  className="icon-optical h-4 w-4 text-muted-foreground"
+                  aria-hidden="true"
+                />
+                <h2 className="font-display text-base font-semibold tracking-tight text-foreground">
+                  Filtros
+                </h2>
+                {activeFilters.length > 0 && (
+                  <Badge variant="secondary" size="sm">
+                    {activeFilters.length}
+                  </Badge>
+                )}
               </div>
-              {dateRangeInvalid && (
-                <p className="text-xs text-destructive">
-                  A data inicial deve ser anterior ou igual à data final.
-                </p>
-              )}
-              <p className="text-xs text-muted-foreground">
-                Para localizar uma guia específica por paciente, número ou procedimento, use a página Guias processadas.
-              </p>
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                onClick={() => setFiltersOpen((open) => !open)}
+                aria-expanded={filtersOpen}
+                aria-controls="dashboard-filters-panel"
+              >
+                {filtersOpen ? "Recolher" : "Expandir"}
+                <ChevronDown
+                  className={cn("h-4 w-4 transition-transform", filtersOpen && "rotate-180")}
+                  aria-hidden="true"
+                />
+              </Button>
             </div>
-          )}
+
+            {filtersOpen && (
+              <div
+                id="dashboard-filters-panel"
+                className="space-y-4 border-t border-border px-4 py-4 sm:px-5 sm:py-5"
+              >
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className={filterGroupLabelClass + " mb-0"}>Períodos rápidos</span>
+                  {[
+                    { id: "hoje", label: "Hoje" },
+                    { id: "7d", label: "Últimos 7 dias" },
+                    { id: "30d", label: "Últimos 30 dias" },
+                  ].map((p) => (
+                    <Chip
+                      key={p.id}
+                      onClick={() => applyPreset(p.id as "hoje" | "7d" | "30d")}
+                      className="text-foreground hover:border-primary hover:bg-primary/5 hover:text-primary"
+                    >
+                      {p.label}
+                    </Chip>
+                  ))}
+                </div>
+
+                <div className="grid grid-cols-1 items-end gap-4 sm:grid-cols-2 lg:grid-cols-[10rem_10rem_minmax(0,1fr)_minmax(0,1fr)_auto]">
+                  <FilterField
+                    label="Data inicial"
+                    type="date"
+                    error={dateRangeInvalid}
+                    value={filters.dataAutorizacaoDe}
+                    onChange={(v) => setFilter("dataAutorizacaoDe", v)}
+                    inputRef={firstFieldRef}
+                  />
+                  <FilterField
+                    label="Data final"
+                    type="date"
+                    error={dateRangeInvalid}
+                    value={filters.dataAutorizacaoAte}
+                    onChange={(v) => setFilter("dataAutorizacaoAte", v)}
+                  />
+                  <FilterSelect
+                    label="Tipo de guia"
+                    value={filters.tipoGuia}
+                    onChange={(v) => setFilter("tipoGuia", v)}
+                    options={GUIDE_TYPES.map((t) => t.name)}
+                  />
+                  <FilterSelect
+                    label="Prestador solicitante"
+                    value={filters.prestadorSolicitante}
+                    onChange={(v) => setFilter("prestadorSolicitante", v)}
+                    options={prestadoresList}
+                  />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={clearAllFilters}
+                    disabled={activeFilters.length === 0}
+                    className="h-10 w-full justify-center sm:col-span-2 sm:h-9 lg:col-span-1 lg:w-auto"
+                  >
+                    Limpar filtros
+                  </Button>
+                </div>
+
+                {dateRangeInvalid && (
+                  <p className="text-xs text-destructive">
+                    A data inicial deve ser anterior ou igual à data final.
+                  </p>
+                )}
+                <p className="text-xs text-muted-foreground">
+                  Para localizar uma guia específica por paciente, número ou procedimento, use a
+                  página Guias processadas.
+                </p>
+              </div>
+            )}
+          </section>
 
 
 
