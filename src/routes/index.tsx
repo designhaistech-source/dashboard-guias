@@ -63,6 +63,13 @@ import {
   DataTableRow,
 } from "@/components/data-table";
 import { PageHeader } from "@/components/page-header";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  appTabsIconClass,
+  appTabsLabelClass,
+  appTabsListClass,
+  appTabsTriggerClass,
+} from "@/components/app-tabs";
 import { SurfaceCard } from "@/components/surface-card";
 import { cn } from "@/lib/utils";
 import { Field } from "@/components/form-field";
