@@ -17,6 +17,7 @@ import {
 } from "../data/document-templates";
 
 const MAX_NAME = 60;
+const FORM_ID = "salvar-modelo-form";
 
 function hasText(html: string): boolean {
   return html.replace(/<[^>]+>/g, "").trim().length > 0;
