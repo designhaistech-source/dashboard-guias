@@ -26,6 +26,8 @@ import {
   ChevronDown,
   CalendarRange,
   Info,
+  FileCheck2,
+  FileStack,
 } from "lucide-react";
 import {
   AreaChart,
