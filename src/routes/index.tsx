@@ -804,12 +804,6 @@ function DashboardPage() {
     [filters],
   );
 
-  /** Resolved after hydration: the server timezone differs from the browser's. */
-  const [timeZoneLabel, setTimeZoneLabel] = useState("");
-  useEffect(() => {
-    setTimeZoneLabel(localTimeZoneLabel());
-  }, []);
-
   const periodLabel = useMemo(
     () =>
       buildPeriodLabel(filters.dataAutorizacaoDe, filters.dataAutorizacaoAte, {
@@ -1307,9 +1301,6 @@ function DashboardPage() {
                   </div>
 
                 </div>
-                <p className="text-xs text-muted-foreground">
-                  Tipo de guia · quantidade de guias · % do total do período
-                </p>
                 <ul className="space-y-2 text-sm">
                   {typeData.map((d, i) => {
                     const pct = total > 0 ? (d.value / total) * 100 : 0;
@@ -1559,6 +1550,7 @@ function Kpi({
       </div>
       {meta && <div className="mt-0.5 text-xs text-muted-foreground">{meta}</div>}
       <div className="mt-3 metric-value text-foreground">{value}</div>
+      {(hint || trend) && (
       <div
         className={[
           "mt-1 metric-hint flex items-center icon-optical gap-1",
@@ -1575,6 +1567,7 @@ function Kpi({
         {trend && <span className="sr-only">{trendA11yLabel[trend]}</span>}
         {hint}
       </div>
+      )}
     </SurfaceCard>
   );
 }
