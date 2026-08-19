@@ -15,7 +15,6 @@ import {
   Layers,
   Download,
   Activity,
-  X,
   SlidersHorizontal,
   ArrowUpRight,
   ArrowDownRight,
@@ -646,17 +645,7 @@ function FilterSelect({
 }
 
 
-/** Filtros cujo valor é uma data ISO e deve ser exibido em pt-BR. */
-const dateFilterKeys: ReadonlySet<keyof GuideFilters> = new Set([
-  "dataAutorizacaoDe",
-  "dataAutorizacaoAte",
-]);
 
-/** Converte o valor cru do filtro na forma legível exibida nos chips. */
-function formatFilterValue(key: keyof GuideFilters, value: string): string {
-  if (!dateFilterKeys.has(key)) return value;
-  return formatIsoToBr(value) || value;
-}
 
 const MONTH_ABBR = [
   "jan", "fev", "mar", "abr", "mai", "jun",
@@ -693,13 +682,6 @@ function monthBoundaries(data: { date: string }[]): { date: string; label: strin
 
 
 
-
-const filterLabels: Record<keyof GuideFilters, string> = {
-  dataAutorizacaoDe: "Período de",
-  dataAutorizacaoAte: "Período até",
-  tipoGuia: "Tipo de guia",
-  prestadorSolicitante: "Prestador solicitante",
-};
 
 
 type ProcedureSortColumn = "code" | "name" | "count";
@@ -795,9 +777,6 @@ function DashboardPage() {
   const clearAllFilters = () => {
     setFilters(emptyFilters);
     toast.success("Filtros limpos.");
-  };
-  const removeFilter = (key: keyof GuideFilters) => {
-    setFilters((f) => ({ ...f, [key]: "" }));
   };
 
   const firstFieldRef = useRef<HTMLInputElement | null>(null);
@@ -1017,36 +996,8 @@ function DashboardPage() {
             </span>
           </p>
 
-          {/* Chips de filtros ativos — resumo apenas quando o painel está recolhido */}
-          {!filtersOpen && activeFilters.length > 0 && (
-            <div className="flex flex-wrap items-center gap-2">
-              {activeFilters.map(([k, v]) => (
-                <Chip key={k} asSpan variant="outline">
-                  <span className="text-muted-foreground">{filterLabels[k]}:</span>
-                  <span className="font-medium">{formatFilterValue(k, v)}</span>
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => removeFilter(k)}
-                    className="ml-1 h-4 w-4 rounded-full p-0.5 hover:bg-muted [&_svg]:size-3"
-                    aria-label={`Remover filtro ${filterLabels[k]}`}
-                  >
-                    <X className="h-3 w-3" />
-                  </Button>
-                </Chip>
-              ))}
-              <Button
-                type="button"
-                variant="link"
-                size="sm"
-                onClick={clearAllFilters}
-                className="h-auto p-0 text-xs text-muted-foreground hover:text-foreground"
-              >
-                Limpar filtros
-              </Button>
-            </div>
-          )}
+
+
 
 
           {/* Container de filtros — cabeçalho próprio com expandir/recolher */}
