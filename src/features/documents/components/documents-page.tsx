@@ -673,10 +673,16 @@ function AttendanceTab() {
                 onChange={(e) => setCidade(e.target.value)}
               />
             </Field>
-            <Field id="comp-data" label="Data do comparecimento">
+            <Field
+              id="comp-data"
+              label="Data do comparecimento"
+              error={dataStatus.error}
+              hint={dataStatus.warning}
+            >
               <Input
                 id="comp-data"
                 type="date"
+                max={todayIsoDate()}
                 value={data}
                 onChange={(e) => setData(e.target.value)}
               />
