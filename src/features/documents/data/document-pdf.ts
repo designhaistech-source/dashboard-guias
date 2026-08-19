@@ -17,7 +17,6 @@ export const PDF_LAYOUT = {
 /** Assinatura mockada exibida no fim do documento. */
 export const PDF_SIGNATURE = {
   name: "Dr. Fulano de Tal — CRM 47231/RN",
-  note: "Documento sem assinatura digital — imprima para assinar manualmente.",
 } as const;
 
 /** Uma linha posicionada dentro de uma página A4. */
