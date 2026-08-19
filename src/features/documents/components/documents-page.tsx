@@ -7,6 +7,7 @@ import {
   Download,
   BookmarkPlus,
   User,
+  Loader2,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -142,6 +143,7 @@ function DocumentActions({
 }) {
   const disabled = !paciente.trim();
   const temTexto = html.replace(/<[^>]+>/g, "").trim().length > 0;
+  const [downloading, setDownloading] = useState(false);
 
   function handlePrint() {
     if (disabled) {
@@ -149,6 +151,32 @@ function DocumentActions({
       return;
     }
     printHtml(title, paciente, html);
+  }
+
+  async function handleDownload() {
+    if (disabled) {
+      toast.error("Informe o paciente antes de baixar o PDF.");
+      return;
+    }
+    if (!temTexto) {
+      toast.error("Escreva o texto do documento antes de baixar o PDF.");
+      return;
+    }
+
+    setDownloading(true);
+    const toastId = toast.loading("Gerando PDF do documento…");
+    try {
+      const { downloadDocumentPdf } = await import("../data/document-pdf");
+      const fileName = downloadDocumentPdf(title, paciente, html);
+      toast.success(`PDF gerado: ${fileName}`, {
+        id: toastId,
+        description: "Documento sem assinatura digital — imprima para assinar manualmente.",
+      });
+    } catch {
+      toast.error("Não foi possível gerar o PDF. Tente novamente.", { id: toastId });
+    } finally {
+      setDownloading(false);
+    }
   }
 
   return (
@@ -170,12 +198,16 @@ function DocumentActions({
         type="button"
         variant="outline"
         size="sm"
-        onClick={() =>
-          toast.success("Documento baixado em PDF sem assinatura digital (simulação).")
-        }
+        onClick={handleDownload}
+        disabled={downloading}
+        aria-busy={downloading}
       >
-        <Download className="icon-optical h-4 w-4" aria-hidden />
-        Baixar PDF
+        {downloading ? (
+          <Loader2 className="icon-optical h-4 w-4 animate-spin" aria-hidden />
+        ) : (
+          <Download className="icon-optical h-4 w-4" aria-hidden />
+        )}
+        {downloading ? "Gerando PDF…" : "Baixar PDF"}
       </Button>
       <Button type="button" variant="outline" size="sm" onClick={handlePrint}>
         <Printer className="icon-optical h-4 w-4" aria-hidden />
