@@ -454,7 +454,7 @@ function DocumentActions({
             : "Documento salvo em “Documentos emitidos”."
         }
         icon={<CheckCircle2 className="icon-optical h-4 w-4 text-success" aria-hidden />}
-        size="sm"
+        size="md"
         footer={
           <>
             {downloadButton}
