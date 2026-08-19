@@ -9,7 +9,10 @@ import {
   AlignLeft,
   AlignCenter,
   AlignRight,
+  Loader2,
+  Sparkles,
 } from "lucide-react";
+
 
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -46,7 +49,12 @@ interface RichTextEditorProps {
   placeholder?: string;
   className?: string;
   ariaLabel: string;
+  /** Aciona a melhoria do texto com IA. Quando ausente, o botão não é exibido. */
+  onImproveWithAi?: () => void;
+  /** Indica que a melhoria com IA está em andamento. */
+  improving?: boolean;
 }
+
 
 /**
  * Editor de texto simples usado nos documentos clínicos.
@@ -60,7 +68,10 @@ export function RichTextEditor({
   placeholder,
   className,
   ariaLabel,
+  onImproveWithAi,
+  improving = false,
 }: RichTextEditorProps) {
+
   const ref = React.useRef<HTMLDivElement>(null);
 
   React.useEffect(() => {
@@ -108,7 +119,33 @@ export function RichTextEditor({
 
           </React.Fragment>
         ))}
+        {onImproveWithAi && (
+          <>
+            <span aria-hidden className="mx-1 h-5 w-px bg-border" />
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              onClick={onImproveWithAi}
+              disabled={improving}
+              aria-busy={improving}
+              title="Melhorar texto com IA"
+              className="h-7 gap-1.5 px-2 text-xs text-muted-foreground hover:text-foreground"
+            >
+              {improving ? (
+                <Loader2
+                  className="icon-optical h-3.5 w-3.5 animate-spin"
+                  aria-hidden
+                />
+              ) : (
+                <Sparkles className="icon-optical h-3.5 w-3.5" aria-hidden />
+              )}
+              {improving ? "Melhorando..." : "Melhorar texto com IA"}
+            </Button>
+          </>
+        )}
       </div>
+
       <div
         ref={ref}
         role="textbox"
