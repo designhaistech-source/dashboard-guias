@@ -1094,8 +1094,10 @@ function DashboardPage() {
                       </linearGradient>
                     </defs>
                     <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" vertical={false} />
-                    <XAxis dataKey="day" stroke="var(--muted-foreground)" fontSize={11} tickLine={false} axisLine={false} tickMargin={6}
+                    <XAxis dataKey="date" stroke="var(--muted-foreground)" fontSize={11} tickLine={false} axisLine={false} tickMargin={6}
+                      interval="preserveStartEnd" minTickGap={18} tickFormatter={formatDailyTick}
                       label={{ value: "Data", position: "insideBottom", offset: -8, fill: "var(--muted-foreground)", fontSize: 11 }} />
+
                     <YAxis stroke="var(--muted-foreground)" fontSize={11} tickLine={false} axisLine={false} width={44} allowDecimals={false}
                       label={{ value: "Quantidade de guias", angle: -90, position: "insideLeft", fill: "var(--muted-foreground)", fontSize: 11, style: { textAnchor: "middle" } }} />
 
