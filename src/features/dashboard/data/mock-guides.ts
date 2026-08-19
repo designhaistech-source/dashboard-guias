@@ -112,9 +112,6 @@ export type DashboardFilterInput = {
   prestadorSolicitante: string;
 };
 
-const norm = (v: string) =>
-  v.normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim().toLowerCase();
-
 export function filterGuides(
   guides: DashboardGuide[],
   f: DashboardFilterInput,
