@@ -307,16 +307,9 @@ function ReportsTab() {
             hint="Use “Salvar como modelo” após redigir o texto para reaproveitá-lo depois."
           />
           <CidFields cid={cid} descricao={diagnosticoSelecionado} onChange={handleCid} />
-          <p className="text-xs text-muted-foreground">
-            Variáveis que podem ser utilizadas no texto:{" "}
-            {DOCUMENT_VARIABLES.map((v) => (
-              <code key={v} className="mr-1 rounded bg-muted px-1 py-0.5 font-mono text-xs">
-                {v}
-              </code>
-            ))}
-          </p>
         </div>
       </SurfaceCard>
+
 
       <RichTextEditor
         ariaLabel="Texto do relatório médico"
@@ -324,6 +317,7 @@ function ReportsTab() {
         onChange={setHtml}
         onImproveWithAi={improve}
         improving={improving}
+        variables={DOCUMENT_VARIABLES}
         placeholder="Redija o relatório médico..."
         header={
           <DocumentEditorHeader
@@ -434,6 +428,7 @@ function CertificateTab() {
         onChange={setHtml}
         onImproveWithAi={improve}
         improving={improving}
+        variables={DOCUMENT_VARIABLES}
         header={
           <DocumentEditorHeader
             title="Atestado médico"
@@ -570,6 +565,7 @@ function AttendanceTab() {
         onChange={setHtml}
         onImproveWithAi={improve}
         improving={improving}
+        variables={DOCUMENT_VARIABLES}
         header={
           <DocumentEditorHeader
             title="Declaração de comparecimento"

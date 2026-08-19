@@ -52,6 +52,8 @@ interface RichTextEditorProps {
   onImproveWithAi?: () => void;
   /** Indica que a melhoria com IA está em andamento. */
   improving?: boolean;
+  /** Variáveis inseríveis no texto (ex.: "@paciente"). */
+  variables?: readonly string[];
 }
 
 /**
@@ -68,6 +70,7 @@ export function RichTextEditor({
   ariaLabel,
   onImproveWithAi,
   improving = false,
+  variables,
 }: RichTextEditorProps) {
   const ref = React.useRef<HTMLDivElement>(null);
 
@@ -81,6 +84,24 @@ export function RichTextEditor({
     document.execCommand(command);
     if (ref.current) onChange(ref.current.innerHTML);
   }
+
+  /** Insere a variável na posição do cursor; ao final do texto se não houver seleção ativa. */
+  function insertVariable(variable: string) {
+    const el = ref.current;
+    if (!el) return;
+    el.focus();
+    const selection = window.getSelection();
+    if (!selection || selection.rangeCount === 0 || !el.contains(selection.anchorNode)) {
+      const range = document.createRange();
+      range.selectNodeContents(el);
+      range.collapse(false);
+      selection?.removeAllRanges();
+      selection?.addRange(range);
+    }
+    document.execCommand("insertText", false, `${variable} `);
+    onChange(el.innerHTML);
+  }
+
 
   return (
     <div
@@ -136,6 +157,32 @@ export function RichTextEditor({
           </>
         )}
       </div>
+
+      {variables && variables.length > 0 && (
+        <div className="flex flex-wrap items-center gap-1.5 border-b border-border px-4 py-2">
+          <span id="rte-variables-hint" className="text-xs text-muted-foreground">
+            Inserir variável:
+          </span>
+          {variables.map((variable) => (
+            <Button
+              key={variable}
+              type="button"
+              variant="secondary"
+              size="sm"
+              onClick={() => insertVariable(variable)}
+              title={`Inserir ${variable} no texto`}
+              className="h-7 rounded-full px-2.5 font-mono text-xs"
+            >
+              {variable}
+            </Button>
+          ))}
+          <span className="text-xs text-muted-foreground">
+            (substituída pelos dados do paciente na impressão)
+          </span>
+        </div>
+      )}
+
+
 
       <div
         ref={ref}
