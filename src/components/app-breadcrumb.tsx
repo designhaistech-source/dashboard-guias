@@ -28,6 +28,7 @@ const ROUTE_META: Record<string, RouteMeta> = {
   "/documentos": {
     label: "Relatórios e documentos",
   },
+  "/documentos-emitidos": { label: "Documentos emitidos" },
   "/cid": { label: "Busca CID-10" },
   "/perfil": { label: "Meu Perfil" },
   "/configuracoes": { label: "Configurações" },
