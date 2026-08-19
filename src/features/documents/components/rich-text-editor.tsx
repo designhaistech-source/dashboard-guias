@@ -297,17 +297,19 @@ export function RichTextEditor({
           </span>
           {(variables ?? []).map((variable) => {
             const resolved = variableValues?.[variable]?.trim();
+            const label = VARIABLE_LABELS[variable] ?? variable;
             return (
               <Button
                 key={variable}
                 type="button"
                 variant="secondary"
                 size="sm"
+                disabled={!resolved}
                 onClick={() => insertVariable(variable)}
                 title={
                   resolved
                     ? `Inserir “${resolved}” no texto`
-                    : `${variable}: sem valor preenchido — o token será inserido e substituído depois`
+                    : `Preencha o campo ${label} para usar ${variable}`
                 }
                 className="h-7 rounded-full px-2.5 font-mono text-xs"
               >
@@ -316,9 +318,8 @@ export function RichTextEditor({
             );
           })}
           <span className="text-xs text-muted-foreground">
-            {canPreview
-              ? "(insere o valor atual do campo; sem valor, insere o token)"
-              : "(substituída pelos dados do paciente na impressão)"}
+            (insere o valor atual do campo; variáveis sem valor ficam
+            indisponíveis)
           </span>
         </div>
       )}
