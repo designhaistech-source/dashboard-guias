@@ -67,6 +67,22 @@ export function formatDateLong(iso: string): string {
   });
 }
 
+interface RelatorioInput {
+  /** Conteúdo do modelo escolhido, usado como base do texto. */
+  base: string;
+  data: string;
+  cidade: string;
+}
+
+/**
+ * Texto padrão do relatório: modelo selecionado + fechamento com cidade e data.
+ * As variáveis (@paciente, @cid…) são resolvidas na camada de variáveis.
+ */
+export function buildRelatorio({ base, data, cidade }: RelatorioInput): string {
+  const cidadeTexto = cidade.trim() ? `${cidade.trim()}, ` : "";
+  return `${base}<p>${cidadeTexto}${formatDateLong(data)}.</p>`;
+}
+
 interface AtestadoInput {
   paciente: string;
   dias: string;

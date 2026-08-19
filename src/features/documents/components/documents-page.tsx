@@ -62,6 +62,7 @@ import {
   REPORT_TEMPLATES,
   AFASTAMENTO_OPTIONS,
   buildAtestado,
+  buildRelatorio,
   buildComparecimento,
   formatDateLong,
   printHtml,
@@ -415,7 +416,7 @@ function ReportsTab() {
   const [paciente, setPaciente] = useState("");
   const [cid, setCid] = useState("");
   const [diagnosticoSelecionado, setDiagnosticoSelecionado] = useState("");
-  const [modelo, setModelo] = useState("");
+  const [modelo, setModelo] = useState(REPORT_TEMPLATES[0].value);
   const [data, setData] = useState(todayIso());
   const [cidade, setCidade] = useState("");
   const [html, setHtml] = useState("");
@@ -428,7 +429,7 @@ function ReportsTab() {
       setPaciente(d.paciente ?? "");
       setCid(d.cid ?? "");
       setDiagnosticoSelecionado(d.diagnosticoSelecionado ?? "");
-      setModelo(d.modelo ?? "");
+      setModelo(d.modelo || REPORT_TEMPLATES[0].value);
       setData(d.data ?? todayIso());
       setCidade(d.cidade ?? "");
       setHtml(d.html ?? "");
@@ -451,9 +452,24 @@ function ReportsTab() {
     saveDialog,
   } = useDocumentTemplates({
     kind: "relatorio",
-    getContent: () => html,
+    getContent: () => html || gerado,
     suggestName: () => (paciente.trim() ? `Relatório — ${paciente.trim()}` : ""),
   });
+
+  // Modelo escolhido (salvo ou padrão) que serve de base ao texto gerado.
+  const baseTemplate = useMemo(() => {
+    const found = [...savedTemplates, ...REPORT_TEMPLATES].find((t) => t.value === modelo);
+    return found?.content ?? REPORT_TEMPLATES[0].content;
+  }, [savedTemplates, modelo]);
+
+  const gerado = useMemo(
+    () => buildRelatorio({ base: baseTemplate, data, cidade }),
+    [baseTemplate, data, cidade],
+  );
+
+  const conteudo = html || gerado;
+
+  const { staleNotice } = useGeneratedSync({ generated: gerado, html, setHtml });
 
   const variableValues = useMemo(
     () => ({ paciente, data, cid, diagnostico }),
@@ -461,12 +477,12 @@ function ReportsTab() {
   );
   const tokenValues = useMemo(() => variableTokenValues(variableValues), [variableValues]);
   const previewHtml = useMemo(
-    () => resolveDocumentVariables(html, variableValues),
-    [html, variableValues],
+    () => resolveDocumentVariables(conteudo, variableValues),
+    [conteudo, variableValues],
   );
   const pending = useMemo(
-    () => findPendingVariables(html, variableValues).map((v) => VARIABLE_LABELS[v] ?? v),
-    [html, variableValues],
+    () => findPendingVariables(conteudo, variableValues).map((v) => VARIABLE_LABELS[v] ?? v),
+    [conteudo, variableValues],
   );
 
   const pacienteError = useMemo(() => validatePaciente(paciente), [paciente]);
@@ -496,14 +512,15 @@ function ReportsTab() {
       successMessage: `Modelo “${template.label}” aplicado.`,
       apply: () => {
         setModelo(value);
-        setHtml(template.content);
+        // Volta ao texto gerado para que o modelo seja preenchido com os campos atuais.
+        setHtml("");
       },
     });
   }
 
   const { improving, improve } = useImproveWithAi(
     "Relatório médico",
-    html,
+    conteudo,
     setHtml,
     requestReplace,
   );
@@ -518,7 +535,7 @@ function ReportsTab() {
       successMessage: "Texto padrão restaurado.",
       apply: () => {
         setModelo(modeloPadrao.value);
-        setHtml(modeloPadrao.content);
+        setHtml("");
       },
     });
   }
@@ -586,9 +603,10 @@ function ReportsTab() {
       </SurfaceCard>
 
 
+      {staleNotice}
       <RichTextEditor
         ariaLabel="Texto do relatório médico"
-        value={html}
+        value={conteudo}
         onChange={setHtml}
         onImproveWithAi={improve}
         improving={improving}
