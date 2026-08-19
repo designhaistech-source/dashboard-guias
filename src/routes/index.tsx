@@ -947,13 +947,20 @@ function DashboardPage() {
     if (dailyData.length < 2) return undefined;
     const last = dailyData[dailyData.length - 1].guias;
     const prev = dailyData[dailyData.length - 2].guias;
+    const prevDate = formatIsoToBr(dailyData[dailyData.length - 2].date);
     const diff = last - prev;
-    if (diff === 0) return { direction: "flat", label: "estável vs. dia anterior" };
+    if (diff === 0) {
+      return { direction: "flat", label: `Mesma quantidade do dia ${prevDate}` };
+    }
     return {
       direction: diff > 0 ? "up" : "down",
-      label: `${diff > 0 ? "+" : "-"}${Math.abs(diff)} vs. dia anterior`,
+      label: `${Math.abs(diff)} ${Math.abs(diff) === 1 ? "guia" : "guias"} ${diff > 0 ? "a mais" : "a menos"} que no dia ${prevDate}`,
     };
   }, [dailyData]);
+
+  /** Reference date of the "today" KPI, shown discreetly in the card. */
+  const todayLabel = formatIsoToBr(todayLocalIsoDate());
+
 
   return (
     <div className="flex min-h-screen w-full bg-background text-foreground">
