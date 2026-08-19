@@ -91,9 +91,7 @@ export function IssuedDocumentsPage() {
 
   const handleDownload = (doc: IssuedDocument) => {
     printDocumentHtml(doc.type, doc.patient, doc.body);
-    toast.success(`${doc.type} pronto para salvar em PDF.`, {
-      description: "Documento sem assinatura digital — imprima para assinar manualmente.",
-    });
+    toast.success(`${doc.type} pronto para salvar em PDF.`);
   };
 
   return (
