@@ -1601,6 +1601,12 @@ function DashboardPage() {
               </div>
             )}
           </SurfaceCard>
+            </TabsContent>
+
+            {/* Reservado para indicadores, filtros e gráficos próprios de cada aba. */}
+            <TabsContent value="emitidas" />
+            <TabsContent value="documentos" />
+          </Tabs>
         </div>
         <SiteFooter />
       </main>
