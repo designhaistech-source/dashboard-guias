@@ -10,6 +10,9 @@ import {
   Activity,
   X,
   SlidersHorizontal,
+  ArrowUpRight,
+  ArrowDownRight,
+  Minus,
 } from "lucide-react";
 import {
   AreaChart,
@@ -105,8 +108,14 @@ function buildPeriodLabel(from: string, to: string) {
 
 const prestadoresList = PRESTADORES;
 
-/** Sparkline a partir dos últimos pontos de uma série. */
-const toSpark = (values: number[]) => values.slice(-10).map((v) => ({ v }));
+type TrendDirection = "up" | "down" | "flat";
+type KpiTrend = { direction: TrendDirection; label: string };
+
+const trendA11yLabel: Record<TrendDirection, string> = {
+  up: "Em alta:",
+  down: "Em queda:",
+  flat: "Sem variação:",
+};
 
 
 async function captureChartPng(selector: string, scale = 2): Promise<{ dataUrl: string; w: number; h: number } | null> {
@@ -755,10 +764,18 @@ function DashboardPage() {
   const typeData = metrics.types;
   const procedures = metrics.procedures;
   const dailyData = metrics.daily;
-  const sparkTotal = toSpark(dailyData.map((d) => d.guias));
-  const sparkHoje = toSpark(dailyData.map((d) => d.guias));
-  const sparkMedia = toSpark(dailyData.map((d) => d.guias));
-  const sparkTipos = toSpark(typeData.map((t) => t.value));
+  /** Real variation of the latest day against the previous one. */
+  const todayTrend = useMemo<KpiTrend | undefined>(() => {
+    if (dailyData.length < 2) return undefined;
+    const last = dailyData[dailyData.length - 1].guias;
+    const prev = dailyData[dailyData.length - 2].guias;
+    const diff = last - prev;
+    if (diff === 0) return { direction: "flat", label: "estável vs. dia anterior" };
+    return {
+      direction: diff > 0 ? "up" : "down",
+      label: `${diff > 0 ? "+" : "-"}${Math.abs(diff)} vs. dia anterior`,
+    };
+  }, [dailyData]);
 
   return (
     <div className="flex min-h-screen w-full bg-background text-foreground">
@@ -911,10 +928,10 @@ function DashboardPage() {
 
           {/* KPIs */}
           <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-            <Kpi icon={FileText} label="Total extraídas" value={String(total)} hint={activeFilters.length > 0 ? "com filtros aplicados" : "no período"} tone="primary" spark={sparkTotal} />
-            <Kpi icon={Activity} label="Extraídas hoje" value={String(metrics.today)} hint="guias de hoje" tone="success" trend="up" spark={sparkHoje} />
-            <Kpi icon={TrendingUp} label="Média por dia" value={String(dailyAvg)} hint="guias/dia no período" tone="info" spark={sparkMedia} />
-            <Kpi icon={Layers} label="Tipos diferentes" value={String(metrics.distinctTypes)} hint="categorias de guia" tone="purple" spark={sparkTipos} />
+            <Kpi icon={FileText} label="Total extraídas" value={String(total)} hint={activeFilters.length > 0 ? "com filtros aplicados" : "no período"} tone="primary" />
+            <Kpi icon={Activity} label="Extraídas hoje" value={String(metrics.today)} hint={todayTrend ? todayTrend.label : "guias de hoje"} tone="success" trend={todayTrend?.direction} />
+            <Kpi icon={TrendingUp} label="Média por dia" value={String(dailyAvg)} hint="guias/dia no período" tone="info" />
+            <Kpi icon={Layers} label="Tipos diferentes" value={String(metrics.distinctTypes)} hint="categorias de guia" tone="purple" />
           </div>
 
           {/* Charts row */}
@@ -1152,15 +1169,13 @@ function Kpi({
   hint,
   tone,
   trend,
-  spark,
 }: {
   icon: React.ComponentType<{ className?: string }>;
   label: string;
   value: string;
   hint: string;
   tone: "primary" | "success" | "info" | "purple";
-  trend?: "up" | "down";
-  spark?: { v: number }[];
+  trend?: TrendDirection;
 }) {
   const toneClass = {
     primary: "bg-primary/10 text-primary",
@@ -1190,11 +1205,18 @@ function Kpi({
       <div className="mt-3 metric-value text-foreground">{value}</div>
       <div
         className={[
-          "mt-1 metric-hint flex items-center gap-1",
-          trend === "up" ? "text-success" : "text-muted-foreground",
+          "mt-1 metric-hint flex items-center icon-optical gap-1",
+          trend === "up"
+            ? "text-success"
+            : trend === "down"
+              ? "text-destructive"
+              : "text-muted-foreground",
         ].join(" ")}
       >
-        {trend === "up" && <span className="text-success">↗</span>}
+        {trend === "up" && <ArrowUpRight className="h-3.5 w-3.5" aria-hidden="true" />}
+        {trend === "down" && <ArrowDownRight className="h-3.5 w-3.5" aria-hidden="true" />}
+        {trend === "flat" && <Minus className="h-3.5 w-3.5" aria-hidden="true" />}
+        {trend && <span className="sr-only">{trendA11yLabel[trend]}</span>}
         {hint}
       </div>
     </SurfaceCard>
