@@ -5,12 +5,7 @@ export interface ReportTemplate {
 }
 
 /** Variáveis dinâmicas suportadas no corpo dos documentos. */
-export const DOCUMENT_VARIABLES = [
-  "@paciente",
-  "@data",
-  "@cid",
-  "@diagnostico",
-] as const;
+export const DOCUMENT_VARIABLES = ["@paciente", "@data", "@cid", "@diagnostico"] as const;
 
 /** Modelos de relatório (dados fictícios de demonstração). */
 export const REPORT_TEMPLATES: ReportTemplate[] = [
@@ -81,13 +76,7 @@ interface AtestadoInput {
 }
 
 /** Texto padrão do atestado, montado a partir dos campos do formulário. */
-export function buildAtestado({
-  paciente,
-  dias,
-  data,
-  cidade,
-  cid,
-}: AtestadoInput): string {
+export function buildAtestado({ paciente, dias, data, cidade, cid }: AtestadoInput): string {
   const nome = paciente.trim() || "____________________";
   const plural = Number(dias) > 1 ? "dias" : "dia";
   const local = cidade.trim() ? `${cidade.trim()}, ` : "";
@@ -119,8 +108,7 @@ export function buildComparecimento({
 }: ComparecimentoInput): string {
   const nome = paciente.trim() || "____________________";
   const estabelecimento = local.trim() || "este estabelecimento";
-  const periodo =
-    entrada && saida ? `das ${entrada} às ${saida}` : "no horário do atendimento";
+  const periodo = entrada && saida ? `das ${entrada} às ${saida}` : "no horário do atendimento";
   const cidadeTexto = cidade.trim() ? `${cidade.trim()}, ` : "";
 
   return [

@@ -23,7 +23,6 @@ import { AppSidebar } from "@/components/app-sidebar";
 import { SiteFooter } from "@/components/site-footer";
 import { PageHeader } from "@/components/page-header";
 import { FormActionBar } from "@/components/form-action-bar";
-import { SavedIndicator } from "@/components/saved-indicator";
 import { useDraftAutosave } from "@/hooks/use-draft-autosave";
 import { SurfaceCard } from "@/components/surface-card";
 import { Field, SelectField } from "@/components/form-field";
@@ -64,24 +63,15 @@ export function DocumentsPage() {
 
           <Tabs defaultValue="relatorios" className="space-y-6">
             <TabsList className={appTabsListClass}>
-              <TabsTrigger
-                value="relatorios"
-                className={appTabsTriggerClass}
-              >
+              <TabsTrigger value="relatorios" className={appTabsTriggerClass}>
                 <FileText className={appTabsIconClass} aria-hidden />
                 <span className={appTabsLabelClass}>Relatórios</span>
               </TabsTrigger>
-              <TabsTrigger
-                value="atestados"
-                className={appTabsTriggerClass}
-              >
+              <TabsTrigger value="atestados" className={appTabsTriggerClass}>
                 <Stethoscope className={appTabsIconClass} aria-hidden />
                 <span className={appTabsLabelClass}>Atestados</span>
               </TabsTrigger>
-              <TabsTrigger
-                value="comparecimento"
-                className={appTabsTriggerClass}
-              >
+              <TabsTrigger value="comparecimento" className={appTabsTriggerClass}>
                 <CalendarCheck className={appTabsIconClass} aria-hidden />
                 <span className={appTabsLabelClass}>
                   <span className="xs:hidden">Compar.</span>
@@ -89,8 +79,6 @@ export function DocumentsPage() {
                 </span>
               </TabsTrigger>
             </TabsList>
-
-
 
             <TabsContent value="relatorios" className="space-y-6">
               <ReportsTab />
@@ -242,9 +230,7 @@ function DocumentActions({
                   size="sm"
                   onClick={() => {
                     setSignOpen(false);
-                    toast.info(
-                      "Fluxo de assinatura digital ainda em definição (representação).",
-                    );
+                    toast.info("Fluxo de assinatura digital ainda em definição (representação).");
                   }}
                 >
                   Continuar para assinatura
@@ -257,7 +243,6 @@ function DocumentActions({
     </FormActionBar>
   );
 }
-
 
 function PatientField({
   id,
@@ -332,11 +317,10 @@ function ReportsTab() {
   const [modelo, setModelo] = useState("");
   const [html, setHtml] = useState("");
 
-  const { savedAt } = useDraftAutosave({
+  useDraftAutosave({
     key: "hg:documentos:relatorio",
     data: { paciente, cid, diagnosticoSelecionado, modelo, html },
-    isEmpty: (d) =>
-      !d.paciente.trim() && !d.cid.trim() && !d.html.replace(/<[^>]+>/g, "").trim(),
+    isEmpty: (d) => !d.paciente.trim() && !d.cid.trim() && !d.html.replace(/<[^>]+>/g, "").trim(),
     onRestore: (d) => {
       setPaciente(d.paciente ?? "");
       setCid(d.cid ?? "");
@@ -347,15 +331,12 @@ function ReportsTab() {
   });
 
   const diagnostico =
-    diagnosticoSelecionado ||
-    (CID10.find((c) => c.codigo === cid)?.descricao ?? "");
+    diagnosticoSelecionado || (CID10.find((c) => c.codigo === cid)?.descricao ?? "");
 
   function handleCid(codigo: string, descricao: string) {
     setCid(codigo);
     setDiagnosticoSelecionado(descricao);
   }
-
-
 
   function applyTemplate(value: string) {
     setModelo(value);
@@ -363,12 +344,7 @@ function ReportsTab() {
     if (template) setHtml(template.content);
   }
 
-
-  const { improving, improve } = useImproveWithAi(
-    "Relatório médico",
-    html,
-    setHtml,
-  );
+  const { improving, improve } = useImproveWithAi("Relatório médico", html, setHtml);
 
   return (
     <>
@@ -377,7 +353,6 @@ function ReportsTab() {
         description="Identifique o paciente e o diagnóstico que será impresso no documento."
         icon={<FileText className="icon-optical h-4 w-4" aria-hidden />}
         padding="lg"
-        actions={<SavedIndicator savedAt={savedAt} />}
       >
         <div className="space-y-4">
           <PatientField id="relatorio-paciente" value={paciente} onChange={setPaciente} />
@@ -394,10 +369,7 @@ function ReportsTab() {
           <p className="text-xs text-muted-foreground">
             Variáveis que podem ser utilizadas no texto:{" "}
             {DOCUMENT_VARIABLES.map((v) => (
-              <code
-                key={v}
-                className="mr-1 rounded bg-muted px-1 py-0.5 font-mono text-xs"
-              >
+              <code key={v} className="mr-1 rounded bg-muted px-1 py-0.5 font-mono text-xs">
                 {v}
               </code>
             ))}
@@ -430,9 +402,7 @@ function ReportsTab() {
         html={html}
         paciente={paciente}
         signable
-        onSaveTemplate={() =>
-          toast.success("Modelo salvo e disponível na lista (simulação).")
-        }
+        onSaveTemplate={() => toast.success("Modelo salvo e disponível na lista (simulação).")}
       />
     </>
   );
@@ -455,7 +425,7 @@ function CertificateTab() {
   const [cidade, setCidade] = useState("");
   const [html, setHtml] = useState("");
 
-  const { savedAt } = useDraftAutosave({
+  useDraftAutosave({
     key: "hg:documentos:atestado",
     data: { paciente, cid, diagnosticoSelecionado, dias, data, cidade, html },
     isEmpty: (d) => !d.paciente.trim() && !d.cid.trim() && !d.cidade.trim() && !d.html,
@@ -477,11 +447,7 @@ function CertificateTab() {
 
   const conteudo = html || gerado;
 
-  const { improving, improve } = useImproveWithAi(
-    "Atestado médico",
-    conteudo,
-    setHtml,
-  );
+  const { improving, improve } = useImproveWithAi("Atestado médico", conteudo, setHtml);
 
   return (
     <>
@@ -490,7 +456,6 @@ function CertificateTab() {
         description="O texto padrão é gerado automaticamente a partir destes campos."
         icon={<Stethoscope className="icon-optical h-4 w-4" aria-hidden />}
         padding="lg"
-        actions={<SavedIndicator savedAt={savedAt} />}
       >
         <div className="space-y-4">
           <PatientField id="atestado-paciente" value={paciente} onChange={setPaciente} />
@@ -532,7 +497,11 @@ function CertificateTab() {
         header={
           <DocumentEditorHeader
             title="Atestado médico"
-            meta={<>Paciente: {paciente || "—"} · {formatDateLong(data)}</>}
+            meta={
+              <>
+                Paciente: {paciente || "—"} · {formatDateLong(data)}
+              </>
+            }
             actions={
               <Button
                 type="button"
@@ -550,12 +519,7 @@ function CertificateTab() {
         }
       />
 
-      <DocumentActions
-        title="Atestado médico"
-        html={conteudo}
-        paciente={paciente}
-        signable
-      />
+      <DocumentActions title="Atestado médico" html={conteudo} paciente={paciente} signable />
     </>
   );
 }
@@ -571,11 +535,16 @@ function AttendanceTab() {
   const [saida, setSaida] = useState("");
   const [html, setHtml] = useState("");
 
-  const { savedAt } = useDraftAutosave({
+  useDraftAutosave({
     key: "hg:documentos:comparecimento",
     data: { paciente, local, cidade, data, entrada, saida, html },
     isEmpty: (d) =>
-      !d.paciente.trim() && !d.local.trim() && !d.cidade.trim() && !d.entrada && !d.saida && !d.html,
+      !d.paciente.trim() &&
+      !d.local.trim() &&
+      !d.cidade.trim() &&
+      !d.entrada &&
+      !d.saida &&
+      !d.html,
     onRestore: (d) => {
       setPaciente(d.paciente ?? "");
       setLocal(d.local ?? "");
@@ -607,7 +576,6 @@ function AttendanceTab() {
         description="Informe o local e os horários de permanência do paciente no atendimento."
         icon={<CalendarCheck className="icon-optical h-4 w-4" aria-hidden />}
         padding="lg"
-        actions={<SavedIndicator savedAt={savedAt} />}
       >
         <div className="space-y-4">
           <PatientField id="comp-paciente" value={paciente} onChange={setPaciente} />
@@ -665,7 +633,11 @@ function AttendanceTab() {
         header={
           <DocumentEditorHeader
             title="Declaração de comparecimento"
-            meta={<>Paciente: {paciente || "—"} · {formatDateLong(data)}</>}
+            meta={
+              <>
+                Paciente: {paciente || "—"} · {formatDateLong(data)}
+              </>
+            }
             actions={
               <Button
                 type="button"

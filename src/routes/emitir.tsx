@@ -33,7 +33,6 @@ import { AppSidebar } from "@/components/app-sidebar";
 import { SiteFooter } from "@/components/site-footer";
 import { PageHeader } from "@/components/page-header";
 import { SectionCard as BaseSectionCard } from "@/components/section-card";
-import { SavedIndicator } from "@/components/saved-indicator";
 import { SignatureField } from "@/components/signature-field";
 import { useDraftAutosave } from "@/hooks/use-draft-autosave";
 
@@ -74,8 +73,6 @@ import { AihGuideForm, ApacGuideForm, InternacaoGuideForm } from "@/features/gui
 import { SadtGuidePreview as GuiaLivePreview } from "@/features/guides/sadt/sadt-guide-preview";
 import { fmtDate } from "@/features/guides/components/guide-print-primitives";
 
-
-
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 import {
@@ -85,12 +82,21 @@ import {
   DialogTitle,
   DialogBody,
   DialogFooter,
-
 } from "@/components/ui/dialog";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { EmptyState } from "@/components/data-state";
-import { Shield, Landmark, ArrowUp, Stethoscope as StethIcon, BedDouble, HeartPulse, Hospital, Check, ChevronRight } from "lucide-react";
+import {
+  Shield,
+  Landmark,
+  ArrowUp,
+  Stethoscope as StethIcon,
+  BedDouble,
+  HeartPulse,
+  Hospital,
+  Check,
+  ChevronRight,
+} from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { cn } from "@/lib/utils";
@@ -99,11 +105,7 @@ import { CID_OPTIONS } from "@/lib/cid";
 import { TUSS, TUSS_OPTIONS, resolveTissTable } from "@/lib/tuss";
 import { nextGuiaNumber } from "@/lib/guia-number";
 import { SADT_SECTION_TITLES as T } from "@/lib/guide-sections";
-import {
-  addIssuedGuide,
-  downloadIssuedGuide,
-  type IssuedGuide,
-} from "@/features/issued-guides";
+import { addIssuedGuide, downloadIssuedGuide, type IssuedGuide } from "@/features/issued-guides";
 import convenioHumanasAsset from "@/assets/convenio-humanas-real.png.asset.json";
 import convenioUnimedAsset from "@/assets/convenio-unimed-real.png.asset.json";
 import convenioCaurnAsset from "@/assets/convenio-caurn-real.png.asset.json";
@@ -119,19 +121,39 @@ import {
   findOptionLabel,
 } from "@/lib/tiss-atendimento-options";
 
-
 const convenioHumanasLogo = convenioHumanasAsset.url;
 const convenioUnimedLogo = convenioUnimedAsset.url;
 const convenioCaurnLogo = convenioCaurnAsset.url;
 
-
 const UF_LIST = [
-  "AC","AL","AP","AM","BA","CE","DF","ES","GO","MA","MT","MS","MG","PA","PB",
-  "PR","PE","PI","RJ","RN","RS","RO","RR","SC","SP","SE","TO",
+  "AC",
+  "AL",
+  "AP",
+  "AM",
+  "BA",
+  "CE",
+  "DF",
+  "ES",
+  "GO",
+  "MA",
+  "MT",
+  "MS",
+  "MG",
+  "PA",
+  "PB",
+  "PR",
+  "PE",
+  "PI",
+  "RJ",
+  "RN",
+  "RS",
+  "RO",
+  "RR",
+  "SC",
+  "SP",
+  "SE",
+  "TO",
 ] as const;
-
-
-
 
 /** Campo 35 — Motivo de Encerramento do Atendimento (domínio TISS nº 39). */
 /** Tipo de consulta (campo 34) conforme domínio TISS. */
@@ -153,16 +175,29 @@ const MOTIVO_ENCERRAMENTO_OPTIONS: readonly { value: string; label: string }[] =
   { value: "21", label: "21 - Permanência, por características próprias da doença" },
   { value: "22", label: "22 - Permanência, por intercorrência" },
   { value: "23", label: "23 - Permanência, por impossibilidade sócio-familiar" },
-  { value: "24", label: "24 - Permanência, por Processo de doação de órgãos, tecidos e células - doador vivo" },
-  { value: "25", label: "25 - Permanência, por Processo de doação de órgãos, tecidos e células - doador morto" },
+  {
+    value: "24",
+    label: "24 - Permanência, por Processo de doação de órgãos, tecidos e células - doador vivo",
+  },
+  {
+    value: "25",
+    label: "25 - Permanência, por Processo de doação de órgãos, tecidos e células - doador morto",
+  },
   { value: "26", label: "26 - Permanência, por mudança de Procedimento" },
   { value: "27", label: "27 - Permanência, por reoperação" },
   { value: "28", label: "28 - Permanência, outros motivos" },
   { value: "31", label: "31 - Transferido para outro estabelecimento" },
   { value: "32", label: "32 - Transferência para Internação Domiciliar" },
   { value: "41", label: "41 - Óbito com declaração de Óbito fornecida pelo médico assistente" },
-  { value: "42", label: "42 - Óbito com declaração de Óbito fornecida pelo Instituto Médico Legal - IML" },
-  { value: "43", label: "43 - Óbito com declaração de Óbito fornecida pelo Serviço de Verificação de Óbito - SVO" },
+  {
+    value: "42",
+    label: "42 - Óbito com declaração de Óbito fornecida pelo Instituto Médico Legal - IML",
+  },
+  {
+    value: "43",
+    label:
+      "43 - Óbito com declaração de Óbito fornecida pelo Serviço de Verificação de Óbito - SVO",
+  },
   { value: "51", label: "51 - Encerramento Administrativo" },
   { value: "61", label: "61 - Alta da mãe/puérpera e do recém-nascido" },
   { value: "62", label: "62 - Alta da mãe/puérpera e permanência do recém-nascido" },
@@ -205,21 +240,15 @@ const GRAU_PARTICIPACAO_OPTIONS = [
   { value: "13", label: "13 - Intensivista" },
 ];
 
-
-
-
 /**
  * Classes compartilhadas pelos campos 32–35 (Dados do Atendimento).
  * Garantem altura de célula uniforme, labels alinhados no topo (reservando
  * espaço para rótulos de duas linhas) e hints ancorados na base da célula,
  * mantendo o espaçamento vertical/horizontal idêntico entre os campos.
  */
-const ATENDIMENTO_FIELD_CLASS =
-  "flex h-full flex-col gap-1.5 space-y-0 sm:gap-2 [&>p]:mt-auto";
+const ATENDIMENTO_FIELD_CLASS = "flex h-full flex-col gap-1.5 space-y-0 sm:gap-2 [&>p]:mt-auto";
 const ATENDIMENTO_LABEL_CLASS = "min-h-[2rem] items-start sm:min-h-[1.125rem]";
 const ATENDIMENTO_TRIGGER_CLASS = "h-10 w-full";
-
-
 
 /**
  * Validação das preferências do prestador. O padrão de matrícula aceita
@@ -231,7 +260,9 @@ const prefsSchema = z.object({
     .trim()
     .min(3, { message: "Informe o nome completo (mínimo de 3 caracteres)." })
     .max(120, { message: "O nome deve ter no máximo 120 caracteres." })
-    .regex(/^[\p{L}\p{M}\s.'-]+$/u, { message: "Use apenas letras, espaços, apóstrofos e hífens." }),
+    .regex(/^[\p{L}\p{M}\s.'-]+$/u, {
+      message: "Use apenas letras, espaços, apóstrofos e hífens.",
+    }),
   matricula: z
     .string()
     .trim()
@@ -254,14 +285,10 @@ type PrefField = keyof PrefsValues;
 const PREF_FIELD_ORDER: PrefField[] = ["prestador", "matricula", "estabelecimento", "uf"];
 
 const OPERADORAS = [
-
   { value: "Humanas", label: "Humanas", logo: convenioHumanasLogo, ans: "357511" },
   { value: "Unimed", label: "Unimed Natal/RN", logo: convenioUnimedLogo, ans: "335592" },
   { value: "CAURN", label: "CAURN", logo: convenioCaurnLogo, ans: "31425-1" },
 ] as const;
-
-
-
 
 export const Route = createFileRoute("/emitir")({
   head: () => ({
@@ -338,7 +365,6 @@ const CONVENIOS: {
   },
 ];
 
-
 type Procedure = {
   id: string;
   code: string;
@@ -381,8 +407,7 @@ const ACIDENTE_OPTIONS: { value: string; label: string }[] = [
   { value: "9", label: "9 - Não acidente" },
 ];
 const ACIDENTE_DEFAULT = "9";
-const acidenteLabel = (code: string) =>
-  ACIDENTE_OPTIONS.find((o) => o.value === code)?.label ?? "";
+const acidenteLabel = (code: string) => ACIDENTE_OPTIONS.find((o) => o.value === code)?.label ?? "";
 
 /** Campo 32 — Tabela de Domínio nº 50 (Tipo de Atendimento): código de 2 caracteres. */
 const TIPO_ATENDIMENTO_OPTIONS: { value: string; label: string }[] = [
@@ -412,9 +437,6 @@ const TIPO_ATENDIMENTO_OPTIONS: { value: string; label: string }[] = [
 const tipoAtendimentoLabel = (code: string) =>
   TIPO_ATENDIMENTO_OPTIONS.find((o) => o.value === code)?.label ?? "";
 
-
-
-
 const GUIDE_SHORT: Record<GuideKind, string> = {
   sadt: "SADT",
   internacao: "Internação",
@@ -430,7 +452,11 @@ const SPECIALTY_KITS: Kit[] = [
     specialty: "CBO - Oftalmologia",
     procedures: [
       { code: "3.03.11.02-0", description: "Cirurgia com sutura ajustável (7C)", quantity: 1 },
-      { code: "3.03.11.03-9", description: "Estrabismo ciclo vertical/transposição - monocular (8A)", quantity: 1 },
+      {
+        code: "3.03.11.03-9",
+        description: "Estrabismo ciclo vertical/transposição - monocular (8A)",
+        quantity: 1,
+      },
       { code: "3.03.11.04-7", description: "Estrabismo horizontal - monocular (7C)", quantity: 1 },
     ],
   },
@@ -439,7 +465,11 @@ const SPECIALTY_KITS: Kit[] = [
     name: "Catarata",
     specialty: "CBO - Oftalmologia",
     procedures: [
-      { code: "3.03.06.03-0", description: "Facectomia com implante de lente intraocular", quantity: 1 },
+      {
+        code: "3.03.06.03-0",
+        description: "Facectomia com implante de lente intraocular",
+        quantity: 1,
+      },
     ],
   },
   {
@@ -457,7 +487,11 @@ const SPECIALTY_KITS: Kit[] = [
     name: "Exames de rotina",
     specialty: "CBO - Clínica Médica",
     procedures: [
-      { code: "4.03.04.36-1", description: "Hemograma com contagem de plaquetas ou frações", quantity: 1 },
+      {
+        code: "4.03.04.36-1",
+        description: "Hemograma com contagem de plaquetas ou frações",
+        quantity: 1,
+      },
       { code: "4.03.02.14-9", description: "Colesterol total", quantity: 1 },
       { code: "4.03.02.20-3", description: "Glicose", quantity: 1 },
       { code: "4.03.04.86-8", description: "TSH", quantity: 1 },
@@ -469,10 +503,7 @@ function EmitirPage() {
   const navigate = useNavigate();
   // Hub — convênio + tipo de guia
   const [convenioId, setConvenioId] = useState<ConvenioId>("tiss");
-  const convenio = useMemo(
-    () => CONVENIOS.find((c) => c.id === convenioId)!,
-    [convenioId],
-  );
+  const convenio = useMemo(() => CONVENIOS.find((c) => c.id === convenioId)!, [convenioId]);
   const [guideKind, setGuideKind] = useState<GuideKind | null>(null);
 
   // Ao trocar de convênio, limpa a escolha de guia
@@ -536,7 +567,6 @@ function EmitirPage() {
   const contratadoExecutante = ESTABLISHMENT.nome;
   const cnesExecutante = ESTABLISHMENT.cnes;
 
-
   // Dados do atendimento (32 a 35)
   const [tipoAtendimento, setTipoAtendimento] = useState("");
   /** Campo 33 — padrão TISS "9 - Não acidente"; alterável quando necessário. */
@@ -559,8 +589,6 @@ function EmitirPage() {
     );
   }, [tipoAtendimento]);
 
-
-
   /**
    * Campo 2 — Nº Guia no Prestador. Não é informado pelo usuário: o sistema
    * gera a numeração sequencial por operadora ao criar/salvar a guia.
@@ -568,9 +596,7 @@ function EmitirPage() {
   const [numeroGuia, setNumeroGuia] = useState<string>("");
 
   // Profissional solicitante (UI compartilhada em Emitir guia e Solicitar OPME)
-  const [profissional, setProfissional] = useState<ProfessionalValue>(
-    defaultProfessionalValue,
-  );
+  const [profissional, setProfissional] = useState<ProfessionalValue>(defaultProfessionalValue);
   const medicoNome = profissional.nome;
   const medicoCrm = councilLabel(profissional);
   const medicoEspecialidade = profissional.especialidade;
@@ -580,7 +606,6 @@ function EmitirPage() {
   /** Campos 15, 16 e 17 precisam estar válidos antes de imprimir ou gerar o PDF. */
   const profissionalErrors = validateProfessional(profissional);
   const profissionalValido = isProfessionalValid(profissional);
-
 
   /** Preferências salvas sobrescrevem o profissional como preenchimento manual. */
   const applyPrefsToProfissional = (prestador?: string, matricula?: string) => {
@@ -613,13 +638,10 @@ function EmitirPage() {
     "none",
   );
   /** Snapshot dos campos da guia antes de aplicar (permite desfazer). */
-  const [prefsUndo, setPrefsUndo] = useState<
-    | {
-        profissional: ProfessionalValue;
-        estabelecimento: string;
-      }
-    | null
-  >(null);
+  const [prefsUndo, setPrefsUndo] = useState<{
+    profissional: ProfessionalValue;
+    estabelecimento: string;
+  } | null>(null);
 
   /** Só oferece revisão quando existe algum dado padrão preenchido. */
   const prefsFilled: PrefField[] = [
@@ -700,7 +722,9 @@ function EmitirPage() {
         // Nada é aplicado automaticamente: o usuário revisa e confirma.
         if (p.prestador || p.matricula || p.estabelecimento) setPrefsStatus("review");
       }
-    } catch { /* ignore */ }
+    } catch {
+      /* ignore */
+    }
   }, []);
   const savePrefs = () => {
     const result = prefsSchema.safeParse({
@@ -738,8 +762,6 @@ function EmitirPage() {
     setPrefsOpen(false);
   };
 
-
-
   const [pacienteNome, setPacienteNome] = useState("");
   const [pacienteCarteira, setPacienteCarteira] = useState("");
   const [pacienteCpf, setPacienteCpf] = useState("");
@@ -749,17 +771,14 @@ function EmitirPage() {
   const [pacienteNomeSocial, setPacienteNomeSocial] = useState("");
   const [pacienteRn, setPacienteRn] = useState("N");
 
-
-
-
   const [cidPrincipal, setCidPrincipal] = useState("");
   const [indicacaoClinica, setIndicacaoClinica] = useState("");
   const [coberturaEspecial, setCoberturaEspecial] = useState("");
   const [regimeAtendimento, setRegimeAtendimento] = useState("");
   const [saudeOcupacional, setSaudeOcupacional] = useState("");
   const [observacoes, setObservacoes] = useState("");
-  const [dataSolicitacao, setDataSolicitacao] = useState(
-    () => new Date().toISOString().slice(0, 10),
+  const [dataSolicitacao, setDataSolicitacao] = useState(() =>
+    new Date().toISOString().slice(0, 10),
   );
 
   // Campos SUS (substituem operadora/ANS)
@@ -768,16 +787,14 @@ function EmitirPage() {
   // Estabelecimento e UF do conselho só são preenchidos após a revisão explícita
   // dos dados padrão (ver applySelectedPrefs).
 
-
-
   // Específicos por tipo de guia
   const [internacaoTipo, setInternacaoTipo] = useState("Clínica");
   const [internacaoRegime, setInternacaoRegime] = useState("Hospitalar");
   const [internacaoDias, setInternacaoDias] = useState(1);
   const [internacaoAcomodacao, setInternacaoAcomodacao] = useState("Enfermaria");
 
-  const [apacCompetencia, setApacCompetencia] = useState(
-    () => new Date().toISOString().slice(0, 7),
+  const [apacCompetencia, setApacCompetencia] = useState(() =>
+    new Date().toISOString().slice(0, 7),
   );
   const [apacTipo, setApacTipo] = useState("Inicial");
 
@@ -836,7 +853,9 @@ function EmitirPage() {
     try {
       const raw = localStorage.getItem("haisguias:kits");
       if (raw) setUserKits(JSON.parse(raw));
-    } catch { /* ignore */ }
+    } catch {
+      /* ignore */
+    }
   }, []);
   useEffect(() => {
     localStorage.setItem("haisguias:kits", JSON.stringify(userKits));
@@ -856,10 +875,7 @@ function EmitirPage() {
   );
 
   // Todos os kits disponíveis (usuário + especialidade) para o seletor do tópico 4
-  const kitOptionsSource = useMemo<Kit[]>(
-    () => [...userKits, ...SPECIALTY_KITS],
-    [userKits],
-  );
+  const kitOptionsSource = useMemo<Kit[]>(() => [...userKits, ...SPECIALTY_KITS], [userKits]);
   const kitOptions = useMemo(
     () =>
       kitOptionsSource.map((k) => ({
@@ -881,7 +897,6 @@ function EmitirPage() {
     );
     toast.success(`Kit "${kit.name}" aplicado (${kit.procedures.length} procedimentos)`);
   };
-
 
   // Formulário inline "criar kit" (rodapé do tópico 4)
   const [kitName, setKitName] = useState("");
@@ -914,7 +929,6 @@ function EmitirPage() {
     setKitName("");
     toast.success(`Kit "${kit.name}" salvo`);
   };
-
 
   // Procedimentos e exames realizados (campos 36 a 47)
   const [executedItems, setExecutedItems] = useState<ExecutedItem[]>([]);
@@ -958,11 +972,9 @@ function EmitirPage() {
     setExecOpen(true);
   };
 
-
   const updateExecuted = (id: string, patch: Partial<ExecutedItem>) =>
     setExecutedItems((l) => l.map((x) => (x.id === id ? { ...x, ...patch } : x)));
-  const removeExecuted = (id: string) =>
-    setExecutedItems((l) => l.filter((x) => x.id !== id));
+  const removeExecuted = (id: string) => setExecutedItems((l) => l.filter((x) => x.id !== id));
 
   /** Copia os procedimentos solicitados (campos 25-27) para o quadro de realizados. */
   const importSolicitedProcedures = () => {
@@ -985,7 +997,6 @@ function EmitirPage() {
 
     setExecOpen(true);
     toast.success(`${filled.length} procedimento(s) copiado(s) dos solicitados`);
-
   };
 
   /** Quadro "Identificação do(a) profissional executante" (campos 48 a 55). */
@@ -1050,8 +1061,6 @@ function EmitirPage() {
   /** Campo 56 — exibido apenas quando o procedimento realizado é seriado. */
   const [showSerieDates, setShowSerieDates] = useState(false);
 
-
-
   const parseMoney = (v: string) => Number(v.replace(/\./g, "").replace(",", ".")) || 0;
   const formatMoney = (v: number) =>
     v.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
@@ -1074,7 +1083,6 @@ function EmitirPage() {
     parseMoney(totalMedicamentos) +
     parseMoney(totalGases);
 
-
   // OPME
   const [opmeItems, setOpmeItems] = useState<OpmeItem[]>([]);
   const addOpme = () =>
@@ -1084,8 +1092,7 @@ function EmitirPage() {
     ]);
   const updateOpme = (id: string, patch: Partial<OpmeItem>) =>
     setOpmeItems((o) => o.map((x) => (x.id === id ? { ...x, ...patch } : x)));
-  const removeOpme = (id: string) =>
-    setOpmeItems((o) => o.filter((x) => x.id !== id));
+  const removeOpme = (id: string) => setOpmeItems((o) => o.filter((x) => x.id !== id));
 
   // Drag & drop reorder (OPME)
   const [dragOpmeId, setDragOpmeId] = useState<string | null>(null);
@@ -1103,11 +1110,8 @@ function EmitirPage() {
     setDragOpmeId(null);
   };
 
-
-
-
   // Autosave do rascunho + indicador "salvo HH:MM" no cabeçalho.
-  const { savedAt } = useDraftAutosave({
+  useDraftAutosave({
     key: "hg:emitir:rascunho",
     data: {
       pacienteNome,
@@ -1144,7 +1148,6 @@ function EmitirPage() {
     },
   });
 
-
   /**
    * Ordem dos tópicos numerados do formulário. Segue a mesma sequência dos
    * quadros impressos na guia SP/SADT: dados da operadora (1-7), beneficiário
@@ -1160,21 +1163,19 @@ function EmitirPage() {
     "paciente",
     "profissional",
     "clinico",
-    
+
     "atendimento",
     "realizados",
     "executantes",
     "observacao",
-    
+
     "opme",
   ];
 
   const stepNumber = (key: string) => stepKeys.indexOf(key) + 1;
 
   const convenioOk =
-    convenioId === "tiss"
-      ? Boolean(operadora.trim())
-      : Boolean(susEstabelecimento.trim());
+    convenioId === "tiss" ? Boolean(operadora.trim()) : Boolean(susEstabelecimento.trim());
   const especificoOk =
     guideKind === "internacao"
       ? Boolean(internacaoTipo && internacaoDias > 0)
@@ -1186,33 +1187,24 @@ function EmitirPage() {
   const pacienteOk = Boolean(pacienteNome.trim() && pacienteCarteira.trim());
 
   const profissionalOk = profissionalValido;
-  
+
   const saudeOcupacionalError = isSaudeOcupacionalValid(saudeOcupacional)
     ? undefined
     : "Selecione uma opção válida da tabela de domínio nº 77.";
   /** Texto exato da opção selecionada no campo 92, para exibir na guia. */
-  const saudeOcupacionalLabel =
-    findOptionLabel(SAUDE_OCUPACIONAL_OPTIONS, saudeOcupacional);
+  const saudeOcupacionalLabel = findOptionLabel(SAUDE_OCUPACIONAL_OPTIONS, saudeOcupacional);
   /** Texto exato da opção selecionada no campo 91, para exibir na guia. */
-  const regimeAtendimentoLabel =
-    findOptionLabel(REGIME_ATENDIMENTO_OPTIONS, regimeAtendimento);
-  const atendimentoOk =
-    Boolean(tipoAtendimento.trim()) && !saudeOcupacionalError;
+  const regimeAtendimentoLabel = findOptionLabel(REGIME_ATENDIMENTO_OPTIONS, regimeAtendimento);
+  const atendimentoOk = Boolean(tipoAtendimento.trim()) && !saudeOcupacionalError;
   const realizadosOk = executedItems.some((i) => i.description.trim() || i.code.trim());
   const executantesOk = executantes.some((e) => e.name.trim() && e.councilNumber.trim());
   const observacaoOk = Boolean(observacoes.trim());
-  
-
-
 
   const clinicoOk = Boolean(indicacaoClinica.trim() && dataSolicitacao.trim());
   const procedimentosOk = procedures.some(
     (p) => p.code.trim() && p.description.trim() && p.quantity > 0,
   );
   const opmeOk = opmeItems.some((i) => i.description.trim());
-
-
-
 
   const validate = () => {
     const missing: string[] = [];
@@ -1224,18 +1216,14 @@ function EmitirPage() {
     if (!medicoNome.trim()) missing.push("Nome do profissional");
     if (!medicoCrm.trim()) missing.push("CRM");
     if (!indicacaoClinica.trim()) missing.push("Indicação clínica");
-    const procsOk = procedures.some(
-      (p) => p.code.trim() && p.description.trim() && p.quantity > 0,
-    );
+    const procsOk = procedures.some((p) => p.code.trim() && p.description.trim() && p.quantity > 0);
     if (!procsOk) missing.push("Ao menos um procedimento");
     return missing;
   };
 
   /** Monta a guia emitida a partir do formulário, no formato do sistema. */
   const buildIssuedGuide = (numero: string, issuedAt: Date): IssuedGuide => {
-    const filledProcedures = procedures.filter(
-      (p) => p.code.trim() && p.description.trim(),
-    );
+    const filledProcedures = procedures.filter((p) => p.code.trim() && p.description.trim());
     const issuedType: IssuedGuide["type"] =
       guideKind === "internacao"
         ? "Internação"
@@ -1370,45 +1358,33 @@ function EmitirPage() {
           <PageHeader
             title="Emitir guia"
             description="Escolha entre guias de convênio (TISS) ou guias do SUS e selecione o tipo correspondente para começar."
-            actions={<SavedIndicator savedAt={savedAt} />}
           />
 
-
-
           {/* Hub: modo (TISS/SUS) via Tabs */}
-          <Tabs
-            value={convenioId}
-            onValueChange={(v) => setConvenioId(v as ConvenioId)}
-          >
+          <Tabs value={convenioId} onValueChange={(v) => setConvenioId(v as ConvenioId)}>
             <TabsList className={appTabsListClass}>
               {CONVENIOS.map((c) => {
                 const Icon = c.id === "tiss" ? Shield : Landmark;
                 return (
-                  <TabsTrigger
-                    key={c.id}
-                    value={c.id}
-                    className={appTabsTriggerClass}
-                  >
+                  <TabsTrigger key={c.id} value={c.id} className={appTabsTriggerClass}>
                     <Icon className={appTabsIconClass} />
                     <span className={appTabsLabelClass}>
                       <span className="lg:hidden">{c.short}</span>
                       <span className="hidden lg:inline">{c.label}</span>
                     </span>
                   </TabsTrigger>
-
-
                 );
               })}
             </TabsList>
-
 
             {CONVENIOS.map((c) => (
               <TabsContent key={c.id} value={c.id} className="mt-4 w-full">
                 <section className="w-full rounded-xl border bg-card shadow-sm overflow-hidden">
                   <div className="px-5 sm:px-7 py-6">
-
                     <div className="mb-5">
-                      <h2 className="font-display text-base font-semibold tracking-tight text-foreground">Escolha o tipo de guia</h2>
+                      <h2 className="font-display text-base font-semibold tracking-tight text-foreground">
+                        Escolha o tipo de guia
+                      </h2>
                       <p className="text-sm text-muted-foreground mt-0.5">
                         Selecione a modalidade de atendimento para prosseguir com o formulário.
                       </p>
@@ -1449,9 +1425,13 @@ function EmitirPage() {
                                     : "border-muted-foreground/70 bg-background group-hover:border-primary group-hover:bg-primary/10",
                                 )}
                               >
-                                {active && <Check className="h-3 w-3 text-primary-foreground" strokeWidth={3} />}
+                                {active && (
+                                  <Check
+                                    className="h-3 w-3 text-primary-foreground"
+                                    strokeWidth={3}
+                                  />
+                                )}
                               </div>
-
                             </div>
                             <div className="mt-3">
                               <h3 className="font-display text-sm font-semibold leading-tight tracking-tight text-foreground">
@@ -1468,7 +1448,6 @@ function EmitirPage() {
                             >
                               {g.badge}
                             </Badge>
-
                           </button>
                         );
                       })}
@@ -1493,9 +1472,7 @@ function EmitirPage() {
                 <div className="flex items-center gap-3">
                   <div className="w-1 h-8 bg-primary rounded-full" />
                   <div className="min-w-0 flex-1">
-                    <p className="text-eyebrow">
-                      Formulário de emissão
-                    </p>
+                    <p className="text-eyebrow">Formulário de emissão</p>
                     <p className="text-sm font-semibold truncate">{guideHeaderTitle}</p>
                   </div>
                 </div>
@@ -1509,9 +1486,7 @@ function EmitirPage() {
                 <div className="flex items-center gap-3">
                   <div className="w-1 h-8 bg-primary rounded-full" />
                   <div className="min-w-0 flex-1">
-                    <p className="text-eyebrow">
-                      Formulário de emissão
-                    </p>
+                    <p className="text-eyebrow">Formulário de emissão</p>
                     <p className="text-sm font-semibold truncate">{guideHeaderTitle}</p>
                   </div>
                 </div>
@@ -1525,9 +1500,7 @@ function EmitirPage() {
                 <div className="flex items-center gap-3">
                   <div className="w-1 h-8 bg-primary rounded-full" />
                   <div className="min-w-0 flex-1">
-                    <p className="text-eyebrow">
-                      Formulário de emissão
-                    </p>
+                    <p className="text-eyebrow">Formulário de emissão</p>
                     <p className="text-sm font-semibold truncate">{guideHeaderTitle}</p>
                   </div>
                 </div>
@@ -1539,476 +1512,420 @@ function EmitirPage() {
             !(guideKind === "internacao" && convenioId === "tiss") &&
             !(guideKind === "apac" && convenioId === "sus") &&
             !(guideKind === "aih" && convenioId === "sus") && (
-
-
-            <div>
-            <form
-              key={guideKind}
-              onSubmit={handleSubmit}
-              className="space-y-6 animate-fade-in"
-            >
-
-
-              {/* Cabeçalho integrado do formulário selecionado */}
-              <div className="flex items-center gap-3">
-                <div className="w-1 h-8 bg-primary rounded-full" />
-                <div className="min-w-0 flex-1">
-                  <p className="text-eyebrow">
-                    Formulário de emissão
-                  </p>
-                  <p className="text-sm font-semibold truncate">{guideHeaderTitle}</p>
-                </div>
-                <TooltipProvider>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <span tabIndex={canPreview ? -1 : 0}>
-                        <Button
-                          type="button"
-                          variant="outline"
-                          size="sm"
-                          disabled={!canPreview}
-                          aria-describedby={canPreview ? undefined : "preview-disabled-hint"}
-                          onClick={() => setPreviewOpen(true)}
-                        >
-                          <Eye className="h-4 w-4" /> Pré-visualizar
-                        </Button>
-                      </span>
-                    </TooltipTrigger>
-                    {!canPreview && (
-                      <TooltipContent id="preview-disabled-hint">
-                        Selecione a operadora / convênio para pré-visualizar a guia.
-                      </TooltipContent>
-                    )}
-                  </Tooltip>
-                </TooltipProvider>
-
-
-              </div>
-
-              {/* Convênio / Estabelecimento */}
-              {convenioId === "tiss" ? (
-                <Section
-                  number={stepNumber("convenio")}
-                  done={convenioOk}
-                  icon={<Building2 className="h-4 w-4" />}
-                  title={T.convenio}
-                  description="Campos 1 a 7 da guia — operadora responsável, autorização e senha."
-                >
-                  <Grid cols={12}>
-                    <Field
-                      label="Operadora / Convênio"
-                      required
-                      span="@md:col-span-6 @3xl:col-span-7"
-                    >
-
-                      <Select value={operadora} onValueChange={(v) => { setOperadora(v); const op = OPERADORAS.find((o) => o.value === v); if (op) setRegistroAns(op.ans); }}>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Selecione o convênio">
-                            {(() => {
-                              const selected = OPERADORAS.find((o) => o.value === operadora);
-                              if (!selected) return null;
-                              return (
-                                <span className="flex min-w-0 items-center gap-2">
-                                  <img
-                                    src={selected.logo}
-                                    alt=""
-                                    aria-hidden
-                                    loading="lazy"
-                                    className="h-4 w-auto max-w-[56px] shrink-0 object-contain"
-                                  />
-                                  <span className="truncate">{selected.label}</span>
-                                </span>
-                              );
-                            })()}
-                          </SelectValue>
-                        </SelectTrigger>
-                        <SelectContent>
-                          {OPERADORAS.map((o) => (
-                            <SelectItem key={o.value} value={o.value}>
-                              <span className="flex min-w-0 items-center gap-2">
-                                <img
-                                  src={o.logo}
-                                  alt=""
-                                  aria-hidden
-                                  loading="lazy"
-                                  className="h-4 w-auto max-w-[56px] shrink-0 object-contain"
-                                />
-                                <span className="truncate">{o.label}</span>
-                              </span>
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </Field>
-
-                    <Field
-                      label="1 - Registro ANS"
-                      span="@md:col-span-6 @3xl:col-span-5"
-                      hint="Preenchido automaticamente pela operadora selecionada."
-                    >
-                      <Input
-                        value={registroAns}
-                        readOnly
-                        aria-readonly="true"
-                        tabIndex={-1}
-                        placeholder="—"
-                        className="font-mono bg-muted text-muted-foreground cursor-default focus-visible:ring-0"
-                      />
-                    </Field>
-
-                  </Grid>
-
-
-                  <Collapsible
-                    open={autorizacaoOpen}
-                    onOpenChange={setAutorizacaoOpen}
-                    className="mt-4 border-t pt-4"
-                  >
-                    <CollapsibleTrigger asChild>
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="sm"
-                        className="w-full justify-between sm:w-auto"
-                        aria-expanded={autorizacaoOpen}
-                      >
-                        <span>Autorização da Operadora (Opcional)</span>
-                        <ChevronRight
-                          className={`transition-transform ${autorizacaoOpen ? "rotate-90" : ""}`}
-                          aria-hidden
-                        />
-                      </Button>
-                    </CollapsibleTrigger>
-                    <CollapsibleContent className="pt-4">
-                      <Grid cols={12}>
-                        {guideKind === "internacao" && (
-                          <Field label="3 - Número da Guia Principal" span="@md:col-span-6 @3xl:col-span-4">
-                            <Input
-                              value={guiaPrincipal}
-                              onChange={(e) => setGuiaPrincipal(e.target.value)}
-                              placeholder="Número da guia a vincular"
-                            />
-                          </Field>
+              <div>
+                <form key={guideKind} onSubmit={handleSubmit} className="space-y-6 animate-fade-in">
+                  {/* Cabeçalho integrado do formulário selecionado */}
+                  <div className="flex items-center gap-3">
+                    <div className="w-1 h-8 bg-primary rounded-full" />
+                    <div className="min-w-0 flex-1">
+                      <p className="text-eyebrow">Formulário de emissão</p>
+                      <p className="text-sm font-semibold truncate">{guideHeaderTitle}</p>
+                    </div>
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <span tabIndex={canPreview ? -1 : 0}>
+                            <Button
+                              type="button"
+                              variant="outline"
+                              size="sm"
+                              disabled={!canPreview}
+                              aria-describedby={canPreview ? undefined : "preview-disabled-hint"}
+                              onClick={() => setPreviewOpen(true)}
+                            >
+                              <Eye className="h-4 w-4" /> Pré-visualizar
+                            </Button>
+                          </span>
+                        </TooltipTrigger>
+                        {!canPreview && (
+                          <TooltipContent id="preview-disabled-hint">
+                            Selecione a operadora / convênio para pré-visualizar a guia.
+                          </TooltipContent>
                         )}
-                        <Field label="4 - Data da Autorização" span="@md:col-span-4 @3xl:col-span-4">
-                          <Input
-                            type="date"
-                            value={dataAutorizacao}
-                            onChange={(e) => setDataAutorizacao(e.target.value)}
-                          />
+                      </Tooltip>
+                    </TooltipProvider>
+                  </div>
+
+                  {/* Convênio / Estabelecimento */}
+                  {convenioId === "tiss" ? (
+                    <Section
+                      number={stepNumber("convenio")}
+                      done={convenioOk}
+                      icon={<Building2 className="h-4 w-4" />}
+                      title={T.convenio}
+                      description="Campos 1 a 7 da guia — operadora responsável, autorização e senha."
+                    >
+                      <Grid cols={12}>
+                        <Field
+                          label="Operadora / Convênio"
+                          required
+                          span="@md:col-span-6 @3xl:col-span-7"
+                        >
+                          <Select
+                            value={operadora}
+                            onValueChange={(v) => {
+                              setOperadora(v);
+                              const op = OPERADORAS.find((o) => o.value === v);
+                              if (op) setRegistroAns(op.ans);
+                            }}
+                          >
+                            <SelectTrigger>
+                              <SelectValue placeholder="Selecione o convênio">
+                                {(() => {
+                                  const selected = OPERADORAS.find((o) => o.value === operadora);
+                                  if (!selected) return null;
+                                  return (
+                                    <span className="flex min-w-0 items-center gap-2">
+                                      <img
+                                        src={selected.logo}
+                                        alt=""
+                                        aria-hidden
+                                        loading="lazy"
+                                        className="h-4 w-auto max-w-[56px] shrink-0 object-contain"
+                                      />
+                                      <span className="truncate">{selected.label}</span>
+                                    </span>
+                                  );
+                                })()}
+                              </SelectValue>
+                            </SelectTrigger>
+                            <SelectContent>
+                              {OPERADORAS.map((o) => (
+                                <SelectItem key={o.value} value={o.value}>
+                                  <span className="flex min-w-0 items-center gap-2">
+                                    <img
+                                      src={o.logo}
+                                      alt=""
+                                      aria-hidden
+                                      loading="lazy"
+                                      className="h-4 w-auto max-w-[56px] shrink-0 object-contain"
+                                    />
+                                    <span className="truncate">{o.label}</span>
+                                  </span>
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
                         </Field>
-                        <Field label="5 - Senha" span="@md:col-span-4 @3xl:col-span-4">
+
+                        <Field
+                          label="1 - Registro ANS"
+                          span="@md:col-span-6 @3xl:col-span-5"
+                          hint="Preenchido automaticamente pela operadora selecionada."
+                        >
                           <Input
-                            value={senha}
-                            onChange={(e) => setSenha(e.target.value)}
-                            placeholder="Senha de autorização"
-                          />
-                        </Field>
-                        <Field label="6 - Data de Validade da Senha" span="@md:col-span-4 @3xl:col-span-4">
-                          <Input
-                            type="date"
-                            value={validadeSenha}
-                            onChange={(e) => setValidadeSenha(e.target.value)}
-                          />
-                        </Field>
-                        <Field label="7 - Número da Guia Atribuído pela Operadora" span="@md:col-span-6 @3xl:col-span-4">
-                          <Input
-                            value={guiaOperadora}
-                            onChange={(e) => setGuiaOperadora(e.target.value)}
-                            placeholder="Informado pela operadora"
+                            value={registroAns}
+                            readOnly
+                            aria-readonly="true"
+                            tabIndex={-1}
+                            placeholder="—"
+                            className="font-mono bg-muted text-muted-foreground cursor-default focus-visible:ring-0"
                           />
                         </Field>
                       </Grid>
-                    </CollapsibleContent>
-                  </Collapsible>
 
-
-
-                </Section>
-              ) : (
-                <Section
-                  number={stepNumber("convenio")}
-                  done={convenioOk}
-                  icon={<Building2 className="h-4 w-4" />}
-                  title={T.estabelecimento}
-                  description="Unidade executante e identificação DATASUS."
-                >
-                  <Grid cols={2}>
-                    <Field label="Estabelecimento" required>
-                      <Input
-                        value={susEstabelecimento}
-                        onChange={(e) => setSusEstabelecimento(e.target.value)}
-                        placeholder="Nome da unidade de saúde"
-                      />
-                    </Field>
-                    <Field label="CNES">
-                      <Input
-                        value={susCnes}
-                        onChange={(e) => setSusCnes(e.target.value)}
-                        placeholder="0000000"
-                      />
-                    </Field>
-                    <Field label="Data da solicitação">
-                      <Input
-                        type="date"
-                        value={dataSolicitacao}
-                        onChange={(e) => setDataSolicitacao(e.target.value)}
-                      />
-                    </Field>
-                  </Grid>
-                </Section>
-              )}
-
-              {/* Detalhes específicos por tipo de guia */}
-              {guideKind === "internacao" && (
-                <Section
-                  number={stepNumber("internacao")}
-                  done={especificoOk}
-                  icon={<BedDouble className="h-4 w-4" />}
-                  title="Dados da internação"
-                  description="Regime, acomodação e previsão de permanência."
-                >
-                  <Grid cols={2}>
-                    <SelectField
-                      label="Tipo de internação"
-                      required
-                      value={internacaoTipo}
-                      onValueChange={setInternacaoTipo}
-                      options={["Clínica", "Cirúrgica", "Obstétrica", "Pediátrica", "Psiquiátrica"].map((o) => ({ value: o, label: o }))}
-                    />
-                    <SelectField
-                      label="Regime"
-                      value={internacaoRegime}
-                      onValueChange={setInternacaoRegime}
-                      options={["Hospitalar", "Hospital-dia", "Domiciliar"].map((o) => ({ value: o, label: o }))}
-                    />
-                    <Field label="Dias solicitados" required>
-                      <Input
-                        type="number"
-                        min={1}
-                        value={internacaoDias}
-                        onChange={(e) =>
-                          setInternacaoDias(Math.max(1, Number(e.target.value) || 1))
-                        }
-                      />
-                    </Field>
-                    <SelectField
-                      label="Acomodação"
-                      value={internacaoAcomodacao}
-                      onValueChange={setInternacaoAcomodacao}
-                      options={["Enfermaria", "Apartamento", "UTI"].map((o) => ({ value: o, label: o }))}
-                    />
-
-                  </Grid>
-                </Section>
-              )}
-
-              {guideKind === "apac" && (
-                <Section
-                  number={stepNumber("apac")}
-                  done={especificoOk}
-                  icon={<HeartPulse className="h-4 w-4" />}
-                  title="Dados da APAC"
-                  description="Competência e tipo de autorização."
-                >
-                  <Grid cols={2}>
-                    <Field label="Competência" required>
-                      <Input
-                        type="month"
-                        value={apacCompetencia}
-                        onChange={(e) => setApacCompetencia(e.target.value)}
-                      />
-                    </Field>
-                    <SelectField
-                      label="Tipo de APAC"
-                      required
-                      value={apacTipo}
-                      onValueChange={setApacTipo}
-                      options={["Inicial", "Continuidade", "Única"].map((o) => ({ value: o, label: o }))}
-                    />
-
-                  </Grid>
-                </Section>
-              )}
-
-              {guideKind === "aih" && (
-                <Section
-                  number={stepNumber("aih")}
-                  done={especificoOk}
-                  icon={<Hospital className="h-4 w-4" />}
-                  title="Dados da AIH"
-                  description="Caráter da internação e motivo."
-                >
-                  <Grid cols={2}>
-                    <SelectField
-                      label="Caráter da internação"
-                      required
-                      value={aihCaraterEntry}
-                      onValueChange={setAihCaraterEntry}
-                      options={["Eletivo", "Urgência"].map((o) => ({ value: o, label: o }))}
-                    />
-
-                    <Field label="Motivo da internação" required>
-                      <Input
-                        value={aihMotivo}
-                        onChange={(e) => setAihMotivo(e.target.value)}
-                        placeholder="Descreva brevemente"
-                      />
-                    </Field>
-                  </Grid>
-                </Section>
-              )}
-
-              {/* Paciente */}
-              <Section
-                number={stepNumber("paciente")}
-                done={pacienteOk}
-                icon={<User className="h-4 w-4" />}
-                title="Dados do Beneficiário"
-                description="Campos 8 a 12 e 89 da guia — identificação do beneficiário na operadora."
-              >
-                <Grid cols={12}>
-                  <Field
-                    label="8 - Número da Carteira"
-                    required
-                    span="@md:col-span-6 @3xl:col-span-5"
-                    hint="Informe o número da carteira do beneficiário"
-                  >
-                    <Input
-                      value={pacienteCarteira}
-                      onChange={(e) => setPacienteCarteira(e.target.value.slice(0, 20))}
-                      placeholder="0000 0000 0000 0000"
-                      maxLength={20}
-                      className="font-mono"
-                    />
-                  </Field>
-
-                  {/* 9 e 11 são condicionados no TISS: sem asterisco, preenchimento manual. */}
-                  <Field
-                    label="9 - Validade da Carteira"
-                    span="@md:col-span-6 @3xl:col-span-3"
-                    hint="Condicionado — informe quando a operadora exigir autorização prévia"
-                  >
-                    <Input
-                      type="date"
-                      value={pacienteValidadeCarteira}
-                      onChange={(e) => setPacienteValidadeCarteira(e.target.value)}
-                    />
-                  </Field>
-
-                  <Field
-                    label="89 - Nome Social"
-                    span="@md:col-span-6 @3xl:col-span-4"
-                    hint="Preencha apenas quando solicitado pelo beneficiário (Decreto nº 8.727/2016)."
-                  >
-                    <Input
-                      value={pacienteNomeSocial}
-                      onChange={(e) => setPacienteNomeSocial(e.target.value.slice(0, 70))}
-                      placeholder="Nome social do beneficiário"
-                      maxLength={70}
-                    />
-                  </Field>
-
-                  <Field
-                    label="10 - Nome"
-                    required
-                    span="@md:col-span-6 @3xl:col-span-4"
-                  >
-                    <Input
-                      value={pacienteNome}
-                      onChange={(e) => setPacienteNome(e.target.value)}
-                      placeholder="Nome completo"
-                    />
-                  </Field>
-
-
-
-
-                  <SelectField
-                    label="12 - Atendimento a RN"
-                    required
-                    className="@md:col-span-6 @3xl:col-span-4"
-                    value={pacienteRn}
-                    onValueChange={setPacienteRn}
-                    options={[
-                      { value: "S", label: "S - Sim" },
-                      { value: "N", label: "N - Não" },
-                    ]}
-                  />
-                </Grid>
-
-
-              </Section>
-
-              {/* Solicitante */}
-              <Section
-                number={stepNumber("profissional")}
-                done={profissionalOk}
-                icon={<Stethoscope className="h-4 w-4" />}
-                title="Dados do Solicitante"
-                description="Campos 13 a 20 — preenchidos pelos cadastros do estabelecimento e do profissional."
-                action={
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setPrefsOpen(true)}
-                  >
-                    <Settings2 className="h-4 w-4" />
-                    Meus dados padrão
-
-                  </Button>
-                }
-              >
-                {prefsStatus === "review" && prefsFilled.length > 0 && (
-                  <div className="mb-4 rounded-xl border border-primary/30 bg-primary/5 p-4">
-                    <div className="flex items-start gap-2">
-                      <Info className="mt-0.5 h-4 w-4 shrink-0 text-primary" aria-hidden="true" />
-                      <div className="min-w-0 space-y-1">
-                        <p className="text-sm font-semibold text-foreground">
-                          Revise seus dados padrão antes de aplicar
-                        </p>
-                        <p className="text-xs leading-relaxed text-muted-foreground">
-                          Nada foi preenchido ainda. Escolha o que deve entrar nesta guia.
-                        </p>
-                      </div>
-                    </div>
-
-                    <ul className="mt-3 space-y-2">
-                      {prefsFilled.map((field) => (
-                        <li key={field} className="flex items-start gap-2.5">
-                          <Checkbox
-                            id={`pref-apply-${field}`}
-                            checked={prefSelection[field]}
-                            onCheckedChange={() => togglePrefField(field)}
-                            className="mt-0.5"
-                          />
-                          <label
-                            htmlFor={`pref-apply-${field}`}
-                            className="min-w-0 cursor-pointer text-xs leading-relaxed"
-                          >
-                            <span className="block text-muted-foreground">
-                              {PREF_LABELS[field]}
-                            </span>
-                            <span className="block font-medium text-foreground">
-                              {prefValue(field)}
-                            </span>
-                          </label>
-                        </li>
-                      ))}
-                    </ul>
-
-                    <div className="mt-4 flex flex-wrap items-center gap-2">
-                      <Button
-                        type="button"
-                        size="sm"
-                        onClick={applySelectedPrefs}
-                        disabled={selectedPrefFields.length === 0}
+                      <Collapsible
+                        open={autorizacaoOpen}
+                        onOpenChange={setAutorizacaoOpen}
+                        className="mt-4 border-t pt-4"
                       >
-                        <CheckCircle2 className="h-4 w-4" />
-                        Aplicar {selectedPrefFields.length > 0 ? selectedPrefFields.length : ""}{" "}
-                        {selectedPrefFields.length === 1 ? "campo" : "campos"}
-                      </Button>
+                        <CollapsibleTrigger asChild>
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            className="w-full justify-between sm:w-auto"
+                            aria-expanded={autorizacaoOpen}
+                          >
+                            <span>Autorização da Operadora (Opcional)</span>
+                            <ChevronRight
+                              className={`transition-transform ${autorizacaoOpen ? "rotate-90" : ""}`}
+                              aria-hidden
+                            />
+                          </Button>
+                        </CollapsibleTrigger>
+                        <CollapsibleContent className="pt-4">
+                          <Grid cols={12}>
+                            {guideKind === "internacao" && (
+                              <Field
+                                label="3 - Número da Guia Principal"
+                                span="@md:col-span-6 @3xl:col-span-4"
+                              >
+                                <Input
+                                  value={guiaPrincipal}
+                                  onChange={(e) => setGuiaPrincipal(e.target.value)}
+                                  placeholder="Número da guia a vincular"
+                                />
+                              </Field>
+                            )}
+                            <Field
+                              label="4 - Data da Autorização"
+                              span="@md:col-span-4 @3xl:col-span-4"
+                            >
+                              <Input
+                                type="date"
+                                value={dataAutorizacao}
+                                onChange={(e) => setDataAutorizacao(e.target.value)}
+                              />
+                            </Field>
+                            <Field label="5 - Senha" span="@md:col-span-4 @3xl:col-span-4">
+                              <Input
+                                value={senha}
+                                onChange={(e) => setSenha(e.target.value)}
+                                placeholder="Senha de autorização"
+                              />
+                            </Field>
+                            <Field
+                              label="6 - Data de Validade da Senha"
+                              span="@md:col-span-4 @3xl:col-span-4"
+                            >
+                              <Input
+                                type="date"
+                                value={validadeSenha}
+                                onChange={(e) => setValidadeSenha(e.target.value)}
+                              />
+                            </Field>
+                            <Field
+                              label="7 - Número da Guia Atribuído pela Operadora"
+                              span="@md:col-span-6 @3xl:col-span-4"
+                            >
+                              <Input
+                                value={guiaOperadora}
+                                onChange={(e) => setGuiaOperadora(e.target.value)}
+                                placeholder="Informado pela operadora"
+                              />
+                            </Field>
+                          </Grid>
+                        </CollapsibleContent>
+                      </Collapsible>
+                    </Section>
+                  ) : (
+                    <Section
+                      number={stepNumber("convenio")}
+                      done={convenioOk}
+                      icon={<Building2 className="h-4 w-4" />}
+                      title={T.estabelecimento}
+                      description="Unidade executante e identificação DATASUS."
+                    >
+                      <Grid cols={2}>
+                        <Field label="Estabelecimento" required>
+                          <Input
+                            value={susEstabelecimento}
+                            onChange={(e) => setSusEstabelecimento(e.target.value)}
+                            placeholder="Nome da unidade de saúde"
+                          />
+                        </Field>
+                        <Field label="CNES">
+                          <Input
+                            value={susCnes}
+                            onChange={(e) => setSusCnes(e.target.value)}
+                            placeholder="0000000"
+                          />
+                        </Field>
+                        <Field label="Data da solicitação">
+                          <Input
+                            type="date"
+                            value={dataSolicitacao}
+                            onChange={(e) => setDataSolicitacao(e.target.value)}
+                          />
+                        </Field>
+                      </Grid>
+                    </Section>
+                  )}
+
+                  {/* Detalhes específicos por tipo de guia */}
+                  {guideKind === "internacao" && (
+                    <Section
+                      number={stepNumber("internacao")}
+                      done={especificoOk}
+                      icon={<BedDouble className="h-4 w-4" />}
+                      title="Dados da internação"
+                      description="Regime, acomodação e previsão de permanência."
+                    >
+                      <Grid cols={2}>
+                        <SelectField
+                          label="Tipo de internação"
+                          required
+                          value={internacaoTipo}
+                          onValueChange={setInternacaoTipo}
+                          options={[
+                            "Clínica",
+                            "Cirúrgica",
+                            "Obstétrica",
+                            "Pediátrica",
+                            "Psiquiátrica",
+                          ].map((o) => ({ value: o, label: o }))}
+                        />
+                        <SelectField
+                          label="Regime"
+                          value={internacaoRegime}
+                          onValueChange={setInternacaoRegime}
+                          options={["Hospitalar", "Hospital-dia", "Domiciliar"].map((o) => ({
+                            value: o,
+                            label: o,
+                          }))}
+                        />
+                        <Field label="Dias solicitados" required>
+                          <Input
+                            type="number"
+                            min={1}
+                            value={internacaoDias}
+                            onChange={(e) =>
+                              setInternacaoDias(Math.max(1, Number(e.target.value) || 1))
+                            }
+                          />
+                        </Field>
+                        <SelectField
+                          label="Acomodação"
+                          value={internacaoAcomodacao}
+                          onValueChange={setInternacaoAcomodacao}
+                          options={["Enfermaria", "Apartamento", "UTI"].map((o) => ({
+                            value: o,
+                            label: o,
+                          }))}
+                        />
+                      </Grid>
+                    </Section>
+                  )}
+
+                  {guideKind === "apac" && (
+                    <Section
+                      number={stepNumber("apac")}
+                      done={especificoOk}
+                      icon={<HeartPulse className="h-4 w-4" />}
+                      title="Dados da APAC"
+                      description="Competência e tipo de autorização."
+                    >
+                      <Grid cols={2}>
+                        <Field label="Competência" required>
+                          <Input
+                            type="month"
+                            value={apacCompetencia}
+                            onChange={(e) => setApacCompetencia(e.target.value)}
+                          />
+                        </Field>
+                        <SelectField
+                          label="Tipo de APAC"
+                          required
+                          value={apacTipo}
+                          onValueChange={setApacTipo}
+                          options={["Inicial", "Continuidade", "Única"].map((o) => ({
+                            value: o,
+                            label: o,
+                          }))}
+                        />
+                      </Grid>
+                    </Section>
+                  )}
+
+                  {guideKind === "aih" && (
+                    <Section
+                      number={stepNumber("aih")}
+                      done={especificoOk}
+                      icon={<Hospital className="h-4 w-4" />}
+                      title="Dados da AIH"
+                      description="Caráter da internação e motivo."
+                    >
+                      <Grid cols={2}>
+                        <SelectField
+                          label="Caráter da internação"
+                          required
+                          value={aihCaraterEntry}
+                          onValueChange={setAihCaraterEntry}
+                          options={["Eletivo", "Urgência"].map((o) => ({ value: o, label: o }))}
+                        />
+
+                        <Field label="Motivo da internação" required>
+                          <Input
+                            value={aihMotivo}
+                            onChange={(e) => setAihMotivo(e.target.value)}
+                            placeholder="Descreva brevemente"
+                          />
+                        </Field>
+                      </Grid>
+                    </Section>
+                  )}
+
+                  {/* Paciente */}
+                  <Section
+                    number={stepNumber("paciente")}
+                    done={pacienteOk}
+                    icon={<User className="h-4 w-4" />}
+                    title="Dados do Beneficiário"
+                    description="Campos 8 a 12 e 89 da guia — identificação do beneficiário na operadora."
+                  >
+                    <Grid cols={12}>
+                      <Field
+                        label="8 - Número da Carteira"
+                        required
+                        span="@md:col-span-6 @3xl:col-span-5"
+                        hint="Informe o número da carteira do beneficiário"
+                      >
+                        <Input
+                          value={pacienteCarteira}
+                          onChange={(e) => setPacienteCarteira(e.target.value.slice(0, 20))}
+                          placeholder="0000 0000 0000 0000"
+                          maxLength={20}
+                          className="font-mono"
+                        />
+                      </Field>
+
+                      {/* 9 e 11 são condicionados no TISS: sem asterisco, preenchimento manual. */}
+                      <Field
+                        label="9 - Validade da Carteira"
+                        span="@md:col-span-6 @3xl:col-span-3"
+                        hint="Condicionado — informe quando a operadora exigir autorização prévia"
+                      >
+                        <Input
+                          type="date"
+                          value={pacienteValidadeCarteira}
+                          onChange={(e) => setPacienteValidadeCarteira(e.target.value)}
+                        />
+                      </Field>
+
+                      <Field
+                        label="89 - Nome Social"
+                        span="@md:col-span-6 @3xl:col-span-4"
+                        hint="Preencha apenas quando solicitado pelo beneficiário (Decreto nº 8.727/2016)."
+                      >
+                        <Input
+                          value={pacienteNomeSocial}
+                          onChange={(e) => setPacienteNomeSocial(e.target.value.slice(0, 70))}
+                          placeholder="Nome social do beneficiário"
+                          maxLength={70}
+                        />
+                      </Field>
+
+                      <Field label="10 - Nome" required span="@md:col-span-6 @3xl:col-span-4">
+                        <Input
+                          value={pacienteNome}
+                          onChange={(e) => setPacienteNome(e.target.value)}
+                          placeholder="Nome completo"
+                        />
+                      </Field>
+
+                      <SelectField
+                        label="12 - Atendimento a RN"
+                        required
+                        className="@md:col-span-6 @3xl:col-span-4"
+                        value={pacienteRn}
+                        onValueChange={setPacienteRn}
+                        options={[
+                          { value: "S", label: "S - Sim" },
+                          { value: "N", label: "N - Não" },
+                        ]}
+                      />
+                    </Grid>
+                  </Section>
+
+                  {/* Solicitante */}
+                  <Section
+                    number={stepNumber("profissional")}
+                    done={profissionalOk}
+                    icon={<Stethoscope className="h-4 w-4" />}
+                    title="Dados do Solicitante"
+                    description="Campos 13 a 20 — preenchidos pelos cadastros do estabelecimento e do profissional."
+                    action={
                       <Button
                         type="button"
                         variant="outline"
@@ -2016,994 +1933,1015 @@ function EmitirPage() {
                         onClick={() => setPrefsOpen(true)}
                       >
                         <Settings2 className="h-4 w-4" />
-                        Editar meus dados padrão
+                        Meus dados padrão
                       </Button>
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => setPrefsStatus("dismissed")}
-                      >
-                        Preencher manualmente
-                      </Button>
-                    </div>
-                  </div>
-                )}
-
-                {prefsStatus === "applied" && (
-                  <div className="mb-4 flex flex-wrap items-center justify-between gap-2 rounded-xl border border-border/70 bg-muted/30 px-3.5 py-2.5">
-                    <p className="flex min-w-0 items-start gap-2 text-xs leading-relaxed text-muted-foreground">
-                      <CheckCircle2
-                        className="mt-0.5 h-3.5 w-3.5 shrink-0 text-success-strong"
-                        aria-hidden="true"
-                      />
-                      <span>
-                        Dados padrão aplicados a esta guia. Edite abaixo para valer só aqui.
-                      </span>
-                    </p>
-                    <Button type="button" variant="outline" size="sm" onClick={undoPrefs}>
-                      Desfazer
-                    </Button>
-                  </div>
-                )}
-
-
-                <Grid cols={12}>
-                  <Field
-                    label="13 - Código na Operadora"
-                    span="@md:col-span-2 @3xl:col-span-3"
+                    }
                   >
-                    <Input
-                      value={codigoSolicitante}
-                      onChange={(e) => setCodigoSolicitante(e.target.value)}
-                      placeholder="Código"
-                      className="font-mono"
-                    />
-                  </Field>
-                  <Field label="14 - Nome do Contratado" span="@md:col-span-4 @3xl:col-span-9">
-                    <Input
-                      value={contratadoSolicitante}
-                      readOnly
-                      aria-readonly
-                      tabIndex={-1}
-                      className="bg-muted/50 text-foreground"
-                    />
-                  </Field>
-                </Grid>
-
-                <div className="mt-4 border-t pt-4">
-                  <ProfessionalRegistryField
-                    value={profissional}
-                    onChange={setProfissional}
-                  />
-                </div>
-
-
-                <div className="mt-5 border-t pt-5">
-                  <SignatureField
-                    label="20 - Assinatura do Profissional Solicitante"
-                    value={assinaturaSolicitante}
-                    onChange={setAssinaturaSolicitante}
-                    hint="A guia deve conter a assinatura do profissional solicitante. Insira a assinatura para que ela seja impressa no campo 20 ou deixe este campo em branco para assinar manualmente após a impressão."
-
-                  />
-                </div>
-              </Section>
-
-
-
-
-
-              {/* Dados da solicitação (21 a 28) */}
-              <Section
-                number={stepNumber("clinico")}
-                done={clinicoOk && procedimentosOk}
-                icon={<FileText className="h-4 w-4" />}
-                title={
-                  <span className="flex items-center gap-2 whitespace-nowrap">
-                    Dados da Solicitação
-                    {guideKind && (
-                      <Badge variant="secondary" className="font-medium">
-                        {GUIDE_SHORT[guideKind]}
-                      </Badge>
-                    )}
-                  </span>
-                }
-                description="Campos 21 a 28 e 90 — data e códigos preenchidos automaticamente pelo sistema."
-
-              >
-                <Grid cols={2}>
-                  <SelectField
-                    label="21 - Caráter do Atendimento"
-                    hint="Código conforme tabela de domínio nº 23. Ex.: 1 (Eletivo)."
-                    value={character}
-                    onValueChange={setCharacter}
-                    options={CHARACTER_OPTIONS}
-                  />
-                  <Field
-                    label="22 - Data da Solicitação"
-                    hint="Data em que o profissional realizou a solicitação"
-                  >
-                    <Input
-                      type="date"
-                      value={dataSolicitacao}
-                      onChange={(e) => setDataSolicitacao(e.target.value)}
-                    />
-                  </Field>
-
-                </Grid>
-
-
-                <Field label="23 - Indicação Clínica" required>
-                  <Textarea
-                    rows={3}
-                    value={indicacaoClinica}
-                    onChange={(e) => setIndicacaoClinica(e.target.value)}
-                    placeholder="Descreva a justificativa clínica do procedimento."
-                  />
-                </Field>
-
-                <SelectField
-                  label="90 - Indicador de Cobertura Especial"
-                  hint="Opcional — conforme tabela de domínio nº 75. Preencha em atendimento ambulatorial de plano exclusivamente hospitalar, a gestantes ou no pré e pós-operatório."
-                  className="@md:max-w-xs"
-                  value={coberturaEspecial}
-                  onValueChange={setCoberturaEspecial}
-                  placeholder="Selecione"
-                  options={[...COBERTURA_ESPECIAL_OPTIONS]}
-                />
-
-
-
-
-
-                {/* Procedimentos solicitados (24 a 28) */}
-                <div className="mt-5 border-t pt-5 space-y-3 @container">
-                  <div className="flex flex-col gap-2 @md:flex-row @md:items-center @md:justify-between">
-                    <h4 className="min-w-0 text-sm font-medium">
-                      Procedimentos solicitados
-                      <span className="ml-2 text-xs font-normal text-muted-foreground">
-                        Campos 24 a 28
-                      </span>
-                    </h4>
-                    <div className="flex shrink-0 items-center gap-2">
-                      <Button
-                        type="button"
-                        size="sm"
-                        variant="outline"
-                        onClick={clearProcedures}
-                        className="flex-1 justify-center @md:flex-none"
-                      >
-                        Limpar
-                      </Button>
-                      <Button
-                        type="button"
-                        size="sm"
-                        onClick={addProcedure}
-                        className="flex-1 justify-center @md:flex-none"
-                      >
-                        <Plus className="h-4 w-4" /> Adicionar
-                      </Button>
-                    </div>
-                  </div>
-
-                  {/* Usar kit salvo */}
-                  <div className="flex flex-col gap-2 rounded-lg border bg-muted/30 p-3 sm:flex-row sm:items-center">
-                    <Label htmlFor="use-kit" className="shrink-0 text-xs font-medium">
-                      Usar kit salvo
-                    </Label>
-                    <div className="min-w-0 flex-1">
-                      <Combobox
-                        id="use-kit"
-                        value={selectedUserKit}
-                        onChange={(id) => {
-                          setSelectedUserKit(id);
-                          const kit = kitOptionsSource.find((k) => k.id === id);
-                          if (kit) applyKit(kit);
-                        }}
-                        options={kitOptions}
-                        placeholder={
-                          kitOptions.length === 0
-                            ? "Nenhum kit disponível"
-                            : "Selecione um kit de procedimentos"
-                        }
-                        searchPlaceholder="Buscar kit..."
-                        emptyMessage="Nenhum kit encontrado."
-                        disabled={kitOptions.length === 0}
-                        clearable
-                      />
-                    </div>
-                  </div>
-
-                  <p className="text-xs text-muted-foreground">
-                    Busque por <strong>descrição</strong> (campo 26) — o
-                    código (25) e a tabela (24) são preenchidos automaticamente.
-                  </p>
-
-
-                  {/* Rótulos das colunas (campos 25 a 27) — visíveis no desktop */}
-                  <div
-                    data-testid="proc-solic-headers"
-                    className="hidden @3xl:grid @3xl:grid-cols-[1.5rem_minmax(0,1fr)_7rem_6rem_2.25rem] items-end gap-2 text-xs font-medium text-muted-foreground"
-                  >
-                    <div />
-                    <div className="whitespace-nowrap" data-testid="proc-solic-header-26">
-                      26 - Descrição <span className="text-destructive">*</span>
-                    </div>
-                    <div className="whitespace-nowrap" data-testid="proc-solic-header-25">
-                      25 - Código
-                    </div>
-                    <div className="whitespace-nowrap text-center" data-testid="proc-solic-header-27">
-                      27 - Qtde. <span className="text-destructive">*</span>
-                    </div>
-
-                    <div />
-                  </div>
-
-
-
-
-
-                  <div className="space-y-3 @3xl:space-y-2">
-                    {procedures.map((p, idx) => (
-                      <div
-                        key={p.id}
-                        draggable
-                        onDragStart={() => onDragStart(p.id)}
-                        onDragOver={onDragOver}
-                        onDrop={() => onDrop(p.id)}
-                        className={cn(
-                          "rounded-lg border p-3 @3xl:grid @3xl:grid-cols-[1.5rem_minmax(0,1fr)_7rem_6rem_2.25rem] @3xl:items-center @3xl:gap-2 @3xl:rounded-none @3xl:border-0 @3xl:p-0",
-                          dragId === p.id && "opacity-50",
-                        )}
-                      >
-                        {/* Handle + remover (mobile: linha superior) */}
-                        <div className="mb-2 flex items-center justify-between @3xl:mb-0 @3xl:contents">
-                          <div className="flex cursor-grab items-center justify-center text-muted-foreground active:cursor-grabbing">
-                            <GripVertical className="h-4 w-4" />
-                            <span className="ml-1 text-xs font-medium @3xl:hidden">
-                              Item {idx + 1}
-                            </span>
-                          </div>
-                          <div className="@3xl:hidden">
-                            <Button
-                              type="button"
-                              variant="ghost"
-                              size="icon"
-                              onClick={() => removeProcedure(p.id)}
-                              disabled={procedures.length === 1}
-                              aria-label={`Remover procedimento ${idx + 1}`}
-                            >
-                              <Trash2 className="h-4 w-4 text-destructive" />
-                            </Button>
+                    {prefsStatus === "review" && prefsFilled.length > 0 && (
+                      <div className="mb-4 rounded-xl border border-primary/30 bg-primary/5 p-4">
+                        <div className="flex items-start gap-2">
+                          <Info
+                            className="mt-0.5 h-4 w-4 shrink-0 text-primary"
+                            aria-hidden="true"
+                          />
+                          <div className="min-w-0 space-y-1">
+                            <p className="text-sm font-semibold text-foreground">
+                              Revise seus dados padrão antes de aplicar
+                            </p>
+                            <p className="text-xs leading-relaxed text-muted-foreground">
+                              Nada foi preenchido ainda. Escolha o que deve entrar nesta guia.
+                            </p>
                           </div>
                         </div>
 
-                        {/*
-                          Campo 24 - Tabela não é exibido: o sistema o resolve a partir do
-                          procedimento escolhido e o envia na guia (PDF/XML).
-                        */}
+                        <ul className="mt-3 space-y-2">
+                          {prefsFilled.map((field) => (
+                            <li key={field} className="flex items-start gap-2.5">
+                              <Checkbox
+                                id={`pref-apply-${field}`}
+                                checked={prefSelection[field]}
+                                onCheckedChange={() => togglePrefField(field)}
+                                className="mt-0.5"
+                              />
+                              <label
+                                htmlFor={`pref-apply-${field}`}
+                                className="min-w-0 cursor-pointer text-xs leading-relaxed"
+                              >
+                                <span className="block text-muted-foreground">
+                                  {PREF_LABELS[field]}
+                                </span>
+                                <span className="block font-medium text-foreground">
+                                  {prefValue(field)}
+                                </span>
+                              </label>
+                            </li>
+                          ))}
+                        </ul>
 
-                        {/* Descrição (campo 26) — busca única por descrição */}
-                        <FormField
-                          label="26 - Descrição (buscar por descrição)"
-                          required
-                          labelClassName="@3xl:hidden"
-                          className="min-w-0 @3xl:space-y-0"
-                        >
+                        <div className="mt-4 flex flex-wrap items-center gap-2">
+                          <Button
+                            type="button"
+                            size="sm"
+                            onClick={applySelectedPrefs}
+                            disabled={selectedPrefFields.length === 0}
+                          >
+                            <CheckCircle2 className="h-4 w-4" />
+                            Aplicar {selectedPrefFields.length > 0
+                              ? selectedPrefFields.length
+                              : ""}{" "}
+                            {selectedPrefFields.length === 1 ? "campo" : "campos"}
+                          </Button>
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            onClick={() => setPrefsOpen(true)}
+                          >
+                            <Settings2 className="h-4 w-4" />
+                            Editar meus dados padrão
+                          </Button>
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => setPrefsStatus("dismissed")}
+                          >
+                            Preencher manualmente
+                          </Button>
+                        </div>
+                      </div>
+                    )}
+
+                    {prefsStatus === "applied" && (
+                      <div className="mb-4 flex flex-wrap items-center justify-between gap-2 rounded-xl border border-border/70 bg-muted/30 px-3.5 py-2.5">
+                        <p className="flex min-w-0 items-start gap-2 text-xs leading-relaxed text-muted-foreground">
+                          <CheckCircle2
+                            className="mt-0.5 h-3.5 w-3.5 shrink-0 text-success-strong"
+                            aria-hidden="true"
+                          />
+                          <span>
+                            Dados padrão aplicados a esta guia. Edite abaixo para valer só aqui.
+                          </span>
+                        </p>
+                        <Button type="button" variant="outline" size="sm" onClick={undoPrefs}>
+                          Desfazer
+                        </Button>
+                      </div>
+                    )}
+
+                    <Grid cols={12}>
+                      <Field label="13 - Código na Operadora" span="@md:col-span-2 @3xl:col-span-3">
+                        <Input
+                          value={codigoSolicitante}
+                          onChange={(e) => setCodigoSolicitante(e.target.value)}
+                          placeholder="Código"
+                          className="font-mono"
+                        />
+                      </Field>
+                      <Field label="14 - Nome do Contratado" span="@md:col-span-4 @3xl:col-span-9">
+                        <Input
+                          value={contratadoSolicitante}
+                          readOnly
+                          aria-readonly
+                          tabIndex={-1}
+                          className="bg-muted/50 text-foreground"
+                        />
+                      </Field>
+                    </Grid>
+
+                    <div className="mt-4 border-t pt-4">
+                      <ProfessionalRegistryField value={profissional} onChange={setProfissional} />
+                    </div>
+
+                    <div className="mt-5 border-t pt-5">
+                      <SignatureField
+                        label="20 - Assinatura do Profissional Solicitante"
+                        value={assinaturaSolicitante}
+                        onChange={setAssinaturaSolicitante}
+                        hint="A guia deve conter a assinatura do profissional solicitante. Insira a assinatura para que ela seja impressa no campo 20 ou deixe este campo em branco para assinar manualmente após a impressão."
+                      />
+                    </div>
+                  </Section>
+
+                  {/* Dados da solicitação (21 a 28) */}
+                  <Section
+                    number={stepNumber("clinico")}
+                    done={clinicoOk && procedimentosOk}
+                    icon={<FileText className="h-4 w-4" />}
+                    title={
+                      <span className="flex items-center gap-2 whitespace-nowrap">
+                        Dados da Solicitação
+                        {guideKind && (
+                          <Badge variant="secondary" className="font-medium">
+                            {GUIDE_SHORT[guideKind]}
+                          </Badge>
+                        )}
+                      </span>
+                    }
+                    description="Campos 21 a 28 e 90 — data e códigos preenchidos automaticamente pelo sistema."
+                  >
+                    <Grid cols={2}>
+                      <SelectField
+                        label="21 - Caráter do Atendimento"
+                        hint="Código conforme tabela de domínio nº 23. Ex.: 1 (Eletivo)."
+                        value={character}
+                        onValueChange={setCharacter}
+                        options={CHARACTER_OPTIONS}
+                      />
+                      <Field
+                        label="22 - Data da Solicitação"
+                        hint="Data em que o profissional realizou a solicitação"
+                      >
+                        <Input
+                          type="date"
+                          value={dataSolicitacao}
+                          onChange={(e) => setDataSolicitacao(e.target.value)}
+                        />
+                      </Field>
+                    </Grid>
+
+                    <Field label="23 - Indicação Clínica" required>
+                      <Textarea
+                        rows={3}
+                        value={indicacaoClinica}
+                        onChange={(e) => setIndicacaoClinica(e.target.value)}
+                        placeholder="Descreva a justificativa clínica do procedimento."
+                      />
+                    </Field>
+
+                    <SelectField
+                      label="90 - Indicador de Cobertura Especial"
+                      hint="Opcional — conforme tabela de domínio nº 75. Preencha em atendimento ambulatorial de plano exclusivamente hospitalar, a gestantes ou no pré e pós-operatório."
+                      className="@md:max-w-xs"
+                      value={coberturaEspecial}
+                      onValueChange={setCoberturaEspecial}
+                      placeholder="Selecione"
+                      options={[...COBERTURA_ESPECIAL_OPTIONS]}
+                    />
+
+                    {/* Procedimentos solicitados (24 a 28) */}
+                    <div className="mt-5 border-t pt-5 space-y-3 @container">
+                      <div className="flex flex-col gap-2 @md:flex-row @md:items-center @md:justify-between">
+                        <h4 className="min-w-0 text-sm font-medium">
+                          Procedimentos solicitados
+                          <span className="ml-2 text-xs font-normal text-muted-foreground">
+                            Campos 24 a 28
+                          </span>
+                        </h4>
+                        <div className="flex shrink-0 items-center gap-2">
+                          <Button
+                            type="button"
+                            size="sm"
+                            variant="outline"
+                            onClick={clearProcedures}
+                            className="flex-1 justify-center @md:flex-none"
+                          >
+                            Limpar
+                          </Button>
+                          <Button
+                            type="button"
+                            size="sm"
+                            onClick={addProcedure}
+                            className="flex-1 justify-center @md:flex-none"
+                          >
+                            <Plus className="h-4 w-4" /> Adicionar
+                          </Button>
+                        </div>
+                      </div>
+
+                      {/* Usar kit salvo */}
+                      <div className="flex flex-col gap-2 rounded-lg border bg-muted/30 p-3 sm:flex-row sm:items-center">
+                        <Label htmlFor="use-kit" className="shrink-0 text-xs font-medium">
+                          Usar kit salvo
+                        </Label>
+                        <div className="min-w-0 flex-1">
                           <Combobox
-                            value={
-                              TUSS.some((t) => t.descricao === p.description)
-                                ? TUSS.find((t) => t.descricao === p.description)!.codigo
-                                : ""
-                            }
-                            onChange={(codigo) => {
-                              const item = TUSS.find((t) => t.codigo === codigo);
-                              updateProcedure(p.id, {
-                                // Campos 25 e 24 preenchidos a partir da seleção.
-                                code: item ? item.codigo : "",
-                                description: item ? item.descricao : "",
-                                table: item ? resolveTissTable(item.codigo) : "",
-                              });
+                            id="use-kit"
+                            value={selectedUserKit}
+                            onChange={(id) => {
+                              setSelectedUserKit(id);
+                              const kit = kitOptionsSource.find((k) => k.id === id);
+                              if (kit) applyKit(kit);
                             }}
-                            options={TUSS_OPTIONS}
-                            placeholder={p.description || "Buscar procedimento pela descrição"}
-                            searchPlaceholder="Digite a descrição do procedimento..."
-                            emptyMessage="Nenhum procedimento encontrado."
+                            options={kitOptions}
+                            placeholder={
+                              kitOptions.length === 0
+                                ? "Nenhum kit disponível"
+                                : "Selecione um kit de procedimentos"
+                            }
+                            searchPlaceholder="Buscar kit..."
+                            emptyMessage="Nenhum kit encontrado."
+                            disabled={kitOptions.length === 0}
                             clearable
                           />
-                        </FormField>
-
-                        {/* Código do procedimento (campo 25) — somente leitura */}
-                        <FormField
-                          label="25 - Código"
-                          labelClassName="@3xl:hidden"
-                          className="mt-3 min-w-0 @3xl:mt-0 @3xl:space-y-0"
-                        >
-                          <Input
-                            value={p.code}
-                            readOnly
-                            aria-readonly
-                            tabIndex={-1}
-                            aria-label="25 - Código do Procedimento ou Item Assistencial"
-                            placeholder="—"
-                            className="bg-muted/50 font-mono text-foreground"
-                          />
-                        </FormField>
-
-                        {/* Quantidade solicitada (campo 27) */}
-                        <FormField
-                          label="27 - Qtde. Solic."
-                          required
-                          labelClassName="@3xl:hidden"
-                          className="mt-3 @3xl:mt-0 @3xl:space-y-0"
-                        >
-                          <Input
-                            type="number"
-                            min={1}
-                            aria-label="27 - Qtde. Solic."
-                            className="text-center"
-                            value={p.quantity}
-                            onChange={(e) =>
-                              updateProcedure(p.id, {
-                                quantity: Math.max(1, Number(e.target.value) || 1),
-                              })
-                            }
-                          />
-                        </FormField>
-
-
-
-
-
-
-
-                        <div className="hidden @3xl:flex @3xl:justify-end">
-                          <Button
-                            type="button"
-                            variant="ghost"
-                            size="icon"
-                            onClick={() => removeProcedure(p.id)}
-                            disabled={procedures.length === 1}
-                            aria-label={`Remover procedimento ${idx + 1}`}
-                          >
-                            <Trash2 className="h-4 w-4 text-destructive" />
-                          </Button>
                         </div>
                       </div>
-                    ))}
-                  </div>
-                </div>
 
-                <div className="mt-5 border-t pt-4">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setKitFormOpen((o) => !o)}
-                    aria-expanded={kitFormOpen}
-                    disabled={filledProcedures.length === 0}
-                  >
-                    <Plus className="h-4 w-4" /> Salvar como kit
-                  </Button>
-                  {filledProcedures.length === 0 && (
-                    <p className="mt-2 text-xs text-muted-foreground">
-                      Preencha ao menos um procedimento para criar um kit reutilizável.
-                    </p>
-                  )}
+                      <p className="text-xs text-muted-foreground">
+                        Busque por <strong>descrição</strong> (campo 26) — o código (25) e a tabela
+                        (24) são preenchidos automaticamente.
+                      </p>
 
-                  {kitFormOpen && filledProcedures.length > 0 && (
-                    <div className="mt-3 space-y-3 rounded-lg border bg-muted/30 p-3">
-                      <ul className="space-y-1">
-                        {filledProcedures.map((p) => (
-                          <li
+                      {/* Rótulos das colunas (campos 25 a 27) — visíveis no desktop */}
+                      <div
+                        data-testid="proc-solic-headers"
+                        className="hidden @3xl:grid @3xl:grid-cols-[1.5rem_minmax(0,1fr)_7rem_6rem_2.25rem] items-end gap-2 text-xs font-medium text-muted-foreground"
+                      >
+                        <div />
+                        <div className="whitespace-nowrap" data-testid="proc-solic-header-26">
+                          26 - Descrição <span className="text-destructive">*</span>
+                        </div>
+                        <div className="whitespace-nowrap" data-testid="proc-solic-header-25">
+                          25 - Código
+                        </div>
+                        <div
+                          className="whitespace-nowrap text-center"
+                          data-testid="proc-solic-header-27"
+                        >
+                          27 - Qtde. <span className="text-destructive">*</span>
+                        </div>
+
+                        <div />
+                      </div>
+
+                      <div className="space-y-3 @3xl:space-y-2">
+                        {procedures.map((p, idx) => (
+                          <div
                             key={p.id}
-                            className="flex min-w-0 items-center gap-2 text-xs text-foreground"
+                            draggable
+                            onDragStart={() => onDragStart(p.id)}
+                            onDragOver={onDragOver}
+                            onDrop={() => onDrop(p.id)}
+                            className={cn(
+                              "rounded-lg border p-3 @3xl:grid @3xl:grid-cols-[1.5rem_minmax(0,1fr)_7rem_6rem_2.25rem] @3xl:items-center @3xl:gap-2 @3xl:rounded-none @3xl:border-0 @3xl:p-0",
+                              dragId === p.id && "opacity-50",
+                            )}
                           >
-                            <span className="font-mono text-muted-foreground">{p.code}</span>
-                            <span className="min-w-0 flex-1 truncate">{p.description}</span>
-                            <span className="shrink-0 text-muted-foreground">{p.quantity}x</span>
-                          </li>
-                        ))}
-                      </ul>
-
-                      <div className="flex flex-col gap-3 sm:flex-row sm:items-end">
-                        <FormField
-                          id="kit-name"
-                          label="Nome do kit"
-                          className="min-w-0 flex-1"
-                          hint="Ex.: Check-up cardiológico"
-                        >
-                          <Input
-                            value={kitName}
-                            onChange={(e) => setKitName(e.target.value)}
-                            placeholder="Nome do kit"
-                          />
-                        </FormField>
-                        <Button
-                          type="button"
-                          onClick={saveAsKit}
-                          disabled={!kitName.trim()}
-                          className="sm:mb-6"
-                        >
-                          Salvar kit
-                        </Button>
-                      </div>
-                    </div>
-                  )}
-                </div>
-
-
-
-
-              </Section>
-
-
-
-              {/* Dados do Atendimento */}
-              <Section
-                number={stepNumber("atendimento")}
-                done={atendimentoOk}
-                icon={<ClipboardList className="h-4 w-4" />}
-                title="Dados do Atendimento"
-                description="Campos 32 a 35, 91 e 92 da guia — exibidos conforme o tipo de atendimento."
-              >
-                <Grid cols={2}>
-                  <SelectField
-                    className={ATENDIMENTO_FIELD_CLASS}
-                    labelClassName={ATENDIMENTO_LABEL_CLASS}
-                    triggerClassName={ATENDIMENTO_TRIGGER_CLASS}
-                    label="32 - Tipo de Atendimento"
-                    required
-                    value={tipoAtendimento}
-                    onValueChange={setTipoAtendimento}
-                    placeholder="Selecione"
-                    options={TIPO_ATENDIMENTO_OPTIONS}
-
-                  />
-                  <SelectField
-                    className={ATENDIMENTO_FIELD_CLASS}
-                    labelClassName={ATENDIMENTO_LABEL_CLASS}
-                    triggerClassName={ATENDIMENTO_TRIGGER_CLASS}
-                    label="33 - Indicação de Acidente"
-                    required
-                    value={indicacaoAcidente}
-                    onValueChange={setIndicacaoAcidente}
-                    placeholder="Selecione"
-                    hint="Preenchido com “Não acidente”; altere apenas quando houver acidente ou doença relacionada."
-                    options={ACIDENTE_OPTIONS}
-                  />
-                  {isConsulta && (
-                    <SelectField
-                      className={ATENDIMENTO_FIELD_CLASS}
-                      labelClassName={ATENDIMENTO_LABEL_CLASS}
-                      triggerClassName={ATENDIMENTO_TRIGGER_CLASS}
-                      label="34 - Tipo de Consulta"
-                      value={tipoConsulta}
-                      onValueChange={setTipoConsulta}
-                      placeholder="Selecione"
-                      options={[...TIPO_CONSULTA_OPTIONS]}
-                    />
-                  )}
-                  <SelectField
-                    className={ATENDIMENTO_FIELD_CLASS}
-                    labelClassName={ATENDIMENTO_LABEL_CLASS}
-                    triggerClassName={ATENDIMENTO_TRIGGER_CLASS}
-                    label="35 - Motivo de Encerramento do Atendimento"
-                    value={motivoEncerramento}
-                    onValueChange={setMotivoEncerramento}
-                    placeholder="Selecione"
-                    hint="Preencher no encerramento do atendimento."
-                    options={[...MOTIVO_ENCERRAMENTO_OPTIONS]}
-                  />
-                  <SelectField
-                    id="campo-91-regime-atendimento"
-                    className={ATENDIMENTO_FIELD_CLASS}
-                    labelClassName={ATENDIMENTO_LABEL_CLASS}
-                    triggerClassName={ATENDIMENTO_TRIGGER_CLASS}
-                    label="91 - Regime de atendimento"
-                    required
-                    value={regimeAtendimento}
-                    onValueChange={setRegimeAtendimento}
-                    placeholder="Selecione"
-                    hint="Conforme tabela de domínio nº 76."
-                    options={[...REGIME_ATENDIMENTO_OPTIONS]}
-                  />
-                  <SelectField
-                    id="campo-92-saude-ocupacional"
-                    className={ATENDIMENTO_FIELD_CLASS}
-                    labelClassName={ATENDIMENTO_LABEL_CLASS}
-                    triggerClassName={ATENDIMENTO_TRIGGER_CLASS}
-                    label="92 - Saúde Ocupacional"
-                    value={saudeOcupacional === "" ? SAUDE_OCUPACIONAL_NONE : saudeOcupacional}
-                    onValueChange={(v) =>
-                      setSaudeOcupacional(
-                        v === SAUDE_OCUPACIONAL_NONE || !SAUDE_OCUPACIONAL_CODES.has(v)
-                          ? ""
-                          : v,
-                      )
-                    }
-                    placeholder="Selecione"
-                    error={saudeOcupacionalError}
-                    hint="Opcional — conforme tabela de domínio nº 77."
-                    options={[
-                      { value: SAUDE_OCUPACIONAL_NONE, label: "Não se aplica" },
-                      ...SAUDE_OCUPACIONAL_OPTIONS,
-                    ]}
-                  />
-                </Grid>
-              </Section>
-
-
-              {/* Dados da Execução — Procedimentos e Exames Realizados */}
-              <Section
-                number={stepNumber("realizados")}
-                done={realizadosOk}
-                icon={<ClipboardList className="h-4 w-4" />}
-                title="Dados da Execução"
-                description="Campos 36 a 47 da guia — busque o procedimento realizado; os demais dados são automáticos."
-                collapsible
-                open={execOpen}
-                onOpenChange={setExecOpen}
-
-                action={
-                  <div className="flex flex-wrap gap-2">
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      onClick={importSolicitedProcedures}
-                    >
-                      Copiar solicitados
-                    </Button>
-                    <Button type="button" size="sm" onClick={addExecuted}>
-                      <Plus className="h-4 w-4" /> Adicionar procedimento
-                    </Button>
-                  </div>
-                }
-              >
-                {executedItems.length === 0 ? (
-                  <EmptyState
-                    size="sm"
-                    title="Nenhum procedimento realizado"
-                    description="Adicione os procedimentos executados ou copie os solicitados."
-                    icon={<ClipboardList className="h-8 w-8" />}
-                  />
-                ) : (
-                  <div className="space-y-2">
-                    <p className="text-xs text-muted-foreground">
-                      Busque por <strong>descrição</strong> (campo 41) — o código
-                      (40) e a tabela (39) são preenchidos automaticamente. A{" "}
-                      <strong>data (36)</strong> vem da realização e pode ser ajustada.
-                    </p>
-
-                    {executedItems.map((item, idx) => (
-                      <div key={item.id} className="rounded-lg border p-3">
-                        {/* Linha 1 — descrição (campo 41) em largura total */}
-                        <div className="flex items-end gap-2">
-                          <FormField
-                            label={`41 - Descrição — procedimento ${idx + 1}`}
-                            required
-                            className="min-w-0 flex-1"
-                          >
-                            <Combobox
-                              value={
-                                TUSS.some((t) => t.descricao === item.description)
-                                  ? TUSS.find((t) => t.descricao === item.description)!.codigo
-                                  : ""
-                              }
-                              onChange={(codigo) => {
-                                const tuss = TUSS.find((t) => t.codigo === codigo);
-                                updateExecuted(item.id, {
-                                  // Campos 40 e 39 preenchidos a partir da seleção.
-                                  code: tuss ? tuss.codigo : "",
-                                  description: tuss ? tuss.descricao : "",
-                                  table: tuss ? resolveTissTable(tuss.codigo) : "",
-                                });
-                              }}
-                              options={TUSS_OPTIONS}
-                              placeholder={
-                                item.description || "Buscar procedimento pela descrição"
-                              }
-                              searchPlaceholder="Digite a descrição do procedimento..."
-                              emptyMessage="Nenhum procedimento encontrado."
-                              clearable
-                            />
-                          </FormField>
-                          <Button
-                            type="button"
-                            variant="ghost"
-                            size="icon"
-                            className="shrink-0"
-                            onClick={() => removeExecuted(item.id)}
-                            aria-label={`Remover procedimento realizado ${idx + 1}`}
-                          >
-                            <Trash2 className="h-4 w-4 text-destructive" />
-                          </Button>
-                        </div>
-
-                        {/* Linha 2 — código, quantidade, data e horários lado a lado */}
-                        <div className="mt-4 flex flex-wrap items-end gap-x-3 gap-y-4">
-                          <FormField label="40 - Código" className="w-[110px] shrink-0">
-                            <Input
-                              value={item.code}
-                              readOnly
-                              aria-readonly
-                              tabIndex={-1}
-                              aria-label="40 - Código do Procedimento"
-                              placeholder="—"
-                              className="bg-muted/50 font-mono text-foreground"
-                            />
-                          </FormField>
-
-                          <FormField label="42 - Qtde." className="w-[74px] shrink-0">
-                            <Input
-                              type="number"
-                              min={1}
-                              aria-label="42 - Quantidade realizada"
-                              className="text-center"
-                              value={item.quantity}
-                              onChange={(e) =>
-                                updateExecuted(item.id, {
-                                  quantity: Math.max(1, Number(e.target.value) || 1),
-                                })
-                              }
-                            />
-                          </FormField>
-
-                          <FormField label="36 - Data" className="w-[150px] shrink-0">
-                            <Input
-                              type="date"
-                              aria-label="36 - Data da realização"
-                              value={item.date}
-                              onChange={(e) => updateExecuted(item.id, { date: e.target.value })}
-                            />
-                          </FormField>
-
-                          {executionTimeVisible && (
-                            <>
-                              <FormField label="37 - Hora Ini." className="w-[110px] shrink-0">
-                                <Input
-                                  type="time"
-                                  aria-label="37 - Hora Inicial"
-                                  value={item.startTime}
-                                  onChange={(e) =>
-                                    updateExecuted(item.id, { startTime: e.target.value })
-                                  }
-                                />
-                              </FormField>
-                              <FormField label="38 - Hora Fim" className="w-[110px] shrink-0">
-                                <Input
-                                  type="time"
-                                  aria-label="38 - Hora Final"
-                                  value={item.endTime}
-                                  onChange={(e) =>
-                                    updateExecuted(item.id, { endTime: e.target.value })
-                                  }
-                                />
-                              </FormField>
-                            </>
-                          )}
-
-                          {!requiresExecutionTime && (
-                            <Button
-                              type="button"
-                              variant="outline"
-                              size="sm"
-                              className="shrink-0"
-                              onClick={() => setShowExecutionTime((v) => !v)}
-                            >
-                              {showExecutionTime
-                                ? "Ocultar horários (37/38)"
-                                : "Registrar horários (37/38)"}
-                            </Button>
-                          )}
-                        </div>
-
-                        {/* Campos 43 e 44 — opcionais, apenas para procedimento cirúrgico */}
-                        <Collapsible
-                          open={Boolean(surgicalOpen[item.id])}
-                          onOpenChange={(o) =>
-                            setSurgicalOpen((s) => ({ ...s, [item.id]: o }))
-                          }
-                          className="mt-4 border-t pt-3"
-                        >
-                          <CollapsibleTrigger asChild>
-                            <Button
-                              type="button"
-                              variant="outline"
-                              size="sm"
-                              className="w-full justify-between sm:w-auto"
-                              aria-expanded={Boolean(surgicalOpen[item.id])}
-                            >
-                              <span>Dados cirúrgicos (opcional)</span>
-                              <ChevronRight
-                                className={`transition-transform ${surgicalOpen[item.id] ? "rotate-90" : ""}`}
-                                aria-hidden
-                              />
-                            </Button>
-                          </CollapsibleTrigger>
-                          <CollapsibleContent className="pt-3">
-                            <p className="mb-2 text-xs text-muted-foreground">
-                              Preencher apenas para procedimento cirúrgico.
-                            </p>
-                            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                              <SelectField
-                                label="43 - Via"
-                                hint="Via de acesso"
-                                value={item.via}
-                                onValueChange={(v) => updateExecuted(item.id, { via: v })}
-                                placeholder="Selecione"
-                                options={VIA_ACESSO_OPTIONS}
-                              />
-                              <SelectField
-                                label="44 - Tec."
-                                hint="Técnica utilizada"
-                                value={item.technique}
-                                onValueChange={(v) => updateExecuted(item.id, { technique: v })}
-                                placeholder="Selecione"
-                                options={TECNICA_OPTIONS}
-                              />
-                            </div>
-                          </CollapsibleContent>
-                        </Collapsible>
-                      </div>
-
-                    ))}
-                  </div>
-
-                )}
-
-
-              </Section>
-
-              {/* Identificação do(a) Profissional Executante (campos 48 a 55) */}
-              <Section
-                number={stepNumber("executantes")}
-                done={executantesOk}
-                icon={<Stethoscope className="h-4 w-4" />}
-                title="Identificação do(s) Profissional(is) Executante(s)"
-                description="Selecione o profissional — conselho, número, UF e CBO são preenchidos automaticamente."
-                collapsible
-                open={execProfOpen}
-                onOpenChange={setExecProfOpen}
-
-                action={
-                  <Button type="button" size="sm" onClick={addExecutante}>
-                    <Plus className="h-4 w-4" /> Adicionar profissional
-                  </Button>
-                }
-              >
-                {executantes.length === 0 ? (
-                  <EmptyState
-                    size="sm"
-                    title="Nenhum profissional executante"
-                    description="Adicione o profissional que executou os procedimentos."
-                    icon={<Stethoscope className="h-8 w-8" />}
-                  />
-                ) : (
-                  <div className="space-y-3">
-                    {executantes.map((ex, idx) => (
-                      <div key={ex.id} className="rounded-md border p-3 @container">
-                        <div className="grid grid-cols-1 items-end gap-3 @md:grid-cols-12">
-                          <div className={participationVisible ? "@md:col-span-7" : "@md:col-span-11"}>
-                            <SelectField
-                              label={`51 - Profissional executante ${executantes.length > 1 ? idx + 1 : ""}`.trim()}
-                              value={ex.professionalId}
-                              onValueChange={(v) => selectExecutanteProfessional(ex.id, v)}
-                              placeholder="Selecione o profissional"
-                              options={PROFESSIONALS.map((p) => ({
-                                value: p.id,
-                                label: `${p.nome} — ${p.conselho} ${p.numero}/${p.uf}`,
-                              }))}
-                            />
-                          </div>
-                          {participationVisible && (
-                            <div className="@md:col-span-4">
-                              <SelectField
-                                label="49 - Grau Part."
-                                value={ex.participation}
-                                onValueChange={(v) => updateExecutante(ex.id, { participation: v })}
-                                placeholder="Selecione"
-                                options={GRAU_PARTICIPACAO_OPTIONS}
-                              />
-                            </div>
-                          )}
-                          <div className="flex justify-end @md:col-span-1">
-                            <Button
-                              type="button"
-                              variant="ghost"
-                              size="icon"
-                              onClick={() => removeExecutante(ex.id)}
-                              aria-label={`Remover profissional executante ${idx + 1}`}
-                            >
-                              <Trash2 className="h-4 w-4 text-destructive" />
-                            </Button>
-                          </div>
-                        </div>
-
-                        {ex.professionalId && (
-                          <dl className="mt-3 grid grid-cols-2 gap-x-4 gap-y-2 rounded-md bg-muted/40 p-3 text-xs @md:grid-cols-4">
-                            {[
-                              { label: "50 - Cód. na Operadora / CPF", value: ex.operatorCode },
-                              { label: "52 - Conselho", value: ex.council },
-                              { label: "53 - Nº no Conselho", value: ex.councilNumber },
-                              { label: "54 - UF", value: ex.uf },
-                              { label: "55 - Código CBO", value: ex.cbo },
-                            ].map((f) => (
-                              <div key={f.label}>
-                                <dt className="text-muted-foreground">{f.label}</dt>
-                                <dd className="font-mono text-foreground">{f.value || "—"}</dd>
+                            {/* Handle + remover (mobile: linha superior) */}
+                            <div className="mb-2 flex items-center justify-between @3xl:mb-0 @3xl:contents">
+                              <div className="flex cursor-grab items-center justify-center text-muted-foreground active:cursor-grabbing">
+                                <GripVertical className="h-4 w-4" />
+                                <span className="ml-1 text-xs font-medium @3xl:hidden">
+                                  Item {idx + 1}
+                                </span>
                               </div>
-                            ))}
-                          </dl>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                )}
-
-                {executantes.length === 1 && !showParticipation && (
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    className="mt-3"
-                    onClick={() => setShowParticipation(true)}
-                  >
-                    Informar grau de participação (49)
-                  </Button>
-                )}
-
-                <div className="mt-4 border-t pt-4 @container">
-                  {!showSerieDates ? (
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      onClick={() => setShowSerieDates(true)}
-                    >
-                      Procedimento seriado — informar datas (56)
-                    </Button>
-                  ) : (
-                    <>
-                      <div className="mb-3 flex items-center justify-between gap-2">
-                        <p className="text-xs font-medium text-muted-foreground">
-                          56 - Data de Realização de Procedimentos em Série
-                        </p>
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => {
-                            setShowSerieDates(false);
-                            setSerieDates([""]);
-                          }}
-                        >
-                          Ocultar
-                        </Button>
-                      </div>
-                      <div className="grid grid-cols-1 gap-3 @sm:grid-cols-2 @2xl:grid-cols-4">
-                        {serieDates.map((d, i) => (
-                          <Field key={i} label={`${i + 1}ª data`}>
-                            <div className="flex items-center gap-2">
-                              <Input
-                                type="date"
-                                value={d}
-                                onChange={(e) =>
-                                  setSerieDates((l) =>
-                                    l.map((v, j) => (j === i ? e.target.value : v)),
-                                  )
-                                }
-                              />
-                              {serieDates.length > 1 && (
+                              <div className="@3xl:hidden">
                                 <Button
                                   type="button"
                                   variant="ghost"
                                   size="icon"
-                                  aria-label={`Remover ${i + 1}ª data`}
-                                  onClick={() =>
-                                    setSerieDates((l) => l.filter((_, j) => j !== i))
-                                  }
+                                  onClick={() => removeProcedure(p.id)}
+                                  disabled={procedures.length === 1}
+                                  aria-label={`Remover procedimento ${idx + 1}`}
                                 >
-                                  <Trash2 className="h-4 w-4" />
+                                  <Trash2 className="h-4 w-4 text-destructive" />
                                 </Button>
-                              )}
+                              </div>
                             </div>
-                          </Field>
+
+                            {/*
+                          Campo 24 - Tabela não é exibido: o sistema o resolve a partir do
+                          procedimento escolhido e o envia na guia (PDF/XML).
+                        */}
+
+                            {/* Descrição (campo 26) — busca única por descrição */}
+                            <FormField
+                              label="26 - Descrição (buscar por descrição)"
+                              required
+                              labelClassName="@3xl:hidden"
+                              className="min-w-0 @3xl:space-y-0"
+                            >
+                              <Combobox
+                                value={
+                                  TUSS.some((t) => t.descricao === p.description)
+                                    ? TUSS.find((t) => t.descricao === p.description)!.codigo
+                                    : ""
+                                }
+                                onChange={(codigo) => {
+                                  const item = TUSS.find((t) => t.codigo === codigo);
+                                  updateProcedure(p.id, {
+                                    // Campos 25 e 24 preenchidos a partir da seleção.
+                                    code: item ? item.codigo : "",
+                                    description: item ? item.descricao : "",
+                                    table: item ? resolveTissTable(item.codigo) : "",
+                                  });
+                                }}
+                                options={TUSS_OPTIONS}
+                                placeholder={p.description || "Buscar procedimento pela descrição"}
+                                searchPlaceholder="Digite a descrição do procedimento..."
+                                emptyMessage="Nenhum procedimento encontrado."
+                                clearable
+                              />
+                            </FormField>
+
+                            {/* Código do procedimento (campo 25) — somente leitura */}
+                            <FormField
+                              label="25 - Código"
+                              labelClassName="@3xl:hidden"
+                              className="mt-3 min-w-0 @3xl:mt-0 @3xl:space-y-0"
+                            >
+                              <Input
+                                value={p.code}
+                                readOnly
+                                aria-readonly
+                                tabIndex={-1}
+                                aria-label="25 - Código do Procedimento ou Item Assistencial"
+                                placeholder="—"
+                                className="bg-muted/50 font-mono text-foreground"
+                              />
+                            </FormField>
+
+                            {/* Quantidade solicitada (campo 27) */}
+                            <FormField
+                              label="27 - Qtde. Solic."
+                              required
+                              labelClassName="@3xl:hidden"
+                              className="mt-3 @3xl:mt-0 @3xl:space-y-0"
+                            >
+                              <Input
+                                type="number"
+                                min={1}
+                                aria-label="27 - Qtde. Solic."
+                                className="text-center"
+                                value={p.quantity}
+                                onChange={(e) =>
+                                  updateProcedure(p.id, {
+                                    quantity: Math.max(1, Number(e.target.value) || 1),
+                                  })
+                                }
+                              />
+                            </FormField>
+
+                            <div className="hidden @3xl:flex @3xl:justify-end">
+                              <Button
+                                type="button"
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => removeProcedure(p.id)}
+                                disabled={procedures.length === 1}
+                                aria-label={`Remover procedimento ${idx + 1}`}
+                              >
+                                <Trash2 className="h-4 w-4 text-destructive" />
+                              </Button>
+                            </div>
+                          </div>
                         ))}
                       </div>
-                      {serieDates.length < 10 && (
+                    </div>
+
+                    <div className="mt-5 border-t pt-4">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setKitFormOpen((o) => !o)}
+                        aria-expanded={kitFormOpen}
+                        disabled={filledProcedures.length === 0}
+                      >
+                        <Plus className="h-4 w-4" /> Salvar como kit
+                      </Button>
+                      {filledProcedures.length === 0 && (
+                        <p className="mt-2 text-xs text-muted-foreground">
+                          Preencha ao menos um procedimento para criar um kit reutilizável.
+                        </p>
+                      )}
+
+                      {kitFormOpen && filledProcedures.length > 0 && (
+                        <div className="mt-3 space-y-3 rounded-lg border bg-muted/30 p-3">
+                          <ul className="space-y-1">
+                            {filledProcedures.map((p) => (
+                              <li
+                                key={p.id}
+                                className="flex min-w-0 items-center gap-2 text-xs text-foreground"
+                              >
+                                <span className="font-mono text-muted-foreground">{p.code}</span>
+                                <span className="min-w-0 flex-1 truncate">{p.description}</span>
+                                <span className="shrink-0 text-muted-foreground">
+                                  {p.quantity}x
+                                </span>
+                              </li>
+                            ))}
+                          </ul>
+
+                          <div className="flex flex-col gap-3 sm:flex-row sm:items-end">
+                            <FormField
+                              id="kit-name"
+                              label="Nome do kit"
+                              className="min-w-0 flex-1"
+                              hint="Ex.: Check-up cardiológico"
+                            >
+                              <Input
+                                value={kitName}
+                                onChange={(e) => setKitName(e.target.value)}
+                                placeholder="Nome do kit"
+                              />
+                            </FormField>
+                            <Button
+                              type="button"
+                              onClick={saveAsKit}
+                              disabled={!kitName.trim()}
+                              className="sm:mb-6"
+                            >
+                              Salvar kit
+                            </Button>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </Section>
+
+                  {/* Dados do Atendimento */}
+                  <Section
+                    number={stepNumber("atendimento")}
+                    done={atendimentoOk}
+                    icon={<ClipboardList className="h-4 w-4" />}
+                    title="Dados do Atendimento"
+                    description="Campos 32 a 35, 91 e 92 da guia — exibidos conforme o tipo de atendimento."
+                  >
+                    <Grid cols={2}>
+                      <SelectField
+                        className={ATENDIMENTO_FIELD_CLASS}
+                        labelClassName={ATENDIMENTO_LABEL_CLASS}
+                        triggerClassName={ATENDIMENTO_TRIGGER_CLASS}
+                        label="32 - Tipo de Atendimento"
+                        required
+                        value={tipoAtendimento}
+                        onValueChange={setTipoAtendimento}
+                        placeholder="Selecione"
+                        options={TIPO_ATENDIMENTO_OPTIONS}
+                      />
+                      <SelectField
+                        className={ATENDIMENTO_FIELD_CLASS}
+                        labelClassName={ATENDIMENTO_LABEL_CLASS}
+                        triggerClassName={ATENDIMENTO_TRIGGER_CLASS}
+                        label="33 - Indicação de Acidente"
+                        required
+                        value={indicacaoAcidente}
+                        onValueChange={setIndicacaoAcidente}
+                        placeholder="Selecione"
+                        hint="Preenchido com “Não acidente”; altere apenas quando houver acidente ou doença relacionada."
+                        options={ACIDENTE_OPTIONS}
+                      />
+                      {isConsulta && (
+                        <SelectField
+                          className={ATENDIMENTO_FIELD_CLASS}
+                          labelClassName={ATENDIMENTO_LABEL_CLASS}
+                          triggerClassName={ATENDIMENTO_TRIGGER_CLASS}
+                          label="34 - Tipo de Consulta"
+                          value={tipoConsulta}
+                          onValueChange={setTipoConsulta}
+                          placeholder="Selecione"
+                          options={[...TIPO_CONSULTA_OPTIONS]}
+                        />
+                      )}
+                      <SelectField
+                        className={ATENDIMENTO_FIELD_CLASS}
+                        labelClassName={ATENDIMENTO_LABEL_CLASS}
+                        triggerClassName={ATENDIMENTO_TRIGGER_CLASS}
+                        label="35 - Motivo de Encerramento do Atendimento"
+                        value={motivoEncerramento}
+                        onValueChange={setMotivoEncerramento}
+                        placeholder="Selecione"
+                        hint="Preencher no encerramento do atendimento."
+                        options={[...MOTIVO_ENCERRAMENTO_OPTIONS]}
+                      />
+                      <SelectField
+                        id="campo-91-regime-atendimento"
+                        className={ATENDIMENTO_FIELD_CLASS}
+                        labelClassName={ATENDIMENTO_LABEL_CLASS}
+                        triggerClassName={ATENDIMENTO_TRIGGER_CLASS}
+                        label="91 - Regime de atendimento"
+                        required
+                        value={regimeAtendimento}
+                        onValueChange={setRegimeAtendimento}
+                        placeholder="Selecione"
+                        hint="Conforme tabela de domínio nº 76."
+                        options={[...REGIME_ATENDIMENTO_OPTIONS]}
+                      />
+                      <SelectField
+                        id="campo-92-saude-ocupacional"
+                        className={ATENDIMENTO_FIELD_CLASS}
+                        labelClassName={ATENDIMENTO_LABEL_CLASS}
+                        triggerClassName={ATENDIMENTO_TRIGGER_CLASS}
+                        label="92 - Saúde Ocupacional"
+                        value={saudeOcupacional === "" ? SAUDE_OCUPACIONAL_NONE : saudeOcupacional}
+                        onValueChange={(v) =>
+                          setSaudeOcupacional(
+                            v === SAUDE_OCUPACIONAL_NONE || !SAUDE_OCUPACIONAL_CODES.has(v)
+                              ? ""
+                              : v,
+                          )
+                        }
+                        placeholder="Selecione"
+                        error={saudeOcupacionalError}
+                        hint="Opcional — conforme tabela de domínio nº 77."
+                        options={[
+                          { value: SAUDE_OCUPACIONAL_NONE, label: "Não se aplica" },
+                          ...SAUDE_OCUPACIONAL_OPTIONS,
+                        ]}
+                      />
+                    </Grid>
+                  </Section>
+
+                  {/* Dados da Execução — Procedimentos e Exames Realizados */}
+                  <Section
+                    number={stepNumber("realizados")}
+                    done={realizadosOk}
+                    icon={<ClipboardList className="h-4 w-4" />}
+                    title="Dados da Execução"
+                    description="Campos 36 a 47 da guia — busque o procedimento realizado; os demais dados são automáticos."
+                    collapsible
+                    open={execOpen}
+                    onOpenChange={setExecOpen}
+                    action={
+                      <div className="flex flex-wrap gap-2">
                         <Button
                           type="button"
                           variant="outline"
                           size="sm"
-                          className="mt-3"
-                          onClick={() => setSerieDates((l) => [...l, ""])}
+                          onClick={importSolicitedProcedures}
                         >
-                          <Plus className="h-4 w-4" /> Adicionar data
+                          Copiar solicitados
                         </Button>
+                        <Button type="button" size="sm" onClick={addExecuted}>
+                          <Plus className="h-4 w-4" /> Adicionar procedimento
+                        </Button>
+                      </div>
+                    }
+                  >
+                    {executedItems.length === 0 ? (
+                      <EmptyState
+                        size="sm"
+                        title="Nenhum procedimento realizado"
+                        description="Adicione os procedimentos executados ou copie os solicitados."
+                        icon={<ClipboardList className="h-8 w-8" />}
+                      />
+                    ) : (
+                      <div className="space-y-2">
+                        <p className="text-xs text-muted-foreground">
+                          Busque por <strong>descrição</strong> (campo 41) — o código (40) e a
+                          tabela (39) são preenchidos automaticamente. A <strong>data (36)</strong>{" "}
+                          vem da realização e pode ser ajustada.
+                        </p>
+
+                        {executedItems.map((item, idx) => (
+                          <div key={item.id} className="rounded-lg border p-3">
+                            {/* Linha 1 — descrição (campo 41) em largura total */}
+                            <div className="flex items-end gap-2">
+                              <FormField
+                                label={`41 - Descrição — procedimento ${idx + 1}`}
+                                required
+                                className="min-w-0 flex-1"
+                              >
+                                <Combobox
+                                  value={
+                                    TUSS.some((t) => t.descricao === item.description)
+                                      ? TUSS.find((t) => t.descricao === item.description)!.codigo
+                                      : ""
+                                  }
+                                  onChange={(codigo) => {
+                                    const tuss = TUSS.find((t) => t.codigo === codigo);
+                                    updateExecuted(item.id, {
+                                      // Campos 40 e 39 preenchidos a partir da seleção.
+                                      code: tuss ? tuss.codigo : "",
+                                      description: tuss ? tuss.descricao : "",
+                                      table: tuss ? resolveTissTable(tuss.codigo) : "",
+                                    });
+                                  }}
+                                  options={TUSS_OPTIONS}
+                                  placeholder={
+                                    item.description || "Buscar procedimento pela descrição"
+                                  }
+                                  searchPlaceholder="Digite a descrição do procedimento..."
+                                  emptyMessage="Nenhum procedimento encontrado."
+                                  clearable
+                                />
+                              </FormField>
+                              <Button
+                                type="button"
+                                variant="ghost"
+                                size="icon"
+                                className="shrink-0"
+                                onClick={() => removeExecuted(item.id)}
+                                aria-label={`Remover procedimento realizado ${idx + 1}`}
+                              >
+                                <Trash2 className="h-4 w-4 text-destructive" />
+                              </Button>
+                            </div>
+
+                            {/* Linha 2 — código, quantidade, data e horários lado a lado */}
+                            <div className="mt-4 flex flex-wrap items-end gap-x-3 gap-y-4">
+                              <FormField label="40 - Código" className="w-[110px] shrink-0">
+                                <Input
+                                  value={item.code}
+                                  readOnly
+                                  aria-readonly
+                                  tabIndex={-1}
+                                  aria-label="40 - Código do Procedimento"
+                                  placeholder="—"
+                                  className="bg-muted/50 font-mono text-foreground"
+                                />
+                              </FormField>
+
+                              <FormField label="42 - Qtde." className="w-[74px] shrink-0">
+                                <Input
+                                  type="number"
+                                  min={1}
+                                  aria-label="42 - Quantidade realizada"
+                                  className="text-center"
+                                  value={item.quantity}
+                                  onChange={(e) =>
+                                    updateExecuted(item.id, {
+                                      quantity: Math.max(1, Number(e.target.value) || 1),
+                                    })
+                                  }
+                                />
+                              </FormField>
+
+                              <FormField label="36 - Data" className="w-[150px] shrink-0">
+                                <Input
+                                  type="date"
+                                  aria-label="36 - Data da realização"
+                                  value={item.date}
+                                  onChange={(e) =>
+                                    updateExecuted(item.id, { date: e.target.value })
+                                  }
+                                />
+                              </FormField>
+
+                              {executionTimeVisible && (
+                                <>
+                                  <FormField label="37 - Hora Ini." className="w-[110px] shrink-0">
+                                    <Input
+                                      type="time"
+                                      aria-label="37 - Hora Inicial"
+                                      value={item.startTime}
+                                      onChange={(e) =>
+                                        updateExecuted(item.id, { startTime: e.target.value })
+                                      }
+                                    />
+                                  </FormField>
+                                  <FormField label="38 - Hora Fim" className="w-[110px] shrink-0">
+                                    <Input
+                                      type="time"
+                                      aria-label="38 - Hora Final"
+                                      value={item.endTime}
+                                      onChange={(e) =>
+                                        updateExecuted(item.id, { endTime: e.target.value })
+                                      }
+                                    />
+                                  </FormField>
+                                </>
+                              )}
+
+                              {!requiresExecutionTime && (
+                                <Button
+                                  type="button"
+                                  variant="outline"
+                                  size="sm"
+                                  className="shrink-0"
+                                  onClick={() => setShowExecutionTime((v) => !v)}
+                                >
+                                  {showExecutionTime
+                                    ? "Ocultar horários (37/38)"
+                                    : "Registrar horários (37/38)"}
+                                </Button>
+                              )}
+                            </div>
+
+                            {/* Campos 43 e 44 — opcionais, apenas para procedimento cirúrgico */}
+                            <Collapsible
+                              open={Boolean(surgicalOpen[item.id])}
+                              onOpenChange={(o) => setSurgicalOpen((s) => ({ ...s, [item.id]: o }))}
+                              className="mt-4 border-t pt-3"
+                            >
+                              <CollapsibleTrigger asChild>
+                                <Button
+                                  type="button"
+                                  variant="outline"
+                                  size="sm"
+                                  className="w-full justify-between sm:w-auto"
+                                  aria-expanded={Boolean(surgicalOpen[item.id])}
+                                >
+                                  <span>Dados cirúrgicos (opcional)</span>
+                                  <ChevronRight
+                                    className={`transition-transform ${surgicalOpen[item.id] ? "rotate-90" : ""}`}
+                                    aria-hidden
+                                  />
+                                </Button>
+                              </CollapsibleTrigger>
+                              <CollapsibleContent className="pt-3">
+                                <p className="mb-2 text-xs text-muted-foreground">
+                                  Preencher apenas para procedimento cirúrgico.
+                                </p>
+                                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                                  <SelectField
+                                    label="43 - Via"
+                                    hint="Via de acesso"
+                                    value={item.via}
+                                    onValueChange={(v) => updateExecuted(item.id, { via: v })}
+                                    placeholder="Selecione"
+                                    options={VIA_ACESSO_OPTIONS}
+                                  />
+                                  <SelectField
+                                    label="44 - Tec."
+                                    hint="Técnica utilizada"
+                                    value={item.technique}
+                                    onValueChange={(v) => updateExecuted(item.id, { technique: v })}
+                                    placeholder="Selecione"
+                                    options={TECNICA_OPTIONS}
+                                  />
+                                </div>
+                              </CollapsibleContent>
+                            </Collapsible>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </Section>
+
+                  {/* Identificação do(a) Profissional Executante (campos 48 a 55) */}
+                  <Section
+                    number={stepNumber("executantes")}
+                    done={executantesOk}
+                    icon={<Stethoscope className="h-4 w-4" />}
+                    title="Identificação do(s) Profissional(is) Executante(s)"
+                    description="Selecione o profissional — conselho, número, UF e CBO são preenchidos automaticamente."
+                    collapsible
+                    open={execProfOpen}
+                    onOpenChange={setExecProfOpen}
+                    action={
+                      <Button type="button" size="sm" onClick={addExecutante}>
+                        <Plus className="h-4 w-4" /> Adicionar profissional
+                      </Button>
+                    }
+                  >
+                    {executantes.length === 0 ? (
+                      <EmptyState
+                        size="sm"
+                        title="Nenhum profissional executante"
+                        description="Adicione o profissional que executou os procedimentos."
+                        icon={<Stethoscope className="h-8 w-8" />}
+                      />
+                    ) : (
+                      <div className="space-y-3">
+                        {executantes.map((ex, idx) => (
+                          <div key={ex.id} className="rounded-md border p-3 @container">
+                            <div className="grid grid-cols-1 items-end gap-3 @md:grid-cols-12">
+                              <div
+                                className={
+                                  participationVisible ? "@md:col-span-7" : "@md:col-span-11"
+                                }
+                              >
+                                <SelectField
+                                  label={`51 - Profissional executante ${executantes.length > 1 ? idx + 1 : ""}`.trim()}
+                                  value={ex.professionalId}
+                                  onValueChange={(v) => selectExecutanteProfessional(ex.id, v)}
+                                  placeholder="Selecione o profissional"
+                                  options={PROFESSIONALS.map((p) => ({
+                                    value: p.id,
+                                    label: `${p.nome} — ${p.conselho} ${p.numero}/${p.uf}`,
+                                  }))}
+                                />
+                              </div>
+                              {participationVisible && (
+                                <div className="@md:col-span-4">
+                                  <SelectField
+                                    label="49 - Grau Part."
+                                    value={ex.participation}
+                                    onValueChange={(v) =>
+                                      updateExecutante(ex.id, { participation: v })
+                                    }
+                                    placeholder="Selecione"
+                                    options={GRAU_PARTICIPACAO_OPTIONS}
+                                  />
+                                </div>
+                              )}
+                              <div className="flex justify-end @md:col-span-1">
+                                <Button
+                                  type="button"
+                                  variant="ghost"
+                                  size="icon"
+                                  onClick={() => removeExecutante(ex.id)}
+                                  aria-label={`Remover profissional executante ${idx + 1}`}
+                                >
+                                  <Trash2 className="h-4 w-4 text-destructive" />
+                                </Button>
+                              </div>
+                            </div>
+
+                            {ex.professionalId && (
+                              <dl className="mt-3 grid grid-cols-2 gap-x-4 gap-y-2 rounded-md bg-muted/40 p-3 text-xs @md:grid-cols-4">
+                                {[
+                                  { label: "50 - Cód. na Operadora / CPF", value: ex.operatorCode },
+                                  { label: "52 - Conselho", value: ex.council },
+                                  { label: "53 - Nº no Conselho", value: ex.councilNumber },
+                                  { label: "54 - UF", value: ex.uf },
+                                  { label: "55 - Código CBO", value: ex.cbo },
+                                ].map((f) => (
+                                  <div key={f.label}>
+                                    <dt className="text-muted-foreground">{f.label}</dt>
+                                    <dd className="font-mono text-foreground">{f.value || "—"}</dd>
+                                  </div>
+                                ))}
+                              </dl>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    )}
+
+                    {executantes.length === 1 && !showParticipation && (
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        className="mt-3"
+                        onClick={() => setShowParticipation(true)}
+                      >
+                        Informar grau de participação (49)
+                      </Button>
+                    )}
+
+                    <div className="mt-4 border-t pt-4 @container">
+                      {!showSerieDates ? (
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={() => setShowSerieDates(true)}
+                        >
+                          Procedimento seriado — informar datas (56)
+                        </Button>
+                      ) : (
+                        <>
+                          <div className="mb-3 flex items-center justify-between gap-2">
+                            <p className="text-xs font-medium text-muted-foreground">
+                              56 - Data de Realização de Procedimentos em Série
+                            </p>
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => {
+                                setShowSerieDates(false);
+                                setSerieDates([""]);
+                              }}
+                            >
+                              Ocultar
+                            </Button>
+                          </div>
+                          <div className="grid grid-cols-1 gap-3 @sm:grid-cols-2 @2xl:grid-cols-4">
+                            {serieDates.map((d, i) => (
+                              <Field key={i} label={`${i + 1}ª data`}>
+                                <div className="flex items-center gap-2">
+                                  <Input
+                                    type="date"
+                                    value={d}
+                                    onChange={(e) =>
+                                      setSerieDates((l) =>
+                                        l.map((v, j) => (j === i ? e.target.value : v)),
+                                      )
+                                    }
+                                  />
+                                  {serieDates.length > 1 && (
+                                    <Button
+                                      type="button"
+                                      variant="ghost"
+                                      size="icon"
+                                      aria-label={`Remover ${i + 1}ª data`}
+                                      onClick={() =>
+                                        setSerieDates((l) => l.filter((_, j) => j !== i))
+                                      }
+                                    >
+                                      <Trash2 className="h-4 w-4" />
+                                    </Button>
+                                  )}
+                                </div>
+                              </Field>
+                            ))}
+                          </div>
+                          {serieDates.length < 10 && (
+                            <Button
+                              type="button"
+                              variant="outline"
+                              size="sm"
+                              className="mt-3"
+                              onClick={() => setSerieDates((l) => [...l, ""])}
+                            >
+                              <Plus className="h-4 w-4" /> Adicionar data
+                            </Button>
+                          )}
+                        </>
                       )}
-                    </>
-                  )}
-                </div>
+                    </div>
+                  </Section>
 
-              </Section>
+                  {/* Observação / Justificativa */}
 
+                  <Section
+                    number={stepNumber("observacao")}
+                    done={observacaoOk}
+                    icon={<FileText className="h-4 w-4" />}
+                    title={T.observacao}
+                    description="Campo 58 — informações complementares ou justificativa clínica (opcional)."
+                  >
+                    <FormField
+                      label="58 - Observação / Justificativa"
+                      hint="Texto livre impresso no campo 58 da guia."
+                    >
+                      <Textarea
+                        value={observacoes}
+                        onChange={(e) => setObservacoes(e.target.value)}
+                        placeholder="Descreva observações ou a justificativa clínica do procedimento."
+                        rows={4}
+                      />
+                    </FormField>
+                  </Section>
 
-              {/* Observação / Justificativa */}
-
-              <Section
-                number={stepNumber("observacao")}
-                done={observacaoOk}
-                icon={<FileText className="h-4 w-4" />}
-                title={T.observacao}
-                description="Campo 58 — informações complementares ou justificativa clínica (opcional)."
-              >
-                <FormField
-                  label="58 - Observação / Justificativa"
-                  hint="Texto livre impresso no campo 58 da guia."
-                >
-                  <Textarea
-                    value={observacoes}
-                    onChange={(e) => setObservacoes(e.target.value)}
-                    placeholder="Descreva observações ou a justificativa clínica do procedimento."
-                    rows={4}
-                  />
-                </FormField>
-              </Section>
-
-              {/* Campos 59 a 65: totais calculados automaticamente pelo sistema
+                  {/* Campos 59 a 65: totais calculados automaticamente pelo sistema
                   e enviados no XML/PDF da guia, sem exibição na emissão. */}
 
+                  {/* Barra de ação padrão: etapas + ações */}
+                  <FormActionBar
+                    stepsLabel="Etapas preenchidas"
+                    steps={[
+                      {
+                        label: convenioId === "tiss" ? T.convenio : T.estabelecimento,
+                        done: convenioOk,
+                      },
+                      ...(guideKind === "internacao"
+                        ? [{ label: "Internação", done: especificoOk }]
+                        : []),
+                      ...(guideKind === "apac" ? [{ label: "APAC", done: especificoOk }] : []),
+                      ...(guideKind === "aih" ? [{ label: "AIH", done: especificoOk }] : []),
+                      { label: T.beneficiario, done: pacienteOk },
+                      { label: T.solicitante, done: profissionalOk },
+                      { label: T.solicitacao, done: clinicoOk && procedimentosOk },
 
-
-
-              {/* Barra de ação padrão: etapas + ações */}
-              <FormActionBar
-                stepsLabel="Etapas preenchidas"
-                steps={[
-                  {
-                    label: convenioId === "tiss" ? T.convenio : T.estabelecimento,
-                    done: convenioOk,
-                  },
-                  ...(guideKind === "internacao"
-                    ? [{ label: "Internação", done: especificoOk }]
-                    : []),
-                  ...(guideKind === "apac" ? [{ label: "APAC", done: especificoOk }] : []),
-                  ...(guideKind === "aih" ? [{ label: "AIH", done: especificoOk }] : []),
-                  { label: T.beneficiario, done: pacienteOk },
-                  { label: T.solicitante, done: profissionalOk },
-                  { label: T.solicitacao, done: clinicoOk && procedimentosOk },
-                  
-                  { label: T.atendimento, done: atendimentoOk },
-                  { label: T.execucao, done: realizadosOk },
-                  { label: T.executante, done: executantesOk },
-                  { label: `${T.observacao} (opcional)`, done: observacaoOk },
-                  
-
-
-                  
-                ]}
-                note={
-                  <>
-                    Campos com <span className="text-destructive/80">*</span> são
-                    obrigatórios e serão validados antes da emissão.
-                  </>
-                }
-              >
-                <Button type="button" variant="outline" size="sm" onClick={handleReset}>
-                  Limpar
-                </Button>
-                <Button type="submit" size="sm" disabled={submitting}>
-                  <FileText className="h-4 w-4" />
-                  {submitting ? "Gerando..." : "Gerar guia"}
-                </Button>
-              </FormActionBar>
-            </form>
-            </div>
-          )}
-
+                      { label: T.atendimento, done: atendimentoOk },
+                      { label: T.execucao, done: realizadosOk },
+                      { label: T.executante, done: executantesOk },
+                      { label: `${T.observacao} (opcional)`, done: observacaoOk },
+                    ]}
+                    note={
+                      <>
+                        Campos com <span className="text-destructive/80">*</span> são obrigatórios e
+                        serão validados antes da emissão.
+                      </>
+                    }
+                  >
+                    <Button type="button" variant="outline" size="sm" onClick={handleReset}>
+                      Limpar
+                    </Button>
+                    <Button type="submit" size="sm" disabled={submitting}>
+                      <FileText className="h-4 w-4" />
+                      {submitting ? "Gerando..." : "Gerar guia"}
+                    </Button>
+                  </FormActionBar>
+                </form>
+              </div>
+            )}
         </div>
         <SiteFooter />
       </main>
@@ -3017,79 +2955,78 @@ function EmitirPage() {
           </DialogHeader>
           {guideKind && (
             <ScaledGuideSheet fit="width">
-            <GuiaLivePreview
-              numeroGuia={numeroGuia}
-              guideKind={guideKind}
-              guideLabel={guideLabel}
-              guideHeaderTitle={guideHeaderTitle}
-              convenioId={convenioId}
-              operadora={operadora}
-              operadoraLogo={OPERADORAS.find((o) => o.value === operadora)?.logo}
-              registroAns={registroAns}
-              character={character}
-              dataSolicitacao={dataSolicitacao}
-              susEstabelecimento={susEstabelecimento}
-              susCnes={susCnes}
-              pacienteNome={pacienteNome}
-              pacienteCarteira={pacienteCarteira}
-              pacienteCpf={pacienteCpf}
-              pacienteNascimento={pacienteNascimento}
-              pacienteSexo={pacienteSexo}
-              medicoNome={medicoNome}
-              medicoCrm={medicoCrm}
-              medicoConselho={profissional.conselho}
-              medicoEspecialidade={medicoEspecialidade}
-              cidPrincipal={cidPrincipal}
-              indicacaoClinica={indicacaoClinica}
-              observacoes={observacoes}
-              procedures={procedures}
-              opmeItems={opmeItems}
-              internacaoTipo={internacaoTipo}
-              internacaoRegime={internacaoRegime}
-              internacaoDias={internacaoDias}
-              internacaoAcomodacao={internacaoAcomodacao}
-              apacCompetencia={apacCompetencia}
-              apacTipo={apacTipo}
-              aihMotivo={aihMotivo}
-              aihCaraterEntry={aihCaraterEntry}
-              guiaPrincipal={guiaPrincipal}
-              dataAutorizacao={dataAutorizacao}
-              senha={senha}
-              validadeSenha={validadeSenha}
-              guiaOperadora={guiaOperadora}
-              codigoSolicitante={codigoSolicitante}
-              contratadoSolicitante={contratadoSolicitante}
-              conselhoUf={conselhoUf}
-              codigoCbo={codigoCbo}
-              codigoExecutante={codigoExecutante}
-              contratadoExecutante={contratadoExecutante}
-              cnesExecutante={cnesExecutante}
-              tipoAtendimento={tipoAtendimento}
-              indicacaoAcidente={indicacaoAcidente}
-              tipoConsulta={isConsulta ? tipoConsulta : ""}
-              motivoEncerramento={motivoEncerramento}
-              pacienteValidadeCarteira={pacienteValidadeCarteira}
-              pacienteNomeSocial={pacienteNomeSocial}
-              coberturaEspecial={coberturaEspecial}
-              regimeAtendimento={regimeAtendimentoLabel}
-              saudeOcupacional={saudeOcupacionalLabel}
-              pacienteRn={pacienteRn}
-              assinaturaSolicitante={assinaturaSolicitante}
-              totais={[
-                formatMoney(totalProcedimentos),
-                totalTaxas,
-                totalMateriais,
-                totalOpme,
-                totalMedicamentos,
-                totalGases,
-                formatMoney(totalGeral),
-              ]}
-              assinaturaAutorizacao={assinaturaAutorizacao}
-              assinaturaBeneficiarioFinal={assinaturaBeneficiarioFinal}
-              assinaturaContratado={assinaturaContratado}
-
-              fullSize
-            />
+              <GuiaLivePreview
+                numeroGuia={numeroGuia}
+                guideKind={guideKind}
+                guideLabel={guideLabel}
+                guideHeaderTitle={guideHeaderTitle}
+                convenioId={convenioId}
+                operadora={operadora}
+                operadoraLogo={OPERADORAS.find((o) => o.value === operadora)?.logo}
+                registroAns={registroAns}
+                character={character}
+                dataSolicitacao={dataSolicitacao}
+                susEstabelecimento={susEstabelecimento}
+                susCnes={susCnes}
+                pacienteNome={pacienteNome}
+                pacienteCarteira={pacienteCarteira}
+                pacienteCpf={pacienteCpf}
+                pacienteNascimento={pacienteNascimento}
+                pacienteSexo={pacienteSexo}
+                medicoNome={medicoNome}
+                medicoCrm={medicoCrm}
+                medicoConselho={profissional.conselho}
+                medicoEspecialidade={medicoEspecialidade}
+                cidPrincipal={cidPrincipal}
+                indicacaoClinica={indicacaoClinica}
+                observacoes={observacoes}
+                procedures={procedures}
+                opmeItems={opmeItems}
+                internacaoTipo={internacaoTipo}
+                internacaoRegime={internacaoRegime}
+                internacaoDias={internacaoDias}
+                internacaoAcomodacao={internacaoAcomodacao}
+                apacCompetencia={apacCompetencia}
+                apacTipo={apacTipo}
+                aihMotivo={aihMotivo}
+                aihCaraterEntry={aihCaraterEntry}
+                guiaPrincipal={guiaPrincipal}
+                dataAutorizacao={dataAutorizacao}
+                senha={senha}
+                validadeSenha={validadeSenha}
+                guiaOperadora={guiaOperadora}
+                codigoSolicitante={codigoSolicitante}
+                contratadoSolicitante={contratadoSolicitante}
+                conselhoUf={conselhoUf}
+                codigoCbo={codigoCbo}
+                codigoExecutante={codigoExecutante}
+                contratadoExecutante={contratadoExecutante}
+                cnesExecutante={cnesExecutante}
+                tipoAtendimento={tipoAtendimento}
+                indicacaoAcidente={indicacaoAcidente}
+                tipoConsulta={isConsulta ? tipoConsulta : ""}
+                motivoEncerramento={motivoEncerramento}
+                pacienteValidadeCarteira={pacienteValidadeCarteira}
+                pacienteNomeSocial={pacienteNomeSocial}
+                coberturaEspecial={coberturaEspecial}
+                regimeAtendimento={regimeAtendimentoLabel}
+                saudeOcupacional={saudeOcupacionalLabel}
+                pacienteRn={pacienteRn}
+                assinaturaSolicitante={assinaturaSolicitante}
+                totais={[
+                  formatMoney(totalProcedimentos),
+                  totalTaxas,
+                  totalMateriais,
+                  totalOpme,
+                  totalMedicamentos,
+                  totalGases,
+                  formatMoney(totalGeral),
+                ]}
+                assinaturaAutorizacao={assinaturaAutorizacao}
+                assinaturaBeneficiarioFinal={assinaturaBeneficiarioFinal}
+                assinaturaContratado={assinaturaContratado}
+                fullSize
+              />
             </ScaledGuideSheet>
           )}
         </DialogContent>
@@ -3128,8 +3065,8 @@ function EmitirPage() {
               >
                 <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" aria-hidden />
                 <span>
-                  Corrija os campos 15, 16 e 17 (Dados do Solicitante) antes de imprimir ou
-                  gerar o PDF:{" "}
+                  Corrija os campos 15, 16 e 17 (Dados do Solicitante) antes de imprimir ou gerar o
+                  PDF:{" "}
                   {[
                     profissionalErrors.nome && `15 — ${profissionalErrors.nome}`,
                     profissionalErrors.conselho && `16 — ${profissionalErrors.conselho}`,
@@ -3151,10 +3088,7 @@ function EmitirPage() {
             >
               <Printer className="h-4 w-4" /> Imprimir
             </Button>
-            <Button
-              variant="outline"
-              onClick={() => navigate({ to: "/guias-emitidas" })}
-            >
+            <Button variant="outline" onClick={() => navigate({ to: "/guias-emitidas" })}>
               <FileText className="h-4 w-4" /> Ver em Guias emitidas
             </Button>
             <Button
@@ -3169,7 +3103,6 @@ function EmitirPage() {
               <Download className="h-4 w-4" /> Baixar guia
             </Button>
           </DialogFooter>
-
         </DialogContent>
       </Dialog>
 
@@ -3178,7 +3111,6 @@ function EmitirPage() {
         onOpenChange={setPrefsOpen}
         title="Meus dados padrão de emissão"
         description="Salve uma vez os seus dados de prestador. Em cada nova guia você escolhe quais deles aplicar aos campos 13 a 20 — sem redigitar."
-
         icon={<Settings2 className="h-4 w-4" aria-hidden="true" />}
         size="lg"
         bodyClassName="space-y-5"
@@ -3193,72 +3125,80 @@ function EmitirPage() {
             </Button>
           </>
         }
-
       >
         <>
           <FormField
-              id="pref-prestador"
-              label="Nome do Prestador"
-              required
-              hint="Utilizado em todas as guias."
-              error={prefErrors.prestador}
-            >
-              <Input
-                value={prefPrestador}
-                onChange={(e) => { setPrefPrestador(e.target.value); clearPrefError("prestador"); }}
-                placeholder="Nome completo do prestador"
-                autoComplete="name"
-              />
-            </FormField>
-            <FormField
-              id="pref-matricula"
-              label="Matrícula / Conselho"
-              required
-              hint="Formato aceito: CRM 123456/RN ou apenas números da matrícula."
-              error={prefErrors.matricula}
-            >
-              <Input
-                value={prefMatricula}
-                onChange={(e) => { setPrefMatricula(e.target.value); clearPrefError("matricula"); }}
-                placeholder="CRM 0000/UF ou nº de matrícula"
-              />
-            </FormField>
-            <FormField
-              id="pref-estabelecimento"
-              label="Estabelecimento (Guia SUS)"
-              optional
-              hint="Preenche automaticamente o campo Estabelecimento nas guias SUS."
-              error={prefErrors.estabelecimento}
-            >
-              <Input
-                value={prefEstabelecimento}
-                onChange={(e) => { setPrefEstabelecimento(e.target.value); clearPrefError("estabelecimento"); }}
-                placeholder="Ex: Hospital Municipal, UBS Centro..."
-              />
-            </FormField>
-            <SelectField
-              id="pref-uf"
-              label="UF"
-              required
-              value={prefUf}
-              onValueChange={(v) => { setPrefUf(v); clearPrefError("uf"); }}
-              options={UF_LIST.map((uf) => ({ value: uf, label: uf }))}
-              error={prefErrors.uf}
+            id="pref-prestador"
+            label="Nome do Prestador"
+            required
+            hint="Utilizado em todas as guias."
+            error={prefErrors.prestador}
+          >
+            <Input
+              value={prefPrestador}
+              onChange={(e) => {
+                setPrefPrestador(e.target.value);
+                clearPrefError("prestador");
+              }}
+              placeholder="Nome completo do prestador"
+              autoComplete="name"
             />
+          </FormField>
+          <FormField
+            id="pref-matricula"
+            label="Matrícula / Conselho"
+            required
+            hint="Formato aceito: CRM 123456/RN ou apenas números da matrícula."
+            error={prefErrors.matricula}
+          >
+            <Input
+              value={prefMatricula}
+              onChange={(e) => {
+                setPrefMatricula(e.target.value);
+                clearPrefError("matricula");
+              }}
+              placeholder="CRM 0000/UF ou nº de matrícula"
+            />
+          </FormField>
+          <FormField
+            id="pref-estabelecimento"
+            label="Estabelecimento (Guia SUS)"
+            optional
+            hint="Preenche automaticamente o campo Estabelecimento nas guias SUS."
+            error={prefErrors.estabelecimento}
+          >
+            <Input
+              value={prefEstabelecimento}
+              onChange={(e) => {
+                setPrefEstabelecimento(e.target.value);
+                clearPrefError("estabelecimento");
+              }}
+              placeholder="Ex: Hospital Municipal, UBS Centro..."
+            />
+          </FormField>
+          <SelectField
+            id="pref-uf"
+            label="UF"
+            required
+            value={prefUf}
+            onValueChange={(v) => {
+              setPrefUf(v);
+              clearPrefError("uf");
+            }}
+            options={UF_LIST.map((uf) => ({ value: uf, label: uf }))}
+            error={prefErrors.uf}
+          />
 
-
-            <p className="flex items-start gap-2 rounded-lg border border-border/70 bg-muted/30 px-3 py-2.5 text-xs leading-relaxed text-muted-foreground">
-              <Info className="mt-0.5 h-3.5 w-3.5 shrink-0 text-primary" aria-hidden="true" />
-              Ao salvar, os campos do profissional solicitante desta guia são atualizados. Você
-              pode sobrescrevê-los na guia sem alterar os dados padrão.
-            </p>
-
+          <p className="flex items-start gap-2 rounded-lg border border-border/70 bg-muted/30 px-3 py-2.5 text-xs leading-relaxed text-muted-foreground">
+            <Info className="mt-0.5 h-3.5 w-3.5 shrink-0 text-primary" aria-hidden="true" />
+            Ao salvar, os campos do profissional solicitante desta guia são atualizados. Você pode
+            sobrescrevê-los na guia sem alterar os dados padrão.
+          </p>
         </>
       </AppModal>
     </div>
   );
 }
-
 
 function Section({
   number,
@@ -3303,7 +3243,6 @@ function Section({
   );
 }
 
-
 function Grid({ cols, children }: { cols: 2 | 3 | 12; children: React.ReactNode }) {
   const colsClass =
     cols === 2
@@ -3319,7 +3258,6 @@ function Grid({ cols, children }: { cols: 2 | 3 | 12; children: React.ReactNode 
     </div>
   );
 }
-
 
 function Field({
   label,
@@ -3360,5 +3298,3 @@ function Row({ label, value, mono }: { label: string; value: string; mono?: bool
     </div>
   );
 }
-
-
