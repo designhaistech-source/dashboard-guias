@@ -415,7 +415,7 @@ function ReportsTab() {
   const [paciente, setPaciente] = useState("");
   const [cid, setCid] = useState("");
   const [diagnosticoSelecionado, setDiagnosticoSelecionado] = useState("");
-  const [modelo, setModelo] = useState("");
+  const [modelo, setModelo] = useState(REPORT_TEMPLATES[0].value);
   const [data, setData] = useState(todayIso());
   const [cidade, setCidade] = useState("");
   const [html, setHtml] = useState("");
