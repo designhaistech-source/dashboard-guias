@@ -727,23 +727,24 @@ function SortableHead({
       aria-sort={ariaSort}
       className={align === "right" ? "text-right" : undefined}
     >
-      <button
+      <Button
         type="button"
+        variant="ghost"
+        size="sm"
         onClick={() =>
           onSort({
             column,
             direction: active && sort.direction === "asc" ? "desc" : active ? "asc" : column === "count" ? "desc" : "asc",
           })
         }
-        className={[
-          "inline-flex items-center gap-1 rounded-sm uppercase tracking-wide",
-          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
-          active ? "text-foreground" : "hover:text-foreground",
-        ].join(" ")}
+        className={cn(
+          "-mx-2 h-auto gap-1 px-2 py-1 text-xs font-medium uppercase tracking-wide",
+          active ? "text-foreground" : "text-muted-foreground",
+        )}
       >
         {label}
         <Icon className="h-3 w-3" aria-hidden="true" />
-      </button>
+      </Button>
     </DataTableHead>
   );
 }
