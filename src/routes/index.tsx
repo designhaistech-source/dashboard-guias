@@ -917,7 +917,14 @@ function DashboardPage() {
     );
   }, [procedures, procedureSort]);
   const dailyData = metrics.daily;
-  const dailyTicks = useMemo(() => dailyAxisTicks(dailyData), [dailyData]);
+  const dailyChartRef = useRef<HTMLDivElement>(null);
+  const dailyChartWidth = useElementWidth(dailyChartRef);
+  /** Quantidade de rótulos proporcional ao espaço disponível (~52px por rótulo). */
+  const dailyMaxTicks = Math.max(3, Math.floor((dailyChartWidth || 640) / 52));
+  const dailyTicks = useMemo(
+    () => dailyAxisTicks(dailyData, dailyMaxTicks),
+    [dailyData, dailyMaxTicks],
+  );
   const dailyMonthStarts = useMemo(() => monthStartTicks(dailyTicks), [dailyTicks]);
 
   const hasData = total > 0;
