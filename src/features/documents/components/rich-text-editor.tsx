@@ -296,7 +296,7 @@ export function RichTextEditor({
 
 
 
-      {previewing && pendingVariables && pendingVariables.length > 0 && (
+      {pendingVariables && pendingVariables.length > 0 && (
         <p
           role="status"
           className="flex items-start gap-1.5 border-b border-border bg-muted/40 px-4 py-2 text-xs text-muted-foreground"
