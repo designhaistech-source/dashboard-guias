@@ -1659,8 +1659,8 @@ function Kpi({
   icon: Icon,
   label,
   value,
-  hint,
-  meta,
+  context,
+  comparison,
   tooltip,
   tone,
   trend,
@@ -1668,9 +1668,10 @@ function Kpi({
   icon: React.ComponentType<{ className?: string }>;
   label: string;
   value: string;
-  hint: string;
-  /** Discreet reference detail (e.g. the exact date the value refers to). */
-  meta?: string;
+  /** What the value refers to (period or reference date). */
+  context: string;
+  /** Optional comparison against a previous period. */
+  comparison?: string;
   /** Short sentence with the exact dates and the comparison rule used. */
   tooltip?: string;
   tone: "primary" | "success" | "info" | "purple";
@@ -1685,7 +1686,7 @@ function Kpi({
 
   return (
     <SurfaceCard padding="md" className="group relative overflow-hidden hover:shadow-sm">
-      <div className="flex items-center justify-between">
+      <div className="flex items-start justify-between gap-2">
         <span className="metric-label flex items-center icon-optical gap-1">
           {label}
           {tooltip && (
@@ -1707,13 +1708,13 @@ function Kpi({
             </TooltipProvider>
           )}
         </span>
-        <span className={`grid place-items-center h-8 w-8 rounded-lg ${toneClass}`}>
+        <span className={`grid place-items-center h-8 w-8 shrink-0 rounded-lg ${toneClass}`}>
           <Icon className="h-4 w-4" />
         </span>
       </div>
-      {meta && <div className="mt-0.5 text-xs text-muted-foreground">{meta}</div>}
       <div className="mt-3 metric-value text-foreground">{value}</div>
-      {(hint || trend) && (
+      <div className="mt-1 metric-hint text-muted-foreground">{context}</div>
+      {comparison && (
         <div
           className={[
             "mt-1 metric-hint flex items-center icon-optical gap-1",
@@ -1728,9 +1729,10 @@ function Kpi({
           {trend === "down" && <ArrowDownRight className="h-3.5 w-3.5" aria-hidden="true" />}
           {trend === "flat" && <Minus className="h-3.5 w-3.5" aria-hidden="true" />}
           {trend && <span className="sr-only">{trendA11yLabel[trend]}</span>}
-          {hint}
+          {comparison}
         </div>
       )}
     </SurfaceCard>
   );
+
 }
