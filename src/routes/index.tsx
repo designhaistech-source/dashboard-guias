@@ -1177,10 +1177,41 @@ function DashboardPage() {
 
           {/* KPIs */}
           <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-            <Kpi icon={FileText} label="Total de guias extraídas" value={String(total)} hint="guias no período selecionado" tone="primary" />
-            <Kpi icon={Activity} label="Guias extraídas hoje" value={String(metrics.today)} meta={todayLabel} hint={todayTrend ? todayTrend.label : "guias extraídas nesta data"} tone="success" trend={todayTrend?.direction} />
-            <Kpi icon={TrendingUp} label="Média de guias por dia" value={String(dailyAvg)} hint="guias por dia no período selecionado" tone="info" />
-            <Kpi icon={Layers} label="Tipos de guia" value={String(metrics.distinctTypes)} hint="tipos diferentes no período selecionado" tone="purple" />
+            <Kpi
+              icon={FileText}
+              label="Total de guias extraídas"
+              value={String(total)}
+              meta={periodLabel}
+              hint={dayCount > 0 ? `Soma das guias extraídas em ${dayCount} ${dayCount === 1 ? "dia" : "dias"}` : "Nenhuma guia extraída no período"}
+              tone="primary"
+            />
+            <Kpi
+              icon={Activity}
+              label="Guias extraídas hoje"
+              value={String(metrics.today)}
+              meta={todayLabel}
+              hint={todayTrend ? todayTrend.label : "Guias extraídas nesta data"}
+              tone="success"
+              trend={todayTrend?.direction}
+            />
+            <Kpi
+              icon={TrendingUp}
+              label="Média de guias por dia"
+              value={String(dailyAvg)}
+              meta={periodLabel}
+              hint={weekTrend ? weekTrend.label : `Média diária considerando ${dayCount} ${dayCount === 1 ? "dia" : "dias"}`}
+              tone="info"
+              trend={weekTrend?.direction}
+            />
+            <Kpi
+              icon={Layers}
+              label="Tipos de guia"
+              value={String(metrics.distinctTypes)}
+              meta={periodLabel}
+              hint={`Tipos diferentes encontrados no período`}
+              tone="purple"
+            />
+
 
           </div>
 
