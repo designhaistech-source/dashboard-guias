@@ -261,6 +261,12 @@ interface SelectFieldProps {
   defaultValue?: string;
   placeholder?: React.ReactNode;
   disabled?: boolean;
+  /**
+   * Somente leitura: renderiza o rótulo da opção escolhida em um input
+   * `readOnly` em vez de desabilitar o Select — o valor continua focável,
+   * legível por leitores de tela e copiável.
+   */
+  readOnly?: boolean;
   name?: string;
   /** Lista de opções. Alternativa: passar `children` (SelectItem...) diretamente. */
   options?: SelectOption[];
@@ -286,11 +292,41 @@ export function SelectField({
   defaultValue,
   placeholder,
   disabled,
+  readOnly,
   name,
   options,
   children,
 }: SelectFieldProps) {
   const messageId = id ? `${id}-msg` : undefined;
+
+  if (readOnly) {
+    const selected = options?.find((o) => o.value === value);
+    const text =
+      typeof selected?.label === "string" ? selected.label : value ?? "";
+    return (
+      <Field
+        id={id}
+        label={label}
+        required={required}
+        optional={optional}
+        hint={hint}
+        error={error}
+        className={className}
+        labelClassName={labelClassName}
+        injectChildProps={false}
+      >
+        <Input
+          id={id}
+          readOnly
+          aria-readonly="true"
+          aria-describedby={messageId}
+          value={text}
+          placeholder={typeof placeholder === "string" ? placeholder : undefined}
+        />
+      </Field>
+    );
+  }
+
   return (
     <Field
       id={id}

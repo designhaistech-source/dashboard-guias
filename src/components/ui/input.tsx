@@ -13,6 +13,8 @@ const Input = React.forwardRef<HTMLInputElement, React.ComponentProps<"input">>(
           "placeholder:text-muted-foreground",
           "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/40 focus-visible:border-ring",
           "disabled:cursor-not-allowed disabled:opacity-50",
+          // Somente leitura: mantém contraste total (legível e copiável), sinaliza pelo fundo.
+          "read-only:bg-muted/50 read-only:text-foreground read-only:cursor-default",
           "aria-[invalid=true]:border-destructive/60 aria-[invalid=true]:focus-visible:ring-destructive/30",
           className,
         )}
