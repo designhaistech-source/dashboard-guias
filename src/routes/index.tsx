@@ -527,12 +527,11 @@ async function generateReportPdf(
     );
     const donutW = Math.min(contentW, donutMaxH * (types ? types.w / types.h : 2));
     const donutX = margin + (contentW - donutW) / 2;
-    const donutTop = y;
     const typesH = drawChart(types, donutW, donutMaxH, donutX);
     if (typesH > 0) {
       // The center total is an HTML overlay on screen, so it is redrawn here.
       const cx = donutX + donutW / 2;
-      const cy = (y === donutTop ? donutTop : y) + typesH / 2;
+      const cy = y + typesH / 2;
       applyType(TYPE.sectionH);
       doc.setFontSize(16);
       doc.text(String(total), cx, cy - 1, { align: "center" });
@@ -570,7 +569,7 @@ async function generateReportPdf(
     // Procedimentos — chart, then table (keep title with chart)
     const proc = await captureChartPng('[data-chart="procedures"]');
     const procMaxH = Math.min(280, pageInnerH * 0.42);
-    const procTableH = tableBlockH(Math.min(4, procedures.length));
+    const procTableH = tableBlockH(Math.min(2, procedures.length));
     sectionTitle(
       "Procedimentos mais frequentes nas guias extraídas",
       procMaxH + GAP + procTableH,
