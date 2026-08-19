@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import type { RefObject } from "react";
 import jsPDF from "jspdf";
 import {
   toLocalIsoDate,
@@ -678,39 +679,50 @@ const MONTH_ABBR = [
   "dez",
 ] as const;
 
-/**
- * Ticks visíveis do eixo X do gráfico diário. Usa um passo fixo para evitar
- * sobreposição e garante que o primeiro dia exibido de cada mês esteja entre os
- * ticks, permitindo destacar a virada de mês diretamente no eixo.
- */
-function dailyAxisTicks(data: { date: string }[], maxTicks = 14): string[] {
-  if (data.length === 0) return [];
-  const step = Math.max(1, Math.ceil(data.length / maxTicks));
-  const selected = new Set<string>();
-  for (let i = 0; i < data.length; i += step) selected.add(data[i]!.date);
-  selected.add(data[data.length - 1]!.date);
-  // Garante um tick no início de cada mês presente no período.
-  const seenMonths = new Set<string>();
-  for (const row of data) {
-    const month = row.date.slice(0, 7);
-    if (!seenMonths.has(month)) {
-      seenMonths.add(month);
-      selected.add(row.date);
-    }
-  }
-  return data.map((d) => d.date).filter((date) => selected.has(date));
+/** Largura observada de um elemento, para adaptar a densidade de rótulos. */
+function useElementWidth(ref: RefObject<HTMLElement | null>): number {
+  const [width, setWidth] = useState(0);
+  useEffect(() => {
+    const element = ref.current;
+    if (!element || typeof ResizeObserver === "undefined") return;
+    const observer = new ResizeObserver((entries) => {
+      const next = entries[0]?.contentRect.width ?? 0;
+      setWidth((current) => (Math.abs(current - next) > 8 ? next : current));
+    });
+    observer.observe(element);
+    return () => observer.disconnect();
+  }, [ref]);
+  return width;
 }
 
 /**
- * Rótulo de cada tick: apenas o dia, exceto no primeiro tick de cada mês, que
- * recebe o mês abreviado (ex.: "21 jul", "02 ago").
+
+ * Ticks do eixo X do gráfico diário. As viradas de mês são âncoras fixas e os
+ * demais ticks são distribuídos com passo regular dentro de cada mês, descartando
+ * candidatos próximos da âncora seguinte para nunca haver sobreposição.
  */
-function formatDailyTick(iso: string, monthStarts: Set<string>): string {
-  const [, month, day] = iso.split("-");
-  if (!month || !day) return iso;
-  if (!monthStarts.has(iso)) return day;
-  const monthLabel = MONTH_ABBR[Number(month) - 1] ?? month;
-  return `${day} ${monthLabel}`;
+function dailyAxisTicks(data: { date: string }[], maxTicks: number): string[] {
+  if (data.length === 0) return [];
+  const dates = data.map((d) => d.date);
+  const step = Math.max(1, Math.ceil(dates.length / Math.max(2, maxTicks)));
+
+  const anchors: number[] = [];
+  dates.forEach((date, index) => {
+    if (index === 0 || date.slice(8, 10) === "01") anchors.push(index);
+  });
+
+  const selected = new Set<number>();
+  anchors.forEach((anchor, i) => {
+    const next = anchors[i + 1] ?? dates.length;
+    selected.add(anchor);
+    for (let index = anchor + step; index < next; index += step) {
+      // Mantém distância mínima da próxima virada de mês.
+      if (next - index < Math.max(2, Math.ceil(step * 0.7))) break;
+      selected.add(index);
+    }
+  });
+
+  return [...selected].sort((a, b) => a - b).map((index) => dates[index]!);
 }
 
 /** Primeiro tick exibido de cada mês, usado para destacar a virada de mês. */
@@ -726,6 +738,53 @@ function monthStartTicks(ticks: string[]): Set<string> {
   }
   return starts;
 }
+
+/**
+ * Tick do eixo X em duas linhas: o dia na primeira e, apenas na virada de mês,
+ * o mês abreviado destacado na segunda — evitando textos longos lado a lado.
+ */
+function DailyAxisTick({
+  x,
+  y,
+  payload,
+  monthStarts,
+}: {
+  x?: number;
+  y?: number;
+  payload?: { value?: string };
+  monthStarts: Set<string>;
+}) {
+  const iso = payload?.value ?? "";
+  const [year, month, day] = iso.split("-");
+  if (!month || !day) return null;
+  const isMonthStart = monthStarts.has(iso);
+  const monthLabel = `${MONTH_ABBR[Number(month) - 1] ?? month}${year ? ` ${year.slice(2)}` : ""}`;
+  return (
+    <g transform={`translate(${x ?? 0},${y ?? 0})`}>
+      <text
+        textAnchor="middle"
+        dy={12}
+        fontSize={11}
+        fill={isMonthStart ? "var(--foreground)" : "var(--muted-foreground)"}
+        fontWeight={isMonthStart ? 600 : 400}
+      >
+        {day}
+      </text>
+      {isMonthStart ? (
+        <text
+          textAnchor="middle"
+          dy={26}
+          fontSize={10}
+          fontWeight={600}
+          fill="var(--foreground)"
+        >
+          {monthLabel}
+        </text>
+      ) : null}
+    </g>
+  );
+}
+
 
 
 type ProcedureSortColumn = "code" | "name" | "count";
@@ -876,7 +935,14 @@ function DashboardPage() {
     );
   }, [procedures, procedureSort]);
   const dailyData = metrics.daily;
-  const dailyTicks = useMemo(() => dailyAxisTicks(dailyData), [dailyData]);
+  const dailyChartRef = useRef<HTMLDivElement>(null);
+  const dailyChartWidth = useElementWidth(dailyChartRef);
+  /** Quantidade de rótulos proporcional ao espaço disponível (~52px por rótulo). */
+  const dailyMaxTicks = Math.max(3, Math.floor((dailyChartWidth || 640) / 52));
+  const dailyTicks = useMemo(
+    () => dailyAxisTicks(dailyData, dailyMaxTicks),
+    [dailyData, dailyMaxTicks],
+  );
   const dailyMonthStarts = useMemo(() => monthStartTicks(dailyTicks), [dailyTicks]);
 
   const hasData = total > 0;
@@ -1227,7 +1293,7 @@ function DashboardPage() {
               {!hasData ? (
                 emptyState
               ) : (
-                <div className="h-72" data-chart="daily">
+                <div className="h-72" data-chart="daily" ref={dailyChartRef}>
                   <ResponsiveContainer width="100%" height="100%">
                     <AreaChart
                       data={dailyData}
@@ -1250,20 +1316,13 @@ function DashboardPage() {
                         fontSize={11}
                         tickLine={false}
                         axisLine={false}
-                        tickMargin={6}
+                        tickMargin={4}
+                        height={40}
                         ticks={dailyTicks}
                         interval={0}
-                        tickFormatter={(iso: string) =>
-                          formatDailyTick(iso, dailyMonthStarts)
-                        }
-                        label={{
-                          value: "Data",
-                          position: "insideBottom",
-                          offset: -8,
-                          fill: "var(--muted-foreground)",
-                          fontSize: 11,
-                        }}
+                        tick={<DailyAxisTick monthStarts={dailyMonthStarts} />}
                       />
+
 
                       <YAxis
                         stroke="var(--muted-foreground)"
