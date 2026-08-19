@@ -47,7 +47,6 @@ import {
 } from "../data/document-variables";
 import { getDocumentDateStatus, todayIsoDate } from "../data/document-date";
 import {
-  findCid,
   validateCid,
   validateCidade,
   validateDiasAfastamento,
