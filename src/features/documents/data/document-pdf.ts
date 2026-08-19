@@ -147,11 +147,6 @@ export function downloadDocumentPdf(
       pdf.text(PDF_SIGNATURE.name, pageWidth / 2, signatureY + 6, {
         align: "center",
       });
-      pdf.setTextColor(120);
-      pdf.setFontSize(8);
-      pdf.text(PDF_SIGNATURE.note, pageWidth / 2, signatureY + 13, {
-        align: "center",
-      });
     }
   });
 
