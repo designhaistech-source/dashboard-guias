@@ -1017,8 +1017,8 @@ function DashboardPage() {
             </span>
           </p>
 
-          {/* Chips de filtros ativos */}
-          {activeFilters.length > 0 && (
+          {/* Chips de filtros ativos — resumo apenas quando o painel está recolhido */}
+          {!filtersOpen && activeFilters.length > 0 && (
             <div className="flex flex-wrap items-center gap-2">
               {activeFilters.map(([k, v]) => (
                 <Chip key={k} asSpan variant="outline">
@@ -1043,10 +1043,11 @@ function DashboardPage() {
                 onClick={clearAllFilters}
                 className="h-auto p-0 text-xs text-muted-foreground hover:text-foreground"
               >
-                Limpar todos
+                Limpar filtros
               </Button>
             </div>
           )}
+
 
           {/* Container de filtros — cabeçalho próprio com expandir/recolher */}
           <section
