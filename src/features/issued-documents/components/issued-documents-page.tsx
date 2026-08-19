@@ -418,7 +418,7 @@ function IssuedDocumentModal({
             <Badge variant="info-soft" size="sm">
               {doc.type}
             </Badge>
-            <SignatureBadge signed={doc.signed} />
+            
           </div>
           <article
             className="space-y-3 rounded-xl border border-border bg-muted/20 p-5 text-sm leading-relaxed text-foreground [&_p]:mb-3"
