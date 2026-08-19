@@ -1198,11 +1198,12 @@ function DashboardPage() {
     <div className="flex min-h-screen w-full bg-background text-foreground">
       <AppSidebar activeKey="dashboard" />
       <main className="flex-1 flex flex-col min-h-screen">
-        <div className="w-full flex-1 space-y-6 px-6 py-8 pb-16 pt-20 md:pt-8 lg:px-10">
+        <div className="w-full flex-1 space-y-6 px-4 py-6 pb-16 pt-20 sm:px-6 sm:py-8 md:pt-8 lg:px-10">
           <AppBreadcrumb />
 
           {/* Header */}
           <PageHeader
+            className="sm:flex-nowrap"
             title="Visão geral"
             description="Acompanhe suas guias, documentos e atividades recentes."
             actions={
@@ -1212,6 +1213,7 @@ function DashboardPage() {
                 disabled={!hasData || generatingReport}
                 aria-busy={generatingReport}
                 title={!hasData ? "Sem dados para gerar o relatório" : undefined}
+                className="w-full justify-center sm:w-auto"
               >
                 {generatingReport ? (
                   <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
