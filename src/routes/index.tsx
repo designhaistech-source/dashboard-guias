@@ -1251,9 +1251,11 @@ function DashboardPage() {
                         tickLine={false}
                         axisLine={false}
                         tickMargin={6}
-                        interval="preserveStartEnd"
-                        minTickGap={18}
-                        tickFormatter={formatDailyTick}
+                        ticks={dailyTicks}
+                        interval={0}
+                        tickFormatter={(iso: string) =>
+                          formatDailyTick(iso, dailyMonthStarts)
+                        }
                         label={{
                           value: "Data",
                           position: "insideBottom",
