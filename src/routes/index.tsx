@@ -504,13 +504,22 @@ async function generateReportPdf(periodLabel: string, metrics: DashboardMetrics)
 
 
 
+/** Converte "yyyy-mm-dd" em "dd/mm/aaaa" para leitura de usuários finais. */
+function formatIsoToBr(iso?: string) {
+  if (!iso) return "";
+  const [y, m, d] = iso.split("-");
+  return y && m && d ? `${d}/${m}/${y}` : iso;
+}
+
 function ChartTooltip({ active, payload, label, suffix }: any) {
   if (!active || !payload?.length) return null;
+  const fullDate = formatIsoToBr(payload[0]?.payload?.date);
+  const heading = fullDate || (label !== undefined ? String(label) : "");
   return (
     <div className="rounded-lg border border-border bg-popover/95 px-3 py-2 shadow-md backdrop-blur">
-      {label !== undefined && (
+      {heading && (
         <div className="text-xs uppercase tracking-wider text-muted-foreground mb-1">
-          Dia {label}
+          {heading}
         </div>
       )}
       {payload.map((p: any) => (
@@ -526,6 +535,7 @@ function ChartTooltip({ active, payload, label, suffix }: any) {
     </div>
   );
 }
+
 
 /**
  * Filtros do dashboard. Contém apenas os campos que o painel expõe e que
