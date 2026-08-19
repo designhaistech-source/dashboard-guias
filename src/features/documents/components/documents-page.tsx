@@ -693,8 +693,8 @@ function CertificateTab() {
   const dataStatus = useMemo(() => getDocumentDateStatus(data), [data]);
 
   const variableValues = useMemo(
-    () => ({ paciente, data, cid, diagnostico: diagnosticoSelecionado }),
-    [paciente, data, cid, diagnosticoSelecionado],
+    () => ({ paciente, data, cidade, cid, diagnostico: diagnosticoSelecionado }),
+    [paciente, data, cidade, cid, diagnosticoSelecionado],
   );
   const tokenValues = useMemo(() => variableTokenValues(variableValues), [variableValues]);
   const previewHtml = useMemo(
