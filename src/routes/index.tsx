@@ -1338,7 +1338,7 @@ function DashboardPage() {
             <SurfaceCard
               className="lg:col-span-2"
               title="Guias extraídas por dia"
-              description={`Quantidade de guias por dia — ${periodLabel}`}
+              description="Quantidade de guias extraídas por dia no período filtrado"
             >
               {!hasData ? (
                 emptyState
