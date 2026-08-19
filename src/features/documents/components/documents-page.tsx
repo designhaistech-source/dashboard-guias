@@ -359,7 +359,7 @@ function PatientField({
   error?: string;
 }) {
   return (
-    <Field id={id} label="Paciente" required error={error}>
+    <Field id={id} label="Paciente" required error={error} injectChildProps={false}>
       <div className="relative">
         <User
           className="icon-optical pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground"
@@ -372,6 +372,8 @@ function PatientField({
           placeholder="Digite o nome do beneficiário..."
           value={value}
           onChange={(e) => onChange(e.target.value)}
+          aria-invalid={Boolean(error)}
+          aria-describedby={`${id}-msg`}
         />
       </div>
     </Field>
