@@ -31,23 +31,25 @@ interface ToolbarButton {
   command: string;
   label: string;
   icon: React.ElementType;
+  /** Comandos de alternância refletem o formato do cursor (aria-pressed + realce). */
+  toggle?: boolean;
 }
 
 const GROUPS: ToolbarButton[][] = [
   [
-    { command: "bold", label: "Negrito", icon: Bold },
-    { command: "italic", label: "Itálico", icon: Italic },
-    { command: "underline", label: "Sublinhado", icon: Underline },
+    { command: "bold", label: "Negrito", icon: Bold, toggle: true },
+    { command: "italic", label: "Itálico", icon: Italic, toggle: true },
+    { command: "underline", label: "Sublinhado", icon: Underline, toggle: true },
   ],
   [
-    { command: "insertUnorderedList", label: "Lista com marcadores", icon: List },
-    { command: "insertOrderedList", label: "Lista numerada", icon: ListOrdered },
+    { command: "insertUnorderedList", label: "Lista com marcadores", icon: List, toggle: true },
+    { command: "insertOrderedList", label: "Lista numerada", icon: ListOrdered, toggle: true },
     { command: "removeFormat", label: "Limpar formatação", icon: Eraser },
   ],
   [
-    { command: "justifyLeft", label: "Alinhar à esquerda", icon: AlignLeft },
-    { command: "justifyCenter", label: "Centralizar", icon: AlignCenter },
-    { command: "justifyRight", label: "Alinhar à direita", icon: AlignRight },
+    { command: "justifyLeft", label: "Alinhar à esquerda", icon: AlignLeft, toggle: true },
+    { command: "justifyCenter", label: "Centralizar", icon: AlignCenter, toggle: true },
+    { command: "justifyRight", label: "Alinhar à direita", icon: AlignRight, toggle: true },
   ],
 ];
 
@@ -93,6 +95,7 @@ export function RichTextEditor({
   const canPreview = typeof previewHtml === "string";
   const ref = React.useRef<HTMLDivElement>(null);
   const { canUndo, canRedo, undo, redo, record } = useEditorHistory(value, onChange, ref);
+  const { activeCommands, syncActiveCommands } = useActiveCommands(ref, previewing);
 
   React.useEffect(() => {
     const el = ref.current;
@@ -106,6 +109,7 @@ export function RichTextEditor({
       record(ref.current.innerHTML, "command");
       onChange(ref.current.innerHTML);
     }
+    syncActiveCommands();
   }
 
   /** Undo/redo próprios: o histórico nativo do contentEditable é inconsistente. */
@@ -183,19 +187,27 @@ export function RichTextEditor({
         {GROUPS.map((group, index) => (
           <React.Fragment key={group[0].command}>
             {index > 0 && <span aria-hidden className="mx-1 h-5 w-px bg-border" />}
-            {group.map(({ command, label, icon: Icon }) => (
-              <Button
-                key={command}
-                variant="ghost"
-                size="icon"
-                onClick={() => run(command)}
-                aria-label={label}
-                title={label}
-                className="h-7 w-7 text-muted-foreground hover:text-foreground"
-              >
-                <Icon className="icon-optical h-3.5 w-3.5" aria-hidden />
-              </Button>
-            ))}
+            {group.map(({ command, label, icon: Icon, toggle }) => {
+              const active = toggle === true && activeCommands.has(command);
+              return (
+                <Button
+                  key={command}
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => run(command)}
+                  aria-label={label}
+                  aria-pressed={toggle ? active : undefined}
+                  title={label}
+                  className={cn(
+                    "h-7 w-7 text-muted-foreground hover:text-foreground",
+                    active && "bg-accent text-accent-foreground shadow-xs",
+                  )}
+                >
+                  <Icon className="icon-optical h-3.5 w-3.5" aria-hidden />
+                </Button>
+              );
+            })}
           </React.Fragment>
         ))}
         {onImproveWithAi && (
@@ -318,9 +330,13 @@ export function RichTextEditor({
         suppressContentEditableWarning
         data-placeholder={placeholder}
         onKeyDown={handleKeyDown}
+        onKeyUp={syncActiveCommands}
+        onMouseUp={syncActiveCommands}
+        onFocus={syncActiveCommands}
         onInput={(e) => {
           record(e.currentTarget.innerHTML, "typing");
           onChange(e.currentTarget.innerHTML);
+          syncActiveCommands();
         }}
         className="min-h-64 px-4 py-3 text-sm leading-relaxed text-foreground outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring empty:before:text-muted-foreground empty:before:content-[attr(data-placeholder)]"
       />
@@ -416,4 +432,57 @@ function useEditorHistory(
     redo: () => apply(state.current.index + 1),
     record,
   };
+}
+
+/** Comandos cujo estado ativo é consultado no navegador. */
+const TOGGLE_COMMANDS = [
+  "bold",
+  "italic",
+  "underline",
+  "insertUnorderedList",
+  "insertOrderedList",
+  "justifyLeft",
+  "justifyCenter",
+  "justifyRight",
+] as const;
+
+/**
+ * Espelha o formato do cursor/seleção na barra de ferramentas.
+ * Consulta `queryCommandState` a cada mudança de seleção para que os botões
+ * exibam `aria-pressed` e o realce visual correspondentes.
+ */
+function useActiveCommands(ref: React.RefObject<HTMLDivElement | null>, previewing: boolean) {
+  const [activeCommands, setActiveCommands] = React.useState<Set<string>>(() => new Set());
+
+  const syncActiveCommands = React.useCallback(() => {
+    const el = ref.current;
+    if (!el) return;
+    const selection = window.getSelection();
+    // Só reflete o estado quando a seleção está dentro do editor.
+    if (!selection || selection.rangeCount === 0 || !el.contains(selection.anchorNode)) return;
+    const next = new Set<string>();
+    for (const command of TOGGLE_COMMANDS) {
+      try {
+        if (document.queryCommandState(command)) next.add(command);
+      } catch {
+        // Comando não suportado pelo navegador: mantém sem estado.
+      }
+    }
+    // Sem alinhamento explícito, o parágrafo está alinhado à esquerda.
+    if (!next.has("justifyCenter") && !next.has("justifyRight")) next.add("justifyLeft");
+    setActiveCommands((current) =>
+      current.size === next.size && [...next].every((c) => current.has(c)) ? current : next,
+    );
+  }, [ref]);
+
+  React.useEffect(() => {
+    if (previewing) {
+      setActiveCommands(new Set());
+      return;
+    }
+    document.addEventListener("selectionchange", syncActiveCommands);
+    return () => document.removeEventListener("selectionchange", syncActiveCommands);
+  }, [previewing, syncActiveCommands]);
+
+  return { activeCommands, syncActiveCommands };
 }
