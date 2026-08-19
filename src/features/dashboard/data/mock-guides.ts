@@ -1,8 +1,9 @@
-import { localIsoDaysAgo } from "@/lib/date";
 /**
  * Synthetic dataset backing the dashboard. Every KPI and chart is derived from
  * these rows so the filter panel produces real, visible changes.
  */
+
+import { localIsoDaysAgo } from "@/lib/date";
 
 export type DashboardGuide = {
   id: string;

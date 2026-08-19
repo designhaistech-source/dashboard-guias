@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef, useState } from "react";
 import jsPDF from "jspdf";
+import { toLocalIsoDate } from "@/lib/date";
 import autoTable from "jspdf-autotable";
 import {
   FileText,
@@ -475,7 +476,7 @@ async function generateReportPdf(periodLabel: string, metrics: DashboardMetrics)
     }
 
 
-    const filename = `relatorio-haisguias-${now.toISOString().slice(0, 10)}.pdf`;
+    const filename = `relatorio-haisguias-${toLocalIsoDate(now)}.pdf`;
     doc.save(filename);
     toast.success("Relatório PDF gerado com sucesso!");
   } catch (err) {
@@ -687,7 +688,7 @@ function DashboardPage() {
 
   const applyPreset = (preset: "hoje" | "7d" | "30d") => {
     const today = new Date();
-    const iso = (d: Date) => d.toISOString().slice(0, 10);
+    const iso = toLocalIsoDate;
     setDraft((d) => {
       if (preset === "hoje") {
         const t = iso(today);

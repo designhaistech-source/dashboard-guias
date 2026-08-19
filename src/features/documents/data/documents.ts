@@ -1,3 +1,5 @@
+import { todayLocalIsoDate } from "@/lib/date";
+
 export interface ReportTemplate {
   value: string;
   label: string;
@@ -94,7 +96,7 @@ export const AFASTAMENTO_OPTIONS = [
 ];
 
 export function todayIso(): string {
-  return new Date().toISOString().slice(0, 10);
+  return todayLocalIsoDate();
 }
 
 function parseIso(iso: string): Date | null {
