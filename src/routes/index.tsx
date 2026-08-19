@@ -994,16 +994,16 @@ function DashboardPage() {
     if (dailyData.length < 2) return undefined;
     const last = dailyData[dailyData.length - 1].guias;
     const prev = dailyData[dailyData.length - 2].guias;
-    const prevDate = formatIsoToBrFull(dailyData[dailyData.length - 2].date);
     const diff = last - prev;
     if (diff === 0) {
-      return { direction: "flat", label: `Mesma quantidade do dia ${prevDate}` };
+      return { direction: "flat", label: "Mesma quantidade de ontem" };
     }
     return {
       direction: diff > 0 ? "up" : "down",
-      label: `${Math.abs(diff)} ${Math.abs(diff) === 1 ? "guia" : "guias"} ${diff > 0 ? "a mais" : "a menos"} que no dia ${prevDate}`,
+      label: `${Math.abs(diff)} ${diff > 0 ? "a mais" : "a menos"} que ontem`,
     };
   }, [dailyData]);
+
 
   /** Reference date of the "today" KPI, shown discreetly in the card. */
   const todayLabel = formatIsoToBrFull(todayLocalIsoDate());
@@ -1299,30 +1299,26 @@ function DashboardPage() {
               label="Total de guias extraídas"
               value={String(total)}
               tooltip={kpiTooltips.total}
-              hint={
-                dayCount > 0
-                  ? `No período filtrado: ${periodLabel}`
-                  : "Nenhuma guia no período filtrado"
-              }
-
+              context={dayCount > 0 ? "No período filtrado" : "Nenhuma guia no período filtrado"}
               tone="primary"
             />
             <Kpi
               icon={Activity}
               label="Guias extraídas hoje"
               value={String(metrics.today)}
-              meta={todayLabel}
               tooltip={kpiTooltips.today}
-              hint={todayTrend ? todayTrend.label : "Guias extraídas nesta data"}
+              context={`Hoje, ${todayLabel}`}
+              comparison={todayTrend?.label}
               tone="success"
               trend={todayTrend?.direction}
             />
             <Kpi
               icon={TrendingUp}
-              label="Média de guias extraídas por dia"
+              label="Média diária de guias extraídas"
               value={String(dailyAvg)}
               tooltip={kpiTooltips.average}
-              hint={weekTrend ? weekTrend.label : ""}
+              context="Por dia no período filtrado"
+              comparison={weekTrend?.label}
               tone="info"
               trend={weekTrend?.direction}
             />
@@ -1331,9 +1327,10 @@ function DashboardPage() {
               label="Tipos de guias extraídas"
               value={String(metrics.distinctTypes)}
               tooltip={kpiTooltips.types}
-              hint="Tipos distintos no período filtrado"
+              context="Tipos distintos no período filtrado"
               tone="purple"
             />
+
           </div>
 
           {/* Charts row */}
@@ -1662,8 +1659,8 @@ function Kpi({
   icon: Icon,
   label,
   value,
-  hint,
-  meta,
+  context,
+  comparison,
   tooltip,
   tone,
   trend,
@@ -1671,9 +1668,10 @@ function Kpi({
   icon: React.ComponentType<{ className?: string }>;
   label: string;
   value: string;
-  hint: string;
-  /** Discreet reference detail (e.g. the exact date the value refers to). */
-  meta?: string;
+  /** What the value refers to (period or reference date). */
+  context: string;
+  /** Optional comparison against a previous period. */
+  comparison?: string;
   /** Short sentence with the exact dates and the comparison rule used. */
   tooltip?: string;
   tone: "primary" | "success" | "info" | "purple";
@@ -1688,7 +1686,7 @@ function Kpi({
 
   return (
     <SurfaceCard padding="md" className="group relative overflow-hidden hover:shadow-sm">
-      <div className="flex items-center justify-between">
+      <div className="flex items-start justify-between gap-2">
         <span className="metric-label flex items-center icon-optical gap-1">
           {label}
           {tooltip && (
@@ -1710,13 +1708,13 @@ function Kpi({
             </TooltipProvider>
           )}
         </span>
-        <span className={`grid place-items-center h-8 w-8 rounded-lg ${toneClass}`}>
+        <span className={`grid place-items-center h-8 w-8 shrink-0 rounded-lg ${toneClass}`}>
           <Icon className="h-4 w-4" />
         </span>
       </div>
-      {meta && <div className="mt-0.5 text-xs text-muted-foreground">{meta}</div>}
       <div className="mt-3 metric-value text-foreground">{value}</div>
-      {(hint || trend) && (
+      <div className="mt-1 metric-hint text-muted-foreground">{context}</div>
+      {comparison && (
         <div
           className={[
             "mt-1 metric-hint flex items-center icon-optical gap-1",
@@ -1731,9 +1729,10 @@ function Kpi({
           {trend === "down" && <ArrowDownRight className="h-3.5 w-3.5" aria-hidden="true" />}
           {trend === "flat" && <Minus className="h-3.5 w-3.5" aria-hidden="true" />}
           {trend && <span className="sr-only">{trendA11yLabel[trend]}</span>}
-          {hint}
+          {comparison}
         </div>
       )}
     </SurfaceCard>
   );
+
 }
