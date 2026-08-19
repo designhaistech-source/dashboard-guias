@@ -37,6 +37,14 @@ import { DocumentEditorHeader } from "./document-editor-header";
 import { RichTextEditor } from "./rich-text-editor";
 import { useTextReplacement } from "./use-text-replacement";
 import { getDocumentDateStatus, todayIsoDate } from "../data/document-date";
+import {
+  validateCidade,
+  validateDiasAfastamento,
+  validateLocal,
+  validatePaciente,
+  validateTimeRange,
+} from "../data/document-validation";
+
 
 import {
   DOCUMENT_VARIABLES,
@@ -252,13 +260,15 @@ function PatientField({
   id,
   value,
   onChange,
+  error,
 }: {
   id: string;
   value: string;
   onChange: (v: string) => void;
+  error?: string;
 }) {
   return (
-    <Field id={id} label="Paciente" required>
+    <Field id={id} label="Paciente" required error={error}>
       <div className="relative">
         <User
           className="icon-optical pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground"
@@ -267,6 +277,7 @@ function PatientField({
         <Input
           id={id}
           className="pl-9"
+          maxLength={120}
           placeholder="Digite o nome do beneficiário..."
           value={value}
           onChange={(e) => onChange(e.target.value)}
@@ -275,6 +286,7 @@ function PatientField({
     </Field>
   );
 }
+
 
 function CidFields({
   cid,
@@ -344,6 +356,9 @@ function ReportsTab() {
 
   const { requestReplace, replacementDialog } = useTextReplacement(html, setHtml);
 
+  const pacienteError = useMemo(() => validatePaciente(paciente), [paciente]);
+
+
   function applyTemplate(value: string) {
     const template = REPORT_TEMPLATES.find((t) => t.value === value);
     if (!template) return;
@@ -376,7 +391,13 @@ function ReportsTab() {
         padding="lg"
       >
         <div className="space-y-4">
-          <PatientField id="relatorio-paciente" value={paciente} onChange={setPaciente} />
+          <PatientField
+            id="relatorio-paciente"
+            value={paciente}
+            onChange={setPaciente}
+            error={pacienteError}
+          />
+
           <SelectField
             id="relatorio-modelo"
             label="Modelos disponíveis"
@@ -416,6 +437,8 @@ function ReportsTab() {
         title="Relatório médico"
         html={html}
         paciente={paciente}
+        blockReason={pacienteError}
+
         onSaveTemplate={() => toast.success("Modelo salvo e disponível na lista (simulação).")}
       />
 
@@ -465,6 +488,13 @@ function CertificateTab() {
 
   const dataStatus = useMemo(() => getDocumentDateStatus(data), [data]);
 
+  const pacienteError = useMemo(() => validatePaciente(paciente), [paciente]);
+  const cidadeError = useMemo(() => validateCidade(cidade), [cidade]);
+  const diasError = useMemo(() => validateDiasAfastamento(dias), [dias]);
+
+  const blockReason = dataStatus.error ?? pacienteError ?? cidadeError ?? diasError;
+
+
   const { requestReplace, replacementDialog } = useTextReplacement(html, setHtml);
 
   const { improving, improve } = useImproveWithAi(
@@ -495,7 +525,12 @@ function CertificateTab() {
         padding="lg"
       >
         <div className="space-y-4">
-          <PatientField id="atestado-paciente" value={paciente} onChange={setPaciente} />
+          <PatientField
+            id="atestado-paciente"
+            value={paciente}
+            onChange={setPaciente}
+            error={pacienteError}
+          />
           <CidFields cid={cid} descricao={diagnosticoSelecionado} onChange={handleCid} />
           <div className="grid min-w-0 gap-4 sm:grid-cols-2 xl:grid-cols-3 [&>*]:min-w-0">
             <SelectField
@@ -504,6 +539,7 @@ function CertificateTab() {
               value={dias}
               onValueChange={setDias}
               options={AFASTAMENTO_OPTIONS}
+              error={diasError}
             />
             <Field
               id="atestado-data"
@@ -519,16 +555,18 @@ function CertificateTab() {
                 onChange={(e) => setData(e.target.value)}
               />
             </Field>
-            <Field id="atestado-cidade" label="Cidade" optional>
+            <Field id="atestado-cidade" label="Cidade" optional error={cidadeError}>
               <Input
                 id="atestado-cidade"
                 placeholder="Cidade de emissão"
+                maxLength={60}
                 value={cidade}
                 onChange={(e) => setCidade(e.target.value)}
               />
             </Field>
           </div>
         </div>
+
       </SurfaceCard>
 
       <RichTextEditor
@@ -564,7 +602,7 @@ function CertificateTab() {
         title="Atestado médico"
         html={conteudo}
         paciente={paciente}
-        blockReason={dataStatus.error}
+        blockReason={blockReason}
         onSaveTemplate={() =>
           toast.success("Modelo de atestado salvo e disponível na lista (simulação).")
         }
@@ -625,6 +663,20 @@ function AttendanceTab() {
     [data],
   );
 
+  const pacienteError = useMemo(() => validatePaciente(paciente), [paciente]);
+  const localError = useMemo(() => validateLocal(local), [local]);
+  const cidadeError = useMemo(() => validateCidade(cidade), [cidade]);
+  const horarios = useMemo(() => validateTimeRange(entrada, saida), [entrada, saida]);
+
+  const blockReason =
+    dataStatus.error ??
+    pacienteError ??
+    localError ??
+    cidadeError ??
+    horarios.entradaError ??
+    horarios.saidaError;
+
+
   const { requestReplace, replacementDialog } = useTextReplacement(html, setHtml);
 
   const { improving, improve } = useImproveWithAi(
@@ -655,20 +707,27 @@ function AttendanceTab() {
         padding="lg"
       >
         <div className="space-y-4">
-          <PatientField id="comp-paciente" value={paciente} onChange={setPaciente} />
-          <Field id="comp-local" label="Local de atendimento">
+          <PatientField
+            id="comp-paciente"
+            value={paciente}
+            onChange={setPaciente}
+            error={pacienteError}
+          />
+          <Field id="comp-local" label="Local de atendimento" error={localError}>
             <Input
               id="comp-local"
               placeholder="Clínica, hospital ou consultório"
+              maxLength={120}
               value={local}
               onChange={(e) => setLocal(e.target.value)}
             />
           </Field>
           <div className="grid min-w-0 gap-4 sm:grid-cols-2 xl:grid-cols-4 [&>*]:min-w-0">
-            <Field id="comp-cidade" label="Cidade" optional>
+            <Field id="comp-cidade" label="Cidade" optional error={cidadeError}>
               <Input
                 id="comp-cidade"
                 placeholder="Cidade de emissão"
+                maxLength={60}
                 value={cidade}
                 onChange={(e) => setCidade(e.target.value)}
               />
@@ -687,24 +746,27 @@ function AttendanceTab() {
                 onChange={(e) => setData(e.target.value)}
               />
             </Field>
-            <Field id="comp-entrada" label="Horário de entrada">
+            <Field id="comp-entrada" label="Horário de entrada" error={horarios.entradaError}>
               <Input
                 id="comp-entrada"
                 type="time"
+                max={saida || undefined}
                 value={entrada}
                 onChange={(e) => setEntrada(e.target.value)}
               />
             </Field>
-            <Field id="comp-saida" label="Horário de saída">
+            <Field id="comp-saida" label="Horário de saída" error={horarios.saidaError}>
               <Input
                 id="comp-saida"
                 type="time"
+                min={entrada || undefined}
                 value={saida}
                 onChange={(e) => setSaida(e.target.value)}
               />
             </Field>
           </div>
         </div>
+
       </SurfaceCard>
 
       <RichTextEditor
@@ -740,7 +802,8 @@ function AttendanceTab() {
         title="Declaração de comparecimento"
         html={conteudo}
         paciente={paciente}
-        blockReason={dataStatus.error}
+        blockReason={blockReason}
+
         onSaveTemplate={() =>
           toast.success(
             "Modelo de declaração salvo e disponível na lista (simulação).",
