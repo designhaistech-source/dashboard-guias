@@ -288,7 +288,7 @@ export function RichTextEditor({
           <span id={variablesHintId} className="text-xs text-muted-foreground">
             Inserir variável:
           </span>
-          {variables.map((variable) => (
+          {(variables ?? []).map((variable) => (
             <Button
               key={variable}
               type="button"
