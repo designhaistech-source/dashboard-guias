@@ -140,16 +140,6 @@ export function DocumentSheets({
                 >
                   {PDF_SIGNATURE.name}
                 </span>
-                <span
-                  className="block text-muted-foreground"
-                  style={{
-                    fontFamily: "Helvetica, Arial, sans-serif",
-                    fontSize: mm(8 * PT_TO_MM),
-                    marginTop: mm(2),
-                  }}
-                >
-                  {PDF_SIGNATURE.note}
-                </span>
               </div>
             )}
           </div>
