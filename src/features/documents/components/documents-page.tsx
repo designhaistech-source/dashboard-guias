@@ -35,7 +35,6 @@ import { CID10 } from "@/lib/cid";
 import { improveDocumentText } from "../lib/improve-text.functions";
 
 import { CidAutocomplete } from "./cid-autocomplete";
-import { DocumentPagePreview } from "./document-page-preview";
 import { DocumentEditorHeader } from "./document-editor-header";
 import { RichTextEditor } from "./rich-text-editor";
 import { useTextReplacement } from "./use-text-replacement";
@@ -231,7 +230,6 @@ function DocumentActions({
   const disabled = !paciente.trim();
   const temTexto = html.replace(/<[^>]+>/g, "").trim().length > 0;
   const [downloading, setDownloading] = useState(false);
-  const [previewOpen, setPreviewOpen] = useState(false);
   const summaryId = "document-actions-issues";
 
   const allIssues: FieldIssue[] = disabled
