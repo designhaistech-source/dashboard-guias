@@ -351,6 +351,16 @@ function DocumentActions({
       </Button>
       <Button
         type="button"
+        variant="outline"
+        size="sm"
+        onClick={handlePreview}
+        aria-describedby={hasIssues ? summaryId : undefined}
+      >
+        <Eye className="icon-optical h-4 w-4" aria-hidden />
+        Pré-visualizar páginas
+      </Button>
+      <Button
+        type="button"
         size="sm"
         onClick={handlePrint}
         aria-describedby={hasIssues ? summaryId : undefined}
@@ -359,6 +369,21 @@ function DocumentActions({
         Imprimir
       </Button>
 
+      <DocumentPagePreview
+        open={previewOpen}
+        onOpenChange={setPreviewOpen}
+        title={title}
+        paciente={paciente}
+        html={html}
+        onDownload={() => {
+          setPreviewOpen(false);
+          void handleDownload();
+        }}
+        onPrint={() => {
+          setPreviewOpen(false);
+          handlePrint();
+        }}
+      />
     </FormActionBar>
   );
 }
