@@ -1330,7 +1330,7 @@ function DashboardPage() {
               label="Tipos de guia"
               value={String(metrics.distinctTypes)}
               tooltip={kpiTooltips.types}
-              hint=""
+              hint="Tipos distintos no período"
               tone="purple"
             />
           </div>
