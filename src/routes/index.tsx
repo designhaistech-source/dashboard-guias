@@ -62,7 +62,6 @@ import {
   DataTableRoot,
   DataTableRow,
 } from "@/components/data-table";
-import { ConfirmDialog } from "@/components/confirm-dialog";
 import { PageHeader } from "@/components/page-header";
 import { SurfaceCard } from "@/components/surface-card";
 import { FilterCard } from "@/components/filter-card";
@@ -751,9 +750,9 @@ function SortableHead({
 
 function DashboardPage() {
   const [activeType, setActiveType] = useState<number | undefined>(undefined);
-  const [filtersOpen, setFiltersOpen] = useState(false);
+  /** Filtros abertos por padrão, como na página Guias emitidas. */
+  const [filtersOpen, setFiltersOpen] = useState(true);
   const [filters, setFilters] = useState<GuideFilters>(emptyFilters);
-  const [draft, setDraft] = useState<GuideFilters>(emptyFilters);
 
   const activeFilters = useMemo(
     () =>
@@ -763,25 +762,18 @@ function DashboardPage() {
     [filters],
   );
 
-  const openFilters = () => {
-    setDraft(filters);
-    setFiltersOpen(true);
-  };
   const dateRangeInvalid =
-    !!draft.dataAutorizacaoDe &&
-    !!draft.dataAutorizacaoAte &&
-    draft.dataAutorizacaoDe > draft.dataAutorizacaoAte;
-  const hasErrors = dateRangeInvalid;
+    !!filters.dataAutorizacaoDe &&
+    !!filters.dataAutorizacaoAte &&
+    filters.dataAutorizacaoDe > filters.dataAutorizacaoAte;
 
-  const previewCount = useMemo(
-    () => (hasErrors ? null : filterGuides(DASHBOARD_GUIDES, draft).length),
-    [draft, hasErrors],
-  );
+  const setFilter = (key: keyof GuideFilters, value: string) =>
+    setFilters((f) => ({ ...f, [key]: value }));
 
   const applyPreset = (preset: "hoje" | "7d" | "30d") => {
     const today = new Date();
     const iso = toLocalIsoDate;
-    setDraft((d) => {
+    setFilters((d) => {
       if (preset === "hoje") {
         const t = iso(today);
         return { ...d, dataAutorizacaoDe: t, dataAutorizacaoAte: t };
@@ -795,62 +787,20 @@ function DashboardPage() {
     });
   };
 
-  const applyFilters = () => {
-    if (hasErrors) return;
-    setFilters(draft);
-    setFiltersOpen(false);
-    const count = Object.values(draft).filter((v) => v.trim() !== "").length;
-    toast.success(
-      count === 0 ? "Filtros limpos." : `${count} filtro${count > 1 ? "s" : ""} aplicado${count > 1 ? "s" : ""}.`,
-    );
-  };
-  
   /**
    * Caminho único de limpeza: chips, painel e estados vazios chamam esta função,
-   * com o mesmo efeito (limpa rascunho + filtros aplicados) e o mesmo feedback.
-   * Não fecha o painel — limpar não é sair.
+   * com o mesmo efeito e o mesmo feedback. Não fecha o painel.
    */
   const clearAllFilters = () => {
-    setDraft(emptyFilters);
     setFilters(emptyFilters);
     toast.success("Filtros limpos.");
   };
   const removeFilter = (key: keyof GuideFilters) => {
     setFilters((f) => ({ ...f, [key]: "" }));
-    setDraft((d) => ({ ...d, [key]: "" }));
-  };
-
-
-  const isDirty = useMemo(
-    () => (Object.keys(draft) as (keyof GuideFilters)[]).some((k) => draft[k] !== filters[k]),
-    [draft, filters],
-  );
-  const [confirmDiscardFilters, setConfirmDiscardFilters] = useState(false);
-  const discardFilterEdits = () => {
-    setConfirmDiscardFilters(false);
-    setDraft(filters);
-    setFiltersOpen(false);
-  };
-  const requestClose = () => {
-    if (isDirty) {
-      setConfirmDiscardFilters(true);
-      return;
-    }
-    setDraft(filters);
-    setFiltersOpen(false);
-  };
-  const cancelEdits = () => {
-    setDraft(filters);
-    setFiltersOpen(false);
   };
 
   const firstFieldRef = useRef<HTMLInputElement | null>(null);
-  useEffect(() => {
-    if (filtersOpen) {
-      const t = setTimeout(() => firstFieldRef.current?.focus(), 60);
-      return () => clearTimeout(t);
-    }
-  }, [filtersOpen]);
+
 
 
   const metrics = useMemo(
@@ -1042,7 +992,7 @@ function DashboardPage() {
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => (filtersOpen ? requestClose() : openFilters())}
+                  onClick={() => setFiltersOpen((open) => !open)}
                   aria-expanded={filtersOpen}
                   aria-controls="dashboard-filters-panel"
                   className="relative"
@@ -1115,95 +1065,79 @@ function DashboardPage() {
             </div>
           )}
 
-          {/* Painel de filtros padronizado (FilterCard) */}
+          {/* Barra de filtros compacta — aberta por padrão, igual a Guias emitidas */}
           {filtersOpen && (
-            <FilterCard
-              id="dashboard-filters-panel"
-              variant="panel"
-              hideToggle
-              open={filtersOpen}
-              onOpenChange={(v: boolean) => (v ? openFilters() : requestClose())}
-              title="Filtros"
-              description={
-                <>
-                  Selecione os critérios para atualizar os indicadores e gráficos da página.
-                  {isDirty && (
-                    <span className="ml-2 text-warning-strong">• alterações não aplicadas</span>
-                  )}
-                </>
-              }
-              activeCount={activeFilters.length}
-              onClear={clearAllFilters}
-              clearDisabled={activeFilters.length === 0}
-              footerActions={
-                <>
-                  <Button type="button" variant="outline" size="sm" onClick={cancelEdits}>
-                    {isDirty ? "Cancelar" : "Fechar"}
-                  </Button>
+          <FilterCard
+            id="dashboard-filters-panel"
+            variant="bar"
+            open
+            hideToggle
+            activeCount={activeFilters.length}
+            onClear={clearAllFilters}
+            clearDisabled={activeFilters.length === 0}
+            barColumnsClassName="lg:grid-cols-[10rem_10rem_minmax(0,1fr)_minmax(0,1fr)_auto] lg:gap-4"
+          >
 
-                  <Button
-                    type="button"
-                    size="sm"
-                    onClick={applyFilters}
-                    disabled={hasErrors}
-                    title={hasErrors ? "Corrija os campos destacados para aplicar" : undefined}
-                  >
-                    Aplicar filtros{previewCount !== null && ` (${previewCount} ${previewCount === 1 ? "guia" : "guias"})`}
-                  </Button>
-                </>
-              }
-            >
-              <div className="grid grid-cols-1 gap-x-4 gap-y-4 lg:grid-cols-12">
-                {/* Períodos rápidos — atalhos alinhados ao rótulo do grupo */}
-                <fieldset className="lg:col-span-12">
-                  <legend className={filterGroupLabelClass}>Períodos rápidos</legend>
-                  <div className="flex flex-wrap items-center gap-2">
-                    {[
-                      { id: "hoje", label: "Hoje" },
-                      { id: "7d", label: "Últimos 7 dias" },
-                      { id: "30d", label: "Últimos 30 dias" },
-                    ].map((p) => (
-                      <Chip
-                        key={p.id}
-                        onClick={() => applyPreset(p.id as "hoje" | "7d" | "30d")}
-                        className="text-foreground hover:border-primary hover:bg-primary/5 hover:text-primary"
-                      >
-                        {p.label}
-                      </Chip>
-                    ))}
-                  </div>
-                </fieldset>
-
-                {/* Período — duas datas lado a lado, largura padronizada */}
-                <fieldset className="lg:col-span-5">
-                  <legend className={filterGroupLabelClass}>Período (data de autorização)</legend>
-                  <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                    <FilterField label="Data inicial" type="date" error={dateRangeInvalid} value={draft.dataAutorizacaoDe} onChange={(v) => setDraft((d) => ({ ...d, dataAutorizacaoDe: v }))} inputRef={firstFieldRef} />
-                    <FilterField label="Data final" type="date" error={dateRangeInvalid} value={draft.dataAutorizacaoAte} onChange={(v) => setDraft((d) => ({ ...d, dataAutorizacaoAte: v }))} />
-                  </div>
-                  {dateRangeInvalid && (
-                    <p className="mt-1.5 text-xs text-destructive">A data inicial deve ser anterior ou igual à data final.</p>
-                  )}
-                </fieldset>
-
-                {/* Comparação — mesma linha-base do grupo Período no desktop */}
-                <fieldset className="lg:col-span-7">
-                  <legend className={filterGroupLabelClass}>Comparação</legend>
-                  <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                    <FilterSelect label="Tipo de guia" value={draft.tipoGuia} onChange={(v) => setDraft((d) => ({ ...d, tipoGuia: v }))} options={GUIDE_TYPES.map((t) => t.name)} />
-                    <FilterSelect label="Prestador solicitante" value={draft.prestadorSolicitante} onChange={(v) => setDraft((d) => ({ ...d, prestadorSolicitante: v }))} options={prestadoresList} />
-                  </div>
-                </fieldset>
-
-                <p className="text-xs text-muted-foreground lg:col-span-12">
-                  Para localizar uma guia específica por paciente, número ou procedimento, use a página Guias processadas.
-                </p>
-              </div>
-
-
-
-            </FilterCard>
+            <FilterField
+              label="Data inicial"
+              type="date"
+              error={dateRangeInvalid}
+              value={filters.dataAutorizacaoDe}
+              onChange={(v) => setFilter("dataAutorizacaoDe", v)}
+              inputRef={firstFieldRef}
+            />
+            <FilterField
+              label="Data final"
+              type="date"
+              error={dateRangeInvalid}
+              value={filters.dataAutorizacaoAte}
+              onChange={(v) => setFilter("dataAutorizacaoAte", v)}
+            />
+            <FilterSelect
+              label="Tipo de guia"
+              value={filters.tipoGuia}
+              onChange={(v) => setFilter("tipoGuia", v)}
+              options={GUIDE_TYPES.map((t) => t.name)}
+            />
+            <FilterSelect
+              label="Prestador solicitante"
+              value={filters.prestadorSolicitante}
+              onChange={(v) => setFilter("prestadorSolicitante", v)}
+              options={prestadoresList}
+            />
+          </FilterCard>
           )}
+
+
+          {filtersOpen && (
+            <div className="space-y-2">
+              <div className="flex flex-wrap items-center gap-2">
+                <span className={filterGroupLabelClass + " mb-0"}>Períodos rápidos</span>
+                {[
+                  { id: "hoje", label: "Hoje" },
+                  { id: "7d", label: "Últimos 7 dias" },
+                  { id: "30d", label: "Últimos 30 dias" },
+                ].map((p) => (
+                  <Chip
+                    key={p.id}
+                    onClick={() => applyPreset(p.id as "hoje" | "7d" | "30d")}
+                    className="text-foreground hover:border-primary hover:bg-primary/5 hover:text-primary"
+                  >
+                    {p.label}
+                  </Chip>
+                ))}
+              </div>
+              {dateRangeInvalid && (
+                <p className="text-xs text-destructive">
+                  A data inicial deve ser anterior ou igual à data final.
+                </p>
+              )}
+              <p className="text-xs text-muted-foreground">
+                Para localizar uma guia específica por paciente, número ou procedimento, use a página Guias processadas.
+              </p>
+            </div>
+          )}
+
 
 
           {/* KPIs */}
@@ -1532,15 +1466,6 @@ function DashboardPage() {
         <SiteFooter />
       </main>
 
-      <ConfirmDialog
-        open={confirmDiscardFilters}
-        onOpenChange={setConfirmDiscardFilters}
-        title="Descartar alterações?"
-        description="Você tem filtros alterados que ainda não foram aplicados. Se sair agora, eles serão perdidos."
-        cancelLabel="Continuar editando"
-        confirmLabel="Descartar alterações"
-        onConfirm={discardFilterEdits}
-      />
 
 
     </div>
