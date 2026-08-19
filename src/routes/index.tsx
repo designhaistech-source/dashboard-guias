@@ -848,7 +848,7 @@ function DashboardPage() {
       }
       action={
         activeFilters.length > 0 ? (
-          <Button type="button" variant="outline" size="sm" onClick={() => setFilters(emptyFilters)}>
+          <Button type="button" variant="outline" size="sm" onClick={clearAllFilters}>
             Limpar filtros
           </Button>
         ) : undefined
@@ -940,7 +940,7 @@ function DashboardPage() {
                 type="button"
                 variant="link"
                 size="sm"
-                onClick={() => setFilters(emptyFilters)}
+                onClick={clearAllFilters}
                 className="h-auto p-0 text-xs text-muted-foreground hover:text-foreground"
               >
                 Limpar todos
