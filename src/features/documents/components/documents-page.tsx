@@ -382,11 +382,14 @@ function PatientField({
 
 
 function CidFields({
+  id,
   cid,
   descricao,
   onChange,
   error,
 }: {
+  /** id único por aba, evitando duplicidade entre Relatórios/Atestados. */
+  id: string;
   cid: string;
   descricao: string;
   onChange: (codigo: string, descricao: string) => void;
@@ -394,17 +397,18 @@ function CidFields({
 }) {
   return (
     <Field
-      id="cid-codigo"
+      id={id}
       label="CID-10"
       error={error}
       hint="Busque pelo código ou pela descrição; o diagnóstico é preenchido automaticamente."
+      injectChildProps={false}
     >
       <CidAutocomplete
-        id="cid-codigo"
+        id={id}
         value={cid}
         description={descricao}
         invalid={Boolean(error)}
-        describedById="cid-codigo-msg"
+        describedById={`${id}-msg`}
         onSelect={(item) => onChange(item?.codigo ?? "", item?.descricao ?? "")}
       />
     </Field>
