@@ -64,7 +64,7 @@ import {
 } from "@/components/data-table";
 import { PageHeader } from "@/components/page-header";
 import { SurfaceCard } from "@/components/surface-card";
-import { FilterCard } from "@/components/filter-card";
+import { cn } from "@/lib/utils";
 import { Field } from "@/components/form-field";
 import { Button } from "@/components/ui/button";
 import logoAsset from "@/assets/guiasplus-logo.png.asset.json";
