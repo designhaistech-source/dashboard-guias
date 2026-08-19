@@ -526,63 +526,35 @@ function ChartTooltip({ active, payload, label, suffix }: any) {
   );
 }
 
+/**
+ * Filtros do dashboard. Contém apenas os campos que o painel expõe e que
+ * `filterGuides` realmente interpreta — nenhum estado morto.
+ */
 type GuideFilters = {
-  // Cabeçalho
-  numGuiaPrestador: string;
-  numGuiaOperadora: string;
-  senha: string;
-  registroAns: string;
+  // Período de autorização
   dataAutorizacaoDe: string;
   dataAutorizacaoAte: string;
-  // Beneficiário
+  // Identificação
+  numGuiaPrestador: string;
   beneficiarioNome: string;
-  numCarteira: string;
-  atendRn: string; // "", "sim", "nao"
-  // Prestadores
-  prestadorSolicitante: string;
-  profissional: string;
-  conselho: string;
-  numConselho: string;
-  ufConselho: string;
-  cbo: string;
-  prestadorExecutante: string;
-  cnes: string;
-  // Procedimentos
-  procTabela: string;
-  procCodigo: string;
-  procDescricao: string;
-  procReferencia: string; // "", "tuss", "sigtap"
-  // Financeiro
-  componenteFinanceiro: string; // "", "honorarios", "materiais", ...
-  // Tipo (já existente conceitualmente)
   tipoGuia: string;
+  prestadorSolicitante: string;
+  // Procedimento
+  procDescricao: string;
+  procCodigo: string;
 };
 
 const emptyFilters: GuideFilters = {
-  numGuiaPrestador: "",
-  numGuiaOperadora: "",
-  senha: "",
-  registroAns: "",
   dataAutorizacaoDe: "",
   dataAutorizacaoAte: "",
+  numGuiaPrestador: "",
   beneficiarioNome: "",
-  numCarteira: "",
-  atendRn: "",
-  prestadorSolicitante: "",
-  profissional: "",
-  conselho: "",
-  numConselho: "",
-  ufConselho: "",
-  cbo: "",
-  prestadorExecutante: "",
-  cnes: "",
-  procTabela: "",
-  procCodigo: "",
-  procDescricao: "",
-  procReferencia: "",
-  componenteFinanceiro: "",
   tipoGuia: "",
+  prestadorSolicitante: "",
+  procDescricao: "",
+  procCodigo: "",
 };
+
 
 /** Rótulo de grupo dentro do painel de filtros — único nível em caixa alta. */
 const filterGroupLabelClass =
@@ -662,30 +634,16 @@ function formatFilterValue(key: keyof GuideFilters, value: string): string {
 }
 
 const filterLabels: Record<keyof GuideFilters, string> = {
-  numGuiaPrestador: "Nº guia",
-  numGuiaOperadora: "Nº guia operadora",
-  senha: "Senha",
-  registroAns: "Registro ANS",
   dataAutorizacaoDe: "Autorização de",
   dataAutorizacaoAte: "Autorização até",
+  numGuiaPrestador: "Nº guia",
   beneficiarioNome: "Beneficiário",
-  numCarteira: "Nº carteira",
-  atendRn: "Atend. RN",
-  prestadorSolicitante: "Prestador solicitante",
-  profissional: "Profissional",
-  conselho: "Conselho",
-  numConselho: "Nº conselho",
-  ufConselho: "UF conselho",
-  cbo: "CBO",
-  prestadorExecutante: "Prestador executante",
-  cnes: "CNES",
-  procTabela: "Tabela",
-  procCodigo: "Código procedimento",
-  procDescricao: "Descrição procedimento",
-  procReferencia: "Referência",
-  componenteFinanceiro: "Componente financeiro",
   tipoGuia: "Tipo de guia",
+  prestadorSolicitante: "Prestador",
+  procDescricao: "Procedimento",
+  procCodigo: "Código proc.",
 };
+
 
 type ProcedureSortColumn = "code" | "name" | "count";
 type ProcedureSort = { column: ProcedureSortColumn; direction: "asc" | "desc" };
