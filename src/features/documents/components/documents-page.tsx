@@ -356,6 +356,9 @@ function ReportsTab() {
 
   const { requestReplace, replacementDialog } = useTextReplacement(html, setHtml);
 
+  const pacienteError = useMemo(() => validatePaciente(paciente), [paciente]);
+
+
   function applyTemplate(value: string) {
     const template = REPORT_TEMPLATES.find((t) => t.value === value);
     if (!template) return;
