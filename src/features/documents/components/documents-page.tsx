@@ -44,6 +44,7 @@ import {
   pendingVariables as findPendingVariables,
   resolveDocumentVariables,
   VARIABLE_LABELS,
+  variableTokenValues,
 } from "../data/document-variables";
 import { getDocumentDateStatus, todayIsoDate } from "../data/document-date";
 import {
