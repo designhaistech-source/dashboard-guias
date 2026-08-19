@@ -257,7 +257,7 @@ async function captureChartPng(
   }
 }
 
-/** Extra context so the PDF matches the wording shown on the "Guias extraídas" tab. */
+/** Extra context so the PDF matches the wording shown on the "Guias processadas" tab. */
 type ReportContext = {
   todayLabel: string;
   todayComparison?: string;
@@ -354,7 +354,7 @@ async function generateReportPdf(
     }
 
     applyType(TYPE.title);
-    doc.text("Relatório de Guias Extraídas", titleX, 35);
+    doc.text("Relatório de Guias Processadas", titleX, 35);
     applyType(TYPE.subtitle);
     // Wrap the metadata line so the timezone suffix is never clipped on the right edge.
     const metaLines = doc.splitTextToSize(
@@ -462,7 +462,7 @@ async function generateReportPdf(
     keepTogether(46);
     applyType(TYPE.body);
     const scopeLines = doc.splitTextToSize(
-      `Este relatório considera apenas as guias extraídas (importadas e processadas pela leitura automática) no período selecionado: ${periodLabel}. Indicadores, gráficos e tabelas a seguir referem-se exclusivamente a essas guias.`,
+      `Este relatório considera apenas as guias processadas (importadas e processadas pela leitura automática) no período selecionado: ${periodLabel}. Indicadores, gráficos e tabelas a seguir referem-se exclusivamente a essas guias.`,
       contentW,
     );
     doc.text(scopeLines, margin, y);
@@ -470,30 +470,30 @@ async function generateReportPdf(
 
     // KPIs
     const kpiBody: string[][] = [
-      ["Total de guias extraídas", String(total), "Soma no período filtrado", "—"],
+      ["Total de guias processadas", String(total), "Soma no período filtrado", "—"],
       [
-        "Guias extraídas hoje",
+        "Guias processadas hoje",
         String(metrics.today),
         `Hoje, ${context.todayLabel}`,
         context.todayComparison ?? "—",
       ],
       [
-        "Média diária de guias extraídas",
+        "Média diária de guias processadas",
         String(dailyAvg),
         "Por dia no período filtrado",
         context.averageComparison ?? "—",
       ],
       [
-        "Tipos de guias extraídas",
+        "Tipos de guias processadas",
         String(metrics.distinctTypes),
         "Tipos distintos no período filtrado",
         "—",
       ],
     ];
     sectionTitle(
-      "Indicadores de guias extraídas",
+      "Indicadores de guias processadas",
       tableBlockH(kpiBody.length, 26),
-      "Valores calculados sobre as guias extraídas no período filtrado.",
+      "Valores calculados sobre as guias processadas no período filtrado.",
     );
     autoTable(doc, {
       startY: y,
@@ -518,27 +518,27 @@ async function generateReportPdf(
     // Spacing token between sections / between a chart and the next block.
     const GAP = 18;
 
-    // Guias extraídas por dia — full width chart
+    // Guias processadas por dia — full width chart
     const daily = await captureChartPng('[data-chart="daily"]');
     const dailyMaxH = Math.min(260, pageInnerH * 0.38);
     sectionTitle(
-      "Guias extraídas por dia",
+      "Guias processadas por dia",
       dailyMaxH,
-      "Quantidade de guias extraídas por dia no período filtrado.",
+      "Quantidade de guias processadas por dia no período filtrado.",
     );
     const dailyH = drawChart(daily, contentW, dailyMaxH);
     y += dailyH + GAP;
 
-    // Guias extraídas por tipo — donut on top, table below
+    // Guias processadas por tipo — donut on top, table below
     const types = await captureChartPng('[data-chart="types"]');
     const donutMaxH = Math.min(200, pageInnerH * 0.32);
     // Header + a couple of rows is enough to keep the group together without
     // pushing the whole section to a new page and leaving a large blank area.
     const typesTableH = tableBlockH(Math.min(2, typeData.length));
     sectionTitle(
-      "Guias extraídas por tipo",
+      "Guias processadas por tipo",
       donutMaxH + GAP + typesTableH,
-      "Distribuição das guias extraídas no período filtrado. O centro do gráfico mostra o total de guias extraídas.",
+      "Distribuição das guias processadas no período filtrado. O centro do gráfico mostra o total de guias processadas.",
     );
     const donutW = Math.min(contentW, donutMaxH * (types ? types.w / types.h : 2));
     const donutX = margin + (contentW - donutW) / 2;
@@ -551,7 +551,7 @@ async function generateReportPdf(
       doc.setFontSize(16);
       doc.text(String(total), cx, cy - 1, { align: "center" });
       applyType(TYPE.caption);
-      doc.text("guias extraídas", cx, cy + 12, { align: "center" });
+      doc.text("guias processadas", cx, cy + 12, { align: "center" });
       applyType(TYPE.body);
     }
     y += typesH + GAP;
@@ -562,7 +562,7 @@ async function generateReportPdf(
       startY: y,
       margin: { left: margin, right: margin },
       tableWidth: contentW,
-      head: [["Tipo de guia", "Guias extraídas", "% do total extraído"]],
+      head: [["Tipo de guia", "Guias processadas", "% do total processado"]],
       body: typeData.map((t) => [
         t.name,
         String(t.value),
@@ -586,9 +586,9 @@ async function generateReportPdf(
     const procMaxH = Math.min(280, pageInnerH * 0.42);
     const procTableH = tableBlockH(Math.min(2, procedures.length));
     sectionTitle(
-      "Procedimentos mais frequentes nas guias extraídas",
+      "Procedimentos mais frequentes nas guias processadas",
       procMaxH + GAP + procTableH,
-      "Procedimentos mais frequentes nas guias extraídas no período filtrado.",
+      "Procedimentos mais frequentes nas guias processadas no período filtrado.",
     );
     const procDrawnH = drawChart(proc, contentW, procMaxH);
     y += procDrawnH + GAP;
@@ -599,7 +599,7 @@ async function generateReportPdf(
       startY: y,
       margin: { left: margin, right: margin },
       tableWidth: contentW,
-      head: [["Código TUSS", "Procedimento", "Ocorrências em guias extraídas"]],
+      head: [["Código TUSS", "Procedimento", "Ocorrências em guias processadas"]],
       body: procedures.map((p) => [p.code, p.name, String(p.count)]),
       theme: "striped",
       headStyles: tableHeadStyles,
@@ -650,7 +650,7 @@ async function generateReportPdf(
       });
     }
 
-    const filename = `relatorio-guias-extraidas-${toLocalIsoDate(now)}.pdf`;
+    const filename = `relatorio-guias-processadas-${toLocalIsoDate(now)}.pdf`;
     doc.save(filename);
     toast.success("Relatório PDF gerado com sucesso!");
   } catch (err) {
@@ -1178,7 +1178,7 @@ function DashboardPage() {
       : undefined;
 
     return {
-      total: `${rangeSentence} Regra: soma das guias extraídas em cada dia do período.`,
+      total: `${rangeSentence} Regra: soma das guias processadas em cada dia do período.`,
       today:
         currentDate && previousDate
           ? `Data atual: ${currentDate}. Data anterior: ${previousDate}. Regra: quantidade do dia atual menos a do dia anterior.`
@@ -1227,7 +1227,7 @@ function DashboardPage() {
               <TabsList className={appTabsListClass}>
                 <TabsTrigger value="extraidas" className={appTabsTriggerClass}>
                   <FileText className={appTabsIconClass} aria-hidden />
-                  <span className={appTabsLabelClass}>Guias extraídas</span>
+                  <span className={appTabsLabelClass}>Guias processadas</span>
                 </TabsTrigger>
                 <Tooltip>
                   <TooltipTrigger asChild>
@@ -1405,7 +1405,7 @@ function DashboardPage() {
           <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             <Kpi
               icon={FileText}
-              label="Total de guias extraídas"
+              label="Total de guias processadas"
               value={String(total)}
               tooltip={kpiTooltips.total}
               context={dayCount > 0 ? "No período filtrado" : "Nenhuma guia no período filtrado"}
@@ -1413,7 +1413,7 @@ function DashboardPage() {
             />
             <Kpi
               icon={Activity}
-              label="Guias extraídas hoje"
+              label="Guias processadas hoje"
               value={String(metrics.today)}
               tooltip={kpiTooltips.today}
               context={`Hoje, ${todayLabel}`}
@@ -1423,7 +1423,7 @@ function DashboardPage() {
             />
             <Kpi
               icon={TrendingUp}
-              label="Média diária de guias extraídas"
+              label="Média diária de guias processadas"
               value={String(dailyAvg)}
               tooltip={kpiTooltips.average}
               context="Por dia no período filtrado"
@@ -1433,7 +1433,7 @@ function DashboardPage() {
             />
             <Kpi
               icon={Layers}
-              label="Tipos de guias extraídas"
+              label="Tipos de guias processadas"
               value={String(metrics.distinctTypes)}
               tooltip={kpiTooltips.types}
               context="Tipos distintos no período filtrado"
@@ -1446,8 +1446,8 @@ function DashboardPage() {
           <div className="grid gap-4 grid-cols-1 lg:grid-cols-3">
             <SurfaceCard
               className="lg:col-span-2"
-              title="Guias extraídas por dia"
-              description="Quantidade de guias extraídas por dia no período filtrado"
+              title="Guias processadas por dia"
+              description="Quantidade de guias processadas por dia no período filtrado"
             >
               {!hasData ? (
                 emptyState
@@ -1507,7 +1507,7 @@ function DashboardPage() {
                       <Area
                         type="monotone"
                         dataKey="guias"
-                        name="Guias extraídas"
+                        name="Guias processadas"
                         stroke="var(--primary)"
                         strokeWidth={2.5}
                         fill="url(#gradPrimary)"
@@ -1524,8 +1524,8 @@ function DashboardPage() {
             </SurfaceCard>
 
             <SurfaceCard
-              title="Guias extraídas por tipo"
-              description="Distribuição das guias extraídas no período filtrado"
+              title="Guias processadas por tipo"
+              description="Distribuição das guias processadas no período filtrado"
 
             >
               {!hasData ? (
@@ -1565,7 +1565,7 @@ function DashboardPage() {
                       <div className="max-w-[96px] text-xs leading-tight text-muted-foreground">
                         {activeType !== undefined
                           ? `guias de ${typeData[activeType].name}`
-                          : "guias extraídas"}
+                          : "guias processadas"}
                       </div>
                     </div>
                   </div>
@@ -1611,7 +1611,7 @@ function DashboardPage() {
           {/* Procedures */}
           <SurfaceCard
             title="Procedimentos mais realizados"
-            description="Procedimentos mais frequentes nas guias extraídas no período filtrado"
+            description="Procedimentos mais frequentes nas guias processadas no período filtrado"
 
           >
             {procedures.length === 0 ? (
