@@ -455,18 +455,33 @@ function ReportsTab() {
     suggestName: () => (paciente.trim() ? `Relatório — ${paciente.trim()}` : ""),
   });
 
+  // Modelo escolhido (salvo ou padrão) que serve de base ao texto gerado.
+  const baseTemplate = useMemo(() => {
+    const found = [...savedTemplates, ...REPORT_TEMPLATES].find((t) => t.value === modelo);
+    return found?.content ?? REPORT_TEMPLATES[0].content;
+  }, [savedTemplates, modelo]);
+
+  const gerado = useMemo(
+    () => buildRelatorio({ base: baseTemplate, data, cidade }),
+    [baseTemplate, data, cidade],
+  );
+
+  const conteudo = html || gerado;
+
+  const { staleNotice } = useGeneratedSync({ generated: gerado, html, setHtml });
+
   const variableValues = useMemo(
     () => ({ paciente, data, cid, diagnostico }),
     [paciente, data, cid, diagnostico],
   );
   const tokenValues = useMemo(() => variableTokenValues(variableValues), [variableValues]);
   const previewHtml = useMemo(
-    () => resolveDocumentVariables(html, variableValues),
-    [html, variableValues],
+    () => resolveDocumentVariables(conteudo, variableValues),
+    [conteudo, variableValues],
   );
   const pending = useMemo(
-    () => findPendingVariables(html, variableValues).map((v) => VARIABLE_LABELS[v] ?? v),
-    [html, variableValues],
+    () => findPendingVariables(conteudo, variableValues).map((v) => VARIABLE_LABELS[v] ?? v),
+    [conteudo, variableValues],
   );
 
   const pacienteError = useMemo(() => validatePaciente(paciente), [paciente]);
