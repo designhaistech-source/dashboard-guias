@@ -1338,7 +1338,7 @@ function DashboardPage() {
             <SurfaceCard
               className="lg:col-span-2"
               title="Guias extraídas por dia"
-              description={`Quantidade de guias por dia — ${periodLabel}`}
+              description="Quantidade de guias extraídas por dia no período filtrado"
             >
               {!hasData ? (
                 emptyState
@@ -1415,8 +1415,9 @@ function DashboardPage() {
             </SurfaceCard>
 
             <SurfaceCard
-              title="Guias por tipo"
-              description={`Distribuição por tipo de guia — ${periodLabel}`}
+              title="Guias extraídas por tipo"
+              description="Distribuição das guias extraídas no período filtrado"
+
             >
               {!hasData ? (
                 emptyState
@@ -1455,7 +1456,7 @@ function DashboardPage() {
                       <div className="max-w-[96px] text-xs leading-tight text-muted-foreground">
                         {activeType !== undefined
                           ? `guias de ${typeData[activeType].name}`
-                          : "guias no período"}
+                          : "guias extraídas"}
                       </div>
                     </div>
                   </div>
@@ -1501,7 +1502,8 @@ function DashboardPage() {
           {/* Procedures */}
           <SurfaceCard
             title="Procedimentos mais realizados"
-            description={`Procedimentos mais frequentes nas guias — ${periodLabel}`}
+            description="Procedimentos mais frequentes nas guias extraídas no período filtrado"
+
           >
             {procedures.length === 0 ? (
               emptyState
