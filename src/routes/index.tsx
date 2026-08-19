@@ -1,7 +1,13 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef, useState } from "react";
 import jsPDF from "jspdf";
-import { toLocalIsoDate, todayLocalIsoDate } from "@/lib/date";
+import {
+  toLocalIsoDate,
+  todayLocalIsoDate,
+  formatIsoToBr,
+  formatIsoToBrFull,
+  localTimeZoneLabel,
+} from "@/lib/date";
 import autoTable from "jspdf-autotable";
 import {
   FileText,
@@ -108,12 +114,6 @@ export const Route = createFileRoute("/")({
   component: DashboardPage,
 });
 
-/** Formats an ISO date (yyyy-mm-dd) as dd/mm/yyyy without timezone shifts. */
-function formatIsoDate(iso: string) {
-  const [y, m, d] = iso.split("-");
-  return y && m && d ? `${d}/${m}/${y}` : iso;
-}
-
 /** Human label for the period actually filtered by the user. */
 /**
  * Rótulo legível do período exibido. Sem filtro de data, usa o intervalo real
@@ -124,11 +124,11 @@ function buildPeriodLabel(from: string, to: string, fallback?: { first?: string;
   const ate = to.trim() || fallback?.last || "";
   if (de && ate) {
     return de === ate
-      ? formatIsoDate(de)
-      : `${formatIsoDate(de)} a ${formatIsoDate(ate)}`;
+      ? formatIsoToBr(de)
+      : `${formatIsoToBr(de)} a ${formatIsoToBr(ate)}`;
   }
-  if (de) return `A partir de ${formatIsoDate(de)}`;
-  if (ate) return `Até ${formatIsoDate(ate)}`;
+  if (de) return `A partir de ${formatIsoToBr(de)}`;
+  if (ate) return `Até ${formatIsoToBr(ate)}`;
   return "Todo o período";
 }
 
@@ -511,36 +511,6 @@ async function generateReportPdf(periodLabel: string, metrics: DashboardMetrics)
 }
 
 
-
-/** Converte "yyyy-mm-dd" em "dd/mm/aaaa" para leitura de usuários finais. */
-function formatIsoToBr(iso?: string) {
-  if (!iso) return "";
-  const [y, m, d] = iso.split("-");
-  return y && m && d ? `${d}/${m}/${y}` : iso;
-}
-
-/**
- * Data completa para tooltips: "qua., 19/08/2026". O dia da semana ajuda a
- * comparar períodos sem contar dias manualmente.
- */
-function formatIsoToBrFull(iso?: string) {
-  const short = formatIsoToBr(iso);
-  if (!short || !iso) return short;
-  const date = new Date(`${iso}T12:00:00`);
-  if (Number.isNaN(date.getTime())) return short;
-  const weekday = date.toLocaleDateString("pt-BR", { weekday: "short" });
-  return `${weekday.replace(".", "")}., ${short}`;
-}
-
-/** Rótulo fixo do fuso usado em todos os tooltips, ex.: "Horário local (UTC-03:00)". */
-function localTimeZoneLabel() {
-  const offsetMinutes = -new Date().getTimezoneOffset();
-  const sign = offsetMinutes < 0 ? "-" : "+";
-  const abs = Math.abs(offsetMinutes);
-  const hh = `${Math.floor(abs / 60)}`.padStart(2, "0");
-  const mm = `${abs % 60}`.padStart(2, "0");
-  return `Horário local (UTC${sign}${hh}:${mm})`;
-}
 
 /** Nomes de variáveis internas que nunca devem aparecer na interface. */
 const TECHNICAL_SERIES_KEYS = new Set(["count", "value", "name", "label", "guias", "qtd"]);
