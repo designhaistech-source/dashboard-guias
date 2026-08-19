@@ -11,6 +11,8 @@ import {
   AlignRight,
   Loader2,
   Sparkles,
+  Undo2,
+  Redo2,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -79,6 +81,7 @@ export function RichTextEditor({
   variables,
 }: RichTextEditorProps) {
   const ref = React.useRef<HTMLDivElement>(null);
+  const { canUndo, canRedo, undo, redo, record } = useEditorHistory(value, onChange, ref);
 
   React.useEffect(() => {
     const el = ref.current;
@@ -88,7 +91,25 @@ export function RichTextEditor({
   function run(command: string) {
     ref.current?.focus();
     document.execCommand(command);
-    if (ref.current) onChange(ref.current.innerHTML);
+    if (ref.current) {
+      record(ref.current.innerHTML, "command");
+      onChange(ref.current.innerHTML);
+    }
+  }
+
+  /** Undo/redo próprios: o histórico nativo do contentEditable é inconsistente. */
+  function handleKeyDown(event: React.KeyboardEvent<HTMLDivElement>) {
+    if (!(event.metaKey || event.ctrlKey)) return;
+    const key = event.key.toLowerCase();
+    if (key === "z" && !event.shiftKey) {
+      event.preventDefault();
+      undo();
+      return;
+    }
+    if ((key === "z" && event.shiftKey) || key === "y") {
+      event.preventDefault();
+      redo();
+    }
   }
 
   /** Insere a variável na posição do cursor; ao final do texto se não houver seleção ativa. */
@@ -105,6 +126,7 @@ export function RichTextEditor({
       selection?.addRange(range);
     }
     document.execCommand("insertText", false, `${variable} `);
+    record(el.innerHTML, "command");
     onChange(el.innerHTML);
   }
 
@@ -122,6 +144,31 @@ export function RichTextEditor({
         </div>
       )}
       <div className="flex flex-wrap items-center gap-1 border-b border-border bg-muted/30 px-2 py-1.5">
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon"
+          onClick={undo}
+          disabled={!canUndo}
+          aria-label="Desfazer (Ctrl+Z)"
+          title="Desfazer (Ctrl+Z)"
+          className="h-7 w-7 text-muted-foreground hover:text-foreground"
+        >
+          <Undo2 className="icon-optical h-3.5 w-3.5" aria-hidden />
+        </Button>
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon"
+          onClick={redo}
+          disabled={!canRedo}
+          aria-label="Refazer (Ctrl+Shift+Z)"
+          title="Refazer (Ctrl+Shift+Z)"
+          className="h-7 w-7 text-muted-foreground hover:text-foreground"
+        >
+          <Redo2 className="icon-optical h-3.5 w-3.5" aria-hidden />
+        </Button>
+        <span aria-hidden className="mx-1 h-5 w-px bg-border" />
         {GROUPS.map((group, index) => (
           <React.Fragment key={group[0].command}>
             {index > 0 && <span aria-hidden className="mx-1 h-5 w-px bg-border" />}
@@ -167,8 +214,8 @@ export function RichTextEditor({
                 <TooltipContent id="rte-ai-hint" className="max-w-64 text-pretty">
                   A IA reescreve todo o texto do editor: corrige gramática, ajusta a
                   linguagem para o padrão clínico e organiza os parágrafos, sem inventar
-                  informações clínicas. A substituição é imediata e não pode ser desfeita —
-                  copie o texto atual antes se quiser mantê-lo.
+                  informações clínicas. A substituição pede confirmação e pode ser revertida
+                  com “Desfazer” (Ctrl+Z) ou pelo aviso exibido após a troca.
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
@@ -210,9 +257,103 @@ export function RichTextEditor({
         contentEditable
         suppressContentEditableWarning
         data-placeholder={placeholder}
-        onInput={(e) => onChange(e.currentTarget.innerHTML)}
+        onKeyDown={handleKeyDown}
+        onInput={(e) => {
+          record(e.currentTarget.innerHTML, "typing");
+          onChange(e.currentTarget.innerHTML);
+        }}
         className="min-h-64 px-4 py-3 text-sm leading-relaxed text-foreground outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring empty:before:text-muted-foreground empty:before:content-[attr(data-placeholder)]"
       />
     </div>
   );
+}
+
+/** Coalesce de digitação: alterações contínuas em menos de 600ms viram um passo. */
+const TYPING_MERGE_MS = 600;
+const MAX_HISTORY = 100;
+
+type ChangeOrigin = "typing" | "command";
+
+/**
+ * Histórico próprio de undo/redo para o editor.
+ * O histórico nativo do `document.execCommand` não sobrevive a injeções
+ * programáticas de HTML (modelos, IA), por isso mantemos snapshots do valor.
+ */
+function useEditorHistory(
+  value: string,
+  onChange: (html: string) => void,
+  ref: React.RefObject<HTMLDivElement | null>,
+) {
+  const state = React.useRef({
+    stack: [value],
+    index: 0,
+    lastAt: 0,
+    lastOrigin: "command" as ChangeOrigin,
+    applying: false,
+  });
+  const [, forceUpdate] = React.useReducer((n: number) => n + 1, 0);
+
+  const record = React.useCallback(
+    (html: string, origin: ChangeOrigin) => {
+      const s = state.current;
+      if (html === s.stack[s.index]) return;
+      const now = Date.now();
+      const merge =
+        origin === "typing" && s.lastOrigin === "typing" && now - s.lastAt < TYPING_MERGE_MS;
+      if (merge) {
+        s.stack[s.index] = html;
+      } else {
+        s.stack = [...s.stack.slice(0, s.index + 1), html].slice(-MAX_HISTORY);
+        s.index = s.stack.length - 1;
+      }
+      console.log("REC", origin, merge, JSON.stringify(s.stack));
+      s.lastAt = now;
+      s.lastOrigin = origin;
+      forceUpdate();
+    },
+    [forceUpdate],
+  );
+
+  // Captura substituições externas (modelos, IA, restaurar texto padrão).
+  React.useEffect(() => {
+    const s = state.current;
+    if (s.applying) {
+      s.applying = false;
+      return;
+    }
+    record(value, "command");
+  }, [value, record]);
+
+  const apply = React.useCallback(
+    (nextIndex: number) => {
+      const s = state.current;
+      if (nextIndex < 0 || nextIndex >= s.stack.length) return;
+      s.applying = true;
+      s.index = nextIndex;
+      s.lastOrigin = "command";
+      const html = s.stack[nextIndex];
+      const el = ref.current;
+      if (el) {
+        el.innerHTML = html;
+        el.focus();
+        const selection = window.getSelection();
+        const range = document.createRange();
+        range.selectNodeContents(el);
+        range.collapse(false);
+        selection?.removeAllRanges();
+        selection?.addRange(range);
+      }
+      onChange(html);
+      forceUpdate();
+    },
+    [forceUpdate, onChange, ref],
+  );
+
+  return {
+    canUndo: state.current.index > 0,
+    canRedo: state.current.index < state.current.stack.length - 1,
+    undo: () => apply(state.current.index - 1),
+    redo: () => apply(state.current.index + 1),
+    record,
+  };
 }
