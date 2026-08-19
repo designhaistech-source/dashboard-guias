@@ -30,7 +30,7 @@ export function PageHeader({ title, description, actions, className }: PageHeade
         )}
       </div>
       {actions && (
-        <div className="flex items-center gap-2 shrink-0">{actions}</div>
+        <div className="flex w-full items-center gap-2 sm:w-auto sm:shrink-0">{actions}</div>
       )}
     </header>
   );
