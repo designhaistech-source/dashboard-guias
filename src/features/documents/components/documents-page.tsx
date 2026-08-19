@@ -338,7 +338,7 @@ function DocumentActions({
         aria-describedby={hasIssues ? summaryId : undefined}
       >
         <Printer className="icon-optical h-4 w-4" aria-hidden />
-        Imprimir e assinar
+        Imprimir
       </Button>
 
     </FormActionBar>
