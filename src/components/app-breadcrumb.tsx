@@ -17,8 +17,8 @@ interface RouteMeta {
 
 /** Mapa de rotas para rótulos de trilha, alinhado aos itens da sidebar. */
 const ROUTE_META: Record<string, RouteMeta> = {
-  "/": { label: "Dashboard" },
-  "/dashboard": { label: "Dashboard" },
+  "/": { label: "Visão geral" },
+  "/dashboard": { label: "Visão geral" },
   "/emitir": { label: "Emitir guia" },
   "/guias-emitidas": { label: "Guias emitidas" },
   "/guias": { label: "Extrair dados da guia" },
@@ -63,9 +63,9 @@ export function AppBreadcrumb({ className }: { className?: string }) {
               className="inline-flex items-center gap-1.5 transition-colors hover:text-foreground"
             >
               <Home aria-hidden="true" className="size-3.5 shrink-0 icon-optical" />
-              {/* Em telas estreitas o ícone já comunica "Dashboard". */}
-              <span className="hidden sm:inline">Dashboard</span>
-              <span className="sr-only sm:hidden">Dashboard</span>
+              {/* Em telas estreitas o ícone já comunica "Início". */}
+              <span className="hidden sm:inline">Início</span>
+              <span className="sr-only sm:hidden">Início</span>
             </Link>
           </BreadcrumbLink>
         </BreadcrumbItem>

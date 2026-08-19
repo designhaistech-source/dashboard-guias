@@ -99,7 +99,7 @@ async function loadImageDataUrl(url: string): Promise<{ dataUrl: string; w: numb
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "HaisGuias — Dashboard" },
+      { title: "Visão geral — Guias+" },
       { name: "description", content: "Visão geral das guias médicas processadas." },
     ],
   }),
@@ -283,7 +283,7 @@ async function generateReportPdf(periodLabel: string, metrics: DashboardMetrics)
     }
 
     applyType(TYPE.title);
-    doc.text("Relatório do Dashboard", titleX, 35);
+    doc.text("Relatório de Visão Geral", titleX, 35);
     applyType(TYPE.subtitle);
     doc.text(`Período: ${periodLabel}  •  Gerado em: ${dateStr}`, titleX, 52);
 

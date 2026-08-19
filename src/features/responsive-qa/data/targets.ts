@@ -12,7 +12,7 @@ export interface QaRoute {
 
 /** Rotas do sistema disponíveis para inspeção. */
 export const QA_ROUTES: QaRoute[] = [
-  { path: "/", label: "Dashboard" },
+  { path: "/", label: "Visão geral" },
   { path: "/emitir", label: "Emitir guia" },
   { path: "/guias", label: "Extrair dados da guia" },
   { path: "/procedimentos", label: "Buscar procedimento" },
