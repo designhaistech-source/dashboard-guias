@@ -5,6 +5,7 @@ export interface DocumentVariableValues {
   paciente?: string;
   /** ISO (yyyy-mm-dd); formatada como dd/mm/aaaa no texto final. */
   data?: string;
+  cidade?: string;
   cid?: string;
   diagnostico?: string;
 }
@@ -13,6 +14,7 @@ export interface DocumentVariableValues {
 export const VARIABLE_LABELS: Record<string, string> = {
   "@paciente": "Paciente",
   "@data": "Data do documento",
+  "@cidade": "Cidade",
   "@cid": "CID",
   "@diagnostico": "Diagnóstico",
 };
@@ -23,6 +25,8 @@ function valueFor(variable: string, values: DocumentVariableValues): string {
       return values.paciente?.trim() ?? "";
     case "@data":
       return values.data ? formatDateShort(values.data) : "";
+    case "@cidade":
+      return values.cidade?.trim() ?? "";
     case "@cid":
       return values.cid?.trim() ?? "";
     case "@diagnostico":

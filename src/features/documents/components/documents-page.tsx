@@ -472,8 +472,8 @@ function ReportsTab() {
   const { staleNotice } = useGeneratedSync({ generated: gerado, html, setHtml });
 
   const variableValues = useMemo(
-    () => ({ paciente, data, cid, diagnostico }),
-    [paciente, data, cid, diagnostico],
+    () => ({ paciente, data, cidade, cid, diagnostico }),
+    [paciente, data, cidade, cid, diagnostico],
   );
   const tokenValues = useMemo(() => variableTokenValues(variableValues), [variableValues]);
   const previewHtml = useMemo(
@@ -920,7 +920,10 @@ function AttendanceTab() {
     [data],
   );
 
-  const variableValues = useMemo(() => ({ paciente, data }), [paciente, data]);
+  const variableValues = useMemo(
+    () => ({ paciente, data, cidade }),
+    [paciente, data, cidade],
+  );
   const tokenValues = useMemo(() => variableTokenValues(variableValues), [variableValues]);
   const previewHtml = useMemo(
     () => resolveDocumentVariables(conteudo, variableValues),
@@ -1078,7 +1081,7 @@ function AttendanceTab() {
         onChange={setHtml}
         onImproveWithAi={improve}
         improving={improving}
-        variables={["@paciente", "@data"]}
+        variables={["@paciente", "@data", "@cidade"]}
         variableValues={tokenValues}
         previewHtml={previewHtml}
         pendingVariables={pending}
