@@ -1,4 +1,6 @@
 import * as React from "react";
+
+import { VARIABLE_LABELS } from "../data/document-variables";
 import {
   Bold,
   Italic,
