@@ -137,23 +137,35 @@ export function RichTextEditor({
         {onImproveWithAi && (
           <>
             <span aria-hidden className="mx-1 h-5 w-px bg-border" />
-            <Button
-              type="button"
-              variant="ghost"
-              size="sm"
-              onClick={onImproveWithAi}
-              disabled={improving}
-              aria-busy={improving}
-              title="Melhorar texto com IA"
-              className="h-7 gap-1.5 px-2 text-xs text-muted-foreground hover:text-foreground"
-            >
-              {improving ? (
-                <Loader2 className="icon-optical h-3.5 w-3.5 animate-spin" aria-hidden />
-              ) : (
-                <Sparkles className="icon-optical h-3.5 w-3.5" aria-hidden />
-              )}
-              {improving ? "Melhorando..." : "Melhorar texto com IA"}
-            </Button>
+            <TooltipProvider delayDuration={150}>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    onClick={onImproveWithAi}
+                    disabled={improving}
+                    aria-busy={improving}
+                    aria-describedby="rte-ai-hint"
+                    className="h-7 gap-1.5 px-2 text-xs text-muted-foreground hover:text-foreground"
+                  >
+                    {improving ? (
+                      <Loader2 className="icon-optical h-3.5 w-3.5 animate-spin" aria-hidden />
+                    ) : (
+                      <Sparkles className="icon-optical h-3.5 w-3.5" aria-hidden />
+                    )}
+                    {improving ? "Melhorando..." : "Melhorar texto com IA"}
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent id="rte-ai-hint" className="max-w-64 text-pretty">
+                  A IA reescreve todo o texto do editor: corrige gramática, ajusta a
+                  linguagem para o padrão clínico e organiza os parágrafos, sem inventar
+                  informações clínicas. A substituição é imediata e não pode ser desfeita —
+                  copie o texto atual antes se quiser mantê-lo.
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
           </>
         )}
       </div>
