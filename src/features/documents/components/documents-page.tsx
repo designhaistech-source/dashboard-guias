@@ -251,6 +251,18 @@ function DocumentActions({
     focusField(first.fieldId);
   }
 
+  function handlePreview() {
+    if (hasIssues) {
+      reportIssues();
+      return;
+    }
+    if (!temTexto) {
+      toast.error("Escreva o texto do documento antes de pré-visualizar.");
+      return;
+    }
+    setPreviewOpen(true);
+  }
+
   function handlePrint() {
     if (hasIssues) {
       reportIssues();
