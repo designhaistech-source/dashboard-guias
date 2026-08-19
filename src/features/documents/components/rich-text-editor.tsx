@@ -1,6 +1,8 @@
 import * as React from "react";
 
 import { VARIABLE_LABELS } from "../data/document-variables";
+import { DocumentPagePreview } from "./document-page-preview";
+
 import {
   Bold,
   Italic,
