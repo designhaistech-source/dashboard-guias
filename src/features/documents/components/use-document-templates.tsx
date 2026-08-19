@@ -87,23 +87,31 @@ export function useDocumentTemplates(options: {
   }
 
   const saveDialog = (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogContent className="sm:max-w-md">
-        <DialogHeader>
-          <DialogTitle>Salvar como modelo</DialogTitle>
-          <DialogDescription>
-            O texto atual será guardado neste navegador e ficará disponível na lista de modelos
-            deste tipo de documento.
-          </DialogDescription>
-        </DialogHeader>
-
-        <form
-          className="space-y-4"
-          onSubmit={(event) => {
-            event.preventDefault();
-            handleConfirm();
-          }}
-        >
+    <AppModal
+      open={open}
+      onOpenChange={setOpen}
+      size="md"
+      title="Salvar como modelo"
+      description="O texto atual será guardado neste navegador e ficará disponível na lista de modelos deste tipo de documento."
+      footer={
+        <>
+          <Button type="button" variant="outline" onClick={() => setOpen(false)}>
+            Cancelar
+          </Button>
+          <Button form={FORM_ID} type="submit" disabled={!trimmed || Boolean(nameError)}>
+            Salvar modelo
+          </Button>
+        </>
+      }
+    >
+      <form
+        id={FORM_ID}
+        className="space-y-5"
+        onSubmit={(event) => {
+          event.preventDefault();
+          handleConfirm();
+        }}
+      >
           <Field
             id="modelo-nome"
             label="Nome do modelo"
