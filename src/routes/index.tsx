@@ -1764,6 +1764,11 @@ function DashboardPage() {
                     </BarChart>
                   </ResponsiveContainer>
                 </div>
+                {isMobile ? (
+                  <p className="-mt-4 text-[11px] leading-snug text-muted-foreground">
+                    Eixo vertical: procedimento · Eixo horizontal: quantidade de guias
+                  </p>
+                ) : null}
                 <DataTable>
                   <DataTableDesktop breakpoint="md">
                     <DataTableRoot className="min-w-[18rem]">
