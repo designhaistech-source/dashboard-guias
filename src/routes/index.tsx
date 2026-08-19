@@ -445,7 +445,7 @@ async function generateReportPdf(periodLabel: string, metrics: DashboardMetrics)
       startY: y,
       margin: { left: margin, right: margin },
       tableWidth: contentW,
-      head: [["Código TUSS", "Procedimento", "Qtd."]],
+      head: [["Código TUSS", "Procedimento", "Quantidade"]],
       body: procedures.map((p) => [p.code, p.name, String(p.count)]),
       theme: "striped",
       headStyles: tableHeadStyles,
@@ -1198,7 +1198,8 @@ function DashboardPage() {
           {/* Procedures */}
           <SurfaceCard
             title="Procedimentos mais realizados"
-            description="Top códigos TUSS no período"
+            description="Procedimentos mais frequentes nas guias do período selecionado"
+
           >
             {procedures.length === 0 ? (
               emptyState
@@ -1209,7 +1210,7 @@ function DashboardPage() {
                   <BarChart
                     data={procedures.map((p) => ({ name: p.name, count: p.count }))}
                     layout="vertical"
-                    margin={{ top: 4, right: 28, left: 8, bottom: 0 }}
+                    margin={{ top: 4, right: 28, left: 8, bottom: 16 }}
                     barCategoryGap={10}
                   >
                     <defs>
@@ -1219,16 +1220,26 @@ function DashboardPage() {
                       </linearGradient>
                     </defs>
                     <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" horizontal={false} />
-                    <XAxis type="number" stroke="var(--muted-foreground)" fontSize={11} tickLine={false} axisLine={false} />
+                    <XAxis
+                      type="number"
+                      stroke="var(--muted-foreground)"
+                      fontSize={11}
+                      tickLine={false}
+                      axisLine={false}
+                      allowDecimals={false}
+                      label={{ value: "Quantidade de guias", position: "insideBottom", offset: -12, fill: "var(--muted-foreground)", fontSize: 11 }}
+                    />
                     <YAxis
                       type="category"
                       dataKey="name"
                       stroke="var(--muted-foreground)"
                       fontSize={11}
-                      width={150}
+                      width={158}
                       tickLine={false}
                       axisLine={false}
+                      label={{ value: "Procedimento", angle: -90, position: "insideLeft", fill: "var(--muted-foreground)", fontSize: 11, style: { textAnchor: "middle" } }}
                     />
+
                     <RTooltip content={<ChartTooltip />} cursor={{ fill: "var(--muted)", opacity: 0.4 }} />
                     <Bar dataKey="count" fill="url(#gradBar)" radius={[0, 6, 6, 0]} maxBarSize={22} isAnimationActive={false}>
                       <LabelList
@@ -1260,7 +1271,7 @@ function DashboardPage() {
                           onSort={setProcedureSort}
                         />
                         <SortableHead
-                          label="Qtd."
+                          label="Quantidade"
                           column="count"
                           sort={procedureSort}
                           onSort={setProcedureSort}
