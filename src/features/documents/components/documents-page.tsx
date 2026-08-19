@@ -158,43 +158,73 @@ function useImproveWithAi(
 
 /* ---------------- Ações comuns ---------------- */
 
+export interface FieldIssue {
+  /** id do campo culpado, usado para focar/rolar até ele. */
+  fieldId: string;
+  label: string;
+  message: string;
+}
+
+/** Move o foco (e a rolagem) para o campo com erro. */
+function focusField(fieldId: string) {
+  const el = document.getElementById(fieldId);
+  if (!el) return;
+  el.scrollIntoView({ behavior: "smooth", block: "center" });
+  (el as HTMLElement).focus({ preventScroll: true });
+}
+
 function DocumentActions({
   title,
   html,
   paciente,
+  pacienteFieldId,
   onSaveTemplate,
-  blockReason,
+  issues = [],
 }: {
   title: string;
   html: string;
   paciente: string;
+  /** id do campo de paciente, para focar quando estiver vazio. */
+  pacienteFieldId: string;
   onSaveTemplate?: () => void;
-  /** Motivo que impede a emissão (ex.: data do documento inválida). */
-  blockReason?: string;
+  /** Erros de validação com o campo culpado, exibidos inline e anunciados por leitor de tela. */
+  issues?: FieldIssue[];
 }) {
   const disabled = !paciente.trim();
   const temTexto = html.replace(/<[^>]+>/g, "").trim().length > 0;
   const [downloading, setDownloading] = useState(false);
+  const summaryId = "document-actions-issues";
+
+  const allIssues: FieldIssue[] = disabled
+    ? [
+        {
+          fieldId: pacienteFieldId,
+          label: "Paciente",
+          message: "Informe o nome do paciente.",
+        },
+        ...issues,
+      ]
+    : issues;
+
+  const hasIssues = allIssues.length > 0;
+
+  function reportIssues() {
+    const first = allIssues[0];
+    toast.error(first.message);
+    focusField(first.fieldId);
+  }
 
   function handlePrint() {
-    if (blockReason) {
-      toast.error(blockReason);
-      return;
-    }
-    if (disabled) {
-      toast.error("Informe o paciente antes de imprimir.");
+    if (hasIssues) {
+      reportIssues();
       return;
     }
     printHtml(title, paciente, html);
   }
 
   async function handleDownload() {
-    if (blockReason) {
-      toast.error(blockReason);
-      return;
-    }
-    if (disabled) {
-      toast.error("Informe o paciente antes de baixar o PDF.");
+    if (hasIssues) {
+      reportIssues();
       return;
     }
     if (!temTexto) {
@@ -227,6 +257,39 @@ function DocumentActions({
         { label: "Texto do documento", done: temTexto },
       ]}
       note="Para ter validade, o documento deve ser impresso e assinado manualmente pelo médico."
+      banner={
+        hasIssues ? (
+          <div
+            id={summaryId}
+            role="alert"
+            aria-live="polite"
+            className="rounded-md border border-destructive/40 bg-destructive/5 p-3 text-xs text-destructive sm:text-sm"
+          >
+            <p className="flex items-start gap-1.5 font-medium">
+              <AlertCircle className="icon-optical mt-0.5 h-4 w-4 shrink-0" aria-hidden />
+              <span>
+                {allIssues.length === 1
+                  ? "1 campo precisa de correção antes de emitir o documento:"
+                  : `${allIssues.length} campos precisam de correção antes de emitir o documento:`}
+              </span>
+            </p>
+            <ul className="mt-1.5 space-y-1 pl-6">
+              {allIssues.map((issue) => (
+                <li key={`${issue.fieldId}-${issue.message}`}>
+                  <Button
+                    type="button"
+                    variant="link"
+                    className="h-auto justify-start p-0 text-left text-xs text-destructive underline sm:text-sm"
+                    onClick={() => focusField(issue.fieldId)}
+                  >
+                    {issue.label}: {issue.message}
+                  </Button>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ) : undefined
+      }
     >
       {onSaveTemplate && (
         <Button type="button" variant="ghost" size="sm" onClick={onSaveTemplate}>
@@ -241,6 +304,7 @@ function DocumentActions({
         onClick={handleDownload}
         disabled={downloading}
         aria-busy={downloading}
+        aria-describedby={hasIssues ? summaryId : undefined}
       >
         {downloading ? (
           <Loader2 className="icon-optical h-4 w-4 animate-spin" aria-hidden />
@@ -249,7 +313,12 @@ function DocumentActions({
         )}
         {downloading ? "Gerando PDF…" : "Baixar PDF"}
       </Button>
-      <Button type="button" size="sm" onClick={handlePrint}>
+      <Button
+        type="button"
+        size="sm"
+        onClick={handlePrint}
+        aria-describedby={hasIssues ? summaryId : undefined}
+      >
         <Printer className="icon-optical h-4 w-4" aria-hidden />
         Imprimir e assinar
       </Button>
@@ -257,6 +326,7 @@ function DocumentActions({
     </FormActionBar>
   );
 }
+
 
 function PatientField({
   id,
