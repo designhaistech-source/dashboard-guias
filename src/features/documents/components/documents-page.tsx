@@ -637,6 +637,20 @@ function AttendanceTab() {
     [data],
   );
 
+  const pacienteError = useMemo(() => validatePaciente(paciente), [paciente]);
+  const localError = useMemo(() => validateLocal(local), [local]);
+  const cidadeError = useMemo(() => validateCidade(cidade), [cidade]);
+  const horarios = useMemo(() => validateTimeRange(entrada, saida), [entrada, saida]);
+
+  const blockReason =
+    dataStatus.error ??
+    pacienteError ??
+    localError ??
+    cidadeError ??
+    horarios.entradaError ??
+    horarios.saidaError;
+
+
   const { requestReplace, replacementDialog } = useTextReplacement(html, setHtml);
 
   const { improving, improve } = useImproveWithAi(
