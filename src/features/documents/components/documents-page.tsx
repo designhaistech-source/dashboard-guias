@@ -6,7 +6,6 @@ import {
   Printer,
   Download,
   BookmarkPlus,
-  ShieldCheck,
   User,
 } from "lucide-react";
 import { toast } from "sonner";
@@ -18,7 +17,6 @@ import {
   appTabsTriggerClass,
 } from "@/components/app-tabs";
 import { AppBreadcrumb } from "@/components/app-breadcrumb";
-import { AppModal } from "@/components/app-modal";
 import { AppSidebar } from "@/components/app-sidebar";
 import { SiteFooter } from "@/components/site-footer";
 import { PageHeader } from "@/components/page-header";
@@ -136,15 +134,12 @@ function DocumentActions({
   html,
   paciente,
   onSaveTemplate,
-  signable,
 }: {
   title: string;
   html: string;
   paciente: string;
   onSaveTemplate?: () => void;
-  signable?: boolean;
 }) {
-  const [signOpen, setSignOpen] = useState(false);
   const disabled = !paciente.trim();
   const temTexto = html.replace(/<[^>]+>/g, "").trim().length > 0;
 
@@ -163,7 +158,7 @@ function DocumentActions({
         { label: "Paciente", done: !disabled },
         { label: "Texto do documento", done: temTexto },
       ]}
-      note="Campos marcados com * são obrigatórios. Para emissão eletrônica, o documento deve ser assinado com certificado digital ICP-Brasil."
+      note="Para ter validade, o documento deve ser impresso e assinado manualmente pelo médico."
     >
       {onSaveTemplate && (
         <Button type="button" variant="outline" size="sm" onClick={onSaveTemplate}>
@@ -186,60 +181,6 @@ function DocumentActions({
         <Printer className="icon-optical h-4 w-4" aria-hidden />
         Imprimir
       </Button>
-      {signable && (
-        <>
-          <Button
-            type="button"
-            size="sm"
-            aria-haspopup="dialog"
-            onClick={() => {
-              if (disabled) {
-                toast.error("Informe o paciente antes de assinar o documento.");
-                return;
-              }
-              if (!temTexto) {
-                toast.error("Escreva o texto do documento antes de assinar.");
-                return;
-              }
-              setSignOpen(true);
-            }}
-          >
-            <ShieldCheck className="icon-optical h-4 w-4" aria-hidden />
-            Assinar digitalmente
-          </Button>
-          <AppModal
-            open={signOpen}
-            onOpenChange={setSignOpen}
-            title="Assinar documento"
-            icon={<ShieldCheck className="h-5 w-5" aria-hidden />}
-            description="Para emitir este documento em formato eletrônico, é necessário assiná-lo utilizando um certificado digital ICP-Brasil."
-            size="sm"
-            unstyledBody
-            footer={
-              <>
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setSignOpen(false)}
-                >
-                  Cancelar
-                </Button>
-                <Button
-                  type="button"
-                  size="sm"
-                  onClick={() => {
-                    setSignOpen(false);
-                    toast.info("Fluxo de assinatura digital ainda em definição (representação).");
-                  }}
-                >
-                  Continuar para assinatura
-                </Button>
-              </>
-            }
-          />
-        </>
-      )}
     </FormActionBar>
   );
 }
@@ -401,7 +342,6 @@ function ReportsTab() {
         title="Relatório médico"
         html={html}
         paciente={paciente}
-        signable
         onSaveTemplate={() => toast.success("Modelo salvo e disponível na lista (simulação).")}
       />
     </>
@@ -519,7 +459,7 @@ function CertificateTab() {
         }
       />
 
-      <DocumentActions title="Atestado médico" html={conteudo} paciente={paciente} signable />
+      <DocumentActions title="Atestado médico" html={conteudo} paciente={paciente} />
     </>
   );
 }
@@ -659,7 +599,6 @@ function AttendanceTab() {
         title="Declaração de comparecimento"
         html={conteudo}
         paciente={paciente}
-        signable
       />
     </>
   );
