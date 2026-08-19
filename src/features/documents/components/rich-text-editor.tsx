@@ -341,14 +341,6 @@ export function RichTextEditor({
         </p>
       )}
 
-      {previewing ? (
-        <div
-          aria-label={`Pré-visualização — ${ariaLabel}`}
-          role="region"
-          className="min-h-64 bg-muted/20 px-4 py-3 text-sm leading-relaxed text-foreground"
-          dangerouslySetInnerHTML={{ __html: previewHtml ?? "" }}
-        />
-      ) : (
       <div
         ref={ref}
         role="textbox"
