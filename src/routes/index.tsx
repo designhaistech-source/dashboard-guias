@@ -124,11 +124,11 @@ function buildPeriodLabel(from: string, to: string, fallback?: { first?: string;
   const ate = to.trim() || fallback?.last || "";
   if (de && ate) {
     return de === ate
-      ? formatIsoToBr(de)
+      ? formatIsoToBrFull(de)
       : `${formatIsoToBr(de)} a ${formatIsoToBr(ate)}`;
   }
-  if (de) return `A partir de ${formatIsoToBr(de)}`;
-  if (ate) return `Até ${formatIsoToBr(ate)}`;
+  if (de) return `A partir de ${formatIsoToBrFull(de)}`;
+  if (ate) return `Até ${formatIsoToBrFull(ate)}`;
   return "Todo o período";
 }
 
@@ -649,9 +649,7 @@ const dateFilterKeys: ReadonlySet<keyof GuideFilters> = new Set([
 /** Converte o valor cru do filtro na forma legível exibida nos chips. */
 function formatFilterValue(key: keyof GuideFilters, value: string): string {
   if (!dateFilterKeys.has(key)) return value;
-  const [year, month, day] = value.split("-");
-  if (!year || !month || !day) return value;
-  return `${day}/${month}/${year}`;
+  return formatIsoToBr(value) || value;
 }
 
 const MONTH_ABBR = [
@@ -926,7 +924,7 @@ function DashboardPage() {
     if (dailyData.length < 2) return undefined;
     const last = dailyData[dailyData.length - 1].guias;
     const prev = dailyData[dailyData.length - 2].guias;
-    const prevDate = formatIsoToBr(dailyData[dailyData.length - 2].date);
+    const prevDate = formatIsoToBrFull(dailyData[dailyData.length - 2].date);
     const diff = last - prev;
     if (diff === 0) {
       return { direction: "flat", label: `Mesma quantidade do dia ${prevDate}` };
@@ -938,7 +936,7 @@ function DashboardPage() {
   }, [dailyData]);
 
   /** Reference date of the "today" KPI, shown discreetly in the card. */
-  const todayLabel = formatIsoToBr(todayLocalIsoDate());
+  const todayLabel = formatIsoToBrFull(todayLocalIsoDate());
 
   /** Number of days covered by the selected period. */
   const dayCount = dailyData.length;
@@ -1026,7 +1024,8 @@ function DashboardPage() {
             <CalendarRange className="h-4 w-4 shrink-0" aria-hidden="true" />
             <span>
               Indicadores e gráficos do período:{" "}
-              <span className="font-medium text-foreground">{periodLabel}</span>
+              <span className="font-medium text-foreground">{periodLabel}</span>{" "}
+              <span className="text-muted-foreground/80">• {localTimeZoneLabel()}</span>
             </span>
           </p>
 
