@@ -1370,24 +1370,28 @@ function DashboardPage() {
                     value={filters.dataAutorizacaoAte}
                     onChange={(v) => setFilter("dataAutorizacaoAte", v)}
                   />
-                  <FilterSelect
-                    label="Tipo de guia"
-                    value={filters.tipoGuia}
-                    onChange={(v) => setFilter("tipoGuia", v)}
-                    options={GUIDE_TYPES.map((t) => t.name)}
-                  />
-                  <FilterSelect
-                    label="Prestador solicitante"
-                    value={filters.prestadorSolicitante}
-                    onChange={(v) => setFilter("prestadorSolicitante", v)}
-                    options={prestadoresList}
-                  />
+                  <div className="col-span-2 min-w-0 lg:col-span-1">
+                    <FilterSelect
+                      label="Tipo de guia"
+                      value={filters.tipoGuia}
+                      onChange={(v) => setFilter("tipoGuia", v)}
+                      options={GUIDE_TYPES.map((t) => t.name)}
+                    />
+                  </div>
+                  <div className="col-span-2 min-w-0 lg:col-span-1">
+                    <FilterSelect
+                      label="Prestador solicitante"
+                      value={filters.prestadorSolicitante}
+                      onChange={(v) => setFilter("prestadorSolicitante", v)}
+                      options={prestadoresList}
+                    />
+                  </div>
                   <Button
                     type="button"
                     variant="outline"
                     onClick={clearAllFilters}
                     disabled={activeFilters.length === 0}
-                    className="h-10 w-full justify-center sm:col-span-2 sm:h-9 lg:col-span-1 lg:w-auto"
+                    className="col-span-2 h-10 w-full justify-center sm:h-9 lg:col-span-1 lg:w-auto"
                   >
                     Limpar filtros
                   </Button>
