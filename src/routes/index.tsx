@@ -1066,17 +1066,18 @@ function DashboardPage() {
           )}
 
           {/* Barra de filtros compacta — aberta por padrão, igual a Guias emitidas */}
+          {filtersOpen && (
           <FilterCard
             id="dashboard-filters-panel"
             variant="bar"
-            open={filtersOpen}
-            onOpenChange={setFiltersOpen}
+            open
             hideToggle
             activeCount={activeFilters.length}
             onClear={clearAllFilters}
             clearDisabled={activeFilters.length === 0}
             barColumnsClassName="lg:grid-cols-[10rem_10rem_minmax(0,1fr)_minmax(0,1fr)_auto] lg:gap-4"
           >
+
             <FilterField
               label="Data inicial"
               type="date"
