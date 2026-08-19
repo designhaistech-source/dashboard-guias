@@ -917,6 +917,8 @@ function DashboardPage() {
     );
   }, [procedures, procedureSort]);
   const dailyData = metrics.daily;
+  const monthMarks = useMemo(() => monthBoundaries(dailyData), [dailyData]);
+
   const hasData = total > 0;
   const [generatingReport, setGeneratingReport] = useState(false);
 
