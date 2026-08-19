@@ -70,7 +70,10 @@ import {
 
 import {
   DOCUMENT_VARIABLES,
+  ATTENDANCE_TEMPLATES,
+  CERTIFICATE_TEMPLATES,
   REPORT_TEMPLATES,
+  type ReportTemplate,
   AFASTAMENTO_OPTIONS,
   buildAtestado,
   buildRelatorio,
@@ -886,10 +889,16 @@ function CertificateTab({ onNewDocument }: { onNewDocument: () => void }) {
     suggestName: () => (dias ? `Atestado de ${dias} dia(s)` : ""),
   });
 
-  const [modelo, setModelo] = useState("");
+  const [modelo, setModelo] = useState(GENERATED_TEMPLATE);
 
   function applySavedTemplate(value: string) {
-    applySaved({ templates: savedTemplates, value, setModelo, requestReplace, setHtml });
+    applySaved({
+      templates: [...CERTIFICATE_TEMPLATES, ...savedTemplates],
+      value,
+      setModelo,
+      requestReplace,
+      setHtml,
+    });
   }
 
   const { improving, improve } = useImproveWithAi(
@@ -906,7 +915,10 @@ function CertificateTab({ onNewDocument }: { onNewDocument: () => void }) {
         "As alterações feitas no texto serão descartadas e o texto gerado automaticamente voltará. Você poderá desfazer pelo aviso exibido após a troca.",
       confirmLabel: "Restaurar texto",
       successMessage: "Texto padrão restaurado.",
-      apply: () => setHtml(""),
+      apply: () => {
+        setModelo(GENERATED_TEMPLATE);
+        setHtml("");
+      },
     });
   }
 
@@ -931,8 +943,9 @@ function CertificateTab({ onNewDocument }: { onNewDocument: () => void }) {
             readOnly={locked}
           />
           <CidFields id="atestado-cid" cid={cid} descricao={diagnosticoSelecionado} onChange={handleCid} error={cidError} readOnly={locked} />
-          <SavedTemplatesField
+          <TemplatesField
             id="atestado-modelo"
+            defaults={CERTIFICATE_TEMPLATES}
             templates={savedTemplates}
             value={modelo}
             onSelect={applySavedTemplate}
@@ -1120,10 +1133,16 @@ function AttendanceTab({ onNewDocument }: { onNewDocument: () => void }) {
     suggestName: () => (local.trim() ? `Comparecimento — ${local.trim()}` : ""),
   });
 
-  const [modelo, setModelo] = useState("");
+  const [modelo, setModelo] = useState(GENERATED_TEMPLATE);
 
   function applySavedTemplate(value: string) {
-    applySaved({ templates: savedTemplates, value, setModelo, requestReplace, setHtml });
+    applySaved({
+      templates: [...ATTENDANCE_TEMPLATES, ...savedTemplates],
+      value,
+      setModelo,
+      requestReplace,
+      setHtml,
+    });
   }
 
   const { improving, improve } = useImproveWithAi(
@@ -1140,7 +1159,10 @@ function AttendanceTab({ onNewDocument }: { onNewDocument: () => void }) {
         "As alterações feitas no texto serão descartadas e o texto gerado automaticamente voltará. Você poderá desfazer pelo aviso exibido após a troca.",
       confirmLabel: "Restaurar texto",
       successMessage: "Texto padrão restaurado.",
-      apply: () => setHtml(""),
+      apply: () => {
+        setModelo(GENERATED_TEMPLATE);
+        setHtml("");
+      },
     });
   }
 
@@ -1175,8 +1197,9 @@ function AttendanceTab({ onNewDocument }: { onNewDocument: () => void }) {
               onChange={(e) => setLocal(e.target.value)}
             />
           </Field>
-          <SavedTemplatesField
+          <TemplatesField
             id="comp-modelo"
+            defaults={ATTENDANCE_TEMPLATES}
             templates={savedTemplates}
             value={modelo}
             onSelect={applySavedTemplate}
@@ -1296,41 +1319,48 @@ function AttendanceTab({ onNewDocument }: { onNewDocument: () => void }) {
 
 /* ---------------- Modelos salvos ---------------- */
 
-/** Select exibido apenas quando o usuário já salvou modelos deste documento. */
-function SavedTemplatesField({
+/** Select de modelos: opção de texto gerado, modelos padrão e modelos salvos. */
+function TemplatesField({
   id,
+  defaults,
   templates,
   value,
   onSelect,
   readOnly,
 }: {
   id: string;
+  defaults: ReportTemplate[];
   templates: SavedDocumentTemplate[];
   value: string;
   onSelect: (value: string) => void;
   readOnly?: boolean;
 }) {
-  const empty = templates.length === 0;
   return (
     <SelectField
       id={id}
       label="Modelos disponíveis"
-      placeholder={empty ? "Nenhum modelo salvo ainda" : "Selecione um modelo salvo"}
+      placeholder="Selecione um modelo"
       value={value}
       onValueChange={onSelect}
       readOnly={readOnly}
-      disabled={empty}
-      options={templates.map((t) => ({ value: t.value, label: `${t.label} (salvo)` }))}
+      options={[
+        { value: GENERATED_TEMPLATE, label: "Texto gerado pelos campos" },
+        ...defaults.map((t) => ({ value: t.value, label: t.label })),
+        ...templates.map((t) => ({ value: t.value, label: `${t.label} (salvo)` })),
+      ]}
       hint={
-        empty
-          ? "Use “Salvar como modelo” após redigir o texto para reaproveitá-lo depois."
-          : `${templates.length} ${templates.length === 1 ? "modelo salvo" : "modelos salvos"} neste navegador. Aplicar um modelo substitui o texto atual (com confirmação).`
+        templates.length > 0
+          ? `${defaults.length} modelos padrão e ${templates.length} ${templates.length === 1 ? "modelo salvo" : "modelos salvos"} neste navegador. Aplicar um modelo substitui o texto atual (com confirmação).`
+          : `${defaults.length} modelos padrão disponíveis. Use “Salvar como modelo” após redigir o texto para reaproveitá-lo depois.`
       }
     />
   );
 }
 
 /** Aplica um modelo salvo protegendo o texto atual com confirmação/desfazer. */
+/** Valor especial: volta ao texto gerado automaticamente a partir dos campos. */
+const GENERATED_TEMPLATE = "__gerado__";
+
 function applySaved({
   templates,
   value,
@@ -1338,12 +1368,27 @@ function applySaved({
   requestReplace,
   setHtml,
 }: {
-  templates: SavedDocumentTemplate[];
+  templates: (SavedDocumentTemplate | ReportTemplate)[];
   value: string;
   setModelo: (value: string) => void;
   requestReplace: ReturnType<typeof useTextReplacement>["requestReplace"];
   setHtml: (html: string) => void;
 }) {
+  if (value === GENERATED_TEMPLATE) {
+    requestReplace({
+      title: "Voltar ao texto gerado?",
+      description:
+        "O texto atual será substituído pelo texto gerado automaticamente a partir dos campos. Você poderá desfazer pelo aviso exibido após a troca.",
+      confirmLabel: "Usar texto gerado",
+      successMessage: "Texto gerado aplicado.",
+      apply: () => {
+        setModelo(GENERATED_TEMPLATE);
+        setHtml("");
+      },
+    });
+    return;
+  }
+
   const template = templates.find((t) => t.value === value);
   if (!template) return;
   requestReplace({
