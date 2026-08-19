@@ -651,14 +651,14 @@ function formatFilterValue(key: keyof GuideFilters, value: string): string {
 }
 
 const filterLabels: Record<keyof GuideFilters, string> = {
-  dataAutorizacaoDe: "Autorização de",
-  dataAutorizacaoAte: "Autorização até",
-  numGuiaPrestador: "Nº guia",
-  beneficiarioNome: "Beneficiário",
+  dataAutorizacaoDe: "Período de",
+  dataAutorizacaoAte: "Período até",
+  numGuiaPrestador: "Número da guia",
+  beneficiarioNome: "Paciente",
   tipoGuia: "Tipo de guia",
-  prestadorSolicitante: "Prestador",
+  prestadorSolicitante: "Prestador solicitante",
   procDescricao: "Procedimento",
-  procCodigo: "Código proc.",
+  procCodigo: "Código do procedimento",
 };
 
 
@@ -1018,7 +1018,7 @@ function DashboardPage() {
               }
             >
               <div>
-                <div className={filterGroupLabelClass}>Atalhos</div>
+                <div className={filterGroupLabelClass}>Períodos rápidos</div>
                 <div className="flex flex-wrap gap-2">
                   {[
                     { id: "hoje", label: "Hoje" },
@@ -1037,10 +1037,10 @@ function DashboardPage() {
               </div>
 
               <div>
-                <div className={filterGroupLabelClass}>Período de autorização</div>
+                <div className={filterGroupLabelClass}>Período (data de autorização da guia)</div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-                  <FilterField label="De" type="date" error={dateRangeInvalid} value={draft.dataAutorizacaoDe} onChange={(v) => setDraft((d) => ({ ...d, dataAutorizacaoDe: v }))} inputRef={firstFieldRef} />
-                  <FilterField label="Até" type="date" error={dateRangeInvalid} value={draft.dataAutorizacaoAte} onChange={(v) => setDraft((d) => ({ ...d, dataAutorizacaoAte: v }))} />
+                  <FilterField label="Data inicial" type="date" error={dateRangeInvalid} value={draft.dataAutorizacaoDe} onChange={(v) => setDraft((d) => ({ ...d, dataAutorizacaoDe: v }))} inputRef={firstFieldRef} />
+                  <FilterField label="Data final" type="date" error={dateRangeInvalid} value={draft.dataAutorizacaoAte} onChange={(v) => setDraft((d) => ({ ...d, dataAutorizacaoAte: v }))} />
                 </div>
                 {dateRangeInvalid && (
                   <p className="mt-1.5 text-xs text-destructive">A data inicial deve ser anterior ou igual à data final.</p>
@@ -1048,12 +1048,12 @@ function DashboardPage() {
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                <FilterField label="Beneficiário" value={draft.beneficiarioNome} onChange={(v) => setDraft((d) => ({ ...d, beneficiarioNome: v }))} />
-                <FilterField label="Nº guia" value={draft.numGuiaPrestador} onChange={(v) => setDraft((d) => ({ ...d, numGuiaPrestador: v }))} />
+                <FilterField label="Paciente" value={draft.beneficiarioNome} onChange={(v) => setDraft((d) => ({ ...d, beneficiarioNome: v }))} />
+                <FilterField label="Número da guia" value={draft.numGuiaPrestador} onChange={(v) => setDraft((d) => ({ ...d, numGuiaPrestador: v }))} />
                 <FilterSelect label="Tipo de guia" value={draft.tipoGuia} onChange={(v) => setDraft((d) => ({ ...d, tipoGuia: v }))} options={GUIDE_TYPES.map((t) => t.name)} />
-                <FilterSelect label="Prestador" value={draft.prestadorSolicitante} onChange={(v) => setDraft((d) => ({ ...d, prestadorSolicitante: v }))} options={prestadoresList} />
+                <FilterSelect label="Prestador solicitante" value={draft.prestadorSolicitante} onChange={(v) => setDraft((d) => ({ ...d, prestadorSolicitante: v }))} options={prestadoresList} />
                 <FilterField label="Procedimento" value={draft.procDescricao} onChange={(v) => setDraft((d) => ({ ...d, procDescricao: v }))} />
-                <FilterField label="Código proc." value={draft.procCodigo} onChange={(v) => setDraft((d) => ({ ...d, procCodigo: v }))} />
+                <FilterField label="Código do procedimento" value={draft.procCodigo} onChange={(v) => setDraft((d) => ({ ...d, procCodigo: v }))} />
               </div>
 
             </FilterCard>
@@ -1062,10 +1062,10 @@ function DashboardPage() {
 
           {/* KPIs */}
           <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-            <Kpi icon={FileText} label="Total de guias extraídas" value={String(total)} hint={activeFilters.length > 0 ? "no período e filtros selecionados" : "no período selecionado"} tone="primary" />
-            <Kpi icon={Activity} label="Guias extraídas hoje" value={String(metrics.today)} hint={todayTrend ? todayTrend.label : "guias processadas hoje"} tone="success" trend={todayTrend?.direction} />
-            <Kpi icon={TrendingUp} label="Média de guias por dia" value={String(dailyAvg)} hint="no período selecionado" tone="info" />
-            <Kpi icon={Layers} label="Tipos de guia" value={String(metrics.distinctTypes)} hint="tipos diferentes no período" tone="purple" />
+            <Kpi icon={FileText} label="Total de guias extraídas" value={String(total)} hint="guias no período selecionado" tone="primary" />
+            <Kpi icon={Activity} label="Guias extraídas hoje" value={String(metrics.today)} hint={todayTrend ? todayTrend.label : "guias extraídas hoje"} tone="success" trend={todayTrend?.direction} />
+            <Kpi icon={TrendingUp} label="Média de guias por dia" value={String(dailyAvg)} hint="guias por dia no período selecionado" tone="info" />
+            <Kpi icon={Layers} label="Tipos de guia" value={String(metrics.distinctTypes)} hint="tipos diferentes no período selecionado" tone="purple" />
 
           </div>
 
@@ -1074,10 +1074,10 @@ function DashboardPage() {
             <SurfaceCard
               className="lg:col-span-2"
               title="Guias extraídas por dia"
-              description={periodLabel}
+              description={`Quantidade de guias por dia — ${periodLabel}`}
               actions={
                 <div className="flex items-center gap-3 text-xs">
-                  <LegendDot color="var(--primary)" label="Guias" />
+                  <LegendDot color="var(--primary)" label="Guias extraídas" />
                 </div>
               }
             >
@@ -1123,7 +1123,7 @@ function DashboardPage() {
 
             <SurfaceCard
               title="Guias por tipo"
-              description={`Distribuição das guias no período selecionado — ${periodLabel}`}
+              description={`Distribuição por tipo de guia — ${periodLabel}`}
             >
 
               {!hasData ? (
@@ -1164,11 +1164,14 @@ function DashboardPage() {
                     <div className="max-w-[96px] text-[10px] leading-tight text-muted-foreground">
                       {activeType !== undefined
                         ? `guias de ${typeData[activeType].name}`
-                        : "total de guias no período"}
+                        : "guias no período"}
                     </div>
                   </div>
 
                 </div>
+                <p className="text-xs text-muted-foreground">
+                  Tipo de guia · quantidade de guias · % do total do período
+                </p>
                 <ul className="space-y-2 text-sm">
                   {typeData.map((d, i) => {
                     const pct = total > 0 ? (d.value / total) * 100 : 0;
@@ -1208,7 +1211,7 @@ function DashboardPage() {
           {/* Procedures */}
           <SurfaceCard
             title="Procedimentos mais realizados"
-            description="Procedimentos mais frequentes nas guias do período selecionado"
+            description={`Procedimentos mais frequentes nas guias — ${periodLabel}`}
 
           >
             {procedures.length === 0 ? (
