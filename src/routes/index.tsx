@@ -1164,7 +1164,7 @@ function DashboardPage() {
                     <Area
                       type="monotone"
                       dataKey="guias"
-                      name="Guias"
+                      name="Guias extraídas"
                       stroke="var(--primary)"
                       strokeWidth={2.5}
                       fill="url(#gradPrimary)"
