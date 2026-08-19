@@ -309,7 +309,7 @@ function DocumentActions({
       }
     >
       {onSaveTemplate && (
-        <Button type="button" variant="ghost" size="sm" onClick={onSaveTemplate}>
+        <Button type="button" variant="outline" size="sm" onClick={onSaveTemplate}>
           <BookmarkPlus className="icon-optical h-4 w-4" aria-hidden />
           Salvar como modelo
         </Button>
