@@ -507,7 +507,12 @@ function CertificateTab() {
         padding="lg"
       >
         <div className="space-y-4">
-          <PatientField id="atestado-paciente" value={paciente} onChange={setPaciente} />
+          <PatientField
+            id="atestado-paciente"
+            value={paciente}
+            onChange={setPaciente}
+            error={pacienteError}
+          />
           <CidFields cid={cid} descricao={diagnosticoSelecionado} onChange={handleCid} />
           <div className="grid min-w-0 gap-4 sm:grid-cols-2 xl:grid-cols-3 [&>*]:min-w-0">
             <SelectField
@@ -516,6 +521,7 @@ function CertificateTab() {
               value={dias}
               onValueChange={setDias}
               options={AFASTAMENTO_OPTIONS}
+              error={diasError}
             />
             <Field
               id="atestado-data"
@@ -531,16 +537,18 @@ function CertificateTab() {
                 onChange={(e) => setData(e.target.value)}
               />
             </Field>
-            <Field id="atestado-cidade" label="Cidade" optional>
+            <Field id="atestado-cidade" label="Cidade" optional error={cidadeError}>
               <Input
                 id="atestado-cidade"
                 placeholder="Cidade de emissão"
+                maxLength={60}
                 value={cidade}
                 onChange={(e) => setCidade(e.target.value)}
               />
             </Field>
           </div>
         </div>
+
       </SurfaceCard>
 
       <RichTextEditor
