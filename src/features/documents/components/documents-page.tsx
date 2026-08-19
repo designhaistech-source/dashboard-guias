@@ -583,11 +583,26 @@ function AttendanceTab() {
 
   const conteudo = html || gerado;
 
+  const { requestReplace, replacementDialog } = useTextReplacement(html, setHtml);
+
   const { improving, improve } = useImproveWithAi(
     "Declaração de comparecimento",
     conteudo,
     setHtml,
+    requestReplace,
   );
+
+  function restoreDefault() {
+    requestReplace({
+      title: "Restaurar texto padrão?",
+      description:
+        "As alterações feitas no texto serão descartadas e o texto gerado automaticamente voltará. Você poderá desfazer pelo aviso exibido após a troca.",
+      confirmLabel: "Restaurar texto",
+      successMessage: "Texto padrão restaurado.",
+      apply: () => setHtml(""),
+    });
+  }
+
 
   return (
     <>
