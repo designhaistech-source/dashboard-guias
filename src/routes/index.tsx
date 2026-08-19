@@ -517,10 +517,35 @@ function formatIsoToBr(iso?: string) {
   return y && m && d ? `${d}/${m}/${y}` : iso;
 }
 
+/**
+ * Data completa para tooltips: "qua., 19/08/2026". O dia da semana ajuda a
+ * comparar períodos sem contar dias manualmente.
+ */
+function formatIsoToBrFull(iso?: string) {
+  const short = formatIsoToBr(iso);
+  if (!short || !iso) return short;
+  const date = new Date(`${iso}T12:00:00`);
+  if (Number.isNaN(date.getTime())) return short;
+  const weekday = date.toLocaleDateString("pt-BR", { weekday: "short" });
+  return `${weekday.replace(".", "")}., ${short}`;
+}
+
+/** Rótulo fixo do fuso usado em todos os tooltips, ex.: "Horário local (UTC-03:00)". */
+function localTimeZoneLabel() {
+  const offsetMinutes = -new Date().getTimezoneOffset();
+  const sign = offsetMinutes < 0 ? "-" : "+";
+  const abs = Math.abs(offsetMinutes);
+  const hh = `${Math.floor(abs / 60)}`.padStart(2, "0");
+  const mm = `${abs % 60}`.padStart(2, "0");
+  return `Horário local (UTC${sign}${hh}:${mm})`;
+}
+
 function ChartTooltip({ active, payload, label, suffix }: any) {
   if (!active || !payload?.length) return null;
-  const fullDate = formatIsoToBr(payload[0]?.payload?.date);
+  const iso: string | undefined = payload[0]?.payload?.date;
+  const fullDate = formatIsoToBrFull(iso);
   const heading = fullDate || (label !== undefined ? String(label) : "");
+
   return (
     <div className="rounded-lg border border-border bg-popover/95 px-3 py-2 shadow-md backdrop-blur">
       {heading && (
