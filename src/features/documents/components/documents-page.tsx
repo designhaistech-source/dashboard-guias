@@ -564,6 +564,7 @@ function CertificateTab() {
         title="Atestado médico"
         html={conteudo}
         paciente={paciente}
+        blockReason={dataStatus.error}
         onSaveTemplate={() =>
           toast.success("Modelo de atestado salvo e disponível na lista (simulação).")
         }
