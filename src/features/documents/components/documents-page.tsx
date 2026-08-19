@@ -279,6 +279,9 @@ function DocumentActions({
     : issues;
 
   const hasIssues = allIssues.length > 0;
+  // O resumo de erros só aparece depois da primeira tentativa de emissão.
+  const [issuesVisible, setIssuesVisible] = useState(false);
+  const showIssues = hasIssues && issuesVisible;
 
   function reportIssues() {
     const first = allIssues[0];
@@ -288,6 +291,7 @@ function DocumentActions({
 
   function handleIssue() {
     if (hasIssues) {
+      setIssuesVisible(true);
       reportIssues();
       return;
     }
@@ -379,7 +383,7 @@ function DocumentActions({
                 </span>
               </p>
             </div>
-          ) : hasIssues ? (
+          ) : showIssues ? (
             <div
               id={summaryId}
               role="alert"
@@ -431,7 +435,7 @@ function DocumentActions({
               type="button"
               size="sm"
               onClick={handleIssue}
-              aria-describedby={hasIssues ? summaryId : undefined}
+              aria-describedby={showIssues ? summaryId : undefined}
             >
               <Send className="icon-optical h-4 w-4" aria-hidden />
               Emitir documento
@@ -680,6 +684,7 @@ function ReportsTab({ onNewDocument }: { onNewDocument: () => void }) {
             error={pacienteError}
           />
 
+          <CidFields id="relatorio-cid" cid={cid} descricao={diagnosticoSelecionado} onChange={handleCid} error={cidError} />
           <SelectField
             id="relatorio-modelo"
             label="Modelos disponíveis"
@@ -696,7 +701,6 @@ function ReportsTab({ onNewDocument }: { onNewDocument: () => void }) {
                 : "Use “Salvar como modelo” após redigir o texto para reaproveitá-lo depois."
             }
           />
-          <CidFields id="relatorio-cid" cid={cid} descricao={diagnosticoSelecionado} onChange={handleCid} error={cidError} />
           <div className="grid min-w-0 gap-4 sm:grid-cols-2 [&>*]:min-w-0">
             <Field
               id="relatorio-data"
