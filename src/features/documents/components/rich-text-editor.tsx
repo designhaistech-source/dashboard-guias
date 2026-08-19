@@ -158,6 +158,32 @@ export function RichTextEditor({
         )}
       </div>
 
+      {variables && variables.length > 0 && (
+        <div className="flex flex-wrap items-center gap-1.5 border-b border-border px-4 py-2">
+          <span id="rte-variables-hint" className="text-xs text-muted-foreground">
+            Inserir variável:
+          </span>
+          {variables.map((variable) => (
+            <Button
+              key={variable}
+              type="button"
+              variant="secondary"
+              size="sm"
+              onClick={() => insertVariable(variable)}
+              title={`Inserir ${variable} no texto`}
+              className="h-7 rounded-full px-2.5 font-mono text-xs"
+            >
+              {variable}
+            </Button>
+          ))}
+          <span className="text-xs text-muted-foreground">
+            (substituída pelos dados do paciente na impressão)
+          </span>
+        </div>
+      )}
+
+
+
       <div
         ref={ref}
         role="textbox"
