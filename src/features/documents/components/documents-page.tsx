@@ -463,6 +463,8 @@ function CertificateTab() {
 
   const conteudo = html || gerado;
 
+  const dataStatus = useMemo(() => getDocumentDateStatus(data), [data]);
+
   const { requestReplace, replacementDialog } = useTextReplacement(html, setHtml);
 
   const { improving, improve } = useImproveWithAi(
