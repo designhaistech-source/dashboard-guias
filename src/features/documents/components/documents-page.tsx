@@ -484,11 +484,14 @@ function PatientField({
   value,
   onChange,
   error,
+  readOnly,
 }: {
   id: string;
   value: string;
   onChange: (v: string) => void;
   error?: string;
+  /** Documento já emitido: mantém o valor legível e copiável. */
+  readOnly?: boolean;
 }) {
   return (
     <Field id={id} label="Paciente" required error={error} injectChildProps={false}>
@@ -504,6 +507,8 @@ function PatientField({
           placeholder="Digite o nome do beneficiário..."
           value={value}
           onChange={(e) => onChange(e.target.value)}
+          readOnly={readOnly}
+          aria-readonly={readOnly || undefined}
           aria-invalid={Boolean(error)}
           aria-describedby={`${id}-msg`}
         />
@@ -526,7 +531,24 @@ function CidFields({
   descricao: string;
   onChange: (codigo: string, descricao: string) => void;
   error?: string;
+  /** Documento já emitido: exibe o CID escolhido como texto somente leitura. */
+  readOnly?: boolean;
 }) {
+  if (readOnly) {
+    return (
+      <Field id={id} label="CID-10" error={error} injectChildProps={false}>
+        <Input
+          id={id}
+          readOnly
+          aria-readonly="true"
+          aria-describedby={`${id}-msg`}
+          value={cid ? `${cid} — ${descricao}` : ""}
+          placeholder="CID não informado"
+        />
+      </Field>
+    );
+  }
+
   return (
     <Field
       id={id}
@@ -669,7 +691,7 @@ function ReportsTab({ onNewDocument }: { onNewDocument: () => void }) {
 
   return (
     <>
-      <fieldset disabled={locked} className="min-w-0 space-y-6 border-0 p-0">
+      <div className="min-w-0 space-y-6">
       <SurfaceCard
         title="Dados do relatório"
         description="Identifique o paciente e o diagnóstico que será impresso no documento."
@@ -682,15 +704,17 @@ function ReportsTab({ onNewDocument }: { onNewDocument: () => void }) {
             value={paciente}
             onChange={setPaciente}
             error={pacienteError}
+            readOnly={locked}
           />
 
-          <CidFields id="relatorio-cid" cid={cid} descricao={diagnosticoSelecionado} onChange={handleCid} error={cidError} />
+          <CidFields id="relatorio-cid" cid={cid} descricao={diagnosticoSelecionado} onChange={handleCid} error={cidError} readOnly={locked} />
           <SelectField
             id="relatorio-modelo"
             label="Modelos disponíveis"
             placeholder="Selecione um modelo salvo"
             value={modelo}
             onValueChange={applyTemplate}
+            readOnly={locked}
             options={[
               ...savedTemplates.map((t) => ({ value: t.value, label: `${t.label} (salvo)` })),
               ...REPORT_TEMPLATES.map((t) => ({ value: t.value, label: t.label })),
@@ -762,7 +786,7 @@ function ReportsTab({ onNewDocument }: { onNewDocument: () => void }) {
         }
       />
 
-      </fieldset>
+      </div>
 
       <DocumentActions
         title="Relatório médico"
@@ -886,7 +910,7 @@ function CertificateTab({ onNewDocument }: { onNewDocument: () => void }) {
 
   return (
     <>
-      <fieldset disabled={locked} className="min-w-0 space-y-6 border-0 p-0">
+      <div className="min-w-0 space-y-6">
       <SurfaceCard
         title="Dados do atestado"
         description="O texto padrão é gerado automaticamente a partir destes campos."
@@ -899,13 +923,15 @@ function CertificateTab({ onNewDocument }: { onNewDocument: () => void }) {
             value={paciente}
             onChange={setPaciente}
             error={pacienteError}
+            readOnly={locked}
           />
-          <CidFields id="atestado-cid" cid={cid} descricao={diagnosticoSelecionado} onChange={handleCid} error={cidError} />
+          <CidFields id="atestado-cid" cid={cid} descricao={diagnosticoSelecionado} onChange={handleCid} error={cidError} readOnly={locked} />
           <SavedTemplatesField
             id="atestado-modelo"
             templates={savedTemplates}
             value={modelo}
             onSelect={applySavedTemplate}
+            readOnly={locked}
           />
           <div className="grid min-w-0 gap-4 sm:grid-cols-2 xl:grid-cols-3 [&>*]:min-w-0">
             <SelectField
@@ -979,7 +1005,7 @@ function CertificateTab({ onNewDocument }: { onNewDocument: () => void }) {
         }
       />
 
-      </fieldset>
+      </div>
 
       <DocumentActions
         title="Atestado médico"
@@ -1113,7 +1139,7 @@ function AttendanceTab({ onNewDocument }: { onNewDocument: () => void }) {
 
   return (
     <>
-      <fieldset disabled={locked} className="min-w-0 space-y-6 border-0 p-0">
+      <div className="min-w-0 space-y-6">
       <SurfaceCard
         title="Dados da declaração"
         description="Informe o local e os horários de permanência do paciente no atendimento."
@@ -1126,6 +1152,7 @@ function AttendanceTab({ onNewDocument }: { onNewDocument: () => void }) {
             value={paciente}
             onChange={setPaciente}
             error={pacienteError}
+            readOnly={locked}
           />
           <Field id="comp-local" label="Local de atendimento" error={localError}>
             <Input
@@ -1141,6 +1168,7 @@ function AttendanceTab({ onNewDocument }: { onNewDocument: () => void }) {
             templates={savedTemplates}
             value={modelo}
             onSelect={applySavedTemplate}
+            readOnly={locked}
           />
           <div className="grid min-w-0 gap-4 sm:grid-cols-2 xl:grid-cols-4 [&>*]:min-w-0">
             <Field id="comp-cidade" label="Cidade" optional error={cidadeError}>
@@ -1224,7 +1252,7 @@ function AttendanceTab({ onNewDocument }: { onNewDocument: () => void }) {
         }
       />
 
-      </fieldset>
+      </div>
 
       <DocumentActions
         title="Declaração de comparecimento"
@@ -1254,11 +1282,13 @@ function SavedTemplatesField({
   templates,
   value,
   onSelect,
+  readOnly,
 }: {
   id: string;
   templates: SavedDocumentTemplate[];
   value: string;
   onSelect: (value: string) => void;
+  readOnly?: boolean;
 }) {
   const empty = templates.length === 0;
   return (
@@ -1268,6 +1298,7 @@ function SavedTemplatesField({
       placeholder={empty ? "Nenhum modelo salvo ainda" : "Selecione um modelo salvo"}
       value={value}
       onValueChange={onSelect}
+      readOnly={readOnly}
       disabled={empty}
       options={templates.map((t) => ({ value: t.value, label: `${t.label} (salvo)` }))}
       hint={
