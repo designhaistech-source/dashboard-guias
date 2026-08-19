@@ -1502,7 +1502,8 @@ function DashboardPage() {
           {/* Procedures */}
           <SurfaceCard
             title="Procedimentos mais realizados"
-            description={`Procedimentos mais frequentes nas guias — ${periodLabel}`}
+            description="Procedimentos mais frequentes nas guias extraídas no período filtrado"
+
           >
             {procedures.length === 0 ? (
               emptyState
