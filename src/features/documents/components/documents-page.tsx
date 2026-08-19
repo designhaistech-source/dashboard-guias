@@ -166,6 +166,15 @@ export interface FieldIssue {
   message: string;
 }
 
+/** Monta a lista de erros ignorando campos válidos. */
+function buildIssues(
+  entries: { fieldId: string; label: string; message?: string }[],
+): FieldIssue[] {
+  return entries
+    .filter((e): e is FieldIssue => Boolean(e.message))
+    .map((e) => ({ fieldId: e.fieldId, label: e.label, message: e.message }));
+}
+
 /** Move o foco (e a rolagem) para o campo com erro. */
 function focusField(fieldId: string) {
   const el = document.getElementById(fieldId);
@@ -440,6 +449,15 @@ function ReportsTab() {
   const pacienteError = useMemo(() => validatePaciente(paciente), [paciente]);
   const cidError = useMemo(() => validateCid(cid), [cid]);
 
+  const issues = useMemo(
+    () =>
+      buildIssues([
+        { fieldId: "relatorio-paciente", label: "Paciente", message: pacienteError },
+        { fieldId: "cid-codigo", label: "CID", message: cidError },
+      ]),
+    [pacienteError, cidError],
+  );
+
 
   function applyTemplate(value: string) {
     const template = REPORT_TEMPLATES.find((t) => t.value === value);
@@ -520,7 +538,7 @@ function ReportsTab() {
         html={html}
         paciente={paciente}
         pacienteFieldId="relatorio-paciente"
-        issues={reportIssues}
+        issues={issues}
 
         onSaveTemplate={() => toast.success("Modelo salvo e disponível na lista (simulação).")}
       />
@@ -576,7 +594,17 @@ function CertificateTab() {
   const cidadeError = useMemo(() => validateCidade(cidade), [cidade]);
   const diasError = useMemo(() => validateDiasAfastamento(dias), [dias]);
 
-  const blockReason = dataStatus.error ?? pacienteError ?? cidError ?? cidadeError ?? diasError;
+  const issues = useMemo(
+    () =>
+      buildIssues([
+        { fieldId: "atestado-paciente", label: "Paciente", message: pacienteError },
+        { fieldId: "cid-codigo", label: "CID", message: cidError },
+        { fieldId: "atestado-dias", label: "Dias de afastamento", message: diasError },
+        { fieldId: "atestado-data", label: "Data do documento", message: dataStatus.error },
+        { fieldId: "atestado-cidade", label: "Cidade", message: cidadeError },
+      ]),
+    [pacienteError, cidError, diasError, dataStatus.error, cidadeError],
+  );
 
 
   const { requestReplace, replacementDialog } = useTextReplacement(html, setHtml);
@@ -686,7 +714,8 @@ function CertificateTab() {
         title="Atestado médico"
         html={conteudo}
         paciente={paciente}
-        blockReason={blockReason}
+        pacienteFieldId="atestado-paciente"
+        issues={issues}
         onSaveTemplate={() =>
           toast.success("Modelo de atestado salvo e disponível na lista (simulação).")
         }
@@ -752,13 +781,25 @@ function AttendanceTab() {
   const cidadeError = useMemo(() => validateCidade(cidade), [cidade]);
   const horarios = useMemo(() => validateTimeRange(entrada, saida), [entrada, saida]);
 
-  const blockReason =
-    dataStatus.error ??
-    pacienteError ??
-    localError ??
-    cidadeError ??
-    horarios.entradaError ??
-    horarios.saidaError;
+  const issues = useMemo(
+    () =>
+      buildIssues([
+        { fieldId: "comp-paciente", label: "Paciente", message: pacienteError },
+        { fieldId: "comp-local", label: "Local de atendimento", message: localError },
+        { fieldId: "comp-cidade", label: "Cidade", message: cidadeError },
+        { fieldId: "comp-data", label: "Data do comparecimento", message: dataStatus.error },
+        { fieldId: "comp-entrada", label: "Horário de entrada", message: horarios.entradaError },
+        { fieldId: "comp-saida", label: "Horário de saída", message: horarios.saidaError },
+      ]),
+    [
+      pacienteError,
+      localError,
+      cidadeError,
+      dataStatus.error,
+      horarios.entradaError,
+      horarios.saidaError,
+    ],
+  );
 
 
   const { requestReplace, replacementDialog } = useTextReplacement(html, setHtml);
@@ -886,7 +927,8 @@ function AttendanceTab() {
         title="Declaração de comparecimento"
         html={conteudo}
         paciente={paciente}
-        blockReason={blockReason}
+        pacienteFieldId="comp-paciente"
+        issues={issues}
 
         onSaveTemplate={() =>
           toast.success(
