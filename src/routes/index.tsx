@@ -239,7 +239,18 @@ async function captureChartPng(
   }
 }
 
-async function generateReportPdf(periodLabel: string, metrics: DashboardMetrics) {
+/** Extra context so the PDF matches the wording shown on the "Guias extraídas" tab. */
+type ReportContext = {
+  todayLabel: string;
+  todayComparison?: string;
+  averageComparison?: string;
+};
+
+async function generateReportPdf(
+  periodLabel: string,
+  metrics: DashboardMetrics,
+  context: ReportContext,
+) {
   const { dailyAvg, total, types: typeData, procedures } = metrics;
   try {
     const doc = new jsPDF({ unit: "pt", format: "a4" });
