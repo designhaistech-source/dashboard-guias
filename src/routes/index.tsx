@@ -1003,18 +1003,6 @@ function DashboardPage() {
   const dayCount = dailyData.length;
 
   /**
-   * Support sentences shown under each KPI value. They mirror the selected
-   * period and the extra filters so the number never depends on a tooltip.
-   */
-  const periodPhrase = dayCount > 0 ? `no período (${periodLabel})` : "no período selecionado";
-  const scopePhrase = useMemo(() => {
-    const parts: string[] = [];
-    if (filters.tipoGuia.trim()) parts.push(`tipo ${filters.tipoGuia}`);
-    if (filters.prestadorSolicitante.trim()) parts.push(filters.prestadorSolicitante);
-    return parts.length ? ` · ${parts.join(" · ")}` : "";
-  }, [filters.tipoGuia, filters.prestadorSolicitante]);
-
-  /**
    * Compares the last 7 days against the 7 preceding days so the daily average
    * card can describe its variation in plain language.
    */
@@ -1259,7 +1247,6 @@ function DashboardPage() {
               label="Total de guias extraídas"
               value={String(total)}
               tooltip={kpiTooltips.total}
-              description={`guias extraídas ${periodPhrase}${scopePhrase}`}
               hint={
                 dayCount > 0
                   ? `Em ${dayCount} ${dayCount === 1 ? "dia" : "dias"}`
@@ -1273,8 +1260,7 @@ function DashboardPage() {
               value={String(metrics.today)}
               meta={todayLabel}
               tooltip={kpiTooltips.today}
-              description={`guias extraídas hoje${scopePhrase}`}
-              hint={todayTrend ? todayTrend.label : "Sem comparação com o dia anterior"}
+              hint={todayTrend ? todayTrend.label : "Guias extraídas nesta data"}
               tone="success"
               trend={todayTrend?.direction}
             />
@@ -1283,11 +1269,6 @@ function DashboardPage() {
               label="Média de guias por dia"
               value={String(dailyAvg)}
               tooltip={kpiTooltips.average}
-              description={
-                dayCount > 0
-                  ? `guias por dia em ${dayCount} ${dayCount === 1 ? "dia" : "dias"}${scopePhrase}`
-                  : `guias por dia ${periodPhrase}${scopePhrase}`
-              }
               hint={weekTrend ? weekTrend.label : ""}
               tone="info"
               trend={weekTrend?.direction}
@@ -1297,17 +1278,9 @@ function DashboardPage() {
               label="Tipos de guia"
               value={String(metrics.distinctTypes)}
               tooltip={kpiTooltips.types}
-              description={`${
-                metrics.distinctTypes === 1 ? "tipo diferente" : "tipos diferentes"
-              } ${periodPhrase}${scopePhrase}`}
-              hint={
-                typeData.length
-                  ? typeData.map((t) => t.name).join(", ")
-                  : "Nenhum tipo de guia no período"
-              }
+              hint=""
               tone="purple"
             />
-
           </div>
 
           {/* Charts row */}
@@ -1631,7 +1604,6 @@ function Kpi({
   label,
   value,
   hint,
-  description,
   meta,
   tooltip,
   tone,
@@ -1641,8 +1613,6 @@ function Kpi({
   label: string;
   value: string;
   hint: string;
-  /** Plain-language sentence explaining what the number counts. */
-  description?: string;
   /** Discreet reference detail (e.g. the exact date the value refers to). */
   meta?: string;
   /** Short sentence with the exact dates and the comparison rule used. */
@@ -1687,9 +1657,6 @@ function Kpi({
       </div>
       {meta && <div className="mt-0.5 text-xs text-muted-foreground">{meta}</div>}
       <div className="mt-3 metric-value text-foreground">{value}</div>
-      {description && (
-        <div className="mt-0.5 text-xs text-muted-foreground">{description}</div>
-      )}
       {(hint || trend) && (
         <div
           className={[
