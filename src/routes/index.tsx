@@ -970,6 +970,38 @@ function DashboardPage() {
   /** Reference date of the "today" KPI, shown discreetly in the card. */
   const todayLabel = formatIsoToBr(todayLocalIsoDate());
 
+  /** Number of days covered by the selected period. */
+  const dayCount = dailyData.length;
+
+  /**
+   * Compares the last 7 days against the 7 preceding days so the daily average
+   * card can describe its variation in plain language.
+   */
+  const weekTrend = useMemo<KpiTrend | undefined>(() => {
+    if (dailyData.length < 4) return undefined;
+    const window = Math.min(7, Math.floor(dailyData.length / 2));
+    const recent = dailyData.slice(-window);
+    const previous = dailyData.slice(-window * 2, -window);
+    if (previous.length === 0) return undefined;
+    const avg = (rows: typeof dailyData) =>
+      rows.reduce((sum, row) => sum + row.guias, 0) / rows.length;
+    const recentAvg = avg(recent);
+    const previousAvg = avg(previous);
+    const diff = Number((recentAvg - previousAvg).toFixed(1));
+    const period = `nos ${window} dias anteriores`;
+    if (diff === 0) {
+      return { direction: "flat", label: `Média igual à ${period.replace("nos", "dos")}` };
+    }
+    return {
+      direction: diff > 0 ? "up" : "down",
+      label: `${Math.abs(diff).toLocaleString("pt-BR")} ${
+        Math.abs(diff) === 1 ? "guia" : "guias"
+      } por dia ${diff > 0 ? "a mais" : "a menos"} que ${period}`,
+    };
+  }, [dailyData]);
+
+
+
 
   return (
     <div className="flex min-h-screen w-full bg-background text-foreground">
