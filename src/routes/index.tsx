@@ -33,6 +33,7 @@ import {
 import { AppBreadcrumb } from "@/components/app-breadcrumb";
 import { AppSidebar } from "@/components/app-sidebar";
 import { SiteFooter } from "@/components/site-footer";
+import { EmptyState } from "@/components/data-state";
 import { ConfirmDialog } from "@/components/confirm-dialog";
 import { PageHeader } from "@/components/page-header";
 import { SurfaceCard } from "@/components/surface-card";
@@ -395,7 +396,7 @@ async function generateReportPdf(periodLabel: string, metrics: DashboardMetrics)
       margin: { left: margin, right: margin },
       tableWidth: contentW,
       head: [["Tipo", "Qtd.", "%"]],
-      body: typeData.map((t) => [t.name, String(t.value), `${Math.round((t.value / total) * 100)}%`]),
+      body: typeData.map((t) => [t.name, String(t.value), `${total > 0 ? Math.round((t.value / total) * 100) : 0}%`]),
       theme: "striped",
       headStyles: tableHeadStyles,
       bodyStyles: { font: FONT, fontStyle: "normal", textColor: TYPE.tableBody.color },
@@ -764,6 +765,26 @@ function DashboardPage() {
   const typeData = metrics.types;
   const procedures = metrics.procedures;
   const dailyData = metrics.daily;
+  const hasData = total > 0;
+  const emptyState = (
+    <EmptyState
+      size="sm"
+      title="Nenhuma guia encontrada"
+      description={
+        activeFilters.length > 0
+          ? "Nenhum resultado para os filtros aplicados. Ajuste ou limpe os filtros para ver os dados."
+          : "Ainda não há guias processadas para exibir."
+      }
+      action={
+        activeFilters.length > 0 ? (
+          <Button type="button" variant="outline" size="sm" onClick={() => setFilters(emptyFilters)}>
+            Limpar filtros
+          </Button>
+        ) : undefined
+      }
+    />
+  );
+
   /** Real variation of the latest day against the previous one. */
   const todayTrend = useMemo<KpiTrend | undefined>(() => {
     if (dailyData.length < 2) return undefined;
@@ -806,7 +827,18 @@ function DashboardPage() {
                     </Badge>
                   )}
                 </Button>
-                <Button size="sm" onClick={() => generateReportPdf(periodLabel, metrics)}>
+                <Button
+                  size="sm"
+                  onClick={() => {
+                    if (!hasData) {
+                      toast.error("Nenhuma guia no período — ajuste os filtros para gerar o relatório.");
+                      return;
+                    }
+                    void generateReportPdf(periodLabel, metrics);
+                  }}
+                  disabled={!hasData}
+                  title={!hasData ? "Sem dados para gerar o relatório" : undefined}
+                >
                   <Download className="h-4 w-4" />
                   Gerar relatório
                 </Button>
