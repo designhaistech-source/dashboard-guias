@@ -634,30 +634,16 @@ function formatFilterValue(key: keyof GuideFilters, value: string): string {
 }
 
 const filterLabels: Record<keyof GuideFilters, string> = {
-  numGuiaPrestador: "Nº guia",
-  numGuiaOperadora: "Nº guia operadora",
-  senha: "Senha",
-  registroAns: "Registro ANS",
   dataAutorizacaoDe: "Autorização de",
   dataAutorizacaoAte: "Autorização até",
+  numGuiaPrestador: "Nº guia",
   beneficiarioNome: "Beneficiário",
-  numCarteira: "Nº carteira",
-  atendRn: "Atend. RN",
-  prestadorSolicitante: "Prestador solicitante",
-  profissional: "Profissional",
-  conselho: "Conselho",
-  numConselho: "Nº conselho",
-  ufConselho: "UF conselho",
-  cbo: "CBO",
-  prestadorExecutante: "Prestador executante",
-  cnes: "CNES",
-  procTabela: "Tabela",
-  procCodigo: "Código procedimento",
-  procDescricao: "Descrição procedimento",
-  procReferencia: "Referência",
-  componenteFinanceiro: "Componente financeiro",
   tipoGuia: "Tipo de guia",
+  prestadorSolicitante: "Prestador",
+  procDescricao: "Procedimento",
+  procCodigo: "Código proc.",
 };
+
 
 type ProcedureSortColumn = "code" | "name" | "count";
 type ProcedureSort = { column: ProcedureSortColumn; direction: "asc" | "desc" };
