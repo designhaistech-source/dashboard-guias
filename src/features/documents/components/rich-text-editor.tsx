@@ -75,7 +75,10 @@ interface RichTextEditorProps {
   pendingVariables?: readonly string[];
   /** Valor atual de cada variável (ex.: { "@paciente": "Maria" }); usado ao inserir o chip. */
   variableValues?: Readonly<Record<string, string>>;
+  /** Quando informado, "Pré-visualizar" abre o documento paginado em A4 (só conferência). */
+  pagePreview?: { title: string; paciente: string };
 }
+
 
 /**
  * Editor de texto simples usado nos documentos clínicos.
