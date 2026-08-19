@@ -745,6 +745,18 @@ function DashboardPage() {
     [filters],
   );
 
+  /**
+   * Contador exibido ao lado de "Filtros": conta apenas os filtros adicionais
+   * (Tipo de guia e Prestador). O período já aparece na linha de contexto.
+   */
+  const extraFilterCount = useMemo(
+    () =>
+      [filters.tipoGuia, filters.prestadorSolicitante].filter((v) => v.trim() !== "")
+        .length,
+    [filters.tipoGuia, filters.prestadorSolicitante],
+  );
+
+
   const dateRangeInvalid =
     !!filters.dataAutorizacaoDe &&
     !!filters.dataAutorizacaoAte &&
@@ -986,15 +998,26 @@ function DashboardPage() {
           />
 
 
-          {/* Período aplicado — sempre visível, sem abrir os filtros */}
-          <p className="flex items-center gap-2 text-sm text-muted-foreground" aria-live="polite">
-            <CalendarRange className="h-4 w-4 shrink-0" aria-hidden="true" />
+          {/* Recorte aplicado — sempre visível, sem abrir os filtros */}
+          <p className="flex items-start gap-2 text-sm text-muted-foreground" aria-live="polite">
+            <CalendarRange className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />
             <span>
-              Indicadores e gráficos do período:{" "}
-              <span className="font-medium text-foreground">{periodLabel}</span>{" "}
-              <span className="text-muted-foreground/80">{timeZoneLabel ? `• ${timeZoneLabel}` : ""}</span>
+              Dados exibidos:{" "}
+              <span className="font-medium text-foreground">{periodLabel}</span>
+              {" · "}Tipo de guia:{" "}
+              <span className="font-medium text-foreground">
+                {filters.tipoGuia.trim() || "Todos os tipos de guia"}
+              </span>
+              {" · "}Prestador:{" "}
+              <span className="font-medium text-foreground">
+                {filters.prestadorSolicitante.trim() || "Todos os prestadores"}
+              </span>
+              {timeZoneLabel ? (
+                <span className="text-muted-foreground/80">{` · ${timeZoneLabel}`}</span>
+              ) : null}
             </span>
           </p>
+
 
 
 
@@ -1014,11 +1037,16 @@ function DashboardPage() {
                 <h2 className="font-display text-base font-semibold tracking-tight text-foreground">
                   Filtros
                 </h2>
-                {activeFilters.length > 0 && (
-                  <Badge variant="secondary" size="sm">
-                    {activeFilters.length}
+                {extraFilterCount > 0 && (
+                  <Badge
+                    variant="secondary"
+                    size="sm"
+                    aria-label={`${extraFilterCount} filtro${extraFilterCount > 1 ? "s" : ""} adicional${extraFilterCount > 1 ? "is" : ""} ativo${extraFilterCount > 1 ? "s" : ""}`}
+                  >
+                    {extraFilterCount}
                   </Badge>
                 )}
+
               </div>
               <Button
                 type="button"
