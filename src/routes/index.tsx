@@ -650,6 +650,26 @@ function formatFilterValue(key: keyof GuideFilters, value: string): string {
   return `${day}/${month}/${year}`;
 }
 
+const MONTH_ABBR = [
+  "jan", "fev", "mar", "abr", "mai", "jun",
+  "jul", "ago", "set", "out", "nov", "dez",
+] as const;
+
+/**
+ * Eixo X do gráfico diário: mostra apenas o dia para manter a leitura limpa e
+ * acrescenta o mês abreviado no primeiro ponto e a cada virada de mês, para que
+ * o período seja identificável mesmo atravessando meses.
+ */
+function formatDailyTick(iso: string, index: number): string {
+  const [, month, day] = iso.split("-");
+  if (!month || !day) return iso;
+  const monthLabel = MONTH_ABBR[Number(month) - 1] ?? month;
+  const showMonth = index === 0 || day === "01";
+  return showMonth ? `${day} ${monthLabel}` : day;
+}
+
+
+
 const filterLabels: Record<keyof GuideFilters, string> = {
   dataAutorizacaoDe: "Período de",
   dataAutorizacaoAte: "Período até",
@@ -1094,8 +1114,10 @@ function DashboardPage() {
                       </linearGradient>
                     </defs>
                     <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" vertical={false} />
-                    <XAxis dataKey="day" stroke="var(--muted-foreground)" fontSize={11} tickLine={false} axisLine={false} tickMargin={6}
+                    <XAxis dataKey="date" stroke="var(--muted-foreground)" fontSize={11} tickLine={false} axisLine={false} tickMargin={6}
+                      interval="preserveStartEnd" minTickGap={18} tickFormatter={formatDailyTick}
                       label={{ value: "Data", position: "insideBottom", offset: -8, fill: "var(--muted-foreground)", fontSize: 11 }} />
+
                     <YAxis stroke="var(--muted-foreground)" fontSize={11} tickLine={false} axisLine={false} width={44} allowDecimals={false}
                       label={{ value: "Quantidade de guias", angle: -90, position: "insideLeft", fill: "var(--muted-foreground)", fontSize: 11, style: { textAnchor: "middle" } }} />
 
