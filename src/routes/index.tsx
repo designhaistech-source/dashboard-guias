@@ -18,6 +18,7 @@ import {
   ChevronsUpDown,
   ChevronUp,
   ChevronDown,
+  CalendarRange,
 } from "lucide-react";
 import {
   AreaChart,
@@ -938,6 +939,15 @@ function DashboardPage() {
           />
 
 
+          {/* Período aplicado — sempre visível, sem abrir os filtros */}
+          <p className="flex items-center gap-2 text-sm text-muted-foreground" aria-live="polite">
+            <CalendarRange className="h-4 w-4 shrink-0" aria-hidden="true" />
+            <span>
+              Indicadores e gráficos do período:{" "}
+              <span className="font-medium text-foreground">{periodLabel}</span>
+            </span>
+          </p>
+
           {/* Chips de filtros ativos */}
           {activeFilters.length > 0 && (
             <div className="flex flex-wrap items-center gap-2">
@@ -980,7 +990,7 @@ function DashboardPage() {
               title="Filtros"
               description={
                 <>
-                  Refine as guias exibidas no dashboard.
+                  Selecione os critérios para atualizar os indicadores e gráficos da página.
                   {isDirty && (
                     <span className="ml-2 text-warning-strong">• alterações não aplicadas</span>
                   )}
