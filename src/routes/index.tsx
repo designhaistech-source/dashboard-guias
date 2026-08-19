@@ -727,23 +727,24 @@ function SortableHead({
       aria-sort={ariaSort}
       className={align === "right" ? "text-right" : undefined}
     >
-      <button
+      <Button
         type="button"
+        variant="ghost"
+        size="sm"
         onClick={() =>
           onSort({
             column,
             direction: active && sort.direction === "asc" ? "desc" : active ? "asc" : column === "count" ? "desc" : "asc",
           })
         }
-        className={[
-          "inline-flex items-center gap-1 rounded-sm uppercase tracking-wide",
-          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
-          active ? "text-foreground" : "hover:text-foreground",
-        ].join(" ")}
+        className={cn(
+          "-mx-2 h-auto gap-1 px-2 py-1 text-xs font-medium uppercase tracking-wide",
+          active ? "text-foreground" : "text-muted-foreground",
+        )}
       >
         {label}
         <Icon className="h-3 w-3" aria-hidden="true" />
-      </button>
+      </Button>
     </DataTableHead>
   );
 }
@@ -1553,13 +1554,15 @@ function Kpi({
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <button
+                  <Button
                     type="button"
-                    className="rounded-full text-muted-foreground hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                    variant="ghost"
+                    size="icon"
+                    className="h-5 w-5 rounded-full text-muted-foreground hover:text-foreground [&_svg]:size-3.5"
                     aria-label={`Como este indicador é calculado: ${tooltip}`}
                   >
-                    <Info className="h-3.5 w-3.5" aria-hidden="true" />
-                  </button>
+                    <Info aria-hidden="true" />
+                  </Button>
                 </TooltipTrigger>
                 <TooltipContent className="max-w-64 text-xs">{tooltip}</TooltipContent>
               </Tooltip>
