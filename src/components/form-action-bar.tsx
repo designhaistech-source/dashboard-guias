@@ -14,6 +14,8 @@ interface FormActionBarProps {
   steps?: FormActionStep[];
   /** Rótulo acima das pills (ex.: "Etapas preenchidas"). */
   stepsLabel?: string;
+  /** Bloco de alerta exibido acima das ações (ex.: resumo de erros de validação). */
+  banner?: ReactNode;
   /** Nota discreta abaixo das pills (ex.: aviso de campos obrigatórios). */
   note?: ReactNode;
   /** Botões de ação (secundários com `variant="outline"`, primário por último). */
@@ -29,6 +31,7 @@ interface FormActionBarProps {
 export function FormActionBar({
   steps,
   stepsLabel,
+  banner,
   note,
   children,
   className,
@@ -57,6 +60,7 @@ export function FormActionBar({
 
       {children && (
         <div className="rounded-xl border border-border bg-card/95 px-4 py-3 shadow-xs backdrop-blur">
+          {banner && <div className="mb-3">{banner}</div>}
           <div className="grid min-w-0 grid-cols-1 gap-2 xs:grid-cols-2 sm:flex sm:flex-wrap sm:items-center sm:justify-end [&>*]:w-full [&>*]:min-w-0 [&>*]:justify-center sm:[&>*]:w-auto">
             {children}
           </div>
