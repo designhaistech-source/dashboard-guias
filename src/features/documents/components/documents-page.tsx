@@ -211,13 +211,19 @@ function focusField(fieldId: string) {
 
 function DocumentActions({
   title,
+  type,
   html,
   paciente,
   pacienteFieldId,
   onSaveTemplate,
   issues = [],
+  issuedDoc,
+  onIssued,
+  onNewDocument,
 }: {
   title: string;
+  /** Tipo registrado em "Documentos emitidos". */
+  type: IssuedDocumentType;
   html: string;
   paciente: string;
   /** id do campo de paciente, para focar quando estiver vazio. */
@@ -225,10 +231,15 @@ function DocumentActions({
   onSaveTemplate?: () => void;
   /** Erros de validação com o campo culpado, exibidos inline e anunciados por leitor de tela. */
   issues?: FieldIssue[];
+  /** Documento já emitido nesta aba (formulário em modo somente leitura). */
+  issuedDoc: IssuedDocument | null;
+  onIssued: (doc: IssuedDocument) => void;
+  onNewDocument: () => void;
 }) {
   const disabled = !paciente.trim();
   const temTexto = html.replace(/<[^>]+>/g, "").trim().length > 0;
   const [downloading, setDownloading] = useState(false);
+  const [confirmOpen, setConfirmOpen] = useState(false);
   const summaryId = "document-actions-issues";
 
   const allIssues: FieldIssue[] = disabled
@@ -250,28 +261,25 @@ function DocumentActions({
     focusField(first.fieldId);
   }
 
-
-
-
-  function handlePrint() {
-    if (hasIssues) {
-      reportIssues();
-      return;
-    }
-    printHtml(title, paciente, html);
-  }
-
-  async function handleDownload() {
+  function handleIssue() {
     if (hasIssues) {
       reportIssues();
       return;
     }
     if (!temTexto) {
-      toast.error("Escreva o texto do documento antes de baixar o PDF.");
+      toast.error("Escreva o texto do documento antes de emitir.");
       return;
     }
+    const doc = addIssuedDocument({ type, patient: paciente.trim(), body: html });
+    onIssued(doc);
+    setConfirmOpen(true);
+  }
 
+  function handlePrint() {
+    printHtml(title, paciente, html);
+  }
 
+  async function handleDownload() {
     setDownloading(true);
     const toastId = toast.loading("Gerando PDF do documento…");
     try {
@@ -288,83 +296,159 @@ function DocumentActions({
     }
   }
 
-  return (
-    <FormActionBar
-      stepsLabel="Etapas preenchidas"
-      steps={[
-        { label: "Paciente", done: !disabled },
-        { label: "Texto do documento", done: temTexto },
-      ]}
-      note="Para ter validade, o documento deve ser impresso e assinado manualmente pelo médico."
-      banner={
-        hasIssues ? (
-          <div
-            id={summaryId}
-            role="alert"
-            className="rounded-md border border-destructive/40 bg-destructive/5 p-3 text-xs text-destructive sm:text-sm"
-          >
-            <p className="flex items-start gap-1.5 font-medium">
-              <AlertCircle className="icon-optical mt-0.5 h-4 w-4 shrink-0" aria-hidden />
-              <span>
-                {allIssues.length === 1
-                  ? "1 campo precisa de correção antes de emitir o documento:"
-                  : `${allIssues.length} campos precisam de correção antes de emitir o documento:`}
-              </span>
-            </p>
-            <ul className="mt-1.5 space-y-1 pl-6">
-              {allIssues.map((issue) => (
-                <li key={`${issue.fieldId}-${issue.message}`}>
-                  <Button
-                    type="button"
-                    variant="link"
-                    className="h-auto justify-start p-0 text-left text-xs text-destructive underline sm:text-sm"
-                    onClick={() => focusField(issue.fieldId)}
-                  >
-                    {issue.label}: {issue.message}
-                  </Button>
-                </li>
-              ))}
-            </ul>
-          </div>
-        ) : undefined
-      }
+  const downloadButton = (
+    <Button
+      type="button"
+      variant="outline"
+      size="sm"
+      onClick={handleDownload}
+      disabled={downloading}
+      aria-busy={downloading}
     >
-      {onSaveTemplate && (
-        <Button type="button" variant="outline" size="sm" onClick={onSaveTemplate}>
-          <BookmarkPlus className="icon-optical h-4 w-4" aria-hidden />
-          Salvar como modelo
-        </Button>
+      {downloading ? (
+        <Loader2 className="icon-optical h-4 w-4 animate-spin" aria-hidden />
+      ) : (
+        <Download className="icon-optical h-4 w-4" aria-hidden />
       )}
-      <Button
-        type="button"
-        variant="outline"
-        size="sm"
-        onClick={handleDownload}
-        disabled={downloading}
-        aria-busy={downloading}
-        aria-describedby={hasIssues ? summaryId : undefined}
+      {downloading ? "Gerando PDF…" : "Baixar PDF"}
+    </Button>
+  );
+
+  const printButton = (
+    <Button type="button" variant="outline" size="sm" onClick={handlePrint}>
+      <Printer className="icon-optical h-4 w-4" aria-hidden />
+      Imprimir
+    </Button>
+  );
+
+  const viewIssuedButton = (
+    <Button asChild type="button" variant="outline" size="sm">
+      <Link to="/documentos-emitidos">
+        <ExternalLink className="icon-optical h-4 w-4" aria-hidden />
+        Ver documento emitido
+      </Link>
+    </Button>
+  );
+
+  return (
+    <>
+      <FormActionBar
+        stepsLabel="Etapas preenchidas"
+        steps={[
+          { label: "Paciente", done: !disabled },
+          { label: "Texto do documento", done: temTexto },
+          { label: "Documento emitido", done: Boolean(issuedDoc) },
+        ]}
+        note={
+          issuedDoc
+            ? `Documento ${issuedDoc.id} emitido e salvo em “Documentos emitidos”. Para ter validade, imprima o documento e realize a assinatura manualmente.`
+            : "Para ter validade, imprima o documento e realize a assinatura manualmente."
+        }
+        banner={
+          issuedDoc ? (
+            <div
+              role="status"
+              className="rounded-md border border-border bg-muted/40 p-3 text-xs text-foreground sm:text-sm"
+            >
+              <p className="flex items-start gap-1.5 font-medium">
+                <CheckCircle2 className="icon-optical mt-0.5 h-4 w-4 shrink-0 text-success" aria-hidden />
+                <span>
+                  {type} {issuedDoc.id} já emitido — o formulário está em modo somente
+                  leitura. Use “Novo documento” para iniciar outra emissão.
+                </span>
+              </p>
+            </div>
+          ) : hasIssues ? (
+            <div
+              id={summaryId}
+              role="alert"
+              className="rounded-md border border-destructive/40 bg-destructive/5 p-3 text-xs text-destructive sm:text-sm"
+            >
+              <p className="flex items-start gap-1.5 font-medium">
+                <AlertCircle className="icon-optical mt-0.5 h-4 w-4 shrink-0" aria-hidden />
+                <span>
+                  {allIssues.length === 1
+                    ? "1 campo precisa de correção antes de emitir o documento:"
+                    : `${allIssues.length} campos precisam de correção antes de emitir o documento:`}
+                </span>
+              </p>
+              <ul className="mt-1.5 space-y-1 pl-6">
+                {allIssues.map((issue) => (
+                  <li key={`${issue.fieldId}-${issue.message}`}>
+                    <Button
+                      type="button"
+                      variant="link"
+                      className="h-auto justify-start p-0 text-left text-xs text-destructive underline sm:text-sm"
+                      onClick={() => focusField(issue.fieldId)}
+                    >
+                      {issue.label}: {issue.message}
+                    </Button>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ) : undefined
+        }
       >
-        {downloading ? (
-          <Loader2 className="icon-optical h-4 w-4 animate-spin" aria-hidden />
+        {issuedDoc ? (
+          <>
+            {viewIssuedButton}
+            <Button type="button" size="sm" onClick={onNewDocument}>
+              <FilePlus2 className="icon-optical h-4 w-4" aria-hidden />
+              Novo documento
+            </Button>
+          </>
         ) : (
-          <Download className="icon-optical h-4 w-4" aria-hidden />
+          <>
+            {onSaveTemplate && (
+              <Button type="button" variant="outline" size="sm" onClick={onSaveTemplate}>
+                <BookmarkPlus className="icon-optical h-4 w-4" aria-hidden />
+                Salvar como modelo
+              </Button>
+            )}
+            <Button
+              type="button"
+              size="sm"
+              onClick={handleIssue}
+              aria-describedby={hasIssues ? summaryId : undefined}
+            >
+              <Send className="icon-optical h-4 w-4" aria-hidden />
+              Emitir documento
+            </Button>
+          </>
         )}
-        {downloading ? "Gerando PDF…" : "Baixar PDF"}
-      </Button>
-      <Button
-        type="button"
+      </FormActionBar>
+
+      <AppModal
+        open={confirmOpen}
+        onOpenChange={setConfirmOpen}
+        title="Documento emitido com sucesso"
+        description={
+          issuedDoc
+            ? `${type} ${issuedDoc.id} salvo em “Documentos emitidos”.`
+            : "Documento salvo em “Documentos emitidos”."
+        }
+        icon={<CheckCircle2 className="icon-optical h-4 w-4 text-success" aria-hidden />}
         size="sm"
-        onClick={handlePrint}
-        aria-describedby={hasIssues ? summaryId : undefined}
+        footer={
+          <>
+            {downloadButton}
+            {printButton}
+            {viewIssuedButton}
+            <Button type="button" size="sm" onClick={() => setConfirmOpen(false)}>
+              Fechar
+            </Button>
+          </>
+        }
       >
-        <Printer className="icon-optical h-4 w-4" aria-hidden />
-        Imprimir
-      </Button>
-
-
-
-
-    </FormActionBar>
+        <p className="flex items-start gap-1.5 text-sm text-muted-foreground">
+          <Info className="icon-optical mt-0.5 h-4 w-4 shrink-0" aria-hidden />
+          <span>
+            Para ter validade, imprima o documento e realize a assinatura manualmente.
+          </span>
+        </p>
+      </AppModal>
+    </>
   );
 }
 
