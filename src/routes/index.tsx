@@ -376,10 +376,11 @@ async function generateReportPdf(periodLabel: string, metrics: DashboardMetrics)
       margin: { left: margin, right: margin },
       head: [["Indicador", "Valor"]],
       body: [
-        ["Total extraídas", String(total)],
-        ["Extraídas hoje", String(metrics.today)],
-        ["Média por dia", String(dailyAvg)],
-        ["Tipos diferentes", String(typeData.length)],
+        ["Total de guias extraídas", String(total)],
+        ["Guias extraídas hoje", String(metrics.today)],
+        ["Média de guias por dia", String(dailyAvg)],
+        ["Tipos de guia", String(typeData.length)],
+
       ],
       theme: "grid",
       headStyles: tableHeadStyles,
@@ -1031,10 +1032,11 @@ function DashboardPage() {
 
           {/* KPIs */}
           <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-            <Kpi icon={FileText} label="Total extraídas" value={String(total)} hint={activeFilters.length > 0 ? "com filtros aplicados" : "no período"} tone="primary" />
-            <Kpi icon={Activity} label="Extraídas hoje" value={String(metrics.today)} hint={todayTrend ? todayTrend.label : "guias de hoje"} tone="success" trend={todayTrend?.direction} />
-            <Kpi icon={TrendingUp} label="Média por dia" value={String(dailyAvg)} hint="guias/dia no período" tone="info" />
-            <Kpi icon={Layers} label="Tipos diferentes" value={String(metrics.distinctTypes)} hint="categorias de guia" tone="purple" />
+            <Kpi icon={FileText} label="Total de guias extraídas" value={String(total)} hint={activeFilters.length > 0 ? "no período e filtros selecionados" : "no período selecionado"} tone="primary" />
+            <Kpi icon={Activity} label="Guias extraídas hoje" value={String(metrics.today)} hint={todayTrend ? todayTrend.label : "guias processadas hoje"} tone="success" trend={todayTrend?.direction} />
+            <Kpi icon={TrendingUp} label="Média de guias por dia" value={String(dailyAvg)} hint="no período selecionado" tone="info" />
+            <Kpi icon={Layers} label="Tipos de guia" value={String(metrics.distinctTypes)} hint="tipos diferentes no período" tone="purple" />
+
           </div>
 
           {/* Charts row */}
