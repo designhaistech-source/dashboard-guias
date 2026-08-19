@@ -264,32 +264,6 @@ export function RichTextEditor({
             </TooltipProvider>
           </>
         )}
-        {canPreview && (
-          <div className="ml-auto flex items-center gap-1">
-            <Button
-              type="button"
-              variant={previewing ? "ghost" : "secondary"}
-              size="sm"
-              onClick={() => setPreviewing(false)}
-              aria-pressed={!previewing}
-              className="h-7 gap-1.5 px-2 text-xs"
-            >
-              <Pencil className="icon-optical h-3.5 w-3.5" aria-hidden />
-              Editar
-            </Button>
-            <Button
-              type="button"
-              variant={previewing ? "secondary" : "ghost"}
-              size="sm"
-              onClick={() => setPreviewing(true)}
-              aria-pressed={previewing}
-              className="h-7 gap-1.5 px-2 text-xs"
-            >
-              <Eye className="icon-optical h-3.5 w-3.5" aria-hidden />
-              Pré-visualizar
-            </Button>
-          </div>
-        )}
       </div>
 
       {showVariables && (
