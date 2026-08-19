@@ -1196,6 +1196,41 @@ function DashboardPage() {
     };
   }, [dailyData]);
 
+  /**
+   * O dataset sintético é relativo à data local do navegador, que não coincide
+   * com o relógio usado na renderização no servidor. Só renderizamos os
+   * indicadores após a hidratação para manter os textos consistentes.
+   */
+  const [hydrated, setHydrated] = useState(false);
+  useEffect(() => setHydrated(true), []);
+
+  if (!hydrated) {
+    return (
+      <div className="flex min-h-screen w-full bg-background text-foreground">
+        <AppSidebar activeKey="dashboard" />
+        <main className="flex-1 flex flex-col min-h-screen">
+          <div className="w-full flex-1 space-y-6 px-4 py-6 pb-16 pt-20 sm:px-6 sm:py-8 md:pt-8 lg:px-10">
+            <PageHeader
+              title="Visão geral"
+              description="Acompanhe suas guias, documentos e atividades recentes."
+            />
+            <div
+              className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
+              aria-busy="true"
+              aria-label="Carregando indicadores"
+            >
+              {[0, 1, 2, 3].map((i) => (
+                <div key={i} className="h-32 animate-pulse rounded-2xl border border-border bg-card" />
+              ))}
+            </div>
+            <div className="h-72 animate-pulse rounded-2xl border border-border bg-card" />
+          </div>
+          <SiteFooter />
+        </main>
+      </div>
+    );
+  }
+
   return (
     <div className="flex min-h-screen w-full bg-background text-foreground">
       <AppSidebar activeKey="dashboard" />
