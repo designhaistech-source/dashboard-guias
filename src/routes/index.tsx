@@ -739,16 +739,18 @@ function FilterField({
   inputRef?: React.Ref<HTMLInputElement>;
 }) {
   return (
-    <Field label={label}>
-      <Input
-        ref={inputRef}
-        type={type}
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        aria-invalid={error || undefined}
-        className={`h-9 ${error ? "border-destructive focus-visible:ring-destructive/40" : ""}`}
-      />
-    </Field>
+    <div className="min-w-0">
+      <Field label={label}>
+        <Input
+          ref={inputRef}
+          type={type}
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          aria-invalid={error || undefined}
+          className={`h-9 w-full min-w-0 ${error ? "border-destructive focus-visible:ring-destructive/40" : ""}`}
+        />
+      </Field>
+    </div>
   );
 }
 
@@ -1391,7 +1393,7 @@ function DashboardPage() {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-2 items-end gap-3 sm:gap-4 md:grid-cols-2 lg:grid-cols-[10rem_10rem_minmax(0,1fr)_minmax(0,1fr)_auto]">
+                <div className="grid grid-cols-1 items-end gap-3 sm:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] sm:gap-4 lg:grid-cols-[10rem_10rem_minmax(0,1fr)_minmax(0,1fr)_auto]">
                   <FilterField
                     label="Data inicial"
                     type="date"
@@ -1407,7 +1409,7 @@ function DashboardPage() {
                     value={filters.dataAutorizacaoAte}
                     onChange={(v) => setFilter("dataAutorizacaoAte", v)}
                   />
-                  <div className="col-span-2 min-w-0 lg:col-span-1">
+                  <div className="min-w-0 sm:col-span-2 lg:col-span-1">
                     <FilterSelect
                       label="Tipo de guia"
                       value={filters.tipoGuia}
@@ -1415,7 +1417,7 @@ function DashboardPage() {
                       options={GUIDE_TYPES.map((t) => t.name)}
                     />
                   </div>
-                  <div className="col-span-2 min-w-0 lg:col-span-1">
+                  <div className="min-w-0 sm:col-span-2 lg:col-span-1">
                     <FilterSelect
                       label="Prestador solicitante"
                       value={filters.prestadorSolicitante}
@@ -1428,7 +1430,7 @@ function DashboardPage() {
                     variant="outline"
                     onClick={clearAllFilters}
                     disabled={activeFilters.length === 0}
-                    className="col-span-2 h-10 w-full justify-center sm:h-9 lg:col-span-1 lg:w-auto"
+                    className="h-10 w-full justify-center sm:col-span-2 sm:h-9 lg:col-span-1 lg:w-auto"
                   >
                     Limpar filtros
                   </Button>
