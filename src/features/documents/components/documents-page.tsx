@@ -437,6 +437,8 @@ function ReportsTab() {
         title="Relatório médico"
         html={html}
         paciente={paciente}
+        blockReason={pacienteError}
+
         onSaveTemplate={() => toast.success("Modelo salvo e disponível na lista (simulação).")}
       />
 
