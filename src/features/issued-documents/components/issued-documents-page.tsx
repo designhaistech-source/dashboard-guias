@@ -82,9 +82,7 @@ export function IssuedDocumentsPage() {
   const handleDownload = (doc: IssuedDocument) => {
     printDocumentHtml(doc.type, doc.patient, doc.body);
     toast.success(`${doc.type} pronto para salvar em PDF.`, {
-      description: doc.signed
-        ? "O arquivo salvo não contém a assinatura digital."
-        : "Documento sem assinatura digital.",
+      description: "Documento sem assinatura digital — imprima para assinar manualmente.",
     });
   };
 
