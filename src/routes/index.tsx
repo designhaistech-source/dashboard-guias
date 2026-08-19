@@ -1198,7 +1198,8 @@ function DashboardPage() {
           {/* Procedures */}
           <SurfaceCard
             title="Procedimentos mais realizados"
-            description="Top códigos TUSS no período"
+            description="Procedimentos mais frequentes nas guias do período selecionado"
+
           >
             {procedures.length === 0 ? (
               emptyState
