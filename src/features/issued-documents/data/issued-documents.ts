@@ -2,7 +2,7 @@
 export type IssuedDocumentType =
   | "Relatório"
   | "Atestado"
-  | "Declaração de comparecimento";
+  | "Comparecimento";
 
 export interface IssuedDocument {
   id: string;
@@ -36,7 +36,7 @@ export const ISSUED_DOCUMENTS: IssuedDocument[] = [
   },
   {
     id: "DOC-2026-0146",
-    type: "Declaração de comparecimento",
+    type: "Comparecimento",
     patient: "Juliana Ferreira Costa",
     issuedAt: "2026-08-06T11:05:00",
     signed: false,
@@ -60,7 +60,7 @@ export const ISSUED_DOCUMENTS: IssuedDocument[] = [
   },
   {
     id: "DOC-2026-0143",
-    type: "Declaração de comparecimento",
+    type: "Comparecimento",
     patient: "Fernando Batista Nogueira",
     issuedAt: "2026-08-03T14:31:00",
     signed: false,
@@ -87,7 +87,7 @@ export const ISSUED_DOCUMENTS: IssuedDocument[] = [
 export const ISSUED_DOCUMENT_TYPES: IssuedDocumentType[] = [
   "Relatório",
   "Atestado",
-  "Declaração de comparecimento",
+  "Comparecimento",
 ];
 
 /** Formata data/hora ISO no padrão brasileiro usado nas listagens. */
