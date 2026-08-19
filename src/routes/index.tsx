@@ -83,6 +83,7 @@ import { Combobox } from "@/components/ui/combobox";
 import { Chip } from "@/components/ui/chip";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Badge } from "@/components/ui/badge";
+import { useIsMobile } from "@/hooks/use-mobile";
 import {
   DASHBOARD_GUIDES,
   PRESTADORES,
@@ -954,6 +955,8 @@ function SortableHead({
 
 function DashboardPage() {
   const [activeType, setActiveType] = useState<number | undefined>(undefined);
+  /** Densidade e rótulos dos gráficos mudam em telas estreitas. */
+  const isMobile = useIsMobile();
   /** Filtros abertos por padrão, como na página Guias emitidas. */
   const [filtersOpen, setFiltersOpen] = useState(true);
   const [filters, setFilters] = useState<GuideFilters>(emptyFilters);
@@ -1193,15 +1196,51 @@ function DashboardPage() {
     };
   }, [dailyData]);
 
+  /**
+   * O dataset sintético é relativo à data local do navegador, que não coincide
+   * com o relógio usado na renderização no servidor. Só renderizamos os
+   * indicadores após a hidratação para manter os textos consistentes.
+   */
+  const [hydrated, setHydrated] = useState(false);
+  useEffect(() => setHydrated(true), []);
+
+  if (!hydrated) {
+    return (
+      <div className="flex min-h-screen w-full bg-background text-foreground">
+        <AppSidebar activeKey="dashboard" />
+        <main className="flex-1 flex flex-col min-h-screen">
+          <div className="w-full flex-1 space-y-6 px-4 py-6 pb-16 pt-20 sm:px-6 sm:py-8 md:pt-8 lg:px-10">
+            <PageHeader
+              title="Visão geral"
+              description="Acompanhe suas guias, documentos e atividades recentes."
+            />
+            <div
+              className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
+              aria-busy="true"
+              aria-label="Carregando indicadores"
+            >
+              {[0, 1, 2, 3].map((i) => (
+                <div key={i} className="h-32 animate-pulse rounded-2xl border border-border bg-card" />
+              ))}
+            </div>
+            <div className="h-72 animate-pulse rounded-2xl border border-border bg-card" />
+          </div>
+          <SiteFooter />
+        </main>
+      </div>
+    );
+  }
+
   return (
     <div className="flex min-h-screen w-full bg-background text-foreground">
       <AppSidebar activeKey="dashboard" />
       <main className="flex-1 flex flex-col min-h-screen">
-        <div className="w-full flex-1 space-y-6 px-6 py-8 pb-16 pt-20 md:pt-8 lg:px-10">
+        <div className="w-full flex-1 space-y-6 px-4 py-6 pb-16 pt-20 sm:px-6 sm:py-8 md:pt-8 lg:px-10">
           <AppBreadcrumb />
 
           {/* Header */}
           <PageHeader
+            className="sm:flex-nowrap"
             title="Visão geral"
             description="Acompanhe suas guias, documentos e atividades recentes."
             actions={
@@ -1211,6 +1250,7 @@ function DashboardPage() {
                 disabled={!hasData || generatingReport}
                 aria-busy={generatingReport}
                 title={!hasData ? "Sem dados para gerar o relatório" : undefined}
+                className="w-full justify-center sm:w-auto"
               >
                 {generatingReport ? (
                   <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
@@ -1332,24 +1372,26 @@ function DashboardPage() {
                 id="dashboard-filters-panel"
                 className="space-y-4 border-t border-border px-4 py-4 sm:px-5 sm:py-5"
               >
-                <div className="flex flex-wrap items-center gap-2">
-                  <span className={filterGroupLabelClass + " mb-0"}>Períodos rápidos</span>
-                  {[
-                    { id: "hoje", label: "Hoje" },
-                    { id: "7d", label: "Últimos 7 dias" },
-                    { id: "30d", label: "Últimos 30 dias" },
-                  ].map((p) => (
-                    <Chip
-                      key={p.id}
-                      onClick={() => applyPreset(p.id as "hoje" | "7d" | "30d")}
-                      className="text-foreground hover:border-primary hover:bg-primary/5 hover:text-primary"
-                    >
-                      {p.label}
-                    </Chip>
-                  ))}
+                <div className="space-y-2 sm:flex sm:flex-wrap sm:items-center sm:gap-2 sm:space-y-0">
+                  <span className={filterGroupLabelClass + " mb-0 block"}>Períodos rápidos</span>
+                  <div className="flex flex-wrap gap-2">
+                    {[
+                      { id: "hoje", label: "Hoje" },
+                      { id: "7d", label: "Últimos 7 dias" },
+                      { id: "30d", label: "Últimos 30 dias" },
+                    ].map((p) => (
+                      <Chip
+                        key={p.id}
+                        onClick={() => applyPreset(p.id as "hoje" | "7d" | "30d")}
+                        className="text-foreground hover:border-primary hover:bg-primary/5 hover:text-primary"
+                      >
+                        {p.label}
+                      </Chip>
+                    ))}
+                  </div>
                 </div>
 
-                <div className="grid grid-cols-1 items-end gap-4 sm:grid-cols-2 lg:grid-cols-[10rem_10rem_minmax(0,1fr)_minmax(0,1fr)_auto]">
+                <div className="grid grid-cols-2 items-end gap-3 sm:gap-4 md:grid-cols-2 lg:grid-cols-[10rem_10rem_minmax(0,1fr)_minmax(0,1fr)_auto]">
                   <FilterField
                     label="Data inicial"
                     type="date"
@@ -1365,24 +1407,28 @@ function DashboardPage() {
                     value={filters.dataAutorizacaoAte}
                     onChange={(v) => setFilter("dataAutorizacaoAte", v)}
                   />
-                  <FilterSelect
-                    label="Tipo de guia"
-                    value={filters.tipoGuia}
-                    onChange={(v) => setFilter("tipoGuia", v)}
-                    options={GUIDE_TYPES.map((t) => t.name)}
-                  />
-                  <FilterSelect
-                    label="Prestador solicitante"
-                    value={filters.prestadorSolicitante}
-                    onChange={(v) => setFilter("prestadorSolicitante", v)}
-                    options={prestadoresList}
-                  />
+                  <div className="col-span-2 min-w-0 lg:col-span-1">
+                    <FilterSelect
+                      label="Tipo de guia"
+                      value={filters.tipoGuia}
+                      onChange={(v) => setFilter("tipoGuia", v)}
+                      options={GUIDE_TYPES.map((t) => t.name)}
+                    />
+                  </div>
+                  <div className="col-span-2 min-w-0 lg:col-span-1">
+                    <FilterSelect
+                      label="Prestador solicitante"
+                      value={filters.prestadorSolicitante}
+                      onChange={(v) => setFilter("prestadorSolicitante", v)}
+                      options={prestadoresList}
+                    />
+                  </div>
                   <Button
                     type="button"
                     variant="outline"
                     onClick={clearAllFilters}
                     disabled={activeFilters.length === 0}
-                    className="h-10 w-full justify-center sm:col-span-2 sm:h-9 lg:col-span-1 lg:w-auto"
+                    className="col-span-2 h-10 w-full justify-center sm:h-9 lg:col-span-1 lg:w-auto"
                   >
                     Limpar filtros
                   </Button>
@@ -1452,11 +1498,11 @@ function DashboardPage() {
               {!hasData ? (
                 emptyState
               ) : (
-                <div className="h-72" data-chart="daily" ref={dailyChartRef}>
+                <div className="h-60 sm:h-72" data-chart="daily" ref={dailyChartRef}>
                   <ResponsiveContainer width="100%" height="100%">
                     <AreaChart
                       data={dailyData}
-                      margin={{ top: 10, right: 10, left: 6, bottom: 18 }}
+                      margin={{ top: 10, right: 10, left: isMobile ? 0 : 6, bottom: 18 }}
                     >
                       <defs>
                         <linearGradient id="gradPrimary" x1="0" y1="0" x2="0" y2="1">
@@ -1488,16 +1534,20 @@ function DashboardPage() {
                         fontSize={11}
                         tickLine={false}
                         axisLine={false}
-                        width={44}
+                        width={isMobile ? 28 : 44}
                         allowDecimals={false}
-                        label={{
-                          value: "Quantidade de guias",
-                          angle: -90,
-                          position: "insideLeft",
-                          fill: "var(--muted-foreground)",
-                          fontSize: 11,
-                          style: { textAnchor: "middle" },
-                        }}
+                        label={
+                          isMobile
+                            ? undefined
+                            : {
+                                value: "Quantidade de guias",
+                                angle: -90,
+                                position: "insideLeft",
+                                fill: "var(--muted-foreground)",
+                                fontSize: 11,
+                                style: { textAnchor: "middle" },
+                              }
+                        }
                       />
 
                       <RTooltip
@@ -1618,12 +1668,17 @@ function DashboardPage() {
               emptyState
             ) : (
               <div className="grid gap-6 lg:grid-cols-2">
-                <div className="h-64" data-chart="procedures">
+                <div className="h-72 sm:h-64" data-chart="procedures">
                   <ResponsiveContainer width="100%" height="100%">
                     <BarChart
                       data={procedures.map((p) => ({ name: p.name, count: p.count }))}
                       layout="vertical"
-                      margin={{ top: 4, right: 28, left: 8, bottom: 16 }}
+                      margin={{
+                        top: 4,
+                        right: isMobile ? 20 : 28,
+                        left: isMobile ? 0 : 8,
+                        bottom: isMobile ? 4 : 16,
+                      }}
                       barCategoryGap={10}
                     >
                       <defs>
@@ -1644,30 +1699,38 @@ function DashboardPage() {
                         tickLine={false}
                         axisLine={false}
                         allowDecimals={false}
-                        label={{
-                          value: "Quantidade de guias",
-                          position: "insideBottom",
-                          offset: -12,
-                          fill: "var(--muted-foreground)",
-                          fontSize: 11,
-                        }}
+                        label={
+                          isMobile
+                            ? undefined
+                            : {
+                                value: "Quantidade de guias",
+                                position: "insideBottom",
+                                offset: -12,
+                                fill: "var(--muted-foreground)",
+                                fontSize: 11,
+                              }
+                        }
                       />
                       <YAxis
                         type="category"
                         dataKey="name"
                         stroke="var(--muted-foreground)"
                         fontSize={11}
-                        width={158}
+                        width={isMobile ? 104 : 158}
                         tickLine={false}
                         axisLine={false}
-                        label={{
-                          value: "Procedimento",
-                          angle: -90,
-                          position: "insideLeft",
-                          fill: "var(--muted-foreground)",
-                          fontSize: 11,
-                          style: { textAnchor: "middle" },
-                        }}
+                        label={
+                          isMobile
+                            ? undefined
+                            : {
+                                value: "Procedimento",
+                                angle: -90,
+                                position: "insideLeft",
+                                fill: "var(--muted-foreground)",
+                                fontSize: 11,
+                                style: { textAnchor: "middle" },
+                              }
+                        }
                       />
 
                       <RTooltip
