@@ -167,12 +167,16 @@ export function printHtml(title: string, paciente: string, bodyHtml: string) {
   doc.write(`<!doctype html><html lang="pt-BR"><head><meta charset="utf-8" />
 <title>${title}</title>
 <style>
-  body { font-family: Arial, Helvetica, sans-serif; color: #111; margin: 48px; line-height: 1.6; }
+  /* margin: 0 remove cabeçalho/rodapé automático do navegador (URL e data) */
+  @page { size: A4; margin: 0; }
+  html, body { margin: 0; }
+  body { font-family: Arial, Helvetica, sans-serif; color: #111; padding: 20mm; line-height: 1.6; }
   h1 { font-size: 18px; text-transform: uppercase; letter-spacing: .06em; text-align: center; }
   .paciente { font-size: 13px; margin-bottom: 24px; text-align: center; color: #444; }
   .assinatura { margin-top: 72px; text-align: center; font-size: 13px; }
   .assinatura span { display: block; border-top: 1px solid #111; padding-top: 6px; width: 260px; margin: 0 auto; }
 </style></head><body>
+
 <h1>${title}</h1>
 <p class="paciente">Paciente: ${paciente || "—"}</p>
 ${bodyHtml}
