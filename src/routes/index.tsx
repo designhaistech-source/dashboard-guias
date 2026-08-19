@@ -1003,6 +1003,18 @@ function DashboardPage() {
   const dayCount = dailyData.length;
 
   /**
+   * Support sentences shown under each KPI value. They mirror the selected
+   * period and the extra filters so the number never depends on a tooltip.
+   */
+  const periodPhrase = dayCount > 0 ? `no período (${periodLabel})` : "no período selecionado";
+  const scopePhrase = useMemo(() => {
+    const parts: string[] = [];
+    if (filters.tipoGuia.trim()) parts.push(`tipo ${filters.tipoGuia}`);
+    if (filters.prestadorSolicitante.trim()) parts.push(filters.prestadorSolicitante);
+    return parts.length ? ` · ${parts.join(" · ")}` : "";
+  }, [filters.tipoGuia, filters.prestadorSolicitante]);
+
+  /**
    * Compares the last 7 days against the 7 preceding days so the daily average
    * card can describe its variation in plain language.
    */
