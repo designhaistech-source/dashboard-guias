@@ -15,8 +15,6 @@ import {
   Sparkles,
   Undo2,
   Redo2,
-  Eye,
-  Pencil,
   AlertCircle,
 } from "lucide-react";
 
@@ -70,7 +68,6 @@ interface RichTextEditorProps {
   /** Variáveis inseríveis no texto (ex.: "@paciente"). */
   variables?: readonly string[];
   /** Texto com as variáveis já substituídas, exibido no modo de pré-visualização. */
-  previewHtml?: string;
   /** Variáveis usadas no texto que ainda não têm valor preenchido. */
   pendingVariables?: readonly string[];
   /** Valor atual de cada variável (ex.: { "@paciente": "Maria" }); usado ao inserir o chip. */
@@ -92,7 +89,6 @@ export function RichTextEditor({
   onImproveWithAi,
   improving = false,
   variables,
-  previewHtml,
   pendingVariables,
   variableValues,
 }: RichTextEditorProps) {
