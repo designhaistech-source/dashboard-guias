@@ -747,14 +747,21 @@ function DashboardPage() {
     );
   };
   
-  const clearAllAndApply = () => {
+  /**
+   * Caminho único de limpeza: chips, painel e estados vazios chamam esta função,
+   * com o mesmo efeito (limpa rascunho + filtros aplicados) e o mesmo feedback.
+   * Não fecha o painel — limpar não é sair.
+   */
+  const clearAllFilters = () => {
     setDraft(emptyFilters);
     setFilters(emptyFilters);
-    setFiltersOpen(false);
     toast.success("Filtros limpos.");
   };
-  const removeFilter = (key: keyof GuideFilters) =>
+  const removeFilter = (key: keyof GuideFilters) => {
     setFilters((f) => ({ ...f, [key]: "" }));
+    setDraft((d) => ({ ...d, [key]: "" }));
+  };
+
 
   const isDirty = useMemo(
     () => (Object.keys(draft) as (keyof GuideFilters)[]).some((k) => draft[k] !== filters[k]),
@@ -841,7 +848,7 @@ function DashboardPage() {
       }
       action={
         activeFilters.length > 0 ? (
-          <Button type="button" variant="outline" size="sm" onClick={() => setFilters(emptyFilters)}>
+          <Button type="button" variant="outline" size="sm" onClick={clearAllFilters}>
             Limpar filtros
           </Button>
         ) : undefined
@@ -933,7 +940,7 @@ function DashboardPage() {
                 type="button"
                 variant="link"
                 size="sm"
-                onClick={() => setFilters(emptyFilters)}
+                onClick={clearAllFilters}
                 className="h-auto p-0 text-xs text-muted-foreground hover:text-foreground"
               >
                 Limpar todos
@@ -959,13 +966,14 @@ function DashboardPage() {
                 </>
               }
               activeCount={activeFilters.length}
-              onClear={clearAllAndApply}
+              onClear={clearAllFilters}
               clearDisabled={activeFilters.length === 0}
               footerActions={
                 <>
-                  <Button type="button" variant="outline" size="sm" onClick={cancelEdits} disabled={!isDirty}>
-                    Cancelar
+                  <Button type="button" variant="outline" size="sm" onClick={cancelEdits}>
+                    {isDirty ? "Cancelar" : "Fechar"}
                   </Button>
+
                   <Button
                     type="button"
                     size="sm"
