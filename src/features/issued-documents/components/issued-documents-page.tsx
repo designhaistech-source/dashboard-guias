@@ -215,10 +215,6 @@ export function IssuedDocumentsPage() {
                           label: "Data de emissão",
                           value: formatIssuedDocumentDate(doc.issuedAt),
                         },
-                        {
-                          label: "Assinatura",
-                          value: <SignatureBadge signed={doc.signed} />,
-                        },
                       ]}
                     />
                     <DataTableCardActions>
@@ -275,8 +271,7 @@ export function IssuedDocumentsPage() {
                             )}
                           </button>
                         </DataTableHead>
-                        <DataTableHead className="w-[15%]">Assinatura</DataTableHead>
-                        <DataTableHead className="w-[14%] whitespace-nowrap text-right">
+                        <DataTableHead className="w-[29%] whitespace-nowrap text-right">
                           Ações
                         </DataTableHead>
                       </DataTableRow>
@@ -294,9 +289,6 @@ export function IssuedDocumentsPage() {
                           </DataTableCell>
                           <DataTableCell className="whitespace-nowrap text-muted-foreground">
                             {formatIssuedDocumentDate(doc.issuedAt)}
-                          </DataTableCell>
-                          <DataTableCell>
-                            <SignatureBadge signed={doc.signed} />
                           </DataTableCell>
                           <DataTableCell className="whitespace-nowrap text-right">
                             <div className="inline-flex items-center gap-0.5 icon-optical text-muted-foreground">
