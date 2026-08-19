@@ -8,15 +8,18 @@ export interface DocumentVariableValues {
   cidade?: string;
   cid?: string;
   diagnostico?: string;
+  /** ISO (yyyy-mm-dd) da data de emissão do documento. */
+  emissao?: string;
 }
 
 /** Rótulos legíveis usados nos avisos de variável pendente. */
 export const VARIABLE_LABELS: Record<string, string> = {
   "@paciente": "Paciente",
-  "@data": "Data do documento",
+  "@data": "Data",
   "@cidade": "Cidade",
   "@cid": "CID",
   "@diagnostico": "Diagnóstico",
+  "@emissao": "Data de emissão",
 };
 
 function valueFor(variable: string, values: DocumentVariableValues): string {
@@ -31,6 +34,8 @@ function valueFor(variable: string, values: DocumentVariableValues): string {
       return values.cid?.trim() ?? "";
     case "@diagnostico":
       return values.diagnostico?.trim() ?? "";
+    case "@emissao":
+      return values.emissao ? formatDateShort(values.emissao) : "";
     default:
       return "";
   }
