@@ -361,7 +361,6 @@ export function RichTextEditor({
         }}
         className="min-h-64 px-4 py-3 text-sm leading-relaxed text-foreground outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring empty:before:text-muted-foreground empty:before:content-[attr(data-placeholder)]"
       />
-      )}
 
       <p
         id={countId}
