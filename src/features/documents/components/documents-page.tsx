@@ -38,6 +38,8 @@ import { RichTextEditor } from "./rich-text-editor";
 import { useTextReplacement } from "./use-text-replacement";
 import { getDocumentDateStatus, todayIsoDate } from "../data/document-date";
 import {
+  findCid,
+  validateCid,
   validateCidade,
   validateDiasAfastamento,
   validateLocal,
@@ -365,6 +367,7 @@ function ReportsTab() {
   const { requestReplace, replacementDialog } = useTextReplacement(html, setHtml);
 
   const pacienteError = useMemo(() => validatePaciente(paciente), [paciente]);
+  const cidError = useMemo(() => validateCid(cid), [cid]);
 
 
   function applyTemplate(value: string) {
@@ -415,7 +418,7 @@ function ReportsTab() {
             options={REPORT_TEMPLATES.map((t) => ({ value: t.value, label: t.label }))}
             hint="Use “Salvar como modelo” após redigir o texto para reaproveitá-lo depois."
           />
-          <CidFields cid={cid} descricao={diagnosticoSelecionado} onChange={handleCid} />
+          <CidFields cid={cid} descricao={diagnosticoSelecionado} onChange={handleCid} error={cidError} />
         </div>
       </SurfaceCard>
 
@@ -445,7 +448,7 @@ function ReportsTab() {
         title="Relatório médico"
         html={html}
         paciente={paciente}
-        blockReason={pacienteError}
+        blockReason={pacienteError ?? cidError}
 
         onSaveTemplate={() => toast.success("Modelo salvo e disponível na lista (simulação).")}
       />
@@ -500,7 +503,7 @@ function CertificateTab() {
   const cidadeError = useMemo(() => validateCidade(cidade), [cidade]);
   const diasError = useMemo(() => validateDiasAfastamento(dias), [dias]);
 
-  const blockReason = dataStatus.error ?? pacienteError ?? cidadeError ?? diasError;
+  const blockReason = dataStatus.error ?? pacienteError ?? cidError ?? cidadeError ?? diasError;
 
 
   const { requestReplace, replacementDialog } = useTextReplacement(html, setHtml);
@@ -539,7 +542,7 @@ function CertificateTab() {
             onChange={setPaciente}
             error={pacienteError}
           />
-          <CidFields cid={cid} descricao={diagnosticoSelecionado} onChange={handleCid} />
+          <CidFields cid={cid} descricao={diagnosticoSelecionado} onChange={handleCid} error={cidError} />
           <div className="grid min-w-0 gap-4 sm:grid-cols-2 xl:grid-cols-3 [&>*]:min-w-0">
             <SelectField
               id="atestado-dias"
