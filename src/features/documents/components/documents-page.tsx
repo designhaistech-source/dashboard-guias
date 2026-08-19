@@ -8,9 +8,14 @@ import {
   BookmarkPlus,
   User,
   Loader2,
+  Send,
+  FilePlus2,
+  ExternalLink,
+  CheckCircle2,
+  Info,
 } from "lucide-react";
 import { AlertCircle } from "lucide-react";
-import { getRouteApi, useNavigate } from "@tanstack/react-router";
+import { getRouteApi, Link, useNavigate } from "@tanstack/react-router";
 import { toast } from "sonner";
 
 import {
@@ -21,6 +26,7 @@ import {
 } from "@/components/app-tabs";
 import { AppBreadcrumb } from "@/components/app-breadcrumb";
 import { AppSidebar } from "@/components/app-sidebar";
+import { AppModal } from "@/components/app-modal";
 import { SiteFooter } from "@/components/site-footer";
 import { PageHeader } from "@/components/page-header";
 import { FormActionBar } from "@/components/form-action-bar";
@@ -30,6 +36,11 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { CID10 } from "@/lib/cid";
+import type {
+  IssuedDocument,
+  IssuedDocumentType,
+} from "@/features/issued-documents/data/issued-documents";
+import { addIssuedDocument } from "@/features/issued-documents/data/issued-documents-store";
 
 import { improveDocumentText } from "../lib/improve-text.functions";
 
@@ -74,6 +85,11 @@ const documentsRoute = getRouteApi("/documentos");
 /** Página de documentos clínicos: relatórios, atestados e declarações. */
 export function DocumentsPage() {
   const { aba } = documentsRoute.useSearch();
+  // "Novo documento" limpa o formulário remontando a aba correspondente.
+  const [resetKeys, setResetKeys] = useState({ relatorios: 0, atestados: 0, comparecimento: 0 });
+  const resetTab = useCallback((tab: "relatorios" | "atestados" | "comparecimento") => {
+    setResetKeys((prev) => ({ ...prev, [tab]: prev[tab] + 1 }));
+  }, []);
   const navigate = useNavigate({ from: "/documentos" });
   const activeTab = aba ?? "relatorios";
 
@@ -120,13 +136,22 @@ export function DocumentsPage() {
             </TabsList>
 
             <TabsContent value="relatorios" className="space-y-6">
-              <ReportsTab />
+              <ReportsTab
+                key={`relatorios-${resetKeys.relatorios}`}
+                onNewDocument={() => resetTab("relatorios")}
+              />
             </TabsContent>
             <TabsContent value="atestados" className="space-y-6">
-              <CertificateTab />
+              <CertificateTab
+                key={`atestados-${resetKeys.atestados}`}
+                onNewDocument={() => resetTab("atestados")}
+              />
             </TabsContent>
             <TabsContent value="comparecimento" className="space-y-6">
-              <AttendanceTab />
+              <AttendanceTab
+                key={`comparecimento-${resetKeys.comparecimento}`}
+                onNewDocument={() => resetTab("comparecimento")}
+              />
             </TabsContent>
           </Tabs>
         </div>
@@ -524,7 +549,8 @@ function CidFields({
 
 /* ---------------- Relatórios ---------------- */
 
-function ReportsTab() {
+function ReportsTab({ onNewDocument }: { onNewDocument: () => void }) {
+  const [issuedDoc, setIssuedDoc] = useState<IssuedDocument | null>(null);
   const [paciente, setPaciente] = useState("");
   const [cid, setCid] = useState("");
   const [diagnosticoSelecionado, setDiagnosticoSelecionado] = useState("");
@@ -749,7 +775,8 @@ function ReportsTab() {
 
 /* ---------------- Atestados ---------------- */
 
-function CertificateTab() {
+function CertificateTab({ onNewDocument }: { onNewDocument: () => void }) {
+  const [issuedDoc, setIssuedDoc] = useState<IssuedDocument | null>(null);
   const [paciente, setPaciente] = useState("");
   const [cid, setCid] = useState("");
   const [diagnosticoSelecionado, setDiagnosticoSelecionado] = useState("");
@@ -954,7 +981,8 @@ function CertificateTab() {
 
 /* ---------------- Comparecimento ---------------- */
 
-function AttendanceTab() {
+function AttendanceTab({ onNewDocument }: { onNewDocument: () => void }) {
+  const [issuedDoc, setIssuedDoc] = useState<IssuedDocument | null>(null);
   const [paciente, setPaciente] = useState("");
   const [local, setLocal] = useState("");
   const [cidade, setCidade] = useState("");
