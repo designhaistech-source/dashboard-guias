@@ -317,10 +317,7 @@ function DocumentActions({
     try {
       const { downloadDocumentPdf } = await import("../data/document-pdf");
       const fileName = downloadDocumentPdf(title, paciente, html);
-      toast.success(`PDF gerado: ${fileName}`, {
-        id: toastId,
-        description: "Documento sem assinatura digital — imprima para assinar manualmente.",
-      });
+      toast.success(`PDF gerado: ${fileName}`, { id: toastId });
     } catch {
       toast.error("Não foi possível gerar o PDF. Tente novamente.", { id: toastId });
     } finally {
