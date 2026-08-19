@@ -1393,7 +1393,7 @@ function DashboardPage() {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-2 items-end gap-3 sm:gap-4 md:grid-cols-2 lg:grid-cols-[10rem_10rem_minmax(0,1fr)_minmax(0,1fr)_auto]">
+                <div className="grid grid-cols-1 items-end gap-3 sm:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] sm:gap-4 lg:grid-cols-[10rem_10rem_minmax(0,1fr)_minmax(0,1fr)_auto]">
                   <FilterField
                     label="Data inicial"
                     type="date"
