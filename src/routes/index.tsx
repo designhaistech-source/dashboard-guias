@@ -679,7 +679,24 @@ const MONTH_ABBR = [
   "dez",
 ] as const;
 
+/** Largura observada de um elemento, para adaptar a densidade de rótulos. */
+function useElementWidth(ref: RefObject<HTMLElement | null>): number {
+  const [width, setWidth] = useState(0);
+  useEffect(() => {
+    const element = ref.current;
+    if (!element || typeof ResizeObserver === "undefined") return;
+    const observer = new ResizeObserver((entries) => {
+      const next = entries[0]?.contentRect.width ?? 0;
+      setWidth((current) => (Math.abs(current - next) > 8 ? next : current));
+    });
+    observer.observe(element);
+    return () => observer.disconnect();
+  }, [ref]);
+  return width;
+}
+
 /**
+
  * Ticks do eixo X do gráfico diário. As viradas de mês são âncoras fixas e os
  * demais ticks são distribuídos com passo regular dentro de cada mês, descartando
  * candidatos próximos da âncora seguinte para nunca haver sobreposição.
