@@ -52,6 +52,8 @@ interface RichTextEditorProps {
   onImproveWithAi?: () => void;
   /** Indica que a melhoria com IA está em andamento. */
   improving?: boolean;
+  /** Variáveis inseríveis no texto (ex.: "@paciente"). */
+  variables?: readonly string[];
 }
 
 /**
@@ -68,6 +70,7 @@ export function RichTextEditor({
   ariaLabel,
   onImproveWithAi,
   improving = false,
+  variables,
 }: RichTextEditorProps) {
   const ref = React.useRef<HTMLDivElement>(null);
 
@@ -81,6 +84,24 @@ export function RichTextEditor({
     document.execCommand(command);
     if (ref.current) onChange(ref.current.innerHTML);
   }
+
+  /** Insere a variável na posição do cursor; ao final do texto se não houver seleção ativa. */
+  function insertVariable(variable: string) {
+    const el = ref.current;
+    if (!el) return;
+    el.focus();
+    const selection = window.getSelection();
+    if (!selection || selection.rangeCount === 0 || !el.contains(selection.anchorNode)) {
+      const range = document.createRange();
+      range.selectNodeContents(el);
+      range.collapse(false);
+      selection?.removeAllRanges();
+      selection?.addRange(range);
+    }
+    document.execCommand("insertText", false, `${variable} `);
+    onChange(el.innerHTML);
+  }
+
 
   return (
     <div
