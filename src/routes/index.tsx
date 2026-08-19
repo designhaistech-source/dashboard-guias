@@ -751,9 +751,9 @@ function SortableHead({
 
 function DashboardPage() {
   const [activeType, setActiveType] = useState<number | undefined>(undefined);
-  const [filtersOpen, setFiltersOpen] = useState(false);
+  /** Filtros abertos por padrão, como na página Guias emitidas. */
+  const [filtersOpen, setFiltersOpen] = useState(true);
   const [filters, setFilters] = useState<GuideFilters>(emptyFilters);
-  const [draft, setDraft] = useState<GuideFilters>(emptyFilters);
 
   const activeFilters = useMemo(
     () =>
@@ -763,25 +763,18 @@ function DashboardPage() {
     [filters],
   );
 
-  const openFilters = () => {
-    setDraft(filters);
-    setFiltersOpen(true);
-  };
   const dateRangeInvalid =
-    !!draft.dataAutorizacaoDe &&
-    !!draft.dataAutorizacaoAte &&
-    draft.dataAutorizacaoDe > draft.dataAutorizacaoAte;
-  const hasErrors = dateRangeInvalid;
+    !!filters.dataAutorizacaoDe &&
+    !!filters.dataAutorizacaoAte &&
+    filters.dataAutorizacaoDe > filters.dataAutorizacaoAte;
 
-  const previewCount = useMemo(
-    () => (hasErrors ? null : filterGuides(DASHBOARD_GUIDES, draft).length),
-    [draft, hasErrors],
-  );
+  const setFilter = (key: keyof GuideFilters, value: string) =>
+    setFilters((f) => ({ ...f, [key]: value }));
 
   const applyPreset = (preset: "hoje" | "7d" | "30d") => {
     const today = new Date();
     const iso = toLocalIsoDate;
-    setDraft((d) => {
+    setFilters((d) => {
       if (preset === "hoje") {
         const t = iso(today);
         return { ...d, dataAutorizacaoDe: t, dataAutorizacaoAte: t };
@@ -795,62 +788,20 @@ function DashboardPage() {
     });
   };
 
-  const applyFilters = () => {
-    if (hasErrors) return;
-    setFilters(draft);
-    setFiltersOpen(false);
-    const count = Object.values(draft).filter((v) => v.trim() !== "").length;
-    toast.success(
-      count === 0 ? "Filtros limpos." : `${count} filtro${count > 1 ? "s" : ""} aplicado${count > 1 ? "s" : ""}.`,
-    );
-  };
-  
   /**
    * Caminho único de limpeza: chips, painel e estados vazios chamam esta função,
-   * com o mesmo efeito (limpa rascunho + filtros aplicados) e o mesmo feedback.
-   * Não fecha o painel — limpar não é sair.
+   * com o mesmo efeito e o mesmo feedback. Não fecha o painel.
    */
   const clearAllFilters = () => {
-    setDraft(emptyFilters);
     setFilters(emptyFilters);
     toast.success("Filtros limpos.");
   };
   const removeFilter = (key: keyof GuideFilters) => {
     setFilters((f) => ({ ...f, [key]: "" }));
-    setDraft((d) => ({ ...d, [key]: "" }));
-  };
-
-
-  const isDirty = useMemo(
-    () => (Object.keys(draft) as (keyof GuideFilters)[]).some((k) => draft[k] !== filters[k]),
-    [draft, filters],
-  );
-  const [confirmDiscardFilters, setConfirmDiscardFilters] = useState(false);
-  const discardFilterEdits = () => {
-    setConfirmDiscardFilters(false);
-    setDraft(filters);
-    setFiltersOpen(false);
-  };
-  const requestClose = () => {
-    if (isDirty) {
-      setConfirmDiscardFilters(true);
-      return;
-    }
-    setDraft(filters);
-    setFiltersOpen(false);
-  };
-  const cancelEdits = () => {
-    setDraft(filters);
-    setFiltersOpen(false);
   };
 
   const firstFieldRef = useRef<HTMLInputElement | null>(null);
-  useEffect(() => {
-    if (filtersOpen) {
-      const t = setTimeout(() => firstFieldRef.current?.focus(), 60);
-      return () => clearTimeout(t);
-    }
-  }, [filtersOpen]);
+
 
 
   const metrics = useMemo(
