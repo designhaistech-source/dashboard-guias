@@ -1554,13 +1554,15 @@ function Kpi({
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <button
+                  <Button
                     type="button"
-                    className="rounded-full text-muted-foreground hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                    variant="ghost"
+                    size="icon"
+                    className="h-5 w-5 rounded-full text-muted-foreground hover:text-foreground [&_svg]:size-3.5"
                     aria-label={`Como este indicador é calculado: ${tooltip}`}
                   >
-                    <Info className="h-3.5 w-3.5" aria-hidden="true" />
-                  </button>
+                    <Info aria-hidden="true" />
+                  </Button>
                 </TooltipTrigger>
                 <TooltipContent className="max-w-64 text-xs">{tooltip}</TooltipContent>
               </Tooltip>
