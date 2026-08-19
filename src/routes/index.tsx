@@ -336,7 +336,7 @@ async function generateReportPdf(
     }
 
     applyType(TYPE.title);
-    doc.text("Relatório de Visão Geral", titleX, 35);
+    doc.text("Relatório de Guias Extraídas", titleX, 35);
     applyType(TYPE.subtitle);
     // Wrap the metadata line so the timezone suffix is never clipped on the right edge.
     const metaLines = doc.splitTextToSize(
