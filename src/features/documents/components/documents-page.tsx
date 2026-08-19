@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import {
   FileText,
   Stethoscope,
@@ -31,6 +31,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { CID10 } from "@/lib/cid";
+
+import { improveDocumentText } from "../lib/improve-text.functions";
 
 import { CidAutocomplete } from "./cid-autocomplete";
 import { DocumentEditorHeader } from "./document-editor-header";
@@ -105,6 +107,38 @@ export function DocumentsPage() {
       </main>
     </div>
   );
+}
+
+/**
+ * Encapsula a melhoria de texto com IA usada nas três abas de documentos.
+ * Mantém o estado de carregamento e o feedback de erro/sucesso.
+ */
+function useImproveWithAi(documentType: string, html: string, onResult: (html: string) => void) {
+  const [improving, setImproving] = useState(false);
+
+  const improve = useCallback(async () => {
+    const plain = html.replace(/<[^>]+>/g, "").trim();
+    if (!plain) {
+      toast.error("Escreva o texto do documento antes de melhorar com IA.");
+      return;
+    }
+    setImproving(true);
+    try {
+      const result = await improveDocumentText({ data: { documentType, html } });
+      onResult(result.html);
+      toast.success("Texto aprimorado com IA.");
+    } catch (error) {
+      toast.error(
+        error instanceof Error && error.message
+          ? error.message
+          : "Não foi possível melhorar o texto agora.",
+      );
+    } finally {
+      setImproving(false);
+    }
+  }, [documentType, html, onResult]);
+
+  return { improving, improve };
 }
 
 /* ---------------- Ações comuns ---------------- */
@@ -330,6 +364,12 @@ function ReportsTab() {
   }
 
 
+  const { improving, improve } = useImproveWithAi(
+    "Relatório médico",
+    html,
+    setHtml,
+  );
+
   return (
     <>
       <SurfaceCard
@@ -369,6 +409,8 @@ function ReportsTab() {
         ariaLabel="Texto do relatório médico"
         value={html}
         onChange={setHtml}
+        onImproveWithAi={improve}
+        improving={improving}
         placeholder="Redija o relatório médico..."
         header={
           <DocumentEditorHeader
@@ -435,6 +477,12 @@ function CertificateTab() {
 
   const conteudo = html || gerado;
 
+  const { improving, improve } = useImproveWithAi(
+    "Atestado médico",
+    conteudo,
+    setHtml,
+  );
+
   return (
     <>
       <SurfaceCard
@@ -479,6 +527,8 @@ function CertificateTab() {
         ariaLabel="Texto do atestado"
         value={conteudo}
         onChange={setHtml}
+        onImproveWithAi={improve}
+        improving={improving}
         header={
           <DocumentEditorHeader
             title="Atestado médico"
@@ -544,6 +594,12 @@ function AttendanceTab() {
 
   const conteudo = html || gerado;
 
+  const { improving, improve } = useImproveWithAi(
+    "Declaração de comparecimento",
+    conteudo,
+    setHtml,
+  );
+
   return (
     <>
       <SurfaceCard
@@ -604,6 +660,8 @@ function AttendanceTab() {
         ariaLabel="Texto da declaração de comparecimento"
         value={conteudo}
         onChange={setHtml}
+        onImproveWithAi={improve}
+        improving={improving}
         header={
           <DocumentEditorHeader
             title="Declaração de comparecimento"
