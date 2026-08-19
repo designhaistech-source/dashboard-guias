@@ -292,20 +292,27 @@ function CidFields({
   cid,
   descricao,
   onChange,
+  error,
 }: {
   cid: string;
   descricao: string;
   onChange: (codigo: string, descricao: string) => void;
+  error?: string;
 }) {
   return (
     <div className="grid min-w-0 gap-4 lg:grid-cols-[minmax(0,10rem)_minmax(0,1fr)]">
-      <Field id="cid-codigo" label="CID">
+      <Field id="cid-codigo" label="CID" error={error}>
         <Input
           id="cid-codigo"
           className="font-mono"
           placeholder="CID"
           value={cid}
-          onChange={(e) => onChange(e.target.value.toUpperCase(), "")}
+          aria-invalid={error ? true : undefined}
+          onChange={(e) => {
+            const codigo = e.target.value.toUpperCase();
+            // Mantém a descrição sincronizada quando o código digitado existe na base.
+            onChange(codigo, findCid(codigo)?.descricao ?? "");
+          }}
         />
       </Field>
       <Field
@@ -323,6 +330,7 @@ function CidFields({
     </div>
   );
 }
+
 
 /* ---------------- Relatórios ---------------- */
 
