@@ -550,7 +550,8 @@ const TECHNICAL_SERIES_KEYS = new Set(["count", "value", "name", "label", "guias
 function ChartTooltip({ active, payload, label, suffix, unit }: any) {
   if (!active || !payload?.length) return null;
   const iso: string | undefined = payload[0]?.payload?.date;
-  const fullDate = formatIsoToBrFull(iso);
+  // Aggregated per day: plain dd/MM/yyyy, without weekday or timezone noise.
+  const fullDate = formatIsoToBr(iso);
   const heading = fullDate || (label !== undefined ? String(label) : "");
 
   return (
@@ -558,9 +559,9 @@ function ChartTooltip({ active, payload, label, suffix, unit }: any) {
       {heading && (
         <div className="mb-1">
           <div className="text-xs uppercase tracking-wider text-muted-foreground">{heading}</div>
-          {iso && <div className="text-xs text-muted-foreground/80">{localTimeZoneLabel()}</div>}
         </div>
       )}
+
       {payload.map((p: any) => {
         const rawName = typeof p.name === "string" ? p.name : "";
         const seriesName = TECHNICAL_SERIES_KEYS.has(rawName.toLowerCase()) ? "" : rawName;
