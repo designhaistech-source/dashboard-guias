@@ -3,7 +3,7 @@
  * these rows so the filter panel produces real, visible changes.
  */
 
-import { localIsoDaysAgo } from "@/lib/date";
+import { localIsoDaysAgo, toLocalIsoDate } from "@/lib/date";
 
 export type DashboardGuide = {
   id: string;
@@ -151,13 +151,42 @@ export type DashboardMetrics = {
   totalValue: number;
 };
 
-export function buildMetrics(guides: DashboardGuide[]): DashboardMetrics {
+/** Inclusive list of local ISO dates between `from` and `to`. */
+function isoDateRange(from: string, to: string): string[] {
+  const dates: string[] = [];
+  const cursor = new Date(`${from}T12:00:00`);
+  const end = new Date(`${to}T12:00:00`);
+  while (cursor.getTime() <= end.getTime()) {
+    dates.push(toLocalIsoDate(cursor));
+    cursor.setDate(cursor.getDate() + 1);
+  }
+  return dates;
+}
+
+/**
+ * Builds the dashboard metrics. The daily series covers every day of the
+ * period, so days without guides are shown explicitly as zero instead of
+ * collapsing the X axis and suggesting missing data.
+ */
+export function buildMetrics(
+  guides: DashboardGuide[],
+  period?: { from?: string; to?: string },
+): DashboardMetrics {
   const byDate = new Map<string, number>();
   for (const g of guides) byDate.set(g.data, (byDate.get(g.data) ?? 0) + 1);
 
-  const daily = [...byDate.entries()]
-    .sort(([a], [b]) => a.localeCompare(b))
-    .map(([date, guias]) => ({ day: date.slice(8, 10), date, guias }));
+  const observed = [...byDate.keys()].sort((a, b) => a.localeCompare(b));
+  const from = period?.from || observed[0];
+  const to = period?.to || observed[observed.length - 1];
+
+  const daily = from && to && from <= to
+    ? isoDateRange(from, to).map((date) => ({
+        day: date.slice(8, 10),
+        date,
+        guias: byDate.get(date) ?? 0,
+      }))
+    : [];
+
 
   const types = GUIDE_TYPES.map((t) => ({
     name: t.name,

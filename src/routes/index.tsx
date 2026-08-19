@@ -833,9 +833,14 @@ function DashboardPage() {
 
 
   const metrics = useMemo(
-    () => buildMetrics(filterGuides(DASHBOARD_GUIDES, filters)),
+    () =>
+      buildMetrics(filterGuides(DASHBOARD_GUIDES, filters), {
+        from: filters.dataAutorizacaoDe || undefined,
+        to: filters.dataAutorizacaoAte || undefined,
+      }),
     [filters],
   );
+
   const periodLabel = useMemo(
     () =>
       buildPeriodLabel(filters.dataAutorizacaoDe, filters.dataAutorizacaoAte, {
