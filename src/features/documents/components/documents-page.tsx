@@ -538,38 +538,56 @@ function CidFields({
   /** Documento já emitido: exibe o CID escolhido como texto somente leitura. */
   readOnly?: boolean;
 }) {
-  if (readOnly) {
-    return (
-      <Field id={id} label="CID-10" error={error} injectChildProps={false}>
-        <Input
-          id={id}
-          readOnly
-          aria-readonly="true"
-          aria-describedby={`${id}-msg`}
-          value={cid ? `${cid} — ${descricao}` : ""}
-          placeholder="CID não informado"
-        />
-      </Field>
-    );
-  }
+  const diagnosticoId = `${id}-diagnostico`;
+  const diagnostico = descricao.trim();
 
   return (
-    <Field
-      id={id}
-      label="CID-10"
-      error={error}
-      hint="Busque pelo código ou pela descrição; o diagnóstico é preenchido automaticamente."
-      injectChildProps={false}
-    >
-      <CidAutocomplete
-        id={id}
-        value={cid}
-        description={descricao}
-        invalid={Boolean(error)}
-        describedById={`${id}-msg`}
-        onSelect={(item) => onChange(item?.codigo ?? "", item?.descricao ?? "")}
-      />
-    </Field>
+    <div className="grid min-w-0 gap-4 sm:grid-cols-2 [&>*]:min-w-0">
+      {readOnly ? (
+        <Field id={id} label="CID-10" error={error} injectChildProps={false}>
+          <Input
+            id={id}
+            readOnly
+            aria-readonly="true"
+            aria-describedby={`${id}-msg`}
+            value={cid}
+            placeholder="CID não informado"
+          />
+        </Field>
+      ) : (
+        <Field
+          id={id}
+          label="CID-10"
+          error={error}
+          hint="Busque pelo código ou pela descrição."
+          injectChildProps={false}
+        >
+          <CidAutocomplete
+            id={id}
+            value={cid}
+            description={descricao}
+            invalid={Boolean(error)}
+            describedById={`${id}-msg`}
+            onSelect={(item) => onChange(item?.codigo ?? "", item?.descricao ?? "")}
+          />
+        </Field>
+      )}
+
+      <Field
+        id={diagnosticoId}
+        label="Diagnóstico"
+        hint={readOnly ? undefined : "Preenchido automaticamente a partir do CID-10 selecionado."}
+      >
+        <Input
+          id={diagnosticoId}
+          readOnly
+          aria-readonly="true"
+          tabIndex={-1}
+          value={diagnostico}
+          placeholder="Selecione um CID-10"
+        />
+      </Field>
+    </div>
   );
 }
 
