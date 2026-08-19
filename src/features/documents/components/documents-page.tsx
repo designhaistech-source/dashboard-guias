@@ -452,7 +452,7 @@ function ReportsTab() {
     saveDialog,
   } = useDocumentTemplates({
     kind: "relatorio",
-    getContent: () => html,
+    getContent: () => html || gerado,
     suggestName: () => (paciente.trim() ? `Relatório — ${paciente.trim()}` : ""),
   });
 
