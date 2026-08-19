@@ -49,7 +49,12 @@ interface RichTextEditorProps {
   placeholder?: string;
   className?: string;
   ariaLabel: string;
+  /** Aciona a melhoria do texto com IA. Quando ausente, o botão não é exibido. */
+  onImproveWithAi?: () => void;
+  /** Indica que a melhoria com IA está em andamento. */
+  improving?: boolean;
 }
+
 
 /**
  * Editor de texto simples usado nos documentos clínicos.
