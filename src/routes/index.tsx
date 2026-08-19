@@ -1510,6 +1510,7 @@ function Kpi({
   value,
   hint,
   meta,
+  tooltip,
   tone,
   trend,
 }: {
@@ -1519,6 +1520,8 @@ function Kpi({
   hint: string;
   /** Discreet reference detail (e.g. the exact date the value refers to). */
   meta?: string;
+  /** Short sentence with the exact dates and the comparison rule used. */
+  tooltip?: string;
   tone: "primary" | "success" | "info" | "purple";
   trend?: TrendDirection;
 }) {
@@ -1535,7 +1538,25 @@ function Kpi({
       className="group relative overflow-hidden hover:shadow-sm"
     >
       <div className="flex items-center justify-between">
-        <span className="metric-label">{label}</span>
+        <span className="metric-label flex items-center icon-optical gap-1">
+          {label}
+          {tooltip && (
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <button
+                    type="button"
+                    className="rounded-full text-muted-foreground hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                    aria-label={`Como este indicador é calculado: ${tooltip}`}
+                  >
+                    <Info className="h-3.5 w-3.5" aria-hidden="true" />
+                  </button>
+                </TooltipTrigger>
+                <TooltipContent className="max-w-64 text-xs">{tooltip}</TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          )}
+        </span>
         <span className={`grid place-items-center h-8 w-8 rounded-lg ${toneClass}`}>
           <Icon className="h-4 w-4" />
         </span>
