@@ -13,6 +13,7 @@ import {
   ArrowUpRight,
   ArrowDownRight,
   Minus,
+  Loader2,
 } from "lucide-react";
 import {
   AreaChart,
@@ -766,6 +767,21 @@ function DashboardPage() {
   const procedures = metrics.procedures;
   const dailyData = metrics.daily;
   const hasData = total > 0;
+  const [generatingReport, setGeneratingReport] = useState(false);
+
+  const handleGenerateReport = async () => {
+    if (generatingReport) return;
+    if (!hasData) {
+      toast.error("Nenhuma guia no período — ajuste os filtros para gerar o relatório.");
+      return;
+    }
+    setGeneratingReport(true);
+    try {
+      await generateReportPdf(periodLabel, metrics);
+    } finally {
+      setGeneratingReport(false);
+    }
+  };
   const emptyState = (
     <EmptyState
       size="sm"
@@ -829,18 +845,17 @@ function DashboardPage() {
                 </Button>
                 <Button
                   size="sm"
-                  onClick={() => {
-                    if (!hasData) {
-                      toast.error("Nenhuma guia no período — ajuste os filtros para gerar o relatório.");
-                      return;
-                    }
-                    void generateReportPdf(periodLabel, metrics);
-                  }}
-                  disabled={!hasData}
+                  onClick={handleGenerateReport}
+                  disabled={!hasData || generatingReport}
+                  aria-busy={generatingReport}
                   title={!hasData ? "Sem dados para gerar o relatório" : undefined}
                 >
-                  <Download className="h-4 w-4" />
-                  Gerar relatório
+                  {generatingReport ? (
+                    <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
+                  ) : (
+                    <Download className="h-4 w-4" aria-hidden="true" />
+                  )}
+                  {generatingReport ? "Gerando…" : "Gerar relatório"}
                 </Button>
               </>
             }
