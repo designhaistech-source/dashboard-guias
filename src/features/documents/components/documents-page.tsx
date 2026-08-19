@@ -1070,16 +1070,21 @@ function SavedTemplatesField({
   value: string;
   onSelect: (value: string) => void;
 }) {
-  if (templates.length === 0) return null;
+  const empty = templates.length === 0;
   return (
     <SelectField
       id={id}
-      label="Modelos salvos"
-      placeholder="Selecione um modelo salvo"
+      label="Modelos disponíveis"
+      placeholder={empty ? "Nenhum modelo salvo ainda" : "Selecione um modelo salvo"}
       value={value}
       onValueChange={onSelect}
-      options={templates.map((t) => ({ value: t.value, label: t.label }))}
-      hint="Aplicar um modelo substitui o texto atual (com confirmação)."
+      disabled={empty}
+      options={templates.map((t) => ({ value: t.value, label: `${t.label} (salvo)` }))}
+      hint={
+        empty
+          ? "Use “Salvar como modelo” após redigir o texto para reaproveitá-lo depois."
+          : `${templates.length} ${templates.length === 1 ? "modelo salvo" : "modelos salvos"} neste navegador. Aplicar um modelo substitui o texto atual (com confirmação).`
+      }
     />
   );
 }
