@@ -5,7 +5,13 @@ export interface ReportTemplate {
 }
 
 /** Variáveis dinâmicas suportadas no corpo dos documentos. */
-export const DOCUMENT_VARIABLES = ["@paciente", "@data", "@cid", "@diagnostico"] as const;
+export const DOCUMENT_VARIABLES = [
+  "@paciente",
+  "@data",
+  "@cidade",
+  "@cid",
+  "@diagnostico",
+] as const;
 
 /** Modelos de relatório (dados fictícios de demonstração). */
 export const REPORT_TEMPLATES: ReportTemplate[] = [
@@ -67,6 +73,15 @@ export function formatDateLong(iso: string): string {
   });
 }
 
+/**
+ * Local e data do documento: "Natal, 19 de agosto de 2026."
+ * Sem cidade informada, exibe apenas a data.
+ */
+export function formatLocalAndDate(cidade: string, data: string): string {
+  const local = cidade.trim();
+  return `${local ? `${local}, ` : ""}${formatDateLong(data)}.`;
+}
+
 interface RelatorioInput {
   /** Conteúdo do modelo escolhido, usado como base do texto. */
   base: string;
@@ -79,8 +94,7 @@ interface RelatorioInput {
  * As variáveis (@paciente, @cid…) são resolvidas na camada de variáveis.
  */
 export function buildRelatorio({ base, data, cidade }: RelatorioInput): string {
-  const cidadeTexto = cidade.trim() ? `${cidade.trim()}, ` : "";
-  return `${base}<p>${cidadeTexto}${formatDateLong(data)}.</p>`;
+  return `${base}<p>${formatLocalAndDate(cidade, data)}</p>`;
 }
 
 interface AtestadoInput {
@@ -95,12 +109,11 @@ interface AtestadoInput {
 export function buildAtestado({ paciente, dias, data, cidade, cid }: AtestadoInput): string {
   const nome = paciente.trim() || "____________________";
   const plural = Number(dias) > 1 ? "dias" : "dia";
-  const local = cidade.trim() ? `${cidade.trim()}, ` : "";
   const cidTexto = cid.trim() ? ` CID: ${cid.trim()}.` : "";
 
   return [
     `<p>Atesto para os devidos fins que o(a) Sr.(a) ${nome}, esteve sob cuidados médicos e necessita de afastamento de suas atividades pelo período de ${dias} ${plural}, a partir de ${formatDateShort(data)}.${cidTexto}</p>`,
-    `<p>${local}${formatDateLong(data)}.</p>`,
+    `<p>${formatLocalAndDate(cidade, data)}</p>`,
   ].join("");
 }
 
@@ -125,13 +138,12 @@ export function buildComparecimento({
   const nome = paciente.trim() || "____________________";
   const estabelecimento = local.trim() || "este estabelecimento";
   const periodo = entrada && saida ? `das ${entrada} às ${saida}` : "no horário do atendimento";
-  const cidadeTexto = cidade.trim() ? `${cidade.trim()}, ` : "";
 
   return [
     `<p>Declaro, para os devidos fins, que o(a) Sr.(a) ${nome} compareceu a(o) ${estabelecimento} no dia ${formatDateShort(data)}.</p>`,
     `<p>O interessado esteve presente ${periodo}.</p>`,
     `<p>Por ser verdade, firmo a presente declaração.</p>`,
-    `<p>${cidadeTexto}${formatDateLong(data)}.</p>`,
+    `<p>${formatLocalAndDate(cidade, data)}</p>`,
   ].join("");
 }
 
