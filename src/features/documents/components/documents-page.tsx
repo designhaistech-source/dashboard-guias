@@ -206,7 +206,7 @@ function DocumentActions({
       note="Para ter validade, o documento deve ser impresso e assinado manualmente pelo médico."
     >
       {onSaveTemplate && (
-        <Button type="button" variant="outline" size="sm" onClick={onSaveTemplate}>
+        <Button type="button" variant="ghost" size="sm" onClick={onSaveTemplate}>
           <BookmarkPlus className="icon-optical h-4 w-4" aria-hidden />
           Salvar como modelo
         </Button>
@@ -226,10 +226,11 @@ function DocumentActions({
         )}
         {downloading ? "Gerando PDF…" : "Baixar PDF"}
       </Button>
-      <Button type="button" variant="outline" size="sm" onClick={handlePrint}>
+      <Button type="button" size="sm" onClick={handlePrint}>
         <Printer className="icon-optical h-4 w-4" aria-hidden />
-        Imprimir
+        Imprimir e assinar
       </Button>
+
     </FormActionBar>
   );
 }
