@@ -584,26 +584,18 @@ type GuideFilters = {
   // Período de autorização
   dataAutorizacaoDe: string;
   dataAutorizacaoAte: string;
-  // Identificação
-  numGuiaPrestador: string;
-  beneficiarioNome: string;
+  // Dimensões de comparação
   tipoGuia: string;
   prestadorSolicitante: string;
-  // Procedimento
-  procDescricao: string;
-  procCodigo: string;
 };
 
 const emptyFilters: GuideFilters = {
   dataAutorizacaoDe: "",
   dataAutorizacaoAte: "",
-  numGuiaPrestador: "",
-  beneficiarioNome: "",
   tipoGuia: "",
   prestadorSolicitante: "",
-  procDescricao: "",
-  procCodigo: "",
 };
+
 
 
 /** Rótulo de grupo dentro do painel de filtros — único nível em caixa alta. */
