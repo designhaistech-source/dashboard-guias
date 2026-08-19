@@ -83,7 +83,25 @@ export const Route = createFileRoute("/")({
   component: DashboardPage,
 });
 
-type Range = "7d" | "30d" | "90d";
+/** Formats an ISO date (yyyy-mm-dd) as dd/mm/yyyy without timezone shifts. */
+function formatIsoDate(iso: string) {
+  const [y, m, d] = iso.split("-");
+  return y && m && d ? `${d}/${m}/${y}` : iso;
+}
+
+/** Human label for the period actually filtered by the user. */
+function buildPeriodLabel(from: string, to: string) {
+  const de = from.trim();
+  const ate = to.trim();
+  if (de && ate) {
+    return de === ate
+      ? formatIsoDate(de)
+      : `${formatIsoDate(de)} a ${formatIsoDate(ate)}`;
+  }
+  if (de) return `A partir de ${formatIsoDate(de)}`;
+  if (ate) return `Até ${formatIsoDate(ate)}`;
+  return "Todo o período";
+}
 
 const prestadoresList = PRESTADORES;
 
