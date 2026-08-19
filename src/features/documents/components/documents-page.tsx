@@ -447,7 +447,26 @@ function CertificateTab() {
 
   const conteudo = html || gerado;
 
-  const { improving, improve } = useImproveWithAi("Atestado médico", conteudo, setHtml);
+  const { requestReplace, replacementDialog } = useTextReplacement(html, setHtml);
+
+  const { improving, improve } = useImproveWithAi(
+    "Atestado médico",
+    conteudo,
+    setHtml,
+    requestReplace,
+  );
+
+  function restoreDefault() {
+    requestReplace({
+      title: "Restaurar texto padrão?",
+      description:
+        "As alterações feitas no texto serão descartadas e o texto gerado automaticamente voltará. Você poderá desfazer pelo aviso exibido após a troca.",
+      confirmLabel: "Restaurar texto",
+      successMessage: "Texto padrão restaurado.",
+      apply: () => setHtml(""),
+    });
+  }
+
 
   return (
     <>
