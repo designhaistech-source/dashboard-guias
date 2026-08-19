@@ -6,7 +6,6 @@ import {
   Printer,
   Download,
   BookmarkPlus,
-  ShieldCheck,
   User,
 } from "lucide-react";
 import { toast } from "sonner";
@@ -18,7 +17,6 @@ import {
   appTabsTriggerClass,
 } from "@/components/app-tabs";
 import { AppBreadcrumb } from "@/components/app-breadcrumb";
-import { AppModal } from "@/components/app-modal";
 import { AppSidebar } from "@/components/app-sidebar";
 import { SiteFooter } from "@/components/site-footer";
 import { PageHeader } from "@/components/page-header";
@@ -136,15 +134,12 @@ function DocumentActions({
   html,
   paciente,
   onSaveTemplate,
-  signable,
 }: {
   title: string;
   html: string;
   paciente: string;
   onSaveTemplate?: () => void;
-  signable?: boolean;
 }) {
-  const [signOpen, setSignOpen] = useState(false);
   const disabled = !paciente.trim();
   const temTexto = html.replace(/<[^>]+>/g, "").trim().length > 0;
 
@@ -347,7 +342,6 @@ function ReportsTab() {
         title="Relatório médico"
         html={html}
         paciente={paciente}
-        signable
         onSaveTemplate={() => toast.success("Modelo salvo e disponível na lista (simulação).")}
       />
     </>
@@ -465,7 +459,7 @@ function CertificateTab() {
         }
       />
 
-      <DocumentActions title="Atestado médico" html={conteudo} paciente={paciente} signable />
+      <DocumentActions title="Atestado médico" html={conteudo} paciente={paciente} />
     </>
   );
 }
@@ -605,7 +599,6 @@ function AttendanceTab() {
         title="Declaração de comparecimento"
         html={conteudo}
         paciente={paciente}
-        signable
       />
     </>
   );
