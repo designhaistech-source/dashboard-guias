@@ -614,6 +614,17 @@ function AttendanceTab() {
 
   const conteudo = html || gerado;
 
+  const dataStatus = useMemo(
+    () =>
+      getDocumentDateStatus(data, {
+        future:
+          "Data futura não é permitida: a declaração só pode ser emitida após o comparecimento.",
+        retroactive: (days) =>
+          `Comparecimento registrado há ${days} dias. Confirme a data do atendimento antes de emitir.`,
+      }),
+    [data],
+  );
+
   const { requestReplace, replacementDialog } = useTextReplacement(html, setHtml);
 
   const { improving, improve } = useImproveWithAi(
