@@ -20,6 +20,7 @@ import {
   X,
   Wrench,
   FileSpreadsheet,
+  FolderCheck,
   BookMarked,
   
 
@@ -80,6 +81,7 @@ export type ItemKey =
   | "kits"
   | "opme"
   | "relatorios"
+  | "documentos-emitidos"
   | "cid"
   | "perfil"
   | "configuracoes"
@@ -281,6 +283,15 @@ function SidebarNav({
           to="/documentos"
           active={activeKey === "relatorios"}
           hint="Gere e gerencie relatórios, atestados e documentos clínicos."
+          collapsed={collapsed}
+          onNavigate={onNavigate}
+        />
+        <SidebarItem
+          icon={FolderCheck}
+          label="Documentos emitidos"
+          to="/documentos-emitidos"
+          active={activeKey === "documentos-emitidos"}
+          hint="Histórico dos relatórios, atestados e declarações já emitidos."
           collapsed={collapsed}
           onNavigate={onNavigate}
         />

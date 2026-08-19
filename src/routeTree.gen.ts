@@ -17,6 +17,7 @@ import { Route as OpmeRouteImport } from './routes/opme'
 import { Route as GuiasEmitidasRouteImport } from './routes/guias-emitidas'
 import { Route as GuiasRouteImport } from './routes/guias'
 import { Route as EmitirRouteImport } from './routes/emitir'
+import { Route as DocumentosEmitidosRouteImport } from './routes/documentos-emitidos'
 import { Route as DocumentosRouteImport } from './routes/documentos'
 import { Route as DesignSystemIconesRouteImport } from './routes/design-system-icones'
 import { Route as DesignSystemRouteImport } from './routes/design-system'
@@ -64,6 +65,11 @@ const GuiasRoute = GuiasRouteImport.update({
 const EmitirRoute = EmitirRouteImport.update({
   id: '/emitir',
   path: '/emitir',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DocumentosEmitidosRoute = DocumentosEmitidosRouteImport.update({
+  id: '/documentos-emitidos',
+  path: '/documentos-emitidos',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DocumentosRoute = DocumentosRouteImport.update({
@@ -115,6 +121,7 @@ export interface FileRoutesByFullPath {
   '/design-system': typeof DesignSystemRoute
   '/design-system-icones': typeof DesignSystemIconesRoute
   '/documentos': typeof DocumentosRoute
+  '/documentos-emitidos': typeof DocumentosEmitidosRoute
   '/emitir': typeof EmitirRoute
   '/guias': typeof GuiasRoute
   '/guias-emitidas': typeof GuiasEmitidasRoute
@@ -133,6 +140,7 @@ export interface FileRoutesByTo {
   '/design-system': typeof DesignSystemRoute
   '/design-system-icones': typeof DesignSystemIconesRoute
   '/documentos': typeof DocumentosRoute
+  '/documentos-emitidos': typeof DocumentosEmitidosRoute
   '/emitir': typeof EmitirRoute
   '/guias': typeof GuiasRoute
   '/guias-emitidas': typeof GuiasEmitidasRoute
@@ -152,6 +160,7 @@ export interface FileRoutesById {
   '/design-system': typeof DesignSystemRoute
   '/design-system-icones': typeof DesignSystemIconesRoute
   '/documentos': typeof DocumentosRoute
+  '/documentos-emitidos': typeof DocumentosEmitidosRoute
   '/emitir': typeof EmitirRoute
   '/guias': typeof GuiasRoute
   '/guias-emitidas': typeof GuiasEmitidasRoute
@@ -172,6 +181,7 @@ export interface FileRouteTypes {
     | '/design-system'
     | '/design-system-icones'
     | '/documentos'
+    | '/documentos-emitidos'
     | '/emitir'
     | '/guias'
     | '/guias-emitidas'
@@ -190,6 +200,7 @@ export interface FileRouteTypes {
     | '/design-system'
     | '/design-system-icones'
     | '/documentos'
+    | '/documentos-emitidos'
     | '/emitir'
     | '/guias'
     | '/guias-emitidas'
@@ -208,6 +219,7 @@ export interface FileRouteTypes {
     | '/design-system'
     | '/design-system-icones'
     | '/documentos'
+    | '/documentos-emitidos'
     | '/emitir'
     | '/guias'
     | '/guias-emitidas'
@@ -227,6 +239,7 @@ export interface RootRouteChildren {
   DesignSystemRoute: typeof DesignSystemRoute
   DesignSystemIconesRoute: typeof DesignSystemIconesRoute
   DocumentosRoute: typeof DocumentosRoute
+  DocumentosEmitidosRoute: typeof DocumentosEmitidosRoute
   EmitirRoute: typeof EmitirRoute
   GuiasRoute: typeof GuiasRoute
   GuiasEmitidasRoute: typeof GuiasEmitidasRoute
@@ -296,6 +309,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof EmitirRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/documentos-emitidos': {
+      id: '/documentos-emitidos'
+      path: '/documentos-emitidos'
+      fullPath: '/documentos-emitidos'
+      preLoaderRoute: typeof DocumentosEmitidosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/documentos': {
       id: '/documentos'
       path: '/documentos'
@@ -363,6 +383,7 @@ const rootRouteChildren: RootRouteChildren = {
   DesignSystemRoute: DesignSystemRoute,
   DesignSystemIconesRoute: DesignSystemIconesRoute,
   DocumentosRoute: DocumentosRoute,
+  DocumentosEmitidosRoute: DocumentosEmitidosRoute,
   EmitirRoute: EmitirRoute,
   GuiasRoute: GuiasRoute,
   GuiasEmitidasRoute: GuiasEmitidasRoute,
