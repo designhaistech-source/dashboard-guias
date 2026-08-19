@@ -25,6 +25,12 @@ interface FieldProps {
   className?: string;
   labelClassName?: string;
   rightAdornment?: React.ReactNode;
+  /**
+   * Injeta `id`/`aria-*` no primeiro filho. Desligue quando o filho for um
+   * wrapper (ex.: `<div className="relative">`) e o controle real já declarar
+   * esses atributos — evita `id` duplicado e `htmlFor` apontando para um div.
+   */
+  injectChildProps?: boolean;
   children: React.ReactNode;
 }
 
