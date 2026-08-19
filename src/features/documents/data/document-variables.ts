@@ -36,6 +36,15 @@ function tokenRegex(variable: string): RegExp {
   return new RegExp(`${variable}(?![\\p{L}\\p{N}_])`, "gu");
 }
 
+/** Valor atual de cada token, para inserir o dado real no editor. */
+export function variableTokenValues(
+  values: DocumentVariableValues,
+): Record<string, string> {
+  return Object.fromEntries(
+    DOCUMENT_VARIABLES.map((variable) => [variable, valueFor(variable, values)]),
+  );
+}
+
 /** Marcador impresso quando a variável usada no texto ainda não tem valor. */
 const EMPTY_PLACEHOLDER = "____________";
 

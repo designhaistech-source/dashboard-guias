@@ -458,6 +458,7 @@ function ReportsTab() {
     () => ({ paciente, data, cid, diagnostico }),
     [paciente, data, cid, diagnostico],
   );
+  const tokenValues = useMemo(() => variableTokenValues(variableValues), [variableValues]);
   const previewHtml = useMemo(
     () => resolveDocumentVariables(html, variableValues),
     [html, variableValues],
@@ -591,6 +592,7 @@ function ReportsTab() {
         onImproveWithAi={improve}
         improving={improving}
         variables={DOCUMENT_VARIABLES}
+        variableValues={tokenValues}
         previewHtml={previewHtml}
         pendingVariables={pending}
         placeholder="Redija o relatório médico..."
@@ -675,6 +677,7 @@ function CertificateTab() {
     () => ({ paciente, data, cid, diagnostico: diagnosticoSelecionado }),
     [paciente, data, cid, diagnosticoSelecionado],
   );
+  const tokenValues = useMemo(() => variableTokenValues(variableValues), [variableValues]);
   const previewHtml = useMemo(
     () => resolveDocumentVariables(conteudo, variableValues),
     [conteudo, variableValues],
@@ -806,6 +809,7 @@ function CertificateTab() {
         onImproveWithAi={improve}
         improving={improving}
         variables={DOCUMENT_VARIABLES}
+        variableValues={tokenValues}
         previewHtml={previewHtml}
         pendingVariables={pending}
         header={
@@ -898,6 +902,7 @@ function AttendanceTab() {
   );
 
   const variableValues = useMemo(() => ({ paciente, data }), [paciente, data]);
+  const tokenValues = useMemo(() => variableTokenValues(variableValues), [variableValues]);
   const previewHtml = useMemo(
     () => resolveDocumentVariables(conteudo, variableValues),
     [conteudo, variableValues],
@@ -1055,6 +1060,7 @@ function AttendanceTab() {
         onImproveWithAi={improve}
         improving={improving}
         variables={DOCUMENT_VARIABLES}
+        variableValues={tokenValues}
         previewHtml={previewHtml}
         pendingVariables={pending}
         header={
