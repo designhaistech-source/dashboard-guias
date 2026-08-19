@@ -876,7 +876,8 @@ function DashboardPage() {
     );
   }, [procedures, procedureSort]);
   const dailyData = metrics.daily;
-  const monthMarks = useMemo(() => monthBoundaries(dailyData), [dailyData]);
+  const dailyTicks = useMemo(() => dailyAxisTicks(dailyData), [dailyData]);
+  const dailyMonthStarts = useMemo(() => monthStartTicks(dailyTicks), [dailyTicks]);
 
   const hasData = total > 0;
   const [generatingReport, setGeneratingReport] = useState(false);
