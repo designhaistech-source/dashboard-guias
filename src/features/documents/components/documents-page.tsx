@@ -500,6 +500,7 @@ function CertificateTab() {
   const dataStatus = useMemo(() => getDocumentDateStatus(data), [data]);
 
   const pacienteError = useMemo(() => validatePaciente(paciente), [paciente]);
+  const cidError = useMemo(() => validateCid(cid), [cid]);
   const cidadeError = useMemo(() => validateCidade(cidade), [cidade]);
   const diasError = useMemo(() => validateDiasAfastamento(dias), [dias]);
 
