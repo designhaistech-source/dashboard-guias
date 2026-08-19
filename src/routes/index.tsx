@@ -1463,11 +1463,11 @@ function DashboardPage() {
               {!hasData ? (
                 emptyState
               ) : (
-                <div className="h-72" data-chart="daily" ref={dailyChartRef}>
+                <div className="h-60 sm:h-72" data-chart="daily" ref={dailyChartRef}>
                   <ResponsiveContainer width="100%" height="100%">
                     <AreaChart
                       data={dailyData}
-                      margin={{ top: 10, right: 10, left: 6, bottom: 18 }}
+                      margin={{ top: 10, right: 10, left: isMobile ? 0 : 6, bottom: 18 }}
                     >
                       <defs>
                         <linearGradient id="gradPrimary" x1="0" y1="0" x2="0" y2="1">
@@ -1499,16 +1499,20 @@ function DashboardPage() {
                         fontSize={11}
                         tickLine={false}
                         axisLine={false}
-                        width={44}
+                        width={isMobile ? 28 : 44}
                         allowDecimals={false}
-                        label={{
-                          value: "Quantidade de guias",
-                          angle: -90,
-                          position: "insideLeft",
-                          fill: "var(--muted-foreground)",
-                          fontSize: 11,
-                          style: { textAnchor: "middle" },
-                        }}
+                        label={
+                          isMobile
+                            ? undefined
+                            : {
+                                value: "Quantidade de guias",
+                                angle: -90,
+                                position: "insideLeft",
+                                fill: "var(--muted-foreground)",
+                                fontSize: 11,
+                                style: { textAnchor: "middle" },
+                              }
+                        }
                       />
 
                       <RTooltip
