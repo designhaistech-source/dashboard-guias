@@ -1153,46 +1153,53 @@ function DashboardPage() {
                 </>
               }
             >
-              <div>
-                <div className={filterGroupLabelClass}>Períodos rápidos</div>
-                <div className="flex flex-wrap gap-2">
-                  {[
-                    { id: "hoje", label: "Hoje" },
-                    { id: "7d", label: "Últimos 7 dias" },
-                    { id: "30d", label: "Últimos 30 dias" },
-                  ].map((p) => (
-                    <Chip
-                      key={p.id}
-                      onClick={() => applyPreset(p.id as "hoje" | "7d" | "30d")}
-                      className="text-foreground hover:border-primary hover:bg-primary/5 hover:text-primary"
-                    >
-                      {p.label}
-                    </Chip>
-                  ))}
-                </div>
-              </div>
+              <div className="grid grid-cols-1 gap-x-4 gap-y-4 lg:grid-cols-12">
+                {/* Períodos rápidos — atalhos alinhados ao rótulo do grupo */}
+                <fieldset className="lg:col-span-12">
+                  <legend className={filterGroupLabelClass}>Períodos rápidos</legend>
+                  <div className="flex flex-wrap items-center gap-2">
+                    {[
+                      { id: "hoje", label: "Hoje" },
+                      { id: "7d", label: "Últimos 7 dias" },
+                      { id: "30d", label: "Últimos 30 dias" },
+                    ].map((p) => (
+                      <Chip
+                        key={p.id}
+                        onClick={() => applyPreset(p.id as "hoje" | "7d" | "30d")}
+                        className="text-foreground hover:border-primary hover:bg-primary/5 hover:text-primary"
+                      >
+                        {p.label}
+                      </Chip>
+                    ))}
+                  </div>
+                </fieldset>
 
-              <div>
-                <div className={filterGroupLabelClass}>Período (data de autorização da guia)</div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-                  <FilterField label="Data inicial" type="date" error={dateRangeInvalid} value={draft.dataAutorizacaoDe} onChange={(v) => setDraft((d) => ({ ...d, dataAutorizacaoDe: v }))} inputRef={firstFieldRef} />
-                  <FilterField label="Data final" type="date" error={dateRangeInvalid} value={draft.dataAutorizacaoAte} onChange={(v) => setDraft((d) => ({ ...d, dataAutorizacaoAte: v }))} />
-                </div>
-                {dateRangeInvalid && (
-                  <p className="mt-1.5 text-xs text-destructive">A data inicial deve ser anterior ou igual à data final.</p>
-                )}
-              </div>
+                {/* Período — duas datas lado a lado, largura padronizada */}
+                <fieldset className="lg:col-span-5">
+                  <legend className={filterGroupLabelClass}>Período (data de autorização)</legend>
+                  <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                    <FilterField label="Data inicial" type="date" error={dateRangeInvalid} value={draft.dataAutorizacaoDe} onChange={(v) => setDraft((d) => ({ ...d, dataAutorizacaoDe: v }))} inputRef={firstFieldRef} />
+                    <FilterField label="Data final" type="date" error={dateRangeInvalid} value={draft.dataAutorizacaoAte} onChange={(v) => setDraft((d) => ({ ...d, dataAutorizacaoAte: v }))} />
+                  </div>
+                  {dateRangeInvalid && (
+                    <p className="mt-1.5 text-xs text-destructive">A data inicial deve ser anterior ou igual à data final.</p>
+                  )}
+                </fieldset>
 
-              <div>
-                <div className={filterGroupLabelClass}>Comparação</div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <FilterSelect label="Tipo de guia" value={draft.tipoGuia} onChange={(v) => setDraft((d) => ({ ...d, tipoGuia: v }))} options={GUIDE_TYPES.map((t) => t.name)} />
-                  <FilterSelect label="Prestador solicitante" value={draft.prestadorSolicitante} onChange={(v) => setDraft((d) => ({ ...d, prestadorSolicitante: v }))} options={prestadoresList} />
-                </div>
-                <p className="mt-1.5 text-xs text-muted-foreground">
+                {/* Comparação — mesma linha-base do grupo Período no desktop */}
+                <fieldset className="lg:col-span-7">
+                  <legend className={filterGroupLabelClass}>Comparação</legend>
+                  <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                    <FilterSelect label="Tipo de guia" value={draft.tipoGuia} onChange={(v) => setDraft((d) => ({ ...d, tipoGuia: v }))} options={GUIDE_TYPES.map((t) => t.name)} />
+                    <FilterSelect label="Prestador solicitante" value={draft.prestadorSolicitante} onChange={(v) => setDraft((d) => ({ ...d, prestadorSolicitante: v }))} options={prestadoresList} />
+                  </div>
+                </fieldset>
+
+                <p className="text-xs text-muted-foreground lg:col-span-12">
                   Para localizar uma guia específica por paciente, número ou procedimento, use a página Guias processadas.
                 </p>
               </div>
+
 
 
             </FilterCard>
