@@ -1633,12 +1633,17 @@ function DashboardPage() {
               emptyState
             ) : (
               <div className="grid gap-6 lg:grid-cols-2">
-                <div className="h-64" data-chart="procedures">
+                <div className="h-72 sm:h-64" data-chart="procedures">
                   <ResponsiveContainer width="100%" height="100%">
                     <BarChart
                       data={procedures.map((p) => ({ name: p.name, count: p.count }))}
                       layout="vertical"
-                      margin={{ top: 4, right: 28, left: 8, bottom: 16 }}
+                      margin={{
+                        top: 4,
+                        right: isMobile ? 20 : 28,
+                        left: isMobile ? 0 : 8,
+                        bottom: isMobile ? 4 : 16,
+                      }}
                       barCategoryGap={10}
                     >
                       <defs>
@@ -1659,30 +1664,38 @@ function DashboardPage() {
                         tickLine={false}
                         axisLine={false}
                         allowDecimals={false}
-                        label={{
-                          value: "Quantidade de guias",
-                          position: "insideBottom",
-                          offset: -12,
-                          fill: "var(--muted-foreground)",
-                          fontSize: 11,
-                        }}
+                        label={
+                          isMobile
+                            ? undefined
+                            : {
+                                value: "Quantidade de guias",
+                                position: "insideBottom",
+                                offset: -12,
+                                fill: "var(--muted-foreground)",
+                                fontSize: 11,
+                              }
+                        }
                       />
                       <YAxis
                         type="category"
                         dataKey="name"
                         stroke="var(--muted-foreground)"
                         fontSize={11}
-                        width={158}
+                        width={isMobile ? 104 : 158}
                         tickLine={false}
                         axisLine={false}
-                        label={{
-                          value: "Procedimento",
-                          angle: -90,
-                          position: "insideLeft",
-                          fill: "var(--muted-foreground)",
-                          fontSize: 11,
-                          style: { textAnchor: "middle" },
-                        }}
+                        label={
+                          isMobile
+                            ? undefined
+                            : {
+                                value: "Procedimento",
+                                angle: -90,
+                                position: "insideLeft",
+                                fill: "var(--muted-foreground)",
+                                fontSize: 11,
+                                style: { textAnchor: "middle" },
+                              }
+                        }
                       />
 
                       <RTooltip
