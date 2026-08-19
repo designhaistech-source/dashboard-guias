@@ -1037,11 +1037,16 @@ function DashboardPage() {
                 <h2 className="font-display text-base font-semibold tracking-tight text-foreground">
                   Filtros
                 </h2>
-                {activeFilters.length > 0 && (
-                  <Badge variant="secondary" size="sm">
-                    {activeFilters.length}
+                {extraFilterCount > 0 && (
+                  <Badge
+                    variant="secondary"
+                    size="sm"
+                    aria-label={`${extraFilterCount} filtro${extraFilterCount > 1 ? "s" : ""} adicional${extraFilterCount > 1 ? "is" : ""} ativo${extraFilterCount > 1 ? "s" : ""}`}
+                  >
+                    {extraFilterCount}
                   </Badge>
                 )}
+
               </div>
               <Button
                 type="button"
