@@ -38,6 +38,8 @@ import { RichTextEditor } from "./rich-text-editor";
 import { useTextReplacement } from "./use-text-replacement";
 import { getDocumentDateStatus, todayIsoDate } from "../data/document-date";
 import {
+  findCid,
+  validateCid,
   validateCidade,
   validateDiasAfastamento,
   validateLocal,
@@ -292,20 +294,27 @@ function CidFields({
   cid,
   descricao,
   onChange,
+  error,
 }: {
   cid: string;
   descricao: string;
   onChange: (codigo: string, descricao: string) => void;
+  error?: string;
 }) {
   return (
     <div className="grid min-w-0 gap-4 lg:grid-cols-[minmax(0,10rem)_minmax(0,1fr)]">
-      <Field id="cid-codigo" label="CID">
+      <Field id="cid-codigo" label="CID" error={error}>
         <Input
           id="cid-codigo"
           className="font-mono"
           placeholder="CID"
           value={cid}
-          onChange={(e) => onChange(e.target.value.toUpperCase(), "")}
+          aria-invalid={error ? true : undefined}
+          onChange={(e) => {
+            const codigo = e.target.value.toUpperCase();
+            // Mantém a descrição sincronizada quando o código digitado existe na base.
+            onChange(codigo, findCid(codigo)?.descricao ?? "");
+          }}
         />
       </Field>
       <Field
@@ -323,6 +332,7 @@ function CidFields({
     </div>
   );
 }
+
 
 /* ---------------- Relatórios ---------------- */
 
@@ -357,6 +367,7 @@ function ReportsTab() {
   const { requestReplace, replacementDialog } = useTextReplacement(html, setHtml);
 
   const pacienteError = useMemo(() => validatePaciente(paciente), [paciente]);
+  const cidError = useMemo(() => validateCid(cid), [cid]);
 
 
   function applyTemplate(value: string) {
@@ -407,7 +418,7 @@ function ReportsTab() {
             options={REPORT_TEMPLATES.map((t) => ({ value: t.value, label: t.label }))}
             hint="Use “Salvar como modelo” após redigir o texto para reaproveitá-lo depois."
           />
-          <CidFields cid={cid} descricao={diagnosticoSelecionado} onChange={handleCid} />
+          <CidFields cid={cid} descricao={diagnosticoSelecionado} onChange={handleCid} error={cidError} />
         </div>
       </SurfaceCard>
 
@@ -437,7 +448,7 @@ function ReportsTab() {
         title="Relatório médico"
         html={html}
         paciente={paciente}
-        blockReason={pacienteError}
+        blockReason={pacienteError ?? cidError}
 
         onSaveTemplate={() => toast.success("Modelo salvo e disponível na lista (simulação).")}
       />
@@ -489,10 +500,11 @@ function CertificateTab() {
   const dataStatus = useMemo(() => getDocumentDateStatus(data), [data]);
 
   const pacienteError = useMemo(() => validatePaciente(paciente), [paciente]);
+  const cidError = useMemo(() => validateCid(cid), [cid]);
   const cidadeError = useMemo(() => validateCidade(cidade), [cidade]);
   const diasError = useMemo(() => validateDiasAfastamento(dias), [dias]);
 
-  const blockReason = dataStatus.error ?? pacienteError ?? cidadeError ?? diasError;
+  const blockReason = dataStatus.error ?? pacienteError ?? cidError ?? cidadeError ?? diasError;
 
 
   const { requestReplace, replacementDialog } = useTextReplacement(html, setHtml);
@@ -531,7 +543,7 @@ function CertificateTab() {
             onChange={setPaciente}
             error={pacienteError}
           />
-          <CidFields cid={cid} descricao={diagnosticoSelecionado} onChange={handleCid} />
+          <CidFields cid={cid} descricao={diagnosticoSelecionado} onChange={handleCid} error={cidError} />
           <div className="grid min-w-0 gap-4 sm:grid-cols-2 xl:grid-cols-3 [&>*]:min-w-0">
             <SelectField
               id="atestado-dias"

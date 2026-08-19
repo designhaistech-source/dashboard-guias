@@ -1,3 +1,5 @@
+import { CID10 } from "@/lib/cid";
+
 import { z } from "zod";
 
 /**
@@ -90,4 +92,29 @@ export function validateTimeRange(entrada: string, saida: string): TimeRangeVali
   }
 
   return {};
+}
+
+const CID_CODE_PATTERN = /^[A-TV-Z][0-9]{2}(\.[0-9])?$/;
+
+/** Procura um CID na base mockada (comparação sem espaços e em maiúsculas). */
+export function findCid(codigo: string) {
+  const normalized = codigo.trim().toUpperCase();
+  if (!normalized) return undefined;
+  return CID10.find((item) => item.codigo === normalized);
+}
+
+/**
+ * Valida o código CID digitado manualmente: precisa seguir o formato CID-10
+ * e existir na base consultada pelo autocomplete.
+ */
+export function validateCid(codigo: string) {
+  const normalized = codigo.trim().toUpperCase();
+  if (!normalized) return undefined; // CID é opcional
+  if (!CID_CODE_PATTERN.test(normalized)) {
+    return "Formato inválido. Use o padrão CID-10 (ex.: J45.9).";
+  }
+  if (!findCid(normalized)) {
+    return "CID não encontrado na base CID-10. Use a busca por diagnóstico.";
+  }
+  return undefined;
 }
