@@ -603,9 +603,10 @@ function ReportsTab() {
       </SurfaceCard>
 
 
+      {staleNotice}
       <RichTextEditor
         ariaLabel="Texto do relatório médico"
-        value={html}
+        value={conteudo}
         onChange={setHtml}
         onImproveWithAi={improve}
         improving={improving}
