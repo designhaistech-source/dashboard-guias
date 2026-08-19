@@ -1192,6 +1192,23 @@ function DashboardPage() {
                       activeDot={{ r: 5, strokeWidth: 2, stroke: "var(--card)" }}
                       isAnimationActive={false}
                     />
+                    {/* Separadores discretos de virada de mês */}
+                    {monthMarks.map((m) => (
+                      <ReferenceLine
+                        key={m.date}
+                        x={m.date}
+                        stroke="var(--border)"
+                        strokeDasharray="4 4"
+                        label={{
+                          value: m.label,
+                          position: "insideTopRight",
+                          fill: "var(--muted-foreground)",
+                          fontSize: 10,
+                        }}
+                      />
+                    ))}
+
+
 
                   </AreaChart>
                 </ResponsiveContainer>
