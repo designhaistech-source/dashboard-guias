@@ -1,3 +1,4 @@
+import { localIsoDaysAgo } from "@/lib/date";
 /**
  * Synthetic dataset backing the dashboard. Every KPI and chart is derived from
  * these rows so the filter panel produces real, visible changes.
@@ -63,12 +64,7 @@ function seeded(seed: number) {
   };
 }
 
-function isoDaysAgo(days: number) {
-  const d = new Date();
-  d.setHours(12, 0, 0, 0);
-  d.setDate(d.getDate() - days);
-  return d.toISOString().slice(0, 10);
-}
+const isoDaysAgo = localIsoDaysAgo;
 
 export const TODAY_ISO = isoDaysAgo(0);
 
