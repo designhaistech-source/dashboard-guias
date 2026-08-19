@@ -233,7 +233,8 @@ async function generateReportPdf(periodLabel: string, metrics: DashboardMetrics)
     const margin = 40;
     const contentW = pageWidth - margin * 2;
     const now = new Date();
-    const dateStr = now.toLocaleString("pt-BR");
+    // Mesmo estilo de data da página: "qua., 19/08/2026 15:47".
+    const dateStr = `${formatIsoToBrFull(toLocalIsoDate(now))} ${now.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })}`;
 
     // ---- Type system: single source of truth for fonts/weights/sizes ----
     const FONT = "helvetica";
@@ -287,7 +288,7 @@ async function generateReportPdf(periodLabel: string, metrics: DashboardMetrics)
     applyType(TYPE.title);
     doc.text("Relatório de Visão Geral", titleX, 35);
     applyType(TYPE.subtitle);
-    doc.text(`Período: ${periodLabel}  •  Gerado em: ${dateStr}`, titleX, 52);
+    doc.text(`Período: ${periodLabel}  •  Gerado em: ${dateStr}  •  ${localTimeZoneLabel()}`, titleX, 52);
 
     // thin accent rule
     doc.setDrawColor(37, 99, 235);
