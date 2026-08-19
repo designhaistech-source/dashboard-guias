@@ -290,7 +290,12 @@ async function generateReportPdf(periodLabel: string, metrics: DashboardMetrics)
     applyType(TYPE.title);
     doc.text("Relatório de Visão Geral", titleX, 35);
     applyType(TYPE.subtitle);
-    doc.text(`Período: ${periodLabel}  •  Gerado em: ${dateStr}  •  ${localTimeZoneLabel()}`, titleX, 52);
+    // Wrap the metadata line so the timezone suffix is never clipped on the right edge.
+    const metaLines = doc.splitTextToSize(
+      `Período: ${periodLabel}  •  Gerado em: ${dateStr}  •  ${localTimeZoneLabel()}`,
+      pageWidth - titleX - margin,
+    );
+    doc.text(metaLines, titleX, 50);
 
     // thin accent rule
     doc.setDrawColor(37, 99, 235);
@@ -858,6 +863,12 @@ function DashboardPage() {
     [filters],
   );
 
+  /** Resolved after hydration: the server timezone differs from the browser's. */
+  const [timeZoneLabel, setTimeZoneLabel] = useState("");
+  useEffect(() => {
+    setTimeZoneLabel(localTimeZoneLabel());
+  }, []);
+
   const periodLabel = useMemo(
     () =>
       buildPeriodLabel(filters.dataAutorizacaoDe, filters.dataAutorizacaoAte, {
@@ -1070,7 +1081,7 @@ function DashboardPage() {
             <span>
               Indicadores e gráficos do período:{" "}
               <span className="font-medium text-foreground">{periodLabel}</span>{" "}
-              <span className="text-muted-foreground/80">• {localTimeZoneLabel()}</span>
+              <span className="text-muted-foreground/80">{timeZoneLabel ? `• ${timeZoneLabel}` : ""}</span>
             </span>
           </p>
 
