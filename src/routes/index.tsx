@@ -83,7 +83,25 @@ export const Route = createFileRoute("/")({
   component: DashboardPage,
 });
 
-type Range = "7d" | "30d" | "90d";
+/** Formats an ISO date (yyyy-mm-dd) as dd/mm/yyyy without timezone shifts. */
+function formatIsoDate(iso: string) {
+  const [y, m, d] = iso.split("-");
+  return y && m && d ? `${d}/${m}/${y}` : iso;
+}
+
+/** Human label for the period actually filtered by the user. */
+function buildPeriodLabel(from: string, to: string) {
+  const de = from.trim();
+  const ate = to.trim();
+  if (de && ate) {
+    return de === ate
+      ? formatIsoDate(de)
+      : `${formatIsoDate(de)} a ${formatIsoDate(ate)}`;
+  }
+  if (de) return `A partir de ${formatIsoDate(de)}`;
+  if (ate) return `Até ${formatIsoDate(ate)}`;
+  return "Todo o período";
+}
 
 const prestadoresList = PRESTADORES;
 
@@ -170,7 +188,7 @@ async function captureChartPng(selector: string, scale = 2): Promise<{ dataUrl: 
   }
 }
 
-async function generateReportPdf(range: Range, metrics: DashboardMetrics) {
+async function generateReportPdf(periodLabel: string, metrics: DashboardMetrics) {
   const { dailyAvg, total, types: typeData, procedures } = metrics;
   try {
     const doc = new jsPDF({ unit: "pt", format: "a4" });
@@ -178,7 +196,6 @@ async function generateReportPdf(range: Range, metrics: DashboardMetrics) {
     const pageHeight = doc.internal.pageSize.getHeight();
     const margin = 40;
     const contentW = pageWidth - margin * 2;
-    const rangeLabel = range === "7d" ? "Últimos 7 dias" : range === "30d" ? "Últimos 30 dias" : "Últimos 90 dias";
     const now = new Date();
     const dateStr = now.toLocaleString("pt-BR");
 
@@ -234,7 +251,7 @@ async function generateReportPdf(range: Range, metrics: DashboardMetrics) {
     applyType(TYPE.title);
     doc.text("Relatório do Dashboard", titleX, 35);
     applyType(TYPE.subtitle);
-    doc.text(`Período: ${rangeLabel}  •  Gerado em: ${dateStr}`, titleX, 52);
+    doc.text(`Período: ${periodLabel}  •  Gerado em: ${dateStr}`, titleX, 52);
 
     // thin accent rule
     doc.setDrawColor(37, 99, 235);
@@ -629,7 +646,6 @@ const filterLabels: Record<keyof GuideFilters, string> = {
 };
 
 function DashboardPage() {
-  const [range, setRange] = useState<Range>("30d");
   const [activeType, setActiveType] = useState<number | undefined>(undefined);
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [filters, setFilters] = useState<GuideFilters>(emptyFilters);
@@ -730,6 +746,10 @@ function DashboardPage() {
     () => buildMetrics(filterGuides(DASHBOARD_GUIDES, filters)),
     [filters],
   );
+  const periodLabel = useMemo(
+    () => buildPeriodLabel(filters.dataAutorizacaoDe, filters.dataAutorizacaoAte),
+    [filters.dataAutorizacaoDe, filters.dataAutorizacaoAte],
+  );
   const total = metrics.total;
   const dailyAvg = metrics.dailyAvg;
   const typeData = metrics.types;
@@ -769,7 +789,7 @@ function DashboardPage() {
                     </Badge>
                   )}
                 </Button>
-                <Button size="sm" onClick={() => generateReportPdf(range, metrics)}>
+                <Button size="sm" onClick={() => generateReportPdf(periodLabel, metrics)}>
                   <Download className="h-4 w-4" />
                   Gerar relatório
                 </Button>
@@ -902,7 +922,7 @@ function DashboardPage() {
             <SurfaceCard
               className="lg:col-span-2"
               title="Guias extraídas por dia"
-              description={`Últimos ${range === "7d" ? 7 : range === "30d" ? 30 : 90} dias`}
+              description={periodLabel}
               actions={
                 <div className="flex items-center gap-3 text-xs">
                   <LegendDot color="var(--primary)" label="Guias" />
