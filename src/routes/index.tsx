@@ -739,16 +739,18 @@ function FilterField({
   inputRef?: React.Ref<HTMLInputElement>;
 }) {
   return (
-    <Field label={label}>
-      <Input
-        ref={inputRef}
-        type={type}
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        aria-invalid={error || undefined}
-        className={`h-9 ${error ? "border-destructive focus-visible:ring-destructive/40" : ""}`}
-      />
-    </Field>
+    <div className="min-w-0">
+      <Field label={label}>
+        <Input
+          ref={inputRef}
+          type={type}
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          aria-invalid={error || undefined}
+          className={`h-9 w-full min-w-0 ${error ? "border-destructive focus-visible:ring-destructive/40" : ""}`}
+        />
+      </Field>
+    </div>
   );
 }
 
