@@ -145,7 +145,7 @@ export type DashboardMetrics = {
   today: number;
   dailyAvg: number;
   distinctTypes: number;
-  daily: { day: string; guias: number }[];
+  daily: { day: string; date: string; guias: number }[];
   types: { name: string; value: number; color: string }[];
   procedures: { code: string; name: string; count: number }[];
   totalValue: number;
@@ -157,7 +157,7 @@ export function buildMetrics(guides: DashboardGuide[]): DashboardMetrics {
 
   const daily = [...byDate.entries()]
     .sort(([a], [b]) => a.localeCompare(b))
-    .map(([date, guias]) => ({ day: date.slice(8, 10), guias }));
+    .map(([date, guias]) => ({ day: date.slice(8, 10), date, guias }));
 
   const types = GUIDE_TYPES.map((t) => ({
     name: t.name,
