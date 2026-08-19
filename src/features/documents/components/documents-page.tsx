@@ -328,13 +328,30 @@ function ReportsTab() {
     setDiagnosticoSelecionado(descricao);
   }
 
+  const { requestReplace, replacementDialog } = useTextReplacement(html, setHtml);
+
   function applyTemplate(value: string) {
-    setModelo(value);
     const template = REPORT_TEMPLATES.find((t) => t.value === value);
-    if (template) setHtml(template.content);
+    if (!template) return;
+    requestReplace({
+      title: "Aplicar modelo?",
+      description: `O texto atual do relatório será substituído pelo modelo “${template.label}”. Você poderá desfazer pelo aviso exibido após a troca.`,
+      confirmLabel: "Aplicar modelo",
+      successMessage: `Modelo “${template.label}” aplicado.`,
+      apply: () => {
+        setModelo(value);
+        setHtml(template.content);
+      },
+    });
   }
 
-  const { improving, improve } = useImproveWithAi("Relatório médico", html, setHtml);
+  const { improving, improve } = useImproveWithAi(
+    "Relatório médico",
+    html,
+    setHtml,
+    requestReplace,
+  );
+
 
   return (
     <>
