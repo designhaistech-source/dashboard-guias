@@ -651,12 +651,6 @@ const dateFilterKeys: ReadonlySet<keyof GuideFilters> = new Set([
   "dataAutorizacaoAte",
 ]);
 
-/** Converte o valor cru do filtro na forma legível exibida nos chips. */
-function formatFilterValue(key: keyof GuideFilters, value: string): string {
-  if (!dateFilterKeys.has(key)) return value;
-  return formatIsoToBr(value) || value;
-}
-
 const MONTH_ABBR = [
   "jan", "fev", "mar", "abr", "mai", "jun",
   "jul", "ago", "set", "out", "nov", "dez",
@@ -692,13 +686,6 @@ function monthBoundaries(data: { date: string }[]): { date: string; label: strin
 
 
 
-
-const filterLabels: Record<keyof GuideFilters, string> = {
-  dataAutorizacaoDe: "Período de",
-  dataAutorizacaoAte: "Período até",
-  tipoGuia: "Tipo de guia",
-  prestadorSolicitante: "Prestador solicitante",
-};
 
 
 type ProcedureSortColumn = "code" | "name" | "count";
