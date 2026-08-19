@@ -440,23 +440,56 @@ async function generateReportPdf(
     // Approx height for an autoTable block (header + N rows + padding).
     const tableBlockH = (rows: number, rowH = 22, headH = 26) => headH + rows * rowH + 6;
 
+    // Nota de escopo: o relatório deve ser compreensível sem consultar o sistema.
+    keepTogether(46);
+    applyType(TYPE.body);
+    const scopeLines = doc.splitTextToSize(
+      `Este relatório considera apenas as guias extraídas (importadas e processadas pela leitura automática) no período selecionado: ${periodLabel}. Indicadores, gráficos e tabelas a seguir referem-se exclusivamente a essas guias.`,
+      contentW,
+    );
+    doc.text(scopeLines, margin, y);
+    y += scopeLines.length * 13 + 16;
+
     // KPIs
-    const kpiRows = 4;
-    sectionTitle("Indicadores", tableBlockH(kpiRows));
+    const kpiBody: string[][] = [
+      ["Total de guias extraídas", String(total), "Soma no período filtrado", "—"],
+      [
+        "Guias extraídas hoje",
+        String(metrics.today),
+        `Hoje, ${context.todayLabel}`,
+        context.todayComparison ?? "—",
+      ],
+      [
+        "Média diária de guias extraídas",
+        String(dailyAvg),
+        "Por dia no período filtrado",
+        context.averageComparison ?? "—",
+      ],
+      [
+        "Tipos de guias extraídas",
+        String(metrics.distinctTypes),
+        "Tipos distintos no período filtrado",
+        "—",
+      ],
+    ];
+    sectionTitle(
+      "Indicadores de guias extraídas",
+      tableBlockH(kpiBody.length, 26),
+      "Valores calculados sobre as guias extraídas no período filtrado.",
+    );
     autoTable(doc, {
       startY: y,
       margin: { left: margin, right: margin },
-      head: [["Indicador", "Valor"]],
-      body: [
-        ["Total de guias extraídas", String(total)],
-        ["Guias extraídas hoje", String(metrics.today)],
-        ["Média de guias por dia", String(dailyAvg)],
-        ["Tipos de guia", String(typeData.length)],
-      ],
+      head: [["Indicador", "Valor", "Contexto", "Comparação"]],
+      body: kpiBody,
       theme: "grid",
       headStyles: tableHeadStyles,
       bodyStyles: { font: FONT, fontStyle: "normal", textColor: TYPE.tableBody.color },
-      columnStyles: { 1: { halign: "right", cellWidth: 120 } },
+      columnStyles: {
+        1: { halign: "right", cellWidth: 55 },
+        2: { cellWidth: 150 },
+        3: { cellWidth: 130 },
+      },
       styles: tableStyleDefaults,
       tableWidth: contentW,
       rowPageBreak: "avoid",
@@ -467,25 +500,36 @@ async function generateReportPdf(
     // Spacing token between sections / between a chart and the next block.
     const GAP = 18;
 
-    // Guias por dia — full width chart
+    // Guias extraídas por dia — full width chart
     const daily = await captureChartPng('[data-chart="daily"]');
     const dailyMaxH = Math.min(260, pageInnerH * 0.38);
-    sectionTitle("Guias extraídas por dia", dailyMaxH);
+    sectionTitle(
+      "Guias extraídas por dia",
+      dailyMaxH,
+      "Quantidade de guias extraídas por dia no período filtrado.",
+    );
     const dailyH = drawChart(daily, contentW, dailyMaxH);
     y += dailyH + GAP;
 
-    // Distribuição por tipo — donut full width on top, table below
+    // Guias extraídas por tipo — donut on top, table below
     const types = await captureChartPng('[data-chart="types"]');
     const donutMaxH = Math.min(200, pageInnerH * 0.32);
-    sectionTitle("Distribuição por tipo de guia", donutMaxH);
+    const typesTableH = tableBlockH(Math.min(4, typeData.length));
+    sectionTitle(
+      "Guias extraídas por tipo",
+      donutMaxH + GAP + typesTableH,
+      "Distribuição das guias extraídas no período filtrado. O centro do gráfico mostra o total de guias extraídas.",
+    );
     const donutW = Math.min(contentW, donutMaxH * (types ? types.w / types.h : 2));
     const typesH = drawChart(types, donutW, donutMaxH, margin + (contentW - donutW) / 2);
     y += typesH + GAP;
+    // Never leave the table header stranded at the bottom of a page.
+    keepTogether(typesTableH);
     autoTable(doc, {
       startY: y,
       margin: { left: margin, right: margin },
       tableWidth: contentW,
-      head: [["Tipo", "Qtd.", "%"]],
+      head: [["Tipo de guia", "Guias extraídas", "% do total extraído"]],
       body: typeData.map((t) => [
         t.name,
         String(t.value),
@@ -495,8 +539,8 @@ async function generateReportPdf(
       headStyles: tableHeadStyles,
       bodyStyles: { font: FONT, fontStyle: "normal", textColor: TYPE.tableBody.color },
       columnStyles: {
-        1: { halign: "right", cellWidth: 60 },
-        2: { halign: "right", cellWidth: 60 },
+        1: { halign: "right", cellWidth: 100 },
+        2: { halign: "right", cellWidth: 110 },
       },
       styles: tableStyleDefaults,
       rowPageBreak: "avoid",
@@ -507,26 +551,32 @@ async function generateReportPdf(
     // Procedimentos — chart, then table (keep title with chart)
     const proc = await captureChartPng('[data-chart="procedures"]');
     const procMaxH = Math.min(280, pageInnerH * 0.42);
-    sectionTitle("Procedimentos mais realizados", procMaxH);
+    const procTableH = tableBlockH(Math.min(4, procedures.length));
+    sectionTitle(
+      "Procedimentos mais frequentes nas guias extraídas",
+      procMaxH + GAP + procTableH,
+      "Procedimentos mais frequentes nas guias extraídas no período filtrado.",
+    );
     const procDrawnH = drawChart(proc, contentW, procMaxH);
     y += procDrawnH + GAP;
     // Don't strand the table header alone after the chart.
-    keepTogether(tableBlockH(Math.min(3, procedures.length)));
+    keepTogether(procTableH);
 
     autoTable(doc, {
       startY: y,
       margin: { left: margin, right: margin },
       tableWidth: contentW,
-      head: [["Código TUSS", "Procedimento", "Quantidade"]],
+      head: [["Código TUSS", "Procedimento", "Ocorrências em guias extraídas"]],
       body: procedures.map((p) => [p.code, p.name, String(p.count)]),
       theme: "striped",
       headStyles: tableHeadStyles,
       bodyStyles: { font: FONT, fontStyle: "normal", textColor: TYPE.tableBody.color },
-      columnStyles: { 0: { cellWidth: 110 }, 2: { halign: "right", cellWidth: 60 } },
+      columnStyles: { 0: { cellWidth: 110 }, 2: { halign: "right", cellWidth: 150 } },
       styles: tableStyleDefaults,
       rowPageBreak: "avoid",
       showHead: "everyPage",
     });
+
 
     // "Gerado por" — bloco final, quebra página se não couber
     const lastY =
