@@ -503,10 +503,16 @@ function CertificateTab() {
               onValueChange={setDias}
               options={AFASTAMENTO_OPTIONS}
             />
-            <Field id="atestado-data" label="Data do documento">
+            <Field
+              id="atestado-data"
+              label="Data do documento"
+              error={dataStatus.error}
+              hint={dataStatus.warning}
+            >
               <Input
                 id="atestado-data"
                 type="date"
+                max={todayIsoDate()}
                 value={data}
                 onChange={(e) => setData(e.target.value)}
               />
