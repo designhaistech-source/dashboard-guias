@@ -98,9 +98,12 @@ export function RichTextEditor({
   previewHtml,
   pendingVariables,
   variableValues,
+  pagePreview,
 }: RichTextEditorProps) {
   const [previewing, setPreviewing] = React.useState(false);
+  const [pagePreviewOpen, setPagePreviewOpen] = React.useState(false);
   const canPreview = typeof previewHtml === "string";
+
   const ref = React.useRef<HTMLDivElement>(null);
   const { canUndo, canRedo, undo, redo, record } = useEditorHistory(value, onChange, ref);
   const { activeCommands, syncActiveCommands } = useActiveCommands(ref, previewing);
