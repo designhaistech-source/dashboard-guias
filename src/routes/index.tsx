@@ -824,8 +824,8 @@ function DashboardPage() {
 
           {/* Header */}
           <PageHeader
-            title="Dashboard"
-            description="Visão geral das guias processadas"
+            title="Visão geral"
+            description="Acompanhe suas guias, documentos e atividades recentes."
             actions={
               <>
                 <Button

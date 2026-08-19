@@ -210,7 +210,7 @@ function SidebarNav({
       <SidebarGroup label="Início" collapsed={collapsed}>
         <SidebarItem
           icon={LayoutGrid}
-          label="Dashboard"
+          label="Início"
           to="/"
           active={activeKey === "dashboard"}
           hint="Visão geral com indicadores e resumo das suas atividades recentes."
