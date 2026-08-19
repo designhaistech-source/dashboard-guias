@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { todayLocalIsoDate } from "@/lib/date";
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
   User,
@@ -190,7 +191,7 @@ function OpmePage() {
   const conselho = prof.conselho;
   const numeroConselho = prof.numero;
 
-  const [data, setData] = useState(() => new Date().toISOString().slice(0, 10));
+  const [data, setData] = useState(() => todayLocalIsoDate());
 
   // Kits
   const [kits, setKits] = useState<Kit[]>(DEFAULT_KITS);

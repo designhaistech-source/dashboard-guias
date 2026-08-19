@@ -3,6 +3,8 @@
  * these rows so the filter panel produces real, visible changes.
  */
 
+import { localIsoDaysAgo } from "@/lib/date";
+
 export type DashboardGuide = {
   id: string;
   numGuiaPrestador: string;
@@ -63,12 +65,7 @@ function seeded(seed: number) {
   };
 }
 
-function isoDaysAgo(days: number) {
-  const d = new Date();
-  d.setHours(12, 0, 0, 0);
-  d.setDate(d.getDate() - days);
-  return d.toISOString().slice(0, 10);
-}
+const isoDaysAgo = localIsoDaysAgo;
 
 export const TODAY_ISO = isoDaysAgo(0);
 

@@ -1,5 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
+import { todayLocalIsoDate } from "@/lib/date";
 import {
   FileText,
   Plus,
@@ -778,7 +779,7 @@ function EmitirPage() {
   const [saudeOcupacional, setSaudeOcupacional] = useState("");
   const [observacoes, setObservacoes] = useState("");
   const [dataSolicitacao, setDataSolicitacao] = useState(() =>
-    new Date().toISOString().slice(0, 10),
+    todayLocalIsoDate(),
   );
 
   // Campos SUS (substituem operadora/ANS)
@@ -794,7 +795,7 @@ function EmitirPage() {
   const [internacaoAcomodacao, setInternacaoAcomodacao] = useState("Enfermaria");
 
   const [apacCompetencia, setApacCompetencia] = useState(() =>
-    new Date().toISOString().slice(0, 7),
+    todayLocalIsoDate().slice(0, 7),
   );
   const [apacTipo, setApacTipo] = useState("Inicial");
 
@@ -946,7 +947,7 @@ function EmitirPage() {
   const newExecutedItem = (patch: Partial<ExecutedItem> = {}): ExecutedItem => ({
     id: crypto.randomUUID(),
     // Campo 36 - Data: preenchida automaticamente com a data de realização.
-    date: new Date().toISOString().slice(0, 10),
+    date: todayLocalIsoDate(),
     startTime: "",
     endTime: "",
     code: "",
