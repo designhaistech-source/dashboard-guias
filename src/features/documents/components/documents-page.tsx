@@ -298,7 +298,6 @@ function DocumentActions({
           <div
             id={summaryId}
             role="alert"
-            aria-live="polite"
             className="rounded-md border border-destructive/40 bg-destructive/5 p-3 text-xs text-destructive sm:text-sm"
           >
             <p className="flex items-start gap-1.5 font-medium">
