@@ -747,14 +747,21 @@ function DashboardPage() {
     );
   };
   
-  const clearAllAndApply = () => {
+  /**
+   * Caminho único de limpeza: chips, painel e estados vazios chamam esta função,
+   * com o mesmo efeito (limpa rascunho + filtros aplicados) e o mesmo feedback.
+   * Não fecha o painel — limpar não é sair.
+   */
+  const clearAllFilters = () => {
     setDraft(emptyFilters);
     setFilters(emptyFilters);
-    setFiltersOpen(false);
     toast.success("Filtros limpos.");
   };
-  const removeFilter = (key: keyof GuideFilters) =>
+  const removeFilter = (key: keyof GuideFilters) => {
     setFilters((f) => ({ ...f, [key]: "" }));
+    setDraft((d) => ({ ...d, [key]: "" }));
+  };
+
 
   const isDirty = useMemo(
     () => (Object.keys(draft) as (keyof GuideFilters)[]).some((k) => draft[k] !== filters[k]),
