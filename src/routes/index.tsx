@@ -746,6 +746,10 @@ function DashboardPage() {
     () => buildMetrics(filterGuides(DASHBOARD_GUIDES, filters)),
     [filters],
   );
+  const periodLabel = useMemo(
+    () => buildPeriodLabel(filters.dataAutorizacaoDe, filters.dataAutorizacaoAte),
+    [filters.dataAutorizacaoDe, filters.dataAutorizacaoAte],
+  );
   const total = metrics.total;
   const dailyAvg = metrics.dailyAvg;
   const typeData = metrics.types;
