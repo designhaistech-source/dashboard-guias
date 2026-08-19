@@ -1152,9 +1152,8 @@ function DashboardPage() {
               icon={FileText}
               label="Total de guias extraídas"
               value={String(total)}
-              meta={periodLabel}
               tooltip={kpiTooltips.total}
-              hint={dayCount > 0 ? `Soma das guias extraídas em ${dayCount} ${dayCount === 1 ? "dia" : "dias"}` : "Nenhuma guia extraída no período"}
+              hint={dayCount > 0 ? `Em ${dayCount} ${dayCount === 1 ? "dia" : "dias"}` : "Nenhuma guia no período"}
               tone="primary"
             />
             <Kpi
@@ -1171,9 +1170,8 @@ function DashboardPage() {
               icon={TrendingUp}
               label="Média de guias por dia"
               value={String(dailyAvg)}
-              meta={periodLabel}
               tooltip={kpiTooltips.average}
-              hint={weekTrend ? weekTrend.label : `Média diária considerando ${dayCount} ${dayCount === 1 ? "dia" : "dias"}`}
+              hint={weekTrend ? weekTrend.label : ""}
               tone="info"
               trend={weekTrend?.direction}
             />
@@ -1181,11 +1179,11 @@ function DashboardPage() {
               icon={Layers}
               label="Tipos de guia"
               value={String(metrics.distinctTypes)}
-              meta={periodLabel}
               tooltip={kpiTooltips.types}
-              hint={`Tipos diferentes encontrados no período`}
+              hint=""
               tone="purple"
             />
+
 
 
           </div>
