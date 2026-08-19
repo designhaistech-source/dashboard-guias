@@ -1188,11 +1188,6 @@ function DashboardPage() {
               className="lg:col-span-2"
               title="Guias extraídas por dia"
               description={`Quantidade de guias por dia — ${periodLabel}`}
-              actions={
-                <div className="flex items-center gap-3 text-xs">
-                  <LegendDot color="var(--primary)" label="Guias extraídas" />
-                </div>
-              }
             >
               {!hasData ? (
                 emptyState
