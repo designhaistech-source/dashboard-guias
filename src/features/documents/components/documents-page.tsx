@@ -8,7 +8,6 @@ import {
   BookmarkPlus,
   User,
   Loader2,
-  Eye,
 } from "lucide-react";
 import { AlertCircle } from "lucide-react";
 import { getRouteApi, useNavigate } from "@tanstack/react-router";
