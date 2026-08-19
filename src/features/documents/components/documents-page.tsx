@@ -729,7 +729,7 @@ function ReportsTab({ onNewDocument }: { onNewDocument: () => void }) {
             readOnly={locked}
           />
 
-          <CidFields id="relatorio-cid" cid={cid} descricao={diagnosticoSelecionado} onChange={handleCid} error={cidError} readOnly={locked} />
+          <CidFields id="relatorio-cid" cid={cid} descricao={diagnostico} onChange={handleCid} error={cidError} readOnly={locked} />
           <SelectField
             id="relatorio-modelo"
             label="Modelos disponíveis"
