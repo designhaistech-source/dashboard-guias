@@ -1037,7 +1037,11 @@ function DashboardPage() {
     }
     setGeneratingReport(true);
     try {
-      await generateReportPdf(periodLabel, metrics);
+      await generateReportPdf(periodLabel, metrics, {
+        todayLabel,
+        todayComparison: todayTrend?.label,
+        averageComparison: weekTrend?.label,
+      });
     } finally {
       setGeneratingReport(false);
     }
