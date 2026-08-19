@@ -10,11 +10,7 @@ import {
   CommandList,
 } from "@/components/ui/command";
 import { Input } from "@/components/ui/input";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cidSearchQueryOptions } from "@/lib/cid-api";
 import type { CidItem } from "@/lib/cid";
 import { cn } from "@/lib/utils";
@@ -73,12 +69,7 @@ export function CidAutocomplete({
             "hover:bg-accent/30 focus-visible:border-ring focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/40",
           )}
         >
-          <span
-            className={cn(
-              "truncate text-left",
-              !label && "text-muted-foreground",
-            )}
-          >
+          <span className={cn("truncate text-left", !label && "text-muted-foreground")}>
             {label || placeholder}
           </span>
           {value ? (
@@ -101,10 +92,7 @@ export function CidAutocomplete({
         </button>
       </PopoverTrigger>
 
-      <PopoverContent
-        align="start"
-        className="w-[--radix-popover-trigger-width] p-0"
-      >
+      <PopoverContent align="start" className="w-[--radix-popover-trigger-width] p-0">
         <Command shouldFilter={false}>
           <div className="relative border-b border-border">
             <Search
@@ -131,15 +119,10 @@ export function CidAutocomplete({
             {query.isError ? (
               <div className="flex items-start gap-2 px-4 py-6 text-sm text-destructive">
                 <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" aria-hidden />
-                <span>
-                  Não foi possível consultar a CID-10. Tente novamente em
-                  instantes.
-                </span>
+                <span>Não foi possível consultar a CID-10. Tente novamente em instantes.</span>
               </div>
             ) : query.isLoading ? (
-              <div className="px-4 py-6 text-sm text-muted-foreground">
-                Buscando códigos...
-              </div>
+              <div className="px-4 py-6 text-sm text-muted-foreground">Buscando códigos...</div>
             ) : (
               <>
                 <CommandEmpty>Nenhum CID encontrado.</CommandEmpty>
@@ -162,9 +145,7 @@ export function CidAutocomplete({
                         )}
                       />
                       <div className="min-w-0">
-                        <span className="block font-mono text-xs font-semibold">
-                          {item.codigo}
-                        </span>
+                        <span className="block font-mono text-xs font-semibold">{item.codigo}</span>
                         <span className="block truncate text-sm text-muted-foreground">
                           {item.descricao}
                         </span>

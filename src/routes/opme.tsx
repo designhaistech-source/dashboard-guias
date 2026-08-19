@@ -22,7 +22,6 @@ import { AppSidebar } from "@/components/app-sidebar";
 import { SiteFooter } from "@/components/site-footer";
 import { PageHeader } from "@/components/page-header";
 import { SectionCard as BaseSectionCard } from "@/components/section-card";
-import { SavedIndicator } from "@/components/saved-indicator";
 import { useDraftAutosave } from "@/hooks/use-draft-autosave";
 
 import { Field } from "@/components/form-field";
@@ -57,7 +56,6 @@ import convenioUnimedAsset from "@/assets/convenio-unimed-real.png.asset.json";
 import convenioCaurnAsset from "@/assets/convenio-caurn-real.png.asset.json";
 import { Chip } from "@/components/ui/chip";
 import { FormActionBar } from "@/components/form-action-bar";
-
 
 const OPERADORAS = [
   { value: "Humanas", label: "Humanas", logo: convenioHumanasAsset.url, ans: "357511" },
@@ -109,8 +107,21 @@ const DEFAULT_KITS: Kit[] = [
     justificativa:
       "Paciente com coxartrose avançada, dor incapacitante refratária ao tratamento conservador. Indicada artroplastia total de quadril não cimentada.",
     materiais: [
-      { id: "1", tiss: "70560840", nome: "Prótese total de quadril não cimentada", enq: "Prótese", qtd: 1, spec: "Preferência por implantes da linha padrão hospitalar quando disponíveis." },
-      { id: "2", tiss: "70560999", nome: "Cimento ósseo com antibiótico 40g", enq: "Material Especial", qtd: 1 },
+      {
+        id: "1",
+        tiss: "70560840",
+        nome: "Prótese total de quadril não cimentada",
+        enq: "Prótese",
+        qtd: 1,
+        spec: "Preferência por implantes da linha padrão hospitalar quando disponíveis.",
+      },
+      {
+        id: "2",
+        tiss: "70560999",
+        nome: "Cimento ósseo com antibiótico 40g",
+        enq: "Material Especial",
+        qtd: 1,
+      },
     ],
   },
   {
@@ -119,8 +130,20 @@ const DEFAULT_KITS: Kit[] = [
     justificativa:
       "Fratura desviada de úmero proximal com indicação cirúrgica. Necessária osteossíntese com placa bloqueada.",
     materiais: [
-      { id: "1", tiss: "70560416", nome: "Placa bloqueada úmero proximal 3 furos", enq: "Órtese", qtd: 1 },
-      { id: "2", tiss: "70560319", nome: "Parafuso cortical 3.5mm x 30mm", enq: "Material Especial", qtd: 6 },
+      {
+        id: "1",
+        tiss: "70560416",
+        nome: "Placa bloqueada úmero proximal 3 furos",
+        enq: "Órtese",
+        qtd: 1,
+      },
+      {
+        id: "2",
+        tiss: "70560319",
+        nome: "Parafuso cortical 3.5mm x 30mm",
+        enq: "Material Especial",
+        qtd: 6,
+      },
     ],
   },
 ];
@@ -184,7 +207,7 @@ function OpmePage() {
   const [showTopBtn, setShowTopBtn] = useState(false);
 
   // Autosave do rascunho + indicador "salvo HH:MM" no cabeçalho.
-  const { savedAt, clearDraft } = useDraftAutosave({
+  const { clearDraft } = useDraftAutosave({
     key: "hg:opme:rascunho",
     data: {
       operadora,
@@ -213,7 +236,6 @@ function OpmePage() {
       setData(d.data);
     },
   });
-
 
   useEffect(() => {
     try {
@@ -279,7 +301,7 @@ function OpmePage() {
 
   function limparMateriais() {
     setMateriais([{ id: uid(), tiss: "", nome: "", enq: "", qtd: 1 }]);
-    
+
     toast.success("Materiais limpos.");
   }
 
@@ -332,7 +354,6 @@ function OpmePage() {
     clearDraft();
   }
 
-
   return (
     <div className="flex min-h-screen w-full bg-background text-foreground">
       <AppSidebar activeKey="opme" />
@@ -343,9 +364,7 @@ function OpmePage() {
           <PageHeader
             title="Solicitar OPME"
             description="Solicite autorização de órteses, próteses e materiais especiais junto à operadora, com justificativa clínica e lista de materiais."
-            actions={<SavedIndicator savedAt={savedAt} />}
           />
-
 
           <form onSubmit={enviarSolicitacao} className="space-y-5">
             {/* 1. Convênio & Paciente */}
@@ -423,8 +442,6 @@ function OpmePage() {
                   />
                 </Field>
 
-
-
                 <Field label="Caráter do atendimento" required>
                   <Select value={caraterAtendimento} onValueChange={setCarater}>
                     <SelectTrigger>
@@ -440,7 +457,6 @@ function OpmePage() {
                   </Select>
                 </Field>
               </div>
-
             </SectionCard>
 
             {/* 2. Justificativa técnica */}
@@ -548,147 +564,144 @@ function OpmePage() {
                     {materiais.map((m, idx) => {
                       const spec = m.spec ?? "";
                       return (
-                      <div key={m.id} className="transition-colors hover:bg-muted/30">
-                        <div className="grid grid-cols-1 lg:grid-cols-[120px_minmax(0,1fr)_180px_88px_36px] gap-x-3 gap-y-3 px-4 pt-3 lg:pt-2.5 lg:items-center">
-                        <div className="space-y-1 lg:space-y-0">
-                          <label
-                            htmlFor={`tiss-${m.id}`}
-                            className="block whitespace-nowrap text-xs font-medium text-muted-foreground lg:hidden"
-                          >
-                            Código TISS
-                          </label>
-                          {/* text-base on mobile avoids iOS Safari's focus zoom (which shifts the layout). */}
-                          <Input
-                            id={`tiss-${m.id}`}
-                            inputMode="numeric"
-                            maxLength={12}
-                            className="h-9 w-full min-w-0 px-2.5 font-mono text-base tracking-tight lg:text-xs"
-                            placeholder="TISS"
-                            value={m.tiss}
-                            onChange={(e) => updateMaterial(m.id, { tiss: e.target.value })}
-                          />
-                        </div>
-                        <div className="space-y-1 lg:space-y-0">
-                          <label
-                            htmlFor={`nome-${m.id}`}
-                            className="block whitespace-nowrap text-xs font-medium text-muted-foreground lg:hidden"
-                          >
-                            Nome comercial
-                          </label>
-                          <Input
-                            id={`nome-${m.id}`}
-                            className="h-9 w-full min-w-0 px-2.5 text-base text-ellipsis lg:text-sm"
-                            placeholder="Buscar material..."
-                            value={m.nome}
-                            onChange={(e) => autoFillFromCatalogo(m.id, e.target.value)}
-                            list={`opme-nome-${idx}`}
-                          />
-                          {/* ds-allow: datalist nativo é o autocomplete leve do <Input> do catálogo OPME */}
-                          <datalist id={`opme-nome-${idx}`}>
-
-                            {CATALOGO_OPME.map((c) => (
-                              /* ds-allow: itens do datalist nativo do catálogo OPME */
-                              <option key={c.tiss} value={c.nome} />
-                            ))}
-                          </datalist>
-                        </div>
-                        <div className="space-y-1 lg:space-y-0">
-                          <span className="block whitespace-nowrap text-xs font-medium text-muted-foreground lg:hidden">
-                            Enquadramento técnico
-                          </span>
-                          <Select
-                            value={m.enq || undefined}
-                            onValueChange={(v) => updateMaterial(m.id, { enq: v })}
-                          >
-                            <SelectTrigger
-                              className="h-9 w-full min-w-0 px-2.5 text-base [&>span]:truncate lg:text-sm"
-                              aria-label="Enquadramento técnico"
+                        <div key={m.id} className="transition-colors hover:bg-muted/30">
+                          <div className="grid grid-cols-1 lg:grid-cols-[120px_minmax(0,1fr)_180px_88px_36px] gap-x-3 gap-y-3 px-4 pt-3 lg:pt-2.5 lg:items-center">
+                            <div className="space-y-1 lg:space-y-0">
+                              <label
+                                htmlFor={`tiss-${m.id}`}
+                                className="block whitespace-nowrap text-xs font-medium text-muted-foreground lg:hidden"
+                              >
+                                Código TISS
+                              </label>
+                              {/* text-base on mobile avoids iOS Safari's focus zoom (which shifts the layout). */}
+                              <Input
+                                id={`tiss-${m.id}`}
+                                inputMode="numeric"
+                                maxLength={12}
+                                className="h-9 w-full min-w-0 px-2.5 font-mono text-base tracking-tight lg:text-xs"
+                                placeholder="TISS"
+                                value={m.tiss}
+                                onChange={(e) => updateMaterial(m.id, { tiss: e.target.value })}
+                              />
+                            </div>
+                            <div className="space-y-1 lg:space-y-0">
+                              <label
+                                htmlFor={`nome-${m.id}`}
+                                className="block whitespace-nowrap text-xs font-medium text-muted-foreground lg:hidden"
+                              >
+                                Nome comercial
+                              </label>
+                              <Input
+                                id={`nome-${m.id}`}
+                                className="h-9 w-full min-w-0 px-2.5 text-base text-ellipsis lg:text-sm"
+                                placeholder="Buscar material..."
+                                value={m.nome}
+                                onChange={(e) => autoFillFromCatalogo(m.id, e.target.value)}
+                                list={`opme-nome-${idx}`}
+                              />
+                              {/* ds-allow: datalist nativo é o autocomplete leve do <Input> do catálogo OPME */}
+                              <datalist id={`opme-nome-${idx}`}>
+                                {CATALOGO_OPME.map((c) => (
+                                  /* ds-allow: itens do datalist nativo do catálogo OPME */
+                                  <option key={c.tiss} value={c.nome} />
+                                ))}
+                              </datalist>
+                            </div>
+                            <div className="space-y-1 lg:space-y-0">
+                              <span className="block whitespace-nowrap text-xs font-medium text-muted-foreground lg:hidden">
+                                Enquadramento técnico
+                              </span>
+                              <Select
+                                value={m.enq || undefined}
+                                onValueChange={(v) => updateMaterial(m.id, { enq: v })}
+                              >
+                                <SelectTrigger
+                                  className="h-9 w-full min-w-0 px-2.5 text-base [&>span]:truncate lg:text-sm"
+                                  aria-label="Enquadramento técnico"
+                                >
+                                  <SelectValue placeholder="—" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  {ENQUADRAMENTOS.map((e) => (
+                                    <SelectItem key={e} value={e}>
+                                      {e}
+                                    </SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                            </div>
+                            <div className="flex items-end gap-3 lg:block">
+                              <div className="w-24 space-y-1 lg:w-auto lg:space-y-0">
+                                <label
+                                  htmlFor={`qtd-${m.id}`}
+                                  className="block whitespace-nowrap text-xs font-medium text-muted-foreground lg:hidden"
+                                >
+                                  Qtd.
+                                </label>
+                                <Input
+                                  id={`qtd-${m.id}`}
+                                  type="number"
+                                  min={1}
+                                  className="h-9 w-full min-w-0 px-1.5 text-center font-mono text-base lg:text-sm"
+                                  value={m.qtd}
+                                  onChange={(e) =>
+                                    updateMaterial(m.id, {
+                                      qtd: Math.max(1, parseInt(e.target.value) || 1),
+                                    })
+                                  }
+                                />
+                              </div>
+                              <Button
+                                type="button"
+                                variant="ghost"
+                                size="icon"
+                                aria-label="Remover material"
+                                onClick={() => removeMaterial(m.id)}
+                                disabled={materiais.length === 1}
+                                className="shrink-0 text-muted-foreground hover:text-destructive hover:bg-destructive/10 disabled:opacity-30 disabled:hover:bg-transparent lg:hidden"
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </div>
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="icon"
+                              aria-label="Remover material"
+                              onClick={() => removeMaterial(m.id)}
+                              disabled={materiais.length === 1}
+                              className="hidden h-8 w-8 justify-self-center shrink-0 text-muted-foreground hover:text-destructive hover:bg-destructive/10 disabled:opacity-30 disabled:hover:bg-transparent lg:flex"
                             >
-                              <SelectValue placeholder="—" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              {ENQUADRAMENTOS.map((e) => (
-                                <SelectItem key={e} value={e}>
-                                  {e}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                        </div>
-                        <div className="flex items-end gap-3 lg:block">
-                          <div className="w-24 space-y-1 lg:w-auto lg:space-y-0">
-                            <label
-                              htmlFor={`qtd-${m.id}`}
-                              className="block whitespace-nowrap text-xs font-medium text-muted-foreground lg:hidden"
-                            >
-                              Qtd.
-                            </label>
-                            <Input
-                              id={`qtd-${m.id}`}
-                              type="number"
-                              min={1}
-                              className="h-9 w-full min-w-0 px-1.5 text-center font-mono text-base lg:text-sm"
-                              value={m.qtd}
-                              onChange={(e) =>
-                                updateMaterial(m.id, {
-                                  qtd: Math.max(1, parseInt(e.target.value) || 1),
-                                })
-                              }
-                            />
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
                           </div>
-                          <Button
-                            type="button"
-                            variant="ghost"
-                            size="icon"
-                            aria-label="Remover material"
-                            onClick={() => removeMaterial(m.id)}
-                            disabled={materiais.length === 1}
-                            className="shrink-0 text-muted-foreground hover:text-destructive hover:bg-destructive/10 disabled:opacity-30 disabled:hover:bg-transparent lg:hidden"
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
-                        </div>
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          size="icon"
-                          aria-label="Remover material"
-                          onClick={() => removeMaterial(m.id)}
-                          disabled={materiais.length === 1}
-                          className="hidden h-8 w-8 justify-self-center shrink-0 text-muted-foreground hover:text-destructive hover:bg-destructive/10 disabled:opacity-30 disabled:hover:bg-transparent lg:flex"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                        </div>
 
-                        <div className="px-4 pb-3 pt-2">
-                          <div className="relative">
-                            <label
-                              htmlFor={`spec-${m.id}`}
-                              className="mb-1 block truncate text-xs font-medium text-muted-foreground"
-                            >
-                              Especificação de{" "}
-                              {m.nome.trim() || `material ${idx + 1}`} (opcional)
-                            </label>
-                            <Textarea
-                              id={`spec-${m.id}`}
-                              rows={2}
-                              maxLength={300}
-                              className="bg-muted/30 pb-7 text-base focus:bg-background lg:text-sm"
-                              placeholder="Ex.: fabricante/distribuidor, modelo, dimensões ou marca de referência"
-                              value={spec}
-                              onChange={(e) => updateMaterial(m.id, { spec: e.target.value })}
-                            />
-                            <span className="pointer-events-none absolute right-3 bottom-2.5 text-xs text-muted-foreground tabular-nums">
-                              {spec.length}/300
-                            </span>
+                          <div className="px-4 pb-3 pt-2">
+                            <div className="relative">
+                              <label
+                                htmlFor={`spec-${m.id}`}
+                                className="mb-1 block truncate text-xs font-medium text-muted-foreground"
+                              >
+                                Especificação de {m.nome.trim() || `material ${idx + 1}`} (opcional)
+                              </label>
+                              <Textarea
+                                id={`spec-${m.id}`}
+                                rows={2}
+                                maxLength={300}
+                                className="bg-muted/30 pb-7 text-base focus:bg-background lg:text-sm"
+                                placeholder="Ex.: fabricante/distribuidor, modelo, dimensões ou marca de referência"
+                                value={spec}
+                                onChange={(e) => updateMaterial(m.id, { spec: e.target.value })}
+                              />
+                              <span className="pointer-events-none absolute right-3 bottom-2.5 text-xs text-muted-foreground tabular-nums">
+                                {spec.length}/300
+                              </span>
+                            </div>
                           </div>
                         </div>
-                      </div>
                       );
                     })}
                   </div>
-
 
                   <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 border-t bg-muted/30 px-4 py-2">
                     <Button
@@ -703,15 +716,13 @@ function OpmePage() {
                     </Button>
                     {materiaisValidos.length > 0 && (
                       <span className="text-xs text-muted-foreground tabular-nums">
-                        {materiaisValidos.length}{" "}
-                        {materiaisValidos.length === 1 ? "item" : "itens"} · {totalMateriais} un.
+                        {materiaisValidos.length} {materiaisValidos.length === 1 ? "item" : "itens"}{" "}
+                        · {totalMateriais} un.
                       </span>
                     )}
                   </div>
                 </div>
-
               </div>
-
             </SectionCard>
 
             {/* 4. Profissional solicitante */}
@@ -730,14 +741,9 @@ function OpmePage() {
             >
               <ProfessionalPicker value={prof} onChange={setProf}>
                 <Field id="opme-data" label="Data">
-                  <Input
-                    type="date"
-                    value={data}
-                    onChange={(e) => setData(e.target.value)}
-                  />
+                  <Input type="date" value={data} onChange={(e) => setData(e.target.value)} />
                 </Field>
               </ProfessionalPicker>
-
             </SectionCard>
 
             {/* Barra de ação padrão: etapas + ações */}
@@ -751,8 +757,8 @@ function OpmePage() {
               ]}
               note={
                 <>
-                  Campos com <span className="text-destructive/80">*</span> são
-                  obrigatórios e serão validados antes do envio.
+                  Campos com <span className="text-destructive/80">*</span> são obrigatórios e serão
+                  validados antes do envio.
                 </>
               }
             >
@@ -793,8 +799,7 @@ function OpmePage() {
                 <div className="flex-1 min-w-0">
                   <div className="truncate text-sm font-semibold text-foreground">{kit.nome}</div>
                   <div className="text-xs text-muted-foreground truncate">
-                    {kit.materiais.length}{" "}
-                    {kit.materiais.length === 1 ? "material" : "materiais"}
+                    {kit.materiais.length} {kit.materiais.length === 1 ? "material" : "materiais"}
                   </div>
                 </div>
                 <Button type="button" size="sm" onClick={() => carregarKit(kit)}>
@@ -841,9 +846,7 @@ function OpmePage() {
             </Field>
             <div className="rounded-md border bg-muted/30 p-3 text-xs text-muted-foreground space-y-1">
               <div>
-                <span className="font-semibold text-foreground">
-                  {materiaisValidos.length}
-                </span>{" "}
+                <span className="font-semibold text-foreground">{materiaisValidos.length}</span>{" "}
                 {materiaisValidos.length === 1 ? "material" : "materiais"} incluídos
               </div>
               {justificativa && (
@@ -918,7 +921,3 @@ function SectionCard({
     </BaseSectionCard>
   );
 }
-
-
-
-

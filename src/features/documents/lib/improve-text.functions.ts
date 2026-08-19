@@ -17,34 +17,31 @@ export const improveDocumentText = createServerFn({ method: "POST" })
       throw new Error("Serviço de IA não configurado.");
     }
 
-    const response = await fetch(
-      "https://ai.gateway.lovable.dev/v1/chat/completions",
-      {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${apiKey}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          model: "google/gemini-2.5-flash",
-          messages: [
-            {
-              role: "system",
-              content:
-                "Você é um assistente de redação clínica em português do Brasil. " +
-                "Melhore a clareza, a gramática e o tom formal do documento sem inventar " +
-                "informações clínicas, datas, nomes ou códigos. Preserve variáveis entre " +
-                "chaves. Responda APENAS com HTML simples usando <p>, <strong>, <em>, " +
-                "<u>, <ul>, <ol> e <li>, sem blocos de código nem comentários.",
-            },
-            {
-              role: "user",
-              content: `Tipo de documento: ${data.documentType}\n\nHTML atual:\n${data.html}`,
-            },
-          ],
-        }),
+    const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        "Content-Type": "application/json",
       },
-    );
+      body: JSON.stringify({
+        model: "google/gemini-2.5-flash",
+        messages: [
+          {
+            role: "system",
+            content:
+              "Você é um assistente de redação clínica em português do Brasil. " +
+              "Melhore a clareza, a gramática e o tom formal do documento sem inventar " +
+              "informações clínicas, datas, nomes ou códigos. Preserve variáveis entre " +
+              "chaves. Responda APENAS com HTML simples usando <p>, <strong>, <em>, " +
+              "<u>, <ul>, <ol> e <li>, sem blocos de código nem comentários.",
+          },
+          {
+            role: "user",
+            content: `Tipo de documento: ${data.documentType}\n\nHTML atual:\n${data.html}`,
+          },
+        ],
+      }),
+    });
 
     if (response.status === 429) {
       throw new Error("Limite de uso da IA atingido. Tente novamente em instantes.");

@@ -16,7 +16,6 @@ import {
   History,
   RefreshCw,
   Trash2,
-  
   BookMarked,
   AlertCircle,
   CheckCircle2,
@@ -32,13 +31,19 @@ import {
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { MultiSelect } from "@/components/ui/combobox";
 
-
-import { Dialog, DialogBody, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogBody,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Field, SearchInput, SelectField } from "@/components/form-field";
 import { PageHeader } from "@/components/page-header";
 import { SectionCard } from "@/components/section-card";
-import { SavedIndicator } from "@/components/saved-indicator";
 
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
@@ -75,7 +80,6 @@ async function loadImageDataUrl(url: string): Promise<{ dataUrl: string; w: numb
   });
   return { dataUrl, ...dims };
 }
-
 
 export const Route = createFileRoute("/prescricao")({
   head: () => ({
@@ -328,7 +332,10 @@ function isEnderecoCompleto(endereco: string): boolean {
   const s = endereco.trim();
   if (s.length < 10) return false;
   // exige pelo menos duas partes separadas por vírgula/traço (rua, bairro, cidade/UF)
-  const partes = s.split(/[,\-]/).map((p) => p.trim()).filter(Boolean);
+  const partes = s
+    .split(/[,\-]/)
+    .map((p) => p.trim())
+    .filter(Boolean);
   if (partes.length < 2) return false;
   // exige uma UF (2 letras) no final — indica "cidade/UF" preenchido
   if (!/\/[A-Za-z]{2}\b/.test(s)) return false;
@@ -363,7 +370,6 @@ function checkPosologia(pos: string): PosologiaCheck {
     };
   return { ok: true };
 }
-
 
 const LS_PACIENTES = "hg:prescricao:pacientes-recentes";
 const LS_MEDS = "hg:prescricao:meds-recentes";
@@ -485,9 +491,6 @@ function enderecoCompletoStr(base: string, numero: string, complemento: string):
   return parts.join(", ");
 }
 
-
-
-
 function PrescricaoPage() {
   return (
     <div className="flex min-h-screen w-full bg-background text-foreground">
@@ -502,7 +505,6 @@ function PrescricaoPage() {
     </div>
   );
 }
-
 
 function Header() {
   return (
@@ -530,10 +532,7 @@ function PrescricaoForm() {
   const [numeroTouched, setNumeroTouched] = useState(false);
   const [complemento, setComplemento] = useState("");
   const [query, setQuery] = useState("");
-  const [tipos, setTipos] = useState<Set<MedType>>(
-    new Set(TIPOS),
-
-  );
+  const [tipos, setTipos] = useState<Set<MedType>>(new Set(TIPOS));
   const [itens, setItens] = useState<ItemReceita[]>([]);
   // Tipo de receituário deduzido automaticamente pelos itens (não é escolha do usuário).
   const itensControlados = itens.filter((it) => it.med.controlado);
@@ -578,7 +577,6 @@ function PrescricaoForm() {
   const [historicoAberto, setHistoricoAberto] = useState(false);
   const [historicoStatus, setHistoricoStatus] = useState<"loading" | "error" | "ready">("loading");
   const [kitsAberto, setKitsAberto] = useState(false);
-
 
   const hidratado = useRef(false);
   const [step, setStep] = useState<1 | 2 | 3>(1);
@@ -645,7 +643,6 @@ function PrescricaoForm() {
     }
   }, []);
 
-
   // Autosave debounced
   useEffect(() => {
     if (!hidratado.current || typeof window === "undefined") return;
@@ -699,10 +696,6 @@ function PrescricaoForm() {
   };
   descartarRascunhoRef.current = descartarRascunho;
 
-
-
-
-
   const todos = tipos.size === TIPOS.length;
   const toggleTipo = (t: MedType) =>
     setTipos((prev) => {
@@ -722,9 +715,7 @@ function PrescricaoForm() {
       const recentes = medsRecentes
         .map((n) => base.find((m) => m.nome === n))
         .filter((m): m is Medicamento => !!m && !favs.includes(m));
-      const restantes = base.filter(
-        (m) => !favs.includes(m) && !recentes.includes(m),
-      );
+      const restantes = base.filter((m) => !favs.includes(m) && !recentes.includes(m));
       return [...favs, ...recentes, ...restantes];
     }
     return base.filter(
@@ -735,7 +726,6 @@ function PrescricaoForm() {
         m.classe.toLowerCase().includes(q),
     );
   }, [query, tipos, medsRecentes]);
-
 
   useEffect(() => {
     setHighlight(0);
@@ -750,8 +740,7 @@ function PrescricaoForm() {
     toast.success(`${med.nome.split(" ")[0]} adicionado à receita.`);
     setTimeout(() => searchRef.current?.focus(), 50);
   };
-  const removeItem = (i: number) =>
-    setItens((prev) => prev.filter((_, idx) => idx !== i));
+  const removeItem = (i: number) => setItens((prev) => prev.filter((_, idx) => idx !== i));
 
   const moveItem = (from: number, to: number) => {
     setItens((prev) => {
@@ -793,16 +782,12 @@ function PrescricaoForm() {
 
   const [overIndex, setOverIndex] = useState<number | null>(null);
 
-
-
-
   const cpfValido = isCpfValid(cpfDigits);
   const enderecoValido = isEnderecoCompleto(endereco);
   const numeroValido = numero.trim().length > 0;
   const enderecoFullValido = enderecoValido && numeroValido;
   const enderecoCompleto = enderecoCompletoStr(endereco, numero, complemento);
-  const especialInvalido =
-    especial && (!cpfValido || !enderecoFullValido);
+  const especialInvalido = especial && (!cpfValido || !enderecoFullValido);
   const posologiasInvalidas = itens
     .map((it, i) => ({ i, med: it.med, check: checkPosologia(it.posologia) }))
     .filter((x) => !x.check.ok);
@@ -835,9 +820,7 @@ function PrescricaoForm() {
         return false;
       }
       if (!enderecoValido) {
-        toast.error(
-          "Informe o endereço completo do paciente (rua, bairro, cidade/UF).",
-        );
+        toast.error("Informe o endereço completo do paciente (rua, bairro, cidade/UF).");
         return false;
       }
       if (!numeroValido) {
@@ -896,7 +879,10 @@ function PrescricaoForm() {
     setHistoricoAberto(false);
     setRascunhoRestaurado(null);
     toast.success(`Prescrição de ${h.paciente || "paciente"} carregada como base.`);
-    setTimeout(() => receitaRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }), 100);
+    setTimeout(
+      () => receitaRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }),
+      100,
+    );
   };
 
   const removerHistorico = (id: string) => {
@@ -955,11 +941,9 @@ function PrescricaoForm() {
     return true;
   };
 
-
   const baixarPdf = async (opts: { emitir?: boolean } = {}) => {
     const { emitir = false } = opts;
     if (!validarEmissao()) return;
-
 
     const slugPaciente = paciente
       .trim()
@@ -1013,14 +997,7 @@ function PrescricaoForm() {
       if (logoImg) {
         const logoH = 14;
         const logoW = (logoImg.w / logoImg.h) * logoH;
-        doc.addImage(
-          logoImg.dataUrl,
-          "PNG",
-          (pageW - logoW) / 2,
-          y,
-          logoW,
-          logoH,
-        );
+        doc.addImage(logoImg.dataUrl, "PNG", (pageW - logoW) / 2, y, logoW, logoH);
         y += logoH + 8;
       } else {
         doc.setFont("helvetica", "bold");
@@ -1047,14 +1024,10 @@ function PrescricaoForm() {
       y += 14;
 
       // Selo do tipo de receita (discreto, à direita)
-      const seloLabel = isEspecial
-        ? "RECEITUÁRIO DE CONTROLE ESPECIAL"
-        : "RECEITUÁRIO";
+      const seloLabel = isEspecial ? "RECEITUÁRIO DE CONTROLE ESPECIAL" : "RECEITUÁRIO";
       doc.setFont("helvetica", "bold");
       doc.setFontSize(7.5);
-      const seloColor: [number, number, number] = isEspecial
-        ? [180, 83, 9]
-        : [71, 85, 105];
+      const seloColor: [number, number, number] = isEspecial ? [180, 83, 9] : [71, 85, 105];
       doc.setTextColor(...seloColor);
       const seloW = doc.getTextWidth(seloLabel) + 6;
       doc.setDrawColor(...seloColor);
@@ -1087,11 +1060,7 @@ function PrescricaoForm() {
         doc.setFont("helvetica", "bold");
         doc.text("CPF:", margin, y);
         doc.setFont("helvetica", "normal");
-        doc.text(
-          formatCpf(cpfDigits) || "—",
-          margin + doc.getTextWidth("CPF: ") + 1,
-          y,
-        );
+        doc.text(formatCpf(cpfDigits) || "—", margin + doc.getTextWidth("CPF: ") + 1, y);
       }
       // Data e hora sempre à direita
       doc.setFont("helvetica", "bold");
@@ -1139,10 +1108,7 @@ function PrescricaoForm() {
 
         doc.setFont("helvetica", "normal");
         const formaTxt = forma ? `, ${forma}` : "";
-        const formaWrapped = doc.splitTextToSize(
-          formaTxt,
-          maxW - numeroW - nomeW - 40,
-        );
+        const formaWrapped = doc.splitTextToSize(formaTxt, maxW - numeroW - nomeW - 40);
         if (formaTxt) {
           doc.text(formaWrapped[0], margin + numeroW + nomeW, y);
         }
@@ -1220,11 +1186,7 @@ function PrescricaoForm() {
       const assinadoNome = `${medico.nome} · ${medico.crm}`;
       doc.text(assinadoLabel, txtX, footerY + 3 + 12);
       doc.setFont("helvetica", "bold");
-      doc.text(
-        assinadoNome,
-        txtX + doc.getTextWidth(assinadoLabel),
-        footerY + 3 + 12,
-      );
+      doc.text(assinadoNome, txtX + doc.getTextWidth(assinadoLabel), footerY + 3 + 12);
 
       if (isEspecial) {
         doc.setFont("helvetica", "italic");
@@ -1237,24 +1199,21 @@ function PrescricaoForm() {
         );
       }
 
-
       const slug = slugPaciente || "paciente";
       const nome = `${isEspecial ? "receita-especial" : "prescricao"}-${slug}.pdf`;
       if (!emitir) documentosParaBaixar.push({ doc, nome });
     }
 
-
-
     let abriuImpressao = false;
     if (emitir && docImpressao) {
-      const nomeImpressao = grupos.length > 1
-        ? `receitas-${slugPaciente || "paciente"}.pdf`
-        : `${hasControlado ? "receita-especial" : "prescricao"}-${slugPaciente || "paciente"}.pdf`;
+      const nomeImpressao =
+        grupos.length > 1
+          ? `receitas-${slugPaciente || "paciente"}.pdf`
+          : `${hasControlado ? "receita-especial" : "prescricao"}-${slugPaciente || "paciente"}.pdf`;
       abriuImpressao = imprimirPdf(docImpressao, nomeImpressao);
     } else {
       documentosParaBaixar.forEach(({ doc, nome }) => doc.save(nome));
     }
-
 
     pushRecente(LS_PACIENTES, paciente);
     setPacientesRecentes(loadRecentes(LS_PACIENTES));
@@ -1276,18 +1235,14 @@ function PrescricaoForm() {
           : "PDF baixado.",
       );
     }
-
   };
-
-
 
   const [kitDialogOpen, setKitDialogOpen] = useState(false);
   const [kitNome, setKitNome] = useState("");
   const kitNomeRef = useRef<HTMLInputElement>(null);
 
   const abrirSalvarKit = () => {
-    if (itens.length === 0)
-      return toast.error("Adicione medicamentos para salvar um kit.");
+    if (itens.length === 0) return toast.error("Adicione medicamentos para salvar um kit.");
     const nomeSugerido = paciente.trim()
       ? `Kit ${paciente.trim().split(" ")[0]}`
       : `Kit ${new Date().toLocaleDateString("pt-BR")}`;
@@ -1317,8 +1272,6 @@ function PrescricaoForm() {
     });
   };
 
-
-
   type Pend = { msg: string; focus?: () => void };
   const focusEl = (el: HTMLElement | null) => {
     if (!el) return;
@@ -1339,7 +1292,10 @@ function PrescricaoForm() {
   if (especial) {
     const focusCpf = () => focusEl(cpfRef.current);
     if (cpfDigits.length === 0)
-      pendencias.push({ msg: "CPF do paciente (obrigatório em receita especial)", focus: focusCpf });
+      pendencias.push({
+        msg: "CPF do paciente (obrigatório em receita especial)",
+        focus: focusCpf,
+      });
     else if (cpfDigits.length < 11)
       pendencias.push({
         msg: `CPF incompleto — faltam ${11 - cpfDigits.length} dígito(s)`,
@@ -1367,12 +1323,6 @@ function PrescricaoForm() {
       },
     });
   });
-
-
-
-
-
-
 
   // Atalhos globais: Ctrl/Cmd+P imprimir, Ctrl/Cmd+S salvar kit, "/" foca busca
   useEffect(() => {
@@ -1416,12 +1366,8 @@ function PrescricaoForm() {
     }
   };
 
-
   const fmtHora = (ts: number) =>
     new Date(ts).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
-
-
-
 
   return (
     <div className="space-y-5 pb-8">
@@ -1431,8 +1377,6 @@ function PrescricaoForm() {
         description="Gere receitas médicas digitais, comuns ou especiais, prontas para impressão ou download em PDF."
         actions={
           <>
-            <SavedIndicator savedAt={savedAt} />
-
             {triedEmit && pendencias.length > 0 ? (
               <Button
                 type="button"
@@ -1462,15 +1406,6 @@ function PrescricaoForm() {
         }
       />
 
-
-
-
-
-
-
-
-
-
       {/* Seção 1 — Dados do paciente */}
       <SectionCard
         id="sec-paciente"
@@ -1478,10 +1413,7 @@ function PrescricaoForm() {
         title="Dados do paciente"
         description="Identifique o paciente. Campos de CPF e endereço aparecem para receita especial."
       >
-
-
-          <>
-
+        <>
           <Field id="paciente-input" label="Nome do paciente" required>
             <SearchInput
               ref={pacienteRef}
@@ -1494,7 +1426,6 @@ function PrescricaoForm() {
             />
             {/* ds-allow: datalist nativo é o autocomplete leve do <Input> para pacientes recentes */}
             <datalist id="pacientes-recentes">
-
               {pacientesRecentes.map((n) => (
                 /* ds-allow: itens do datalist nativo de pacientes recentes */
                 <option key={n} value={n} />
@@ -1541,10 +1472,6 @@ function PrescricaoForm() {
             </div>
           )}
 
-
-
-
-
           {mostrarCamposEspeciais && (
             <div className="space-y-4 pt-2 border-t border-border/60">
               <div>
@@ -1571,9 +1498,7 @@ function PrescricaoForm() {
                         : undefined
                 }
                 error={
-                  cpfDigits.length === 11 && !cpfValido
-                    ? "Dígito verificador inválido."
-                    : undefined
+                  cpfDigits.length === 11 && !cpfValido ? "Dígito verificador inválido." : undefined
                 }
                 rightAdornment={
                   cpfValido ? (
@@ -1587,15 +1512,10 @@ function PrescricaoForm() {
                 <Input
                   ref={cpfRef}
                   value={formatCpf(cpfDigits)}
-                  onChange={(e) =>
-                    setCpfDigits(e.target.value.replace(/\D/g, "").slice(0, 11))
-                  }
+                  onChange={(e) => setCpfDigits(e.target.value.replace(/\D/g, "").slice(0, 11))}
                   onPaste={(e) => {
                     e.preventDefault();
-                    const text = e.clipboardData
-                      .getData("text")
-                      .replace(/\D/g, "")
-                      .slice(0, 11);
+                    const text = e.clipboardData.getData("text").replace(/\D/g, "").slice(0, 11);
                     setCpfDigits(text);
                   }}
                   autoComplete="off"
@@ -1646,9 +1566,7 @@ function PrescricaoForm() {
                     label="Rua, bairro, cidade/UF"
                     required
                     hint={
-                      enderecoValido
-                        ? "Endereço válido."
-                        : "Preenchido automaticamente pelo CEP."
+                      enderecoValido ? "Endereço válido." : "Preenchido automaticamente pelo CEP."
                     }
                     rightAdornment={
                       enderecoValido ? (
@@ -1672,11 +1590,7 @@ function PrescricaoForm() {
                 <Field
                   label="Número e complemento"
                   required
-                  error={
-                    numeroTouched && numero.length === 0
-                      ? "Informe o número."
-                      : undefined
-                  }
+                  error={numeroTouched && numero.length === 0 ? "Informe o número." : undefined}
                 >
                   <div className="flex gap-2">
                     <Input
@@ -1707,9 +1621,8 @@ function PrescricaoForm() {
               </div>
             </div>
           )}
-          </>
+        </>
       </SectionCard>
-
 
       {/* Seção 2 — Medicamentos */}
       <SectionCard
@@ -1756,85 +1669,77 @@ function PrescricaoForm() {
           </>
         }
       >
+        <>
+          <div className="grid gap-3 lg:grid-cols-[minmax(0,1fr)_220px]">
+            <SearchInput
+              id="med-search"
+              ref={searchRef}
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              onKeyDown={(e) => {
+                if (editing) return;
+                if (e.key === "ArrowDown") {
+                  e.preventDefault();
+                  setHighlight((h) => Math.min(h + 1, resultados.length - 1));
+                } else if (e.key === "ArrowUp") {
+                  e.preventDefault();
+                  setHighlight((h) => Math.max(h - 1, 0));
+                } else if (e.key === "Enter" && resultados[highlight]) {
+                  e.preventDefault();
+                  setEditing(resultados[highlight]);
+                } else if (e.key === "Escape") {
+                  setQuery("");
+                }
+              }}
+              placeholder='Nome comercial ou princípio ativo…  (tecle "/" para focar)'
+              clearable
+              onClear={() => setQuery("")}
+              rightSlot={!query ? <Kbd>/</Kbd> : undefined}
+            />
 
+            <MultiSelect
+              options={TIPOS.map((t) => ({ value: t, label: t }))}
+              values={Array.from(tipos)}
+              onChange={(vs) => setTipos(new Set(vs as MedType[]))}
+              placeholder="Filtrar por tipo"
+              allLabel="Todos os tipos"
+              emptyLabel="Nenhum tipo"
+              searchPlaceholder="Buscar tipo..."
+              countLabel={(n) => `${n} tipos`}
+            />
+          </div>
 
-
-
-            <>
-            <div className="grid gap-3 lg:grid-cols-[minmax(0,1fr)_220px]">
-              <SearchInput
-                id="med-search"
-                ref={searchRef}
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                onKeyDown={(e) => {
-                  if (editing) return;
-                  if (e.key === "ArrowDown") {
-                    e.preventDefault();
-                    setHighlight((h) => Math.min(h + 1, resultados.length - 1));
-                  } else if (e.key === "ArrowUp") {
-                    e.preventDefault();
-                    setHighlight((h) => Math.max(h - 1, 0));
-                  } else if (e.key === "Enter" && resultados[highlight]) {
-                    e.preventDefault();
-                    setEditing(resultados[highlight]);
-                  } else if (e.key === "Escape") {
-                    setQuery("");
-                  }
-                }}
-                placeholder='Nome comercial ou princípio ativo…  (tecle "/" para focar)'
-                clearable
-                onClear={() => setQuery("")}
-                rightSlot={!query ? <Kbd>/</Kbd> : undefined}
-              />
-
-              <MultiSelect
-                options={TIPOS.map((t) => ({ value: t, label: t }))}
-                values={Array.from(tipos)}
-                onChange={(vs) => setTipos(new Set(vs as MedType[]))}
-                placeholder="Filtrar por tipo"
-                allLabel="Todos os tipos"
-                emptyLabel="Nenhum tipo"
-                searchPlaceholder="Buscar tipo..."
-                countLabel={(n) => `${n} tipos`}
-              />
-
+          {!editing && resultados.length > 0 && (
+            <div className="rounded-xl border border-border bg-background/40 divide-y divide-border max-h-[420px] overflow-y-auto">
+              {resultados.map((m, i) => (
+                <MedRow
+                  key={m.nome}
+                  m={m}
+                  highlighted={i === highlight}
+                  onHover={() => setHighlight(i)}
+                  onPick={() => setEditing(m)}
+                />
+              ))}
             </div>
+          )}
+          {query && !editing && resultados.length === 0 && (
+            <EmptyState
+              size="sm"
+              title="Nenhum medicamento encontrado"
+              description="Ajuste os filtros ou tente outro termo de busca."
+              icon={<Search className="h-8 w-8" />}
+            />
+          )}
 
-
-            {!editing && resultados.length > 0 && (
-              <div className="rounded-xl border border-border bg-background/40 divide-y divide-border max-h-[420px] overflow-y-auto">
-                {resultados.map((m, i) => (
-                  <MedRow
-                    key={m.nome}
-                    m={m}
-                    highlighted={i === highlight}
-                    onHover={() => setHighlight(i)}
-                    onPick={() => setEditing(m)}
-                  />
-                ))}
-              </div>
-            )}
-            {query && !editing && resultados.length === 0 && (
-              <EmptyState
-                size="sm"
-                title="Nenhum medicamento encontrado"
-                description="Ajuste os filtros ou tente outro termo de busca."
-                icon={<Search className="h-8 w-8" />}
-              />
-            )}
-
-            {editing && (
-              <PosologiaPanel
-                med={editing}
-                onCancel={() => setEditing(null)}
-                onAdd={(pos) => addItem(editing, pos)}
-              />
-            )}
-            </>
+          {editing && (
+            <PosologiaPanel
+              med={editing}
+              onCancel={() => setEditing(null)}
+              onAdd={(pos) => addItem(editing, pos)}
+            />
+          )}
+        </>
       </SectionCard>
-
-
 
       {/* Seção 3 — Revisar e emitir */}
       <SectionCard
@@ -1867,235 +1772,203 @@ function PrescricaoForm() {
           ) : undefined
         }
       >
-
-
-
-
-
-            <ul className="space-y-3">
-              {itens.map((it, i) => {
-                const isDragging = dragIndex === i;
-                const isOver =
-                  overIndex === i && dragIndex !== null && dragIndex !== i;
-                const posCheck = checkPosologia(it.posologia);
-                const isEditing = editingPosIdx === i;
-                const editCheck = isEditing
-                  ? checkPosologia(editingPosValue)
-                  : null;
-                return (
-                  <li
-                    id={`item-receita-${i}`}
-                    key={i}
-                    draggable={!isEditing}
-                    onDragStart={(e) => {
-                      setDragIndex(i);
-                      e.dataTransfer.effectAllowed = "move";
-                      e.dataTransfer.setData("text/plain", String(i));
-                    }}
-                    onDragOver={(e) => {
-                      e.preventDefault();
-                      e.dataTransfer.dropEffect = "move";
-                      if (overIndex !== i) setOverIndex(i);
-                    }}
-                    onDragLeave={() => {
-                      if (overIndex === i) setOverIndex(null);
-                    }}
-                    onDrop={(e) => {
-                      e.preventDefault();
-                      if (dragIndex !== null && dragIndex !== i)
-                        moveItem(dragIndex, i);
-                      setDragIndex(null);
-                      setOverIndex(null);
-                    }}
-                    onDragEnd={() => {
-                      setDragIndex(null);
-                      setOverIndex(null);
-                    }}
-                    className={`rounded-xl border bg-background/40 p-4 transition-all ${
-                      isDragging ? "opacity-40 border-primary/60" : ""
-                    } ${
-                      isOver
-                        ? "ring-2 ring-primary/60 border-primary/60"
-                        : posCheck.ok
-                          ? "border-border/70"
-                          : "border-destructive/60 bg-destructive/5"
-                    }`}
-                  >
-                    <div className="flex items-start gap-2">
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="icon"
-                        aria-label="Arrastar para reordenar"
-                        title="Arraste para reordenar"
-                        className="h-6 w-6 mt-0.5 text-muted-foreground hover:text-foreground cursor-grab active:cursor-grabbing shrink-0"
-                        onMouseDown={(e) => e.stopPropagation()}
-                      >
-                        <GripVertical className="h-4 w-4" />
-                      </Button>
-                      <div className="min-w-0 space-y-1 flex-1">
-                        <div className="text-sm font-semibold">
-                          <span className="text-muted-foreground mr-1">
-                            {i + 1}.
-                          </span>
-                          {it.med.nome}, {it.med.forma}
-                        </div>
-                        <div className="text-xs text-muted-foreground">
-                          {it.med.principios} | {it.med.fabricante} |{" "}
-                          {it.med.forma} | {it.med.tipo}
-                        </div>
-                        {isEditing ? (
-                          <div className="mt-2 space-y-1.5">
-                            <Textarea
-                              value={editingPosValue}
-                              onChange={(e) =>
-                                setEditingPosValue(e.target.value)
-                              }
-                              rows={2}
-                              autoFocus
-                              aria-invalid={!editCheck?.ok}
-                              className={
-                                editCheck?.ok
-                                  ? "border-success/40 focus-visible:ring-success/40"
-                                  : "border-destructive/50 focus-visible:ring-destructive/40"
-                              }
-                            />
-                            {editCheck && !editCheck.ok && (
-                              <div className="text-xs text-destructive">
-                                ⚠ {editCheck.mensagem}
-                              </div>
-                            )}
-                            <div className="flex items-center gap-2">
-                              <Button
-                                type="button"
-                                size="sm"
-                                onClick={saveEditPos}
-                                disabled={!editCheck?.ok}
-                              >
-                                Salvar
-                              </Button>
-                              <Button
-                                type="button"
-                                variant="outline"
-                                size="sm"
-                                onClick={cancelEditPos}
-                              >
-                                Cancelar
-                              </Button>
-                            </div>
-                          </div>
-                        ) : (
-                          <>
-                            <div className="mt-1 flex items-start gap-2 text-sm text-foreground">
-                              <Link2
-                                className={`h-3.5 w-3.5 mt-0.5 shrink-0 ${
-                                  posCheck.ok ? "text-primary" : "text-destructive"
-                                }`}
-                              />
-                              <span>
-                                {it.posologia || (
-                                  <em className="text-muted-foreground">
-                                    sem posologia
-                                  </em>
-                                )}
-                              </span>
-                            </div>
-                            {!posCheck.ok && (
-                              <div className="text-xs text-destructive flex items-center gap-2">
-                                <span>⚠ {posCheck.mensagem}</span>
-                                <Button
-                                  type="button"
-                                  variant="link"
-                                  size="sm"
-                                  onClick={() => startEditPos(i)}
-                                  className="h-auto p-0 text-xs text-destructive underline hover:no-underline font-medium"
-                                >
-                                  Editar posologia
-                                </Button>
-                              </div>
-                            )}
-                            {posCheck.ok && (
-                              <Button
-                                type="button"
-                                variant="link"
-                                size="sm"
-                                onClick={() => startEditPos(i)}
-                                className="h-auto p-0 text-xs text-muted-foreground hover:text-primary"
-                              >
-                                Editar posologia
-                              </Button>
-                            )}
-                          </>
-                        )}
-                      </div>
-
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="icon"
-                        onClick={() => removeItem(i)}
-                        className="h-6 w-6 text-muted-foreground hover:text-destructive hover:border-destructive/60 shrink-0"
-                        aria-label="Remover item"
-                      >
-                        <X className="h-3.5 w-3.5" />
-                      </Button>
-                    </div>
-                  </li>
-                );
-              })}
-            </ul>
-
-            {/* Detecção automática do tipo de receituário */}
-            {itens.length > 0 && (
-              <div
-                className={`rounded-xl border px-4 py-3 ${
-                  hasControlado
-                    ? "border-warning/40 bg-warning/5"
-                    : "border-success/30 bg-success/5"
+        <ul className="space-y-3">
+          {itens.map((it, i) => {
+            const isDragging = dragIndex === i;
+            const isOver = overIndex === i && dragIndex !== null && dragIndex !== i;
+            const posCheck = checkPosologia(it.posologia);
+            const isEditing = editingPosIdx === i;
+            const editCheck = isEditing ? checkPosologia(editingPosValue) : null;
+            return (
+              <li
+                id={`item-receita-${i}`}
+                key={i}
+                draggable={!isEditing}
+                onDragStart={(e) => {
+                  setDragIndex(i);
+                  e.dataTransfer.effectAllowed = "move";
+                  e.dataTransfer.setData("text/plain", String(i));
+                }}
+                onDragOver={(e) => {
+                  e.preventDefault();
+                  e.dataTransfer.dropEffect = "move";
+                  if (overIndex !== i) setOverIndex(i);
+                }}
+                onDragLeave={() => {
+                  if (overIndex === i) setOverIndex(null);
+                }}
+                onDrop={(e) => {
+                  e.preventDefault();
+                  if (dragIndex !== null && dragIndex !== i) moveItem(dragIndex, i);
+                  setDragIndex(null);
+                  setOverIndex(null);
+                }}
+                onDragEnd={() => {
+                  setDragIndex(null);
+                  setOverIndex(null);
+                }}
+                className={`rounded-xl border bg-background/40 p-4 transition-all ${
+                  isDragging ? "opacity-40 border-primary/60" : ""
+                } ${
+                  isOver
+                    ? "ring-2 ring-primary/60 border-primary/60"
+                    : posCheck.ok
+                      ? "border-border/70"
+                      : "border-destructive/60 bg-destructive/5"
                 }`}
               >
-                <div className="flex items-start gap-2.5">
-                  <span
-                    className={`mt-0.5 inline-block h-2 w-2 rounded-full ${
-                      hasControlado ? "bg-warning/100" : "bg-success"
-                    }`}
-                  />
-                  <div className="flex-1 min-w-0">
-                    <div className="text-sm font-medium">
-                      {hasControlado && hasComum
-                        ? "Serão gerados 2 documentos separados"
-                        : hasControlado
-                          ? "Receituário de controle especial"
-                          : "Receita simples"}
+                <div className="flex items-start gap-2">
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    aria-label="Arrastar para reordenar"
+                    title="Arraste para reordenar"
+                    className="h-6 w-6 mt-0.5 text-muted-foreground hover:text-foreground cursor-grab active:cursor-grabbing shrink-0"
+                    onMouseDown={(e) => e.stopPropagation()}
+                  >
+                    <GripVertical className="h-4 w-4" />
+                  </Button>
+                  <div className="min-w-0 space-y-1 flex-1">
+                    <div className="text-sm font-semibold">
+                      <span className="text-muted-foreground mr-1">{i + 1}.</span>
+                      {it.med.nome}, {it.med.forma}
                     </div>
-                    <ul className="mt-1.5 space-y-1 text-xs text-muted-foreground">
-                      {hasComum && (
-                        <li className="flex items-center gap-1.5">
-                          <span className="inline-block h-1.5 w-1.5 rounded-full bg-success" />
-                          Receita simples — {itensComuns.length}{" "}
-                          {itensComuns.length === 1 ? "item" : "itens"}
-                        </li>
-                      )}
-                      {hasControlado && (
-                        <li className="flex items-center gap-1.5">
-                          <span className="inline-block h-1.5 w-1.5 rounded-full bg-warning/100" />
-                          Controle especial — {itensControlados.length}{" "}
-                          {itensControlados.length === 1 ? "item" : "itens"}
-                        </li>
-                      )}
-                    </ul>
+                    <div className="text-xs text-muted-foreground">
+                      {it.med.principios} | {it.med.fabricante} | {it.med.forma} | {it.med.tipo}
+                    </div>
+                    {isEditing ? (
+                      <div className="mt-2 space-y-1.5">
+                        <Textarea
+                          value={editingPosValue}
+                          onChange={(e) => setEditingPosValue(e.target.value)}
+                          rows={2}
+                          autoFocus
+                          aria-invalid={!editCheck?.ok}
+                          className={
+                            editCheck?.ok
+                              ? "border-success/40 focus-visible:ring-success/40"
+                              : "border-destructive/50 focus-visible:ring-destructive/40"
+                          }
+                        />
+                        {editCheck && !editCheck.ok && (
+                          <div className="text-xs text-destructive">⚠ {editCheck.mensagem}</div>
+                        )}
+                        <div className="flex items-center gap-2">
+                          <Button
+                            type="button"
+                            size="sm"
+                            onClick={saveEditPos}
+                            disabled={!editCheck?.ok}
+                          >
+                            Salvar
+                          </Button>
+                          <Button type="button" variant="outline" size="sm" onClick={cancelEditPos}>
+                            Cancelar
+                          </Button>
+                        </div>
+                      </div>
+                    ) : (
+                      <>
+                        <div className="mt-1 flex items-start gap-2 text-sm text-foreground">
+                          <Link2
+                            className={`h-3.5 w-3.5 mt-0.5 shrink-0 ${
+                              posCheck.ok ? "text-primary" : "text-destructive"
+                            }`}
+                          />
+                          <span>
+                            {it.posologia || (
+                              <em className="text-muted-foreground">sem posologia</em>
+                            )}
+                          </span>
+                        </div>
+                        {!posCheck.ok && (
+                          <div className="text-xs text-destructive flex items-center gap-2">
+                            <span>⚠ {posCheck.mensagem}</span>
+                            <Button
+                              type="button"
+                              variant="link"
+                              size="sm"
+                              onClick={() => startEditPos(i)}
+                              className="h-auto p-0 text-xs text-destructive underline hover:no-underline font-medium"
+                            >
+                              Editar posologia
+                            </Button>
+                          </div>
+                        )}
+                        {posCheck.ok && (
+                          <Button
+                            type="button"
+                            variant="link"
+                            size="sm"
+                            onClick={() => startEditPos(i)}
+                            className="h-auto p-0 text-xs text-muted-foreground hover:text-primary"
+                          >
+                            Editar posologia
+                          </Button>
+                        )}
+                      </>
+                    )}
                   </div>
+
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="icon"
+                    onClick={() => removeItem(i)}
+                    className="h-6 w-6 text-muted-foreground hover:text-destructive hover:border-destructive/60 shrink-0"
+                    aria-label="Remover item"
+                  >
+                    <X className="h-3.5 w-3.5" />
+                  </Button>
                 </div>
+              </li>
+            );
+          })}
+        </ul>
+
+        {/* Detecção automática do tipo de receituário */}
+        {itens.length > 0 && (
+          <div
+            className={`rounded-xl border px-4 py-3 ${
+              hasControlado ? "border-warning/40 bg-warning/5" : "border-success/30 bg-success/5"
+            }`}
+          >
+            <div className="flex items-start gap-2.5">
+              <span
+                className={`mt-0.5 inline-block h-2 w-2 rounded-full ${
+                  hasControlado ? "bg-warning/100" : "bg-success"
+                }`}
+              />
+              <div className="flex-1 min-w-0">
+                <div className="text-sm font-medium">
+                  {hasControlado && hasComum
+                    ? "Serão gerados 2 documentos separados"
+                    : hasControlado
+                      ? "Receituário de controle especial"
+                      : "Receita simples"}
+                </div>
+                <ul className="mt-1.5 space-y-1 text-xs text-muted-foreground">
+                  {hasComum && (
+                    <li className="flex items-center gap-1.5">
+                      <span className="inline-block h-1.5 w-1.5 rounded-full bg-success" />
+                      Receita simples — {itensComuns.length}{" "}
+                      {itensComuns.length === 1 ? "item" : "itens"}
+                    </li>
+                  )}
+                  {hasControlado && (
+                    <li className="flex items-center gap-1.5">
+                      <span className="inline-block h-1.5 w-1.5 rounded-full bg-warning/100" />
+                      Controle especial — {itensControlados.length}{" "}
+                      {itensControlados.length === 1 ? "item" : "itens"}
+                    </li>
+                  )}
+                </ul>
               </div>
-            )}
-
-
-
-
-
-
+            </div>
+          </div>
+        )}
       </SectionCard>
-
 
       {/* Barra de ação padrão: etapas + ações */}
       <FormActionBar
@@ -2103,9 +1976,7 @@ function PrescricaoForm() {
         steps={[
           {
             label: "Paciente",
-            done:
-              paciente.trim().length > 0 &&
-              (!especial || (cpfValido && enderecoFullValido)),
+            done: paciente.trim().length > 0 && (!especial || (cpfValido && enderecoFullValido)),
           },
           {
             label: "Medicamentos",
@@ -2115,18 +1986,12 @@ function PrescricaoForm() {
         ]}
         note={
           <>
-            Campos com <span className="text-destructive/80">*</span> são
-            obrigatórios e serão validados antes da emissão.
+            Campos com <span className="text-destructive/80">*</span> são obrigatórios e serão
+            validados antes da emissão.
           </>
         }
       >
-        <Button
-          type="button"
-          variant="outline"
-          size="sm"
-          onClick={abrirSalvarKit}
-          title="Ctrl+S"
-        >
+        <Button type="button" variant="outline" size="sm" onClick={abrirSalvarKit} title="Ctrl+S">
           <Save className="h-4 w-4" />
           Salvar como kit
         </Button>
@@ -2174,7 +2039,11 @@ function PrescricaoForm() {
               active={historicoAberto}
               title={historicoAberto ? "Ocultar histórico" : "Mostrar histórico"}
             >
-              {historicoAberto ? "Ocultar" : historicoStatus === "ready" ? `Ver (${historico.length})` : "Ver"}
+              {historicoAberto
+                ? "Ocultar"
+                : historicoStatus === "ready"
+                  ? `Ver (${historico.length})`
+                  : "Ver"}
             </ActionBtn>
           </div>
           {historicoAberto && (
@@ -2209,20 +2078,13 @@ function PrescricaoForm() {
         onConfirm={confirmarLimparHistorico}
       />
 
-
-
-
-
-
-
-
-
       <Dialog open={kitDialogOpen} onOpenChange={setKitDialogOpen}>
         <DialogContent size="sm" initialFocusRef={kitNomeRef}>
           <DialogHeader>
             <DialogTitle>Salvar como kit</DialogTitle>
             <DialogDescription>
-              Salve a receita atual como modelo reutilizável ({itens.length} {itens.length === 1 ? "item" : "itens"}).
+              Salve a receita atual como modelo reutilizável ({itens.length}{" "}
+              {itens.length === 1 ? "item" : "itens"}).
             </DialogDescription>
           </DialogHeader>
           <DialogBody className="grid gap-2">
@@ -2285,7 +2147,9 @@ function PrescricaoForm() {
         aria-label="Voltar ao topo"
         title="Voltar ao topo"
         className={`fixed bottom-6 right-6 z-40 h-10 w-10 rounded-full bg-card/90 backdrop-blur text-muted-foreground shadow-md hover:text-foreground hover:bg-card transition-all duration-200 ${
-          showTopBtn ? "opacity-100 translate-y-0 pointer-events-auto" : "opacity-0 translate-y-2 pointer-events-none"
+          showTopBtn
+            ? "opacity-100 translate-y-0 pointer-events-auto"
+            : "opacity-0 translate-y-2 pointer-events-none"
         }`}
       >
         <ArrowUp className="h-4 w-4" />
@@ -2321,8 +2185,7 @@ function ActionBtn({
       : active
         ? "border-primary bg-primary/10 text-primary hover:bg-primary/15 ring-1 ring-primary/40"
         : "border-border text-foreground hover:bg-muted";
-  const sizeCls =
-    size === "sm" ? "px-2.5 py-1.5 text-xs gap-1.5" : "px-3 py-1.5 text-sm gap-1.5";
+  const sizeCls = size === "sm" ? "px-2.5 py-1.5 text-xs gap-1.5" : "px-3 py-1.5 text-sm gap-1.5";
   const effectiveTitle = disabled && disabledReason ? disabledReason : title;
   return (
     <Button
@@ -2340,7 +2203,6 @@ function ActionBtn({
     </Button>
   );
 }
-
 
 function PosologiaPanel({
   med,
@@ -2396,14 +2258,13 @@ function PosologiaPanel({
     onAdd(pos.trim());
   };
 
-
   return (
     <div className="rounded-xl border border-border bg-muted/30 p-4 space-y-3">
       <div>
         <div className="text-sm font-semibold text-foreground">Posologia (obrigatória)</div>
         <div className="text-xs text-muted-foreground mt-0.5">
-          {med.nome.split(" ")[0]} - {med.nome.replace(/^\S+\s*/, "")} -{" "}
-          {med.fabricante} - {med.forma}
+          {med.nome.split(" ")[0]} - {med.nome.replace(/^\S+\s*/, "")} - {med.fabricante} -{" "}
+          {med.forma}
         </div>
       </div>
 
@@ -2443,8 +2304,7 @@ function PosologiaPanel({
       </div>
 
       <div className="text-xs text-muted-foreground">
-        Sugestões ao digitar ·{" "}
-        <Kbd>↑</Kbd> <Kbd>↓</Kbd> <span className="mx-1">navega</span>
+        Sugestões ao digitar · <Kbd>↑</Kbd> <Kbd>↓</Kbd> <span className="mx-1">navega</span>
         <Kbd>Enter</Kbd> <span className="mx-1">ou</span> <Kbd>Tab</Kbd>{" "}
         <span className="mx-1">aplica</span>
         <Kbd>Shift</Kbd>+<Kbd>Enter</Kbd> <span className="mx-1">quebra linha</span>
@@ -2649,7 +2509,9 @@ function HistoricoPanel({
       <div className="flex items-center justify-between gap-3">
         <div className="flex items-center gap-2">
           <History className="h-4 w-4 text-primary" />
-          <h3 className="font-display text-base font-semibold tracking-tight text-foreground">Histórico de prescrições</h3>
+          <h3 className="font-display text-base font-semibold tracking-tight text-foreground">
+            Histórico de prescrições
+          </h3>
           <span className="text-xs text-muted-foreground">
             {status === "ready"
               ? `(${historico.length} ${historico.length === 1 ? "entrada" : "entradas"} — só neste navegador)`
@@ -2704,7 +2566,9 @@ function HistoricoPanel({
             <li
               key={h.id}
               className={`rounded-xl border p-3 ${
-                h.especial ? "border-destructive/40 bg-destructive/5" : "border-border bg-background/40"
+                h.especial
+                  ? "border-destructive/40 bg-destructive/5"
+                  : "border-border bg-background/40"
               }`}
             >
               <div className="flex items-start justify-between gap-3">
@@ -2764,5 +2628,3 @@ function HistoricoPanel({
 }
 
 void Check;
-
-

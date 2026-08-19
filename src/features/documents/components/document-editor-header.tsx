@@ -14,11 +14,7 @@ interface DocumentEditorHeaderProps {
  * Centraliza os tokens de tipografia usados nas abas Relatórios,
  * Atestados e Comparecimento.
  */
-export function DocumentEditorHeader({
-  title,
-  meta,
-  actions,
-}: DocumentEditorHeaderProps) {
+export function DocumentEditorHeader({ title, meta, actions }: DocumentEditorHeaderProps) {
   return (
     <>
       <div className="min-w-0">
