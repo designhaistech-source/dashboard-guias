@@ -152,17 +152,24 @@ function DocumentActions({
   html,
   paciente,
   onSaveTemplate,
+  blockReason,
 }: {
   title: string;
   html: string;
   paciente: string;
   onSaveTemplate?: () => void;
+  /** Motivo que impede a emissão (ex.: data do documento inválida). */
+  blockReason?: string;
 }) {
   const disabled = !paciente.trim();
   const temTexto = html.replace(/<[^>]+>/g, "").trim().length > 0;
   const [downloading, setDownloading] = useState(false);
 
   function handlePrint() {
+    if (blockReason) {
+      toast.error(blockReason);
+      return;
+    }
     if (disabled) {
       toast.error("Informe o paciente antes de imprimir.");
       return;
@@ -171,6 +178,10 @@ function DocumentActions({
   }
 
   async function handleDownload() {
+    if (blockReason) {
+      toast.error(blockReason);
+      return;
+    }
     if (disabled) {
       toast.error("Informe o paciente antes de baixar o PDF.");
       return;
@@ -179,6 +190,7 @@ function DocumentActions({
       toast.error("Escreva o texto do documento antes de baixar o PDF.");
       return;
     }
+
 
     setDownloading(true);
     const toastId = toast.loading("Gerando PDF do documento…");
