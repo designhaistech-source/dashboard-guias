@@ -17,7 +17,6 @@ export const PDF_LAYOUT = {
 /** Assinatura mockada exibida no fim do documento. */
 export const PDF_SIGNATURE = {
   name: "Dr. Fulano de Tal — CRM 47231/RN",
-  note: "Documento sem assinatura digital — imprima para assinar manualmente.",
 } as const;
 
 /** Uma linha posicionada dentro de uma página A4. */
@@ -146,11 +145,6 @@ export function downloadDocumentPdf(
       pdf.line(pageWidth / 2 - 35, signatureY, pageWidth / 2 + 35, signatureY);
       pdf.setFontSize(10);
       pdf.text(PDF_SIGNATURE.name, pageWidth / 2, signatureY + 6, {
-        align: "center",
-      });
-      pdf.setTextColor(120);
-      pdf.setFontSize(8);
-      pdf.text(PDF_SIGNATURE.note, pageWidth / 2, signatureY + 13, {
         align: "center",
       });
     }
