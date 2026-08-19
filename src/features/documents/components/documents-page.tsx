@@ -535,7 +535,7 @@ function ReportsTab() {
       successMessage: "Texto padrão restaurado.",
       apply: () => {
         setModelo(modeloPadrao.value);
-        setHtml(modeloPadrao.content);
+        setHtml("");
       },
     });
   }
