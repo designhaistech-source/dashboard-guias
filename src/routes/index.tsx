@@ -714,12 +714,8 @@ function monthBoundaries(data: { date: string }[]): { date: string; label: strin
 const filterLabels: Record<keyof GuideFilters, string> = {
   dataAutorizacaoDe: "Período de",
   dataAutorizacaoAte: "Período até",
-  numGuiaPrestador: "Número da guia",
-  beneficiarioNome: "Paciente",
   tipoGuia: "Tipo de guia",
   prestadorSolicitante: "Prestador solicitante",
-  procDescricao: "Procedimento",
-  procCodigo: "Código do procedimento",
 };
 
 
