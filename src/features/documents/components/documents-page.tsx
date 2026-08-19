@@ -339,12 +339,8 @@ function DocumentActions({
     </Button>
   );
 
-  const printButton = (
-    <Button type="button" variant="outline" size="sm" onClick={handlePrint}>
-      <Printer className="icon-optical h-4 w-4" aria-hidden />
-      Imprimir
-    </Button>
-  );
+
+
 
   const viewIssuedButton = (
     <Button asChild type="button" variant="outline" size="sm">
