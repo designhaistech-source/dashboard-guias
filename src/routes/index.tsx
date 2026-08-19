@@ -1101,7 +1101,11 @@ function DashboardPage() {
               )}
             </SurfaceCard>
 
-            <SurfaceCard title="Por tipo de guia" description="Distribuição no período">
+            <SurfaceCard
+              title="Guias por tipo"
+              description={`Distribuição das guias no período selecionado — ${periodLabel}`}
+            >
+
               {!hasData ? (
                 emptyState
               ) : (
