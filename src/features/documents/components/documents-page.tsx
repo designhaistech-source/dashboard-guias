@@ -317,6 +317,7 @@ function ReportsTab() {
         onChange={setHtml}
         onImproveWithAi={improve}
         improving={improving}
+        variables={DOCUMENT_VARIABLES}
         placeholder="Redija o relatório médico..."
         header={
           <DocumentEditorHeader
@@ -427,6 +428,7 @@ function CertificateTab() {
         onChange={setHtml}
         onImproveWithAi={improve}
         improving={improving}
+        variables={DOCUMENT_VARIABLES}
         header={
           <DocumentEditorHeader
             title="Atestado médico"
@@ -563,6 +565,7 @@ function AttendanceTab() {
         onChange={setHtml}
         onImproveWithAi={improve}
         improving={improving}
+        variables={DOCUMENT_VARIABLES}
         header={
           <DocumentEditorHeader
             title="Declaração de comparecimento"
