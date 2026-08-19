@@ -512,14 +512,15 @@ function ReportsTab() {
       successMessage: `Modelo “${template.label}” aplicado.`,
       apply: () => {
         setModelo(value);
-        setHtml(template.content);
+        // Volta ao texto gerado para que o modelo seja preenchido com os campos atuais.
+        setHtml("");
       },
     });
   }
 
   const { improving, improve } = useImproveWithAi(
     "Relatório médico",
-    html,
+    conteudo,
     setHtml,
     requestReplace,
   );
