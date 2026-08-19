@@ -549,8 +549,13 @@ function ChartTooltip({ active, payload, label, suffix }: any) {
   return (
     <div className="rounded-lg border border-border bg-popover/95 px-3 py-2 shadow-md backdrop-blur">
       {heading && (
-        <div className="text-xs uppercase tracking-wider text-muted-foreground mb-1">
-          {heading}
+        <div className="mb-1">
+          <div className="text-xs uppercase tracking-wider text-muted-foreground">
+            {heading}
+          </div>
+          {iso && (
+            <div className="text-[10px] text-muted-foreground/80">{localTimeZoneLabel()}</div>
+          )}
         </div>
       )}
       {payload.map((p: any) => (
@@ -563,6 +568,7 @@ function ChartTooltip({ active, payload, label, suffix }: any) {
           </span>
         </div>
       ))}
+
     </div>
   );
 }
