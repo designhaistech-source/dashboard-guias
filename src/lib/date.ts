@@ -26,3 +26,33 @@ export function localIsoDaysAgo(days: number): string {
   d.setDate(d.getDate() - days);
   return toLocalIsoDate(d);
 }
+
+/** Formats "yyyy-MM-dd" as "dd/MM/yyyy" without timezone shifts. */
+export function formatIsoToBr(iso?: string): string {
+  if (!iso) return "";
+  const [y, m, d] = iso.split("-");
+  return y && m && d ? `${d}/${m}/${y}` : iso;
+}
+
+/**
+ * Full date with weekday: "qua., 19/08/2026". Used wherever a single day is
+ * referenced (KPIs, tooltips) so the page keeps one date style.
+ */
+export function formatIsoToBrFull(iso?: string): string {
+  const short = formatIsoToBr(iso);
+  if (!short || !iso) return short;
+  const date = new Date(`${iso}T12:00:00`);
+  if (Number.isNaN(date.getTime())) return short;
+  const weekday = date.toLocaleDateString("pt-BR", { weekday: "short" }).replace(".", "");
+  return `${weekday}., ${short}`;
+}
+
+/** Fixed timezone label shared by indicators and charts, e.g. "Horário local (UTC-03:00)". */
+export function localTimeZoneLabel(): string {
+  const offsetMinutes = -new Date().getTimezoneOffset();
+  const sign = offsetMinutes < 0 ? "-" : "+";
+  const abs = Math.abs(offsetMinutes);
+  const hh = `${Math.floor(abs / 60)}`.padStart(2, "0");
+  const mm = `${abs % 60}`.padStart(2, "0");
+  return `Horário local (UTC${sign}${hh}:${mm})`;
+}

@@ -1,7 +1,13 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef, useState } from "react";
 import jsPDF from "jspdf";
-import { toLocalIsoDate, todayLocalIsoDate } from "@/lib/date";
+import {
+  toLocalIsoDate,
+  todayLocalIsoDate,
+  formatIsoToBr,
+  formatIsoToBrFull,
+  localTimeZoneLabel,
+} from "@/lib/date";
 import autoTable from "jspdf-autotable";
 import {
   FileText,
@@ -108,12 +114,6 @@ export const Route = createFileRoute("/")({
   component: DashboardPage,
 });
 
-/** Formats an ISO date (yyyy-mm-dd) as dd/mm/yyyy without timezone shifts. */
-function formatIsoDate(iso: string) {
-  const [y, m, d] = iso.split("-");
-  return y && m && d ? `${d}/${m}/${y}` : iso;
-}
-
 /** Human label for the period actually filtered by the user. */
 /**
  * Rótulo legível do período exibido. Sem filtro de data, usa o intervalo real
@@ -124,11 +124,11 @@ function buildPeriodLabel(from: string, to: string, fallback?: { first?: string;
   const ate = to.trim() || fallback?.last || "";
   if (de && ate) {
     return de === ate
-      ? formatIsoDate(de)
-      : `${formatIsoDate(de)} a ${formatIsoDate(ate)}`;
+      ? formatIsoToBrFull(de)
+      : `${formatIsoToBr(de)} a ${formatIsoToBr(ate)}`;
   }
-  if (de) return `A partir de ${formatIsoDate(de)}`;
-  if (ate) return `Até ${formatIsoDate(ate)}`;
+  if (de) return `A partir de ${formatIsoToBrFull(de)}`;
+  if (ate) return `Até ${formatIsoToBrFull(ate)}`;
   return "Todo o período";
 }
 
@@ -233,7 +233,8 @@ async function generateReportPdf(periodLabel: string, metrics: DashboardMetrics)
     const margin = 40;
     const contentW = pageWidth - margin * 2;
     const now = new Date();
-    const dateStr = now.toLocaleString("pt-BR");
+    // Mesmo estilo de data da página: "qua., 19/08/2026 15:47".
+    const dateStr = `${formatIsoToBrFull(toLocalIsoDate(now))} ${now.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })}`;
 
     // ---- Type system: single source of truth for fonts/weights/sizes ----
     const FONT = "helvetica";
@@ -287,7 +288,7 @@ async function generateReportPdf(periodLabel: string, metrics: DashboardMetrics)
     applyType(TYPE.title);
     doc.text("Relatório de Visão Geral", titleX, 35);
     applyType(TYPE.subtitle);
-    doc.text(`Período: ${periodLabel}  •  Gerado em: ${dateStr}`, titleX, 52);
+    doc.text(`Período: ${periodLabel}  •  Gerado em: ${dateStr}  •  ${localTimeZoneLabel()}`, titleX, 52);
 
     // thin accent rule
     doc.setDrawColor(37, 99, 235);
@@ -512,36 +513,6 @@ async function generateReportPdf(periodLabel: string, metrics: DashboardMetrics)
 
 
 
-/** Converte "yyyy-mm-dd" em "dd/mm/aaaa" para leitura de usuários finais. */
-function formatIsoToBr(iso?: string) {
-  if (!iso) return "";
-  const [y, m, d] = iso.split("-");
-  return y && m && d ? `${d}/${m}/${y}` : iso;
-}
-
-/**
- * Data completa para tooltips: "qua., 19/08/2026". O dia da semana ajuda a
- * comparar períodos sem contar dias manualmente.
- */
-function formatIsoToBrFull(iso?: string) {
-  const short = formatIsoToBr(iso);
-  if (!short || !iso) return short;
-  const date = new Date(`${iso}T12:00:00`);
-  if (Number.isNaN(date.getTime())) return short;
-  const weekday = date.toLocaleDateString("pt-BR", { weekday: "short" });
-  return `${weekday.replace(".", "")}., ${short}`;
-}
-
-/** Rótulo fixo do fuso usado em todos os tooltips, ex.: "Horário local (UTC-03:00)". */
-function localTimeZoneLabel() {
-  const offsetMinutes = -new Date().getTimezoneOffset();
-  const sign = offsetMinutes < 0 ? "-" : "+";
-  const abs = Math.abs(offsetMinutes);
-  const hh = `${Math.floor(abs / 60)}`.padStart(2, "0");
-  const mm = `${abs % 60}`.padStart(2, "0");
-  return `Horário local (UTC${sign}${hh}:${mm})`;
-}
-
 /** Nomes de variáveis internas que nunca devem aparecer na interface. */
 const TECHNICAL_SERIES_KEYS = new Set(["count", "value", "name", "label", "guias", "qtd"]);
 
@@ -679,9 +650,7 @@ const dateFilterKeys: ReadonlySet<keyof GuideFilters> = new Set([
 /** Converte o valor cru do filtro na forma legível exibida nos chips. */
 function formatFilterValue(key: keyof GuideFilters, value: string): string {
   if (!dateFilterKeys.has(key)) return value;
-  const [year, month, day] = value.split("-");
-  if (!year || !month || !day) return value;
-  return `${day}/${month}/${year}`;
+  return formatIsoToBr(value) || value;
 }
 
 const MONTH_ABBR = [
@@ -956,7 +925,7 @@ function DashboardPage() {
     if (dailyData.length < 2) return undefined;
     const last = dailyData[dailyData.length - 1].guias;
     const prev = dailyData[dailyData.length - 2].guias;
-    const prevDate = formatIsoToBr(dailyData[dailyData.length - 2].date);
+    const prevDate = formatIsoToBrFull(dailyData[dailyData.length - 2].date);
     const diff = last - prev;
     if (diff === 0) {
       return { direction: "flat", label: `Mesma quantidade do dia ${prevDate}` };
@@ -968,7 +937,7 @@ function DashboardPage() {
   }, [dailyData]);
 
   /** Reference date of the "today" KPI, shown discreetly in the card. */
-  const todayLabel = formatIsoToBr(todayLocalIsoDate());
+  const todayLabel = formatIsoToBrFull(todayLocalIsoDate());
 
   /** Number of days covered by the selected period. */
   const dayCount = dailyData.length;
@@ -1056,7 +1025,8 @@ function DashboardPage() {
             <CalendarRange className="h-4 w-4 shrink-0" aria-hidden="true" />
             <span>
               Indicadores e gráficos do período:{" "}
-              <span className="font-medium text-foreground">{periodLabel}</span>
+              <span className="font-medium text-foreground">{periodLabel}</span>{" "}
+              <span className="text-muted-foreground/80">• {localTimeZoneLabel()}</span>
             </span>
           </p>
 
