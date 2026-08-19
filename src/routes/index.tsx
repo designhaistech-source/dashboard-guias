@@ -745,6 +745,18 @@ function DashboardPage() {
     [filters],
   );
 
+  /**
+   * Contador exibido ao lado de "Filtros": conta apenas os filtros adicionais
+   * (Tipo de guia e Prestador). O período já aparece na linha de contexto.
+   */
+  const extraFilterCount = useMemo(
+    () =>
+      [filters.tipoGuia, filters.prestadorSolicitante].filter((v) => v.trim() !== "")
+        .length,
+    [filters.tipoGuia, filters.prestadorSolicitante],
+  );
+
+
   const dateRangeInvalid =
     !!filters.dataAutorizacaoDe &&
     !!filters.dataAutorizacaoAte &&
