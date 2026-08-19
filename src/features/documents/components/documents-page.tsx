@@ -23,7 +23,6 @@ import { AppSidebar } from "@/components/app-sidebar";
 import { SiteFooter } from "@/components/site-footer";
 import { PageHeader } from "@/components/page-header";
 import { FormActionBar } from "@/components/form-action-bar";
-import { useDraftAutosave } from "@/hooks/use-draft-autosave";
 import { SurfaceCard } from "@/components/surface-card";
 import { Field, SelectField } from "@/components/form-field";
 import { Button } from "@/components/ui/button";
@@ -427,21 +426,6 @@ function ReportsTab() {
   const [cidade, setCidade] = useState("");
   const [html, setHtml] = useState("");
 
-  useDraftAutosave({
-    key: "hg:documentos:relatorio",
-    data: { paciente, cid, diagnosticoSelecionado, modelo, data, cidade, html },
-    isEmpty: (d) => !d.paciente.trim() && !d.cid.trim() && !d.html.replace(/<[^>]+>/g, "").trim(),
-    onRestore: (d) => {
-      setPaciente(d.paciente ?? "");
-      setCid(d.cid ?? "");
-      setDiagnosticoSelecionado(d.diagnosticoSelecionado ?? "");
-      setModelo(d.modelo || REPORT_TEMPLATES[0].value);
-      setData(d.data ?? todayIso());
-      setCidade(d.cidade ?? "");
-      setHtml(d.html ?? "");
-    },
-  });
-
   const diagnostico =
     diagnosticoSelecionado || (CID10.find((c) => c.codigo === cid)?.descricao ?? "");
 
@@ -672,21 +656,6 @@ function CertificateTab() {
   const [cidade, setCidade] = useState("");
   const [html, setHtml] = useState("");
 
-  useDraftAutosave({
-    key: "hg:documentos:atestado",
-    data: { paciente, cid, diagnosticoSelecionado, dias, data, cidade, html },
-    isEmpty: (d) => !d.paciente.trim() && !d.cid.trim() && !d.cidade.trim() && !d.html,
-    onRestore: (d) => {
-      setPaciente(d.paciente ?? "");
-      setCid(d.cid ?? "");
-      setDiagnosticoSelecionado(d.diagnosticoSelecionado ?? "");
-      setDias(d.dias ?? "1");
-      setData(d.data ?? todayIso());
-      setCidade(d.cidade ?? "");
-      setHtml(d.html ?? "");
-    },
-  });
-
   const gerado = useMemo(
     () => buildAtestado({ paciente, dias, data, cidade, cid }),
     [paciente, dias, data, cidade, cid],
@@ -884,27 +853,6 @@ function AttendanceTab() {
   const [entrada, setEntrada] = useState("");
   const [saida, setSaida] = useState("");
   const [html, setHtml] = useState("");
-
-  useDraftAutosave({
-    key: "hg:documentos:comparecimento",
-    data: { paciente, local, cidade, data, entrada, saida, html },
-    isEmpty: (d) =>
-      !d.paciente.trim() &&
-      !d.local.trim() &&
-      !d.cidade.trim() &&
-      !d.entrada &&
-      !d.saida &&
-      !d.html,
-    onRestore: (d) => {
-      setPaciente(d.paciente ?? "");
-      setLocal(d.local ?? "");
-      setCidade(d.cidade ?? "");
-      setData(d.data ?? todayIso());
-      setEntrada(d.entrada ?? "");
-      setSaida(d.saida ?? "");
-      setHtml(d.html ?? "");
-    },
-  });
 
   const gerado = useMemo(
     () => buildComparecimento({ paciente, local, cidade, data, entrada, saida }),
