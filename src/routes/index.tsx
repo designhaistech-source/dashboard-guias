@@ -1137,14 +1137,17 @@ function DashboardPage() {
                       <RTooltip content={<ChartTooltip />} />
                     </PieChart>
                   </ResponsiveContainer>
-                  <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center">
+                  <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center px-6 text-center">
                     <div className="metric-value text-foreground">
                       {activeType !== undefined ? typeData[activeType].value : total}
                     </div>
-                    <div className="text-xs uppercase tracking-wider text-muted-foreground">
-                      {activeType !== undefined ? typeData[activeType].name : "guias"}
+                    <div className="text-[11px] leading-tight text-muted-foreground">
+                      {activeType !== undefined
+                        ? `guias de ${typeData[activeType].name}`
+                        : "total de guias no período"}
                     </div>
                   </div>
+
                 </div>
                 <ul className="space-y-2 text-sm">
                   {typeData.map((d, i) => {
