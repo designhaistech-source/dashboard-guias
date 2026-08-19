@@ -2,7 +2,16 @@ import { createFileRoute } from "@tanstack/react-router";
 
 import { DocumentsPage } from "@/features/documents";
 
+const DOCUMENT_TABS = ["relatorios", "atestados", "comparecimento"] as const;
+type DocumentTab = (typeof DOCUMENT_TABS)[number];
+
 export const Route = createFileRoute("/documentos")({
+  // Mantém a aba ativa na URL para sobreviver a reload e compartilhamento.
+  validateSearch: (search: Record<string, unknown>): { aba?: DocumentTab } => ({
+    aba: DOCUMENT_TABS.includes(search.aba as DocumentTab)
+      ? (search.aba as DocumentTab)
+      : "relatorios",
+  }),
   head: () => ({
     meta: [
       { title: "HaisGuias — Relatórios e documentos" },
