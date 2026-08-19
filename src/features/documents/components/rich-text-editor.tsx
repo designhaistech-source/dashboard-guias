@@ -285,10 +285,10 @@ export function RichTextEditor({
             </Button>
             <Button
               type="button"
-              variant={previewing ? "secondary" : "ghost"}
+              variant={previewing || pagePreviewOpen ? "secondary" : "ghost"}
               size="sm"
-              onClick={() => setPreviewing(true)}
-              aria-pressed={previewing}
+              onClick={() => (pagePreview ? setPagePreviewOpen(true) : setPreviewing(true))}
+              aria-pressed={pagePreview ? undefined : previewing}
               className="h-7 gap-1.5 px-2 text-xs"
             >
               <Eye className="icon-optical h-3.5 w-3.5" aria-hidden />
@@ -296,6 +296,17 @@ export function RichTextEditor({
             </Button>
           </div>
         )}
+
+        {pagePreview && (
+          <DocumentPagePreview
+            open={pagePreviewOpen}
+            onOpenChange={setPagePreviewOpen}
+            title={pagePreview.title}
+            paciente={pagePreview.paciente}
+            html={previewHtml ?? value}
+          />
+        )}
+
       </div>
 
       {showVariables && (
