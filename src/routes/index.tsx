@@ -816,9 +816,14 @@ function DashboardPage() {
     [filters],
   );
   const periodLabel = useMemo(
-    () => buildPeriodLabel(filters.dataAutorizacaoDe, filters.dataAutorizacaoAte),
-    [filters.dataAutorizacaoDe, filters.dataAutorizacaoAte],
+    () =>
+      buildPeriodLabel(filters.dataAutorizacaoDe, filters.dataAutorizacaoAte, {
+        first: metrics.daily[0]?.date,
+        last: metrics.daily[metrics.daily.length - 1]?.date,
+      }),
+    [filters.dataAutorizacaoDe, filters.dataAutorizacaoAte, metrics.daily],
   );
+
   const total = metrics.total;
   const dailyAvg = metrics.dailyAvg;
   const typeData = metrics.types;
