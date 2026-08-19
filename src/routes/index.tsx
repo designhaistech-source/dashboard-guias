@@ -15,6 +15,9 @@ import {
   ArrowDownRight,
   Minus,
   Loader2,
+  ChevronsUpDown,
+  ChevronUp,
+  ChevronDown,
 } from "lucide-react";
 import {
   AreaChart,
@@ -36,6 +39,19 @@ import { AppBreadcrumb } from "@/components/app-breadcrumb";
 import { AppSidebar } from "@/components/app-sidebar";
 import { SiteFooter } from "@/components/site-footer";
 import { EmptyState } from "@/components/data-state";
+import {
+  DataTable,
+  DataTableBody,
+  DataTableCard,
+  DataTableCardHeader,
+  DataTableCardList,
+  DataTableCell,
+  DataTableDesktop,
+  DataTableHead,
+  DataTableHeader,
+  DataTableRoot,
+  DataTableRow,
+} from "@/components/data-table";
 import { ConfirmDialog } from "@/components/confirm-dialog";
 import { PageHeader } from "@/components/page-header";
 import { SurfaceCard } from "@/components/surface-card";
@@ -671,6 +687,52 @@ const filterLabels: Record<keyof GuideFilters, string> = {
   tipoGuia: "Tipo de guia",
 };
 
+type ProcedureSortColumn = "code" | "name" | "count";
+type ProcedureSort = { column: ProcedureSortColumn; direction: "asc" | "desc" };
+
+/** Cabeçalho de coluna ordenável, com estado anunciado via aria-sort. */
+function SortableHead({
+  label,
+  column,
+  sort,
+  onSort,
+  align = "left",
+}: {
+  label: string;
+  column: ProcedureSortColumn;
+  sort: ProcedureSort;
+  onSort: (sort: ProcedureSort) => void;
+  align?: "left" | "right";
+}) {
+  const active = sort.column === column;
+  const ariaSort = active ? (sort.direction === "asc" ? "ascending" : "descending") : "none";
+  const Icon = !active ? ChevronsUpDown : sort.direction === "asc" ? ChevronUp : ChevronDown;
+  return (
+    <DataTableHead
+      aria-sort={ariaSort}
+      className={align === "right" ? "text-right" : undefined}
+    >
+      <button
+        type="button"
+        onClick={() =>
+          onSort({
+            column,
+            direction: active && sort.direction === "asc" ? "desc" : active ? "asc" : column === "count" ? "desc" : "asc",
+          })
+        }
+        className={[
+          "inline-flex items-center gap-1 rounded-sm uppercase tracking-wide",
+          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+          active ? "text-foreground" : "hover:text-foreground",
+        ].join(" ")}
+      >
+        {label}
+        <Icon className="h-3 w-3" aria-hidden="true" />
+      </button>
+    </DataTableHead>
+  );
+}
+
 function DashboardPage() {
   const [activeType, setActiveType] = useState<number | undefined>(undefined);
   const [filtersOpen, setFiltersOpen] = useState(false);
@@ -780,6 +842,19 @@ function DashboardPage() {
   const dailyAvg = metrics.dailyAvg;
   const typeData = metrics.types;
   const procedures = metrics.procedures;
+  const [procedureSort, setProcedureSort] = useState<ProcedureSort>({
+    column: "count",
+    direction: "desc",
+  });
+  const sortedProcedures = useMemo(() => {
+    const { column, direction } = procedureSort;
+    const factor = direction === "asc" ? 1 : -1;
+    return [...procedures].sort((a, b) =>
+      column === "count"
+        ? (a.count - b.count) * factor
+        : a[column].localeCompare(b[column], "pt-BR") * factor,
+    );
+  }, [procedures, procedureSort]);
   const dailyData = metrics.daily;
   const hasData = total > 0;
   const [generatingReport, setGeneratingReport] = useState(false);
@@ -1169,28 +1244,64 @@ function DashboardPage() {
                   </BarChart>
                 </ResponsiveContainer>
               </div>
-              <div className="overflow-x-auto rounded-lg border border-border">
-                <table className="w-full min-w-[18rem] text-sm">
+              <DataTable>
+                <DataTableDesktop breakpoint="md">
+                  <DataTableRoot className="min-w-[18rem]">
+                    <DataTableHeader>
+                      <DataTableRow>
+                        <SortableHead
+                          label="Código"
+                          column="code"
+                          sort={procedureSort}
+                          onSort={setProcedureSort}
+                        />
+                        <SortableHead
+                          label="Procedimento"
+                          column="name"
+                          sort={procedureSort}
+                          onSort={setProcedureSort}
+                        />
+                        <SortableHead
+                          label="Qtd."
+                          column="count"
+                          sort={procedureSort}
+                          onSort={setProcedureSort}
+                          align="right"
+                        />
+                      </DataTableRow>
+                    </DataTableHeader>
+                    <DataTableBody>
+                      {sortedProcedures.map((p) => (
+                        <DataTableRow key={p.code}>
+                          <DataTableCell className="text-muted-foreground tabular-nums">
+                            {p.code}
+                          </DataTableCell>
+                          <DataTableCell title={p.name}>{p.name}</DataTableCell>
+                          <DataTableCell className="text-right font-medium tabular-nums">
+                            {p.count}
+                          </DataTableCell>
+                        </DataTableRow>
+                      ))}
+                    </DataTableBody>
+                  </DataTableRoot>
+                </DataTableDesktop>
 
-                  <thead>
-                    <tr className="text-left text-muted-foreground bg-muted/40">
-                      <th className="px-4 py-2 font-medium">Código</th>
-                      <th className="px-4 py-2 font-medium">Procedimento</th>
-                      <th className="px-4 py-2 font-medium text-right">Qtd.</th>
-                      
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {procedures.map((p) => (
-                      <tr key={p.code} className="border-t border-border hover:bg-muted/30">
-                        <td className="px-4 py-2 text-muted-foreground tabular-nums">{p.code}</td>
-                        <td className="px-4 py-2 truncate max-w-[180px]">{p.name}</td>
-                        <td className="px-4 py-2 text-right tabular-nums font-medium">{p.count}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+                <DataTableCardList breakpoint="md" divided>
+                  {sortedProcedures.map((p) => (
+                    <DataTableCard key={p.code} flat>
+                      <DataTableCardHeader
+                        title={<span className="min-w-0 break-words">{p.name}</span>}
+                        subtitle={<span className="tabular-nums">{p.code}</span>}
+                        trailing={
+                          <Badge variant="secondary" className="tabular-nums">
+                            {p.count}
+                          </Badge>
+                        }
+                      />
+                    </DataTableCard>
+                  ))}
+                </DataTableCardList>
+              </DataTable>
             </div>
             )}
           </SurfaceCard>
