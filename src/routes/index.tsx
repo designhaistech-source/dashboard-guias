@@ -1500,6 +1500,7 @@ function DashboardPage() {
               {!hasData ? (
                 emptyState
               ) : (
+                <>
                 <div className="h-60 sm:h-72" data-chart="daily" ref={dailyChartRef}>
                   <ResponsiveContainer width="100%" height="100%">
                     <AreaChart
@@ -1572,6 +1573,12 @@ function DashboardPage() {
                     </AreaChart>
                   </ResponsiveContainer>
                 </div>
+                {isMobile ? (
+                  <p className="mt-2 text-[11px] leading-snug text-muted-foreground">
+                    Eixo vertical: quantidade de guias · Eixo horizontal: dia do período
+                  </p>
+                ) : null}
+                </>
               )}
             </SurfaceCard>
 
@@ -1757,6 +1764,11 @@ function DashboardPage() {
                     </BarChart>
                   </ResponsiveContainer>
                 </div>
+                {isMobile ? (
+                  <p className="-mt-4 text-[11px] leading-snug text-muted-foreground">
+                    Eixo vertical: procedimento · Eixo horizontal: quantidade de guias
+                  </p>
+                ) : null}
                 <DataTable>
                   <DataTableDesktop breakpoint="md">
                     <DataTableRoot className="min-w-[18rem]">
