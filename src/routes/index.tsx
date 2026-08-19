@@ -1151,7 +1151,7 @@ function DashboardPage() {
                     <div className="metric-value text-foreground">
                       {activeType !== undefined ? typeData[activeType].value : total}
                     </div>
-                    <div className="text-[11px] leading-tight text-muted-foreground">
+                    <div className="max-w-[96px] text-[10px] leading-tight text-muted-foreground">
                       {activeType !== undefined
                         ? `guias de ${typeData[activeType].name}`
                         : "total de guias no período"}
