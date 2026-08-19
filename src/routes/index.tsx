@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import jsPDF from "jspdf";
 import {
   toLocalIsoDate,
@@ -82,9 +82,6 @@ import {
   type DashboardMetrics,
 } from "@/features/dashboard/data/mock-guides";
 
-
-
-
 async function loadImageDataUrl(url: string): Promise<{ dataUrl: string; w: number; h: number }> {
   const res = await fetch(url);
   const blob = await res.blob();
@@ -102,7 +99,6 @@ async function loadImageDataUrl(url: string): Promise<{ dataUrl: string; w: numb
   });
   return { dataUrl, ...dims };
 }
-
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -123,15 +119,12 @@ function buildPeriodLabel(from: string, to: string, fallback?: { first?: string;
   const de = from.trim() || fallback?.first || "";
   const ate = to.trim() || fallback?.last || "";
   if (de && ate) {
-    return de === ate
-      ? formatIsoToBrFull(de)
-      : `${formatIsoToBr(de)} a ${formatIsoToBr(ate)}`;
+    return de === ate ? formatIsoToBrFull(de) : `${formatIsoToBr(de)} a ${formatIsoToBr(ate)}`;
   }
   if (de) return `A partir de ${formatIsoToBrFull(de)}`;
   if (ate) return `Até ${formatIsoToBrFull(ate)}`;
   return "Todo o período";
 }
-
 
 const prestadoresList = PRESTADORES;
 
@@ -144,8 +137,10 @@ const trendA11yLabel: Record<TrendDirection, string> = {
   flat: "Sem variação:",
 };
 
-
-async function captureChartPng(selector: string, scale = 2): Promise<{ dataUrl: string; w: number; h: number } | null> {
+async function captureChartPng(
+  selector: string,
+  scale = 2,
+): Promise<{ dataUrl: string; w: number; h: number } | null> {
   const container = document.querySelector(selector) as HTMLElement | null;
   if (!container) return null;
   const svg = container.querySelector("svg") as SVGSVGElement | null;
@@ -182,7 +177,18 @@ async function captureChartPng(selector: string, scale = 2): Promise<{ dataUrl: 
     const cs = window.getComputedStyle(el);
     const dst = dstEls[i] as SVGElement;
     if (!dst) return;
-    const props = ["fill", "stroke", "stroke-width", "stroke-dasharray", "opacity", "fill-opacity", "stroke-opacity", "font-size", "font-family", "font-weight"];
+    const props = [
+      "fill",
+      "stroke",
+      "stroke-width",
+      "stroke-dasharray",
+      "opacity",
+      "fill-opacity",
+      "stroke-opacity",
+      "font-size",
+      "font-family",
+      "font-weight",
+    ];
     let style = "";
     for (const p of props) {
       let v = cs.getPropertyValue(p);
@@ -198,7 +204,6 @@ async function captureChartPng(selector: string, scale = 2): Promise<{ dataUrl: 
     if (attrStroke) dst.setAttribute("stroke", resolveColor(attrStroke));
   });
   colorProbe.remove();
-
 
   const xml = new XMLSerializer().serializeToString(clone);
   const svgBlob = new Blob([xml], { type: "image/svg+xml;charset=utf-8" });
@@ -239,16 +244,40 @@ async function generateReportPdf(periodLabel: string, metrics: DashboardMetrics)
     // ---- Type system: single source of truth for fonts/weights/sizes ----
     const FONT = "helvetica";
     const TYPE = {
-      title:       { size: 18, weight: "bold"   as const, color: [20, 20, 20]     as [number, number, number] },
-      subtitle:    { size: 10, weight: "normal" as const, color: [110, 110, 110]  as [number, number, number] },
-      sectionH:    { size: 12, weight: "bold"   as const, color: [20, 20, 20]     as [number, number, number] },
-      body:        { size: 10, weight: "normal" as const, color: [20, 20, 20]     as [number, number, number] },
-      tableHead:   { size: 10, weight: "bold"   as const, color: [255, 255, 255]  as [number, number, number] },
-      tableBody:   { size: 10, weight: "normal" as const, color: [40, 40, 40]     as [number, number, number] },
-      caption:     { size: 8,  weight: "normal" as const, color: [130, 130, 130]  as [number, number, number] },
+      title: { size: 18, weight: "bold" as const, color: [20, 20, 20] as [number, number, number] },
+      subtitle: {
+        size: 10,
+        weight: "normal" as const,
+        color: [110, 110, 110] as [number, number, number],
+      },
+      sectionH: {
+        size: 12,
+        weight: "bold" as const,
+        color: [20, 20, 20] as [number, number, number],
+      },
+      body: {
+        size: 10,
+        weight: "normal" as const,
+        color: [20, 20, 20] as [number, number, number],
+      },
+      tableHead: {
+        size: 10,
+        weight: "bold" as const,
+        color: [255, 255, 255] as [number, number, number],
+      },
+      tableBody: {
+        size: 10,
+        weight: "normal" as const,
+        color: [40, 40, 40] as [number, number, number],
+      },
+      caption: {
+        size: 8,
+        weight: "normal" as const,
+        color: [130, 130, 130] as [number, number, number],
+      },
     };
 
-    const applyType = (t: typeof TYPE[keyof typeof TYPE]) => {
+    const applyType = (t: (typeof TYPE)[keyof typeof TYPE]) => {
       doc.setFont(FONT, t.weight);
       doc.setFontSize(t.size);
       doc.setTextColor(t.color[0], t.color[1], t.color[2]);
@@ -309,12 +338,9 @@ async function generateReportPdf(periodLabel: string, metrics: DashboardMetrics)
       clinic: "Clínica CAORN — Natal/RN",
     };
 
-
     const footerH = 50;
     const headerOffsetTop = 60;
     let y = 100;
-
-
 
     const availableH = () => pageHeight - footerH - y;
     const pageInnerH = pageHeight - footerH - headerOffsetTop;
@@ -394,7 +420,6 @@ async function generateReportPdf(periodLabel: string, metrics: DashboardMetrics)
         ["Guias extraídas hoje", String(metrics.today)],
         ["Média de guias por dia", String(dailyAvg)],
         ["Tipos de guia", String(typeData.length)],
-
       ],
       theme: "grid",
       headStyles: tableHeadStyles,
@@ -429,11 +454,18 @@ async function generateReportPdf(periodLabel: string, metrics: DashboardMetrics)
       margin: { left: margin, right: margin },
       tableWidth: contentW,
       head: [["Tipo", "Qtd.", "%"]],
-      body: typeData.map((t) => [t.name, String(t.value), `${total > 0 ? Math.round((t.value / total) * 100) : 0}%`]),
+      body: typeData.map((t) => [
+        t.name,
+        String(t.value),
+        `${total > 0 ? Math.round((t.value / total) * 100) : 0}%`,
+      ]),
       theme: "striped",
       headStyles: tableHeadStyles,
       bodyStyles: { font: FONT, fontStyle: "normal", textColor: TYPE.tableBody.color },
-      columnStyles: { 1: { halign: "right", cellWidth: 60 }, 2: { halign: "right", cellWidth: 60 } },
+      columnStyles: {
+        1: { halign: "right", cellWidth: 60 },
+        2: { halign: "right", cellWidth: 60 },
+      },
       styles: tableStyleDefaults,
       rowPageBreak: "avoid",
       showHead: "everyPage",
@@ -448,7 +480,6 @@ async function generateReportPdf(periodLabel: string, metrics: DashboardMetrics)
     y += procDrawnH + GAP;
     // Don't strand the table header alone after the chart.
     keepTogether(tableBlockH(Math.min(3, procedures.length)));
-
 
     autoTable(doc, {
       startY: y,
@@ -466,7 +497,8 @@ async function generateReportPdf(periodLabel: string, metrics: DashboardMetrics)
     });
 
     // "Gerado por" — bloco final, quebra página se não couber
-    const lastY = (doc as unknown as { lastAutoTable?: { finalY: number } }).lastAutoTable?.finalY ?? y;
+    const lastY =
+      (doc as unknown as { lastAutoTable?: { finalY: number } }).lastAutoTable?.finalY ?? y;
     y = lastY + 30;
     const blockH = 60;
     if (y + blockH > pageHeight - footerH) {
@@ -486,15 +518,10 @@ async function generateReportPdf(periodLabel: string, metrics: DashboardMetrics)
     y += 13;
     doc.setFont(FONT, "normal");
     doc.setTextColor(90, 90, 90);
-    doc.text(
-      `${user.role}  •  ${user.crm}  •  ${user.email}  •  ${user.clinic}`,
-      margin,
-      y,
-    );
+    doc.text(`${user.role}  •  ${user.crm}  •  ${user.email}  •  ${user.clinic}`, margin, y);
 
     // Footer
     const pageCount = doc.getNumberOfPages();
-
 
     for (let i = 1; i <= pageCount; i++) {
       doc.setPage(i);
@@ -503,9 +530,10 @@ async function generateReportPdf(periodLabel: string, metrics: DashboardMetrics)
       doc.line(margin, pageHeight - 32, pageWidth - margin, pageHeight - 32);
       applyType(TYPE.caption);
       doc.text("Guias+", margin, pageHeight - 18);
-      doc.text(`Página ${i} de ${pageCount}`, pageWidth - margin, pageHeight - 18, { align: "right" });
+      doc.text(`Página ${i} de ${pageCount}`, pageWidth - margin, pageHeight - 18, {
+        align: "right",
+      });
     }
-
 
     const filename = `relatorio-haisguias-${toLocalIsoDate(now)}.pdf`;
     doc.save(filename);
@@ -515,8 +543,6 @@ async function generateReportPdf(periodLabel: string, metrics: DashboardMetrics)
     toast.error("Falha ao gerar o relatório PDF.");
   }
 }
-
-
 
 /** Nomes de variáveis internas que nunca devem aparecer na interface. */
 const TECHNICAL_SERIES_KEYS = new Set(["count", "value", "name", "label", "guias", "qtd"]);
@@ -531,12 +557,8 @@ function ChartTooltip({ active, payload, label, suffix, unit }: any) {
     <div className="rounded-lg border border-border bg-popover/95 px-3 py-2 shadow-md backdrop-blur">
       {heading && (
         <div className="mb-1">
-          <div className="text-xs uppercase tracking-wider text-muted-foreground">
-            {heading}
-          </div>
-          {iso && (
-            <div className="text-xs text-muted-foreground/80">{localTimeZoneLabel()}</div>
-          )}
+          <div className="text-xs uppercase tracking-wider text-muted-foreground">{heading}</div>
+          {iso && <div className="text-xs text-muted-foreground/80">{localTimeZoneLabel()}</div>}
         </div>
       )}
       {payload.map((p: any) => {
@@ -544,7 +566,10 @@ function ChartTooltip({ active, payload, label, suffix, unit }: any) {
         const seriesName = TECHNICAL_SERIES_KEYS.has(rawName.toLowerCase()) ? "" : rawName;
         return (
           <div key={p.dataKey} className="flex items-center gap-2 text-xs">
-            <span className="h-2 w-2 rounded-full" style={{ background: p.color || p.payload?.color }} />
+            <span
+              className="h-2 w-2 rounded-full"
+              style={{ background: p.color || p.payload?.color }}
+            />
             {seriesName && <span className="text-muted-foreground">{seriesName}</span>}
             <span className={`${seriesName ? "ml-auto" : ""} font-semibold tabular-nums`}>
               {p.value}
@@ -554,12 +579,9 @@ function ChartTooltip({ active, payload, label, suffix, unit }: any) {
           </div>
         );
       })}
-
     </div>
   );
 }
-
-
 
 /**
  * Filtros do dashboard. Contém apenas os campos que o painel expõe e que
@@ -581,11 +603,8 @@ const emptyFilters: GuideFilters = {
   prestadorSolicitante: "",
 };
 
-
-
 /** Rótulo de grupo dentro do painel de filtros — único nível em caixa alta. */
 const filterGroupLabelClass = "mb-2 text-eyebrow";
-
 
 function FilterField({
   label,
@@ -616,7 +635,6 @@ function FilterField({
   );
 }
 
-
 function FilterSelect({
   label,
   value,
@@ -644,12 +662,19 @@ function FilterSelect({
   );
 }
 
-
-
-
 const MONTH_ABBR = [
-  "jan", "fev", "mar", "abr", "mai", "jun",
-  "jul", "ago", "set", "out", "nov", "dez",
+  "jan",
+  "fev",
+  "mar",
+  "abr",
+  "mai",
+  "jun",
+  "jul",
+  "ago",
+  "set",
+  "out",
+  "nov",
+  "dez",
 ] as const;
 
 /**
@@ -679,11 +704,6 @@ function monthBoundaries(data: { date: string }[]): { date: string; label: strin
     });
 }
 
-
-
-
-
-
 type ProcedureSortColumn = "code" | "name" | "count";
 type ProcedureSort = { column: ProcedureSortColumn; direction: "asc" | "desc" };
 
@@ -705,10 +725,7 @@ function SortableHead({
   const ariaSort = active ? (sort.direction === "asc" ? "ascending" : "descending") : "none";
   const Icon = !active ? ChevronsUpDown : sort.direction === "asc" ? ChevronUp : ChevronDown;
   return (
-    <DataTableHead
-      aria-sort={ariaSort}
-      className={align === "right" ? "text-right" : undefined}
-    >
+    <DataTableHead aria-sort={ariaSort} className={align === "right" ? "text-right" : undefined}>
       <Button
         type="button"
         variant="ghost"
@@ -716,7 +733,14 @@ function SortableHead({
         onClick={() =>
           onSort({
             column,
-            direction: active && sort.direction === "asc" ? "desc" : active ? "asc" : column === "count" ? "desc" : "asc",
+            direction:
+              active && sort.direction === "asc"
+                ? "desc"
+                : active
+                  ? "asc"
+                  : column === "count"
+                    ? "desc"
+                    : "asc",
           })
         }
         className={cn(
@@ -750,12 +774,9 @@ function DashboardPage() {
    * (Tipo de guia e Prestador). O período já aparece na linha de contexto.
    */
   const extraFilterCount = useMemo(
-    () =>
-      [filters.tipoGuia, filters.prestadorSolicitante].filter((v) => v.trim() !== "")
-        .length,
+    () => [filters.tipoGuia, filters.prestadorSolicitante].filter((v) => v.trim() !== "").length,
     [filters.tipoGuia, filters.prestadorSolicitante],
   );
-
 
   const dateRangeInvalid =
     !!filters.dataAutorizacaoDe &&
@@ -774,10 +795,12 @@ function DashboardPage() {
         return { ...d, dataAutorizacaoDe: t, dataAutorizacaoAte: t };
       }
       if (preset === "7d") {
-        const from = new Date(today); from.setDate(today.getDate() - 7);
+        const from = new Date(today);
+        from.setDate(today.getDate() - 7);
         return { ...d, dataAutorizacaoDe: iso(from), dataAutorizacaoAte: iso(today) };
       }
-      const from = new Date(today); from.setDate(today.getDate() - 30);
+      const from = new Date(today);
+      from.setDate(today.getDate() - 30);
       return { ...d, dataAutorizacaoDe: iso(from), dataAutorizacaoAte: iso(today) };
     });
   };
@@ -793,8 +816,6 @@ function DashboardPage() {
 
   const firstFieldRef = useRef<HTMLInputElement | null>(null);
 
-
-
   const metrics = useMemo(
     () =>
       buildMetrics(filterGuides(DASHBOARD_GUIDES, filters), {
@@ -803,12 +824,6 @@ function DashboardPage() {
       }),
     [filters],
   );
-
-  /** Resolved after hydration: the server timezone differs from the browser's. */
-  const [timeZoneLabel, setTimeZoneLabel] = useState("");
-  useEffect(() => {
-    setTimeZoneLabel(localTimeZoneLabel());
-  }, []);
 
   const periodLabel = useMemo(
     () =>
@@ -943,7 +958,9 @@ function DashboardPage() {
       ? formatIsoToBrFull(dailyData[dailyData.length - 2].date)
       : undefined;
     const window = dailyData.length >= 4 ? Math.min(7, Math.floor(dailyData.length / 2)) : 0;
-    const recentStart = window ? formatIsoToBrFull(dailyData[dailyData.length - window].date) : undefined;
+    const recentStart = window
+      ? formatIsoToBrFull(dailyData[dailyData.length - window].date)
+      : undefined;
     const previousStart = window
       ? formatIsoToBrFull(dailyData[dailyData.length - window * 2].date)
       : undefined;
@@ -966,7 +983,6 @@ function DashboardPage() {
       types: `${rangeSentence} Regra: contagem de tipos de guia diferentes, sem comparação com outro período.`,
     };
   }, [dailyData]);
-
 
   return (
     <div className="flex min-h-screen w-full bg-background text-foreground">
@@ -997,31 +1013,27 @@ function DashboardPage() {
             }
           />
 
-
           {/* Recorte aplicado — sempre visível, sem abrir os filtros */}
           <p className="flex items-start gap-2 text-sm text-muted-foreground" aria-live="polite">
             <CalendarRange className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />
             <span>
-              Dados exibidos:{" "}
-              <span className="font-medium text-foreground">{periodLabel}</span>
-              {" · "}Tipo de guia:{" "}
-              <span className="font-medium text-foreground">
-                {filters.tipoGuia.trim() || "Todos os tipos de guia"}
-              </span>
-              {" · "}Prestador:{" "}
-              <span className="font-medium text-foreground">
-                {filters.prestadorSolicitante.trim() || "Todos os prestadores"}
-              </span>
-              {timeZoneLabel ? (
-                <span className="text-muted-foreground/80">{` · ${timeZoneLabel}`}</span>
+              Dados exibidos: <span className="font-medium text-foreground">{periodLabel}</span>
+              {filters.tipoGuia.trim() ? (
+                <>
+                  {" · "}Tipo de guia:{" "}
+                  <span className="font-medium text-foreground">{filters.tipoGuia.trim()}</span>
+                </>
+              ) : null}
+              {filters.prestadorSolicitante.trim() ? (
+                <>
+                  {" · "}Prestador:{" "}
+                  <span className="font-medium text-foreground">
+                    {filters.prestadorSolicitante.trim()}
+                  </span>
+                </>
               ) : null}
             </span>
           </p>
-
-
-
-
-
 
           {/* Container de filtros — cabeçalho próprio com expandir/recolher */}
           <section
@@ -1046,7 +1058,6 @@ function DashboardPage() {
                     {extraFilterCount}
                   </Badge>
                 )}
-
               </div>
               <Button
                 type="button"
@@ -1138,17 +1149,18 @@ function DashboardPage() {
             )}
           </section>
 
-
-
           {/* KPIs */}
           <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             <Kpi
               icon={FileText}
               label="Total de guias extraídas"
               value={String(total)}
-              meta={periodLabel}
               tooltip={kpiTooltips.total}
-              hint={dayCount > 0 ? `Soma das guias extraídas em ${dayCount} ${dayCount === 1 ? "dia" : "dias"}` : "Nenhuma guia extraída no período"}
+              hint={
+                dayCount > 0
+                  ? `Em ${dayCount} ${dayCount === 1 ? "dia" : "dias"}`
+                  : "Nenhuma guia no período"
+              }
               tone="primary"
             />
             <Kpi
@@ -1165,9 +1177,8 @@ function DashboardPage() {
               icon={TrendingUp}
               label="Média de guias por dia"
               value={String(dailyAvg)}
-              meta={periodLabel}
               tooltip={kpiTooltips.average}
-              hint={weekTrend ? weekTrend.label : `Média diária considerando ${dayCount} ${dayCount === 1 ? "dia" : "dias"}`}
+              hint={weekTrend ? weekTrend.label : ""}
               tone="info"
               trend={weekTrend?.direction}
             />
@@ -1175,13 +1186,10 @@ function DashboardPage() {
               icon={Layers}
               label="Tipos de guia"
               value={String(metrics.distinctTypes)}
-              meta={periodLabel}
               tooltip={kpiTooltips.types}
-              hint={`Tipos diferentes encontrados no período`}
+              hint=""
               tone="purple"
             />
-
-
           </div>
 
           {/* Charts row */}
@@ -1190,68 +1198,96 @@ function DashboardPage() {
               className="lg:col-span-2"
               title="Guias extraídas por dia"
               description={`Quantidade de guias por dia — ${periodLabel}`}
-              actions={
-                <div className="flex items-center gap-3 text-xs">
-                  <LegendDot color="var(--primary)" label="Guias extraídas" />
-                </div>
-              }
             >
               {!hasData ? (
                 emptyState
               ) : (
-              <div className="h-72" data-chart="daily">
-                <ResponsiveContainer width="100%" height="100%">
-                  <AreaChart data={dailyData} margin={{ top: 10, right: 10, left: 6, bottom: 18 }}>
-                    <defs>
-                      <linearGradient id="gradPrimary" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="0%" stopColor="var(--primary)" stopOpacity={0.45} />
-                        <stop offset="100%" stopColor="var(--primary)" stopOpacity={0} />
-                      </linearGradient>
-                    </defs>
-                    <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" vertical={false} />
-                    <XAxis dataKey="date" stroke="var(--muted-foreground)" fontSize={11} tickLine={false} axisLine={false} tickMargin={6}
-                      interval="preserveStartEnd" minTickGap={18} tickFormatter={formatDailyTick}
-                      label={{ value: "Data", position: "insideBottom", offset: -8, fill: "var(--muted-foreground)", fontSize: 11 }} />
-
-                    <YAxis stroke="var(--muted-foreground)" fontSize={11} tickLine={false} axisLine={false} width={44} allowDecimals={false}
-                      label={{ value: "Quantidade de guias", angle: -90, position: "insideLeft", fill: "var(--muted-foreground)", fontSize: 11, style: { textAnchor: "middle" } }} />
-
-                    <RTooltip
-                      content={<ChartTooltip />}
-                      cursor={{ stroke: "var(--primary)", strokeOpacity: 0.25, strokeWidth: 1 }}
-                    />
-                    <Area
-                      type="monotone"
-                      dataKey="guias"
-                      name="Guias extraídas"
-                      stroke="var(--primary)"
-                      strokeWidth={2.5}
-                      fill="url(#gradPrimary)"
-                      dot={{ r: 0 }}
-                      activeDot={{ r: 5, strokeWidth: 2, stroke: "var(--card)" }}
-                      isAnimationActive={false}
-                    />
-                    {/* Separadores discretos de virada de mês */}
-                    {monthMarks.map((m) => (
-                      <ReferenceLine
-                        key={m.date}
-                        x={m.date}
+                <div className="h-72" data-chart="daily">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <AreaChart
+                      data={dailyData}
+                      margin={{ top: 10, right: 10, left: 6, bottom: 18 }}
+                    >
+                      <defs>
+                        <linearGradient id="gradPrimary" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="0%" stopColor="var(--primary)" stopOpacity={0.45} />
+                          <stop offset="100%" stopColor="var(--primary)" stopOpacity={0} />
+                        </linearGradient>
+                      </defs>
+                      <CartesianGrid
+                        strokeDasharray="3 3"
                         stroke="var(--border)"
-                        strokeDasharray="4 4"
+                        vertical={false}
+                      />
+                      <XAxis
+                        dataKey="date"
+                        stroke="var(--muted-foreground)"
+                        fontSize={11}
+                        tickLine={false}
+                        axisLine={false}
+                        tickMargin={6}
+                        interval="preserveStartEnd"
+                        minTickGap={18}
+                        tickFormatter={formatDailyTick}
                         label={{
-                          value: m.label,
-                          position: "insideTopRight",
+                          value: "Data",
+                          position: "insideBottom",
+                          offset: -8,
                           fill: "var(--muted-foreground)",
-                          fontSize: 10,
+                          fontSize: 11,
                         }}
                       />
-                    ))}
 
+                      <YAxis
+                        stroke="var(--muted-foreground)"
+                        fontSize={11}
+                        tickLine={false}
+                        axisLine={false}
+                        width={44}
+                        allowDecimals={false}
+                        label={{
+                          value: "Quantidade de guias",
+                          angle: -90,
+                          position: "insideLeft",
+                          fill: "var(--muted-foreground)",
+                          fontSize: 11,
+                          style: { textAnchor: "middle" },
+                        }}
+                      />
 
-
-                  </AreaChart>
-                </ResponsiveContainer>
-              </div>
+                      <RTooltip
+                        content={<ChartTooltip />}
+                        cursor={{ stroke: "var(--primary)", strokeOpacity: 0.25, strokeWidth: 1 }}
+                      />
+                      <Area
+                        type="monotone"
+                        dataKey="guias"
+                        name="Guias extraídas"
+                        stroke="var(--primary)"
+                        strokeWidth={2.5}
+                        fill="url(#gradPrimary)"
+                        dot={{ r: 0 }}
+                        activeDot={{ r: 5, strokeWidth: 2, stroke: "var(--card)" }}
+                        isAnimationActive={false}
+                      />
+                      {/* Separadores discretos de virada de mês */}
+                      {monthMarks.map((m) => (
+                        <ReferenceLine
+                          key={m.date}
+                          x={m.date}
+                          stroke="var(--border)"
+                          strokeDasharray="4 4"
+                          label={{
+                            value: m.label,
+                            position: "insideTopRight",
+                            fill: "var(--muted-foreground)",
+                            fontSize: 10,
+                          }}
+                        />
+                      ))}
+                    </AreaChart>
+                  </ResponsiveContainer>
+                </div>
               )}
             </SurfaceCard>
 
@@ -1259,85 +1295,82 @@ function DashboardPage() {
               title="Guias por tipo"
               description={`Distribuição por tipo de guia — ${periodLabel}`}
             >
-
               {!hasData ? (
                 emptyState
               ) : (
-              <div className="space-y-4">
-                <div className="relative h-44" data-chart="types">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <PieChart>
-                      <Pie
-                        data={typeData}
-                        innerRadius={58}
-                        outerRadius={82}
-                        paddingAngle={2}
-                        dataKey="value"
-                        stroke="var(--card)"
-                        strokeWidth={2}
-                        activeIndex={activeType}
-                        activeShape={(props: any) => (
-                          <Sector {...props} outerRadius={props.outerRadius + 6} />
-                        )}
-                        onMouseEnter={(_, i) => setActiveType(i)}
-                        onMouseLeave={() => setActiveType(undefined)}
-                        isAnimationActive={false}
-                      >
-
-                        {typeData.map((d, i) => (
-                          <Cell key={i} fill={d.color} />
-                        ))}
-                      </Pie>
-                      <RTooltip content={<ChartTooltip unit="guias" />} />
-                    </PieChart>
-                  </ResponsiveContainer>
-                  <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center px-6 text-center">
-                    <div className="metric-value text-foreground">
-                      {activeType !== undefined ? typeData[activeType].value : total}
-                    </div>
-                    <div className="max-w-[96px] text-xs leading-tight text-muted-foreground">
-                      {activeType !== undefined
-                        ? `guias de ${typeData[activeType].name}`
-                        : "guias no período"}
+                <div className="space-y-4">
+                  <div className="relative h-44" data-chart="types">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <PieChart>
+                        <Pie
+                          data={typeData}
+                          innerRadius={58}
+                          outerRadius={82}
+                          paddingAngle={2}
+                          dataKey="value"
+                          stroke="var(--card)"
+                          strokeWidth={2}
+                          activeIndex={activeType}
+                          activeShape={(props: any) => (
+                            <Sector {...props} outerRadius={props.outerRadius + 6} />
+                          )}
+                          onMouseEnter={(_, i) => setActiveType(i)}
+                          onMouseLeave={() => setActiveType(undefined)}
+                          isAnimationActive={false}
+                        >
+                          {typeData.map((d, i) => (
+                            <Cell key={i} fill={d.color} />
+                          ))}
+                        </Pie>
+                        <RTooltip content={<ChartTooltip unit="guias" />} />
+                      </PieChart>
+                    </ResponsiveContainer>
+                    <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center px-6 text-center">
+                      <div className="metric-value text-foreground">
+                        {activeType !== undefined ? typeData[activeType].value : total}
+                      </div>
+                      <div className="max-w-[96px] text-xs leading-tight text-muted-foreground">
+                        {activeType !== undefined
+                          ? `guias de ${typeData[activeType].name}`
+                          : "guias no período"}
+                      </div>
                     </div>
                   </div>
-
+                  <ul className="space-y-2 text-sm">
+                    {typeData.map((d, i) => {
+                      const pct = total > 0 ? (d.value / total) * 100 : 0;
+                      const isActive = activeType === i;
+                      return (
+                        <li
+                          key={d.name}
+                          onMouseEnter={() => setActiveType(i)}
+                          onMouseLeave={() => setActiveType(undefined)}
+                          className={[
+                            "min-w-0 rounded-md px-2 py-1 cursor-default transition-colors",
+                            isActive ? "bg-muted/60" : "",
+                          ].join(" ")}
+                        >
+                          <div className="flex items-center gap-2">
+                            <span
+                              className="h-2.5 w-2.5 rounded-full shrink-0"
+                              style={{ background: d.color }}
+                            />
+                            <span className="flex-1 truncate">{d.name}</span>
+                            <span className="text-muted-foreground tabular-nums text-xs">
+                              {d.value} · {Math.round(pct)}%
+                            </span>
+                          </div>
+                          <div className="mt-1 h-1.5 rounded-full bg-muted overflow-hidden">
+                            <div
+                              className="h-full rounded-full transition-all"
+                              style={{ width: `${pct}%`, background: d.color }}
+                            />
+                          </div>
+                        </li>
+                      );
+                    })}
+                  </ul>
                 </div>
-                <p className="text-xs text-muted-foreground">
-                  Tipo de guia · quantidade de guias · % do total do período
-                </p>
-                <ul className="space-y-2 text-sm">
-                  {typeData.map((d, i) => {
-                    const pct = total > 0 ? (d.value / total) * 100 : 0;
-                    const isActive = activeType === i;
-                    return (
-                      <li
-                        key={d.name}
-                        onMouseEnter={() => setActiveType(i)}
-                        onMouseLeave={() => setActiveType(undefined)}
-                        className={[
-                          "min-w-0 rounded-md px-2 py-1 cursor-default transition-colors",
-                          isActive ? "bg-muted/60" : "",
-                        ].join(" ")}
-                      >
-                        <div className="flex items-center gap-2">
-                          <span className="h-2.5 w-2.5 rounded-full shrink-0" style={{ background: d.color }} />
-                          <span className="flex-1 truncate">{d.name}</span>
-                          <span className="text-muted-foreground tabular-nums text-xs">
-                            {d.value} · {Math.round(pct)}%
-                          </span>
-                        </div>
-                        <div className="mt-1 h-1.5 rounded-full bg-muted overflow-hidden">
-                          <div
-                            className="h-full rounded-full transition-all"
-                            style={{ width: `${pct}%`, background: d.color }}
-                          />
-                        </div>
-                      </li>
-                    );
-                  })}
-                </ul>
-              </div>
               )}
             </SurfaceCard>
           </div>
@@ -1346,151 +1379,150 @@ function DashboardPage() {
           <SurfaceCard
             title="Procedimentos mais realizados"
             description={`Procedimentos mais frequentes nas guias — ${periodLabel}`}
-
           >
             {procedures.length === 0 ? (
               emptyState
             ) : (
-            <div className="grid gap-6 lg:grid-cols-2">
-              <div className="h-64" data-chart="procedures">
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart
-                    data={procedures.map((p) => ({ name: p.name, count: p.count }))}
-                    layout="vertical"
-                    margin={{ top: 4, right: 28, left: 8, bottom: 16 }}
-                    barCategoryGap={10}
-                  >
-                    <defs>
-                      <linearGradient id="gradBar" x1="0" y1="0" x2="1" y2="0">
-                        <stop offset="0%" stopColor="var(--purple)" />
-                        <stop offset="100%" stopColor="var(--primary)" />
-                      </linearGradient>
-                    </defs>
-                    <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" horizontal={false} />
-                    <XAxis
-                      type="number"
-                      stroke="var(--muted-foreground)"
-                      fontSize={11}
-                      tickLine={false}
-                      axisLine={false}
-                      allowDecimals={false}
-                      label={{ value: "Quantidade de guias", position: "insideBottom", offset: -12, fill: "var(--muted-foreground)", fontSize: 11 }}
-                    />
-                    <YAxis
-                      type="category"
-                      dataKey="name"
-                      stroke="var(--muted-foreground)"
-                      fontSize={11}
-                      width={158}
-                      tickLine={false}
-                      axisLine={false}
-                      label={{ value: "Procedimento", angle: -90, position: "insideLeft", fill: "var(--muted-foreground)", fontSize: 11, style: { textAnchor: "middle" } }}
-                    />
+              <div className="grid gap-6 lg:grid-cols-2">
+                <div className="h-64" data-chart="procedures">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart
+                      data={procedures.map((p) => ({ name: p.name, count: p.count }))}
+                      layout="vertical"
+                      margin={{ top: 4, right: 28, left: 8, bottom: 16 }}
+                      barCategoryGap={10}
+                    >
+                      <defs>
+                        <linearGradient id="gradBar" x1="0" y1="0" x2="1" y2="0">
+                          <stop offset="0%" stopColor="var(--purple)" />
+                          <stop offset="100%" stopColor="var(--primary)" />
+                        </linearGradient>
+                      </defs>
+                      <CartesianGrid
+                        strokeDasharray="3 3"
+                        stroke="var(--border)"
+                        horizontal={false}
+                      />
+                      <XAxis
+                        type="number"
+                        stroke="var(--muted-foreground)"
+                        fontSize={11}
+                        tickLine={false}
+                        axisLine={false}
+                        allowDecimals={false}
+                        label={{
+                          value: "Quantidade de guias",
+                          position: "insideBottom",
+                          offset: -12,
+                          fill: "var(--muted-foreground)",
+                          fontSize: 11,
+                        }}
+                      />
+                      <YAxis
+                        type="category"
+                        dataKey="name"
+                        stroke="var(--muted-foreground)"
+                        fontSize={11}
+                        width={158}
+                        tickLine={false}
+                        axisLine={false}
+                        label={{
+                          value: "Procedimento",
+                          angle: -90,
+                          position: "insideLeft",
+                          fill: "var(--muted-foreground)",
+                          fontSize: 11,
+                          style: { textAnchor: "middle" },
+                        }}
+                      />
 
-                    <RTooltip content={<ChartTooltip unit="guias" />} cursor={{ fill: "var(--muted)", opacity: 0.4 }} />
-                    <Bar dataKey="count" name="" fill="url(#gradBar)" radius={[0, 6, 6, 0]} maxBarSize={22} isAnimationActive={false}>
-                      <LabelList
+                      <RTooltip
+                        content={<ChartTooltip unit="guias" />}
+                        cursor={{ fill: "var(--muted)", opacity: 0.4 }}
+                      />
+                      <Bar
                         dataKey="count"
-                        position="right"
-                        className="fill-foreground"
-                        style={{ fontSize: 11, fontWeight: 600 }}
-                      />
-                    </Bar>
-
-                  </BarChart>
-                </ResponsiveContainer>
-              </div>
-              <DataTable>
-                <DataTableDesktop breakpoint="md">
-                  <DataTableRoot className="min-w-[18rem]">
-                    <DataTableHeader>
-                      <DataTableRow>
-                        <SortableHead
-                          label="Código"
-                          column="code"
-                          sort={procedureSort}
-                          onSort={setProcedureSort}
+                        name=""
+                        fill="url(#gradBar)"
+                        radius={[0, 6, 6, 0]}
+                        maxBarSize={22}
+                        isAnimationActive={false}
+                      >
+                        <LabelList
+                          dataKey="count"
+                          position="right"
+                          className="fill-foreground"
+                          style={{ fontSize: 11, fontWeight: 600 }}
                         />
-                        <SortableHead
-                          label="Procedimento"
-                          column="name"
-                          sort={procedureSort}
-                          onSort={setProcedureSort}
-                        />
-                        <SortableHead
-                          label="Quantidade"
-                          column="count"
-                          sort={procedureSort}
-                          onSort={setProcedureSort}
-                          align="right"
-                        />
-                      </DataTableRow>
-                    </DataTableHeader>
-                    <DataTableBody>
-                      {sortedProcedures.map((p) => (
-                        <DataTableRow key={p.code}>
-                          <DataTableCell className="text-muted-foreground tabular-nums">
-                            {p.code}
-                          </DataTableCell>
-                          <DataTableCell title={p.name}>{p.name}</DataTableCell>
-                          <DataTableCell className="text-right font-medium tabular-nums">
-                            {p.count}
-                          </DataTableCell>
+                      </Bar>
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
+                <DataTable>
+                  <DataTableDesktop breakpoint="md">
+                    <DataTableRoot className="min-w-[18rem]">
+                      <DataTableHeader>
+                        <DataTableRow>
+                          <SortableHead
+                            label="Código"
+                            column="code"
+                            sort={procedureSort}
+                            onSort={setProcedureSort}
+                          />
+                          <SortableHead
+                            label="Procedimento"
+                            column="name"
+                            sort={procedureSort}
+                            onSort={setProcedureSort}
+                          />
+                          <SortableHead
+                            label="Quantidade"
+                            column="count"
+                            sort={procedureSort}
+                            onSort={setProcedureSort}
+                            align="right"
+                          />
                         </DataTableRow>
-                      ))}
-                    </DataTableBody>
-                  </DataTableRoot>
-                </DataTableDesktop>
+                      </DataTableHeader>
+                      <DataTableBody>
+                        {sortedProcedures.map((p) => (
+                          <DataTableRow key={p.code}>
+                            <DataTableCell className="text-muted-foreground tabular-nums">
+                              {p.code}
+                            </DataTableCell>
+                            <DataTableCell title={p.name}>{p.name}</DataTableCell>
+                            <DataTableCell className="text-right font-medium tabular-nums">
+                              {p.count}
+                            </DataTableCell>
+                          </DataTableRow>
+                        ))}
+                      </DataTableBody>
+                    </DataTableRoot>
+                  </DataTableDesktop>
 
-                <DataTableCardList breakpoint="md" divided>
-                  {sortedProcedures.map((p) => (
-                    <DataTableCard key={p.code} flat>
-                      <DataTableCardHeader
-                        title={<span className="min-w-0 break-words">{p.name}</span>}
-                        subtitle={<span className="tabular-nums">{p.code}</span>}
-                        trailing={
-                          <Badge variant="secondary" className="tabular-nums">
-                            {p.count}
-                          </Badge>
-                        }
-                      />
-                    </DataTableCard>
-                  ))}
-                </DataTableCardList>
-              </DataTable>
-            </div>
+                  <DataTableCardList breakpoint="md" divided>
+                    {sortedProcedures.map((p) => (
+                      <DataTableCard key={p.code} flat>
+                        <DataTableCardHeader
+                          title={<span className="min-w-0 break-words">{p.name}</span>}
+                          subtitle={<span className="tabular-nums">{p.code}</span>}
+                          trailing={
+                            <Badge variant="secondary" className="tabular-nums">
+                              {p.count}
+                            </Badge>
+                          }
+                        />
+                      </DataTableCard>
+                    ))}
+                  </DataTableCardList>
+                </DataTable>
+              </div>
             )}
           </SurfaceCard>
-
         </div>
         <SiteFooter />
       </main>
-
-
-
     </div>
-  );
-}
-
-
-
-
-
-
-
-function LegendDot({ color, label, dashed }: { color: string; label: string; dashed?: boolean }) {
-  return (
-    <span className="inline-flex items-center icon-optical gap-1.5 text-muted-foreground">
-      {dashed ? (
-        <span
-          className="inline-block h-0 w-4 border-t-2"
-          style={{ borderColor: color, borderStyle: "dashed" }}
-        />
-      ) : (
-        <span className="inline-block h-2 w-2 rounded-full" style={{ background: color }} />
-      )}
-      {label}
-    </span>
   );
 }
 
@@ -1523,10 +1555,7 @@ function Kpi({
   }[tone];
 
   return (
-    <SurfaceCard
-      padding="md"
-      className="group relative overflow-hidden hover:shadow-sm"
-    >
+    <SurfaceCard padding="md" className="group relative overflow-hidden hover:shadow-sm">
       <div className="flex items-center justify-between">
         <span className="metric-label flex items-center icon-optical gap-1">
           {label}
@@ -1555,22 +1584,24 @@ function Kpi({
       </div>
       {meta && <div className="mt-0.5 text-xs text-muted-foreground">{meta}</div>}
       <div className="mt-3 metric-value text-foreground">{value}</div>
-      <div
-        className={[
-          "mt-1 metric-hint flex items-center icon-optical gap-1",
-          trend === "up"
-            ? "text-success"
-            : trend === "down"
-              ? "text-destructive"
-              : "text-muted-foreground",
-        ].join(" ")}
-      >
-        {trend === "up" && <ArrowUpRight className="h-3.5 w-3.5" aria-hidden="true" />}
-        {trend === "down" && <ArrowDownRight className="h-3.5 w-3.5" aria-hidden="true" />}
-        {trend === "flat" && <Minus className="h-3.5 w-3.5" aria-hidden="true" />}
-        {trend && <span className="sr-only">{trendA11yLabel[trend]}</span>}
-        {hint}
-      </div>
+      {(hint || trend) && (
+        <div
+          className={[
+            "mt-1 metric-hint flex items-center icon-optical gap-1",
+            trend === "up"
+              ? "text-success"
+              : trend === "down"
+                ? "text-destructive"
+                : "text-muted-foreground",
+          ].join(" ")}
+        >
+          {trend === "up" && <ArrowUpRight className="h-3.5 w-3.5" aria-hidden="true" />}
+          {trend === "down" && <ArrowDownRight className="h-3.5 w-3.5" aria-hidden="true" />}
+          {trend === "flat" && <Minus className="h-3.5 w-3.5" aria-hidden="true" />}
+          {trend && <span className="sr-only">{trendA11yLabel[trend]}</span>}
+          {hint}
+        </div>
+      )}
     </SurfaceCard>
   );
 }
