@@ -445,7 +445,7 @@ async function generateReportPdf(periodLabel: string, metrics: DashboardMetrics)
       startY: y,
       margin: { left: margin, right: margin },
       tableWidth: contentW,
-      head: [["Código TUSS", "Procedimento", "Qtd."]],
+      head: [["Código TUSS", "Procedimento", "Quantidade"]],
       body: procedures.map((p) => [p.code, p.name, String(p.count)]),
       theme: "striped",
       headStyles: tableHeadStyles,
