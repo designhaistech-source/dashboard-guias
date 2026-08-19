@@ -640,7 +640,7 @@ function ReportsTab({ onNewDocument }: { onNewDocument: () => void }) {
   const { staleNotice } = useGeneratedSync({ generated: gerado, html, setHtml });
 
   const variableValues = useMemo(
-    () => ({ paciente, data, cidade, cid, diagnostico }),
+    () => ({ paciente, data, cidade, cid, diagnostico, emissao: data }),
     [paciente, data, cidade, cid, diagnostico],
   );
   const tokenValues = useMemo(() => variableTokenValues(variableValues), [variableValues]);
@@ -864,7 +864,7 @@ function CertificateTab({ onNewDocument }: { onNewDocument: () => void }) {
   const dataStatus = useMemo(() => getDocumentDateStatus(data), [data]);
 
   const variableValues = useMemo(
-    () => ({ paciente, data, cidade, cid, diagnostico: diagnosticoSelecionado }),
+    () => ({ paciente, data, cidade, cid, diagnostico: diagnosticoSelecionado, emissao: data }),
     [paciente, data, cidade, cid, diagnosticoSelecionado],
   );
   const tokenValues = useMemo(() => variableTokenValues(variableValues), [variableValues]);
@@ -1075,13 +1075,14 @@ function AttendanceTab({ onNewDocument }: { onNewDocument: () => void }) {
   const [local, setLocal] = useState("");
   const [cidade, setCidade] = useState("");
   const [data, setData] = useState(todayIso());
+  const [emissao, setEmissao] = useState(todayIso());
   const [entrada, setEntrada] = useState("");
   const [saida, setSaida] = useState("");
   const [html, setHtml] = useState("");
 
   const gerado = useMemo(
-    () => buildComparecimento({ paciente, local, cidade, data, entrada, saida }),
-    [paciente, local, cidade, data, entrada, saida],
+    () => buildComparecimento({ paciente, local, cidade, data, emissao, entrada, saida }),
+    [paciente, local, cidade, data, emissao, entrada, saida],
   );
 
   const conteudo = html || gerado;
@@ -1100,8 +1101,8 @@ function AttendanceTab({ onNewDocument }: { onNewDocument: () => void }) {
   );
 
   const variableValues = useMemo(
-    () => ({ paciente, data, cidade }),
-    [paciente, data, cidade],
+    () => ({ paciente, data, cidade, emissao }),
+    [paciente, data, cidade, emissao],
   );
   const tokenValues = useMemo(() => variableTokenValues(variableValues), [variableValues]);
   const previewHtml = useMemo(
@@ -1117,6 +1118,13 @@ function AttendanceTab({ onNewDocument }: { onNewDocument: () => void }) {
   const localError = useMemo(() => validateLocal(local), [local]);
   const cidadeError = useMemo(() => validateCidade(cidade), [cidade]);
   const horarios = useMemo(() => validateTimeRange(entrada, saida), [entrada, saida]);
+  const emissaoError = useMemo(() => {
+    if (!emissao) return "Informe a data de emissão.";
+    if (emissao > todayIsoDate()) return "A data de emissão não pode ser futura.";
+    if (data && emissao < data)
+      return "A emissão não pode ser anterior à data do comparecimento.";
+    return undefined;
+  }, [emissao, data]);
 
   const issues = useMemo(
     () =>
@@ -1125,6 +1133,7 @@ function AttendanceTab({ onNewDocument }: { onNewDocument: () => void }) {
         { fieldId: "comp-local", label: "Local de atendimento", message: localError },
         { fieldId: "comp-cidade", label: "Cidade", message: cidadeError },
         { fieldId: "comp-data", label: "Data do comparecimento", message: dataStatus.error },
+        { fieldId: "comp-emissao", label: "Data de emissão", message: emissaoError },
         { fieldId: "comp-entrada", label: "Horário de entrada", message: horarios.entradaError },
         { fieldId: "comp-saida", label: "Horário de saída", message: horarios.saidaError },
       ]),
@@ -1133,6 +1142,7 @@ function AttendanceTab({ onNewDocument }: { onNewDocument: () => void }) {
       localError,
       cidadeError,
       dataStatus.error,
+      emissaoError,
       horarios.entradaError,
       horarios.saidaError,
     ],
@@ -1239,7 +1249,7 @@ function AttendanceTab({ onNewDocument }: { onNewDocument: () => void }) {
               id="comp-data"
               label="Data do comparecimento"
               error={dataStatus.error}
-              hint={dataStatus.warning}
+              hint={dataStatus.warning ?? "Data do atendimento; é o valor usado pela variável @data."}
             >
               <Input
                 id="comp-data"
@@ -1249,6 +1259,23 @@ function AttendanceTab({ onNewDocument }: { onNewDocument: () => void }) {
                 max={todayIsoDate()}
                 value={data}
                 onChange={(e) => setData(e.target.value)}
+              />
+            </Field>
+            <Field
+              id="comp-emissao"
+              label="Data de emissão"
+              error={emissaoError}
+              hint="Data em que a declaração é assinada; compõe o fechamento com a cidade."
+            >
+              <Input
+                id="comp-emissao"
+                readOnly={locked}
+                aria-readonly={locked || undefined}
+                type="date"
+                min={data || undefined}
+                max={todayIsoDate()}
+                value={emissao}
+                onChange={(e) => setEmissao(e.target.value)}
               />
             </Field>
             <Field id="comp-entrada" label="Horário de entrada" error={horarios.entradaError}>
@@ -1287,7 +1314,7 @@ function AttendanceTab({ onNewDocument }: { onNewDocument: () => void }) {
         onChange={setHtml}
         onImproveWithAi={improve}
         improving={improving}
-        variables={["@paciente", "@data", "@cidade"]}
+        variables={["@paciente", "@data", "@cidade", "@emissao"]}
         variableValues={tokenValues}
         previewHtml={previewHtml}
         pendingVariables={pending}
