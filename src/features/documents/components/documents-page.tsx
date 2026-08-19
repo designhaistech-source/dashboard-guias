@@ -100,33 +100,48 @@ export function DocumentsPage() {
  * Encapsula a melhoria de texto com IA usada nas três abas de documentos.
  * Mantém o estado de carregamento e o feedback de erro/sucesso.
  */
-function useImproveWithAi(documentType: string, html: string, onResult: (html: string) => void) {
+function useImproveWithAi(
+  documentType: string,
+  html: string,
+  onResult: (html: string) => void,
+  requestReplace: ReturnType<typeof useTextReplacement>["requestReplace"],
+) {
   const [improving, setImproving] = useState(false);
 
-  const improve = useCallback(async () => {
+  const improve = useCallback(() => {
     const plain = html.replace(/<[^>]+>/g, "").trim();
     if (!plain) {
       toast.error("Escreva o texto do documento antes de melhorar com IA.");
       return;
     }
-    setImproving(true);
-    try {
-      const result = await improveDocumentText({ data: { documentType, html } });
-      onResult(result.html);
-      toast.success("Texto aprimorado com IA.");
-    } catch (error) {
-      toast.error(
-        error instanceof Error && error.message
-          ? error.message
-          : "Não foi possível melhorar o texto agora.",
-      );
-    } finally {
-      setImproving(false);
-    }
-  }, [documentType, html, onResult]);
+    requestReplace({
+      title: "Melhorar texto com IA?",
+      description:
+        "A IA reescreve todo o texto do editor e substitui o conteúdo atual. Você poderá desfazer pelo aviso exibido após a substituição.",
+      confirmLabel: "Melhorar texto",
+      successMessage: "Texto aprimorado com IA.",
+      apply: async () => {
+        setImproving(true);
+        try {
+          const result = await improveDocumentText({ data: { documentType, html } });
+          onResult(result.html);
+        } catch (error) {
+          toast.error(
+            error instanceof Error && error.message
+              ? error.message
+              : "Não foi possível melhorar o texto agora.",
+          );
+          throw error;
+        } finally {
+          setImproving(false);
+        }
+      },
+    });
+  }, [documentType, html, onResult, requestReplace]);
 
   return { improving, improve };
 }
+
 
 /* ---------------- Ações comuns ---------------- */
 
