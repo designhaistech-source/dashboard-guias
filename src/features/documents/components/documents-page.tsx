@@ -47,7 +47,6 @@ import {
 } from "../data/document-variables";
 import { getDocumentDateStatus, todayIsoDate } from "../data/document-date";
 import {
-  findCid,
   validateCid,
   validateCidade,
   validateDiasAfastamento,
@@ -390,34 +389,21 @@ function CidFields({
   error?: string;
 }) {
   return (
-    <div className="grid min-w-0 gap-4 lg:grid-cols-[minmax(0,10rem)_minmax(0,1fr)]">
-      <Field id="cid-codigo" label="CID" error={error}>
-        <Input
-          id="cid-codigo"
-          className="font-mono"
-          placeholder="CID"
-          value={cid}
-          aria-invalid={error ? true : undefined}
-          onChange={(e) => {
-            const codigo = e.target.value.toUpperCase();
-            // Mantém a descrição sincronizada quando o código digitado existe na base.
-            onChange(codigo, findCid(codigo)?.descricao ?? "");
-          }}
-        />
-      </Field>
-      <Field
-        id="cid-diagnostico"
-        label="Diagnóstico"
-        hint="A busca consulta a base CID-10 e preenche o código automaticamente."
-      >
-        <CidAutocomplete
-          id="cid-diagnostico"
-          value={cid}
-          description={descricao}
-          onSelect={(item) => onChange(item?.codigo ?? "", item?.descricao ?? "")}
-        />
-      </Field>
-    </div>
+    <Field
+      id="cid-codigo"
+      label="CID-10"
+      error={error}
+      hint="Busque pelo código ou pela descrição; o diagnóstico é preenchido automaticamente."
+    >
+      <CidAutocomplete
+        id="cid-codigo"
+        value={cid}
+        description={descricao}
+        invalid={Boolean(error)}
+        describedById="cid-codigo-msg"
+        onSelect={(item) => onChange(item?.codigo ?? "", item?.descricao ?? "")}
+      />
+    </Field>
   );
 }
 

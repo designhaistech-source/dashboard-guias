@@ -33,6 +33,10 @@ interface CidAutocompleteProps {
   description: string;
   onSelect: (item: CidItem | null) => void;
   placeholder?: string;
+  /** Sinaliza estado inválido no gatilho do combobox. */
+  invalid?: boolean;
+  /** Id da mensagem de erro/dica associada ao campo. */
+  describedById?: string;
 }
 
 /** Autocomplete de CID-10 com busca assíncrona na API. */
@@ -42,6 +46,8 @@ export function CidAutocomplete({
   description,
   onSelect,
   placeholder = "Busque por código ou descrição...",
+  invalid = false,
+  describedById,
 }: CidAutocompleteProps) {
   const [open, setOpen] = useState(false);
   const [term, setTerm] = useState("");
@@ -64,9 +70,12 @@ export function CidAutocomplete({
           role="combobox"
           aria-expanded={open}
           aria-label="Buscar CID-10"
+          aria-invalid={invalid || undefined}
+          aria-describedby={describedById}
           className={cn(
             "flex h-10 w-full items-center justify-between gap-2 rounded-md border border-input bg-transparent px-3 py-2 text-base shadow-sm transition-colors sm:h-9 sm:text-sm",
             "hover:bg-accent/30 focus-visible:border-ring focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/40",
+            invalid && "border-destructive focus-visible:border-destructive focus-visible:ring-destructive/40",
           )}
         >
           <span className={cn("truncate text-left", !label && "text-muted-foreground")}>
