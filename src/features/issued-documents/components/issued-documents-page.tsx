@@ -4,10 +4,8 @@ import {
   ArrowUp,
   Download,
   Eye,
-  FileSignature,
   FileSpreadsheet,
   Printer,
-  ShieldCheck,
 } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import { toast } from "sonner";
@@ -328,18 +326,6 @@ export function IssuedDocumentsPage() {
         onPrint={handlePrint}
       />
     </div>
-  );
-}
-
-function SignatureBadge({ signed }: { signed: boolean }) {
-  return signed ? (
-    <Badge variant="success-soft" size="sm">
-      <ShieldCheck className="h-3.5 w-3.5" aria-hidden="true" /> Assinado
-    </Badge>
-  ) : (
-    <Badge variant="secondary" size="sm">
-      <FileSignature className="h-3.5 w-3.5" aria-hidden="true" /> Sem assinatura
-    </Badge>
   );
 }
 
