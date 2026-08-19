@@ -701,6 +701,11 @@ function AttendanceTab() {
         title="Declaração de comparecimento"
         html={conteudo}
         paciente={paciente}
+        onSaveTemplate={() =>
+          toast.success(
+            "Modelo de declaração salvo e disponível na lista (simulação).",
+          )
+        }
       />
 
       {replacementDialog}
