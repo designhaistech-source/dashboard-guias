@@ -49,12 +49,13 @@ export function Field({
   className,
   labelClassName,
   rightAdornment,
+  injectChildProps = true,
   children,
 }: FieldProps) {
   const messageId = id ? `${id}-msg` : undefined;
 
   // Injeta id + aria-describedby + aria-invalid no primeiro filho quando possível.
-  const child = React.isValidElement(children)
+  const child = injectChildProps && React.isValidElement(children)
     ? React.cloneElement(children as React.ReactElement<any>, {
         id: (children as React.ReactElement<any>).props.id ?? id,
         "aria-invalid":
