@@ -1256,7 +1256,7 @@ function DashboardPage() {
                           <Cell key={i} fill={d.color} />
                         ))}
                       </Pie>
-                      <RTooltip content={<ChartTooltip />} />
+                      <RTooltip content={<ChartTooltip unit="guias" />} />
                     </PieChart>
                   </ResponsiveContainer>
                   <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center px-6 text-center">
@@ -1355,8 +1355,8 @@ function DashboardPage() {
                       label={{ value: "Procedimento", angle: -90, position: "insideLeft", fill: "var(--muted-foreground)", fontSize: 11, style: { textAnchor: "middle" } }}
                     />
 
-                    <RTooltip content={<ChartTooltip />} cursor={{ fill: "var(--muted)", opacity: 0.4 }} />
-                    <Bar dataKey="count" fill="url(#gradBar)" radius={[0, 6, 6, 0]} maxBarSize={22} isAnimationActive={false}>
+                    <RTooltip content={<ChartTooltip unit="guias" />} cursor={{ fill: "var(--muted)", opacity: 0.4 }} />
+                    <Bar dataKey="count" name="" fill="url(#gradBar)" radius={[0, 6, 6, 0]} maxBarSize={22} isAnimationActive={false}>
                       <LabelList
                         dataKey="count"
                         position="right"
