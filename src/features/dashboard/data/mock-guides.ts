@@ -108,16 +108,9 @@ export const DASHBOARD_GUIDES: DashboardGuide[] = buildGuides();
 export type DashboardFilterInput = {
   dataAutorizacaoDe: string;
   dataAutorizacaoAte: string;
-  beneficiarioNome: string;
-  numGuiaPrestador: string;
   tipoGuia: string;
   prestadorSolicitante: string;
-  procDescricao: string;
-  procCodigo: string;
 };
-
-const norm = (v: string) =>
-  v.normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim().toLowerCase();
 
 export function filterGuides(
   guides: DashboardGuide[],
@@ -126,16 +119,9 @@ export function filterGuides(
   return guides.filter((g) => {
     if (f.dataAutorizacaoDe && g.data < f.dataAutorizacaoDe) return false;
     if (f.dataAutorizacaoAte && g.data > f.dataAutorizacaoAte) return false;
-    if (f.beneficiarioNome.trim() && !norm(g.beneficiarioNome).includes(norm(f.beneficiarioNome)))
-      return false;
-    if (f.numGuiaPrestador.trim() && !g.numGuiaPrestador.includes(f.numGuiaPrestador.trim()))
-      return false;
     if (f.tipoGuia.trim() && g.tipoGuia !== f.tipoGuia) return false;
     if (f.prestadorSolicitante.trim() && g.prestadorSolicitante !== f.prestadorSolicitante)
       return false;
-    if (f.procDescricao.trim() && !norm(g.procDescricao).includes(norm(f.procDescricao)))
-      return false;
-    if (f.procCodigo.trim() && !g.procCodigo.includes(f.procCodigo.trim())) return false;
     return true;
   });
 }
