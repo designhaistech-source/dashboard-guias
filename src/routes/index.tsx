@@ -216,7 +216,22 @@ async function captureChartPng(
     const attrStroke = el.getAttribute("stroke");
     if (attrStroke) dst.setAttribute("stroke", resolveColor(attrStroke));
   });
+
+  // Gradient stops declared with CSS variables (e.g. stopColor="var(--purple)")
+  // lose their value once the SVG is rasterized off-DOM, so resolve them here.
+  const rootStyle = window.getComputedStyle(document.documentElement);
+  clone.querySelectorAll<SVGStopElement>("stop").forEach((stop) => {
+    const raw = stop.getAttribute("stop-color") ?? stop.style.stopColor ?? "";
+    const varName = raw.match(/var\(\s*(--[\w-]+)/)?.[1];
+    const value = varName ? rootStyle.getPropertyValue(varName).trim() : raw;
+    const resolved = resolveColor(value);
+    if (resolved) {
+      stop.setAttribute("stop-color", resolved);
+      stop.style.stopColor = resolved;
+    }
+  });
   colorProbe.remove();
+
 
   const xml = new XMLSerializer().serializeToString(clone);
   const svgBlob = new Blob([xml], { type: "image/svg+xml;charset=utf-8" });
