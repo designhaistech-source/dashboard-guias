@@ -2,15 +2,8 @@ import { useCallback, useEffect, useState } from "react";
 import { Trash2 } from "lucide-react";
 import { toast } from "sonner";
 
+import { AppModal } from "@/components/app-modal";
 import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
 import { Field } from "@/components/form-field";
 import { Input } from "@/components/ui/input";
 
@@ -24,6 +17,7 @@ import {
 } from "../data/document-templates";
 
 const MAX_NAME = 60;
+const FORM_ID = "salvar-modelo-form";
 
 function hasText(html: string): boolean {
   return html.replace(/<[^>]+>/g, "").trim().length > 0;
@@ -87,23 +81,31 @@ export function useDocumentTemplates(options: {
   }
 
   const saveDialog = (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogContent className="sm:max-w-md">
-        <DialogHeader>
-          <DialogTitle>Salvar como modelo</DialogTitle>
-          <DialogDescription>
-            O texto atual será guardado neste navegador e ficará disponível na lista de modelos
-            deste tipo de documento.
-          </DialogDescription>
-        </DialogHeader>
-
-        <form
-          className="space-y-4"
-          onSubmit={(event) => {
-            event.preventDefault();
-            handleConfirm();
-          }}
-        >
+    <AppModal
+      open={open}
+      onOpenChange={setOpen}
+      size="md"
+      title="Salvar como modelo"
+      description="O texto atual será guardado neste navegador e ficará disponível na lista de modelos deste tipo de documento."
+      footer={
+        <>
+          <Button type="button" variant="outline" onClick={() => setOpen(false)}>
+            Cancelar
+          </Button>
+          <Button form={FORM_ID} type="submit" disabled={!trimmed || Boolean(nameError)}>
+            Salvar modelo
+          </Button>
+        </>
+      }
+    >
+      <form
+        id={FORM_ID}
+        className="space-y-5"
+        onSubmit={(event) => {
+          event.preventDefault();
+          handleConfirm();
+        }}
+      >
           <Field
             id="modelo-nome"
             label="Nome do modelo"
@@ -125,43 +127,33 @@ export function useDocumentTemplates(options: {
             />
           </Field>
 
-          {templates.length > 0 && (
-            <div className="space-y-2">
-              <p className="text-xs font-medium text-muted-foreground">Modelos salvos</p>
-              <ul className="max-h-40 space-y-1 overflow-y-auto">
-                {templates.map((template) => (
-                  <li
-                    key={template.value}
-                    className="flex items-center justify-between gap-2 rounded-md border border-border bg-muted/30 px-2 py-1"
+        {templates.length > 0 && (
+          <div className="space-y-2">
+            <p className="text-xs font-medium text-muted-foreground">Modelos salvos</p>
+            <ul className="max-h-40 space-y-1.5 overflow-y-auto">
+              {templates.map((template) => (
+                <li
+                  key={template.value}
+                  className="flex items-center justify-between gap-2 rounded-md border border-border bg-muted/30 py-1.5 pl-3 pr-1.5"
+                >
+                  <span className="min-w-0 truncate text-xs">{template.label}</span>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    className="h-7 w-7 shrink-0 text-muted-foreground"
+                    aria-label={`Remover modelo ${template.label}`}
+                    onClick={() => remove(template)}
                   >
-                    <span className="min-w-0 truncate text-xs">{template.label}</span>
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="icon"
-                      className="h-7 w-7 text-muted-foreground"
-                      aria-label={`Remover modelo ${template.label}`}
-                      onClick={() => remove(template)}
-                    >
-                      <Trash2 className="icon-optical h-4 w-4" aria-hidden />
-                    </Button>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-
-          <DialogFooter>
-            <Button type="button" variant="outline" onClick={() => setOpen(false)}>
-              Cancelar
-            </Button>
-            <Button type="submit" disabled={!trimmed || Boolean(nameError)}>
-              Salvar modelo
-            </Button>
-          </DialogFooter>
-        </form>
-      </DialogContent>
-    </Dialog>
+                    <Trash2 className="icon-optical h-4 w-4" aria-hidden />
+                  </Button>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+      </form>
+    </AppModal>
   );
 
   return { templates, requestSave, remove, saveDialog };
