@@ -68,7 +68,10 @@ export function RichTextEditor({
   placeholder,
   className,
   ariaLabel,
+  onImproveWithAi,
+  improving = false,
 }: RichTextEditorProps) {
+
   const ref = React.useRef<HTMLDivElement>(null);
 
   React.useEffect(() => {
