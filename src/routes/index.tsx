@@ -645,11 +645,7 @@ function FilterSelect({
 }
 
 
-/** Filtros cujo valor é uma data ISO e deve ser exibido em pt-BR. */
-const dateFilterKeys: ReadonlySet<keyof GuideFilters> = new Set([
-  "dataAutorizacaoDe",
-  "dataAutorizacaoAte",
-]);
+
 
 const MONTH_ABBR = [
   "jan", "fev", "mar", "abr", "mai", "jun",
