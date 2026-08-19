@@ -37,6 +37,8 @@ import { CidAutocomplete } from "./cid-autocomplete";
 import { DocumentEditorHeader } from "./document-editor-header";
 import { RichTextEditor } from "./rich-text-editor";
 import { useTextReplacement } from "./use-text-replacement";
+import { useDocumentTemplates } from "./use-document-templates";
+import type { SavedDocumentTemplate } from "../data/document-templates";
 import { getDocumentDateStatus, todayIsoDate } from "../data/document-date";
 import {
   findCid,
@@ -446,6 +448,16 @@ function ReportsTab() {
 
   const { requestReplace, replacementDialog } = useTextReplacement(html, setHtml);
 
+  const {
+    templates: savedTemplates,
+    requestSave: requestSaveTemplate,
+    saveDialog,
+  } = useDocumentTemplates({
+    kind: "relatorio",
+    getContent: () => html,
+    suggestName: () => (paciente.trim() ? `Relatório — ${paciente.trim()}` : ""),
+  });
+
   const pacienteError = useMemo(() => validatePaciente(paciente), [paciente]);
   const cidError = useMemo(() => validateCid(cid), [cid]);
 
@@ -460,7 +472,7 @@ function ReportsTab() {
 
 
   function applyTemplate(value: string) {
-    const template = REPORT_TEMPLATES.find((t) => t.value === value);
+    const template = [...savedTemplates, ...REPORT_TEMPLATES].find((t) => t.value === value);
     if (!template) return;
     requestReplace({
       title: "Aplicar modelo?",
@@ -504,8 +516,15 @@ function ReportsTab() {
             placeholder="Selecione um modelo salvo"
             value={modelo}
             onValueChange={applyTemplate}
-            options={REPORT_TEMPLATES.map((t) => ({ value: t.value, label: t.label }))}
-            hint="Use “Salvar como modelo” após redigir o texto para reaproveitá-lo depois."
+            options={[
+              ...savedTemplates.map((t) => ({ value: t.value, label: `${t.label} (salvo)` })),
+              ...REPORT_TEMPLATES.map((t) => ({ value: t.value, label: t.label })),
+            ]}
+            hint={
+              savedTemplates.length > 0
+                ? `${savedTemplates.length} ${savedTemplates.length === 1 ? "modelo salvo" : "modelos salvos"} neste navegador, além dos modelos padrão.`
+                : "Use “Salvar como modelo” após redigir o texto para reaproveitá-lo depois."
+            }
           />
           <CidFields cid={cid} descricao={diagnosticoSelecionado} onChange={handleCid} error={cidError} />
         </div>
@@ -540,9 +559,10 @@ function ReportsTab() {
         pacienteFieldId="relatorio-paciente"
         issues={issues}
 
-        onSaveTemplate={() => toast.success("Modelo salvo e disponível na lista (simulação).")}
+        onSaveTemplate={requestSaveTemplate}
       />
 
+      {saveDialog}
       {replacementDialog}
     </>
   );
@@ -609,6 +629,22 @@ function CertificateTab() {
 
   const { requestReplace, replacementDialog } = useTextReplacement(html, setHtml);
 
+  const {
+    templates: savedTemplates,
+    requestSave: requestSaveTemplate,
+    saveDialog,
+  } = useDocumentTemplates({
+    kind: "atestado",
+    getContent: () => conteudo,
+    suggestName: () => (dias ? `Atestado de ${dias} dia(s)` : ""),
+  });
+
+  const [modelo, setModelo] = useState("");
+
+  function applySavedTemplate(value: string) {
+    applySaved({ templates: savedTemplates, value, setModelo, requestReplace, setHtml });
+  }
+
   const { improving, improve } = useImproveWithAi(
     "Atestado médico",
     conteudo,
@@ -644,6 +680,12 @@ function CertificateTab() {
             error={pacienteError}
           />
           <CidFields cid={cid} descricao={diagnosticoSelecionado} onChange={handleCid} error={cidError} />
+          <SavedTemplatesField
+            id="atestado-modelo"
+            templates={savedTemplates}
+            value={modelo}
+            onSelect={applySavedTemplate}
+          />
           <div className="grid min-w-0 gap-4 sm:grid-cols-2 xl:grid-cols-3 [&>*]:min-w-0">
             <SelectField
               id="atestado-dias"
@@ -716,11 +758,10 @@ function CertificateTab() {
         paciente={paciente}
         pacienteFieldId="atestado-paciente"
         issues={issues}
-        onSaveTemplate={() =>
-          toast.success("Modelo de atestado salvo e disponível na lista (simulação).")
-        }
+        onSaveTemplate={requestSaveTemplate}
       />
 
+      {saveDialog}
       {replacementDialog}
     </>
   );
@@ -804,6 +845,22 @@ function AttendanceTab() {
 
   const { requestReplace, replacementDialog } = useTextReplacement(html, setHtml);
 
+  const {
+    templates: savedTemplates,
+    requestSave: requestSaveTemplate,
+    saveDialog,
+  } = useDocumentTemplates({
+    kind: "comparecimento",
+    getContent: () => conteudo,
+    suggestName: () => (local.trim() ? `Comparecimento — ${local.trim()}` : ""),
+  });
+
+  const [modelo, setModelo] = useState("");
+
+  function applySavedTemplate(value: string) {
+    applySaved({ templates: savedTemplates, value, setModelo, requestReplace, setHtml });
+  }
+
   const { improving, improve } = useImproveWithAi(
     "Declaração de comparecimento",
     conteudo,
@@ -847,6 +904,12 @@ function AttendanceTab() {
               onChange={(e) => setLocal(e.target.value)}
             />
           </Field>
+          <SavedTemplatesField
+            id="comp-modelo"
+            templates={savedTemplates}
+            value={modelo}
+            onSelect={applySavedTemplate}
+          />
           <div className="grid min-w-0 gap-4 sm:grid-cols-2 xl:grid-cols-4 [&>*]:min-w-0">
             <Field id="comp-cidade" label="Cidade" optional error={cidadeError}>
               <Input
@@ -930,14 +993,67 @@ function AttendanceTab() {
         pacienteFieldId="comp-paciente"
         issues={issues}
 
-        onSaveTemplate={() =>
-          toast.success(
-            "Modelo de declaração salvo e disponível na lista (simulação).",
-          )
-        }
+        onSaveTemplate={requestSaveTemplate}
       />
 
+      {saveDialog}
       {replacementDialog}
     </>
   );
+}
+
+/* ---------------- Modelos salvos ---------------- */
+
+/** Select exibido apenas quando o usuário já salvou modelos deste documento. */
+function SavedTemplatesField({
+  id,
+  templates,
+  value,
+  onSelect,
+}: {
+  id: string;
+  templates: SavedDocumentTemplate[];
+  value: string;
+  onSelect: (value: string) => void;
+}) {
+  if (templates.length === 0) return null;
+  return (
+    <SelectField
+      id={id}
+      label="Modelos salvos"
+      placeholder="Selecione um modelo salvo"
+      value={value}
+      onValueChange={onSelect}
+      options={templates.map((t) => ({ value: t.value, label: t.label }))}
+      hint="Aplicar um modelo substitui o texto atual (com confirmação)."
+    />
+  );
+}
+
+/** Aplica um modelo salvo protegendo o texto atual com confirmação/desfazer. */
+function applySaved({
+  templates,
+  value,
+  setModelo,
+  requestReplace,
+  setHtml,
+}: {
+  templates: SavedDocumentTemplate[];
+  value: string;
+  setModelo: (value: string) => void;
+  requestReplace: ReturnType<typeof useTextReplacement>["requestReplace"];
+  setHtml: (html: string) => void;
+}) {
+  const template = templates.find((t) => t.value === value);
+  if (!template) return;
+  requestReplace({
+    title: "Aplicar modelo?",
+    description: `O texto atual será substituído pelo modelo “${template.label}”. Você poderá desfazer pelo aviso exibido após a troca.`,
+    confirmLabel: "Aplicar modelo",
+    successMessage: `Modelo “${template.label}” aplicado.`,
+    apply: () => {
+      setModelo(value);
+      setHtml(template.content);
+    },
+  });
 }
