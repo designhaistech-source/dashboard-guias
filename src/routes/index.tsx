@@ -1017,36 +1017,8 @@ function DashboardPage() {
             </span>
           </p>
 
-          {/* Chips de filtros ativos — resumo apenas quando o painel está recolhido */}
-          {!filtersOpen && activeFilters.length > 0 && (
-            <div className="flex flex-wrap items-center gap-2">
-              {activeFilters.map(([k, v]) => (
-                <Chip key={k} asSpan variant="outline">
-                  <span className="text-muted-foreground">{filterLabels[k]}:</span>
-                  <span className="font-medium">{formatFilterValue(k, v)}</span>
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => removeFilter(k)}
-                    className="ml-1 h-4 w-4 rounded-full p-0.5 hover:bg-muted [&_svg]:size-3"
-                    aria-label={`Remover filtro ${filterLabels[k]}`}
-                  >
-                    <X className="h-3 w-3" />
-                  </Button>
-                </Chip>
-              ))}
-              <Button
-                type="button"
-                variant="link"
-                size="sm"
-                onClick={clearAllFilters}
-                className="h-auto p-0 text-xs text-muted-foreground hover:text-foreground"
-              >
-                Limpar filtros
-              </Button>
-            </div>
-          )}
+
+
 
 
           {/* Container de filtros — cabeçalho próprio com expandir/recolher */}
