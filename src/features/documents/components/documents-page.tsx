@@ -35,6 +35,8 @@ import { improveDocumentText } from "../lib/improve-text.functions";
 import { CidAutocomplete } from "./cid-autocomplete";
 import { DocumentEditorHeader } from "./document-editor-header";
 import { RichTextEditor } from "./rich-text-editor";
+import { useTextReplacement } from "./use-text-replacement";
+
 import {
   DOCUMENT_VARIABLES,
   REPORT_TEMPLATES,
@@ -100,33 +102,48 @@ export function DocumentsPage() {
  * Encapsula a melhoria de texto com IA usada nas três abas de documentos.
  * Mantém o estado de carregamento e o feedback de erro/sucesso.
  */
-function useImproveWithAi(documentType: string, html: string, onResult: (html: string) => void) {
+function useImproveWithAi(
+  documentType: string,
+  html: string,
+  onResult: (html: string) => void,
+  requestReplace: ReturnType<typeof useTextReplacement>["requestReplace"],
+) {
   const [improving, setImproving] = useState(false);
 
-  const improve = useCallback(async () => {
+  const improve = useCallback(() => {
     const plain = html.replace(/<[^>]+>/g, "").trim();
     if (!plain) {
       toast.error("Escreva o texto do documento antes de melhorar com IA.");
       return;
     }
-    setImproving(true);
-    try {
-      const result = await improveDocumentText({ data: { documentType, html } });
-      onResult(result.html);
-      toast.success("Texto aprimorado com IA.");
-    } catch (error) {
-      toast.error(
-        error instanceof Error && error.message
-          ? error.message
-          : "Não foi possível melhorar o texto agora.",
-      );
-    } finally {
-      setImproving(false);
-    }
-  }, [documentType, html, onResult]);
+    requestReplace({
+      title: "Melhorar texto com IA?",
+      description:
+        "A IA reescreve todo o texto do editor e substitui o conteúdo atual. Você poderá desfazer pelo aviso exibido após a substituição.",
+      confirmLabel: "Melhorar texto",
+      successMessage: "Texto aprimorado com IA.",
+      apply: async () => {
+        setImproving(true);
+        try {
+          const result = await improveDocumentText({ data: { documentType, html } });
+          onResult(result.html);
+        } catch (error) {
+          toast.error(
+            error instanceof Error && error.message
+              ? error.message
+              : "Não foi possível melhorar o texto agora.",
+          );
+          throw error;
+        } finally {
+          setImproving(false);
+        }
+      },
+    });
+  }, [documentType, html, onResult, requestReplace]);
 
   return { improving, improve };
 }
+
 
 /* ---------------- Ações comuns ---------------- */
 
@@ -311,13 +328,30 @@ function ReportsTab() {
     setDiagnosticoSelecionado(descricao);
   }
 
+  const { requestReplace, replacementDialog } = useTextReplacement(html, setHtml);
+
   function applyTemplate(value: string) {
-    setModelo(value);
     const template = REPORT_TEMPLATES.find((t) => t.value === value);
-    if (template) setHtml(template.content);
+    if (!template) return;
+    requestReplace({
+      title: "Aplicar modelo?",
+      description: `O texto atual do relatório será substituído pelo modelo “${template.label}”. Você poderá desfazer pelo aviso exibido após a troca.`,
+      confirmLabel: "Aplicar modelo",
+      successMessage: `Modelo “${template.label}” aplicado.`,
+      apply: () => {
+        setModelo(value);
+        setHtml(template.content);
+      },
+    });
   }
 
-  const { improving, improve } = useImproveWithAi("Relatório médico", html, setHtml);
+  const { improving, improve } = useImproveWithAi(
+    "Relatório médico",
+    html,
+    setHtml,
+    requestReplace,
+  );
+
 
   return (
     <>
@@ -370,6 +404,8 @@ function ReportsTab() {
         paciente={paciente}
         onSaveTemplate={() => toast.success("Modelo salvo e disponível na lista (simulação).")}
       />
+
+      {replacementDialog}
     </>
   );
 }
@@ -413,7 +449,26 @@ function CertificateTab() {
 
   const conteudo = html || gerado;
 
-  const { improving, improve } = useImproveWithAi("Atestado médico", conteudo, setHtml);
+  const { requestReplace, replacementDialog } = useTextReplacement(html, setHtml);
+
+  const { improving, improve } = useImproveWithAi(
+    "Atestado médico",
+    conteudo,
+    setHtml,
+    requestReplace,
+  );
+
+  function restoreDefault() {
+    requestReplace({
+      title: "Restaurar texto padrão?",
+      description:
+        "As alterações feitas no texto serão descartadas e o texto gerado automaticamente voltará. Você poderá desfazer pelo aviso exibido após a troca.",
+      confirmLabel: "Restaurar texto",
+      successMessage: "Texto padrão restaurado.",
+      apply: () => setHtml(""),
+    });
+  }
+
 
   return (
     <>
@@ -474,10 +529,7 @@ function CertificateTab() {
                 type="button"
                 variant="ghost"
                 size="sm"
-                onClick={() => {
-                  setHtml("");
-                  toast.success("Texto padrão restaurado.");
-                }}
+                onClick={restoreDefault}
               >
                 Restaurar texto padrão
               </Button>
@@ -487,6 +539,8 @@ function CertificateTab() {
       />
 
       <DocumentActions title="Atestado médico" html={conteudo} paciente={paciente} />
+
+      {replacementDialog}
     </>
   );
 }
@@ -530,11 +584,26 @@ function AttendanceTab() {
 
   const conteudo = html || gerado;
 
+  const { requestReplace, replacementDialog } = useTextReplacement(html, setHtml);
+
   const { improving, improve } = useImproveWithAi(
     "Declaração de comparecimento",
     conteudo,
     setHtml,
+    requestReplace,
   );
+
+  function restoreDefault() {
+    requestReplace({
+      title: "Restaurar texto padrão?",
+      description:
+        "As alterações feitas no texto serão descartadas e o texto gerado automaticamente voltará. Você poderá desfazer pelo aviso exibido após a troca.",
+      confirmLabel: "Restaurar texto",
+      successMessage: "Texto padrão restaurado.",
+      apply: () => setHtml(""),
+    });
+  }
+
 
   return (
     <>
@@ -611,10 +680,7 @@ function AttendanceTab() {
                 type="button"
                 variant="ghost"
                 size="sm"
-                onClick={() => {
-                  setHtml("");
-                  toast.success("Texto padrão restaurado.");
-                }}
+                onClick={restoreDefault}
               >
                 Restaurar texto padrão
               </Button>
@@ -628,6 +694,8 @@ function AttendanceTab() {
         html={conteudo}
         paciente={paciente}
       />
+
+      {replacementDialog}
     </>
   );
 }
