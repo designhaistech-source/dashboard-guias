@@ -1,6 +1,8 @@
 import * as React from "react";
 
 import { VARIABLE_LABELS } from "../data/document-variables";
+import { DocumentPagePreview } from "./document-page-preview";
+
 import {
   Bold,
   Italic,
@@ -75,7 +77,10 @@ interface RichTextEditorProps {
   pendingVariables?: readonly string[];
   /** Valor atual de cada variável (ex.: { "@paciente": "Maria" }); usado ao inserir o chip. */
   variableValues?: Readonly<Record<string, string>>;
+  /** Quando informado, "Pré-visualizar" abre o documento paginado em A4 (só conferência). */
+  pagePreview?: { title: string; paciente: string };
 }
+
 
 /**
  * Editor de texto simples usado nos documentos clínicos.
@@ -95,9 +100,12 @@ export function RichTextEditor({
   previewHtml,
   pendingVariables,
   variableValues,
+  pagePreview,
 }: RichTextEditorProps) {
   const [previewing, setPreviewing] = React.useState(false);
+  const [pagePreviewOpen, setPagePreviewOpen] = React.useState(false);
   const canPreview = typeof previewHtml === "string";
+
   const ref = React.useRef<HTMLDivElement>(null);
   const { canUndo, canRedo, undo, redo, record } = useEditorHistory(value, onChange, ref);
   const { activeCommands, syncActiveCommands } = useActiveCommands(ref, previewing);
@@ -279,10 +287,10 @@ export function RichTextEditor({
             </Button>
             <Button
               type="button"
-              variant={previewing ? "secondary" : "ghost"}
+              variant={previewing || pagePreviewOpen ? "secondary" : "ghost"}
               size="sm"
-              onClick={() => setPreviewing(true)}
-              aria-pressed={previewing}
+              onClick={() => (pagePreview ? setPagePreviewOpen(true) : setPreviewing(true))}
+              aria-pressed={pagePreview ? undefined : previewing}
               className="h-7 gap-1.5 px-2 text-xs"
             >
               <Eye className="icon-optical h-3.5 w-3.5" aria-hidden />
@@ -290,6 +298,17 @@ export function RichTextEditor({
             </Button>
           </div>
         )}
+
+        {pagePreview && (
+          <DocumentPagePreview
+            open={pagePreviewOpen}
+            onOpenChange={setPagePreviewOpen}
+            title={pagePreview.title}
+            paciente={pagePreview.paciente}
+            html={previewHtml ?? value}
+          />
+        )}
+
       </div>
 
       {showVariables && (

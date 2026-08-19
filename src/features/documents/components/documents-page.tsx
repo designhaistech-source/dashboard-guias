@@ -619,6 +619,7 @@ function ReportsTab() {
       {staleNotice}
       <RichTextEditor
         ariaLabel="Texto do relatório médico"
+        pagePreview={{ title: "Relatório médico", paciente }}
         value={conteudo}
         onChange={setHtml}
         onImproveWithAi={improve}
@@ -821,6 +822,7 @@ function CertificateTab() {
       {staleNotice}
       <RichTextEditor
         ariaLabel="Texto do atestado"
+        pagePreview={{ title: "Atestado médico", paciente }}
         value={conteudo}
         onChange={setHtml}
         onImproveWithAi={improve}
@@ -1054,6 +1056,7 @@ function AttendanceTab() {
       {staleNotice}
       <RichTextEditor
         ariaLabel="Texto da declaração de comparecimento"
+        pagePreview={{ title: "Declaração de comparecimento", paciente }}
         value={conteudo}
         onChange={setHtml}
         onImproveWithAi={improve}
