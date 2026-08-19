@@ -966,13 +966,14 @@ function DashboardPage() {
                 </>
               }
               activeCount={activeFilters.length}
-              onClear={clearAllAndApply}
+              onClear={clearAllFilters}
               clearDisabled={activeFilters.length === 0}
               footerActions={
                 <>
-                  <Button type="button" variant="outline" size="sm" onClick={cancelEdits} disabled={!isDirty}>
-                    Cancelar
+                  <Button type="button" variant="outline" size="sm" onClick={cancelEdits}>
+                    {isDirty ? "Cancelar" : "Fechar"}
                   </Button>
+
                   <Button
                     type="button"
                     size="sm"
