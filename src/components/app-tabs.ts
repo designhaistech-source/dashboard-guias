@@ -19,4 +19,4 @@ export const appTabsIconClass = "icon-optical h-4 w-4 shrink-0";
 
 /** Rótulo do gatilho de aba. */
 export const appTabsLabelClass =
-  "max-w-full truncate whitespace-nowrap text-[11px] leading-tight tracking-tight sm:text-xs lg:text-sm";
+  "max-w-full text-center text-[11px] leading-tight tracking-tight text-balance whitespace-normal break-words sm:text-xs lg:truncate lg:whitespace-nowrap lg:text-sm";
