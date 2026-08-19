@@ -388,7 +388,13 @@ function ReportsTab() {
         padding="lg"
       >
         <div className="space-y-4">
-          <PatientField id="relatorio-paciente" value={paciente} onChange={setPaciente} />
+          <PatientField
+            id="relatorio-paciente"
+            value={paciente}
+            onChange={setPaciente}
+            error={pacienteError}
+          />
+
           <SelectField
             id="relatorio-modelo"
             label="Modelos disponíveis"
