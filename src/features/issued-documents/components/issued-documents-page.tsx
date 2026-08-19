@@ -82,9 +82,7 @@ export function IssuedDocumentsPage() {
   const handleDownload = (doc: IssuedDocument) => {
     printDocumentHtml(doc.type, doc.patient, doc.body);
     toast.success(`${doc.type} pronto para salvar em PDF.`, {
-      description: doc.signed
-        ? "O arquivo salvo não contém a assinatura digital."
-        : "Documento sem assinatura digital.",
+      description: "Documento sem assinatura digital — imprima para assinar manualmente.",
     });
   };
 
@@ -378,9 +376,7 @@ function IssuedDocumentModal({
             dangerouslySetInnerHTML={{ __html: doc.body }}
           />
           <p className="mt-4 text-xs text-muted-foreground">
-            {doc.signed
-              ? "Documento assinado digitalmente com certificado ICP-Brasil."
-              : "Documento sem assinatura digital — imprima para assinar manualmente."}
+            Documento sem assinatura digital — imprima para assinar manualmente.
           </p>
         </section>
       )}
