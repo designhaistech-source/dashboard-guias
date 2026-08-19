@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { AppBreadcrumb } from "@/components/app-breadcrumb";
 import { AppSidebar } from "@/components/app-sidebar";
 import { AppModal } from "@/components/app-modal";
+import { DocumentSheets, useDocumentPages } from "@/features/documents";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Combobox } from "@/components/ui/combobox";
@@ -346,6 +347,9 @@ function IssuedDocumentModal({
   onDownload,
   onPrint,
 }: { doc: IssuedDocument | null; onClose: () => void } & DocumentActions) {
+  const pages = useDocumentPages(doc?.body ?? "", doc !== null);
+  const total = pages?.length ?? 0;
+
   return (
     <AppModal
       open={doc !== null}
@@ -355,19 +359,23 @@ function IssuedDocumentModal({
       icon={<FileSpreadsheet className="h-4 w-4" aria-hidden="true" />}
       title={doc ? doc.type : "Documento emitido"}
       description={
-        doc ? `${doc.patient} · emitido em ${formatIssuedDocumentDate(doc.issuedAt)}` : undefined
+        doc
+          ? `${doc.patient} · emitido em ${formatIssuedDocumentDate(doc.issuedAt)}${
+              total > 0 ? ` · ${total} ${total === 1 ? "página" : "páginas"} A4` : ""
+            }`
+          : undefined
       }
       size="lg"
       footer={
         doc ? (
           <div className="flex flex-col gap-2 sm:flex-row sm:justify-end">
-            <Button variant="secondary" onClick={() => onPrint(doc)}>
-              <Printer className="h-4 w-4" aria-hidden="true" />
-              Imprimir
-            </Button>
-            <Button onClick={() => onDownload(doc)}>
+            <Button variant="secondary" onClick={() => onDownload(doc)}>
               <Download className="h-4 w-4" aria-hidden="true" />
               Baixar PDF
+            </Button>
+            <Button onClick={() => onPrint(doc)}>
+              <Printer className="h-4 w-4" aria-hidden="true" />
+              Imprimir
             </Button>
           </div>
         ) : undefined
@@ -375,17 +383,15 @@ function IssuedDocumentModal({
     >
       {doc && (
         <section aria-label={`Pré-visualização do documento de ${doc.patient}`}>
-          <div className="mb-4 flex flex-wrap items-center gap-2">
-            <Badge variant="info-soft" size="sm">
-              {doc.type}
-            </Badge>
-          </div>
-          <article
-            className="space-y-3 rounded-xl border border-border bg-muted/30 p-5 text-sm leading-relaxed text-foreground [&_p]:mb-3"
-            dangerouslySetInnerHTML={{ __html: doc.body }}
+          <DocumentSheets
+            pages={pages}
+            title={doc.type}
+            paciente={doc.patient}
+            ariaLabel={`Documento emitido de ${doc.patient}, somente leitura`}
           />
-          <p className="mt-4 text-xs text-muted-foreground">
-            Documento sem assinatura digital — imprima para assinar manualmente.
+          <p className="mt-4 text-center text-xs text-muted-foreground">
+            Documento já emitido, exibido em modo somente leitura — imprima para assinar
+            manualmente.
           </p>
         </section>
       )}
