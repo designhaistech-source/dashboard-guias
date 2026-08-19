@@ -283,7 +283,7 @@ async function generateReportPdf(periodLabel: string, metrics: DashboardMetrics)
     }
 
     applyType(TYPE.title);
-    doc.text("Relatório do Dashboard", titleX, 35);
+    doc.text("Relatório de Visão Geral", titleX, 35);
     applyType(TYPE.subtitle);
     doc.text(`Período: ${periodLabel}  •  Gerado em: ${dateStr}`, titleX, 52);
 
