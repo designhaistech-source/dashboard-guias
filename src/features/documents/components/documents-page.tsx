@@ -667,20 +667,27 @@ function AttendanceTab() {
         padding="lg"
       >
         <div className="space-y-4">
-          <PatientField id="comp-paciente" value={paciente} onChange={setPaciente} />
-          <Field id="comp-local" label="Local de atendimento">
+          <PatientField
+            id="comp-paciente"
+            value={paciente}
+            onChange={setPaciente}
+            error={pacienteError}
+          />
+          <Field id="comp-local" label="Local de atendimento" error={localError}>
             <Input
               id="comp-local"
               placeholder="Clínica, hospital ou consultório"
+              maxLength={120}
               value={local}
               onChange={(e) => setLocal(e.target.value)}
             />
           </Field>
           <div className="grid min-w-0 gap-4 sm:grid-cols-2 xl:grid-cols-4 [&>*]:min-w-0">
-            <Field id="comp-cidade" label="Cidade" optional>
+            <Field id="comp-cidade" label="Cidade" optional error={cidadeError}>
               <Input
                 id="comp-cidade"
                 placeholder="Cidade de emissão"
+                maxLength={60}
                 value={cidade}
                 onChange={(e) => setCidade(e.target.value)}
               />
@@ -699,24 +706,27 @@ function AttendanceTab() {
                 onChange={(e) => setData(e.target.value)}
               />
             </Field>
-            <Field id="comp-entrada" label="Horário de entrada">
+            <Field id="comp-entrada" label="Horário de entrada" error={horarios.entradaError}>
               <Input
                 id="comp-entrada"
                 type="time"
+                max={saida || undefined}
                 value={entrada}
                 onChange={(e) => setEntrada(e.target.value)}
               />
             </Field>
-            <Field id="comp-saida" label="Horário de saída">
+            <Field id="comp-saida" label="Horário de saída" error={horarios.saidaError}>
               <Input
                 id="comp-saida"
                 type="time"
+                min={entrada || undefined}
                 value={saida}
                 onChange={(e) => setSaida(e.target.value)}
               />
             </Field>
           </div>
         </div>
+
       </SurfaceCard>
 
       <RichTextEditor
