@@ -15,8 +15,6 @@ import {
   Sparkles,
   Undo2,
   Redo2,
-  Eye,
-  Pencil,
   AlertCircle,
 } from "lucide-react";
 
@@ -70,7 +68,6 @@ interface RichTextEditorProps {
   /** Variáveis inseríveis no texto (ex.: "@paciente"). */
   variables?: readonly string[];
   /** Texto com as variáveis já substituídas, exibido no modo de pré-visualização. */
-  previewHtml?: string;
   /** Variáveis usadas no texto que ainda não têm valor preenchido. */
   pendingVariables?: readonly string[];
   /** Valor atual de cada variável (ex.: { "@paciente": "Maria" }); usado ao inserir o chip. */
@@ -92,26 +89,19 @@ export function RichTextEditor({
   onImproveWithAi,
   improving = false,
   variables,
-  previewHtml,
   pendingVariables,
   variableValues,
 }: RichTextEditorProps) {
-  const [previewing, setPreviewing] = React.useState(false);
-  const canPreview = typeof previewHtml === "string";
   const ref = React.useRef<HTMLDivElement>(null);
   const { canUndo, canRedo, undo, redo, record } = useEditorHistory(value, onChange, ref);
-  const { activeCommands, syncActiveCommands } = useActiveCommands(ref, previewing);
+  const { activeCommands, syncActiveCommands } = useActiveCommands(ref, false);
   const uid = React.useId();
   const variablesHintId = `${uid}-variables-hint`;
   const aiHintId = `${uid}-ai-hint`;
   const countId = `${uid}-count`;
 
-  const showVariables = Boolean(variables && variables.length > 0) && !previewing;
-  const stats = React.useMemo(() => getTextStats(previewing ? (previewHtml ?? value) : value), [
-    previewing,
-    previewHtml,
-    value,
-  ]);
+  const showVariables = Boolean(variables && variables.length > 0);
+  const stats = React.useMemo(() => getTextStats(value), [value]);
 
   React.useEffect(() => {
     const el = ref.current;
@@ -264,32 +254,6 @@ export function RichTextEditor({
             </TooltipProvider>
           </>
         )}
-        {canPreview && (
-          <div className="ml-auto flex items-center gap-1">
-            <Button
-              type="button"
-              variant={previewing ? "ghost" : "secondary"}
-              size="sm"
-              onClick={() => setPreviewing(false)}
-              aria-pressed={!previewing}
-              className="h-7 gap-1.5 px-2 text-xs"
-            >
-              <Pencil className="icon-optical h-3.5 w-3.5" aria-hidden />
-              Editar
-            </Button>
-            <Button
-              type="button"
-              variant={previewing ? "secondary" : "ghost"}
-              size="sm"
-              onClick={() => setPreviewing(true)}
-              aria-pressed={previewing}
-              className="h-7 gap-1.5 px-2 text-xs"
-            >
-              <Eye className="icon-optical h-3.5 w-3.5" aria-hidden />
-              Pré-visualizar
-            </Button>
-          </div>
-        )}
       </div>
 
       {showVariables && (
@@ -328,7 +292,7 @@ export function RichTextEditor({
 
 
 
-      {previewing && pendingVariables && pendingVariables.length > 0 && (
+      {pendingVariables && pendingVariables.length > 0 && (
         <p
           role="status"
           className="flex items-start gap-1.5 border-b border-border bg-muted/40 px-4 py-2 text-xs text-muted-foreground"
@@ -341,14 +305,6 @@ export function RichTextEditor({
         </p>
       )}
 
-      {previewing ? (
-        <div
-          aria-label={`Pré-visualização — ${ariaLabel}`}
-          role="region"
-          className="min-h-64 bg-muted/20 px-4 py-3 text-sm leading-relaxed text-foreground"
-          dangerouslySetInnerHTML={{ __html: previewHtml ?? "" }}
-        />
-      ) : (
       <div
         ref={ref}
         role="textbox"
@@ -369,7 +325,6 @@ export function RichTextEditor({
         }}
         className="min-h-64 px-4 py-3 text-sm leading-relaxed text-foreground outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring empty:before:text-muted-foreground empty:before:content-[attr(data-placeholder)]"
       />
-      )}
 
       <p
         id={countId}
