@@ -500,7 +500,7 @@ function ReportsTab() {
     () =>
       buildIssues([
         { fieldId: "relatorio-paciente", label: "Paciente", message: pacienteError },
-        { fieldId: "cid-codigo", label: "CID", message: cidError },
+        { fieldId: "relatorio-cid", label: "CID", message: cidError },
         { fieldId: "relatorio-data", label: "Data do documento", message: dataStatus.error },
         { fieldId: "relatorio-cidade", label: "Cidade", message: cidadeError },
       ]),
@@ -579,7 +579,7 @@ function ReportsTab() {
                 : "Use “Salvar como modelo” após redigir o texto para reaproveitá-lo depois."
             }
           />
-          <CidFields cid={cid} descricao={diagnosticoSelecionado} onChange={handleCid} error={cidError} />
+          <CidFields id="relatorio-cid" cid={cid} descricao={diagnosticoSelecionado} onChange={handleCid} error={cidError} />
           <div className="grid min-w-0 gap-4 sm:grid-cols-2 [&>*]:min-w-0">
             <Field
               id="relatorio-data"
@@ -721,7 +721,7 @@ function CertificateTab() {
     () =>
       buildIssues([
         { fieldId: "atestado-paciente", label: "Paciente", message: pacienteError },
-        { fieldId: "cid-codigo", label: "CID", message: cidError },
+        { fieldId: "atestado-cid", label: "CID", message: cidError },
         { fieldId: "atestado-dias", label: "Dias de afastamento", message: diasError },
         { fieldId: "atestado-data", label: "Data do documento", message: dataStatus.error },
         { fieldId: "atestado-cidade", label: "Cidade", message: cidadeError },
@@ -782,7 +782,7 @@ function CertificateTab() {
             onChange={setPaciente}
             error={pacienteError}
           />
-          <CidFields cid={cid} descricao={diagnosticoSelecionado} onChange={handleCid} error={cidError} />
+          <CidFields id="atestado-cid" cid={cid} descricao={diagnosticoSelecionado} onChange={handleCid} error={cidError} />
           <SavedTemplatesField
             id="atestado-modelo"
             templates={savedTemplates}
