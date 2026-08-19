@@ -1123,14 +1123,17 @@ function DashboardPage() {
                 )}
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                <FilterField label="Paciente" value={draft.beneficiarioNome} onChange={(v) => setDraft((d) => ({ ...d, beneficiarioNome: v }))} />
-                <FilterField label="Número da guia" value={draft.numGuiaPrestador} onChange={(v) => setDraft((d) => ({ ...d, numGuiaPrestador: v }))} />
-                <FilterSelect label="Tipo de guia" value={draft.tipoGuia} onChange={(v) => setDraft((d) => ({ ...d, tipoGuia: v }))} options={GUIDE_TYPES.map((t) => t.name)} />
-                <FilterSelect label="Prestador solicitante" value={draft.prestadorSolicitante} onChange={(v) => setDraft((d) => ({ ...d, prestadorSolicitante: v }))} options={prestadoresList} />
-                <FilterField label="Procedimento" value={draft.procDescricao} onChange={(v) => setDraft((d) => ({ ...d, procDescricao: v }))} />
-                <FilterField label="Código do procedimento" value={draft.procCodigo} onChange={(v) => setDraft((d) => ({ ...d, procCodigo: v }))} />
+              <div>
+                <div className={filterGroupLabelClass}>Comparação</div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <FilterSelect label="Tipo de guia" value={draft.tipoGuia} onChange={(v) => setDraft((d) => ({ ...d, tipoGuia: v }))} options={GUIDE_TYPES.map((t) => t.name)} />
+                  <FilterSelect label="Prestador solicitante" value={draft.prestadorSolicitante} onChange={(v) => setDraft((d) => ({ ...d, prestadorSolicitante: v }))} options={prestadoresList} />
+                </div>
+                <p className="mt-1.5 text-xs text-muted-foreground">
+                  Para localizar uma guia específica por paciente, número ou procedimento, use a página Guias processadas.
+                </p>
               </div>
+
 
             </FilterCard>
           )}
