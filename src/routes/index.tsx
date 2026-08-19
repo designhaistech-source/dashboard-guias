@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef, useState } from "react";
 import jsPDF from "jspdf";
-import { toLocalIsoDate } from "@/lib/date";
+import { toLocalIsoDate, todayLocalIsoDate } from "@/lib/date";
 import autoTable from "jspdf-autotable";
 import {
   FileText,
