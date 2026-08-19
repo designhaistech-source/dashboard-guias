@@ -1455,7 +1455,7 @@ function DashboardPage() {
                       <div className="max-w-[96px] text-xs leading-tight text-muted-foreground">
                         {activeType !== undefined
                           ? `guias de ${typeData[activeType].name}`
-                          : "guias no período"}
+                          : "guias extraídas"}
                       </div>
                     </div>
                   </div>
