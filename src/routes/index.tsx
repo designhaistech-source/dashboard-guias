@@ -1106,6 +1106,8 @@ function DashboardPage() {
               options={prestadoresList}
             />
           </FilterCard>
+          )}
+
 
           {filtersOpen && (
             <div className="space-y-2">
