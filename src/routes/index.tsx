@@ -176,7 +176,8 @@ async function captureChartPng(
   document.body.appendChild(colorProbe);
   const resolveColor = (v: string) => {
     if (!v || v === "none" || v.startsWith("url(")) return v;
-    if (!/oklch|oklab|color\(/i.test(v)) return v;
+    if (!/oklch|oklab|color\(|var\(/i.test(v)) return v;
+    colorProbe.style.color = "";
     colorProbe.style.color = v;
     return window.getComputedStyle(colorProbe).color || v;
   };
@@ -195,6 +196,8 @@ async function captureChartPng(
       "opacity",
       "fill-opacity",
       "stroke-opacity",
+      "stop-color",
+      "stop-opacity",
       "font-size",
       "font-family",
       "font-weight",
@@ -203,7 +206,7 @@ async function captureChartPng(
     for (const p of props) {
       let v = cs.getPropertyValue(p);
       if (!v) continue;
-      if (p === "fill" || p === "stroke") v = resolveColor(v);
+      if (p === "fill" || p === "stroke" || p === "stop-color") v = resolveColor(v);
       style += `${p}:${v};`;
     }
     dst.setAttribute("style", style);
