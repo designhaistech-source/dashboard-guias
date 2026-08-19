@@ -8,7 +8,6 @@ import {
   BookmarkPlus,
   User,
   Loader2,
-  Eye,
 } from "lucide-react";
 import { AlertCircle } from "lucide-react";
 import { getRouteApi, useNavigate } from "@tanstack/react-router";
@@ -35,7 +34,6 @@ import { CID10 } from "@/lib/cid";
 import { improveDocumentText } from "../lib/improve-text.functions";
 
 import { CidAutocomplete } from "./cid-autocomplete";
-import { DocumentPagePreview } from "./document-page-preview";
 import { DocumentEditorHeader } from "./document-editor-header";
 import { RichTextEditor } from "./rich-text-editor";
 import { useTextReplacement } from "./use-text-replacement";
@@ -231,7 +229,6 @@ function DocumentActions({
   const disabled = !paciente.trim();
   const temTexto = html.replace(/<[^>]+>/g, "").trim().length > 0;
   const [downloading, setDownloading] = useState(false);
-  const [previewOpen, setPreviewOpen] = useState(false);
   const summaryId = "document-actions-issues";
 
   const allIssues: FieldIssue[] = disabled
@@ -253,17 +250,8 @@ function DocumentActions({
     focusField(first.fieldId);
   }
 
-  function handlePreview() {
-    if (hasIssues) {
-      reportIssues();
-      return;
-    }
-    if (!temTexto) {
-      toast.error("Escreva o texto do documento antes de pré-visualizar.");
-      return;
-    }
-    setPreviewOpen(true);
-  }
+
+
 
   function handlePrint() {
     if (hasIssues) {
@@ -365,16 +353,6 @@ function DocumentActions({
       </Button>
       <Button
         type="button"
-        variant="outline"
-        size="sm"
-        onClick={handlePreview}
-        aria-describedby={hasIssues ? summaryId : undefined}
-      >
-        <Eye className="icon-optical h-4 w-4" aria-hidden />
-        Pré-visualizar páginas
-      </Button>
-      <Button
-        type="button"
         size="sm"
         onClick={handlePrint}
         aria-describedby={hasIssues ? summaryId : undefined}
@@ -383,21 +361,9 @@ function DocumentActions({
         Imprimir
       </Button>
 
-      <DocumentPagePreview
-        open={previewOpen}
-        onOpenChange={setPreviewOpen}
-        title={title}
-        paciente={paciente}
-        html={html}
-        onDownload={() => {
-          setPreviewOpen(false);
-          void handleDownload();
-        }}
-        onPrint={() => {
-          setPreviewOpen(false);
-          handlePrint();
-        }}
-      />
+
+
+
     </FormActionBar>
   );
 }
