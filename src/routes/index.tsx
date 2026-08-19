@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef, useState } from "react";
 import jsPDF from "jspdf";
-import { toLocalIsoDate } from "@/lib/date";
+import { toLocalIsoDate, todayLocalIsoDate } from "@/lib/date";
 import autoTable from "jspdf-autotable";
 import {
   FileText,
@@ -947,13 +947,20 @@ function DashboardPage() {
     if (dailyData.length < 2) return undefined;
     const last = dailyData[dailyData.length - 1].guias;
     const prev = dailyData[dailyData.length - 2].guias;
+    const prevDate = formatIsoToBr(dailyData[dailyData.length - 2].date);
     const diff = last - prev;
-    if (diff === 0) return { direction: "flat", label: "estável vs. dia anterior" };
+    if (diff === 0) {
+      return { direction: "flat", label: `Mesma quantidade do dia ${prevDate}` };
+    }
     return {
       direction: diff > 0 ? "up" : "down",
-      label: `${diff > 0 ? "+" : "-"}${Math.abs(diff)} vs. dia anterior`,
+      label: `${Math.abs(diff)} ${Math.abs(diff) === 1 ? "guia" : "guias"} ${diff > 0 ? "a mais" : "a menos"} que no dia ${prevDate}`,
     };
   }, [dailyData]);
+
+  /** Reference date of the "today" KPI, shown discreetly in the card. */
+  const todayLabel = formatIsoToBr(todayLocalIsoDate());
+
 
   return (
     <div className="flex min-h-screen w-full bg-background text-foreground">
@@ -1130,7 +1137,7 @@ function DashboardPage() {
           {/* KPIs */}
           <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             <Kpi icon={FileText} label="Total de guias extraídas" value={String(total)} hint="guias no período selecionado" tone="primary" />
-            <Kpi icon={Activity} label="Guias extraídas hoje" value={String(metrics.today)} hint={todayTrend ? todayTrend.label : "guias extraídas hoje"} tone="success" trend={todayTrend?.direction} />
+            <Kpi icon={Activity} label="Guias extraídas hoje" value={String(metrics.today)} meta={todayLabel} hint={todayTrend ? todayTrend.label : "guias extraídas nesta data"} tone="success" trend={todayTrend?.direction} />
             <Kpi icon={TrendingUp} label="Média de guias por dia" value={String(dailyAvg)} hint="guias por dia no período selecionado" tone="info" />
             <Kpi icon={Layers} label="Tipos de guia" value={String(metrics.distinctTypes)} hint="tipos diferentes no período selecionado" tone="purple" />
 
@@ -1460,6 +1467,7 @@ function Kpi({
   label,
   value,
   hint,
+  meta,
   tone,
   trend,
 }: {
@@ -1467,6 +1475,8 @@ function Kpi({
   label: string;
   value: string;
   hint: string;
+  /** Discreet reference detail (e.g. the exact date the value refers to). */
+  meta?: string;
   tone: "primary" | "success" | "info" | "purple";
   trend?: TrendDirection;
 }) {
@@ -1488,6 +1498,7 @@ function Kpi({
           <Icon className="h-4 w-4" />
         </span>
       </div>
+      {meta && <div className="mt-0.5 text-xs text-muted-foreground">{meta}</div>}
       <div className="mt-3 metric-value text-foreground">{value}</div>
       <div
         className={[
