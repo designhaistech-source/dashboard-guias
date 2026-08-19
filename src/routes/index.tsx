@@ -1657,6 +1657,9 @@ function Kpi({
       </div>
       {meta && <div className="mt-0.5 text-xs text-muted-foreground">{meta}</div>}
       <div className="mt-3 metric-value text-foreground">{value}</div>
+      {description && (
+        <div className="mt-0.5 text-xs text-muted-foreground">{description}</div>
+      )}
       {(hint || trend) && (
         <div
           className={[
