@@ -1271,7 +1271,7 @@ function DashboardPage() {
                           onSort={setProcedureSort}
                         />
                         <SortableHead
-                          label="Qtd."
+                          label="Quantidade"
                           column="count"
                           sort={procedureSort}
                           onSort={setProcedureSort}
