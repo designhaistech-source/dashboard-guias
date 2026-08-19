@@ -26,6 +26,8 @@ import {
   ChevronDown,
   CalendarRange,
   Info,
+  FileCheck2,
+  FileStack,
 } from "lucide-react";
 import {
   AreaChart,
@@ -63,6 +65,13 @@ import {
   DataTableRow,
 } from "@/components/data-table";
 import { PageHeader } from "@/components/page-header";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  appTabsIconClass,
+  appTabsLabelClass,
+  appTabsListClass,
+  appTabsTriggerClass,
+} from "@/components/app-tabs";
 import { SurfaceCard } from "@/components/surface-card";
 import { cn } from "@/lib/utils";
 import { Field } from "@/components/form-field";
@@ -1104,6 +1113,49 @@ function DashboardPage() {
             }
           />
 
+          <Tabs defaultValue="extraidas" className="space-y-6">
+            <TooltipProvider>
+              <TabsList className={appTabsListClass}>
+                <TabsTrigger value="extraidas" className={appTabsTriggerClass}>
+                  <FileText className={appTabsIconClass} aria-hidden />
+                  <span className={appTabsLabelClass}>Guias extraídas</span>
+                </TabsTrigger>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <span className="flex min-w-0">
+                      <TabsTrigger
+                        value="emitidas"
+                        disabled
+                        aria-disabled="true"
+                        className={cn(appTabsTriggerClass, "w-full opacity-50")}
+                      >
+                        <FileCheck2 className={appTabsIconClass} aria-hidden />
+                        <span className={appTabsLabelClass}>Guias emitidas</span>
+                      </TabsTrigger>
+                    </span>
+                  </TooltipTrigger>
+                  <TooltipContent>Disponível em breve</TooltipContent>
+                </Tooltip>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <span className="flex min-w-0">
+                      <TabsTrigger
+                        value="documentos"
+                        disabled
+                        aria-disabled="true"
+                        className={cn(appTabsTriggerClass, "w-full opacity-50")}
+                      >
+                        <FileStack className={appTabsIconClass} aria-hidden />
+                        <span className={appTabsLabelClass}>Documentos emitidos</span>
+                      </TabsTrigger>
+                    </span>
+                  </TooltipTrigger>
+                  <TooltipContent>Disponível em breve</TooltipContent>
+                </Tooltip>
+              </TabsList>
+            </TooltipProvider>
+
+            <TabsContent value="extraidas" className="space-y-6">
           {/* Recorte aplicado — sempre visível, sem abrir os filtros */}
           <p className="flex items-start gap-2 text-sm text-muted-foreground" aria-live="polite">
             <CalendarRange className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />
@@ -1592,6 +1644,12 @@ function DashboardPage() {
               </div>
             )}
           </SurfaceCard>
+            </TabsContent>
+
+            {/* Reservado para indicadores, filtros e gráficos próprios de cada aba. */}
+            <TabsContent value="emitidas" />
+            <TabsContent value="documentos" />
+          </Tabs>
         </div>
         <SiteFooter />
       </main>
