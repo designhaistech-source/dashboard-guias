@@ -378,9 +378,7 @@ function IssuedDocumentModal({
             dangerouslySetInnerHTML={{ __html: doc.body }}
           />
           <p className="mt-4 text-xs text-muted-foreground">
-            {doc.signed
-              ? "Documento assinado digitalmente com certificado ICP-Brasil."
-              : "Documento sem assinatura digital — imprima para assinar manualmente."}
+            Documento sem assinatura digital — imprima para assinar manualmente.
           </p>
         </section>
       )}
