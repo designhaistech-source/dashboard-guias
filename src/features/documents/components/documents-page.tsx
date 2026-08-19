@@ -664,8 +664,11 @@ function ReportsTab({ onNewDocument }: { onNewDocument: () => void }) {
   }
 
 
+  const locked = Boolean(issuedDoc);
+
   return (
     <>
+      <fieldset disabled={locked} className="min-w-0 space-y-6 border-0 p-0">
       <SurfaceCard
         title="Dados do relatório"
         description="Identifique o paciente e o diagnóstico que será impresso no documento."
@@ -728,6 +731,7 @@ function ReportsTab({ onNewDocument }: { onNewDocument: () => void }) {
 
       {staleNotice}
       <RichTextEditor
+        readOnly={locked}
         ariaLabel="Texto do relatório médico"
         pagePreview={{ title: "Relatório médico", paciente }}
         value={conteudo}
@@ -757,11 +761,17 @@ function ReportsTab({ onNewDocument }: { onNewDocument: () => void }) {
         }
       />
 
+      </fieldset>
+
       <DocumentActions
         title="Relatório médico"
         html={previewHtml}
         paciente={paciente}
         pacienteFieldId="relatorio-paciente"
+        type="Relatório"
+        issuedDoc={issuedDoc}
+        onIssued={setIssuedDoc}
+        onNewDocument={onNewDocument}
         issues={issues}
 
         onSaveTemplate={requestSaveTemplate}
@@ -871,8 +881,11 @@ function CertificateTab({ onNewDocument }: { onNewDocument: () => void }) {
   }
 
 
+  const locked = Boolean(issuedDoc);
+
   return (
     <>
+      <fieldset disabled={locked} className="min-w-0 space-y-6 border-0 p-0">
       <SurfaceCard
         title="Dados do atestado"
         description="O texto padrão é gerado automaticamente a partir destes campos."
@@ -932,6 +945,7 @@ function CertificateTab({ onNewDocument }: { onNewDocument: () => void }) {
 
       {staleNotice}
       <RichTextEditor
+        readOnly={locked}
         ariaLabel="Texto do atestado"
         pagePreview={{ title: "Atestado médico", paciente }}
         value={conteudo}
@@ -964,11 +978,17 @@ function CertificateTab({ onNewDocument }: { onNewDocument: () => void }) {
         }
       />
 
+      </fieldset>
+
       <DocumentActions
         title="Atestado médico"
         html={previewHtml}
         paciente={paciente}
         pacienteFieldId="atestado-paciente"
+        type="Atestado"
+        issuedDoc={issuedDoc}
+        onIssued={setIssuedDoc}
+        onNewDocument={onNewDocument}
         issues={issues}
         onSaveTemplate={requestSaveTemplate}
       />
@@ -1088,8 +1108,11 @@ function AttendanceTab({ onNewDocument }: { onNewDocument: () => void }) {
   }
 
 
+  const locked = Boolean(issuedDoc);
+
   return (
     <>
+      <fieldset disabled={locked} className="min-w-0 space-y-6 border-0 p-0">
       <SurfaceCard
         title="Dados da declaração"
         description="Informe o local e os horários de permanência do paciente no atendimento."
@@ -1167,6 +1190,7 @@ function AttendanceTab({ onNewDocument }: { onNewDocument: () => void }) {
 
       {staleNotice}
       <RichTextEditor
+        readOnly={locked}
         ariaLabel="Texto da declaração de comparecimento"
         pagePreview={{ title: "Declaração de comparecimento", paciente }}
         value={conteudo}
@@ -1199,11 +1223,17 @@ function AttendanceTab({ onNewDocument }: { onNewDocument: () => void }) {
         }
       />
 
+      </fieldset>
+
       <DocumentActions
         title="Declaração de comparecimento"
         html={previewHtml}
         paciente={paciente}
         pacienteFieldId="comp-paciente"
+        type="Comparecimento"
+        issuedDoc={issuedDoc}
+        onIssued={setIssuedDoc}
+        onNewDocument={onNewDocument}
         issues={issues}
 
         onSaveTemplate={requestSaveTemplate}
