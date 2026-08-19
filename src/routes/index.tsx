@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import jsPDF from "jspdf";
 import {
   toLocalIsoDate,
@@ -1467,22 +1467,6 @@ function DashboardPage() {
 
 
 
-
-function LegendDot({ color, label, dashed }: { color: string; label: string; dashed?: boolean }) {
-  return (
-    <span className="inline-flex items-center icon-optical gap-1.5 text-muted-foreground">
-      {dashed ? (
-        <span
-          className="inline-block h-0 w-4 border-t-2"
-          style={{ borderColor: color, borderStyle: "dashed" }}
-        />
-      ) : (
-        <span className="inline-block h-2 w-2 rounded-full" style={{ background: color }} />
-      )}
-      {label}
-    </span>
-  );
-}
 
 function Kpi({
   icon: Icon,
