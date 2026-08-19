@@ -477,6 +477,13 @@ function CertificateTab() {
 
   const dataStatus = useMemo(() => getDocumentDateStatus(data), [data]);
 
+  const pacienteError = useMemo(() => validatePaciente(paciente), [paciente]);
+  const cidadeError = useMemo(() => validateCidade(cidade), [cidade]);
+  const diasError = useMemo(() => validateDiasAfastamento(dias), [dias]);
+
+  const blockReason = dataStatus.error ?? pacienteError ?? cidadeError ?? diasError;
+
+
   const { requestReplace, replacementDialog } = useTextReplacement(html, setHtml);
 
   const { improving, improve } = useImproveWithAi(
