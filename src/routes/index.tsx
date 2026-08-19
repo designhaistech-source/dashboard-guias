@@ -35,7 +35,9 @@ import {
   Bar,
   LabelList,
   Sector,
+  ReferenceLine,
 } from "recharts";
+
 import { AppBreadcrumb } from "@/components/app-breadcrumb";
 import { AppSidebar } from "@/components/app-sidebar";
 import { SiteFooter } from "@/components/site-footer";
@@ -699,6 +701,22 @@ function formatDailyTick(iso: string, index: number): string {
   return showMonth ? `${day} ${monthLabel}` : day;
 }
 
+/**
+ * Datas de virada de mês (dia 01, exceto o primeiro ponto) usadas para desenhar
+ * separadores verticais discretos no gráfico diário.
+ */
+function monthBoundaries(data: { date: string }[]): { date: string; label: string }[] {
+  return data
+    .filter((d, i) => i > 0 && d.date.slice(8, 10) === "01")
+    .map((d) => {
+      const month = Number(d.date.slice(5, 7));
+      const monthLabel = MONTH_ABBR[month - 1] ?? d.date.slice(5, 7);
+      return { date: d.date, label: `${monthLabel}/${d.date.slice(2, 4)}` };
+    });
+}
+
+
+
 
 
 const filterLabels: Record<keyof GuideFilters, string> = {
@@ -899,6 +917,8 @@ function DashboardPage() {
     );
   }, [procedures, procedureSort]);
   const dailyData = metrics.daily;
+  const monthMarks = useMemo(() => monthBoundaries(dailyData), [dailyData]);
+
   const hasData = total > 0;
   const [generatingReport, setGeneratingReport] = useState(false);
 
@@ -1172,6 +1192,23 @@ function DashboardPage() {
                       activeDot={{ r: 5, strokeWidth: 2, stroke: "var(--card)" }}
                       isAnimationActive={false}
                     />
+                    {/* Separadores discretos de virada de mês */}
+                    {monthMarks.map((m) => (
+                      <ReferenceLine
+                        key={m.date}
+                        x={m.date}
+                        stroke="var(--border)"
+                        strokeDasharray="4 4"
+                        label={{
+                          value: m.label,
+                          position: "insideTopRight",
+                          fill: "var(--muted-foreground)",
+                          fontSize: 10,
+                        }}
+                      />
+                    ))}
+
+
 
                   </AreaChart>
                 </ResponsiveContainer>
