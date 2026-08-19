@@ -1464,15 +1464,6 @@ function DashboardPage() {
         <SiteFooter />
       </main>
 
-      <ConfirmDialog
-        open={confirmDiscardFilters}
-        onOpenChange={setConfirmDiscardFilters}
-        title="Descartar alterações?"
-        description="Você tem filtros alterados que ainda não foram aplicados. Se sair agora, eles serão perdidos."
-        cancelLabel="Continuar editando"
-        confirmLabel="Descartar alterações"
-        onConfirm={discardFilterEdits}
-      />
 
 
     </div>
