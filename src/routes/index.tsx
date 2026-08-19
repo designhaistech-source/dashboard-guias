@@ -631,8 +631,22 @@ function FilterSelect({
 }
 
 
+/** Filtros cujo valor é uma data ISO e deve ser exibido em pt-BR. */
+const dateFilterKeys: ReadonlySet<keyof GuideFilters> = new Set([
+  "dataAutorizacaoDe",
+  "dataAutorizacaoAte",
+]);
+
+/** Converte o valor cru do filtro na forma legível exibida nos chips. */
+function formatFilterValue(key: keyof GuideFilters, value: string): string {
+  if (!dateFilterKeys.has(key)) return value;
+  const [year, month, day] = value.split("-");
+  if (!year || !month || !day) return value;
+  return `${day}/${month}/${year}`;
+}
+
 const filterLabels: Record<keyof GuideFilters, string> = {
-  numGuiaPrestador: "Nº guia prestador",
+  numGuiaPrestador: "Nº guia",
   numGuiaOperadora: "Nº guia operadora",
   senha: "Senha",
   registroAns: "Registro ANS",
@@ -869,7 +883,7 @@ function DashboardPage() {
               {activeFilters.map(([k, v]) => (
                 <Chip key={k} asSpan variant="outline">
                   <span className="text-muted-foreground">{filterLabels[k]}:</span>
-                  <span className="font-medium">{v}</span>
+                  <span className="font-medium">{formatFilterValue(k, v)}</span>
                   <Button
                     type="button"
                     variant="ghost"
