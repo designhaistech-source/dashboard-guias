@@ -25,6 +25,7 @@ import {
   ChevronUp,
   ChevronDown,
   CalendarRange,
+  Info,
 } from "lucide-react";
 import {
   AreaChart,
@@ -72,6 +73,7 @@ import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
 import { Combobox } from "@/components/ui/combobox";
 import { Chip } from "@/components/ui/chip";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Badge } from "@/components/ui/badge";
 import {
   DASHBOARD_GUIDES,
@@ -969,7 +971,49 @@ function DashboardPage() {
     };
   }, [dailyData]);
 
+  /**
+   * Explains, in one short sentence per card, the exact dates used in the
+   * calculation and the comparison rule applied.
+   */
+  const kpiTooltips = useMemo(() => {
+    const firstDate = dailyData[0]?.date ? formatIsoToBrFull(dailyData[0].date) : undefined;
+    const lastDate = dailyData[dailyData.length - 1]?.date
+      ? formatIsoToBrFull(dailyData[dailyData.length - 1].date)
+      : undefined;
+    const rangeSentence =
+      firstDate && lastDate
+        ? firstDate === lastDate
+          ? `Considera apenas o dia ${firstDate}.`
+          : `Considera os dias de ${firstDate} até ${lastDate}.`
+        : "Nenhum dia com dados no período selecionado.";
+    const currentDate = lastDate;
+    const previousDate = dailyData[dailyData.length - 2]?.date
+      ? formatIsoToBrFull(dailyData[dailyData.length - 2].date)
+      : undefined;
+    const window = dailyData.length >= 4 ? Math.min(7, Math.floor(dailyData.length / 2)) : 0;
+    const recentStart = window ? formatIsoToBrFull(dailyData[dailyData.length - window].date) : undefined;
+    const previousStart = window
+      ? formatIsoToBrFull(dailyData[dailyData.length - window * 2].date)
+      : undefined;
+    const previousEnd = window
+      ? formatIsoToBrFull(dailyData[dailyData.length - window - 1].date)
+      : undefined;
 
+    return {
+      total: `${rangeSentence} Regra: soma das guias extraídas em cada dia do período.`,
+      today:
+        currentDate && previousDate
+          ? `Data atual: ${currentDate}. Data anterior: ${previousDate}. Regra: quantidade do dia atual menos a do dia anterior.`
+          : currentDate
+            ? `Data atual: ${currentDate}. Sem dia anterior no período para comparar.`
+            : "Sem dias com dados para calcular este indicador.",
+      average:
+        window && recentStart && currentDate && previousStart && previousEnd
+          ? `Período atual: ${recentStart} a ${currentDate}. Período anterior: ${previousStart} a ${previousEnd}. Regra: média diária atual menos a média diária do período anterior de mesmo tamanho.`
+          : `${rangeSentence} Regra: total de guias dividido pelo número de dias. Sem período anterior para comparar.`,
+      types: `${rangeSentence} Regra: contagem de tipos de guia diferentes, sem comparação com outro período.`,
+    };
+  }, [dailyData]);
 
 
   return (
@@ -1152,6 +1196,7 @@ function DashboardPage() {
               label="Total de guias extraídas"
               value={String(total)}
               meta={periodLabel}
+              tooltip={kpiTooltips.total}
               hint={dayCount > 0 ? `Soma das guias extraídas em ${dayCount} ${dayCount === 1 ? "dia" : "dias"}` : "Nenhuma guia extraída no período"}
               tone="primary"
             />
@@ -1160,6 +1205,7 @@ function DashboardPage() {
               label="Guias extraídas hoje"
               value={String(metrics.today)}
               meta={todayLabel}
+              tooltip={kpiTooltips.today}
               hint={todayTrend ? todayTrend.label : "Guias extraídas nesta data"}
               tone="success"
               trend={todayTrend?.direction}
@@ -1169,6 +1215,7 @@ function DashboardPage() {
               label="Média de guias por dia"
               value={String(dailyAvg)}
               meta={periodLabel}
+              tooltip={kpiTooltips.average}
               hint={weekTrend ? weekTrend.label : `Média diária considerando ${dayCount} ${dayCount === 1 ? "dia" : "dias"}`}
               tone="info"
               trend={weekTrend?.direction}
@@ -1178,6 +1225,7 @@ function DashboardPage() {
               label="Tipos de guia"
               value={String(metrics.distinctTypes)}
               meta={periodLabel}
+              tooltip={kpiTooltips.types}
               hint={`Tipos diferentes encontrados no período`}
               tone="purple"
             />
