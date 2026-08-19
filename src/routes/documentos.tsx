@@ -7,7 +7,7 @@ type DocumentTab = (typeof DOCUMENT_TABS)[number];
 
 export const Route = createFileRoute("/documentos")({
   // Mantém a aba ativa na URL para sobreviver a reload e compartilhamento.
-  validateSearch: (search: Record<string, unknown>): { aba: DocumentTab } => ({
+  validateSearch: (search: Record<string, unknown>): { aba?: DocumentTab } => ({
     aba: DOCUMENT_TABS.includes(search.aba as DocumentTab)
       ? (search.aba as DocumentTab)
       : "relatorios",
