@@ -382,8 +382,13 @@ async function generateReportPdf(
       }
     };
 
-    const sectionTitle = (text: string, keepNextH = 0) => {
-      const titleBlock = 28;
+    const sectionTitle = (text: string, keepNextH = 0, description?: string) => {
+      applyType(TYPE.subtitle);
+      const descLines = description
+        ? doc.splitTextToSize(description, pageWidth - margin * 2)
+        : [];
+      const titleBlock = 28 + descLines.length * 12;
+      // The title, its description and the following block always travel together.
       keepTogether(titleBlock + keepNextH);
       applyType(TYPE.sectionH);
       doc.text(text, margin, y);
@@ -391,8 +396,14 @@ async function generateReportPdf(
       doc.setLineWidth(0.6);
       doc.line(margin, y + 4, pageWidth - margin, y + 4);
       y += 18;
+      if (descLines.length > 0) {
+        applyType(TYPE.subtitle);
+        doc.text(descLines, margin, y);
+        y += descLines.length * 12 + 2;
+      }
       applyType(TYPE.body);
     };
+
 
     // Fit image into a box preserving aspect ratio (contain).
     const fitSize = (img: { w: number; h: number }, maxW: number, maxH: number) => {
