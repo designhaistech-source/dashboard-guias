@@ -955,6 +955,8 @@ function SortableHead({
 
 function DashboardPage() {
   const [activeType, setActiveType] = useState<number | undefined>(undefined);
+  /** Densidade e rótulos dos gráficos mudam em telas estreitas. */
+  const isMobile = useIsMobile();
   /** Filtros abertos por padrão, como na página Guias emitidas. */
   const [filtersOpen, setFiltersOpen] = useState(true);
   const [filters, setFilters] = useState<GuideFilters>(emptyFilters);
