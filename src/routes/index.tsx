@@ -1604,6 +1604,7 @@ function Kpi({
   label,
   value,
   hint,
+  description,
   meta,
   tooltip,
   tone,
@@ -1613,6 +1614,8 @@ function Kpi({
   label: string;
   value: string;
   hint: string;
+  /** Plain-language sentence explaining what the number counts. */
+  description?: string;
   /** Discreet reference detail (e.g. the exact date the value refers to). */
   meta?: string;
   /** Short sentence with the exact dates and the comparison rule used. */
