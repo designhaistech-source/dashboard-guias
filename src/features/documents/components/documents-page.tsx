@@ -734,6 +734,8 @@ function ReportsTab({ onNewDocument }: { onNewDocument: () => void }) {
             >
               <Input
                 id="relatorio-data"
+                readOnly={locked}
+                aria-readonly={locked || undefined}
                 type="date"
                 max={todayIsoDate()}
                 value={data}
@@ -743,6 +745,8 @@ function ReportsTab({ onNewDocument }: { onNewDocument: () => void }) {
             <Field id="relatorio-cidade" label="Cidade" optional error={cidadeError}>
               <Input
                 id="relatorio-cidade"
+                readOnly={locked}
+                aria-readonly={locked || undefined}
                 placeholder="Cidade de emissão"
                 maxLength={60}
                 value={cidade}
@@ -936,6 +940,7 @@ function CertificateTab({ onNewDocument }: { onNewDocument: () => void }) {
           <div className="grid min-w-0 gap-4 sm:grid-cols-2 xl:grid-cols-3 [&>*]:min-w-0">
             <SelectField
               id="atestado-dias"
+              readOnly={locked}
               label="Dias de afastamento"
               value={dias}
               onValueChange={setDias}
@@ -950,6 +955,8 @@ function CertificateTab({ onNewDocument }: { onNewDocument: () => void }) {
             >
               <Input
                 id="atestado-data"
+                readOnly={locked}
+                aria-readonly={locked || undefined}
                 type="date"
                 max={todayIsoDate()}
                 value={data}
@@ -959,6 +966,8 @@ function CertificateTab({ onNewDocument }: { onNewDocument: () => void }) {
             <Field id="atestado-cidade" label="Cidade" optional error={cidadeError}>
               <Input
                 id="atestado-cidade"
+                readOnly={locked}
+                aria-readonly={locked || undefined}
                 placeholder="Cidade de emissão"
                 maxLength={60}
                 value={cidade}
@@ -1157,6 +1166,8 @@ function AttendanceTab({ onNewDocument }: { onNewDocument: () => void }) {
           <Field id="comp-local" label="Local de atendimento" error={localError}>
             <Input
               id="comp-local"
+              readOnly={locked}
+              aria-readonly={locked || undefined}
               placeholder="Clínica, hospital ou consultório"
               maxLength={120}
               value={local}
@@ -1174,6 +1185,8 @@ function AttendanceTab({ onNewDocument }: { onNewDocument: () => void }) {
             <Field id="comp-cidade" label="Cidade" optional error={cidadeError}>
               <Input
                 id="comp-cidade"
+                readOnly={locked}
+                aria-readonly={locked || undefined}
                 placeholder="Cidade de emissão"
                 maxLength={60}
                 value={cidade}
@@ -1188,6 +1201,8 @@ function AttendanceTab({ onNewDocument }: { onNewDocument: () => void }) {
             >
               <Input
                 id="comp-data"
+                readOnly={locked}
+                aria-readonly={locked || undefined}
                 type="date"
                 max={todayIsoDate()}
                 value={data}
@@ -1197,6 +1212,8 @@ function AttendanceTab({ onNewDocument }: { onNewDocument: () => void }) {
             <Field id="comp-entrada" label="Horário de entrada" error={horarios.entradaError}>
               <Input
                 id="comp-entrada"
+                readOnly={locked}
+                aria-readonly={locked || undefined}
                 type="time"
                 max={saida || undefined}
                 value={entrada}
@@ -1206,6 +1223,8 @@ function AttendanceTab({ onNewDocument }: { onNewDocument: () => void }) {
             <Field id="comp-saida" label="Horário de saída" error={horarios.saidaError}>
               <Input
                 id="comp-saida"
+                readOnly={locked}
+                aria-readonly={locked || undefined}
                 type="time"
                 min={entrada || undefined}
                 value={saida}
