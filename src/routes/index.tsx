@@ -1275,7 +1275,7 @@ function DashboardPage() {
               {!hasData ? (
                 emptyState
               ) : (
-                <div className="h-72" data-chart="daily">
+                <div className="h-72" data-chart="daily" ref={dailyChartRef}>
                   <ResponsiveContainer width="100%" height="100%">
                     <AreaChart
                       data={dailyData}
