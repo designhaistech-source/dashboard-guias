@@ -404,6 +404,8 @@ function ReportsTab() {
         paciente={paciente}
         onSaveTemplate={() => toast.success("Modelo salvo e disponível na lista (simulação).")}
       />
+
+      {replacementDialog}
     </>
   );
 }
@@ -527,10 +529,7 @@ function CertificateTab() {
                 type="button"
                 variant="ghost"
                 size="sm"
-                onClick={() => {
-                  setHtml("");
-                  toast.success("Texto padrão restaurado.");
-                }}
+                onClick={restoreDefault}
               >
                 Restaurar texto padrão
               </Button>
@@ -540,6 +539,8 @@ function CertificateTab() {
       />
 
       <DocumentActions title="Atestado médico" html={conteudo} paciente={paciente} />
+
+      {replacementDialog}
     </>
   );
 }
@@ -679,10 +680,7 @@ function AttendanceTab() {
                 type="button"
                 variant="ghost"
                 size="sm"
-                onClick={() => {
-                  setHtml("");
-                  toast.success("Texto padrão restaurado.");
-                }}
+                onClick={restoreDefault}
               >
                 Restaurar texto padrão
               </Button>
@@ -696,6 +694,8 @@ function AttendanceTab() {
         html={conteudo}
         paciente={paciente}
       />
+
+      {replacementDialog}
     </>
   );
 }
