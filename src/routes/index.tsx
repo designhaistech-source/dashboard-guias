@@ -1299,30 +1299,26 @@ function DashboardPage() {
               label="Total de guias extraídas"
               value={String(total)}
               tooltip={kpiTooltips.total}
-              hint={
-                dayCount > 0
-                  ? `No período filtrado: ${periodLabel}`
-                  : "Nenhuma guia no período filtrado"
-              }
-
+              context={dayCount > 0 ? "No período filtrado" : "Nenhuma guia no período filtrado"}
               tone="primary"
             />
             <Kpi
               icon={Activity}
               label="Guias extraídas hoje"
               value={String(metrics.today)}
-              meta={todayLabel}
               tooltip={kpiTooltips.today}
-              hint={todayTrend ? todayTrend.label : "Guias extraídas nesta data"}
+              context={`Hoje, ${todayLabel}`}
+              comparison={todayTrend?.label}
               tone="success"
               trend={todayTrend?.direction}
             />
             <Kpi
               icon={TrendingUp}
-              label="Média de guias extraídas por dia"
+              label="Média diária de guias extraídas"
               value={String(dailyAvg)}
               tooltip={kpiTooltips.average}
-              hint={weekTrend ? weekTrend.label : ""}
+              context="Por dia no período filtrado"
+              comparison={weekTrend?.label}
               tone="info"
               trend={weekTrend?.direction}
             />
@@ -1331,9 +1327,10 @@ function DashboardPage() {
               label="Tipos de guias extraídas"
               value={String(metrics.distinctTypes)}
               tooltip={kpiTooltips.types}
-              hint="Tipos distintos no período filtrado"
+              context="Tipos distintos no período filtrado"
               tone="purple"
             />
+
           </div>
 
           {/* Charts row */}
