@@ -994,16 +994,16 @@ function DashboardPage() {
     if (dailyData.length < 2) return undefined;
     const last = dailyData[dailyData.length - 1].guias;
     const prev = dailyData[dailyData.length - 2].guias;
-    const prevDate = formatIsoToBrFull(dailyData[dailyData.length - 2].date);
     const diff = last - prev;
     if (diff === 0) {
-      return { direction: "flat", label: `Mesma quantidade do dia ${prevDate}` };
+      return { direction: "flat", label: "Mesma quantidade de ontem" };
     }
     return {
       direction: diff > 0 ? "up" : "down",
-      label: `${Math.abs(diff)} ${Math.abs(diff) === 1 ? "guia" : "guias"} ${diff > 0 ? "a mais" : "a menos"} que no dia ${prevDate}`,
+      label: `${Math.abs(diff)} ${diff > 0 ? "a mais" : "a menos"} que ontem`,
     };
   }, [dailyData]);
+
 
   /** Reference date of the "today" KPI, shown discreetly in the card. */
   const todayLabel = formatIsoToBrFull(todayLocalIsoDate());
