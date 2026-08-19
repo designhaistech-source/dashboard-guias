@@ -1060,7 +1060,7 @@ function AttendanceTab() {
         onChange={setHtml}
         onImproveWithAi={improve}
         improving={improving}
-        variables={DOCUMENT_VARIABLES}
+        variables={["@paciente", "@data"]}
         variableValues={tokenValues}
         previewHtml={previewHtml}
         pendingVariables={pending}
