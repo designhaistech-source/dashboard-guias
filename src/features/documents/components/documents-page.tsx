@@ -428,7 +428,7 @@ function ReportsTab() {
       setPaciente(d.paciente ?? "");
       setCid(d.cid ?? "");
       setDiagnosticoSelecionado(d.diagnosticoSelecionado ?? "");
-      setModelo(d.modelo ?? "");
+      setModelo(d.modelo || REPORT_TEMPLATES[0].value);
       setData(d.data ?? todayIso());
       setCidade(d.cidade ?? "");
       setHtml(d.html ?? "");
