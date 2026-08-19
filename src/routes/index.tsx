@@ -1259,6 +1259,7 @@ function DashboardPage() {
               label="Total de guias extraídas"
               value={String(total)}
               tooltip={kpiTooltips.total}
+              description={`guias extraídas ${periodPhrase}${scopePhrase}`}
               hint={
                 dayCount > 0
                   ? `Em ${dayCount} ${dayCount === 1 ? "dia" : "dias"}`
@@ -1272,7 +1273,8 @@ function DashboardPage() {
               value={String(metrics.today)}
               meta={todayLabel}
               tooltip={kpiTooltips.today}
-              hint={todayTrend ? todayTrend.label : "Guias extraídas nesta data"}
+              description={`guias extraídas hoje${scopePhrase}`}
+              hint={todayTrend ? todayTrend.label : "Sem comparação com o dia anterior"}
               tone="success"
               trend={todayTrend?.direction}
             />
@@ -1281,6 +1283,11 @@ function DashboardPage() {
               label="Média de guias por dia"
               value={String(dailyAvg)}
               tooltip={kpiTooltips.average}
+              description={
+                dayCount > 0
+                  ? `guias por dia em ${dayCount} ${dayCount === 1 ? "dia" : "dias"}${scopePhrase}`
+                  : `guias por dia ${periodPhrase}${scopePhrase}`
+              }
               hint={weekTrend ? weekTrend.label : ""}
               tone="info"
               trend={weekTrend?.direction}
@@ -1290,9 +1297,17 @@ function DashboardPage() {
               label="Tipos de guia"
               value={String(metrics.distinctTypes)}
               tooltip={kpiTooltips.types}
-              hint=""
+              description={`${
+                metrics.distinctTypes === 1 ? "tipo diferente" : "tipos diferentes"
+              } ${periodPhrase}${scopePhrase}`}
+              hint={
+                typeData.length
+                  ? typeData.map((t) => t.name).join(", ")
+                  : "Nenhum tipo de guia no período"
+              }
               tone="purple"
             />
+
           </div>
 
           {/* Charts row */}
