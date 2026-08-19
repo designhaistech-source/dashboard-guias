@@ -542,7 +542,10 @@ function localTimeZoneLabel() {
   return `Horário local (UTC${sign}${hh}:${mm})`;
 }
 
-function ChartTooltip({ active, payload, label, suffix }: any) {
+/** Nomes de variáveis internas que nunca devem aparecer na interface. */
+const TECHNICAL_SERIES_KEYS = new Set(["count", "value", "name", "label", "guias", "qtd"]);
+
+function ChartTooltip({ active, payload, label, suffix, unit }: any) {
   if (!active || !payload?.length) return null;
   const iso: string | undefined = payload[0]?.payload?.date;
   const fullDate = formatIsoToBrFull(iso);
@@ -560,20 +563,26 @@ function ChartTooltip({ active, payload, label, suffix }: any) {
           )}
         </div>
       )}
-      {payload.map((p: any) => (
-        <div key={p.dataKey} className="flex items-center gap-2 text-xs">
-          <span className="h-2 w-2 rounded-full" style={{ background: p.color || p.payload?.color }} />
-          <span className="text-muted-foreground">{p.name}</span>
-          <span className="ml-auto font-semibold tabular-nums">
-            {p.value}
-            {suffix ?? ""}
-          </span>
-        </div>
-      ))}
+      {payload.map((p: any) => {
+        const rawName = typeof p.name === "string" ? p.name : "";
+        const seriesName = TECHNICAL_SERIES_KEYS.has(rawName.toLowerCase()) ? "" : rawName;
+        return (
+          <div key={p.dataKey} className="flex items-center gap-2 text-xs">
+            <span className="h-2 w-2 rounded-full" style={{ background: p.color || p.payload?.color }} />
+            {seriesName && <span className="text-muted-foreground">{seriesName}</span>}
+            <span className={`${seriesName ? "ml-auto" : ""} font-semibold tabular-nums`}>
+              {p.value}
+              {suffix ?? ""}
+              {unit ? ` ${unit}` : ""}
+            </span>
+          </div>
+        );
+      })}
 
     </div>
   );
 }
+
 
 
 /**
