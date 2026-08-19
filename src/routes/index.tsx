@@ -1301,9 +1301,10 @@ function DashboardPage() {
               tooltip={kpiTooltips.total}
               hint={
                 dayCount > 0
-                  ? `Em ${dayCount} ${dayCount === 1 ? "dia" : "dias"}`
-                  : "Nenhuma guia no período"
+                  ? `No período filtrado: ${periodLabel}`
+                  : "Nenhuma guia no período filtrado"
               }
+
               tone="primary"
             />
             <Kpi
@@ -1330,7 +1331,7 @@ function DashboardPage() {
               label="Tipos de guias extraídas"
               value={String(metrics.distinctTypes)}
               tooltip={kpiTooltips.types}
-              hint="Tipos distintos no período"
+              hint="Tipos distintos no período filtrado"
               tone="purple"
             />
           </div>
