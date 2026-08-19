@@ -376,10 +376,11 @@ async function generateReportPdf(periodLabel: string, metrics: DashboardMetrics)
       margin: { left: margin, right: margin },
       head: [["Indicador", "Valor"]],
       body: [
-        ["Total extraídas", String(total)],
-        ["Extraídas hoje", String(metrics.today)],
-        ["Média por dia", String(dailyAvg)],
-        ["Tipos diferentes", String(typeData.length)],
+        ["Total de guias extraídas", String(total)],
+        ["Guias extraídas hoje", String(metrics.today)],
+        ["Média de guias por dia", String(dailyAvg)],
+        ["Tipos de guia", String(typeData.length)],
+
       ],
       theme: "grid",
       headStyles: tableHeadStyles,
