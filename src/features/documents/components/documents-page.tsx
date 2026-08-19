@@ -252,13 +252,15 @@ function PatientField({
   id,
   value,
   onChange,
+  error,
 }: {
   id: string;
   value: string;
   onChange: (v: string) => void;
+  error?: string;
 }) {
   return (
-    <Field id={id} label="Paciente" required>
+    <Field id={id} label="Paciente" required error={error}>
       <div className="relative">
         <User
           className="icon-optical pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground"
@@ -267,6 +269,7 @@ function PatientField({
         <Input
           id={id}
           className="pl-9"
+          maxLength={120}
           placeholder="Digite o nome do beneficiário..."
           value={value}
           onChange={(e) => onChange(e.target.value)}
@@ -275,6 +278,7 @@ function PatientField({
     </Field>
   );
 }
+
 
 function CidFields({
   cid,
