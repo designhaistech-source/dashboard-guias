@@ -35,6 +35,8 @@ import { improveDocumentText } from "../lib/improve-text.functions";
 import { CidAutocomplete } from "./cid-autocomplete";
 import { DocumentEditorHeader } from "./document-editor-header";
 import { RichTextEditor } from "./rich-text-editor";
+import { useTextReplacement } from "./use-text-replacement";
+
 import {
   DOCUMENT_VARIABLES,
   REPORT_TEMPLATES,
