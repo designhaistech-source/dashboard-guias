@@ -61,7 +61,7 @@ import { SurfaceCard } from "@/components/surface-card";
 import { FilterCard } from "@/components/filter-card";
 import { Field } from "@/components/form-field";
 import { Button } from "@/components/ui/button";
-import logoAsset from "@/assets/haisguias-logo.png.asset.json";
+import logoAsset from "@/assets/guiasplus-logo.png.asset.json";
 import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
 import { Combobox } from "@/components/ui/combobox";
@@ -272,7 +272,7 @@ async function generateReportPdf(periodLabel: string, metrics: DashboardMetrics)
     doc.setFillColor(255, 255, 255);
     doc.rect(0, 0, pageWidth, 70, "F");
 
-    // HaisGuias logo (top-left)
+    // Guias+ logo (top-left)
     let titleX = margin;
     try {
       const logo = await loadImageDataUrl(logoAsset.url);
@@ -496,7 +496,7 @@ async function generateReportPdf(periodLabel: string, metrics: DashboardMetrics)
       doc.setLineWidth(0.5);
       doc.line(margin, pageHeight - 32, pageWidth - margin, pageHeight - 32);
       applyType(TYPE.caption);
-      doc.text("HaisGuias", margin, pageHeight - 18);
+      doc.text("Guias+", margin, pageHeight - 18);
       doc.text(`Página ${i} de ${pageCount}`, pageWidth - margin, pageHeight - 18, { align: "right" });
     }
 
