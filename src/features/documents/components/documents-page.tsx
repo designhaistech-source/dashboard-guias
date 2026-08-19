@@ -373,13 +373,8 @@ function DocumentActions({
         Imprimir
       </Button>
 
-      <DocumentPagePreview
-        open={previewOpen}
-        onOpenChange={setPreviewOpen}
-        title={title}
-        paciente={paciente}
-        html={html}
-      />
+
+
 
     </FormActionBar>
   );
