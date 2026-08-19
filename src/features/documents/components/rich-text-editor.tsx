@@ -71,6 +71,8 @@ interface RichTextEditorProps {
   previewHtml?: string;
   /** Variáveis usadas no texto que ainda não têm valor preenchido. */
   pendingVariables?: readonly string[];
+  /** Valor atual de cada variável (ex.: { "@paciente": "Maria" }); usado ao inserir o chip. */
+  variableValues?: Readonly<Record<string, string>>;
 }
 
 /**
@@ -90,6 +92,7 @@ export function RichTextEditor({
   variables,
   previewHtml,
   pendingVariables,
+  variableValues,
 }: RichTextEditorProps) {
   const [previewing, setPreviewing] = React.useState(false);
   const canPreview = typeof previewHtml === "string";
@@ -138,7 +141,10 @@ export function RichTextEditor({
     }
   }
 
-  /** Insere a variável na posição do cursor; ao final do texto se não houver seleção ativa. */
+  /**
+   * Insere o valor atual da variável (ex.: o nome do paciente) na posição do cursor.
+   * Sem valor preenchido, insere o token para ser resolvido depois.
+   */
   function insertVariable(variable: string) {
     const el = ref.current;
     if (!el) return;
@@ -151,7 +157,8 @@ export function RichTextEditor({
       selection?.removeAllRanges();
       selection?.addRange(range);
     }
-    document.execCommand("insertText", false, `${variable} `);
+    const resolved = variableValues?.[variable]?.trim();
+    document.execCommand("insertText", false, `${resolved || variable} `);
     record(el.innerHTML, "command");
     onChange(el.innerHTML);
   }
@@ -288,22 +295,29 @@ export function RichTextEditor({
           <span id={variablesHintId} className="text-xs text-muted-foreground">
             Inserir variável:
           </span>
-          {(variables ?? []).map((variable) => (
-            <Button
-              key={variable}
-              type="button"
-              variant="secondary"
-              size="sm"
-              onClick={() => insertVariable(variable)}
-              title={`Inserir ${variable} no texto`}
-              className="h-7 rounded-full px-2.5 font-mono text-xs"
-            >
-              {variable}
-            </Button>
-          ))}
+          {(variables ?? []).map((variable) => {
+            const resolved = variableValues?.[variable]?.trim();
+            return (
+              <Button
+                key={variable}
+                type="button"
+                variant="secondary"
+                size="sm"
+                onClick={() => insertVariable(variable)}
+                title={
+                  resolved
+                    ? `Inserir “${resolved}” no texto`
+                    : `${variable}: sem valor preenchido — o token será inserido e substituído depois`
+                }
+                className="h-7 rounded-full px-2.5 font-mono text-xs"
+              >
+                {variable}
+              </Button>
+            );
+          })}
           <span className="text-xs text-muted-foreground">
             {canPreview
-              ? "(veja o texto final em “Pré-visualizar”)"
+              ? "(insere o valor atual do campo; sem valor, insere o token)"
               : "(substituída pelos dados do paciente na impressão)"}
           </span>
         </div>
