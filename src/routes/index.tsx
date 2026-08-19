@@ -1335,24 +1335,26 @@ function DashboardPage() {
                 id="dashboard-filters-panel"
                 className="space-y-4 border-t border-border px-4 py-4 sm:px-5 sm:py-5"
               >
-                <div className="flex flex-wrap items-center gap-2">
-                  <span className={filterGroupLabelClass + " mb-0"}>Períodos rápidos</span>
-                  {[
-                    { id: "hoje", label: "Hoje" },
-                    { id: "7d", label: "Últimos 7 dias" },
-                    { id: "30d", label: "Últimos 30 dias" },
-                  ].map((p) => (
-                    <Chip
-                      key={p.id}
-                      onClick={() => applyPreset(p.id as "hoje" | "7d" | "30d")}
-                      className="text-foreground hover:border-primary hover:bg-primary/5 hover:text-primary"
-                    >
-                      {p.label}
-                    </Chip>
-                  ))}
+                <div className="space-y-2 sm:flex sm:flex-wrap sm:items-center sm:gap-2 sm:space-y-0">
+                  <span className={filterGroupLabelClass + " mb-0 block"}>Períodos rápidos</span>
+                  <div className="flex flex-wrap gap-2">
+                    {[
+                      { id: "hoje", label: "Hoje" },
+                      { id: "7d", label: "Últimos 7 dias" },
+                      { id: "30d", label: "Últimos 30 dias" },
+                    ].map((p) => (
+                      <Chip
+                        key={p.id}
+                        onClick={() => applyPreset(p.id as "hoje" | "7d" | "30d")}
+                        className="text-foreground hover:border-primary hover:bg-primary/5 hover:text-primary"
+                      >
+                        {p.label}
+                      </Chip>
+                    ))}
+                  </div>
                 </div>
 
-                <div className="grid grid-cols-1 items-end gap-4 sm:grid-cols-2 lg:grid-cols-[10rem_10rem_minmax(0,1fr)_minmax(0,1fr)_auto]">
+                <div className="grid grid-cols-2 items-end gap-3 sm:gap-4 md:grid-cols-2 lg:grid-cols-[10rem_10rem_minmax(0,1fr)_minmax(0,1fr)_auto]">
                   <FilterField
                     label="Data inicial"
                     type="date"
