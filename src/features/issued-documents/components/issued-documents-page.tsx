@@ -1,14 +1,5 @@
 import { useMemo, useState } from "react";
-import {
-  ArrowDown,
-  ArrowUp,
-  Download,
-  Eye,
-  FileSignature,
-  FileSpreadsheet,
-  Printer,
-  ShieldCheck,
-} from "lucide-react";
+import { ArrowDown, ArrowUp, Download, Eye, FileSpreadsheet, Printer } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import { toast } from "sonner";
 
@@ -187,9 +178,7 @@ export function IssuedDocumentsPage() {
           </FilterCard>
 
           <p className="text-sm text-muted-foreground" aria-live="polite">
-            {rows.length === 1
-              ? "1 documento encontrado"
-              : `${rows.length} documentos encontrados`}
+            {rows.length === 1 ? "1 documento encontrado" : `${rows.length} documentos encontrados`}
           </p>
 
           {rows.length === 0 ? (
@@ -218,19 +207,11 @@ export function IssuedDocumentsPage() {
                       ]}
                     />
                     <DataTableCardActions>
-                      <Button
-                        variant="secondary"
-                        size="sm"
-                        onClick={() => setDetail(doc)}
-                      >
+                      <Button variant="secondary" size="sm" onClick={() => setDetail(doc)}>
                         <Eye className="h-4 w-4" aria-hidden="true" />
                         Visualizar
                       </Button>
-                      <RowActions
-                        doc={doc}
-                        onDownload={handleDownload}
-                        onPrint={handlePrint}
-                      />
+                      <RowActions doc={doc} onDownload={handleDownload} onPrint={handlePrint} />
                     </DataTableCardActions>
                   </DataTableCard>
                 ))}
@@ -241,17 +222,13 @@ export function IssuedDocumentsPage() {
                   <DataTableRoot className="w-full min-w-[720px] table-fixed">
                     <DataTableHeader>
                       <DataTableRow className="hover:bg-transparent">
-                        <DataTableHead className="w-[26%]">
-                          Tipo de documento
-                        </DataTableHead>
+                        <DataTableHead className="w-[26%]">Tipo de documento</DataTableHead>
                         <DataTableHead className="w-[26%]">Paciente</DataTableHead>
                         <DataTableHead className="w-[19%]">
                           <button /* ds-allow: cabeçalho de ordenação da tabela */
                             type="button"
                             onClick={() =>
-                              setSortDirection((prev) =>
-                                prev === "desc" ? "asc" : "desc",
-                              )
+                              setSortDirection((prev) => (prev === "desc" ? "asc" : "desc"))
                             }
                             aria-label={
                               sortDirection === "desc"
@@ -262,10 +239,7 @@ export function IssuedDocumentsPage() {
                           >
                             Data de emissão
                             {sortDirection === "desc" ? (
-                              <ArrowDown
-                                className="size-3.5 shrink-0"
-                                aria-hidden="true"
-                              />
+                              <ArrowDown className="size-3.5 shrink-0" aria-hidden="true" />
                             ) : (
                               <ArrowUp className="size-3.5 shrink-0" aria-hidden="true" />
                             )}
@@ -284,9 +258,7 @@ export function IssuedDocumentsPage() {
                               {doc.type}
                             </Badge>
                           </DataTableCell>
-                          <DataTableCell className="truncate">
-                            {doc.patient}
-                          </DataTableCell>
+                          <DataTableCell className="truncate">{doc.patient}</DataTableCell>
                           <DataTableCell className="whitespace-nowrap text-muted-foreground">
                             {formatIssuedDocumentDate(doc.issuedAt)}
                           </DataTableCell>
@@ -331,28 +303,12 @@ export function IssuedDocumentsPage() {
   );
 }
 
-function SignatureBadge({ signed }: { signed: boolean }) {
-  return signed ? (
-    <Badge variant="success-soft" size="sm">
-      <ShieldCheck className="h-3.5 w-3.5" aria-hidden="true" /> Assinado
-    </Badge>
-  ) : (
-    <Badge variant="secondary" size="sm">
-      <FileSignature className="h-3.5 w-3.5" aria-hidden="true" /> Sem assinatura
-    </Badge>
-  );
-}
-
 interface DocumentActions {
   onDownload: (doc: IssuedDocument) => void;
   onPrint: (doc: IssuedDocument) => void;
 }
 
-function RowActions({
-  doc,
-  onDownload,
-  onPrint,
-}: { doc: IssuedDocument } & DocumentActions) {
+function RowActions({ doc, onDownload, onPrint }: { doc: IssuedDocument } & DocumentActions) {
   return (
     <div className="inline-flex items-center gap-0.5 icon-optical">
       <Button
@@ -392,9 +348,7 @@ function IssuedDocumentModal({
       icon={<FileSpreadsheet className="h-4 w-4" aria-hidden="true" />}
       title={doc ? doc.type : "Documento emitido"}
       description={
-        doc
-          ? `${doc.patient} · emitido em ${formatIssuedDocumentDate(doc.issuedAt)}`
-          : undefined
+        doc ? `${doc.patient} · emitido em ${formatIssuedDocumentDate(doc.issuedAt)}` : undefined
       }
       size="lg"
       footer={
@@ -418,7 +372,6 @@ function IssuedDocumentModal({
             <Badge variant="info-soft" size="sm">
               {doc.type}
             </Badge>
-            <SignatureBadge signed={doc.signed} />
           </div>
           <article
             className="space-y-3 rounded-xl border border-border bg-muted/20 p-5 text-sm leading-relaxed text-foreground [&_p]:mb-3"
