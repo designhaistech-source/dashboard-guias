@@ -37,8 +37,13 @@ export function useTextReplacement(html: string, setHtml: (value: string) => voi
   const run = useCallback(
     async (request: ReplaceRequest) => {
       const previous = htmlRef.current;
-      await request.apply();
+      try {
+        await request.apply();
+      } catch {
+        return;
+      }
       const hadContent = Boolean(previous.replace(/<[^>]+>/g, "").trim());
+
       toast.success(
         request.successMessage,
         hadContent
