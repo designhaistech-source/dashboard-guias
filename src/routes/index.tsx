@@ -1409,7 +1409,7 @@ function DashboardPage() {
                     value={filters.dataAutorizacaoAte}
                     onChange={(v) => setFilter("dataAutorizacaoAte", v)}
                   />
-                  <div className="col-span-2 min-w-0 lg:col-span-1">
+                  <div className="min-w-0 sm:col-span-2 lg:col-span-1">
                     <FilterSelect
                       label="Tipo de guia"
                       value={filters.tipoGuia}
@@ -1417,7 +1417,7 @@ function DashboardPage() {
                       options={GUIDE_TYPES.map((t) => t.name)}
                     />
                   </div>
-                  <div className="col-span-2 min-w-0 lg:col-span-1">
+                  <div className="min-w-0 sm:col-span-2 lg:col-span-1">
                     <FilterSelect
                       label="Prestador solicitante"
                       value={filters.prestadorSolicitante}
@@ -1430,7 +1430,7 @@ function DashboardPage() {
                     variant="outline"
                     onClick={clearAllFilters}
                     disabled={activeFilters.length === 0}
-                    className="col-span-2 h-10 w-full justify-center sm:h-9 lg:col-span-1 lg:w-auto"
+                    className="h-10 w-full justify-center sm:col-span-2 sm:h-9 lg:col-span-1 lg:w-auto"
                   >
                     Limpar filtros
                   </Button>
