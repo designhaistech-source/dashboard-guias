@@ -617,7 +617,7 @@ async function generateReportPdf(
       });
     }
 
-    const filename = `relatorio-haisguias-${toLocalIsoDate(now)}.pdf`;
+    const filename = `relatorio-guias-extraidas-${toLocalIsoDate(now)}.pdf`;
     doc.save(filename);
     toast.success("Relatório PDF gerado com sucesso!");
   } catch (err) {
