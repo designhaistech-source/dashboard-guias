@@ -100,7 +100,7 @@ export function DocumentsPage() {
             description="Emita relatórios médicos, atestados e declarações de comparecimento com dados do paciente, CID e texto gerado automaticamente."
           />
 
-          <Tabs defaultValue="relatorios" className="space-y-6">
+          <Tabs value={activeTab} onValueChange={handleTabChange} className="space-y-6">
             <TabsList className={appTabsListClass}>
               <TabsTrigger value="relatorios" className={appTabsTriggerClass}>
                 <FileText className={appTabsIconClass} aria-hidden />
