@@ -469,16 +469,17 @@ async function generateReportPdf(
     doc.text(scopeLines, margin, y);
     y += scopeLines.length * 13 + 16;
 
-    // KPIs
+    // KPIs — resumo simples: apenas indicador e valor.
+    const todayLabel = new Date().toLocaleDateString("pt-BR", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+    });
     const kpiBody: string[][] = [
-      ["Total de guias processadas", String(total), ""],
-      ["Guias processadas hoje", String(metrics.today), context.todayComparison ?? ""],
-      [
-        "Média diária de guias processadas",
-        String(dailyAvg),
-        context.averageComparison ?? "",
-      ],
-      ["Tipos de guias processadas", String(metrics.distinctTypes), ""],
+      ["Total de guias processadas", String(total)],
+      [`Guias processadas hoje (${todayLabel})`, String(metrics.today)],
+      ["Média diária de guias processadas", String(dailyAvg)],
+      ["Tipos de guias processadas", String(metrics.distinctTypes)],
     ];
     sectionTitle(
       "Indicadores de guias processadas",
@@ -492,15 +493,15 @@ async function generateReportPdf(
     autoTable(doc, {
       startY: y,
       margin: { left: margin, right: margin },
-      head: [["Indicador", "Valor", "Comparação"]],
+      head: [["Indicador", "Valor"]],
       body: kpiBody,
       theme: "grid",
       headStyles: tableHeadStyles,
       bodyStyles: { font: FONT, fontStyle: "normal", textColor: TYPE.tableBody.color },
       columnStyles: {
-        1: { halign: "right", cellWidth: 70 },
-        2: { cellWidth: 200 },
+        1: { halign: "right", cellWidth: 90 },
       },
+
       styles: tableStyleDefaults,
       tableWidth: contentW,
       rowPageBreak: "avoid",
