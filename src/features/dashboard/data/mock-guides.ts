@@ -39,11 +39,10 @@ export type DashboardGuide = {
 };
 
 export const GUIDE_TYPES = [
-  { name: "Consulta", color: "var(--primary)" },
-  { name: "SP/SADT", color: "var(--purple)" },
-  { name: "Internação", color: "var(--cat-6)" },
-  { name: "Honorários", color: "var(--success)" },
-  { name: "Odontológica", color: "var(--warning)" },
+  { name: "SP/SADT", color: "var(--primary)" },
+  { name: "Internação", color: "var(--purple)" },
+  { name: "APAC", color: "var(--cat-6)" },
+  { name: "AIH", color: "var(--success)" },
 ] as const;
 
 export const PRESTADORES = [
@@ -56,15 +55,17 @@ export const PRESTADORES = [
 ];
 
 const PROCEDURES = [
-  { code: "10101012", name: "Consulta em consultório", tipo: "Consulta", valor: 180 },
   { code: "40901408", name: "Hemograma completo", tipo: "SP/SADT", valor: 62 },
   { code: "40802089", name: "Ultrassonografia abdominal", tipo: "SP/SADT", valor: 320 },
   { code: "31602045", name: "Eletrocardiograma", tipo: "SP/SADT", valor: 96 },
-  { code: "40803115", name: "Ressonância magnética", tipo: "Internação", valor: 1450 },
-  { code: "20203020", name: "Curativo grau II", tipo: "Honorários", valor: 240 },
-  { code: "81000030", name: "Restauração em resina", tipo: "Odontológica", valor: 210 },
+  { code: "40803115", name: "Ressonância magnética", tipo: "SP/SADT", valor: 1450 },
   { code: "30101018", name: "Internação clínica", tipo: "Internação", valor: 2600 },
+  { code: "30731016", name: "Internação cirúrgica", tipo: "Internação", valor: 3100 },
+  { code: "0304050089", name: "Quimioterapia ambulatorial", tipo: "APAC", valor: 890 },
+  { code: "0305010107", name: "Sessão de hemodiálise", tipo: "APAC", valor: 470 },
+  { code: "0407020098", name: "Artroplastia de quadril", tipo: "AIH", valor: 5200 },
 ];
+
 
 const FIRST_NAMES = [
   "Ana", "Bruno", "Carla", "Diego", "Eduarda", "Felipe", "Gabriela",
