@@ -1678,9 +1678,9 @@ function DashboardPage() {
               <div className="grid gap-6 xl:gap-8 xl:grid-cols-2 items-start xl:items-stretch">
                 <div className="min-w-0 flex flex-col gap-3">
                 <div>
-                  <h3 className="text-sm font-semibold text-foreground">
+                  <p className="text-xs font-medium text-muted-foreground">
                     Ranking de procedimentos
-                  </h3>
+                  </p>
                 </div>
 
                 <div className="h-72 sm:h-64 xl:h-auto xl:flex-1 xl:min-h-[16rem]" data-chart="procedures">
@@ -1773,9 +1773,9 @@ function DashboardPage() {
                 </div>
                 <div className="min-w-0 space-y-3">
                 <div>
-                  <h3 className="text-sm font-semibold text-foreground">
+                  <p className="text-xs font-medium text-muted-foreground">
                     Detalhamento dos procedimentos
-                  </h3>
+                  </p>
                 </div>
 
                 <DataTable>
