@@ -1259,7 +1259,7 @@ function DashboardPage() {
               description="Acompanhe suas guias, documentos e atividades recentes."
             />
             <div
-              className="grid gap-4 grid-cols-1 sm:grid-cols-2 xl:grid-cols-4"
+              className="grid gap-4 grid-cols-1 @[30rem]:grid-cols-2 @[68rem]:grid-cols-4"
               aria-busy="true"
               aria-label="Carregando indicadores"
             >
@@ -1497,7 +1497,7 @@ function DashboardPage() {
 
           {/* KPIs */}
           <div
-            className="grid gap-4 grid-cols-1 sm:grid-cols-2 xl:grid-cols-4"
+            className="grid gap-4 grid-cols-1 @[30rem]:grid-cols-2 @[68rem]:grid-cols-4"
             data-testid="kpi-grid"
           >
             <Kpi
