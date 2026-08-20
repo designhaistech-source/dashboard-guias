@@ -1483,7 +1483,7 @@ function DashboardPage() {
           </div>
 
           {/* Charts row */}
-          <div className="grid gap-4 grid-cols-1 lg:grid-cols-3">
+          <div className="grid gap-4 grid-cols-1 lg:grid-cols-3 items-start">
             <SurfaceCard
               className="lg:col-span-2"
               title="Guias processadas por dia"
@@ -1517,11 +1517,23 @@ function DashboardPage() {
                         tickLine={false}
                         axisLine={false}
                         tickMargin={4}
-                        height={40}
+                        height={isMobile ? 40 : 56}
                         ticks={dailyTicks}
                         interval={0}
                         tick={<DailyAxisTick monthStarts={dailyMonthStarts} />}
+                        label={
+                          isMobile
+                            ? undefined
+                            : {
+                                value: "Dia do período",
+                                position: "insideBottom",
+                                offset: 0,
+                                fill: "var(--muted-foreground)",
+                                fontSize: 11,
+                              }
+                        }
                       />
+
 
 
                       <YAxis
