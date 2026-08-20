@@ -1697,8 +1697,9 @@ function DashboardPage() {
             {procedures.length === 0 ? (
               emptyState
             ) : (
-              <div className="grid gap-6 xl:gap-8 xl:grid-cols-2 items-start xl:items-stretch">
-                <div className="min-w-0 flex flex-col gap-3">
+              <div className="grid gap-6 xl:gap-0 xl:grid-cols-2 items-start xl:items-stretch xl:divide-x xl:divide-border">
+                <div className="min-w-0 flex flex-col gap-3 xl:pr-8">
+
                 <div>
                   <p className="text-xs font-medium text-muted-foreground">
                     Ranking de procedimentos
@@ -1793,7 +1794,7 @@ function DashboardPage() {
                   </p>
                 ) : null}
                 </div>
-                <div className="min-w-0 space-y-3">
+                <div className="min-w-0 space-y-3 xl:pl-8">
                 <div>
                   <p className="text-xs font-medium text-muted-foreground">
                     Detalhamento dos procedimentos
@@ -1871,9 +1872,10 @@ function DashboardPage() {
             {!hasData ? (
               emptyState
             ) : (
-              <div className="grid gap-6 xl:gap-8 xl:grid-cols-2 items-start">
+              <div className="grid gap-6 xl:gap-0 xl:grid-cols-2 items-start xl:divide-x xl:divide-border">
                 {/* Status do processamento */}
-                <div className="min-w-0 flex flex-col gap-3">
+                <div className="min-w-0 flex flex-col gap-3 xl:pr-8">
+
                   <p className="text-xs font-medium text-muted-foreground">
                     Status do processamento
                   </p>
@@ -1928,7 +1930,7 @@ function DashboardPage() {
                 </div>
 
                 {/* Falhas por tipo */}
-                <div className="min-w-0 flex flex-col gap-3">
+                <div className="min-w-0 flex flex-col gap-3 xl:pl-8">
                   <p className="text-xs font-medium text-muted-foreground">
                     Falhas por tipo
                   </p>
