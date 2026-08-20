@@ -471,43 +471,35 @@ async function generateReportPdf(
 
     // KPIs
     const kpiBody: string[][] = [
-      ["Total de guias processadas", String(total), "Soma no período filtrado", "—"],
-      [
-        "Guias processadas hoje",
-        String(metrics.today),
-        `Hoje, ${context.todayLabel}`,
-        context.todayComparison ?? "—",
-      ],
+      ["Total de guias processadas", String(total), ""],
+      ["Guias processadas hoje", String(metrics.today), context.todayComparison ?? ""],
       [
         "Média diária de guias processadas",
         String(dailyAvg),
-        "Por dia no período filtrado",
-        context.averageComparison ?? "—",
+        context.averageComparison ?? "",
       ],
-      [
-        "Tipos de guias processadas",
-        String(metrics.distinctTypes),
-        "Tipos distintos no período filtrado",
-        "—",
-      ],
+      ["Tipos de guias processadas", String(metrics.distinctTypes), ""],
     ];
     sectionTitle(
       "Indicadores de guias processadas",
       tableBlockH(kpiBody.length, 26),
-      "Valores calculados sobre as guias processadas no período filtrado.",
+      // "22/07/2026 a 20/08/2026" pede a preposição; rótulos como "Todo o
+      // período" ou "A partir de ..." já são autoexplicativos.
+      /^\d/.test(periodLabel)
+        ? `Dados referentes ao período de ${periodLabel}.`
+        : `Dados referentes ao período selecionado: ${periodLabel}.`,
     );
     autoTable(doc, {
       startY: y,
       margin: { left: margin, right: margin },
-      head: [["Indicador", "Valor", "Contexto", "Comparação"]],
+      head: [["Indicador", "Valor", "Comparação"]],
       body: kpiBody,
       theme: "grid",
       headStyles: tableHeadStyles,
       bodyStyles: { font: FONT, fontStyle: "normal", textColor: TYPE.tableBody.color },
       columnStyles: {
-        1: { halign: "right", cellWidth: 55 },
-        2: { cellWidth: 150 },
-        3: { cellWidth: 130 },
+        1: { halign: "right", cellWidth: 70 },
+        2: { cellWidth: 200 },
       },
       styles: tableStyleDefaults,
       tableWidth: contentW,
