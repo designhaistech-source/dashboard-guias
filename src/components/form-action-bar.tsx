@@ -65,7 +65,7 @@ export function FormActionBar({
             {children}
           </div>
           {note && (
-            <p className="mt-3 flex items-start gap-1.5 border-t border-border/60 pt-2 text-xs leading-relaxed text-muted-foreground/80 sm:text-[11px] sm:text-muted-foreground/70">
+            <p className="mt-3 flex items-start gap-1.5 border-t border-border/60 pt-2 text-xs leading-relaxed text-muted-foreground/80 sm:text-muted-foreground/70">
               <Info className="mt-0.5 h-3 w-3 shrink-0" aria-hidden="true" />
               <span>{note}</span>
             </p>
@@ -74,7 +74,7 @@ export function FormActionBar({
       )}
 
       {!children && note && (
-        <p className="flex items-start gap-1.5 text-xs leading-relaxed text-muted-foreground/80 sm:text-[11px] sm:text-muted-foreground/70">
+        <p className="flex items-start gap-1.5 text-xs leading-relaxed text-muted-foreground/80 sm:text-muted-foreground/70">
           <Info className="mt-0.5 h-3 w-3 shrink-0" aria-hidden="true" />
           <span>{note}</span>
         </p>

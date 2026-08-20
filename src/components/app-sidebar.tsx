@@ -524,7 +524,7 @@ function SidebarGroup({
   return (
     <div className="space-y-1">
       {!collapsed && (
-        <div className="px-3 text-[11px] font-semibold uppercase tracking-wide text-sidebar-muted">
+        <div className="px-3 text-xs font-semibold uppercase tracking-wide text-sidebar-muted">
           {label}
         </div>
       )}

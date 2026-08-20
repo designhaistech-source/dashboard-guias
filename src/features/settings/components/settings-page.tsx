@@ -222,7 +222,7 @@ export function SettingsPage() {
             icon={<Palette className="h-4 w-4" aria-hidden="true" />}
           >
             <fieldset className="space-y-2">
-              <legend className="text-[13px] font-medium leading-snug text-foreground sm:text-sm">Tema</legend>
+              <legend className="text-sm font-medium leading-snug text-foreground">Tema</legend>
               <div
                 role="radiogroup"
                 aria-label="Tema da interface"
