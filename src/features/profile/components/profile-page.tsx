@@ -159,7 +159,7 @@ export function ProfilePage() {
             description="Imagens aplicadas no rodapé e no cabeçalho dos documentos."
             icon={<PenLine className="h-4 w-4" aria-hidden="true" />}
           >
-            <div className="grid items-stretch gap-x-5 gap-y-4 sm:grid-cols-2">
+            <div className="grid items-stretch gap-x-5 gap-y-4 lg:grid-cols-2">
               <ImageUploadField
                 label="Assinatura digital"
                 hint="PNG com fundo transparente, JPG ou SVG. Até 2 MB."

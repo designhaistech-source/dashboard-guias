@@ -1532,10 +1532,10 @@ function DashboardPage() {
           </div>
 
           {/* Charts row */}
-          <div className="grid gap-4 grid-cols-1 lg:grid-cols-3 items-start lg:items-stretch">
+          <div className="grid gap-4 grid-cols-1 xl:grid-cols-3 items-start xl:items-stretch">
             <SurfaceCard
-              className="lg:col-span-2 lg:flex lg:flex-col"
-              bodyClassName="lg:flex-1 lg:flex lg:flex-col lg:min-h-0"
+              className="xl:col-span-2 xl:flex xl:flex-col"
+              bodyClassName="xl:flex-1 xl:flex xl:flex-col xl:min-h-0"
               title="Guias processadas por dia"
               description="Quantidade de guias processadas por dia no período filtrado"
             >
@@ -1543,7 +1543,7 @@ function DashboardPage() {
                 emptyState
               ) : (
                 <>
-                <div className="h-60 sm:h-72 lg:h-auto lg:flex-1 lg:min-h-[15rem]" data-chart="daily" ref={dailyChartRef}>
+                <div className="h-60 sm:h-72 xl:h-auto xl:flex-1 xl:min-h-[15rem]" data-chart="daily" ref={dailyChartRef}>
                   <ResponsiveContainer width="100%" height="100%">
                     <AreaChart
                       data={dailyData}
