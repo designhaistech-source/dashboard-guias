@@ -55,6 +55,9 @@
   --color-info-muted: var(--info-muted);
   --color-info-strong: var(--info-strong);
   --color-destructive-strong: var(--destructive-strong);
+  --color-quality-success: var(--quality-success);
+  --color-quality-failure: var(--quality-failure);
+
   --color-purple: var(--purple);
   --color-purple-foreground: var(--purple-foreground);
 
