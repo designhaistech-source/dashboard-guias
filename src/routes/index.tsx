@@ -2028,7 +2028,8 @@ function DashboardPage() {
                           Eixo vertical: tipo de falha · Eixo horizontal: quantidade de ocorrências
                         </p>
                       ) : null}
-                    </>
+                    </div>
+
                   )}
                 </div>
               </div>
