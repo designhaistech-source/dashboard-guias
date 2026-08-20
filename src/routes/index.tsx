@@ -2070,7 +2070,7 @@ function DashboardPage() {
                         </ResponsiveContainer>
                       </div>
                       {isMobile ? (
-                        <p className="text-[11px] leading-snug text-muted-foreground">
+                        <p className="text-xs leading-snug text-muted-foreground">
                           Eixo vertical: tipo de falha · Eixo horizontal: quantidade de ocorrências
                         </p>
                       ) : null}
