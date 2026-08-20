@@ -106,7 +106,22 @@ function buildGuides(): DashboardGuide[] {
         LAST_NAMES[Math.floor(rand() * LAST_NAMES.length)]
       }`;
       const variation = 0.75 + rand() * 0.7;
+      // ~12% das guias falham; distribuição desigual entre os tipos de falha.
+      const failureRoll = rand();
+      const failed = failureRoll < 0.12;
+      const typeRoll = rand();
+      const tipoFalha: FailureType = failed
+        ? typeRoll < 0.42
+          ? "Falha na extração"
+          : typeRoll < 0.7
+            ? "Documento inválido"
+            : typeRoll < 0.89
+              ? "Erro de processamento"
+              : "Erro de entrega"
+        : "Falha na extração";
       rows.push({
+        statusProcessamento: failed ? "falha" : "sucesso",
+        ...(failed ? { tipoFalha } : {}),
         id: `${data}-${i}`,
         numGuiaPrestador: String(100000 + rows.length * 7 + Math.floor(rand() * 6)),
         data,
