@@ -2078,9 +2078,13 @@ function Kpi({
   }[tone];
 
   return (
-    <SurfaceCard padding="md" className="group relative overflow-hidden hover:shadow-sm">
-      <div className="flex items-start justify-between gap-2">
-        <span className="metric-label flex items-center icon-optical gap-1">
+    <SurfaceCard
+      padding="md"
+      className="group relative h-full overflow-hidden hover:shadow-sm"
+      bodyClassName="flex h-full flex-col items-start text-left"
+    >
+      <div className="flex w-full min-h-[2.75rem] items-start justify-between gap-2">
+        <span className="metric-label flex items-start icon-optical gap-1 text-left">
           {label}
           {tooltip && (
             <TooltipProvider>
@@ -2090,7 +2094,7 @@ function Kpi({
                     type="button"
                     variant="ghost"
                     size="icon"
-                    className="h-5 w-5 rounded-full text-muted-foreground hover:text-foreground [&_svg]:size-3.5"
+                    className="h-5 w-5 shrink-0 rounded-full text-muted-foreground hover:text-foreground [&_svg]:size-3.5"
                     aria-label={`Como este indicador é calculado: ${tooltip}`}
                   >
                     <Info aria-hidden="true" />
@@ -2107,6 +2111,7 @@ function Kpi({
       </div>
       <div className="mt-3 metric-value text-foreground">{value}</div>
       <div className="mt-1 metric-hint text-muted-foreground">{context}</div>
+
       {comparison && (
         <div
           className={[
