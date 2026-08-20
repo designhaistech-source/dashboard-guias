@@ -1829,6 +1829,7 @@ function DashboardPage() {
                     ))}
                   </DataTableCardList>
                 </DataTable>
+                </div>
               </div>
             )}
           </SurfaceCard>
