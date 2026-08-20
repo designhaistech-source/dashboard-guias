@@ -1698,7 +1698,8 @@ function DashboardPage() {
               emptyState
             ) : (
               <div className="grid gap-6 xl:gap-0 xl:grid-cols-2 items-start xl:items-stretch xl:divide-x xl:divide-border">
-                <div className="min-w-0 flex flex-col gap-3">
+                <div className="min-w-0 flex flex-col gap-3 xl:pr-8">
+
                 <div>
                   <p className="text-xs font-medium text-muted-foreground">
                     Ranking de procedimentos
