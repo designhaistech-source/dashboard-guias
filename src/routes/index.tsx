@@ -1714,7 +1714,7 @@ function DashboardPage() {
             {procedures.length === 0 ? (
               emptyState
             ) : (
-              <div className="grid gap-0 xl:grid-cols-2 items-start xl:items-stretch xl:divide-x xl:divide-border [&>*+*]:mt-6 [&>*+*]:border-t [&>*+*]:border-border [&>*+*]:pt-6 xl:[&>*+*]:mt-0 xl:[&>*+*]:border-t-0 xl:[&>*+*]:pt-0">
+              <div className={`${SPLIT_GRID_CLASS} items-start xl:items-stretch`}>
                 <div className="min-w-0 flex flex-col gap-3 xl:pr-8">
 
                 <div>
@@ -1889,7 +1889,7 @@ function DashboardPage() {
             {!hasData ? (
               emptyState
             ) : (
-              <div className="grid gap-0 xl:grid-cols-2 items-stretch xl:divide-x xl:divide-border [&>*+*]:mt-6 [&>*+*]:border-t [&>*+*]:border-border [&>*+*]:pt-6 xl:[&>*+*]:mt-0 xl:[&>*+*]:border-t-0 xl:[&>*+*]:pt-0">
+              <div className={`${SPLIT_GRID_CLASS} items-stretch`}>
                 {/* Status do processamento */}
                 <div className="min-w-0 flex flex-col gap-3 xl:pr-8">
 
