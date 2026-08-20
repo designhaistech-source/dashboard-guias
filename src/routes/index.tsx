@@ -1367,8 +1367,8 @@ function DashboardPage() {
                 id="dashboard-filters-panel"
                 className="space-y-4 border-t border-border px-4 py-4 sm:px-5 sm:py-5"
               >
-                <div className="space-y-2 sm:flex sm:flex-wrap sm:items-center sm:gap-x-3 sm:gap-y-2 sm:space-y-0">
-                  <span className="flex items-center text-xs font-medium leading-snug text-muted-foreground">
+                <div className="space-y-1.5">
+                  <span className="block text-xs font-medium leading-snug text-muted-foreground">
                     Períodos predefinidos
                   </span>
                   <div className="flex flex-wrap gap-2">
