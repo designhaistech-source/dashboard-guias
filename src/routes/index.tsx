@@ -666,7 +666,7 @@ function ChartTooltip({ active, payload, label, suffix, unit }: any) {
   const heading = fullDate || (label !== undefined ? String(label) : "");
 
   return (
-    <div className="rounded-lg border border-border bg-popover/95 px-3 py-2 shadow-md backdrop-blur">
+    <div className="rounded-lg border border-border bg-popover px-3 py-2 shadow-md">
       {heading && (
         <div className="mb-1">
           <div className="text-xs uppercase tracking-wider text-muted-foreground">{heading}</div>
@@ -1643,7 +1643,7 @@ function DashboardPage() {
                             <Cell key={i} fill={d.color} />
                           ))}
                         </Pie>
-                        <RTooltip content={<ChartTooltip unit="guias" />} />
+                        <RTooltip content={<ChartTooltip unit="guias" />} wrapperStyle={{ zIndex: 30 }} />
                       </PieChart>
                     </ResponsiveContainer>
                     <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center px-6 text-center">
@@ -1894,7 +1894,7 @@ function DashboardPage() {
                             <Cell key={d.name} fill={d.color} />
                           ))}
                         </Pie>
-                        <RTooltip content={<ChartTooltip unit="guias" />} />
+                        <RTooltip content={<ChartTooltip unit="guias" />} wrapperStyle={{ zIndex: 30 }} />
                       </PieChart>
                     </ResponsiveContainer>
                     <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center px-6 text-center">
