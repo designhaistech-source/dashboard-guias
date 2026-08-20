@@ -1483,7 +1483,7 @@ function DashboardPage() {
           </div>
 
           {/* Charts row */}
-          <div className="grid gap-4 grid-cols-1 lg:grid-cols-3">
+          <div className="grid gap-4 grid-cols-1 lg:grid-cols-3 items-start">
             <SurfaceCard
               className="lg:col-span-2"
               title="Guias processadas por dia"
