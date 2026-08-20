@@ -658,6 +658,22 @@ async function generateReportPdf(
 /** Nomes de variáveis internas que nunca devem aparecer na interface. */
 const TECHNICAL_SERIES_KEYS = new Set(["count", "value", "name", "label", "guias", "qtd"]);
 
+/** Fixed bar thickness (px) for horizontal bar charts, constant across breakpoints. */
+const HORIZONTAL_BAR_SIZE = 22;
+/** Gap (px) between bar categories in horizontal bar charts. */
+const HORIZONTAL_BAR_GAP = 18;
+
+/**
+ * Height needed so bars keep a constant thickness regardless of viewport width:
+ * responsiveness adjusts width and total height, never bar thickness.
+ */
+function horizontalBarsHeight(categories: number, isMobile: boolean) {
+  const axisSpace = isMobile ? 32 : 60;
+  return Math.max(1, categories) * (HORIZONTAL_BAR_SIZE + HORIZONTAL_BAR_GAP) + axisSpace;
+}
+
+
+
 /** Two-column split with a vertical divider on desktop and a centered horizontal divider (24px above/below) on mobile/tablet. */
 const SPLIT_GRID_CLASS =
   "grid gap-0 xl:grid-cols-2 xl:divide-x xl:divide-border " +
@@ -1723,7 +1739,11 @@ function DashboardPage() {
                   </p>
                 </div>
 
-                <div className="h-72 sm:h-64 xl:h-auto xl:flex-1 xl:min-h-[16rem]" data-chart="procedures">
+                <div
+                  className="w-full"
+                  style={{ height: horizontalBarsHeight(procedures.length, isMobile) }}
+                  data-chart="procedures"
+                >
 
                   <ResponsiveContainer width="100%" height="100%">
                     <BarChart
@@ -1735,7 +1755,7 @@ function DashboardPage() {
                         left: isMobile ? 0 : 8,
                         bottom: isMobile ? 4 : 16,
                       }}
-                      barCategoryGap={10}
+                      barCategoryGap={HORIZONTAL_BAR_GAP}
                     >
                       <CartesianGrid
                         strokeDasharray="3 3"
@@ -1792,7 +1812,7 @@ function DashboardPage() {
                         name=""
                         fill="var(--primary)"
                         radius={[0, 6, 6, 0]}
-                        maxBarSize={22}
+                        barSize={HORIZONTAL_BAR_SIZE}
                         isAnimationActive={false}
                       >
                         <LabelList
@@ -1959,7 +1979,16 @@ function DashboardPage() {
                     />
                   ) : (
                     <div className="flex flex-1 flex-col gap-3">
-                      <div className="h-44 sm:h-48 xl:min-h-[15rem] xl:flex-1" data-chart="quality-failures">
+                      <div
+                        className="w-full"
+                        style={{
+                          height: horizontalBarsHeight(
+                            metrics.quality.failuresByType.length,
+                            isMobile,
+                          ),
+                        }}
+                        data-chart="quality-failures"
+                      >
 
                         <ResponsiveContainer width="100%" height="100%">
                           <BarChart
@@ -1971,7 +2000,7 @@ function DashboardPage() {
                               left: isMobile ? 0 : 8,
                               bottom: isMobile ? 4 : 16,
                             }}
-                            barCategoryGap={10}
+                            barCategoryGap={HORIZONTAL_BAR_GAP}
                           >
                             <CartesianGrid
                               strokeDasharray="3 3"
@@ -2027,7 +2056,7 @@ function DashboardPage() {
                               name="Ocorrências"
                               fill="var(--quality-failure)"
                               radius={[0, 6, 6, 0]}
-                              maxBarSize={22}
+                              barSize={HORIZONTAL_BAR_SIZE}
                               isAnimationActive={false}
                             >
                               <LabelList
