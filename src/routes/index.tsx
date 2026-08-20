@@ -1864,168 +1864,173 @@ function DashboardPage() {
           </SurfaceCard>
 
           {/* Qualidade do processamento */}
-          <section className="space-y-4">
-            <div className="space-y-0.5">
-              <h2 className="font-display text-base font-semibold tracking-tight text-foreground">
-                Qualidade do processamento
-              </h2>
-              <p className="text-sm text-muted-foreground">
-                Resultado do processamento das guias no período filtrado
-              </p>
-            </div>
-
-            <div className="grid gap-4 lg:grid-cols-2 items-start">
-              <SurfaceCard
-                title="Status do processamento"
-                description="Guias processadas com sucesso e guias com falha no período filtrado"
-              >
-                {!hasData ? (
-                  emptyState
-                ) : (
-                  <div className="space-y-4">
-                    <div className="relative h-44 sm:h-48" data-chart="quality-status">
-                      <ResponsiveContainer width="100%" height="100%">
-                        <PieChart>
-                          <Pie
-                            data={statusData}
-                            innerRadius={58}
-                            outerRadius={82}
-                            paddingAngle={2}
-                            dataKey="value"
-                            stroke="var(--card)"
-                            strokeWidth={2}
-                            isAnimationActive={false}
-                          >
-                            {statusData.map((d) => (
-                              <Cell key={d.name} fill={d.color} />
-                            ))}
-                          </Pie>
-                          <RTooltip content={<ChartTooltip unit="guias" />} />
-                        </PieChart>
-                      </ResponsiveContainer>
-                      <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center px-6 text-center">
-                        <div className="metric-value text-foreground">{total}</div>
-                        <div className="max-w-[96px] text-xs leading-tight text-muted-foreground">
-                          guias processadas
-                        </div>
+          <SurfaceCard
+            title="Qualidade do processamento"
+            description="Resultado do processamento das guias no período filtrado"
+          >
+            {!hasData ? (
+              emptyState
+            ) : (
+              <div className="grid gap-6 xl:gap-8 xl:grid-cols-2 items-start">
+                {/* Status do processamento */}
+                <div className="min-w-0 flex flex-col gap-3">
+                  <p className="text-xs font-medium text-muted-foreground">
+                    Status do processamento
+                  </p>
+                  <div className="relative h-44 sm:h-48" data-chart="quality-status">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <PieChart>
+                        <Pie
+                          data={statusData}
+                          innerRadius={58}
+                          outerRadius={82}
+                          paddingAngle={2}
+                          dataKey="value"
+                          stroke="var(--card)"
+                          strokeWidth={2}
+                          isAnimationActive={false}
+                        >
+                          {statusData.map((d) => (
+                            <Cell key={d.name} fill={d.color} />
+                          ))}
+                        </Pie>
+                        <RTooltip content={<ChartTooltip unit="guias" />} />
+                      </PieChart>
+                    </ResponsiveContainer>
+                    <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center px-6 text-center">
+                      <div className="metric-value text-foreground">{total}</div>
+                      <div className="max-w-[96px] text-xs leading-tight text-muted-foreground">
+                        guias processadas
                       </div>
                     </div>
-                    <ul className="space-y-1 text-sm">
-                      {statusData.map((d) => {
-                        const pct = total > 0 ? Math.round((d.value / total) * 100) : 0;
-                        const StatusIcon = d.icon;
-                        return (
-                          <li
-                            key={d.name}
-                            className="flex min-w-0 items-center gap-2 rounded-md px-2 py-1"
-                          >
-                            <StatusIcon
-                              aria-hidden="true"
-                              className="h-4 w-4 shrink-0"
-                              style={{ color: d.color }}
-                            />
-                            <span className="flex-1 truncate">{d.name}</span>
-                            <span className="text-muted-foreground tabular-nums text-xs">
-                              {d.value} · {pct}%
-                            </span>
-                          </li>
-                        );
-                      })}
-                    </ul>
                   </div>
-                )}
-              </SurfaceCard>
-
-              <SurfaceCard
-                title="Falhas por tipo"
-                description="Tipos de falha mais frequentes nas guias do período filtrado"
-              >
-                {metrics.quality.failuresByType.length === 0 ? (
-                  <EmptyState
-                    icon={<FileCheck2 className="h-10 w-10" />}
-                    title="Nenhuma falha no período"
-                    description="Todas as guias do período filtrado foram processadas com sucesso."
-                  />
-                ) : (
-                  <div className="space-y-2">
-                    <div className="h-56 sm:h-60" data-chart="quality-failures">
-                      <ResponsiveContainer width="100%" height="100%">
-                        <BarChart
-                          data={metrics.quality.failuresByType}
-                          layout="vertical"
-                          margin={{
-                            top: 4,
-                            right: isMobile ? 20 : 28,
-                            left: isMobile ? 0 : 8,
-                            bottom: isMobile ? 4 : 16,
-                          }}
-                          barCategoryGap={10}
+                  <ul className="space-y-1 text-sm">
+                    {statusData.map((d) => {
+                      const pct = total > 0 ? Math.round((d.value / total) * 100) : 0;
+                      return (
+                        <li
+                          key={d.name}
+                          className="flex min-w-0 items-center gap-2 rounded-md px-2 py-1"
                         >
-                          <CartesianGrid
-                            strokeDasharray="3 3"
-                            stroke="var(--border)"
-                            horizontal={false}
+                          <span
+                            aria-hidden="true"
+                            className="h-2.5 w-2.5 rounded-full shrink-0"
+                            style={{ background: d.color }}
                           />
-                          <XAxis
-                            type="number"
-                            stroke="var(--muted-foreground)"
-                            fontSize={11}
-                            tickLine={false}
-                            axisLine={false}
-                            allowDecimals={false}
-                            label={
-                              isMobile
-                                ? undefined
-                                : {
-                                    value: "Quantidade de ocorrências",
-                                    position: "insideBottom",
-                                    offset: -12,
-                                    fill: "var(--muted-foreground)",
-                                    fontSize: 11,
-                                  }
-                            }
-                          />
-                          <YAxis
-                            type="category"
-                            dataKey="name"
-                            stroke="var(--muted-foreground)"
-                            fontSize={11}
-                            width={isMobile ? 104 : 158}
-                            tickLine={false}
-                            axisLine={false}
-                          />
-                          <RTooltip
-                            content={<ChartTooltip unit="ocorrências" />}
-                            cursor={{ fill: "var(--muted)", opacity: 0.4 }}
-                          />
-                          <Bar
-                            dataKey="count"
-                            name="Ocorrências"
-                            fill="var(--destructive)"
-                            radius={[0, 6, 6, 0]}
-                            maxBarSize={22}
-                            isAnimationActive={false}
+                          <span className="flex-1 truncate">{d.name}</span>
+                          <span className="text-muted-foreground tabular-nums text-xs">
+                            {d.value} · {pct}%
+                          </span>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                </div>
+
+                {/* Falhas por tipo */}
+                <div className="min-w-0 flex flex-col gap-3">
+                  <p className="text-xs font-medium text-muted-foreground">
+                    Falhas por tipo
+                  </p>
+                  {metrics.quality.failuresByType.length === 0 ? (
+                    <EmptyState
+                      icon={<FileCheck2 className="h-10 w-10" />}
+                      title="Nenhuma falha no período"
+                      description="Todas as guias do período filtrado foram processadas com sucesso."
+                    />
+                  ) : (
+                    <>
+                      <div className="h-56 sm:h-60" data-chart="quality-failures">
+                        <ResponsiveContainer width="100%" height="100%">
+                          <BarChart
+                            data={metrics.quality.failuresByType}
+                            layout="vertical"
+                            margin={{
+                              top: 4,
+                              right: isMobile ? 20 : 28,
+                              left: isMobile ? 0 : 8,
+                              bottom: isMobile ? 4 : 16,
+                            }}
+                            barCategoryGap={10}
                           >
-                            <LabelList
-                              dataKey="count"
-                              position="right"
-                              className="fill-foreground"
-                              style={{ fontSize: 11, fontWeight: 600 }}
+                            <CartesianGrid
+                              strokeDasharray="3 3"
+                              stroke="var(--border)"
+                              horizontal={false}
                             />
-                          </Bar>
-                        </BarChart>
-                      </ResponsiveContainer>
-                    </div>
-                    {isMobile ? (
-                      <p className="text-[11px] leading-snug text-muted-foreground">
-                        Eixo vertical: tipo de falha · Eixo horizontal: quantidade de ocorrências
-                      </p>
-                    ) : null}
-                  </div>
-                )}
-              </SurfaceCard>
-            </div>
-          </section>
+                            <XAxis
+                              type="number"
+                              stroke="var(--muted-foreground)"
+                              fontSize={11}
+                              tickLine={false}
+                              axisLine={false}
+                              allowDecimals={false}
+                              label={
+                                isMobile
+                                  ? undefined
+                                  : {
+                                      value: "Quantidade de ocorrências",
+                                      position: "insideBottom",
+                                      offset: -12,
+                                      fill: "var(--muted-foreground)",
+                                      fontSize: 11,
+                                    }
+                              }
+                            />
+                            <YAxis
+                              type="category"
+                              dataKey="name"
+                              stroke="var(--muted-foreground)"
+                              fontSize={11}
+                              width={isMobile ? 104 : 172}
+                              tickLine={false}
+                              axisLine={false}
+                              label={
+                                isMobile
+                                  ? undefined
+                                  : {
+                                      value: "Tipo de falha",
+                                      angle: -90,
+                                      position: "insideLeft",
+                                      fill: "var(--muted-foreground)",
+                                      fontSize: 11,
+                                      style: { textAnchor: "middle" },
+                                    }
+                              }
+                            />
+                            <RTooltip
+                              content={<ChartTooltip unit="ocorrências" />}
+                              cursor={{ fill: "var(--muted)", opacity: 0.4 }}
+                            />
+                            <Bar
+                              dataKey="count"
+                              name="Ocorrências"
+                              fill="var(--destructive)"
+                              radius={[0, 6, 6, 0]}
+                              maxBarSize={22}
+                              isAnimationActive={false}
+                            >
+                              <LabelList
+                                dataKey="count"
+                                position="right"
+                                className="fill-foreground"
+                                style={{ fontSize: 11, fontWeight: 600 }}
+                              />
+                            </Bar>
+                          </BarChart>
+                        </ResponsiveContainer>
+                      </div>
+                      {isMobile ? (
+                        <p className="text-[11px] leading-snug text-muted-foreground">
+                          Eixo vertical: tipo de falha · Eixo horizontal: quantidade de ocorrências
+                        </p>
+                      ) : null}
+                    </>
+                  )}
+                </div>
+              </div>
+            )}
+          </SurfaceCard>
             </TabsContent>
 
             {/* Reservado para indicadores, filtros e gráficos próprios de cada aba. */}
