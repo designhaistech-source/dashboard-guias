@@ -1675,7 +1675,10 @@ function DashboardPage() {
             {procedures.length === 0 ? (
               emptyState
             ) : (
-              <div className="grid gap-6 xl:grid-cols-2">
+              <div className="grid gap-6 xl:grid-cols-2 items-start">
+                <h3 className="text-sm font-semibold text-foreground">
+                  Ranking de procedimentos
+                </h3>
                 <div className="h-72 sm:h-64" data-chart="procedures">
                   <ResponsiveContainer width="100%" height="100%">
                     <BarChart
