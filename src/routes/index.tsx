@@ -1675,15 +1675,16 @@ function DashboardPage() {
             {procedures.length === 0 ? (
               emptyState
             ) : (
-              <div className="grid gap-6 xl:gap-8 xl:grid-cols-2 items-start">
-                <div className="min-w-0 space-y-3">
+              <div className="grid gap-6 xl:gap-8 xl:grid-cols-2 items-start xl:items-stretch">
+                <div className="min-w-0 flex flex-col gap-3">
                 <div>
                   <h3 className="text-sm font-semibold text-foreground">
                     Ranking de procedimentos
                   </h3>
                 </div>
 
-                <div className="h-72 sm:h-64" data-chart="procedures">
+                <div className="h-72 sm:h-64 xl:h-auto xl:flex-1 xl:min-h-[16rem]" data-chart="procedures">
+
                   <ResponsiveContainer width="100%" height="100%">
                     <BarChart
                       data={procedures.map((p) => ({ name: p.name, count: p.count }))}
