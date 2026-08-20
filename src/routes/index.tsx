@@ -2000,7 +2000,7 @@ function DashboardPage() {
                               left: isMobile ? 0 : 8,
                               bottom: isMobile ? 4 : 16,
                             }}
-                            barCategoryGap={10}
+                            barCategoryGap={HORIZONTAL_BAR_GAP}
                           >
                             <CartesianGrid
                               strokeDasharray="3 3"
