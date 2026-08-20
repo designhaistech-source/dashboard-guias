@@ -714,7 +714,7 @@ const emptyFilters: GuideFilters = {
 };
 
 /** Rótulo de grupo dentro do painel de filtros — único nível em caixa alta. */
-const filterGroupLabelClass = "mb-2 text-eyebrow";
+
 
 function FilterField({
   label,
