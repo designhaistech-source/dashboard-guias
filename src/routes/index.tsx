@@ -658,6 +658,12 @@ async function generateReportPdf(
 /** Nomes de variáveis internas que nunca devem aparecer na interface. */
 const TECHNICAL_SERIES_KEYS = new Set(["count", "value", "name", "label", "guias", "qtd"]);
 
+/** Two-column split with a vertical divider on desktop and a centered horizontal divider (24px above/below) on mobile/tablet. */
+const SPLIT_GRID_CLASS =
+  "grid gap-0 xl:grid-cols-2 xl:divide-x xl:divide-border " +
+  "[&>*+*]:mt-6 [&>*+*]:border-t [&>*+*]:border-border [&>*+*]:pt-6 " +
+  "xl:[&>*+*]:mt-0 xl:[&>*+*]:border-t-0 xl:[&>*+*]:pt-0";
+
 function ChartTooltip({ active, payload, label, suffix, unit }: any) {
   if (!active || !payload?.length) return null;
   const iso: string | undefined = payload[0]?.payload?.date;
