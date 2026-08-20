@@ -1498,7 +1498,7 @@ function DashboardPage() {
                   <ResponsiveContainer width="100%" height="100%">
                     <AreaChart
                       data={dailyData}
-                      margin={{ top: 10, right: 10, left: isMobile ? 0 : 6, bottom: 18 }}
+                      margin={{ top: 10, right: 10, left: isMobile ? 0 : 6, bottom: 0 }}
                     >
                       <defs>
                         <linearGradient id="gradPrimary" x1="0" y1="0" x2="0" y2="1">
