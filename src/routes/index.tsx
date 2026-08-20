@@ -1628,7 +1628,7 @@ function DashboardPage() {
                   </ResponsiveContainer>
                 </div>
                 {isMobile ? (
-                  <p className="mt-2 text-[11px] leading-snug text-muted-foreground">
+                  <p className="mt-2 text-xs leading-snug text-muted-foreground">
                     Eixo vertical: quantidade de guias · Eixo horizontal: dia do período
                   </p>
                 ) : null}
@@ -1826,7 +1826,7 @@ function DashboardPage() {
                   </ResponsiveContainer>
                 </div>
                 {isMobile ? (
-                  <p className="text-[11px] leading-snug text-muted-foreground">
+                   <p className="text-xs leading-snug text-muted-foreground">
                     Eixo vertical: procedimento · Eixo horizontal: quantidade de guias
                   </p>
                 ) : null}
@@ -2070,7 +2070,7 @@ function DashboardPage() {
                         </ResponsiveContainer>
                       </div>
                       {isMobile ? (
-                        <p className="text-[11px] leading-snug text-muted-foreground">
+                        <p className="text-xs leading-snug text-muted-foreground">
                           Eixo vertical: tipo de falha · Eixo horizontal: quantidade de ocorrências
                         </p>
                       ) : null}
