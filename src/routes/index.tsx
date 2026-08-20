@@ -2056,7 +2056,7 @@ function DashboardPage() {
                               name="Ocorrências"
                               fill="var(--quality-failure)"
                               radius={[0, 6, 6, 0]}
-                              maxBarSize={22}
+                              barSize={HORIZONTAL_BAR_SIZE}
                               isAnimationActive={false}
                             >
                               <LabelList
