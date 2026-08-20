@@ -1621,7 +1621,15 @@ function DashboardPage() {
                 emptyState
               ) : (
                 <div className="space-y-4">
-                  <div className="relative h-44 sm:h-48" data-chart="types">
+                  <div
+                    className="relative h-44 sm:h-48"
+                    data-chart="types"
+                    role="img"
+                    aria-label={`Guias processadas por tipo: ${typeData
+                      .map((d) => `${d.name} ${d.value}`)
+                      .join(", ")}. Total ${total} guias.`}
+                  >
+
                     <ResponsiveContainer width="100%" height="100%">
                       <PieChart>
                         <Pie
