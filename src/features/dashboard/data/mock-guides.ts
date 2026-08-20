@@ -170,6 +170,12 @@ export type DashboardMetrics = {
   types: { name: string; value: number; color: string }[];
   procedures: { code: string; name: string; count: number }[];
   totalValue: number;
+  /** Qualidade do processamento no período filtrado. */
+  quality: {
+    success: number;
+    failure: number;
+    failuresByType: { name: FailureType; count: number }[];
+  };
 };
 
 /** Inclusive list of local ISO dates between `from` and `to`. */
