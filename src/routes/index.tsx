@@ -483,7 +483,11 @@ async function generateReportPdf(
     sectionTitle(
       "Indicadores de guias processadas",
       tableBlockH(kpiBody.length, 26),
-      `Dados referentes ao período de ${periodLabel}.`,
+      // "22/07/2026 a 20/08/2026" pede a preposição; rótulos como "Todo o
+      // período" ou "A partir de ..." já são autoexplicativos.
+      /^\d/.test(periodLabel)
+        ? `Dados referentes ao período de ${periodLabel}.`
+        : `Dados referentes ao período selecionado: ${periodLabel}.`,
     );
     autoTable(doc, {
       startY: y,
