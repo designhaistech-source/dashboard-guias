@@ -27,6 +27,13 @@ const PRIMITIVES_ALLOWLIST = [
   "src/features/design-system",
   "src/lib/error-page.ts", // HTML estático de fallback, fora do React
   "src/routes/emitir.tsx", // fac-símile A4 com medidas de impressão
+  // Fac-símiles das guias TISS: reproduzem o formulário oficial impresso, cujas
+  // medidas tipográficas em px são normativas e não pertencem à escala da UI.
+  "src/features/guides/components/guide-print-primitives.tsx",
+  "src/features/guides/sadt/sadt-guide-preview.tsx",
+  "src/features/guides/internacao/internacao-guide-preview.tsx",
+  "src/features/guides/apac/apac-guide-preview.tsx",
+  "src/features/guides/aih/aih-guide-preview.tsx",
 ];
 
 
