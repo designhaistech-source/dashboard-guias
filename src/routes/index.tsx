@@ -1675,11 +1675,16 @@ function DashboardPage() {
             {procedures.length === 0 ? (
               emptyState
             ) : (
-              <div className="grid gap-6 xl:grid-cols-2 items-start">
-                <div className="min-w-0 space-y-2">
-                <h3 className="text-sm font-semibold text-foreground">
-                  Ranking de procedimentos
-                </h3>
+              <div className="grid gap-6 xl:gap-8 xl:grid-cols-2 items-start">
+                <div className="min-w-0 space-y-3">
+                <div className="min-h-[2.75rem] space-y-0.5">
+                  <h3 className="text-sm font-semibold text-foreground">
+                    Ranking de procedimentos
+                  </h3>
+                  <p className="text-xs text-muted-foreground">
+                    Comparação visual por quantidade de guias
+                  </p>
+                </div>
                 <div className="h-72 sm:h-64" data-chart="procedures">
                   <ResponsiveContainer width="100%" height="100%">
                     <BarChart
