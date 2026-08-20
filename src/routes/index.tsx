@@ -674,11 +674,16 @@ function horizontalBarsHeight(categories: number, isMobile: boolean) {
 
 
 
-/** Two-column split with a vertical divider on desktop and a centered horizontal divider (24px above/below) on mobile/tablet. */
+/**
+ * Two-column split driven by the available content width (container query, not
+ * viewport): side by side with a vertical divider only while each half keeps a
+ * comfortable reading width; otherwise stacked with a centered horizontal
+ * divider (24px above/below).
+ */
 const SPLIT_GRID_CLASS =
-  "grid gap-0 xl:grid-cols-2 xl:divide-x xl:divide-border " +
+  "grid gap-0 @min-[44rem]:grid-cols-2 @min-[44rem]:divide-x @min-[44rem]:divide-border " +
   "[&>*+*]:mt-6 [&>*+*]:border-t [&>*+*]:border-border/50 [&>*+*]:pt-6 " +
-  "xl:[&>*+*]:mt-0 xl:[&>*+*]:border-t-0 xl:[&>*+*]:pt-0";
+  "@min-[44rem]:[&>*+*]:mt-0 @min-[44rem]:[&>*+*]:border-t-0 @min-[44rem]:[&>*+*]:pt-0";
 
 function ChartTooltip({ active, payload, label, suffix, unit }: any) {
   if (!active || !payload?.length) return null;
@@ -1248,13 +1253,13 @@ function DashboardPage() {
       <div className="flex min-h-screen w-full bg-background text-foreground">
         <AppSidebar activeKey="dashboard" />
         <main className="flex-1 flex flex-col min-h-screen">
-          <div className="w-full flex-1 space-y-6 px-4 py-6 pb-16 pt-20 sm:px-6 sm:py-8 md:pt-8 lg:px-10">
+          <div className="@container w-full flex-1 space-y-6 px-4 py-6 pb-16 pt-20 sm:px-6 sm:py-8 md:pt-8 lg:px-10">
             <PageHeader
               title="Visão geral"
               description="Acompanhe suas guias, documentos e atividades recentes."
             />
             <div
-              className="grid gap-4 grid-cols-1 sm:grid-cols-2 xl:grid-cols-4"
+              className="grid gap-4 grid-cols-1 @min-[30rem]:grid-cols-2 @min-[60rem]:grid-cols-4"
               aria-busy="true"
               aria-label="Carregando indicadores"
             >
@@ -1274,7 +1279,7 @@ function DashboardPage() {
     <div className="flex min-h-screen w-full bg-background text-foreground">
       <AppSidebar activeKey="dashboard" />
       <main className="flex-1 flex flex-col min-h-screen">
-        <div className="w-full flex-1 space-y-6 px-4 py-6 pb-16 pt-20 sm:px-6 sm:py-8 md:pt-8 lg:px-10">
+        <div className="@container w-full flex-1 space-y-6 px-4 py-6 pb-16 pt-20 sm:px-6 sm:py-8 md:pt-8 lg:px-10">
           <AppBreadcrumb />
 
           {/* Header */}
@@ -1492,7 +1497,7 @@ function DashboardPage() {
 
           {/* KPIs */}
           <div
-            className="grid gap-4 grid-cols-1 sm:grid-cols-2 xl:grid-cols-4"
+            className="grid gap-4 grid-cols-1 @min-[30rem]:grid-cols-2 @min-[60rem]:grid-cols-4"
             data-testid="kpi-grid"
           >
             <Kpi
@@ -1535,9 +1540,9 @@ function DashboardPage() {
           </div>
 
           {/* Charts row */}
-          <div className="grid gap-4 grid-cols-1 xl:grid-cols-3 items-start">
+          <div className="grid gap-4 grid-cols-1 @min-[62rem]:grid-cols-3 items-start">
             <SurfaceCard
-              className="xl:col-span-2"
+              className="@min-[62rem]:col-span-2"
               title="Guias processadas por dia"
               description="Quantidade de guias processadas por dia no período filtrado"
             >
@@ -1545,7 +1550,7 @@ function DashboardPage() {
                 emptyState
               ) : (
                 <>
-                <div className="h-60 sm:h-72 xl:h-80" data-chart="daily" ref={dailyChartRef}>
+                <div className="h-60 sm:h-72 @min-[62rem]:h-80" data-chart="daily" ref={dailyChartRef}>
                   <ResponsiveContainer width="100%" height="100%">
                     <AreaChart
                       data={dailyData}
@@ -1733,7 +1738,7 @@ function DashboardPage() {
               emptyState
             ) : (
               <div className={`${SPLIT_GRID_CLASS} items-start`}>
-                <div className="min-w-0 flex flex-col gap-3 xl:pr-8">
+                <div className="min-w-0 flex flex-col gap-3 @min-[44rem]:pr-8">
 
                 <div>
                   <p className="text-xs font-medium text-muted-foreground">
@@ -1833,7 +1838,7 @@ function DashboardPage() {
                   </p>
                 ) : null}
                 </div>
-                <div className="min-w-0 space-y-3 xl:pl-8">
+                <div className="min-w-0 space-y-3 @min-[44rem]:pl-8">
                 <div>
                   <p className="text-xs font-medium text-muted-foreground">
                     Detalhamento dos procedimentos
@@ -1913,7 +1918,7 @@ function DashboardPage() {
             ) : (
               <div className={`${SPLIT_GRID_CLASS} items-start`}>
                 {/* Status do processamento */}
-                <div className="min-w-0 flex flex-col gap-3 xl:pr-8">
+                <div className="min-w-0 flex flex-col gap-3 @min-[44rem]:pr-8">
 
                   <p className="text-xs font-medium text-muted-foreground">
                     Status do processamento
@@ -1969,7 +1974,7 @@ function DashboardPage() {
                 </div>
 
                 {/* Falhas por tipo */}
-                <div className="min-w-0 flex flex-col gap-3 xl:pl-8">
+                <div className="min-w-0 flex flex-col gap-3 @min-[44rem]:pl-8">
                   <p className="text-xs font-medium text-muted-foreground">
                     Falhas por tipo
                   </p>
