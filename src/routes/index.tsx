@@ -28,6 +28,8 @@ import {
   Info,
   FileCheck2,
   FileStack,
+  CheckCircle2,
+  AlertTriangle,
 } from "lucide-react";
 import {
   AreaChart,
@@ -1058,6 +1060,25 @@ function DashboardPage() {
   const dailyMonthStarts = useMemo(() => monthStartTicks(dailyTicks), [dailyTicks]);
 
   const hasData = total > 0;
+
+  /** Status do processamento: sucesso vs. falha (cor + ícone, nunca só cor). */
+  const statusData = useMemo(
+    () => [
+      {
+        name: "Processadas com sucesso",
+        value: metrics.quality.success,
+        color: "var(--success-strong)",
+        icon: CheckCircle2,
+      },
+      {
+        name: "Com falha",
+        value: metrics.quality.failure,
+        color: "var(--destructive)",
+        icon: AlertTriangle,
+      },
+    ].filter((d) => d.value > 0),
+    [metrics.quality.success, metrics.quality.failure],
+  );
   const [generatingReport, setGeneratingReport] = useState(false);
 
   const handleGenerateReport = async () => {
@@ -1921,7 +1942,7 @@ function DashboardPage() {
               >
                 {metrics.quality.failuresByType.length === 0 ? (
                   <EmptyState
-                    icon={FileCheck2}
+                    icon={<FileCheck2 className="h-10 w-10" />}
                     title="Nenhuma falha no período"
                     description="Todas as guias do período filtrado foram processadas com sucesso."
                   />
