@@ -1979,7 +1979,16 @@ function DashboardPage() {
                     />
                   ) : (
                     <div className="flex flex-1 flex-col gap-3">
-                      <div className="h-44 sm:h-48 xl:min-h-[15rem] xl:flex-1" data-chart="quality-failures">
+                      <div
+                        className="w-full"
+                        style={{
+                          height: horizontalBarsHeight(
+                            metrics.quality.failuresByType.length,
+                            isMobile,
+                          ),
+                        }}
+                        data-chart="quality-failures"
+                      >
 
                         <ResponsiveContainer width="100%" height="100%">
                           <BarChart
