@@ -1872,7 +1872,7 @@ function DashboardPage() {
             {!hasData ? (
               emptyState
             ) : (
-              <div className="grid gap-6 xl:gap-0 xl:grid-cols-2 items-start xl:divide-x xl:divide-border">
+              <div className="grid gap-6 xl:gap-0 xl:grid-cols-2 items-stretch xl:divide-x xl:divide-border">
                 {/* Status do processamento */}
                 <div className="min-w-0 flex flex-col gap-3 xl:pr-8">
 
