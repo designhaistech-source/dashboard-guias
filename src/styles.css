@@ -284,6 +284,9 @@
   --success-strong: oklch(0.82 0.14 155);
   --warning-strong: oklch(0.86 0.13 85);
   --info-strong: oklch(0.8 0.13 250);
+  --quality-success: #3fa67a;
+  --quality-failure: #df6666;
+
   --destructive-strong: oklch(0.78 0.15 25);
 
   --cat-1: oklch(0.72 0.16 155);
