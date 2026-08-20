@@ -1826,7 +1826,7 @@ function DashboardPage() {
                   </ResponsiveContainer>
                 </div>
                 {isMobile ? (
-                  <p className="text-[11px] leading-snug text-muted-foreground">
+                   <p className="text-xs leading-snug text-muted-foreground">
                     Eixo vertical: procedimento · Eixo horizontal: quantidade de guias
                   </p>
                 ) : null}
