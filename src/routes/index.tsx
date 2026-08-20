@@ -1323,9 +1323,11 @@ function DashboardPage() {
 
             <TabsContent value="extraidas" className="space-y-6">
           {/* Recorte aplicado — sempre visível, sem abrir os filtros */}
-          <p className="flex items-center gap-2 text-sm text-muted-foreground" aria-live="polite">
-            <CalendarRange className="h-4 w-4 shrink-0" aria-hidden="true" />
-            <span>
+          <p className="flex items-center gap-2 text-sm leading-5 text-muted-foreground" aria-live="polite">
+            <span className="flex h-5 shrink-0 items-center" aria-hidden="true">
+              <CalendarRange className="block h-4 w-4" />
+            </span>
+            <span className="leading-5">
               Dados exibidos: <span className="font-medium text-foreground">{periodLabel}</span>
               {filters.tipoGuia.trim() ? (
                 <>
