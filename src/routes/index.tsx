@@ -1491,7 +1491,10 @@ function DashboardPage() {
           </section>
 
           {/* KPIs */}
-          <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 xl:grid-cols-4">
+          <div
+            className="grid gap-4 grid-cols-1 sm:grid-cols-2 xl:grid-cols-4"
+            data-testid="kpi-grid"
+          >
             <Kpi
               icon={FileText}
               label="Total de guias processadas"
