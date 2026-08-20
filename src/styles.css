@@ -194,8 +194,8 @@
   /* Tipos de guia: paleta dessaturada com contraste >= 3:1 sobre o card (WCAG 1.4.11) */
   --guide-type-1: #4f7cbf;
   --guide-type-2: #8474c0;
-  --guide-type-3: #b5793c;
-  --guide-type-4: #328f68;
+  --guide-type-3: #3f95a8;
+  --guide-type-4: #c19a3e;
 
   --destructive-strong: oklch(0.5 0.18 25);
 
@@ -293,8 +293,8 @@
   --quality-failure: #df6666;
   --guide-type-1: #7ba2dd;
   --guide-type-2: #a294d8;
-  --guide-type-3: #e0ab79;
-  --guide-type-4: #5cbb92;
+  --guide-type-3: #6fbccd;
+  --guide-type-4: #d9bb69;
 
   --destructive-strong: oklch(0.78 0.15 25);
 
