@@ -1597,8 +1597,8 @@ function DashboardPage() {
               {!hasData ? (
                 emptyState
               ) : (
-                <div className="space-y-4">
-                  <div className="relative h-44" data-chart="types">
+                <div className="space-y-3">
+                  <div className="relative h-36" data-chart="types">
                     <ResponsiveContainer width="100%" height="100%">
                       <PieChart>
                         <Pie
