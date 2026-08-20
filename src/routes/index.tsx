@@ -1675,7 +1675,11 @@ function DashboardPage() {
             {procedures.length === 0 ? (
               emptyState
             ) : (
-              <div className="grid gap-6 xl:grid-cols-2">
+              <div className="grid gap-6 xl:grid-cols-2 items-start">
+                <div className="min-w-0 space-y-2">
+                <h3 className="text-sm font-semibold text-foreground">
+                  Ranking de procedimentos
+                </h3>
                 <div className="h-72 sm:h-64" data-chart="procedures">
                   <ResponsiveContainer width="100%" height="100%">
                     <BarChart
@@ -1758,10 +1762,15 @@ function DashboardPage() {
                   </ResponsiveContainer>
                 </div>
                 {isMobile ? (
-                  <p className="-mt-4 text-[11px] leading-snug text-muted-foreground">
+                  <p className="text-[11px] leading-snug text-muted-foreground">
                     Eixo vertical: procedimento · Eixo horizontal: quantidade de guias
                   </p>
                 ) : null}
+                </div>
+                <div className="min-w-0 space-y-2">
+                <h3 className="text-sm font-semibold text-foreground">
+                  Detalhamento dos procedimentos
+                </h3>
                 <DataTable>
                   <DataTableDesktop breakpoint="md">
                     <DataTableRoot className="min-w-[18rem]">
@@ -1820,6 +1829,7 @@ function DashboardPage() {
                     ))}
                   </DataTableCardList>
                 </DataTable>
+                </div>
               </div>
             )}
           </SurfaceCard>
