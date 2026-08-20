@@ -5,6 +5,22 @@
 
 import { localIsoDaysAgo, toLocalIsoDate } from "@/lib/date";
 
+/** Resultado do processamento automático da guia. */
+export type ProcessingStatus = "sucesso" | "falha";
+
+/**
+ * Tipos de falha mapeados no sistema. "Qualidade da imagem" não é um tipo
+ * próprio: é uma possível causa de "Falha na extração".
+ */
+export const FAILURE_TYPES = [
+  "Documento inválido",
+  "Falha na extração",
+  "Erro de processamento",
+  "Erro de entrega",
+] as const;
+
+export type FailureType = (typeof FAILURE_TYPES)[number];
+
 export type DashboardGuide = {
   id: string;
   numGuiaPrestador: string;
@@ -16,6 +32,10 @@ export type DashboardGuide = {
   procCodigo: string;
   procDescricao: string;
   valorTotal: number;
+  /** Resultado do processamento (qualidade). */
+  statusProcessamento: ProcessingStatus;
+  /** Preenchido apenas quando `statusProcessamento` é "falha". */
+  tipoFalha?: FailureType;
 };
 
 export const GUIDE_TYPES = [
