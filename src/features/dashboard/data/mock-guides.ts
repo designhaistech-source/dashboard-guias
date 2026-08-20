@@ -39,10 +39,10 @@ export type DashboardGuide = {
 };
 
 export const GUIDE_TYPES = [
-  { name: "SP/SADT", color: "var(--primary)" },
-  { name: "Internação", color: "var(--purple)" },
-  { name: "APAC", color: "var(--cat-6)" },
-  { name: "AIH", color: "var(--success)" },
+  { name: "SP/SADT", color: "var(--guide-type-1)" },
+  { name: "Internação", color: "var(--guide-type-2)" },
+  { name: "APAC", color: "var(--guide-type-3)" },
+  { name: "AIH", color: "var(--guide-type-4)" },
 ] as const;
 
 export const PRESTADORES = [
