@@ -1518,7 +1518,7 @@ function DashboardPage() {
                         tickLine={false}
                         axisLine={false}
                         tickMargin={4}
-                        height={isMobile ? 40 : 56}
+                        height={isMobile ? 34 : 48}
                         ticks={dailyTicks}
                         interval={0}
                         tick={<DailyAxisTick monthStarts={dailyMonthStarts} />}
@@ -1528,7 +1528,7 @@ function DashboardPage() {
                             : {
                                 value: "Dia do período",
                                 position: "insideBottom",
-                                offset: 0,
+                                offset: 2,
                                 fill: "var(--muted-foreground)",
                                 fontSize: 11,
                               }
