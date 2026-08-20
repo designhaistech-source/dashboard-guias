@@ -666,7 +666,7 @@ function ChartTooltip({ active, payload, label, suffix, unit }: any) {
   const heading = fullDate || (label !== undefined ? String(label) : "");
 
   return (
-    <div className="rounded-lg border border-border bg-popover/95 px-3 py-2 shadow-md backdrop-blur">
+    <div className="rounded-lg border border-border bg-popover px-3 py-2 shadow-md">
       {heading && (
         <div className="mb-1">
           <div className="text-xs uppercase tracking-wider text-muted-foreground">{heading}</div>
