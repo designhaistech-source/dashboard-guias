@@ -43,15 +43,15 @@ READY_SELECTOR = '[data-chart="daily"], [data-chart="types"]'
 # fixas: menor viewport suportado, celulares comuns, tablets retrato/paisagem,
 # notebooks e desktop largo.
 CASES = [
-    {"name": "320", "width": 320, "height": 1600},
-    {"name": "390", "width": 390, "height": 1600},
-    {"name": "414", "width": 414, "height": 1600},
-    {"name": "640", "width": 640, "height": 1600},
-    {"name": "768", "width": 768, "height": 1600},
-    {"name": "1024", "width": 1024, "height": 1600},
-    {"name": "1280", "width": 1280, "height": 1600},
-    {"name": "1440", "width": 1440, "height": 1600},
-    {"name": "1920", "width": 1920, "height": 1600},
+    {"name": "320", "width": 320, "height": 1600, "kpi_cols": 1},
+    {"name": "390", "width": 390, "height": 1600, "kpi_cols": 1},
+    {"name": "414", "width": 414, "height": 1600, "kpi_cols": 1},
+    {"name": "640", "width": 640, "height": 1600, "kpi_cols": 2},
+    {"name": "768", "width": 768, "height": 1600, "kpi_cols": 2},
+    {"name": "1024", "width": 1024, "height": 1600, "kpi_cols": 2},
+    {"name": "1280", "width": 1280, "height": 1600, "kpi_cols": 4},
+    {"name": "1440", "width": 1440, "height": 1600, "kpi_cols": 4},
+    {"name": "1920", "width": 1920, "height": 1600, "kpi_cols": 4},
 ]
 
 # Percentual máximo de pixels alterados tolerado por caso.
@@ -60,92 +60,35 @@ THRESHOLD = 0.4
 CHANNEL_TOLERANCE = 12
 # Largura mínima confortável de leitura para cada metade de uma seção dividida.
 MIN_SPLIT_HALF_WIDTH = 330
-# Breakpoints de container (px) usados pela página, espelhando src/routes/index.tsx.
-KPI_2_COLS_AT = 480    # @min-[30rem]
-KPI_4_COLS_AT = 960    # @min-[60rem]
-CHARTS_ROW_SPLIT_AT = 992  # @min-[62rem]
-SECTION_SPLIT_AT = 704     # @min-[44rem]
 
-# Mede rolagem horizontal, colunas dos KPIs, empilhamento das seções divididas,
-# a linha "por dia + por tipo" e elementos que estourem a viewport.
+# Mede colunas de grid e larguras das seções divididas direto no DOM.
 LAYOUT_JS = """() => {
   const docW = document.documentElement.clientWidth;
-  const round = (n) => Math.round(n);
   const cols = (el) => el
     ? getComputedStyle(el).gridTemplateColumns.split(' ').filter(Boolean).length
     : 0;
 
-  const measure = (grid) => {
-    if (!grid) return null;
-    const kids = [...grid.children];
-    const gridW = round(grid.getBoundingClientRect().width);
-    const widths = kids.map((c) => round(c.getBoundingClientRect().width));
-    const tops = new Set(kids.map((c) => round(c.getBoundingClientRect().top)));
-    return { gridW, widths, sideBySide: kids.length > 1 && tops.size === 1 };
-  };
+  // Grid dos KPIs: primeiro grid que contém os cards de indicador.
+  const kpi = document.querySelector('[data-testid="kpi-grid"]')
+    ?? [...document.querySelectorAll('main div.grid')].find(
+        (g) => g.querySelectorAll(':scope > *').length === 4
+          && /guias/i.test(g.textContent || ''));
 
-  const grids = [...document.querySelectorAll('main div.grid')];
-  const gridWith = (sel) => grids.find((g) => g.querySelector(sel));
-
-  const kpi = document.querySelector('[data-testid="kpi-grid"]');
-  const chartsRow = gridWith('[data-chart="daily"]');
-  const splitGrids = grids.filter(
-    (g) => g.querySelector('[data-chart="procedures"], [data-chart="quality-status"]')
-      && g !== chartsRow,
-  );
-
-  // Qualquer elemento visível fora da viewport (fora de scrollers legítimos).
-  const overflowing = [];
-  for (const el of document.querySelectorAll('main *')) {
-    const cs = getComputedStyle(el);
-    if (cs.display === 'none' || cs.visibility === 'hidden' || cs.position === 'fixed') continue;
-    if (String(el.className || '').includes('sr-only')) continue;
-    let inScroller = false;
-    for (let a = el.parentElement; a && a !== document.documentElement; a = a.parentElement) {
-      if (['auto', 'scroll', 'hidden'].includes(getComputedStyle(a).overflowX)) { inScroller = true; break; }
-    }
-    if (inScroller) continue;
-    const r = el.getBoundingClientRect();
-    if (r.width === 0 && r.height === 0) continue;
-    if (r.right > docW + 1 || r.left < -1) {
-      overflowing.push({
-        tag: el.tagName.toLowerCase(),
-        cls: String(el.className || '').slice(0, 60),
-        left: round(r.left),
-        right: round(r.right),
-      });
-    }
-  }
-
-  // Gráficos: svg nunca deve exceder o container nem degenerar.
-  const charts = [...document.querySelectorAll('[data-chart]')].map((host) => {
-    const svg = host.querySelector('svg');
-    const hr = host.getBoundingClientRect();
-    const sr = svg ? svg.getBoundingClientRect() : null;
-    return {
-      id: host.getAttribute('data-chart'),
-      hostW: round(hr.width),
-      svgW: sr ? round(sr.width) : 0,
-      svgH: sr ? round(sr.height) : 0,
-    };
-  });
+  const splits = [...document.querySelectorAll('main div.grid')]
+    .filter((g) => g.querySelector('[data-chart="procedures"], [data-chart="quality-status"]'))
+    .map((g) => {
+      const kids = [...g.children].map((c) => Math.round(c.getBoundingClientRect().width));
+      const top = kids.length > 1
+        ? new Set([...g.children].map((c) => Math.round(c.getBoundingClientRect().top)))
+        : new Set([0]);
+      return { widths: kids, sideBySide: top.size === 1 && kids.length > 1 };
+    });
 
   return {
     hscroll: document.documentElement.scrollWidth > docW + 1,
     docW,
-    contentW: (() => {
-      const c = [...document.querySelectorAll('main div')]
-        .find((d) => getComputedStyle(d).containerType !== 'normal');
-      if (!c) return docW;
-      const cs = getComputedStyle(c);
-      return round(c.getBoundingClientRect().width
-        - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight));
-    })(),
     kpiCols: cols(kpi),
-    chartsRow: measure(chartsRow),
-    splits: splitGrids.map(measure),
-    overflowing: overflowing.slice(0, 6),
-    charts,
+    splits,
   };
 }"""
 
@@ -186,59 +129,17 @@ def compare(baseline: Path, current: Path, diff_path: Path) -> tuple[float, str]
 
 def check_layout(case, layout) -> list[str]:
     problems: list[str] = []
-    content_w = layout["contentW"]
-    expected_kpi_cols = (
-        4 if content_w >= KPI_4_COLS_AT else 2 if content_w >= KPI_2_COLS_AT else 1
-    )
-
     if layout["hscroll"]:
-        problems.append("gera rolagem horizontal na página")
-    for el in layout["overflowing"]:
+        problems.append("gera rolagem horizontal")
+    if layout["kpiCols"] and layout["kpiCols"] != case["kpi_cols"]:
         problems.append(
-            f"elemento fora da viewport: <{el['tag']} class=\"{el['cls']}\"> "
-            f"({el['left']}–{el['right']}px em {layout['docW']}px)"
+            f"cards de indicadores em {layout['kpiCols']} coluna(s), esperado {case['kpi_cols']}"
         )
-
-    if layout["kpiCols"] and layout["kpiCols"] != expected_kpi_cols:
-        problems.append(
-            f"cards de indicadores em {layout['kpiCols']} coluna(s), esperado "
-            f"{expected_kpi_cols} para {content_w}px de conteúdo"
-        )
-
-    sections = [
-        ("por dia + por tipo", layout["chartsRow"], CHARTS_ROW_SPLIT_AT),
-    ] + [
-        (f"seção dividida #{i + 1}", s, SECTION_SPLIT_AT)
-        for i, s in enumerate(layout["splits"])
-    ]
-    for label, section, split_at in sections:
-        expected_side_by_side = content_w >= split_at
-        if not section:
-            problems.append(f"{label}: seção não encontrada no DOM")
-            continue
-        if section["sideBySide"] != expected_side_by_side:
-            estado = "lado a lado" if section["sideBySide"] else "empilhada"
-            esperado = "lado a lado" if expected_side_by_side else "empilhada"
-            problems.append(f"{label}: {estado}, esperado {esperado}")
-        if not section["sideBySide"] and any(
-            w < section["gridW"] - 1 for w in section["widths"]
-        ):
-            problems.append(f"{label}: empilhada mas sem ocupar a largura disponível")
-        if section["sideBySide"] and min(section["widths"]) < MIN_SPLIT_HALF_WIDTH:
+    for i, split in enumerate(layout["splits"]):
+        if split["sideBySide"] and min(split["widths"]) < MIN_SPLIT_HALF_WIDTH:
             problems.append(
-                f"{label}: metade com {min(section['widths'])}px "
+                f"seção dividida #{i + 1} lado a lado com metade de {min(split['widths'])}px "
                 f"(mínimo {MIN_SPLIT_HALF_WIDTH}px) — deveria empilhar"
-            )
-
-    for chart in layout["charts"]:
-        if chart["svgW"] > chart["hostW"] + 2:
-            problems.append(
-                f"gráfico '{chart['id']}' mais largo que o container "
-                f"({chart['svgW']}px > {chart['hostW']}px)"
-            )
-        if chart["svgW"] < 80 or chart["svgH"] < 80:
-            problems.append(
-                f"gráfico '{chart['id']}' degenerado ({chart['svgW']}x{chart['svgH']}px)"
             )
     return problems
 

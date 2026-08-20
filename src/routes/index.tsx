@@ -663,33 +663,22 @@ const HORIZONTAL_BAR_SIZE = 22;
 /** Gap (px) between bar categories in horizontal bar charts. */
 const HORIZONTAL_BAR_GAP = 18;
 
-/** Vertical space reserved for the value axis/labels, constant across breakpoints. */
-const HORIZONTAL_BAR_AXIS_SPACE = 44;
-
 /**
- * Height needed so bars keep a constant thickness and the chart never stretches
- * or shrinks when the breakpoint changes: it depends only on how many
- * categories are plotted. Responsiveness adjusts width, never height per bar.
+ * Height needed so bars keep a constant thickness regardless of viewport width:
+ * responsiveness adjusts width and total height, never bar thickness.
  */
-function horizontalBarsHeight(categories: number) {
-  return (
-    Math.max(1, categories) * (HORIZONTAL_BAR_SIZE + HORIZONTAL_BAR_GAP) +
-    HORIZONTAL_BAR_AXIS_SPACE
-  );
+function horizontalBarsHeight(categories: number, isMobile: boolean) {
+  const axisSpace = isMobile ? 32 : 60;
+  return Math.max(1, categories) * (HORIZONTAL_BAR_SIZE + HORIZONTAL_BAR_GAP) + axisSpace;
 }
 
 
 
-/**
- * Two-column split driven by the available content width (container query, not
- * viewport): side by side with a vertical divider only while each half keeps a
- * comfortable reading width; otherwise stacked with a centered horizontal
- * divider (24px above/below).
- */
+/** Two-column split with a vertical divider on desktop and a centered horizontal divider (24px above/below) on mobile/tablet. */
 const SPLIT_GRID_CLASS =
-  "grid gap-0 @min-[44rem]:grid-cols-2 @min-[44rem]:divide-x @min-[44rem]:divide-border " +
+  "grid gap-0 xl:grid-cols-2 xl:divide-x xl:divide-border " +
   "[&>*+*]:mt-6 [&>*+*]:border-t [&>*+*]:border-border/50 [&>*+*]:pt-6 " +
-  "@min-[44rem]:[&>*+*]:mt-0 @min-[44rem]:[&>*+*]:border-t-0 @min-[44rem]:[&>*+*]:pt-0";
+  "xl:[&>*+*]:mt-0 xl:[&>*+*]:border-t-0 xl:[&>*+*]:pt-0";
 
 function ChartTooltip({ active, payload, label, suffix, unit }: any) {
   if (!active || !payload?.length) return null;
@@ -1259,18 +1248,18 @@ function DashboardPage() {
       <div className="flex min-h-screen w-full bg-background text-foreground">
         <AppSidebar activeKey="dashboard" />
         <main className="flex-1 flex flex-col min-h-screen">
-          <div className="@container w-full flex-1 space-y-6 px-4 py-6 pb-16 pt-20 sm:px-6 sm:py-8 md:pt-8 lg:px-10">
+          <div className="w-full flex-1 space-y-6 px-4 py-6 pb-16 pt-20 sm:px-6 sm:py-8 md:pt-8 lg:px-10">
             <PageHeader
               title="Visão geral"
               description="Acompanhe suas guias, documentos e atividades recentes."
             />
             <div
-              className="grid gap-4 grid-cols-1 @min-[30rem]:grid-cols-2 @min-[60rem]:grid-cols-4"
+              className="grid gap-4 grid-cols-1 sm:grid-cols-2 xl:grid-cols-4"
               aria-busy="true"
               aria-label="Carregando indicadores"
             >
               {[0, 1, 2, 3].map((i) => (
-                <div key={i} className="h-28 animate-pulse rounded-2xl border border-border bg-card" />
+                <div key={i} className="h-32 animate-pulse rounded-2xl border border-border bg-card" />
               ))}
             </div>
             <div className="h-72 animate-pulse rounded-2xl border border-border bg-card" />
@@ -1285,7 +1274,7 @@ function DashboardPage() {
     <div className="flex min-h-screen w-full bg-background text-foreground">
       <AppSidebar activeKey="dashboard" />
       <main className="flex-1 flex flex-col min-h-screen">
-        <div className="@container w-full flex-1 space-y-6 px-4 py-6 pb-16 pt-20 sm:px-6 sm:py-8 md:pt-8 lg:px-10">
+        <div className="w-full flex-1 space-y-6 px-4 py-6 pb-16 pt-20 sm:px-6 sm:py-8 md:pt-8 lg:px-10">
           <AppBreadcrumb />
 
           {/* Header */}
@@ -1503,7 +1492,7 @@ function DashboardPage() {
 
           {/* KPIs */}
           <div
-            className="grid gap-4 grid-cols-1 @min-[30rem]:grid-cols-2 @min-[60rem]:grid-cols-4"
+            className="grid gap-4 grid-cols-1 sm:grid-cols-2 xl:grid-cols-4"
             data-testid="kpi-grid"
           >
             <Kpi
@@ -1546,9 +1535,9 @@ function DashboardPage() {
           </div>
 
           {/* Charts row */}
-          <div className="grid gap-4 grid-cols-1 @min-[62rem]:grid-cols-3 items-start">
+          <div className="grid gap-4 grid-cols-1 xl:grid-cols-3 items-start">
             <SurfaceCard
-              className="@min-[62rem]:col-span-2"
+              className="xl:col-span-2"
               title="Guias processadas por dia"
               description="Quantidade de guias processadas por dia no período filtrado"
             >
@@ -1556,7 +1545,7 @@ function DashboardPage() {
                 emptyState
               ) : (
                 <>
-                <div className="h-60 @min-[30rem]:h-72 @min-[62rem]:h-80" data-chart="daily" ref={dailyChartRef}>
+                <div className="h-60 sm:h-72 xl:h-80" data-chart="daily" ref={dailyChartRef}>
                   <ResponsiveContainer width="100%" height="100%">
                     <AreaChart
                       data={dailyData}
@@ -1659,7 +1648,7 @@ function DashboardPage() {
               ) : (
                 <div className="space-y-4">
                   <div
-                    className="relative h-44 @min-[30rem]:h-48"
+                    className="relative h-44 sm:h-48"
                     data-chart="types"
                     role="img"
                     aria-label={`Guias processadas por tipo: ${typeData
@@ -1744,7 +1733,7 @@ function DashboardPage() {
               emptyState
             ) : (
               <div className={`${SPLIT_GRID_CLASS} items-start`}>
-                <div className="min-w-0 flex flex-col gap-3 @min-[44rem]:pr-8">
+                <div className="min-w-0 flex flex-col gap-3 xl:pr-8">
 
                 <div>
                   <p className="text-xs font-medium text-muted-foreground">
@@ -1754,7 +1743,7 @@ function DashboardPage() {
 
                 <div
                   className="w-full"
-                  style={{ height: horizontalBarsHeight(procedures.length) }}
+                  style={{ height: horizontalBarsHeight(procedures.length, isMobile) }}
                   data-chart="procedures"
                 >
 
@@ -1844,7 +1833,7 @@ function DashboardPage() {
                   </p>
                 ) : null}
                 </div>
-                <div className="min-w-0 space-y-3 @min-[44rem]:pl-8">
+                <div className="min-w-0 space-y-3 xl:pl-8">
                 <div>
                   <p className="text-xs font-medium text-muted-foreground">
                     Detalhamento dos procedimentos
@@ -1924,12 +1913,12 @@ function DashboardPage() {
             ) : (
               <div className={`${SPLIT_GRID_CLASS} items-start`}>
                 {/* Status do processamento */}
-                <div className="min-w-0 flex flex-col gap-3 @min-[44rem]:pr-8">
+                <div className="min-w-0 flex flex-col gap-3 xl:pr-8">
 
                   <p className="text-xs font-medium text-muted-foreground">
                     Status do processamento
                   </p>
-                  <div className="relative h-44 @min-[30rem]:h-48" data-chart="quality-status">
+                  <div className="relative h-44 sm:h-48" data-chart="quality-status">
                     <ResponsiveContainer width="100%" height="100%">
                       <PieChart>
                         <Pie
@@ -1980,7 +1969,7 @@ function DashboardPage() {
                 </div>
 
                 {/* Falhas por tipo */}
-                <div className="min-w-0 flex flex-col gap-3 @min-[44rem]:pl-8">
+                <div className="min-w-0 flex flex-col gap-3 xl:pl-8">
                   <p className="text-xs font-medium text-muted-foreground">
                     Falhas por tipo
                   </p>
@@ -1997,6 +1986,7 @@ function DashboardPage() {
                         style={{
                           height: horizontalBarsHeight(
                             metrics.quality.failuresByType.length,
+                            isMobile,
                           ),
                         }}
                         data-chart="quality-failures"
@@ -2141,7 +2131,7 @@ function Kpi({
       className="group relative h-full overflow-hidden hover:shadow-sm"
       bodyClassName="flex h-full flex-col items-start text-left"
     >
-      <div className="flex w-full min-h-10 items-start justify-between gap-2">
+      <div className="flex w-full min-h-[2.75rem] items-start justify-between gap-2">
         <span className="metric-label flex items-start icon-optical gap-1 text-left">
           {label}
           {tooltip && (
