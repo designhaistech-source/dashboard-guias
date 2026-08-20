@@ -43,15 +43,15 @@ READY_SELECTOR = '[data-chart="daily"], [data-chart="types"]'
 # fixas: menor viewport suportado, celulares comuns, tablets retrato/paisagem,
 # notebooks e desktop largo.
 CASES = [
-    {"name": "320", "width": 320, "height": 1600, "kpi_cols": 1, "side_by_side": False},
-    {"name": "390", "width": 390, "height": 1600, "kpi_cols": 1, "side_by_side": False},
-    {"name": "414", "width": 414, "height": 1600, "kpi_cols": 1, "side_by_side": False},
-    {"name": "640", "width": 640, "height": 1600, "kpi_cols": 2, "side_by_side": False},
-    {"name": "768", "width": 768, "height": 1600, "kpi_cols": 2, "side_by_side": False},
-    {"name": "1024", "width": 1024, "height": 1600, "kpi_cols": 2, "side_by_side": False},
-    {"name": "1280", "width": 1280, "height": 1600, "kpi_cols": 4, "side_by_side": True},
-    {"name": "1440", "width": 1440, "height": 1600, "kpi_cols": 4, "side_by_side": True},
-    {"name": "1920", "width": 1920, "height": 1600, "kpi_cols": 4, "side_by_side": True},
+    {"name": "320", "width": 320, "height": 1600},
+    {"name": "390", "width": 390, "height": 1600},
+    {"name": "414", "width": 414, "height": 1600},
+    {"name": "640", "width": 640, "height": 1600},
+    {"name": "768", "width": 768, "height": 1600},
+    {"name": "1024", "width": 1024, "height": 1600},
+    {"name": "1280", "width": 1280, "height": 1600},
+    {"name": "1440", "width": 1440, "height": 1600},
+    {"name": "1920", "width": 1920, "height": 1600},
 ]
 
 # Percentual máximo de pixels alterados tolerado por caso.
@@ -60,6 +60,11 @@ THRESHOLD = 0.4
 CHANNEL_TOLERANCE = 12
 # Largura mínima confortável de leitura para cada metade de uma seção dividida.
 MIN_SPLIT_HALF_WIDTH = 330
+# Breakpoints de container (px) usados pela página, espelhando src/routes/index.tsx.
+KPI_2_COLS_AT = 480    # @[30rem]
+KPI_4_COLS_AT = 1088   # @[68rem]
+CHARTS_ROW_SPLIT_AT = 992  # @[62rem]
+SECTION_SPLIT_AT = 704     # @[44rem]
 
 # Mede rolagem horizontal, colunas dos KPIs, empilhamento das seções divididas,
 # a linha "por dia + por tipo" e elementos que estourem a viewport.
@@ -127,6 +132,13 @@ LAYOUT_JS = """() => {
   return {
     hscroll: document.documentElement.scrollWidth > docW + 1,
     docW,
+    contentW: (() => {
+      const c = document.querySelector('main .\\@container');
+      if (!c) return docW;
+      const cs = getComputedStyle(c);
+      return round(c.getBoundingClientRect().width
+        - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight));
+    })(),
     kpiCols: cols(kpi),
     chartsRow: measure(chartsRow),
     splits: splitGrids.map(measure),
@@ -172,7 +184,10 @@ def compare(baseline: Path, current: Path, diff_path: Path) -> tuple[float, str]
 
 def check_layout(case, layout) -> list[str]:
     problems: list[str] = []
-    expected_side_by_side = case["side_by_side"]
+    content_w = layout["contentW"]
+    expected_kpi_cols = (
+        4 if content_w >= KPI_4_COLS_AT else 2 if content_w >= KPI_2_COLS_AT else 1
+    )
 
     if layout["hscroll"]:
         problems.append("gera rolagem horizontal na página")
@@ -182,15 +197,20 @@ def check_layout(case, layout) -> list[str]:
             f"({el['left']}–{el['right']}px em {layout['docW']}px)"
         )
 
-    if layout["kpiCols"] and layout["kpiCols"] != case["kpi_cols"]:
+    if layout["kpiCols"] and layout["kpiCols"] != expected_kpi_cols:
         problems.append(
-            f"cards de indicadores em {layout['kpiCols']} coluna(s), esperado {case['kpi_cols']}"
+            f"cards de indicadores em {layout['kpiCols']} coluna(s), esperado "
+            f"{expected_kpi_cols} para {content_w}px de conteúdo"
         )
 
-    sections = [("por dia + por tipo", layout["chartsRow"])] + [
-        (f"seção dividida #{i + 1}", s) for i, s in enumerate(layout["splits"])
+    sections = [
+        ("por dia + por tipo", layout["chartsRow"], CHARTS_ROW_SPLIT_AT),
+    ] + [
+        (f"seção dividida #{i + 1}", s, SECTION_SPLIT_AT)
+        for i, s in enumerate(layout["splits"])
     ]
-    for label, section in sections:
+    for label, section, split_at in sections:
+        expected_side_by_side = content_w >= split_at
         if not section:
             problems.append(f"{label}: seção não encontrada no DOM")
             continue
@@ -199,7 +219,7 @@ def check_layout(case, layout) -> list[str]:
             esperado = "lado a lado" if expected_side_by_side else "empilhada"
             problems.append(f"{label}: {estado}, esperado {esperado}")
         if not section["sideBySide"] and any(
-            w < layout["docW"] * 0.7 for w in section["widths"]
+            w < content_w * 0.9 for w in section["widths"]
         ):
             problems.append(f"{label}: empilhada mas sem ocupar a largura disponível")
         if section["sideBySide"] and min(section["widths"]) < MIN_SPLIT_HALF_WIDTH:
