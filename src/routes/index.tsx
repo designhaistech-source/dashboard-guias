@@ -674,11 +674,16 @@ function horizontalBarsHeight(categories: number, isMobile: boolean) {
 
 
 
-/** Two-column split with a vertical divider on desktop and a centered horizontal divider (24px above/below) on mobile/tablet. */
+/**
+ * Two-column split driven by the available content width (container query, not
+ * viewport): side by side with a vertical divider only while each half keeps a
+ * comfortable reading width; otherwise stacked with a centered horizontal
+ * divider (24px above/below).
+ */
 const SPLIT_GRID_CLASS =
-  "grid gap-0 xl:grid-cols-2 xl:divide-x xl:divide-border " +
+  "grid gap-0 @[44rem]:grid-cols-2 @[44rem]:divide-x @[44rem]:divide-border " +
   "[&>*+*]:mt-6 [&>*+*]:border-t [&>*+*]:border-border/50 [&>*+*]:pt-6 " +
-  "xl:[&>*+*]:mt-0 xl:[&>*+*]:border-t-0 xl:[&>*+*]:pt-0";
+  "@[44rem]:[&>*+*]:mt-0 @[44rem]:[&>*+*]:border-t-0 @[44rem]:[&>*+*]:pt-0";
 
 function ChartTooltip({ active, payload, label, suffix, unit }: any) {
   if (!active || !payload?.length) return null;
@@ -1274,7 +1279,7 @@ function DashboardPage() {
     <div className="flex min-h-screen w-full bg-background text-foreground">
       <AppSidebar activeKey="dashboard" />
       <main className="flex-1 flex flex-col min-h-screen">
-        <div className="w-full flex-1 space-y-6 px-4 py-6 pb-16 pt-20 sm:px-6 sm:py-8 md:pt-8 lg:px-10">
+        <div className="@container w-full flex-1 space-y-6 px-4 py-6 pb-16 pt-20 sm:px-6 sm:py-8 md:pt-8 lg:px-10">
           <AppBreadcrumb />
 
           {/* Header */}
