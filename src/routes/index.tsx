@@ -1762,10 +1762,15 @@ function DashboardPage() {
                   </ResponsiveContainer>
                 </div>
                 {isMobile ? (
-                  <p className="-mt-4 text-[11px] leading-snug text-muted-foreground">
+                  <p className="text-[11px] leading-snug text-muted-foreground">
                     Eixo vertical: procedimento · Eixo horizontal: quantidade de guias
                   </p>
                 ) : null}
+                </div>
+                <div className="min-w-0 space-y-2">
+                <h3 className="text-sm font-semibold text-foreground">
+                  Detalhamento dos procedimentos
+                </h3>
                 <DataTable>
                   <DataTableDesktop breakpoint="md">
                     <DataTableRoot className="min-w-[18rem]">
