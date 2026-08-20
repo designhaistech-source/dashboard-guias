@@ -1951,7 +1951,7 @@ function DashboardPage() {
                     />
                   ) : (
                     <div className="flex flex-1 flex-col gap-3">
-                      <div className="h-56 flex-1 xl:min-h-[15rem]" data-chart="quality-failures">
+                      <div className="h-56 xl:min-h-[15rem] xl:flex-1" data-chart="quality-failures">
 
                         <ResponsiveContainer width="100%" height="100%">
                           <BarChart
@@ -2019,7 +2019,7 @@ function DashboardPage() {
                               name="Ocorrências"
                               fill="var(--quality-failure)"
                               radius={[0, 6, 6, 0]}
-                              maxBarSize={22}
+                              barSize={isMobile ? 14 : 18}
                               isAnimationActive={false}
                             >
                               <LabelList
