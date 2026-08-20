@@ -666,10 +666,12 @@ function ChartTooltip({ active, payload, label, suffix, unit }: any) {
   const heading = fullDate || (label !== undefined ? String(label) : "");
 
   return (
-    <div className="rounded-lg border border-border bg-popover/95 px-3 py-2 shadow-md backdrop-blur">
+    <div className="max-w-[16rem] rounded-lg border border-border bg-popover/95 px-3 py-2 shadow-md backdrop-blur">
       {heading && (
         <div className="mb-1">
-          <div className="text-xs uppercase tracking-wider text-muted-foreground">{heading}</div>
+          <div className="truncate text-xs uppercase tracking-wider text-muted-foreground">
+            {heading}
+          </div>
         </div>
       )}
 
@@ -677,13 +679,15 @@ function ChartTooltip({ active, payload, label, suffix, unit }: any) {
         const rawName = typeof p.name === "string" ? p.name : "";
         const seriesName = TECHNICAL_SERIES_KEYS.has(rawName.toLowerCase()) ? "" : rawName;
         return (
-          <div key={p.dataKey} className="flex items-center gap-2 text-xs">
+          <div key={p.dataKey} className="flex items-center gap-2 whitespace-nowrap text-xs">
             <span
-              className="h-2 w-2 rounded-full"
+              className="h-2 w-2 shrink-0 rounded-full"
               style={{ background: p.color || p.payload?.color }}
             />
-            {seriesName && <span className="text-muted-foreground">{seriesName}</span>}
-            <span className={`${seriesName ? "ml-auto" : ""} font-semibold tabular-nums`}>
+            {seriesName && (
+              <span className="min-w-0 truncate text-muted-foreground">{seriesName}</span>
+            )}
+            <span className={`${seriesName ? "ml-auto" : ""} shrink-0 font-semibold tabular-nums`}>
               {p.value}
               {suffix ?? ""}
               {unit ? ` ${unit}` : ""}
