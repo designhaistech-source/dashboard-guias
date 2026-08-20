@@ -1643,7 +1643,7 @@ function DashboardPage() {
                             <Cell key={i} fill={d.color} />
                           ))}
                         </Pie>
-                        <RTooltip content={<ChartTooltip unit="guias" />} />
+                        <RTooltip content={<ChartTooltip unit="guias" />} wrapperStyle={{ zIndex: 30 }} />
                       </PieChart>
                     </ResponsiveContainer>
                     <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center px-6 text-center">
@@ -1894,7 +1894,7 @@ function DashboardPage() {
                             <Cell key={d.name} fill={d.color} />
                           ))}
                         </Pie>
-                        <RTooltip content={<ChartTooltip unit="guias" />} />
+                        <RTooltip content={<ChartTooltip unit="guias" />} wrapperStyle={{ zIndex: 30 }} />
                       </PieChart>
                     </ResponsiveContainer>
                     <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center px-6 text-center">
