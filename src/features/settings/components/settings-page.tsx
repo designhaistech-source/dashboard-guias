@@ -226,7 +226,7 @@ export function SettingsPage() {
               <div
                 role="radiogroup"
                 aria-label="Tema da interface"
-                className="grid gap-3 sm:grid-cols-3"
+                className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3"
               >
                 {THEME_OPTIONS.map((option) => {
                   const Icon = option.icon;
@@ -257,10 +257,10 @@ export function SettingsPage() {
                         <Icon className="h-4 w-4" aria-hidden="true" />
                       </span>
                       <span className="min-w-0">
-                        <span className="block text-sm font-semibold text-foreground">
+                        <span className="block truncate text-sm font-semibold text-foreground">
                           {option.label}
                         </span>
-                        <span className="block text-xs text-muted-foreground">
+                        <span className="block truncate text-xs text-muted-foreground">
                           {option.hint}
                         </span>
                       </span>

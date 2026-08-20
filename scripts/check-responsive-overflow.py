@@ -1,7 +1,8 @@
 import asyncio, json, sys
 from playwright.async_api import async_playwright
 
-ROUTES = ["/", "/dashboard", "/guias", "/emitir", "/prescricao", "/opme", "/documentos", "/cid", "/procedimentos"]
+ROUTES = ["/", "/dashboard", "/guias", "/guias-emitidas", "/emitir", "/prescricao", "/opme", "/documentos",
+          "/documentos-emitidos", "/cid", "/procedimentos", "/perfil", "/configuracoes"]
 WIDTHS = [320, 360, 390, 414, 768, 820, 1024, 1280]
 
 JS = """() => {
