@@ -5,6 +5,22 @@
 
 import { localIsoDaysAgo, toLocalIsoDate } from "@/lib/date";
 
+/** Resultado do processamento automático da guia. */
+export type ProcessingStatus = "sucesso" | "falha";
+
+/**
+ * Tipos de falha mapeados no sistema. "Qualidade da imagem" não é um tipo
+ * próprio: é uma possível causa de "Falha na extração".
+ */
+export const FAILURE_TYPES = [
+  "Documento inválido",
+  "Falha na extração",
+  "Erro de processamento",
+  "Erro de entrega",
+] as const;
+
+export type FailureType = (typeof FAILURE_TYPES)[number];
+
 export type DashboardGuide = {
   id: string;
   numGuiaPrestador: string;
@@ -16,6 +32,10 @@ export type DashboardGuide = {
   procCodigo: string;
   procDescricao: string;
   valorTotal: number;
+  /** Resultado do processamento (qualidade). */
+  statusProcessamento: ProcessingStatus;
+  /** Preenchido apenas quando `statusProcessamento` é "falha". */
+  tipoFalha?: FailureType;
 };
 
 export const GUIDE_TYPES = [
@@ -86,7 +106,22 @@ function buildGuides(): DashboardGuide[] {
         LAST_NAMES[Math.floor(rand() * LAST_NAMES.length)]
       }`;
       const variation = 0.75 + rand() * 0.7;
+      // ~12% das guias falham; distribuição desigual entre os tipos de falha.
+      const failureRoll = rand();
+      const failed = failureRoll < 0.12;
+      const typeRoll = rand();
+      const tipoFalha: FailureType = failed
+        ? typeRoll < 0.42
+          ? "Falha na extração"
+          : typeRoll < 0.7
+            ? "Documento inválido"
+            : typeRoll < 0.89
+              ? "Erro de processamento"
+              : "Erro de entrega"
+        : "Falha na extração";
       rows.push({
+        statusProcessamento: failed ? "falha" : "sucesso",
+        ...(failed ? { tipoFalha } : {}),
         id: `${data}-${i}`,
         numGuiaPrestador: String(100000 + rows.length * 7 + Math.floor(rand() * 6)),
         data,
@@ -135,6 +170,12 @@ export type DashboardMetrics = {
   types: { name: string; value: number; color: string }[];
   procedures: { code: string; name: string; count: number }[];
   totalValue: number;
+  /** Qualidade do processamento no período filtrado. */
+  quality: {
+    success: number;
+    failure: number;
+    failuresByType: { name: FailureType; count: number }[];
+  };
 };
 
 /** Inclusive list of local ISO dates between `from` and `to`. */
@@ -191,7 +232,20 @@ export function buildMetrics(
     procMap.set(g.procCodigo, entry);
   }
 
+  const failed = guides.filter((g) => g.statusProcessamento === "falha");
+  const failuresByType = FAILURE_TYPES.map((name) => ({
+    name,
+    count: failed.filter((g) => g.tipoFalha === name).length,
+  }))
+    .filter((f) => f.count > 0)
+    .sort((a, b) => b.count - a.count);
+
   return {
+    quality: {
+      success: guides.length - failed.length,
+      failure: failed.length,
+      failuresByType,
+    },
     total: guides.length,
     today: guides.filter((g) => g.data === TODAY_ISO).length,
     dailyAvg: daily.length ? Math.round(guides.length / daily.length) : 0,
