@@ -232,7 +232,20 @@ export function buildMetrics(
     procMap.set(g.procCodigo, entry);
   }
 
+  const failed = guides.filter((g) => g.statusProcessamento === "falha");
+  const failuresByType = FAILURE_TYPES.map((name) => ({
+    name,
+    count: failed.filter((g) => g.tipoFalha === name).length,
+  }))
+    .filter((f) => f.count > 0)
+    .sort((a, b) => b.count - a.count);
+
   return {
+    quality: {
+      success: guides.length - failed.length,
+      failure: failed.length,
+      failuresByType,
+    },
     total: guides.length,
     today: guides.filter((g) => g.data === TODAY_ISO).length,
     dailyAvg: daily.length ? Math.round(guides.length / daily.length) : 0,
