@@ -291,6 +291,10 @@
   --info-strong: oklch(0.8 0.13 250);
   --quality-success: #3fa67a;
   --quality-failure: #df6666;
+  --guide-type-1: #7ba2dd;
+  --guide-type-2: #a294d8;
+  --guide-type-3: #e0ab79;
+  --guide-type-4: #5cbb92;
 
   --destructive-strong: oklch(0.78 0.15 25);
 
