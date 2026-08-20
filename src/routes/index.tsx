@@ -1540,9 +1540,9 @@ function DashboardPage() {
           </div>
 
           {/* Charts row */}
-          <div className="grid gap-4 grid-cols-1 xl:grid-cols-3 items-start">
+          <div className="grid gap-4 grid-cols-1 @[62rem]:grid-cols-3 items-start">
             <SurfaceCard
-              className="xl:col-span-2"
+              className="@[62rem]:col-span-2"
               title="Guias processadas por dia"
               description="Quantidade de guias processadas por dia no período filtrado"
             >
@@ -1550,7 +1550,7 @@ function DashboardPage() {
                 emptyState
               ) : (
                 <>
-                <div className="h-60 sm:h-72 xl:h-80" data-chart="daily" ref={dailyChartRef}>
+                <div className="h-60 sm:h-72 @[62rem]:h-80" data-chart="daily" ref={dailyChartRef}>
                   <ResponsiveContainer width="100%" height="100%">
                     <AreaChart
                       data={dailyData}
@@ -1738,7 +1738,7 @@ function DashboardPage() {
               emptyState
             ) : (
               <div className={`${SPLIT_GRID_CLASS} items-start`}>
-                <div className="min-w-0 flex flex-col gap-3 xl:pr-8">
+                <div className="min-w-0 flex flex-col gap-3 @[44rem]:pr-8">
 
                 <div>
                   <p className="text-xs font-medium text-muted-foreground">
@@ -1838,7 +1838,7 @@ function DashboardPage() {
                   </p>
                 ) : null}
                 </div>
-                <div className="min-w-0 space-y-3 xl:pl-8">
+                <div className="min-w-0 space-y-3 @[44rem]:pl-8">
                 <div>
                   <p className="text-xs font-medium text-muted-foreground">
                     Detalhamento dos procedimentos
@@ -1918,7 +1918,7 @@ function DashboardPage() {
             ) : (
               <div className={`${SPLIT_GRID_CLASS} items-start`}>
                 {/* Status do processamento */}
-                <div className="min-w-0 flex flex-col gap-3 xl:pr-8">
+                <div className="min-w-0 flex flex-col gap-3 @[44rem]:pr-8">
 
                   <p className="text-xs font-medium text-muted-foreground">
                     Status do processamento
@@ -1974,7 +1974,7 @@ function DashboardPage() {
                 </div>
 
                 {/* Falhas por tipo */}
-                <div className="min-w-0 flex flex-col gap-3 xl:pl-8">
+                <div className="min-w-0 flex flex-col gap-3 @[44rem]:pl-8">
                   <p className="text-xs font-medium text-muted-foreground">
                     Falhas por tipo
                   </p>
