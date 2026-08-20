@@ -1723,7 +1723,11 @@ function DashboardPage() {
                   </p>
                 </div>
 
-                <div className="h-72 sm:h-64 xl:h-auto xl:flex-1 xl:min-h-[16rem]" data-chart="procedures">
+                <div
+                  className="w-full"
+                  style={{ height: horizontalBarsHeight(procedures.length, isMobile) }}
+                  data-chart="procedures"
+                >
 
                   <ResponsiveContainer width="100%" height="100%">
                     <BarChart
@@ -1735,7 +1739,7 @@ function DashboardPage() {
                         left: isMobile ? 0 : 8,
                         bottom: isMobile ? 4 : 16,
                       }}
-                      barCategoryGap={10}
+                      barCategoryGap={HORIZONTAL_BAR_GAP}
                     >
                       <CartesianGrid
                         strokeDasharray="3 3"
