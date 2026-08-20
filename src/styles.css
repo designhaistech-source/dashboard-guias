@@ -191,6 +191,11 @@
   /* Qualidade do processamento (tons suavizados) */
   --quality-success: #3fa67a;
   --quality-failure: #df6666;
+  /* Tipos de guia (paleta dessaturada e harmonizada) */
+  --guide-type-1: #5b87c9;
+  --guide-type-2: #8b7cc4;
+  --guide-type-3: #d69a63;
+  --guide-type-4: #3fa67a;
 
   --destructive-strong: oklch(0.5 0.18 25);
 
