@@ -1635,7 +1635,7 @@ function DashboardPage() {
                       </div>
                     </div>
                   </div>
-                  <ul className="space-y-2 text-sm">
+                  <ul className="space-y-1 text-sm">
                     {typeData.map((d, i) => {
                       const pct = total > 0 ? (d.value / total) * 100 : 0;
                       const isActive = activeType === i;
@@ -1645,26 +1645,18 @@ function DashboardPage() {
                           onMouseEnter={() => setActiveType(i)}
                           onMouseLeave={() => setActiveType(undefined)}
                           className={[
-                            "min-w-0 rounded-md px-2 py-1 cursor-default transition-colors",
+                            "flex min-w-0 items-center gap-2 rounded-md px-2 py-1 cursor-default transition-colors",
                             isActive ? "bg-muted/60" : "",
                           ].join(" ")}
                         >
-                          <div className="flex items-center gap-2">
-                            <span
-                              className="h-2.5 w-2.5 rounded-full shrink-0"
-                              style={{ background: d.color }}
-                            />
-                            <span className="flex-1 truncate">{d.name}</span>
-                            <span className="text-muted-foreground tabular-nums text-xs">
-                              {d.value} · {Math.round(pct)}%
-                            </span>
-                          </div>
-                          <div className="mt-1 h-1.5 rounded-full bg-muted overflow-hidden">
-                            <div
-                              className="h-full rounded-full transition-all"
-                              style={{ width: `${pct}%`, background: d.color }}
-                            />
-                          </div>
+                          <span
+                            className="h-2.5 w-2.5 rounded-full shrink-0"
+                            style={{ background: d.color }}
+                          />
+                          <span className="flex-1 truncate">{d.name}</span>
+                          <span className="text-muted-foreground tabular-nums text-xs">
+                            {d.value} · {Math.round(pct)}%
+                          </span>
                         </li>
                       );
                     })}
