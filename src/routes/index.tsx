@@ -1254,7 +1254,7 @@ function DashboardPage() {
               description="Acompanhe suas guias, documentos e atividades recentes."
             />
             <div
-              className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
+              className="grid gap-4 grid-cols-1 sm:grid-cols-2 xl:grid-cols-4"
               aria-busy="true"
               aria-label="Carregando indicadores"
             >
@@ -1491,7 +1491,7 @@ function DashboardPage() {
           </section>
 
           {/* KPIs */}
-          <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 xl:grid-cols-4">
             <Kpi
               icon={FileText}
               label="Total de guias processadas"
@@ -1532,10 +1532,9 @@ function DashboardPage() {
           </div>
 
           {/* Charts row */}
-          <div className="grid gap-4 grid-cols-1 xl:grid-cols-3 items-start xl:items-stretch">
+          <div className="grid gap-4 grid-cols-1 xl:grid-cols-3 items-start">
             <SurfaceCard
-              className="xl:col-span-2 xl:flex xl:flex-col"
-              bodyClassName="xl:flex-1 xl:flex xl:flex-col xl:min-h-0"
+              className="xl:col-span-2"
               title="Guias processadas por dia"
               description="Quantidade de guias processadas por dia no período filtrado"
             >
@@ -1543,7 +1542,7 @@ function DashboardPage() {
                 emptyState
               ) : (
                 <>
-                <div className="h-60 sm:h-72 xl:h-auto xl:flex-1 xl:min-h-[15rem]" data-chart="daily" ref={dailyChartRef}>
+                <div className="h-60 sm:h-72 xl:h-80" data-chart="daily" ref={dailyChartRef}>
                   <ResponsiveContainer width="100%" height="100%">
                     <AreaChart
                       data={dailyData}
@@ -1909,7 +1908,7 @@ function DashboardPage() {
             {!hasData ? (
               emptyState
             ) : (
-              <div className={`${SPLIT_GRID_CLASS} items-stretch`}>
+              <div className={`${SPLIT_GRID_CLASS} items-start`}>
                 {/* Status do processamento */}
                 <div className="min-w-0 flex flex-col gap-3 xl:pr-8">
 
