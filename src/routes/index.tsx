@@ -1676,6 +1676,7 @@ function DashboardPage() {
               emptyState
             ) : (
               <div className="grid gap-6 xl:grid-cols-2 items-start">
+                <div className="min-w-0 space-y-2">
                 <h3 className="text-sm font-semibold text-foreground">
                   Ranking de procedimentos
                 </h3>
