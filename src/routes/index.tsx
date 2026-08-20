@@ -1517,11 +1517,23 @@ function DashboardPage() {
                         tickLine={false}
                         axisLine={false}
                         tickMargin={4}
-                        height={40}
+                        height={isMobile ? 40 : 56}
                         ticks={dailyTicks}
                         interval={0}
                         tick={<DailyAxisTick monthStarts={dailyMonthStarts} />}
+                        label={
+                          isMobile
+                            ? undefined
+                            : {
+                                value: "Dia do período",
+                                position: "insideBottom",
+                                offset: 0,
+                                fill: "var(--muted-foreground)",
+                                fontSize: 11,
+                              }
+                        }
                       />
+
 
 
                       <YAxis
