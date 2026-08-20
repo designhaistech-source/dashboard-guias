@@ -1872,7 +1872,7 @@ function DashboardPage() {
             {!hasData ? (
               emptyState
             ) : (
-              <div className="grid gap-6 xl:gap-0 xl:grid-cols-2 items-start xl:divide-x xl:divide-border">
+              <div className="grid gap-6 xl:gap-0 xl:grid-cols-2 items-stretch xl:divide-x xl:divide-border">
                 {/* Status do processamento */}
                 <div className="min-w-0 flex flex-col gap-3 xl:pr-8">
 
@@ -1941,8 +1941,9 @@ function DashboardPage() {
                       description="Todas as guias do período filtrado foram processadas com sucesso."
                     />
                   ) : (
-                    <>
-                      <div className="h-56 sm:h-60" data-chart="quality-failures">
+                    <div className="flex flex-1 flex-col gap-3">
+                      <div className="h-56 flex-1 xl:min-h-[15rem]" data-chart="quality-failures">
+
                         <ResponsiveContainer width="100%" height="100%">
                           <BarChart
                             data={metrics.quality.failuresByType}
@@ -2027,7 +2028,8 @@ function DashboardPage() {
                           Eixo vertical: tipo de falha · Eixo horizontal: quantidade de ocorrências
                         </p>
                       ) : null}
-                    </>
+                    </div>
+
                   )}
                 </div>
               </div>
