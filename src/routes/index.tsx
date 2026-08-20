@@ -681,9 +681,9 @@ function horizontalBarsHeight(categories: number, isMobile: boolean) {
  * divider (24px above/below).
  */
 const SPLIT_GRID_CLASS =
-  "grid gap-0 @[44rem]:grid-cols-2 @[44rem]:divide-x @[44rem]:divide-border " +
+  "grid gap-0 @min-[44rem]:grid-cols-2 @min-[44rem]:divide-x @min-[44rem]:divide-border " +
   "[&>*+*]:mt-6 [&>*+*]:border-t [&>*+*]:border-border/50 [&>*+*]:pt-6 " +
-  "@[44rem]:[&>*+*]:mt-0 @[44rem]:[&>*+*]:border-t-0 @[44rem]:[&>*+*]:pt-0";
+  "@min-[44rem]:[&>*+*]:mt-0 @min-[44rem]:[&>*+*]:border-t-0 @min-[44rem]:[&>*+*]:pt-0";
 
 function ChartTooltip({ active, payload, label, suffix, unit }: any) {
   if (!active || !payload?.length) return null;
@@ -1259,7 +1259,7 @@ function DashboardPage() {
               description="Acompanhe suas guias, documentos e atividades recentes."
             />
             <div
-              className="grid gap-4 grid-cols-1 @[30rem]:grid-cols-2 @[68rem]:grid-cols-4"
+              className="grid gap-4 grid-cols-1 @min-[30rem]:grid-cols-2 @min-[68rem]:grid-cols-4"
               aria-busy="true"
               aria-label="Carregando indicadores"
             >
@@ -1497,7 +1497,7 @@ function DashboardPage() {
 
           {/* KPIs */}
           <div
-            className="grid gap-4 grid-cols-1 @[30rem]:grid-cols-2 @[68rem]:grid-cols-4"
+            className="grid gap-4 grid-cols-1 @min-[30rem]:grid-cols-2 @min-[68rem]:grid-cols-4"
             data-testid="kpi-grid"
           >
             <Kpi
@@ -1540,9 +1540,9 @@ function DashboardPage() {
           </div>
 
           {/* Charts row */}
-          <div className="grid gap-4 grid-cols-1 @[62rem]:grid-cols-3 items-start">
+          <div className="grid gap-4 grid-cols-1 @min-[62rem]:grid-cols-3 items-start">
             <SurfaceCard
-              className="@[62rem]:col-span-2"
+              className="@min-[62rem]:col-span-2"
               title="Guias processadas por dia"
               description="Quantidade de guias processadas por dia no período filtrado"
             >
@@ -1550,7 +1550,7 @@ function DashboardPage() {
                 emptyState
               ) : (
                 <>
-                <div className="h-60 sm:h-72 @[62rem]:h-80" data-chart="daily" ref={dailyChartRef}>
+                <div className="h-60 sm:h-72 @min-[62rem]:h-80" data-chart="daily" ref={dailyChartRef}>
                   <ResponsiveContainer width="100%" height="100%">
                     <AreaChart
                       data={dailyData}
@@ -1738,7 +1738,7 @@ function DashboardPage() {
               emptyState
             ) : (
               <div className={`${SPLIT_GRID_CLASS} items-start`}>
-                <div className="min-w-0 flex flex-col gap-3 @[44rem]:pr-8">
+                <div className="min-w-0 flex flex-col gap-3 @min-[44rem]:pr-8">
 
                 <div>
                   <p className="text-xs font-medium text-muted-foreground">
@@ -1838,7 +1838,7 @@ function DashboardPage() {
                   </p>
                 ) : null}
                 </div>
-                <div className="min-w-0 space-y-3 @[44rem]:pl-8">
+                <div className="min-w-0 space-y-3 @min-[44rem]:pl-8">
                 <div>
                   <p className="text-xs font-medium text-muted-foreground">
                     Detalhamento dos procedimentos
@@ -1918,7 +1918,7 @@ function DashboardPage() {
             ) : (
               <div className={`${SPLIT_GRID_CLASS} items-start`}>
                 {/* Status do processamento */}
-                <div className="min-w-0 flex flex-col gap-3 @[44rem]:pr-8">
+                <div className="min-w-0 flex flex-col gap-3 @min-[44rem]:pr-8">
 
                   <p className="text-xs font-medium text-muted-foreground">
                     Status do processamento
@@ -1974,7 +1974,7 @@ function DashboardPage() {
                 </div>
 
                 {/* Falhas por tipo */}
-                <div className="min-w-0 flex flex-col gap-3 @[44rem]:pl-8">
+                <div className="min-w-0 flex flex-col gap-3 @min-[44rem]:pl-8">
                   <p className="text-xs font-medium text-muted-foreground">
                     Falhas por tipo
                   </p>
