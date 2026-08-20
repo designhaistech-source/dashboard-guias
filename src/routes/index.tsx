@@ -1545,7 +1545,7 @@ function DashboardPage() {
                         tickLine={false}
                         axisLine={false}
                         tickMargin={4}
-                        height={isMobile ? 34 : 48}
+                        height={isMobile ? 46 : 48}
                         ticks={dailyTicks}
                         interval={0}
                         tick={<DailyAxisTick monthStarts={dailyMonthStarts} />}
