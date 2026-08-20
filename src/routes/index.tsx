@@ -1772,10 +1772,15 @@ function DashboardPage() {
                   </p>
                 ) : null}
                 </div>
-                <div className="min-w-0 space-y-2">
-                <h3 className="text-sm font-semibold text-foreground">
-                  Detalhamento dos procedimentos
-                </h3>
+                <div className="min-w-0 space-y-3">
+                <div className="min-h-[2.75rem] space-y-0.5">
+                  <h3 className="text-sm font-semibold text-foreground">
+                    Detalhamento dos procedimentos
+                  </h3>
+                  <p className="text-xs text-muted-foreground">
+                    Mesmos procedimentos do ranking, com código, nome e quantidade
+                  </p>
+                </div>
                 <DataTable>
                   <DataTableDesktop breakpoint="md">
                     <DataTableRoot className="min-w-[18rem]">
