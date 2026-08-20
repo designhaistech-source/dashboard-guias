@@ -2009,7 +2009,7 @@ function DashboardPage() {
                             <Bar
                               dataKey="count"
                               name="Ocorrências"
-                              fill="var(--destructive)"
+                              fill="var(--quality-failure)"
                               radius={[0, 6, 6, 0]}
                               maxBarSize={22}
                               isAnimationActive={false}
