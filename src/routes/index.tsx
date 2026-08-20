@@ -663,13 +663,19 @@ const HORIZONTAL_BAR_SIZE = 22;
 /** Gap (px) between bar categories in horizontal bar charts. */
 const HORIZONTAL_BAR_GAP = 18;
 
+/** Vertical space reserved for the value axis/labels, constant across breakpoints. */
+const HORIZONTAL_BAR_AXIS_SPACE = 44;
+
 /**
- * Height needed so bars keep a constant thickness regardless of viewport width:
- * responsiveness adjusts width and total height, never bar thickness.
+ * Height needed so bars keep a constant thickness and the chart never stretches
+ * or shrinks when the breakpoint changes: it depends only on how many
+ * categories are plotted. Responsiveness adjusts width, never height per bar.
  */
-function horizontalBarsHeight(categories: number, isMobile: boolean) {
-  const axisSpace = isMobile ? 32 : 60;
-  return Math.max(1, categories) * (HORIZONTAL_BAR_SIZE + HORIZONTAL_BAR_GAP) + axisSpace;
+function horizontalBarsHeight(categories: number) {
+  return (
+    Math.max(1, categories) * (HORIZONTAL_BAR_SIZE + HORIZONTAL_BAR_GAP) +
+    HORIZONTAL_BAR_AXIS_SPACE
+  );
 }
 
 
@@ -1264,7 +1270,7 @@ function DashboardPage() {
               aria-label="Carregando indicadores"
             >
               {[0, 1, 2, 3].map((i) => (
-                <div key={i} className="h-32 animate-pulse rounded-2xl border border-border bg-card" />
+                <div key={i} className="h-28 animate-pulse rounded-2xl border border-border bg-card" />
               ))}
             </div>
             <div className="h-72 animate-pulse rounded-2xl border border-border bg-card" />
@@ -1550,7 +1556,7 @@ function DashboardPage() {
                 emptyState
               ) : (
                 <>
-                <div className="h-60 sm:h-72 @min-[62rem]:h-80" data-chart="daily" ref={dailyChartRef}>
+                <div className="h-60 @min-[30rem]:h-72 @min-[62rem]:h-80" data-chart="daily" ref={dailyChartRef}>
                   <ResponsiveContainer width="100%" height="100%">
                     <AreaChart
                       data={dailyData}
@@ -1653,7 +1659,7 @@ function DashboardPage() {
               ) : (
                 <div className="space-y-4">
                   <div
-                    className="relative h-44 sm:h-48"
+                    className="relative h-44 @min-[30rem]:h-48"
                     data-chart="types"
                     role="img"
                     aria-label={`Guias processadas por tipo: ${typeData
@@ -1748,7 +1754,7 @@ function DashboardPage() {
 
                 <div
                   className="w-full"
-                  style={{ height: horizontalBarsHeight(procedures.length, isMobile) }}
+                  style={{ height: horizontalBarsHeight(procedures.length) }}
                   data-chart="procedures"
                 >
 
@@ -1923,7 +1929,7 @@ function DashboardPage() {
                   <p className="text-xs font-medium text-muted-foreground">
                     Status do processamento
                   </p>
-                  <div className="relative h-44 sm:h-48" data-chart="quality-status">
+                  <div className="relative h-44 @min-[30rem]:h-48" data-chart="quality-status">
                     <ResponsiveContainer width="100%" height="100%">
                       <PieChart>
                         <Pie
@@ -1991,7 +1997,6 @@ function DashboardPage() {
                         style={{
                           height: horizontalBarsHeight(
                             metrics.quality.failuresByType.length,
-                            isMobile,
                           ),
                         }}
                         data-chart="quality-failures"
@@ -2136,7 +2141,7 @@ function Kpi({
       className="group relative h-full overflow-hidden hover:shadow-sm"
       bodyClassName="flex h-full flex-col items-start text-left"
     >
-      <div className="flex w-full min-h-[2.75rem] items-start justify-between gap-2">
+      <div className="flex w-full min-h-10 items-start justify-between gap-2">
         <span className="metric-label flex items-start icon-optical gap-1 text-left">
           {label}
           {tooltip && (
