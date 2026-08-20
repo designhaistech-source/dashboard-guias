@@ -658,6 +658,22 @@ async function generateReportPdf(
 /** Nomes de variáveis internas que nunca devem aparecer na interface. */
 const TECHNICAL_SERIES_KEYS = new Set(["count", "value", "name", "label", "guias", "qtd"]);
 
+/** Fixed bar thickness (px) for horizontal bar charts, constant across breakpoints. */
+const HORIZONTAL_BAR_SIZE = 22;
+/** Gap (px) between bar categories in horizontal bar charts. */
+const HORIZONTAL_BAR_GAP = 18;
+
+/**
+ * Height needed so bars keep a constant thickness regardless of viewport width:
+ * responsiveness adjusts width and total height, never bar thickness.
+ */
+function horizontalBarsHeight(categories: number, isMobile: boolean) {
+  const axisSpace = isMobile ? 32 : 60;
+  return Math.max(1, categories) * (HORIZONTAL_BAR_SIZE + HORIZONTAL_BAR_GAP) + axisSpace;
+}
+
+
+
 /** Two-column split with a vertical divider on desktop and a centered horizontal divider (24px above/below) on mobile/tablet. */
 const SPLIT_GRID_CLASS =
   "grid gap-0 xl:grid-cols-2 xl:divide-x xl:divide-border " +
