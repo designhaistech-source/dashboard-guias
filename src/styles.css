@@ -188,6 +188,10 @@
   --success-strong: oklch(0.48 0.13 155);
   --warning-strong: oklch(0.52 0.12 75);
   --info-strong: oklch(0.48 0.16 250);
+  /* Qualidade do processamento (tons suavizados) */
+  --quality-success: #3fa67a;
+  --quality-failure: #df6666;
+
   --destructive-strong: oklch(0.5 0.18 25);
 
   /* Categorical palette */
