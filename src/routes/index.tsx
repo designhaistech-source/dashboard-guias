@@ -1067,16 +1067,17 @@ function DashboardPage() {
       {
         name: "Processadas com sucesso",
         value: metrics.quality.success,
-        color: "var(--success-strong)",
+        color: "var(--quality-success)",
         icon: CheckCircle2,
       },
       {
         name: "Com falha",
         value: metrics.quality.failure,
-        color: "var(--destructive)",
+        color: "var(--quality-failure)",
         icon: AlertTriangle,
       },
     ].filter((d) => d.value > 0),
+
     [metrics.quality.success, metrics.quality.failure],
   );
   const [generatingReport, setGeneratingReport] = useState(false);
@@ -2008,7 +2009,7 @@ function DashboardPage() {
                             <Bar
                               dataKey="count"
                               name="Ocorrências"
-                              fill="var(--destructive)"
+                              fill="var(--quality-failure)"
                               radius={[0, 6, 6, 0]}
                               maxBarSize={22}
                               isAnimationActive={false}

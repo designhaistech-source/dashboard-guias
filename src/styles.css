@@ -55,6 +55,9 @@
   --color-info-muted: var(--info-muted);
   --color-info-strong: var(--info-strong);
   --color-destructive-strong: var(--destructive-strong);
+  --color-quality-success: var(--quality-success);
+  --color-quality-failure: var(--quality-failure);
+
   --color-purple: var(--purple);
   --color-purple-foreground: var(--purple-foreground);
 
@@ -185,6 +188,10 @@
   --success-strong: oklch(0.48 0.13 155);
   --warning-strong: oklch(0.52 0.12 75);
   --info-strong: oklch(0.48 0.16 250);
+  /* Qualidade do processamento (tons suavizados) */
+  --quality-success: #3fa67a;
+  --quality-failure: #df6666;
+
   --destructive-strong: oklch(0.5 0.18 25);
 
   /* Categorical palette */
@@ -277,6 +284,9 @@
   --success-strong: oklch(0.82 0.14 155);
   --warning-strong: oklch(0.86 0.13 85);
   --info-strong: oklch(0.8 0.13 250);
+  --quality-success: #3fa67a;
+  --quality-failure: #df6666;
+
   --destructive-strong: oklch(0.78 0.15 25);
 
   --cat-1: oklch(0.72 0.16 155);
