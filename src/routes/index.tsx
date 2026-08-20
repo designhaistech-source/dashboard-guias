@@ -1677,14 +1677,12 @@ function DashboardPage() {
             ) : (
               <div className="grid gap-6 xl:gap-8 xl:grid-cols-2 items-start">
                 <div className="min-w-0 space-y-3">
-                <div className="min-h-[2.75rem] space-y-0.5">
+                <div>
                   <h3 className="text-sm font-semibold text-foreground">
                     Ranking de procedimentos
                   </h3>
-                  <p className="text-xs text-muted-foreground">
-                    Comparação visual por quantidade de guias
-                  </p>
                 </div>
+
                 <div className="h-72 sm:h-64" data-chart="procedures">
                   <ResponsiveContainer width="100%" height="100%">
                     <BarChart
@@ -1773,14 +1771,12 @@ function DashboardPage() {
                 ) : null}
                 </div>
                 <div className="min-w-0 space-y-3">
-                <div className="min-h-[2.75rem] space-y-0.5">
+                <div>
                   <h3 className="text-sm font-semibold text-foreground">
                     Detalhamento dos procedimentos
                   </h3>
-                  <p className="text-xs text-muted-foreground">
-                    Mesmos procedimentos do ranking, com código, nome e quantidade
-                  </p>
                 </div>
+
                 <DataTable>
                   <DataTableDesktop breakpoint="md">
                     <DataTableRoot className="min-w-[18rem]">
