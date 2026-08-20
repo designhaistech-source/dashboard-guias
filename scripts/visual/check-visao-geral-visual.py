@@ -133,7 +133,8 @@ LAYOUT_JS = """() => {
     hscroll: document.documentElement.scrollWidth > docW + 1,
     docW,
     contentW: (() => {
-      const c = document.querySelector('main .\\@container');
+      const c = [...document.querySelectorAll('main div')]
+        .find((d) => getComputedStyle(d).containerType !== 'normal');
       if (!c) return docW;
       const cs = getComputedStyle(c);
       return round(c.getBoundingClientRect().width
