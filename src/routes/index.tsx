@@ -680,6 +680,17 @@ const SPLIT_GRID_CLASS =
   "[&>*+*]:mt-6 [&>*+*]:border-t [&>*+*]:border-border/50 [&>*+*]:pt-6 " +
   "xl:[&>*+*]:mt-0 xl:[&>*+*]:border-t-0 xl:[&>*+*]:pt-0";
 
+/**
+ * Igual ao split padrão, mas só divide em duas colunas a partir de 2xl: abaixo
+ * disso a coluna da tabela fica estreita, os nomes dos procedimentos quebram em
+ * várias linhas e sobra espaço vazio embaixo do gráfico.
+ */
+const SPLIT_GRID_CLASS_WIDE =
+  "grid gap-0 2xl:grid-cols-2 2xl:divide-x 2xl:divide-border " +
+  "[&>*+*]:mt-6 [&>*+*]:border-t [&>*+*]:border-border/50 [&>*+*]:pt-6 " +
+  "2xl:[&>*+*]:mt-0 2xl:[&>*+*]:border-t-0 2xl:[&>*+*]:pt-0";
+
+
 function ChartTooltip({ active, payload, label, suffix, unit }: any) {
   if (!active || !payload?.length) return null;
   const iso: string | undefined = payload[0]?.payload?.date;
@@ -1730,8 +1741,8 @@ function DashboardPage() {
             {procedures.length === 0 ? (
               emptyState
             ) : (
-              <div className={`${SPLIT_GRID_CLASS} items-start`}>
-                <div className="min-w-0 flex flex-col gap-3 xl:pr-8">
+              <div className={`${SPLIT_GRID_CLASS_WIDE} items-start`}>
+                <div className="min-w-0 flex flex-col gap-3 2xl:pr-8">
 
                 <div>
                   <p className="text-xs font-medium text-muted-foreground">
@@ -1831,7 +1842,7 @@ function DashboardPage() {
                   </p>
                 ) : null}
                 </div>
-                <div className="min-w-0 space-y-3 xl:pl-8">
+                <div className="min-w-0 space-y-3 2xl:pl-8">
                 <div>
                   <p className="text-xs font-medium text-muted-foreground">
                     Detalhamento dos procedimentos
