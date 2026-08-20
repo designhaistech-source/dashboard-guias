@@ -85,6 +85,7 @@ import { Combobox } from "@/components/ui/combobox";
 import { Chip } from "@/components/ui/chip";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Badge } from "@/components/ui/badge";
+import { useContainerWidth } from "@/hooks/use-container-width";
 import { useIsMobile } from "@/hooks/use-mobile";
 import {
   DASHBOARD_GUIDES,
@@ -987,6 +988,13 @@ function DashboardPage() {
   const [activeType, setActiveType] = useState<number | undefined>(undefined);
   /** Densidade e rótulos dos gráficos mudam em telas estreitas. */
   const isMobile = useIsMobile();
+  /**
+   * O ranking de procedimentos adapta eixos e rótulos à largura real da coluna
+   * (que fica estreita mesmo em telas grandes quando a seção está lado a lado).
+   */
+  const { ref: proceduresChartRef, width: proceduresWidth } =
+    useContainerWidth<HTMLDivElement>();
+  const proceduresCompact = proceduresWidth === null ? isMobile : proceduresWidth < 420;
   /** Filtros abertos por padrão, como na página Guias emitidas. */
   const [filtersOpen, setFiltersOpen] = useState(true);
   const [filters, setFilters] = useState<GuideFilters>(emptyFilters);
@@ -1744,7 +1752,10 @@ function DashboardPage() {
               emptyState
             ) : (
               <div className={`${SPLIT_GRID_CLASS} items-start`}>
-                <div className="min-w-0 flex flex-col gap-3 @min-[44rem]:pr-8">
+                <div
+                  ref={proceduresChartRef}
+                  className="@container min-w-0 flex flex-col gap-3 @min-[44rem]:pr-8"
+                >
 
                 <div>
                   <p className="text-xs font-medium text-muted-foreground">
@@ -1764,9 +1775,9 @@ function DashboardPage() {
                       layout="vertical"
                       margin={{
                         top: 4,
-                        right: isMobile ? 20 : 28,
-                        left: isMobile ? 0 : 8,
-                        bottom: isMobile ? 4 : 16,
+                        right: proceduresCompact ? 20 : 28,
+                        left: proceduresCompact ? 0 : 8,
+                        bottom: proceduresCompact ? 4 : 16,
                       }}
                       barCategoryGap={HORIZONTAL_BAR_GAP}
                     >
@@ -1783,7 +1794,7 @@ function DashboardPage() {
                         axisLine={false}
                         allowDecimals={false}
                         label={
-                          isMobile
+                          proceduresCompact
                             ? undefined
                             : {
                                 value: "Quantidade de guias",
@@ -1799,11 +1810,11 @@ function DashboardPage() {
                         dataKey="name"
                         stroke="var(--muted-foreground)"
                         fontSize={11}
-                        width={isMobile ? 104 : 158}
+                        width={proceduresCompact ? 104 : 158}
                         tickLine={false}
                         axisLine={false}
                         label={
-                          isMobile
+                          proceduresCompact
                             ? undefined
                             : {
                                 value: "Procedimento",
@@ -1838,13 +1849,13 @@ function DashboardPage() {
                     </BarChart>
                   </ResponsiveContainer>
                 </div>
-                {isMobile ? (
+                {proceduresCompact ? (
                    <p className="text-xs leading-snug text-muted-foreground">
                     Eixo vertical: procedimento · Eixo horizontal: quantidade de guias
                   </p>
                 ) : null}
                 </div>
-                <div className="min-w-0 space-y-3 @min-[44rem]:pl-8">
+                <div className="@container min-w-0 space-y-3 @min-[44rem]:pl-8">
                 <div>
                   <p className="text-xs font-medium text-muted-foreground">
                     Detalhamento dos procedimentos
@@ -1852,7 +1863,7 @@ function DashboardPage() {
                 </div>
 
                 <DataTable>
-                  <DataTableDesktop breakpoint="md">
+                  <DataTableDesktop breakpoint="container-md">
                     <DataTableRoot className="min-w-[18rem]">
                       <DataTableHeader>
                         <DataTableRow>
@@ -1893,7 +1904,7 @@ function DashboardPage() {
                     </DataTableRoot>
                   </DataTableDesktop>
 
-                  <DataTableCardList breakpoint="md" divided>
+                  <DataTableCardList breakpoint="container-md" divided>
                     {sortedProcedures.map((p) => (
                       <DataTableCard key={p.code} flat>
                         <DataTableCardHeader

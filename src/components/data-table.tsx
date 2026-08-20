@@ -124,16 +124,25 @@ export function DataTableEmptyRow({ colSpan, children, className }: EmptyRowProp
  * listagens compartilhem a mesma estrutura, espaçamento e tipografia.
  */
 
-type Breakpoint = "md" | "lg";
+/**
+ * `md`/`lg` seguem a viewport; os valores `container-*` seguem a largura
+ * disponível do container mais próximo, para listagens dentro de colunas que
+ * ficam estreitas mesmo em telas grandes.
+ */
+type Breakpoint = "md" | "lg" | "container-md" | "container-lg";
 
 const HIDE_FROM: Record<Breakpoint, string> = {
   md: "md:hidden",
   lg: "lg:hidden",
+  "container-md": "@min-[28rem]:hidden",
+  "container-lg": "@min-[44rem]:hidden",
 };
 
 const SHOW_FROM: Record<Breakpoint, string> = {
   md: "hidden md:block",
   lg: "hidden lg:block",
+  "container-md": "hidden @min-[28rem]:block",
+  "container-lg": "hidden @min-[44rem]:block",
 };
 
 interface CardListProps extends React.HTMLAttributes<HTMLUListElement> {
