@@ -61,10 +61,10 @@ CHANNEL_TOLERANCE = 12
 # Largura mínima confortável de leitura para cada metade de uma seção dividida.
 MIN_SPLIT_HALF_WIDTH = 330
 # Breakpoints de container (px) usados pela página, espelhando src/routes/index.tsx.
-KPI_2_COLS_AT = 480    # @[30rem]
-KPI_4_COLS_AT = 1088   # @[68rem]
-CHARTS_ROW_SPLIT_AT = 992  # @[62rem]
-SECTION_SPLIT_AT = 704     # @[44rem]
+KPI_2_COLS_AT = 480    # @min-[30rem]
+KPI_4_COLS_AT = 960    # @min-[60rem]
+CHARTS_ROW_SPLIT_AT = 992  # @min-[62rem]
+SECTION_SPLIT_AT = 704     # @min-[44rem]
 
 # Mede rolagem horizontal, colunas dos KPIs, empilhamento das seções divididas,
 # a linha "por dia + por tipo" e elementos que estourem a viewport.
@@ -78,9 +78,10 @@ LAYOUT_JS = """() => {
   const measure = (grid) => {
     if (!grid) return null;
     const kids = [...grid.children];
+    const gridW = round(grid.getBoundingClientRect().width);
     const widths = kids.map((c) => round(c.getBoundingClientRect().width));
     const tops = new Set(kids.map((c) => round(c.getBoundingClientRect().top)));
-    return { widths, sideBySide: kids.length > 1 && tops.size === 1 };
+    return { gridW, widths, sideBySide: kids.length > 1 && tops.size === 1 };
   };
 
   const grids = [...document.querySelectorAll('main div.grid')];
@@ -220,7 +221,7 @@ def check_layout(case, layout) -> list[str]:
             esperado = "lado a lado" if expected_side_by_side else "empilhada"
             problems.append(f"{label}: {estado}, esperado {esperado}")
         if not section["sideBySide"] and any(
-            w < content_w * 0.9 for w in section["widths"]
+            w < section["gridW"] - 1 for w in section["widths"]
         ):
             problems.append(f"{label}: empilhada mas sem ocupar a largura disponível")
         if section["sideBySide"] and min(section["widths"]) < MIN_SPLIT_HALF_WIDTH:
