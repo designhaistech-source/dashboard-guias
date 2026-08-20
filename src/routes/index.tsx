@@ -1689,12 +1689,6 @@ function DashboardPage() {
                       }}
                       barCategoryGap={10}
                     >
-                      <defs>
-                        <linearGradient id="gradBar" x1="0" y1="0" x2="1" y2="0">
-                          <stop offset="0%" stopColor="var(--purple)" />
-                          <stop offset="100%" stopColor="var(--primary)" />
-                        </linearGradient>
-                      </defs>
                       <CartesianGrid
                         strokeDasharray="3 3"
                         stroke="var(--border)"
@@ -1748,7 +1742,7 @@ function DashboardPage() {
                       <Bar
                         dataKey="count"
                         name=""
-                        fill="url(#gradBar)"
+                        fill="var(--primary)"
                         radius={[0, 6, 6, 0]}
                         maxBarSize={22}
                         isAnimationActive={false}
