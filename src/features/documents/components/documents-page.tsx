@@ -1232,7 +1232,7 @@ function AttendanceTab({ onNewDocument }: { onNewDocument: () => void }) {
             error={pacienteError}
             readOnly={locked}
           />
-          <Field id="comp-local" label="Local de atendimento" error={localError}>
+          <Field id="comp-local" label="Local de atendimento" required error={localError}>
             <Input
               id="comp-local"
               readOnly={locked}
