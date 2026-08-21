@@ -358,12 +358,12 @@ function DocumentActions({
   return (
     <>
       <FormActionBar
-        stepsLabel="Etapas preenchidas"
+        stepsLabel="Etapas para emissão"
         steps={[
-          { label: "Paciente", done: !disabled },
+          { label: "Dados preenchidos", done: !hasIssues },
           { label: "Texto do documento", done: temTexto },
-          { label: "Documento emitido", done: Boolean(issuedDoc) },
         ]}
+
         note="Emita o documento para poder baixar ou imprimir. Para ter validade, será necessário assiná-lo manualmente."
         banner={
           issuedDoc ? (
@@ -431,8 +431,15 @@ function DocumentActions({
               type="button"
               size="sm"
               onClick={handleIssue}
+              disabled={hasIssues || !temTexto}
+              title={
+                hasIssues || !temTexto
+                  ? "Preencha os dados obrigatórios e o texto do documento para emitir."
+                  : undefined
+              }
               aria-describedby={showIssues ? summaryId : undefined}
             >
+
               <Send className="icon-optical h-4 w-4" aria-hidden />
               Emitir documento
             </Button>
