@@ -1266,7 +1266,8 @@ function AttendanceTab({ onNewDocument }: { onNewDocument: () => void }) {
             <Field
               id="comp-data"
               label="Data do comparecimento"
-              error={dataStatus.error}
+              required
+              error={dataError}
               hint={dataStatus.warning ?? "Data do atendimento; é o valor usado pela variável @data."}
             >
               <Input
