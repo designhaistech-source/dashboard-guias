@@ -1125,9 +1125,17 @@ function AttendanceTab({ onNewDocument }: { onNewDocument: () => void }) {
   );
 
   const pacienteError = useMemo(() => validatePaciente(paciente), [paciente]);
-  const localError = useMemo(() => validateLocal(local), [local]);
+  const localError = useMemo(
+    () => validateLocal(local) ?? (local.trim() ? undefined : "Informe o local de atendimento."),
+    [local],
+  );
   const cidadeError = useMemo(() => validateCidade(cidade), [cidade]);
   const horarios = useMemo(() => validateTimeRange(entrada, saida), [entrada, saida]);
+  // Campos obrigatórios: horários vazios mantêm a etapa "Dados preenchidos" pendente.
+  const entradaError = horarios.entradaError ?? (entrada ? undefined : "Informe o horário de entrada.");
+  const saidaError = horarios.saidaError ?? (saida ? undefined : "Informe o horário de saída.");
+  const dataError =
+    dataStatus.error ?? (data ? undefined : "Informe a data do comparecimento.");
   const emissaoError = useMemo(() => {
     if (!emissao) return "Informe a data de emissão.";
     if (emissao > todayIsoDate()) return "A data de emissão não pode ser futura.";
@@ -1142,19 +1150,19 @@ function AttendanceTab({ onNewDocument }: { onNewDocument: () => void }) {
         { fieldId: "comp-paciente", label: "Paciente", message: pacienteError },
         { fieldId: "comp-local", label: "Local de atendimento", message: localError },
         { fieldId: "comp-cidade", label: "Cidade", message: cidadeError },
-        { fieldId: "comp-data", label: "Data do comparecimento", message: dataStatus.error },
+        { fieldId: "comp-data", label: "Data do comparecimento", message: dataError },
         { fieldId: "comp-emissao", label: "Data de emissão", message: emissaoError },
-        { fieldId: "comp-entrada", label: "Horário de entrada", message: horarios.entradaError },
-        { fieldId: "comp-saida", label: "Horário de saída", message: horarios.saidaError },
+        { fieldId: "comp-entrada", label: "Horário de entrada", message: entradaError },
+        { fieldId: "comp-saida", label: "Horário de saída", message: saidaError },
       ]),
     [
       pacienteError,
       localError,
       cidadeError,
-      dataStatus.error,
+      dataError,
       emissaoError,
-      horarios.entradaError,
-      horarios.saidaError,
+      entradaError,
+      saidaError,
     ],
   );
 
