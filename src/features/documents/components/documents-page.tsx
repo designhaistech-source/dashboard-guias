@@ -431,8 +431,15 @@ function DocumentActions({
               type="button"
               size="sm"
               onClick={handleIssue}
+              disabled={hasIssues || !temTexto}
+              title={
+                hasIssues || !temTexto
+                  ? "Preencha os dados obrigatórios e o texto do documento para emitir."
+                  : undefined
+              }
               aria-describedby={showIssues ? summaryId : undefined}
             >
+
               <Send className="icon-optical h-4 w-4" aria-hidden />
               Emitir documento
             </Button>
