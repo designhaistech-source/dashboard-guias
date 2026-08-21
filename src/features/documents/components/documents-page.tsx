@@ -753,7 +753,8 @@ function ReportsTab({ onNewDocument }: { onNewDocument: () => void }) {
             <Field
               id="relatorio-data"
               label="Data do documento"
-              error={dataStatus.error}
+              required
+              error={dataError}
               hint={dataStatus.warning}
             >
               <Input
