@@ -657,16 +657,18 @@ function ReportsTab({ onNewDocument }: { onNewDocument: () => void }) {
   const cidError = useMemo(() => validateCid(cid), [cid]);
   const cidadeError = useMemo(() => validateCidade(cidade), [cidade]);
   const dataStatus = useMemo(() => getDocumentDateStatus(data), [data]);
+  // Campo obrigatório: sem data preenchida a etapa "Dados preenchidos" fica pendente.
+  const dataError = dataStatus.error ?? (data ? undefined : "Informe a data do documento.");
 
   const issues = useMemo(
     () =>
       buildIssues([
         { fieldId: "relatorio-paciente", label: "Paciente", message: pacienteError },
         { fieldId: "relatorio-cid", label: "CID", message: cidError },
-        { fieldId: "relatorio-data", label: "Data do documento", message: dataStatus.error },
+        { fieldId: "relatorio-data", label: "Data do documento", message: dataError },
         { fieldId: "relatorio-cidade", label: "Cidade", message: cidadeError },
       ]),
-    [pacienteError, cidError, dataStatus.error, cidadeError],
+    [pacienteError, cidError, dataError, cidadeError],
   );
 
 
@@ -751,7 +753,8 @@ function ReportsTab({ onNewDocument }: { onNewDocument: () => void }) {
             <Field
               id="relatorio-data"
               label="Data do documento"
-              error={dataStatus.error}
+              required
+              error={dataError}
               hint={dataStatus.warning}
             >
               <Input
@@ -880,7 +883,12 @@ function CertificateTab({ onNewDocument }: { onNewDocument: () => void }) {
   const pacienteError = useMemo(() => validatePaciente(paciente), [paciente]);
   const cidError = useMemo(() => validateCid(cid), [cid]);
   const cidadeError = useMemo(() => validateCidade(cidade), [cidade]);
-  const diasError = useMemo(() => validateDiasAfastamento(dias), [dias]);
+  const diasError = useMemo(
+    () => validateDiasAfastamento(dias) ?? (dias ? undefined : "Informe os dias de afastamento."),
+    [dias],
+  );
+  // Campo obrigatório: sem data preenchida a etapa "Dados preenchidos" fica pendente.
+  const dataError = dataStatus.error ?? (data ? undefined : "Informe a data do documento.");
 
   const issues = useMemo(
     () =>
@@ -888,10 +896,10 @@ function CertificateTab({ onNewDocument }: { onNewDocument: () => void }) {
         { fieldId: "atestado-paciente", label: "Paciente", message: pacienteError },
         { fieldId: "atestado-cid", label: "CID", message: cidError },
         { fieldId: "atestado-dias", label: "Dias de afastamento", message: diasError },
-        { fieldId: "atestado-data", label: "Data do documento", message: dataStatus.error },
+        { fieldId: "atestado-data", label: "Data do documento", message: dataError },
         { fieldId: "atestado-cidade", label: "Cidade", message: cidadeError },
       ]),
-    [pacienteError, cidError, diasError, dataStatus.error, cidadeError],
+    [pacienteError, cidError, diasError, dataError, cidadeError],
   );
 
 
@@ -974,6 +982,7 @@ function CertificateTab({ onNewDocument }: { onNewDocument: () => void }) {
               id="atestado-dias"
               readOnly={locked}
               label="Dias de afastamento"
+              required
               value={dias}
               onValueChange={setDias}
               options={AFASTAMENTO_OPTIONS}
@@ -982,7 +991,8 @@ function CertificateTab({ onNewDocument }: { onNewDocument: () => void }) {
             <Field
               id="atestado-data"
               label="Data do documento"
-              error={dataStatus.error}
+              required
+              error={dataError}
               hint={dataStatus.warning}
             >
               <Input
@@ -1115,9 +1125,17 @@ function AttendanceTab({ onNewDocument }: { onNewDocument: () => void }) {
   );
 
   const pacienteError = useMemo(() => validatePaciente(paciente), [paciente]);
-  const localError = useMemo(() => validateLocal(local), [local]);
+  const localError = useMemo(
+    () => validateLocal(local) ?? (local.trim() ? undefined : "Informe o local de atendimento."),
+    [local],
+  );
   const cidadeError = useMemo(() => validateCidade(cidade), [cidade]);
   const horarios = useMemo(() => validateTimeRange(entrada, saida), [entrada, saida]);
+  // Campos obrigatórios: horários vazios mantêm a etapa "Dados preenchidos" pendente.
+  const entradaError = horarios.entradaError ?? (entrada ? undefined : "Informe o horário de entrada.");
+  const saidaError = horarios.saidaError ?? (saida ? undefined : "Informe o horário de saída.");
+  const dataError =
+    dataStatus.error ?? (data ? undefined : "Informe a data do comparecimento.");
   const emissaoError = useMemo(() => {
     if (!emissao) return "Informe a data de emissão.";
     if (emissao > todayIsoDate()) return "A data de emissão não pode ser futura.";
@@ -1132,19 +1150,19 @@ function AttendanceTab({ onNewDocument }: { onNewDocument: () => void }) {
         { fieldId: "comp-paciente", label: "Paciente", message: pacienteError },
         { fieldId: "comp-local", label: "Local de atendimento", message: localError },
         { fieldId: "comp-cidade", label: "Cidade", message: cidadeError },
-        { fieldId: "comp-data", label: "Data do comparecimento", message: dataStatus.error },
+        { fieldId: "comp-data", label: "Data do comparecimento", message: dataError },
         { fieldId: "comp-emissao", label: "Data de emissão", message: emissaoError },
-        { fieldId: "comp-entrada", label: "Horário de entrada", message: horarios.entradaError },
-        { fieldId: "comp-saida", label: "Horário de saída", message: horarios.saidaError },
+        { fieldId: "comp-entrada", label: "Horário de entrada", message: entradaError },
+        { fieldId: "comp-saida", label: "Horário de saída", message: saidaError },
       ]),
     [
       pacienteError,
       localError,
       cidadeError,
-      dataStatus.error,
+      dataError,
       emissaoError,
-      horarios.entradaError,
-      horarios.saidaError,
+      entradaError,
+      saidaError,
     ],
   );
 
@@ -1214,7 +1232,7 @@ function AttendanceTab({ onNewDocument }: { onNewDocument: () => void }) {
             error={pacienteError}
             readOnly={locked}
           />
-          <Field id="comp-local" label="Local de atendimento" error={localError}>
+          <Field id="comp-local" label="Local de atendimento" required error={localError}>
             <Input
               id="comp-local"
               readOnly={locked}
@@ -1248,7 +1266,8 @@ function AttendanceTab({ onNewDocument }: { onNewDocument: () => void }) {
             <Field
               id="comp-data"
               label="Data do comparecimento"
-              error={dataStatus.error}
+              required
+              error={dataError}
               hint={dataStatus.warning ?? "Data do atendimento; é o valor usado pela variável @data."}
             >
               <Input
@@ -1264,6 +1283,7 @@ function AttendanceTab({ onNewDocument }: { onNewDocument: () => void }) {
             <Field
               id="comp-emissao"
               label="Data de emissão"
+              required
               error={emissaoError}
               hint="Data em que a declaração é assinada; compõe o fechamento com a cidade."
             >
@@ -1278,7 +1298,7 @@ function AttendanceTab({ onNewDocument }: { onNewDocument: () => void }) {
                 onChange={(e) => setEmissao(e.target.value)}
               />
             </Field>
-            <Field id="comp-entrada" label="Horário de entrada" error={horarios.entradaError}>
+            <Field id="comp-entrada" label="Horário de entrada" required error={entradaError}>
               <Input
                 id="comp-entrada"
                 readOnly={locked}
@@ -1289,7 +1309,7 @@ function AttendanceTab({ onNewDocument }: { onNewDocument: () => void }) {
                 onChange={(e) => setEntrada(e.target.value)}
               />
             </Field>
-            <Field id="comp-saida" label="Horário de saída" error={horarios.saidaError}>
+            <Field id="comp-saida" label="Horário de saída" required error={saidaError}>
               <Input
                 id="comp-saida"
                 readOnly={locked}
