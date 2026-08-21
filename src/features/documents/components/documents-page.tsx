@@ -366,8 +366,8 @@ function DocumentActions({
         ]}
         note={
           issuedDoc
-            ? `Documento ${issuedDoc.id} emitido e salvo em “Documentos emitidos”. Para ter validade, imprima o documento e realize a assinatura manualmente.`
-            : "Para ter validade, imprima o documento e realize a assinatura manualmente."
+            ? `Documento ${issuedDoc.id} emitido e salvo em “Documentos emitidos”. Emita o documento para poder baixá-lo ou imprimi-lo. Para ter validade, será necessário assiná-lo manualmente.`
+            : "Emita o documento para poder baixá-lo ou imprimi-lo. Para ter validade, será necessário assiná-lo manualmente."
         }
         banner={
           issuedDoc ? (
