@@ -1298,7 +1298,7 @@ function AttendanceTab({ onNewDocument }: { onNewDocument: () => void }) {
                 onChange={(e) => setEmissao(e.target.value)}
               />
             </Field>
-            <Field id="comp-entrada" label="Horário de entrada" error={horarios.entradaError}>
+            <Field id="comp-entrada" label="Horário de entrada" required error={entradaError}>
               <Input
                 id="comp-entrada"
                 readOnly={locked}
