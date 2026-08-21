@@ -982,6 +982,7 @@ function CertificateTab({ onNewDocument }: { onNewDocument: () => void }) {
               id="atestado-dias"
               readOnly={locked}
               label="Dias de afastamento"
+              required
               value={dias}
               onValueChange={setDias}
               options={AFASTAMENTO_OPTIONS}
@@ -990,7 +991,8 @@ function CertificateTab({ onNewDocument }: { onNewDocument: () => void }) {
             <Field
               id="atestado-data"
               label="Data do documento"
-              error={dataStatus.error}
+              required
+              error={dataError}
               hint={dataStatus.warning}
             >
               <Input
