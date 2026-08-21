@@ -364,11 +364,7 @@ function DocumentActions({
           { label: "Texto do documento", done: temTexto },
           { label: "Documento emitido", done: Boolean(issuedDoc) },
         ]}
-        note={
-          issuedDoc
-            ? `Documento ${issuedDoc.id} emitido e salvo em “Documentos emitidos”. Para ter validade, imprima o documento e realize a assinatura manualmente.`
-            : "Para ter validade, imprima o documento e realize a assinatura manualmente."
-        }
+        note="Emita o documento para poder baixar ou imprimir. Para ter validade, será necessário assiná-lo manualmente."
         banner={
           issuedDoc ? (
             <div
