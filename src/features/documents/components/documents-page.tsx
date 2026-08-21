@@ -358,12 +358,12 @@ function DocumentActions({
   return (
     <>
       <FormActionBar
-        stepsLabel="Etapas preenchidas"
+        stepsLabel="Etapas para emissão"
         steps={[
-          { label: "Paciente", done: !disabled },
+          { label: "Dados preenchidos", done: !hasIssues },
           { label: "Texto do documento", done: temTexto },
-          { label: "Documento emitido", done: Boolean(issuedDoc) },
         ]}
+
         note="Emita o documento para poder baixar ou imprimir. Para ter validade, será necessário assiná-lo manualmente."
         banner={
           issuedDoc ? (
