@@ -657,16 +657,18 @@ function ReportsTab({ onNewDocument }: { onNewDocument: () => void }) {
   const cidError = useMemo(() => validateCid(cid), [cid]);
   const cidadeError = useMemo(() => validateCidade(cidade), [cidade]);
   const dataStatus = useMemo(() => getDocumentDateStatus(data), [data]);
+  // Campo obrigatório: sem data preenchida a etapa "Dados preenchidos" fica pendente.
+  const dataError = dataStatus.error ?? (data ? undefined : "Informe a data do documento.");
 
   const issues = useMemo(
     () =>
       buildIssues([
         { fieldId: "relatorio-paciente", label: "Paciente", message: pacienteError },
         { fieldId: "relatorio-cid", label: "CID", message: cidError },
-        { fieldId: "relatorio-data", label: "Data do documento", message: dataStatus.error },
+        { fieldId: "relatorio-data", label: "Data do documento", message: dataError },
         { fieldId: "relatorio-cidade", label: "Cidade", message: cidadeError },
       ]),
-    [pacienteError, cidError, dataStatus.error, cidadeError],
+    [pacienteError, cidError, dataError, cidadeError],
   );
 
 
