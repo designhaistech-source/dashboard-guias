@@ -883,7 +883,12 @@ function CertificateTab({ onNewDocument }: { onNewDocument: () => void }) {
   const pacienteError = useMemo(() => validatePaciente(paciente), [paciente]);
   const cidError = useMemo(() => validateCid(cid), [cid]);
   const cidadeError = useMemo(() => validateCidade(cidade), [cidade]);
-  const diasError = useMemo(() => validateDiasAfastamento(dias), [dias]);
+  const diasError = useMemo(
+    () => validateDiasAfastamento(dias) ?? (dias ? undefined : "Informe os dias de afastamento."),
+    [dias],
+  );
+  // Campo obrigatório: sem data preenchida a etapa "Dados preenchidos" fica pendente.
+  const dataError = dataStatus.error ?? (data ? undefined : "Informe a data do documento.");
 
   const issues = useMemo(
     () =>
@@ -891,10 +896,10 @@ function CertificateTab({ onNewDocument }: { onNewDocument: () => void }) {
         { fieldId: "atestado-paciente", label: "Paciente", message: pacienteError },
         { fieldId: "atestado-cid", label: "CID", message: cidError },
         { fieldId: "atestado-dias", label: "Dias de afastamento", message: diasError },
-        { fieldId: "atestado-data", label: "Data do documento", message: dataStatus.error },
+        { fieldId: "atestado-data", label: "Data do documento", message: dataError },
         { fieldId: "atestado-cidade", label: "Cidade", message: cidadeError },
       ]),
-    [pacienteError, cidError, diasError, dataStatus.error, cidadeError],
+    [pacienteError, cidError, diasError, dataError, cidadeError],
   );
 
 
