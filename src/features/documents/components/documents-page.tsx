@@ -1283,6 +1283,7 @@ function AttendanceTab({ onNewDocument }: { onNewDocument: () => void }) {
             <Field
               id="comp-emissao"
               label="Data de emissão"
+              required
               error={emissaoError}
               hint="Data em que a declaração é assinada; compõe o fechamento com a cidade."
             >
