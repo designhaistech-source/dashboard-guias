@@ -2236,21 +2236,23 @@ function ProviderProcedureHeatmap({
   const get = (code: string, provider: string) => cells[`${code}|${provider}`] ?? 0;
 
   const legend = (
-    <div className="mt-4 flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
-      <span>Menos solicitações</span>
+    <div className="mt-4 flex flex-wrap items-center justify-between gap-x-3 gap-y-2 border-t border-border pt-3 text-xs text-muted-foreground">
+      <span className="shrink-0">Menos solicitações</span>
       <span className="flex items-center gap-1" aria-hidden="true">
-        {[0.1, 0.35, 0.6, 0.85, 1].map((r) => (
+        {[0.15, 0.35, 0.55, 0.8, 1].map((r) => (
           <span
             key={r}
-            className="h-3 w-6 rounded-sm border border-border"
+            className="h-3.5 w-7 rounded-sm border border-border"
             style={{ background: heatCell(r * max, max).background }}
           />
         ))}
       </span>
-      <span>Mais solicitações</span>
-      <span className="tabular-nums">(máx. {max})</span>
+      <span className="shrink-0">
+        Mais solicitações <span className="tabular-nums">(máx. {max})</span>
+      </span>
     </div>
   );
+
 
   if (isMobile) {
     return (
