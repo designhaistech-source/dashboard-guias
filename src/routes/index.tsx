@@ -1923,13 +1923,31 @@ function DashboardPage() {
           <SurfaceCard
             title="Procedimentos solicitados por prestador"
             description="Quantidade de procedimentos por prestador no período filtrado"
+            actions={
+              hasProviderMatrix ? (
+                <HeatmapLegend
+                  min={providerHeatRange.min}
+                  max={providerHeatRange.max}
+                  className="hidden lg:block"
+                />
+              ) : undefined
+            }
+            headerClassName="lg:flex-nowrap lg:gap-6"
           >
-            {providerMatrix.rows.length === 0 || providerMatrix.columns.length === 0 ? (
+            {!hasProviderMatrix ? (
               emptyState
             ) : (
-              <ProviderProcedureHeatmap matrix={providerMatrix} isMobile={isMobile} />
+              <>
+                <HeatmapLegend
+                  min={providerHeatRange.min}
+                  max={providerHeatRange.max}
+                  className="mb-4 lg:hidden"
+                />
+                <ProviderProcedureHeatmap matrix={providerMatrix} isMobile={isMobile} />
+              </>
             )}
           </SurfaceCard>
+
 
 
 
