@@ -9,92 +9,27 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as QaResponsividadeRouteImport } from './routes/qa-responsividade'
-import { Route as ProcedimentosRouteImport } from './routes/procedimentos'
-import { Route as PrescricaoRouteImport } from './routes/prescricao'
-import { Route as PerfilRouteImport } from './routes/perfil'
-import { Route as OpmeRouteImport } from './routes/opme'
-import { Route as GuiasEmitidasRouteImport } from './routes/guias-emitidas'
-import { Route as GuiasRouteImport } from './routes/guias'
-import { Route as EmitirRouteImport } from './routes/emitir'
-import { Route as DocumentosEmitidosRouteImport } from './routes/documentos-emitidos'
-import { Route as DocumentosRouteImport } from './routes/documentos'
-import { Route as DesignSystemIconesRouteImport } from './routes/design-system-icones'
-import { Route as DesignSystemRouteImport } from './routes/design-system'
-import { Route as DashboardRouteImport } from './routes/dashboard'
-import { Route as ConfiguracoesRouteImport } from './routes/configuracoes'
-import { Route as CidRouteImport } from './routes/cid'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as CidRouteImport } from './routes/cid'
+import { Route as ConfiguracoesRouteImport } from './routes/configuracoes'
+import { Route as DashboardRouteImport } from './routes/dashboard'
+import { Route as DesignSystemRouteImport } from './routes/design-system'
+import { Route as DesignSystemIconesRouteImport } from './routes/design-system-icones'
+import { Route as DocumentosRouteImport } from './routes/documentos'
+import { Route as DocumentosEmitidosRouteImport } from './routes/documentos-emitidos'
+import { Route as EmitirRouteImport } from './routes/emitir'
+import { Route as GuiasRouteImport } from './routes/guias'
+import { Route as GuiasEmitidasRouteImport } from './routes/guias-emitidas'
+import { Route as OpmeRouteImport } from './routes/opme'
+import { Route as PerfilRouteImport } from './routes/perfil'
+import { Route as PrescricaoRouteImport } from './routes/prescricao'
+import { Route as ProcedimentosRouteImport } from './routes/procedimentos'
+import { Route as QaResponsividadeRouteImport } from './routes/qa-responsividade'
 import { Route as ApiCidRouteImport } from './routes/api/cid'
 
-const QaResponsividadeRoute = QaResponsividadeRouteImport.update({
-  id: '/qa-responsividade',
-  path: '/qa-responsividade',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ProcedimentosRoute = ProcedimentosRouteImport.update({
-  id: '/procedimentos',
-  path: '/procedimentos',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const PrescricaoRoute = PrescricaoRouteImport.update({
-  id: '/prescricao',
-  path: '/prescricao',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const PerfilRoute = PerfilRouteImport.update({
-  id: '/perfil',
-  path: '/perfil',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const OpmeRoute = OpmeRouteImport.update({
-  id: '/opme',
-  path: '/opme',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const GuiasEmitidasRoute = GuiasEmitidasRouteImport.update({
-  id: '/guias-emitidas',
-  path: '/guias-emitidas',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const GuiasRoute = GuiasRouteImport.update({
-  id: '/guias',
-  path: '/guias',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const EmitirRoute = EmitirRouteImport.update({
-  id: '/emitir',
-  path: '/emitir',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const DocumentosEmitidosRoute = DocumentosEmitidosRouteImport.update({
-  id: '/documentos-emitidos',
-  path: '/documentos-emitidos',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const DocumentosRoute = DocumentosRouteImport.update({
-  id: '/documentos',
-  path: '/documentos',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const DesignSystemIconesRoute = DesignSystemIconesRouteImport.update({
-  id: '/design-system-icones',
-  path: '/design-system-icones',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const DesignSystemRoute = DesignSystemRouteImport.update({
-  id: '/design-system',
-  path: '/design-system',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const DashboardRoute = DashboardRouteImport.update({
-  id: '/dashboard',
-  path: '/dashboard',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ConfiguracoesRoute = ConfiguracoesRouteImport.update({
-  id: '/configuracoes',
-  path: '/configuracoes',
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CidRoute = CidRouteImport.update({
@@ -102,9 +37,74 @@ const CidRoute = CidRouteImport.update({
   path: '/cid',
   getParentRoute: () => rootRouteImport,
 } as any)
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
+const ConfiguracoesRoute = ConfiguracoesRouteImport.update({
+  id: '/configuracoes',
+  path: '/configuracoes',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DashboardRoute = DashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DesignSystemRoute = DesignSystemRouteImport.update({
+  id: '/design-system',
+  path: '/design-system',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DesignSystemIconesRoute = DesignSystemIconesRouteImport.update({
+  id: '/design-system-icones',
+  path: '/design-system-icones',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DocumentosRoute = DocumentosRouteImport.update({
+  id: '/documentos',
+  path: '/documentos',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DocumentosEmitidosRoute = DocumentosEmitidosRouteImport.update({
+  id: '/documentos-emitidos',
+  path: '/documentos-emitidos',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EmitirRoute = EmitirRouteImport.update({
+  id: '/emitir',
+  path: '/emitir',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GuiasRoute = GuiasRouteImport.update({
+  id: '/guias',
+  path: '/guias',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GuiasEmitidasRoute = GuiasEmitidasRouteImport.update({
+  id: '/guias-emitidas',
+  path: '/guias-emitidas',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OpmeRoute = OpmeRouteImport.update({
+  id: '/opme',
+  path: '/opme',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PerfilRoute = PerfilRouteImport.update({
+  id: '/perfil',
+  path: '/perfil',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PrescricaoRoute = PrescricaoRouteImport.update({
+  id: '/prescricao',
+  path: '/prescricao',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProcedimentosRoute = ProcedimentosRouteImport.update({
+  id: '/procedimentos',
+  path: '/procedimentos',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const QaResponsividadeRoute = QaResponsividadeRouteImport.update({
+  id: '/qa-responsividade',
+  path: '/qa-responsividade',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiCidRoute = ApiCidRouteImport.update({
@@ -253,102 +253,11 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/qa-responsividade': {
-      id: '/qa-responsividade'
-      path: '/qa-responsividade'
-      fullPath: '/qa-responsividade'
-      preLoaderRoute: typeof QaResponsividadeRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/procedimentos': {
-      id: '/procedimentos'
-      path: '/procedimentos'
-      fullPath: '/procedimentos'
-      preLoaderRoute: typeof ProcedimentosRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/prescricao': {
-      id: '/prescricao'
-      path: '/prescricao'
-      fullPath: '/prescricao'
-      preLoaderRoute: typeof PrescricaoRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/perfil': {
-      id: '/perfil'
-      path: '/perfil'
-      fullPath: '/perfil'
-      preLoaderRoute: typeof PerfilRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/opme': {
-      id: '/opme'
-      path: '/opme'
-      fullPath: '/opme'
-      preLoaderRoute: typeof OpmeRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/guias-emitidas': {
-      id: '/guias-emitidas'
-      path: '/guias-emitidas'
-      fullPath: '/guias-emitidas'
-      preLoaderRoute: typeof GuiasEmitidasRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/guias': {
-      id: '/guias'
-      path: '/guias'
-      fullPath: '/guias'
-      preLoaderRoute: typeof GuiasRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/emitir': {
-      id: '/emitir'
-      path: '/emitir'
-      fullPath: '/emitir'
-      preLoaderRoute: typeof EmitirRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/documentos-emitidos': {
-      id: '/documentos-emitidos'
-      path: '/documentos-emitidos'
-      fullPath: '/documentos-emitidos'
-      preLoaderRoute: typeof DocumentosEmitidosRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/documentos': {
-      id: '/documentos'
-      path: '/documentos'
-      fullPath: '/documentos'
-      preLoaderRoute: typeof DocumentosRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/design-system-icones': {
-      id: '/design-system-icones'
-      path: '/design-system-icones'
-      fullPath: '/design-system-icones'
-      preLoaderRoute: typeof DesignSystemIconesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/design-system': {
-      id: '/design-system'
-      path: '/design-system'
-      fullPath: '/design-system'
-      preLoaderRoute: typeof DesignSystemRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/dashboard': {
-      id: '/dashboard'
-      path: '/dashboard'
-      fullPath: '/dashboard'
-      preLoaderRoute: typeof DashboardRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/configuracoes': {
-      id: '/configuracoes'
-      path: '/configuracoes'
-      fullPath: '/configuracoes'
-      preLoaderRoute: typeof ConfiguracoesRouteImport
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/cid': {
@@ -358,11 +267,102 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CidRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
+    '/configuracoes': {
+      id: '/configuracoes'
+      path: '/configuracoes'
+      fullPath: '/configuracoes'
+      preLoaderRoute: typeof ConfiguracoesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dashboard': {
+      id: '/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof DashboardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/design-system': {
+      id: '/design-system'
+      path: '/design-system'
+      fullPath: '/design-system'
+      preLoaderRoute: typeof DesignSystemRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/design-system-icones': {
+      id: '/design-system-icones'
+      path: '/design-system-icones'
+      fullPath: '/design-system-icones'
+      preLoaderRoute: typeof DesignSystemIconesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/documentos': {
+      id: '/documentos'
+      path: '/documentos'
+      fullPath: '/documentos'
+      preLoaderRoute: typeof DocumentosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/documentos-emitidos': {
+      id: '/documentos-emitidos'
+      path: '/documentos-emitidos'
+      fullPath: '/documentos-emitidos'
+      preLoaderRoute: typeof DocumentosEmitidosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/emitir': {
+      id: '/emitir'
+      path: '/emitir'
+      fullPath: '/emitir'
+      preLoaderRoute: typeof EmitirRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/guias': {
+      id: '/guias'
+      path: '/guias'
+      fullPath: '/guias'
+      preLoaderRoute: typeof GuiasRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/guias-emitidas': {
+      id: '/guias-emitidas'
+      path: '/guias-emitidas'
+      fullPath: '/guias-emitidas'
+      preLoaderRoute: typeof GuiasEmitidasRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/opme': {
+      id: '/opme'
+      path: '/opme'
+      fullPath: '/opme'
+      preLoaderRoute: typeof OpmeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/perfil': {
+      id: '/perfil'
+      path: '/perfil'
+      fullPath: '/perfil'
+      preLoaderRoute: typeof PerfilRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/prescricao': {
+      id: '/prescricao'
+      path: '/prescricao'
+      fullPath: '/prescricao'
+      preLoaderRoute: typeof PrescricaoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/procedimentos': {
+      id: '/procedimentos'
+      path: '/procedimentos'
+      fullPath: '/procedimentos'
+      preLoaderRoute: typeof ProcedimentosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/qa-responsividade': {
+      id: '/qa-responsividade'
+      path: '/qa-responsividade'
+      fullPath: '/qa-responsividade'
+      preLoaderRoute: typeof QaResponsividadeRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/cid': {
