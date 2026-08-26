@@ -2306,34 +2306,9 @@ function ProviderProcedureHeatmap({
   const SortIcon = !nameSort ? ChevronsUpDown : nameSort === "asc" ? ChevronUp : ChevronDown;
 
   // Intervalo real dos dados exibidos (ignora células sem solicitação).
-  const values = rows.flatMap((row) =>
-    columns.map((provider) => get(row.code, provider)).filter((v) => v > 0),
-  );
-  const min = values.length ? Math.min(...values) : 0;
+  const { min } = heatmapRange(matrix);
 
 
-  /** Valores de referência: limites de cada faixa, do mínimo ao máximo. */
-  const ticks = Array.from({ length: HEAT_STEPS + 1 }, (_, i) =>
-    Math.round(min + ((max - min) * i) / HEAT_STEPS),
-  );
-
-  const legend = (
-    <div className="mt-4 border-t border-border pt-3">
-      <p className="text-xs font-medium text-foreground">Quantidade de solicitações</p>
-      <div className="mt-2 max-w-xs">
-        <div className="flex overflow-hidden rounded-md border border-border" aria-hidden="true">
-          {Array.from({ length: HEAT_STEPS }, (_, step) => (
-            <span key={step} className="h-3.5 flex-1" style={heatStepStyle(step)} />
-          ))}
-        </div>
-        <div className="mt-1 flex justify-between text-xs tabular-nums text-muted-foreground">
-          {ticks.map((tick, i) => (
-            <span key={i}>{tick}</span>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
 
 
 
