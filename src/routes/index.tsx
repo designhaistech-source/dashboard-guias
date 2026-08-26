@@ -1725,7 +1725,7 @@ function DashboardPage() {
 
           {/* Procedures */}
           <SurfaceCard
-            title="Procedimentos mais realizados"
+            title="Procedimentos mais solicitados"
             description="Procedimentos mais frequentes nas guias processadas no período filtrado"
 
           >
