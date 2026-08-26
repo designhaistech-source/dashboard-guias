@@ -2249,23 +2249,35 @@ function ProviderProcedureHeatmap({
   const { rows, columns, cells, max } = matrix;
   const get = (code: string, provider: string) => cells[`${code}|${provider}`] ?? 0;
 
+  // Intervalo real dos dados exibidos (ignora células sem solicitação).
+  const values = rows.flatMap((row) =>
+    columns.map((provider) => get(row.code, provider)).filter((v) => v > 0),
+  );
+  const min = values.length ? Math.min(...values) : 0;
+
+  /** Valores de referência: limites de cada faixa, do mínimo ao máximo. */
+  const ticks = Array.from({ length: HEAT_STEPS + 1 }, (_, i) =>
+    Math.round(min + ((max - min) * i) / HEAT_STEPS),
+  );
+
   const legend = (
-    <div className="mt-4 flex flex-wrap items-center justify-between gap-x-3 gap-y-2 border-t border-border pt-3 text-xs text-muted-foreground">
-      <span className="shrink-0">Menos solicitações</span>
-      <span className="flex items-center gap-1" aria-hidden="true">
-        {[0.15, 0.35, 0.55, 0.8, 1].map((r) => (
-          <span
-            key={r}
-            className="h-3.5 w-7 rounded-sm border border-border"
-            style={{ background: heatCell(r * max, max).background }}
-          />
-        ))}
-      </span>
-      <span className="shrink-0">
-        Mais solicitações <span className="tabular-nums">(máx. {max})</span>
-      </span>
+    <div className="mt-4 border-t border-border pt-3">
+      <p className="text-xs font-medium text-foreground">Quantidade de solicitações</p>
+      <div className="mt-2 max-w-xs">
+        <div className="flex overflow-hidden rounded-md border border-border" aria-hidden="true">
+          {Array.from({ length: HEAT_STEPS }, (_, step) => (
+            <span key={step} className="h-3.5 flex-1" style={heatStepStyle(step)} />
+          ))}
+        </div>
+        <div className="mt-1 flex justify-between text-xs tabular-nums text-muted-foreground">
+          {ticks.map((tick, i) => (
+            <span key={i}>{tick}</span>
+          ))}
+        </div>
+      </div>
     </div>
   );
+
 
 
   if (isMobile) {
