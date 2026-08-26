@@ -1767,9 +1767,11 @@ function DashboardPage() {
                   </p>
                 </div>
 
+                {/* Cresce junto com a tabela ao lado: as barras mantêm a espessura
+                    e apenas os intervalos se redistribuem na altura disponível. */}
                 <div
-                  className="w-full"
-                  style={{ height: horizontalBarsHeight(procedures.length, isMobile) }}
+                  className="w-full flex-1"
+                  style={{ minHeight: horizontalBarsHeight(procedures.length, isMobile) }}
                   data-chart="procedures"
                 >
 
