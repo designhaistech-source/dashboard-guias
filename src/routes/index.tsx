@@ -2307,7 +2307,7 @@ function ProviderProcedureHeatmap({
                     </span>
                     <span
                       className="grid h-7 w-11 shrink-0 place-items-center rounded-md text-xs font-medium tabular-nums"
-                      style={heatCell(item.value, max)}
+                      style={heatCell(item.value, min, max)}
                     >
                       {item.value}
                     </span>
@@ -2377,7 +2377,7 @@ function ProviderProcedureHeatmap({
                     <td key={provider} className="p-0">
                       <span
                         className="grid h-9 w-full place-items-center rounded-md text-sm font-medium tabular-nums"
-                        style={heatCell(value, max)}
+                        style={heatCell(value, min, max)}
                         title={`${row.name} · ${provider}: ${value}`}
                       >
                         {value === 0 ? "–" : value}
