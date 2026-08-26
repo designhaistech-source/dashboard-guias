@@ -1696,7 +1696,7 @@ function DashboardPage() {
                       <div className="metric-value text-foreground">
                         {activeType !== undefined ? typeData[activeType].value : total}
                       </div>
-                      <div className="max-w-[96px] text-xs leading-tight text-muted-foreground">
+                      <div className="max-w-24 text-xs leading-tight text-muted-foreground">
                         {activeType !== undefined
                           ? `guias de ${typeData[activeType].name}`
                           : "guias processadas"}
@@ -1853,7 +1853,7 @@ function DashboardPage() {
 
                 <DataTable>
                   <DataTableDesktop breakpoint="md">
-                    <DataTableRoot className="min-w-[18rem]">
+                    <DataTableRoot className="min-w-72">
                       <DataTableHeader>
                         <DataTableRow>
                           <SortableHead
@@ -1965,7 +1965,7 @@ function DashboardPage() {
                     </ResponsiveContainer>
                     <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center px-6 text-center">
                       <div className="metric-value text-foreground">{total}</div>
-                      <div className="max-w-[96px] text-xs leading-tight text-muted-foreground">
+                      <div className="max-w-24 text-xs leading-tight text-muted-foreground">
                         guias processadas
                       </div>
                     </div>
@@ -2156,7 +2156,7 @@ function Kpi({
       className="group relative h-full overflow-hidden hover:shadow-sm"
       bodyClassName="flex h-full flex-col items-start text-left"
     >
-      <div className="flex w-full min-h-[2.75rem] items-start justify-between gap-2">
+      <div className="flex w-full min-h-11 items-start justify-between gap-2">
         <span className="metric-label flex items-start icon-optical gap-1 text-left">
           {label}
           {tooltip && (
