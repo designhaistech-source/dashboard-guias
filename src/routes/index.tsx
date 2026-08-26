@@ -30,9 +30,6 @@ import {
   FileStack,
   CheckCircle2,
   AlertTriangle,
-  ArrowDownAZ,
-  ArrowUpAZ,
-  ArrowUpDown,
 } from "lucide-react";
 import {
   AreaChart,
@@ -2259,9 +2256,8 @@ function ProviderProcedureHeatmap({
     const dir = nameSort === "asc" ? 1 : -1;
     return [...matrix.rows].sort((a, b) => dir * a.name.localeCompare(b.name, "pt-BR"));
   }, [matrix.rows, nameSort]);
-  const toggleNameSort = () =>
-    setNameSort((s) => (s === "asc" ? "desc" : s === "desc" ? null : "asc"));
-  const SortIcon = nameSort === "asc" ? ArrowDownAZ : nameSort === "desc" ? ArrowUpAZ : ArrowUpDown;
+  const toggleNameSort = () => setNameSort((s) => (s === "asc" ? "desc" : "asc"));
+  const SortIcon = !nameSort ? ChevronsUpDown : nameSort === "asc" ? ChevronUp : ChevronDown;
 
   // Intervalo real dos dados exibidos (ignora células sem solicitação).
   const values = rows.flatMap((row) =>
@@ -2362,16 +2358,24 @@ function ProviderProcedureHeatmap({
           </colgroup>
           <thead>
             <tr>
-              <th scope="col" className="text-left align-bottom text-xs font-medium uppercase tracking-wide text-muted-foreground">
-                <button
+              <th
+                scope="col"
+                aria-sort={nameSort ? (nameSort === "asc" ? "ascending" : "descending") : "none"}
+                className="text-left align-bottom"
+              >
+                <Button
                   type="button"
+                  variant="ghost"
+                  size="sm"
                   onClick={toggleNameSort}
-                  aria-label="Ordenar procedimentos por nome"
-                  className="inline-flex items-center gap-1 rounded-md px-1 py-0.5 uppercase tracking-wide transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                  className={cn(
+                    "-mx-2 h-auto gap-1 px-2 py-1 text-xs font-medium uppercase tracking-wide",
+                    nameSort ? "text-foreground" : "text-muted-foreground",
+                  )}
                 >
                   Procedimento
-                  <SortIcon className="h-3.5 w-3.5" aria-hidden="true" />
-                </button>
+                  <SortIcon className="h-3 w-3" aria-hidden="true" />
+                </Button>
               </th>
 
               {columns.map((provider) => (
