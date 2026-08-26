@@ -2360,8 +2360,17 @@ function ProviderProcedureHeatmap({
           <thead>
             <tr>
               <th scope="col" className="text-left align-bottom text-xs font-medium uppercase tracking-wide text-muted-foreground">
-                Procedimento
+                <button
+                  type="button"
+                  onClick={toggleNameSort}
+                  aria-label="Ordenar procedimentos por nome"
+                  className="inline-flex items-center gap-1 rounded-md px-1 py-0.5 uppercase tracking-wide transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                >
+                  Procedimento
+                  <SortIcon className="h-3.5 w-3.5" aria-hidden="true" />
+                </button>
               </th>
+
               {columns.map((provider) => (
                 <th
                   key={provider}
