@@ -1037,14 +1037,23 @@ function DashboardPage() {
 
   const firstFieldRef = useRef<HTMLInputElement | null>(null);
 
+  const filteredGuides = useMemo(() => filterGuides(DASHBOARD_GUIDES, filters), [filters]);
+
   const metrics = useMemo(
     () =>
-      buildMetrics(filterGuides(DASHBOARD_GUIDES, filters), {
+      buildMetrics(filteredGuides, {
         from: filters.dataAutorizacaoDe || undefined,
         to: filters.dataAutorizacaoAte || undefined,
       }),
-    [filters],
+    [filteredGuides, filters.dataAutorizacaoDe, filters.dataAutorizacaoAte],
   );
+
+  /** Matriz procedimento x prestador (heatmap), limitada aos 6 mais solicitados. */
+  const providerMatrix = useMemo(
+    () => buildProviderProcedureMatrix(filteredGuides, 6),
+    [filteredGuides],
+  );
+
 
   const periodLabel = useMemo(
     () =>
