@@ -1657,17 +1657,19 @@ function DashboardPage() {
             </SurfaceCard>
 
             <SurfaceCard
+              className="flex h-full min-w-0 flex-col"
+              bodyClassName="flex flex-1 flex-col"
               title="Guias processadas por tipo"
               description="Distribuição das guias processadas no período filtrado"
-
             >
               {!hasData ? (
                 emptyState
               ) : (
-                <div className="space-y-4">
+                <div className="flex flex-1 flex-col gap-4">
                   <div
-                    className="relative h-44 sm:h-48"
+                    className="relative min-h-44 flex-1 sm:min-h-48"
                     data-chart="types"
+
                     role="img"
                     aria-label={`Guias processadas por tipo: ${typeData
                       .map((d) => `${d.name} ${d.value}`)
