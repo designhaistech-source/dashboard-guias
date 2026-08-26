@@ -23,6 +23,10 @@ export default tseslint.config(
   { ignores: ["dist", ".output", ".vinxi", "node_modules"] },
   {
     files: ["**/*.{ts,tsx}"],
+    languageOptions: {
+      parser: tseslint.parser,
+      parserOptions: { ecmaFeatures: { jsx: true }, sourceType: "module" },
+    },
     rules: { "no-restricted-syntax": ["error", ...designSystemRestrictions] },
   },
   {
