@@ -2355,8 +2355,10 @@ function ProviderProcedureHeatmap({
 
   if (useCards) {
     return (
-      <div ref={hostRef} className="min-w-0">
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+      <div ref={hostRef} className="@container min-w-0">
+        {/* Colunas medidas pelo espaço do card (container query), não pela viewport. */}
+        <div className="grid grid-cols-1 gap-3 @xl:grid-cols-2 @4xl:grid-cols-3">
+
           {rows.map((row) => {
             const items = columns
               .map((provider) => ({ provider, value: get(row.code, provider) }))
