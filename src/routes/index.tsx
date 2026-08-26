@@ -2236,21 +2236,23 @@ function ProviderProcedureHeatmap({
   const get = (code: string, provider: string) => cells[`${code}|${provider}`] ?? 0;
 
   const legend = (
-    <div className="mt-4 flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
-      <span>Menos solicitações</span>
+    <div className="mt-4 flex flex-wrap items-center justify-between gap-x-3 gap-y-2 border-t border-border pt-3 text-xs text-muted-foreground">
+      <span className="shrink-0">Menos solicitações</span>
       <span className="flex items-center gap-1" aria-hidden="true">
-        {[0.1, 0.35, 0.6, 0.85, 1].map((r) => (
+        {[0.15, 0.35, 0.55, 0.8, 1].map((r) => (
           <span
             key={r}
-            className="h-3 w-6 rounded-sm border border-border"
+            className="h-3.5 w-7 rounded-sm border border-border"
             style={{ background: heatCell(r * max, max).background }}
           />
         ))}
       </span>
-      <span>Mais solicitações</span>
-      <span className="tabular-nums">(máx. {max})</span>
+      <span className="shrink-0">
+        Mais solicitações <span className="tabular-nums">(máx. {max})</span>
+      </span>
     </div>
   );
+
 
   if (isMobile) {
     return (
@@ -2278,7 +2280,7 @@ function ProviderProcedureHeatmap({
                       {item.provider}
                     </span>
                     <span
-                      className="grid h-6 min-w-9 place-items-center rounded-md px-2 text-xs font-medium tabular-nums"
+                      className="grid h-7 w-11 shrink-0 place-items-center rounded-md text-xs font-medium tabular-nums"
                       style={heatCell(item.value, max)}
                     >
                       {item.value}
@@ -2294,16 +2296,32 @@ function ProviderProcedureHeatmap({
     );
   }
 
+  // Células com tamanho fixo: a largura não depende do nome do prestador nem
+  // do valor exibido; nomes longos quebram no cabeçalho.
+  const CELL_REM = 6;
+  const LABEL_REM = 16;
+  const TOTAL_REM = 4;
+
   return (
     <div className="min-w-0">
       <div className="overflow-x-auto">
-        <table className="w-full min-w-[42rem] border-separate border-spacing-1 text-sm">
+        <table
+          className="table-fixed border-separate border-spacing-1 text-sm"
+          style={{ width: `${LABEL_REM + columns.length * CELL_REM + TOTAL_REM}rem` }}
+        >
           <caption className="sr-only">
             Quantidade de solicitações por procedimento e prestador solicitante
           </caption>
+          <colgroup>
+            <col style={{ width: `${LABEL_REM}rem` }} />
+            {columns.map((provider) => (
+              <col key={provider} style={{ width: `${CELL_REM}rem` }} />
+            ))}
+            <col style={{ width: `${TOTAL_REM}rem` }} />
+          </colgroup>
           <thead>
             <tr>
-              <th scope="col" className="w-64 text-left align-bottom text-xs font-medium uppercase tracking-wide text-muted-foreground">
+              <th scope="col" className="text-left align-bottom text-xs font-medium uppercase tracking-wide text-muted-foreground">
                 Procedimento
               </th>
               {columns.map((provider) => (
@@ -2323,7 +2341,7 @@ function ProviderProcedureHeatmap({
           <tbody>
             {rows.map((row) => (
               <tr key={row.code}>
-                <th scope="row" className="max-w-64 py-1 pr-3 text-left font-normal">
+                <th scope="row" className="py-1 pr-3 text-left font-normal">
                   <span className="block truncate text-sm text-foreground">{row.name}</span>
                   <span className="block font-mono text-xs text-muted-foreground">{row.code}</span>
                 </th>
@@ -2332,7 +2350,7 @@ function ProviderProcedureHeatmap({
                   return (
                     <td key={provider} className="p-0">
                       <span
-                        className="grid h-9 place-items-center rounded-md text-sm font-medium tabular-nums"
+                        className="grid h-9 w-full place-items-center rounded-md text-sm font-medium tabular-nums"
                         style={heatCell(value, max)}
                         title={`${row.name} · ${provider}: ${value}`}
                       >
@@ -2348,6 +2366,7 @@ function ProviderProcedureHeatmap({
             ))}
           </tbody>
         </table>
+
       </div>
       {legend}
     </div>
