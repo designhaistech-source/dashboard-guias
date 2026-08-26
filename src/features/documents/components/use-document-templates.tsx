@@ -41,10 +41,8 @@ export function useDocumentTemplates(options: {
   kind: DocumentTemplateKind;
   /** Conteúdo HTML atual do editor, lido no momento do salvamento. */
   getContent: () => string;
-  /** Nome sugerido no diálogo (ex.: nome do paciente). */
-  suggestName?: () => string;
 }) {
-  const { kind, getContent, suggestName } = options;
+  const { kind, getContent } = options;
   const [templates, setTemplates] = useState<SavedDocumentTemplate[]>([]);
   const [open, setOpen] = useState(false);
   const [name, setName] = useState("");
@@ -61,9 +59,10 @@ export function useDocumentTemplates(options: {
       toast.error("Escreva o texto do documento antes de salvá-lo como modelo.");
       return;
     }
-    setName(suggestName?.().trim() ?? "");
+    // Nome sempre começa vazio: o modelo é reutilizável, não vinculado ao paciente.
+    setName("");
     setOpen(true);
-  }, [getContent, suggestName]);
+  }, [getContent]);
 
   const remove = useCallback(
     (template: SavedDocumentTemplate) => {
