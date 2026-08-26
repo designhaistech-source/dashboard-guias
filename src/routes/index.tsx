@@ -2208,17 +2208,31 @@ function Kpi({
 
 }
 
-/** Escala de azul do heatmap: intensidade proporcional à quantidade. */
-function heatCell(value: number, max: number) {
-  if (value === 0) return { background: "var(--muted)", color: "var(--muted-foreground)" };
-  const ratio = max > 0 ? value / max : 0;
-  // Piso de 12% para células com pelo menos uma solicitação continuarem legíveis.
-  const mix = Math.round(12 + ratio * 78);
+/** Quantidade de faixas da escala de intensidade do heatmap. */
+const HEAT_STEPS = 5;
+
+/** Estilo de uma faixa (0 = mais claro, HEAT_STEPS-1 = mais escuro). */
+function heatStepStyle(step: number) {
+  const mix = Math.round(14 + (step / (HEAT_STEPS - 1)) * 76);
   return {
     background: `color-mix(in oklab, var(--primary) ${mix}%, var(--card))`,
     color: mix >= 55 ? "var(--primary-foreground)" : "var(--foreground)",
   };
 }
+
+/** Faixa da escala em que um valor cai, dado o intervalo dos dados exibidos. */
+function heatStep(value: number, min: number, max: number) {
+  if (max <= min) return HEAT_STEPS - 1;
+  const ratio = (value - min) / (max - min);
+  return Math.min(HEAT_STEPS - 1, Math.max(0, Math.floor(ratio * HEAT_STEPS)));
+}
+
+/** Cor da célula: usa exatamente as mesmas faixas mostradas na legenda. */
+function heatCell(value: number, min: number, max: number) {
+  if (value === 0) return { background: "var(--muted)", color: "var(--muted-foreground)" };
+  return heatStepStyle(heatStep(value, min, max));
+}
+
 
 /**
  * Heatmap procedimento (linhas) x prestador solicitante (colunas).
