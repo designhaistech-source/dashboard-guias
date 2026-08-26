@@ -135,10 +135,30 @@ export function DocumentSheets({
                   style={{
                     fontFamily: "Helvetica, Arial, sans-serif",
                     fontSize: mm(10 * PT_TO_MM),
-                    marginTop: mm(2),
+                    marginTop: mm(1.5),
                   }}
                 >
                   {PDF_SIGNATURE.name}
+                </span>
+                <span
+                  className="block text-foreground"
+                  style={{
+                    fontFamily: "Helvetica, Arial, sans-serif",
+                    fontSize: mm(10 * PT_TO_MM),
+                    marginTop: mm(1),
+                  }}
+                >
+                  {PDF_SIGNATURE.council}
+                </span>
+                <span
+                  className="block text-muted-foreground"
+                  style={{
+                    fontFamily: "Helvetica, Arial, sans-serif",
+                    fontSize: mm(9 * PT_TO_MM),
+                    marginTop: mm(1.5),
+                  }}
+                >
+                  {PDF_SIGNATURE.caption}
                 </span>
               </div>
             )}
