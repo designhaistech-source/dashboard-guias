@@ -95,7 +95,7 @@ export function useDocumentTemplates(options: {
       onOpenChange={setOpen}
       size="md"
       title="Salvar como modelo"
-      description="O texto atual será guardado neste navegador e ficará disponível na lista de modelos deste tipo de documento."
+      description={MODAL_DESCRIPTION}
       footer={
         <>
           <Button type="button" variant="outline" onClick={() => setOpen(false)}>
