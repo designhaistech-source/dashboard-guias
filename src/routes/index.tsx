@@ -2540,4 +2540,4 @@ const ProviderProcedureHeatmap = memo(function ProviderProcedureHeatmap({
       </div>
     </div>
   );
-}
+});
