@@ -140,5 +140,17 @@ export function useDocumentTemplates(options: {
     </AppModal>
   );
 
-  return { templates, requestSave, remove, saveDialog };
+  const manageDialog = (
+    <TemplatesManagerModal open={manageOpen} onOpenChange={setManageOpen} kind={kind} />
+  );
+
+  return {
+    templates,
+    requestSave,
+    remove,
+    saveDialog,
+    openManage: () => setManageOpen(true),
+    manageDialog,
+  };
 }
+
