@@ -4,7 +4,6 @@ import { BookMarked, Check, Pencil, Search, Trash2, X } from "lucide-react";
 import { toast } from "sonner";
 
 import { AppModal } from "@/components/app-modal";
-import { ConfirmDialog } from "@/components/confirm-dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
