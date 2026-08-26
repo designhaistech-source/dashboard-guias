@@ -85,6 +85,7 @@ import { Combobox } from "@/components/ui/combobox";
 import { Chip } from "@/components/ui/chip";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Badge } from "@/components/ui/badge";
+import { Skeleton } from "@/components/ui/skeleton";
 import { useIsMobile } from "@/hooks/use-mobile";
 import {
   DASHBOARD_GUIDES,
