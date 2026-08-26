@@ -40,9 +40,9 @@ export type DashboardGuide = {
 
 export const GUIDE_TYPES = [
   { name: "SP/SADT", color: "var(--guide-type-1)" },
-  { name: "Internação", color: "var(--guide-type-2)" },
-  { name: "APAC", color: "var(--guide-type-3)" },
-  { name: "AIH", color: "var(--guide-type-4)" },
+  { name: "Solicitação de Exame", color: "var(--guide-type-2)" },
+  { name: "Encaminhamento", color: "var(--guide-type-3)" },
+  { name: "Outros", color: "var(--guide-type-4)" },
 ] as const;
 
 export const PRESTADORES = [
@@ -59,12 +59,13 @@ const PROCEDURES = [
   { code: "40802089", name: "Ultrassonografia abdominal", tipo: "SP/SADT", valor: 320 },
   { code: "31602045", name: "Eletrocardiograma", tipo: "SP/SADT", valor: 96 },
   { code: "40803115", name: "Ressonância magnética", tipo: "SP/SADT", valor: 1450 },
-  { code: "30101018", name: "Internação clínica", tipo: "Internação", valor: 2600 },
-  { code: "30731016", name: "Internação cirúrgica", tipo: "Internação", valor: 3100 },
-  { code: "0304050089", name: "Quimioterapia ambulatorial", tipo: "APAC", valor: 890 },
-  { code: "0305010107", name: "Sessão de hemodiálise", tipo: "APAC", valor: 470 },
-  { code: "0407020098", name: "Artroplastia de quadril", tipo: "AIH", valor: 5200 },
+  { code: "40304361", name: "Colonoscopia", tipo: "Solicitação de Exame", valor: 980 },
+  { code: "40601137", name: "Espirometria", tipo: "Solicitação de Exame", valor: 210 },
+  { code: "10101012", name: "Consulta em cardiologia", tipo: "Encaminhamento", valor: 180 },
+  { code: "10101039", name: "Consulta em ortopedia", tipo: "Encaminhamento", valor: 180 },
+  { code: "20103077", name: "Curativo ambulatorial", tipo: "Outros", valor: 75 },
 ];
+
 
 
 const FIRST_NAMES = [
