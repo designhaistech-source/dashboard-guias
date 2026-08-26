@@ -209,9 +209,7 @@ export function TemplatesManagerModal({ open, onOpenChange, kind }: TemplatesMan
                     >
                       <AlertTriangle className="size-3.5 shrink-0 text-destructive" aria-hidden />
                       <p className="min-w-0 flex-1 text-xs text-muted-foreground">
-                        <span className="font-medium text-foreground">
-                          Excluir “{template.label}”?
-                        </span>{" "}
+                        <span className="font-medium text-foreground">Excluir este modelo?</span>{" "}
                         Esta ação não poderá ser desfeita.
                       </p>
                       <div className="ml-auto flex items-center gap-1.5">
