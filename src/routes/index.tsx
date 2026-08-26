@@ -2313,7 +2313,7 @@ function HeatmapLegend({
  * No mobile a matriz é reagrupada por procedimento, mantendo a leitura dos
  * nomes e das quantidades sem comprimir todas as colunas na largura da tela.
  */
-function ProviderProcedureHeatmap({
+const ProviderProcedureHeatmap = memo(function ProviderProcedureHeatmap({
   matrix,
   isMobile,
 }: {
