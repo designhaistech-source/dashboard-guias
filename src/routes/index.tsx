@@ -2378,7 +2378,7 @@ function ProviderProcedureHeatmap({
                 >
                   Procedimento
                   <SortIcon className="h-3 w-3" aria-hidden="true" />
-                </button>
+                </Button>
               </th>
 
               {columns.map((provider) => (
