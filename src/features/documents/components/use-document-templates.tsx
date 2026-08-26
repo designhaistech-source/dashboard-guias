@@ -19,6 +19,16 @@ import {
 const MAX_NAME = 60;
 const FORM_ID = "salvar-modelo-form";
 
+/** Placeholder do nome do modelo por tipo de documento. */
+const NAME_PLACEHOLDER: Record<DocumentTemplateKind, string> = {
+  relatorio: "Ex.: Relatório de acompanhamento",
+  atestado: "Ex.: Atestado de afastamento",
+  comparecimento: "Ex.: Declaração de comparecimento",
+};
+
+const MODAL_DESCRIPTION =
+  "Os dados do paciente serão substituídos por variáveis, permitindo reutilizar o modelo em outros documentos.";
+
 function hasText(html: string): boolean {
   return html.replace(/<[^>]+>/g, "").trim().length > 0;
 }
