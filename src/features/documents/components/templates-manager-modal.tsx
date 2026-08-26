@@ -136,6 +136,7 @@ export function TemplatesManagerModal({ open, onOpenChange, kind }: TemplatesMan
           <ul className="grid gap-2.5">
             {filtered.map((template) => {
               const isEditing = editing === template.value;
+              const isConfirming = confirmingDelete === template.value;
               return (
                 <li
                   key={template.value}
