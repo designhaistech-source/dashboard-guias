@@ -2402,22 +2402,39 @@ const ProviderProcedureHeatmap = memo(function ProviderProcedureHeatmap({
               <div key={row.code} className="rounded-xl border border-border bg-card p-3">
                 <div className="flex items-start justify-between gap-2">
                   <div className="min-w-0">
-                    <p className="truncate text-sm font-medium text-foreground">{row.name}</p>
+                    {/* Sem truncamento no card: em telas estreitas o nome do
+                        procedimento quebra em até duas linhas para seguir legível. */}
+                    <p
+                      title={row.name}
+                      className="line-clamp-2 text-sm font-medium leading-tight text-foreground"
+                    >
+                      {row.name}
+                    </p>
                     <p className="font-mono text-xs text-muted-foreground">{row.code}</p>
                   </div>
-                  <Badge variant="secondary" className="shrink-0 tabular-nums">
+                  <Badge
+                    variant="secondary"
+                    className="shrink-0 tabular-nums"
+                    aria-label={`Total de ${row.total} solicitações`}
+                  >
                     {row.total}
                   </Badge>
                 </div>
                 <ul className="mt-2 flex flex-col gap-1">
                   {items.map((item) => (
-                    <li key={item.provider} className="flex items-center gap-2">
-                      <span className="min-w-0 flex-1 truncate text-xs text-muted-foreground">
+                    <li key={item.provider} className="flex items-start justify-between gap-2">
+                      {/* Tooltip não é acessível por toque: o rótulo completo
+                          fica no title e o nome quebra em vez de truncar. */}
+                      <span
+                        title={item.provider}
+                        className="min-w-0 flex-1 break-words pt-1 text-xs leading-tight text-muted-foreground"
+                      >
                         {item.provider}
                       </span>
                       <span
                         className="grid h-7 w-11 shrink-0 place-items-center rounded-md text-xs font-medium tabular-nums"
                         style={heatCell(item.value, min, max)}
+                        aria-label={`${item.provider}: ${item.value} ${item.value === 1 ? "solicitação" : "solicitações"}`}
                       >
                         {item.value}
                       </span>
