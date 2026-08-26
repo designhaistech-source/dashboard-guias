@@ -2497,33 +2497,31 @@ const ProviderProcedureHeatmap = memo(function ProviderProcedureHeatmap({
                   const value = get(row.code, provider);
                   return (
                     <td key={provider} className="p-0">
-                      <TooltipProvider delayDuration={120}>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <span
-                              tabIndex={0}
-                              className="grid h-9 w-full place-items-center rounded-md text-sm font-medium tabular-nums focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                              style={heatCell(value, min, max)}
-                            >
-                              {value === 0 ? "–" : value}
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <span
+                            tabIndex={0}
+                            className="grid h-9 w-full place-items-center rounded-md text-sm font-medium tabular-nums focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                            style={heatCell(value, min, max)}
+                          >
+                            {value === 0 ? "–" : value}
+                          </span>
+                        </TooltipTrigger>
+                        <TooltipContent className="max-w-64 rounded-lg border border-border bg-popover px-3 py-2 text-foreground shadow-md">
+                          <div className="flex flex-col gap-1 text-xs">
+                            <span className="text-xs uppercase tracking-wider text-muted-foreground">
+                              CBHPM {row.code}
                             </span>
-                          </TooltipTrigger>
-                          <TooltipContent className="max-w-64 rounded-lg border border-border bg-popover px-3 py-2 text-foreground shadow-md">
-                            <div className="flex flex-col gap-1 text-xs">
-                              <span className="text-xs uppercase tracking-wider text-muted-foreground">
-                                CBHPM {row.code}
-                              </span>
-                              <span className="font-medium leading-tight text-foreground">
-                                {row.name}
-                              </span>
-                              <span className="text-muted-foreground">{provider}</span>
-                              <span className="mt-1 border-t border-border pt-1 font-semibold tabular-nums text-foreground">
-                                {value} {value === 1 ? "solicitação" : "solicitações"}
-                              </span>
-                            </div>
-                          </TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
+                            <span className="font-medium leading-tight text-foreground">
+                              {row.name}
+                            </span>
+                            <span className="text-muted-foreground">{provider}</span>
+                            <span className="mt-1 border-t border-border pt-1 font-semibold tabular-nums text-foreground">
+                              {value} {value === 1 ? "solicitação" : "solicitações"}
+                            </span>
+                          </div>
+                        </TooltipContent>
+                      </Tooltip>
                     </td>
                   );
                 })}
