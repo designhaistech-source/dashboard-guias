@@ -2414,14 +2414,19 @@ function ProviderProcedureHeatmap({
                               {value === 0 ? "–" : value}
                             </span>
                           </TooltipTrigger>
-                          <TooltipContent className="max-w-64 p-0">
-                            <div className="flex flex-col gap-1 p-2.5 text-xs">
-                              <span className="font-mono text-[0.6875rem] opacity-80">
+                          <TooltipContent
+                            className="max-w-64 rounded-lg border border-border bg-popover px-3 py-2 text-foreground shadow-md"
+                            arrowClassName="bg-popover fill-popover"
+                          >
+                            <div className="flex flex-col gap-1 text-xs">
+                              <span className="text-xs uppercase tracking-wider text-muted-foreground">
                                 CBHPM {row.code}
                               </span>
-                              <span className="font-medium leading-tight">{row.name}</span>
-                              <span className="opacity-80">{provider}</span>
-                              <span className="mt-1 border-t border-current/20 pt-1 tabular-nums">
+                              <span className="font-medium leading-tight text-foreground">
+                                {row.name}
+                              </span>
+                              <span className="text-muted-foreground">{provider}</span>
+                              <span className="mt-1 border-t border-border pt-1 font-semibold tabular-nums text-foreground">
                                 {value} {value === 1 ? "solicitação" : "solicitações"}
                               </span>
                             </div>
