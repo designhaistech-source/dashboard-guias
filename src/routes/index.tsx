@@ -1978,7 +1978,7 @@ function DashboardPage() {
                           data={statusData}
                           innerRadius={58}
                           outerRadius={82}
-                          paddingAngle={2}
+                          paddingAngle={statusData.length > 1 ? 2 : 0}
                           dataKey="value"
                           stroke="var(--card)"
                           strokeWidth={2}
