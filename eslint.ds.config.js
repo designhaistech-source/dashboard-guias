@@ -2,6 +2,7 @@
  * Configuração enxuta usada no CI (`bun run lint:ds`): aplica apenas os
  * guardrails do design system, sem as regras de estilo/prettier do lint geral.
  */
+import reactHooks from "eslint-plugin-react-hooks";
 import tseslint from "typescript-eslint";
 
 import {
@@ -21,6 +22,12 @@ const designSystemRestrictions = DESIGN_SYSTEM_RULES.filter(
 
 export default tseslint.config(
   { ignores: ["dist", ".output", ".vinxi", "node_modules"] },
+  {
+    // Plugins registrados apenas para que diretivas eslint-disable existentes
+    // no código não sejam reportadas como regras desconhecidas.
+    plugins: { "react-hooks": reactHooks },
+    linterOptions: { reportUnusedDisableDirectives: "off" },
+  },
   {
     files: ["**/*.{ts,tsx}"],
     languageOptions: {
