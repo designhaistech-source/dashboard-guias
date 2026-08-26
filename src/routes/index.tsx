@@ -2421,19 +2421,22 @@ function ProviderProcedureHeatmap({
   return (
     <div ref={hostRef} className="min-w-0">
       <div className="min-w-0">
-        <table className="w-full table-fixed border-separate border-spacing-1 text-sm">
-
+        <table
+          className="table-fixed border-separate border-spacing-1 text-sm"
+          style={{ width: matrixWidth, maxWidth: "100%" }}
+        >
           <caption className="sr-only">
             Quantidade de solicitações por procedimento e prestador solicitante
           </caption>
           <colgroup>
-            {/* Rótulo fixo, total estreito e prestadores dividindo o resto. */}
-            <col className="w-52" />
+            {/* Rótulo e total fixos; prestadores com largura limitada (min/max). */}
+            <col style={{ width: MIN_LABEL }} />
             {columns.map((provider) => (
-              <col key={provider} style={{ width: `${(100 / columns.length).toFixed(4)}%` }} />
+              <col key={provider} style={{ width: cellWidth }} />
             ))}
-            <col className="w-14" />
+            <col style={{ width: MIN_TOTAL }} />
           </colgroup>
+
 
           <thead>
             <tr>
