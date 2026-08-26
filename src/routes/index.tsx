@@ -1682,7 +1682,7 @@ function DashboardPage() {
                           data={typeData}
                           innerRadius={58}
                           outerRadius={82}
-                          paddingAngle={2}
+                          paddingAngle={typeData.length > 1 ? 2 : 0}
                           dataKey="value"
                           stroke="var(--card)"
                           strokeWidth={2}
