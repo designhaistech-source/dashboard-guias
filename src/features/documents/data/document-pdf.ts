@@ -158,7 +158,15 @@ export function downloadDocumentPdf(
       pdf.setTextColor(20);
       pdf.line(pageWidth / 2 - 35, signatureY, pageWidth / 2 + 35, signatureY);
       pdf.setFontSize(10);
-      pdf.text(PDF_SIGNATURE.name, pageWidth / 2, signatureY + 6, {
+      pdf.text(PDF_SIGNATURE.name, pageWidth / 2, signatureY + 5, {
+        align: "center",
+      });
+      pdf.text(PDF_SIGNATURE.council, pageWidth / 2, signatureY + 10, {
+        align: "center",
+      });
+      pdf.setFontSize(9);
+      pdf.setTextColor(90);
+      pdf.text(PDF_SIGNATURE.caption, pageWidth / 2, signatureY + 16, {
         align: "center",
       });
     }
