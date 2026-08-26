@@ -2402,22 +2402,39 @@ const ProviderProcedureHeatmap = memo(function ProviderProcedureHeatmap({
               <div key={row.code} className="rounded-xl border border-border bg-card p-3">
                 <div className="flex items-start justify-between gap-2">
                   <div className="min-w-0">
-                    <p className="truncate text-sm font-medium text-foreground">{row.name}</p>
+                    {/* Sem truncamento no card: em telas estreitas o nome do
+                        procedimento quebra em até duas linhas para seguir legível. */}
+                    <p
+                      title={row.name}
+                      className="line-clamp-2 text-sm font-medium leading-tight text-foreground"
+                    >
+                      {row.name}
+                    </p>
                     <p className="font-mono text-xs text-muted-foreground">{row.code}</p>
                   </div>
-                  <Badge variant="secondary" className="shrink-0 tabular-nums">
+                  <Badge
+                    variant="secondary"
+                    className="shrink-0 tabular-nums"
+                    aria-label={`Total de ${row.total} solicitações`}
+                  >
                     {row.total}
                   </Badge>
                 </div>
                 <ul className="mt-2 flex flex-col gap-1">
                   {items.map((item) => (
-                    <li key={item.provider} className="flex items-center gap-2">
-                      <span className="min-w-0 flex-1 truncate text-xs text-muted-foreground">
+                    <li key={item.provider} className="flex items-start justify-between gap-2">
+                      {/* Tooltip não é acessível por toque: o rótulo completo
+                          fica no title e o nome quebra em vez de truncar. */}
+                      <span
+                        title={item.provider}
+                        className="min-w-0 flex-1 break-words pt-1 text-xs leading-tight text-muted-foreground"
+                      >
                         {item.provider}
                       </span>
                       <span
                         className="grid h-7 w-11 shrink-0 place-items-center rounded-md text-xs font-medium tabular-nums"
                         style={heatCell(item.value, min, max)}
+                        aria-label={`${item.provider}: ${item.value} ${item.value === 1 ? "solicitação" : "solicitações"}`}
                       >
                         {item.value}
                       </span>
@@ -2481,7 +2498,23 @@ const ProviderProcedureHeatmap = memo(function ProviderProcedureHeatmap({
                   scope="col"
                   className="px-1 pb-1 align-bottom text-xs font-medium text-muted-foreground"
                 >
-                  <span className="block leading-tight">{provider}</span>
+                  {/* Célula estreita: o rótulo quebra apenas entre palavras (o
+                      word joiner evita "+" sozinho numa linha) e o nome completo
+                      continua acessível por tooltip/title. */}
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <span
+                        tabIndex={0}
+                        title={provider}
+                        className="mx-auto block break-normal hyphens-none text-center leading-tight focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                      >
+                        {provider.replace(/([+/&-])/g, "\u2060$1")}
+                      </span>
+                    </TooltipTrigger>
+                    <TooltipContent className="max-w-56 rounded-lg border border-border bg-popover px-3 py-2 text-xs text-foreground shadow-md">
+                      {provider}
+                    </TooltipContent>
+                  </Tooltip>
                 </th>
               ))}
               <th scope="col" className="px-1 pb-1 text-right align-bottom text-xs font-medium uppercase tracking-wide text-muted-foreground">
@@ -2493,7 +2526,12 @@ const ProviderProcedureHeatmap = memo(function ProviderProcedureHeatmap({
             {rows.map((row) => (
               <tr key={row.code}>
                 <th scope="row" className="py-1 pr-3 text-left font-normal">
-                  <span className="block truncate text-sm text-foreground">{row.name}</span>
+                  <span
+                    title={row.name}
+                    className="block truncate text-sm leading-tight text-foreground"
+                  >
+                    {row.name}
+                  </span>
                   <span className="block font-mono text-xs text-muted-foreground">{row.code}</span>
                 </th>
                 {columns.map((provider) => {
@@ -2504,6 +2542,7 @@ const ProviderProcedureHeatmap = memo(function ProviderProcedureHeatmap({
                         <TooltipTrigger asChild>
                           <span
                             tabIndex={0}
+                            aria-label={`${row.name}, ${provider}: ${value} ${value === 1 ? "solicitação" : "solicitações"}`}
                             className="mx-auto grid h-9 w-full place-items-center rounded-md text-sm font-medium tabular-nums focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                             // maxWidth garante o limite superior mesmo quando o
                             // table-fixed distribui sobra de largura nas colunas.
@@ -2512,7 +2551,11 @@ const ProviderProcedureHeatmap = memo(function ProviderProcedureHeatmap({
                             {value === 0 ? "–" : value}
                           </span>
                         </TooltipTrigger>
-                        <TooltipContent className="max-w-64 rounded-lg border border-border bg-popover px-3 py-2 text-foreground shadow-md">
+                        {/* Largura reduzida em telas menores para o tooltip não
+                            encostar nas bordas; texto quebra em vez de cortar. */}
+                        <TooltipContent
+                          collisionPadding={12}
+                          className="max-w-56 rounded-lg border border-border bg-popover px-3 py-2 text-foreground shadow-md sm:max-w-64">
                           <div className="flex flex-col gap-1 text-xs">
                             <span className="text-xs uppercase tracking-wider text-muted-foreground">
                               CBHPM {row.code}
