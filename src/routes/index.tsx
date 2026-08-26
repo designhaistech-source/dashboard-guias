@@ -1948,7 +1948,7 @@ function DashboardPage() {
                   max={providerHeatRange.max}
                   className="mb-4 lg:hidden"
                 />
-                <ProviderProcedureHeatmap matrix={providerMatrix} isMobile={isMobile} />
+                <ProviderProcedureHeatmap matrix={deferredProviderMatrix} isMobile={isMobile} />
               </>
             )}
           </SurfaceCard>
