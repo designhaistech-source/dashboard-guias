@@ -257,3 +257,52 @@ export function buildMetrics(
     totalValue: guides.reduce((s, g) => s + g.valorTotal, 0),
   };
 }
+
+export type ProviderProcedureMatrix = {
+  /** Procedimentos (linhas), ordenados pela quantidade total desc. */
+  rows: { code: string; name: string; total: number }[];
+  /** Prestadores solicitantes (colunas) presentes no período filtrado. */
+  columns: string[];
+  /** Contagem por `${code}|${prestador}`. */
+  cells: Record<string, number>;
+  /** Maior contagem em uma célula, base para a escala de intensidade. */
+  max: number;
+};
+
+/**
+ * Matriz procedimento x prestador solicitante usada no heatmap da Visão geral.
+ * Considera apenas as guias já filtradas, então o filtro de prestador reduz
+ * naturalmente as colunas exibidas.
+ */
+export function buildProviderProcedureMatrix(
+  guides: DashboardGuide[],
+  limit = 6,
+): ProviderProcedureMatrix {
+  const totals = new Map<string, { code: string; name: string; total: number }>();
+  const cells: Record<string, number> = {};
+  const providers = new Set<string>();
+
+  for (const g of guides) {
+    const entry = totals.get(g.procCodigo) ?? {
+      code: g.procCodigo,
+      name: g.procDescricao,
+      total: 0,
+    };
+    entry.total += 1;
+    totals.set(g.procCodigo, entry);
+    providers.add(g.prestadorSolicitante);
+    const key = `${g.procCodigo}|${g.prestadorSolicitante}`;
+    cells[key] = (cells[key] ?? 0) + 1;
+  }
+
+  const rows = [...totals.values()].sort((a, b) => b.total - a.total).slice(0, limit);
+  const columns = PRESTADORES.filter((p) => providers.has(p));
+  const max = rows.reduce(
+    (acc, row) =>
+      columns.reduce((m, col) => Math.max(m, cells[`${row.code}|${col}`] ?? 0), acc),
+    0,
+  );
+
+  return { rows, columns, cells, max };
+}
+
