@@ -91,8 +91,10 @@ import {
   PRESTADORES,
   filterGuides,
   buildMetrics,
+  buildProviderProcedureMatrix,
   GUIDE_TYPES,
   type DashboardMetrics,
+  type ProviderProcedureMatrix,
 } from "@/features/dashboard/data/mock-guides";
 
 async function loadImageDataUrl(url: string): Promise<{ dataUrl: string; w: number; h: number }> {
