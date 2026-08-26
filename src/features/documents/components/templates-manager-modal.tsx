@@ -168,6 +168,29 @@ export function TemplatesManagerModal({ open, onOpenChange, kind }: TemplatesMan
                         Cancelar
                       </Button>
                     </>
+                  ) : isConfirming ? (
+                    <>
+                      <span className="min-w-0 flex-1 text-sm font-medium text-foreground">
+                        Excluir “{template.label}”?
+                      </span>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => setConfirmingDelete(null)}
+                      >
+                        <X className="size-4" aria-hidden />
+                        Cancelar
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="destructive"
+                        autoFocus
+                        onClick={() => handleDelete(template)}
+                      >
+                        <Trash2 className="size-4" aria-hidden />
+                        Excluir modelo
+                      </Button>
+                    </>
                   ) : (
                     <>
                       <span className="min-w-0 flex-1 truncate text-sm font-medium text-foreground">
@@ -185,7 +208,7 @@ export function TemplatesManagerModal({ open, onOpenChange, kind }: TemplatesMan
                       <Button
                         size="sm"
                         variant="ghost"
-                        onClick={() => setToDelete(template)}
+                        onClick={() => setConfirmingDelete(template.value)}
                         aria-label={`Excluir modelo ${template.label}`}
                         className="text-destructive hover:text-destructive"
                       >
@@ -200,17 +223,6 @@ export function TemplatesManagerModal({ open, onOpenChange, kind }: TemplatesMan
           </ul>
         )}
       </AppModal>
-
-      <ConfirmDialog
-        open={Boolean(toDelete)}
-        onOpenChange={(v) => {
-          if (!v) setToDelete(null);
-        }}
-        title="Excluir modelo?"
-        description={`O modelo “${toDelete?.label ?? ""}” será removido deste navegador. Documentos já emitidos não são afetados.`}
-        confirmLabel="Excluir modelo"
-        onConfirm={handleDelete}
-      />
     </>
   );
 }
