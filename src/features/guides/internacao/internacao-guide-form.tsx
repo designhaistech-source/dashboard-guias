@@ -445,7 +445,7 @@ export function InternacaoGuideForm({
                             alt=""
                             aria-hidden
                             loading="lazy"
-                            className="h-4 w-auto max-w-[56px] shrink-0 object-contain"
+                            className="h-4 w-auto max-w-14 shrink-0 object-contain"
                           />
                         )}
                         <span className="truncate">{selected.label}</span>
@@ -464,7 +464,7 @@ export function InternacaoGuideForm({
                           alt=""
                           aria-hidden
                           loading="lazy"
-                          className="h-4 w-auto max-w-[56px] shrink-0 object-contain"
+                          className="h-4 w-auto max-w-14 shrink-0 object-contain"
                         />
                       )}
                       <span className="truncate">{o.label}</span>
