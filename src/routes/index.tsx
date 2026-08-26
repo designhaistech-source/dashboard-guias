@@ -1551,12 +1551,14 @@ function DashboardPage() {
           </div>
 
           {/* Charts row */}
-          <div className="grid gap-4 grid-cols-1 xl:grid-cols-3 items-start">
+          <div className="grid gap-4 grid-cols-1 xl:grid-cols-3 items-stretch">
             <SurfaceCard
-              className="xl:col-span-2"
+              className="xl:col-span-2 flex h-full min-w-0 flex-col"
+              bodyClassName="flex flex-1 flex-col"
               title="Guias processadas por dia"
               description="Quantidade de guias processadas por dia no período filtrado"
             >
+
               {!hasData ? (
                 emptyState
               ) : (
