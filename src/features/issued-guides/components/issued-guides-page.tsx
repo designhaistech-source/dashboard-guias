@@ -183,7 +183,7 @@ export function IssuedGuidesPage() {
             onClear={() => setFilters(EMPTY_FILTERS)}
             clearDisabled={activeCount === 0}
           >
-            <div className="w-full min-w-0 sm:col-span-2 lg:w-auto lg:flex-1 lg:min-w-[240px]">
+            <div className="w-full min-w-0 sm:col-span-2 lg:w-auto lg:flex-1 lg:min-w-60">
               <SearchInput
                 placeholder="Buscar por nº da guia ou paciente"
                 aria-label="Buscar guias emitidas"
@@ -193,7 +193,7 @@ export function IssuedGuidesPage() {
                 onClear={() => setFilter("query", "")}
               />
             </div>
-            <div className="w-full min-w-0 lg:w-[200px]">
+            <div className="w-full min-w-0 lg:w-50">
               <Combobox
                 aria-label="Operadora"
                 options={ISSUED_GUIDE_OPERADORAS.map((name) => ({
@@ -208,7 +208,7 @@ export function IssuedGuidesPage() {
                 clearable
               />
             </div>
-            <div className="w-full min-w-0 lg:w-[190px]">
+            <div className="w-full min-w-0 lg:w-48">
               <Combobox
                 aria-label="Tipo de guia"
                 options={[
@@ -222,7 +222,7 @@ export function IssuedGuidesPage() {
                 clearable
               />
             </div>
-            <div className="flex w-full min-w-0 items-center gap-2 lg:w-[200px]">
+            <div className="flex w-full min-w-0 items-center gap-2 lg:w-50">
               <label
                 htmlFor="issued-guides-from"
                 className="shrink-0 text-xs font-medium text-muted-foreground"
@@ -239,7 +239,7 @@ export function IssuedGuidesPage() {
                 onChange={(event) => setFilter("from", event.target.value)}
               />
             </div>
-            <div className="flex w-full min-w-0 items-center gap-2 lg:w-[200px]">
+            <div className="flex w-full min-w-0 items-center gap-2 lg:w-50">
               <label
                 htmlFor="issued-guides-to"
                 className="shrink-0 text-xs font-medium text-muted-foreground"
@@ -303,7 +303,7 @@ export function IssuedGuidesPage() {
 
               <div className="overflow-hidden rounded-xl border border-border bg-card">
                 <DataTableDesktop>
-                  <DataTableRoot className="w-full min-w-[720px] table-fixed">
+                  <DataTableRoot className="w-full min-w-180 table-fixed">
                     <DataTableHeader>
                       <DataTableRow className="hover:bg-transparent">
                         <DataTableHead className="w-[15%]">Nº da guia</DataTableHead>
@@ -395,7 +395,7 @@ export function IssuedGuidesPage() {
       {printTarget && (
         <div
           aria-hidden="true"
-          className="pointer-events-none fixed left-[-10000px] top-0 w-[1100px]"
+          className="pointer-events-none fixed left-[-10000px] top-0 w-275"
 
         >
           <div ref={printAreaRef}>
@@ -479,7 +479,7 @@ function IssuedGuideModal({
         guide ? `${guide.type} · emitida em ${formatIssuedAt(guide.issuedAt)}` : undefined
       }
       size="xl"
-      className="w-[95vw] max-w-[1200px]"
+      className="w-[95vw] max-w-300"
       headerClassName="gap-0.5 px-4 py-3 sm:px-4 sm:py-3"
       bodyClassName="p-0 sm:p-0"
       footer={

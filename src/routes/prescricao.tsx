@@ -1710,7 +1710,7 @@ function PrescricaoForm() {
           </div>
 
           {!editing && resultados.length > 0 && (
-            <div className="rounded-xl border border-border bg-background/40 divide-y divide-border max-h-[420px] overflow-y-auto">
+            <div className="rounded-xl border border-border bg-background/40 divide-y divide-border max-h-105 overflow-y-auto">
               {resultados.map((m, i) => (
                 <MedRow
                   key={m.nome}
@@ -2561,7 +2561,7 @@ function HistoricoPanel({
           description="Ao imprimir ou baixar um PDF, a prescrição fica registrada aqui."
         />
       ) : (
-        <ul className="space-y-2 max-h-[480px] overflow-y-auto">
+        <ul className="space-y-2 max-h-120 overflow-y-auto">
           {historico.map((h) => (
             <li
               key={h.id}

@@ -329,10 +329,10 @@ function History_Section({ extraRows }: { extraRows: Row[] }) {
 
       {/* Card de filtros padronizado (mesmo componente das telas de busca). */}
       <FilterCard id="history-filters" onClear={() => {}}>
-        <div className="w-full min-w-0 sm:col-span-2 lg:w-auto lg:flex-1 lg:min-w-[240px]">
+        <div className="w-full min-w-0 sm:col-span-2 lg:w-auto lg:flex-1 lg:min-w-60">
           <SearchInput placeholder="Buscar por arquivo ou paciente" />
         </div>
-        <div className="w-full min-w-0 lg:w-[180px]">
+        <div className="w-full min-w-0 lg:w-45">
           <Combobox
             options={[
               { value: "sucesso", label: "Sucesso" },
@@ -344,7 +344,7 @@ function History_Section({ extraRows }: { extraRows: Row[] }) {
             clearable
           />
         </div>
-        <div className="w-full min-w-0 lg:w-[200px]">
+        <div className="w-full min-w-0 lg:w-50">
           <Combobox
             options={[
               { value: "sadt", label: "SADT" },
@@ -429,7 +429,7 @@ function History_Section({ extraRows }: { extraRows: Row[] }) {
       <div className="overflow-hidden rounded-xl border border-border bg-card">
         <DataTableDesktop>
 
-          <DataTableRoot className="min-w-[1000px]">
+          <DataTableRoot className="min-w-250">
             <DataTableHeader>
               <DataTableRow className="hover:bg-transparent">
                 <DataTableHead>Arquivo</DataTableHead>
@@ -447,7 +447,7 @@ function History_Section({ extraRows }: { extraRows: Row[] }) {
                 <DataTableRow key={i}>
                   <DataTableCell>
                     <div className="flex items-center gap-2">
-                      <span className="block max-w-[200px] truncate sm:max-w-[260px]">{r.file}</span>
+                      <span className="block max-w-50 truncate sm:max-w-65">{r.file}</span>
                       {r.warn && <AlertTriangle className="h-4 w-4 shrink-0 text-warning" />}
                     </div>
                   </DataTableCell>
@@ -455,7 +455,7 @@ function History_Section({ extraRows }: { extraRows: Row[] }) {
                   <DataTableCell className="whitespace-nowrap font-mono text-muted-foreground">
                     {r.guiaPrestador ?? "—"}
                   </DataTableCell>
-                  <DataTableCell className="max-w-[200px] truncate sm:max-w-[260px]">{r.patient}</DataTableCell>
+                  <DataTableCell className="max-w-50 truncate sm:max-w-65">{r.patient}</DataTableCell>
                   <DataTableCell>
                     <TypeBadge type={r.type} />
                   </DataTableCell>
@@ -705,7 +705,7 @@ function SectionCard({
 function ProcedureTable({ columns, rows }: { columns: string[]; rows: string[][] }) {
   return (
     <div className="-mx-1 overflow-x-auto px-1">
-      <table className="w-full min-w-[420px] text-sm">
+      <table className="w-full min-w-105 text-sm">
         <thead>
           <tr className="text-left text-muted-foreground">
             {columns.map((c) => (
@@ -812,7 +812,7 @@ function GuidePreview({ src, alt }: { src: string; alt: string }) {
 
   return (
     <>
-      <div className="relative rounded-lg border border-border bg-muted/40 overflow-hidden h-full min-h-[400px]">
+      <div className="relative rounded-lg border border-border bg-muted/40 overflow-hidden h-full min-h-100">
         {controls}
         <div
           ref={scrollRef}
@@ -894,7 +894,7 @@ function DetailCard({
           <div key={it.label} className="flex flex-col gap-1 py-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
             <dt className="text-sm text-muted-foreground">{it.label}</dt>
             <dd className="flex min-w-0 items-center gap-2 text-sm font-medium text-foreground sm:text-right">
-              <span className="min-w-0 truncate sm:max-w-[280px]">{it.value}</span>
+              <span className="min-w-0 truncate sm:max-w-70">{it.value}</span>
               <Button
                 variant="ghost"
                 size="icon"
@@ -919,7 +919,7 @@ function DateField({ label }: { label: string }) {
   return (
     <Button
       variant="outline"
-      className="w-full justify-start gap-2 text-sm font-normal lg:w-auto lg:min-w-[150px]"
+      className="w-full justify-start gap-2 text-sm font-normal lg:w-auto lg:min-w-38"
     >
       <Calendar className="h-4 w-4 text-muted-foreground" />
       <span className="text-muted-foreground">{label}</span>
@@ -1182,7 +1182,7 @@ function RequiredFieldsModal() {
 
             {/* Lista de campos */}
             <div
-              className={`rounded-lg border bg-card p-4 min-h-[140px] ${
+              className={`rounded-lg border bg-card p-4 min-h-35 ${
                 isEmpty ? "border-destructive/50" : "border-border"
               }`}
             >
