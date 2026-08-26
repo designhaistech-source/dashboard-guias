@@ -2349,7 +2349,6 @@ function ProviderProcedureHeatmap({
             </div>
           );
         })}
-        {legend}
       </div>
     );
   }
@@ -2464,7 +2463,6 @@ function ProviderProcedureHeatmap({
         </table>
 
       </div>
-      {legend}
     </div>
   );
 }
