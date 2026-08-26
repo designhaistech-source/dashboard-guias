@@ -2498,8 +2498,9 @@ const ProviderProcedureHeatmap = memo(function ProviderProcedureHeatmap({
                   scope="col"
                   className="px-1 pb-1 align-bottom text-xs font-medium text-muted-foreground"
                 >
-                  {/* Célula estreita: o rótulo quebra em até duas linhas e o nome
-                      completo continua acessível por tooltip/title. */}
+                  {/* Célula estreita: o rótulo quebra apenas entre palavras (o
+                      word joiner evita "+" sozinho numa linha) e o nome completo
+                      continua acessível por tooltip/title. */}
                   <Tooltip>
                     <TooltipTrigger asChild>
                       <span
@@ -2507,7 +2508,7 @@ const ProviderProcedureHeatmap = memo(function ProviderProcedureHeatmap({
                         title={provider}
                         className="mx-auto block break-normal hyphens-none text-center leading-tight focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                       >
-                        {provider}
+                        {provider.replace(/([+/&-])/g, "\u2060$1")}
                       </span>
                     </TooltipTrigger>
                     <TooltipContent className="max-w-56 rounded-lg border border-border bg-popover px-3 py-2 text-xs text-foreground shadow-md">
