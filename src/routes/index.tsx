@@ -2208,17 +2208,31 @@ function Kpi({
 
 }
 
-/** Escala de azul do heatmap: intensidade proporcional à quantidade. */
-function heatCell(value: number, max: number) {
-  if (value === 0) return { background: "var(--muted)", color: "var(--muted-foreground)" };
-  const ratio = max > 0 ? value / max : 0;
-  // Piso de 12% para células com pelo menos uma solicitação continuarem legíveis.
-  const mix = Math.round(12 + ratio * 78);
+/** Quantidade de faixas da escala de intensidade do heatmap. */
+const HEAT_STEPS = 5;
+
+/** Estilo de uma faixa (0 = mais claro, HEAT_STEPS-1 = mais escuro). */
+function heatStepStyle(step: number) {
+  const mix = Math.round(14 + (step / (HEAT_STEPS - 1)) * 76);
   return {
     background: `color-mix(in oklab, var(--primary) ${mix}%, var(--card))`,
     color: mix >= 55 ? "var(--primary-foreground)" : "var(--foreground)",
   };
 }
+
+/** Faixa da escala em que um valor cai, dado o intervalo dos dados exibidos. */
+function heatStep(value: number, min: number, max: number) {
+  if (max <= min) return HEAT_STEPS - 1;
+  const ratio = (value - min) / (max - min);
+  return Math.min(HEAT_STEPS - 1, Math.max(0, Math.floor(ratio * HEAT_STEPS)));
+}
+
+/** Cor da célula: usa exatamente as mesmas faixas mostradas na legenda. */
+function heatCell(value: number, min: number, max: number) {
+  if (value === 0) return { background: "var(--muted)", color: "var(--muted-foreground)" };
+  return heatStepStyle(heatStep(value, min, max));
+}
+
 
 /**
  * Heatmap procedimento (linhas) x prestador solicitante (colunas).
@@ -2235,23 +2249,35 @@ function ProviderProcedureHeatmap({
   const { rows, columns, cells, max } = matrix;
   const get = (code: string, provider: string) => cells[`${code}|${provider}`] ?? 0;
 
+  // Intervalo real dos dados exibidos (ignora células sem solicitação).
+  const values = rows.flatMap((row) =>
+    columns.map((provider) => get(row.code, provider)).filter((v) => v > 0),
+  );
+  const min = values.length ? Math.min(...values) : 0;
+
+  /** Valores de referência: limites de cada faixa, do mínimo ao máximo. */
+  const ticks = Array.from({ length: HEAT_STEPS + 1 }, (_, i) =>
+    Math.round(min + ((max - min) * i) / HEAT_STEPS),
+  );
+
   const legend = (
-    <div className="mt-4 flex flex-wrap items-center justify-between gap-x-3 gap-y-2 border-t border-border pt-3 text-xs text-muted-foreground">
-      <span className="shrink-0">Menos solicitações</span>
-      <span className="flex items-center gap-1" aria-hidden="true">
-        {[0.15, 0.35, 0.55, 0.8, 1].map((r) => (
-          <span
-            key={r}
-            className="h-3.5 w-7 rounded-sm border border-border"
-            style={{ background: heatCell(r * max, max).background }}
-          />
-        ))}
-      </span>
-      <span className="shrink-0">
-        Mais solicitações <span className="tabular-nums">(máx. {max})</span>
-      </span>
+    <div className="mt-4 border-t border-border pt-3">
+      <p className="text-xs font-medium text-foreground">Quantidade de solicitações</p>
+      <div className="mt-2 max-w-xs">
+        <div className="flex overflow-hidden rounded-md border border-border" aria-hidden="true">
+          {Array.from({ length: HEAT_STEPS }, (_, step) => (
+            <span key={step} className="h-3.5 flex-1" style={heatStepStyle(step)} />
+          ))}
+        </div>
+        <div className="mt-1 flex justify-between text-xs tabular-nums text-muted-foreground">
+          {ticks.map((tick, i) => (
+            <span key={i}>{tick}</span>
+          ))}
+        </div>
+      </div>
     </div>
   );
+
 
 
   if (isMobile) {
@@ -2281,7 +2307,7 @@ function ProviderProcedureHeatmap({
                     </span>
                     <span
                       className="grid h-7 w-11 shrink-0 place-items-center rounded-md text-xs font-medium tabular-nums"
-                      style={heatCell(item.value, max)}
+                      style={heatCell(item.value, min, max)}
                     >
                       {item.value}
                     </span>
@@ -2351,7 +2377,7 @@ function ProviderProcedureHeatmap({
                     <td key={provider} className="p-0">
                       <span
                         className="grid h-9 w-full place-items-center rounded-md text-sm font-medium tabular-nums"
-                        style={heatCell(value, max)}
+                        style={heatCell(value, min, max)}
                         title={`${row.name} · ${provider}: ${value}`}
                       >
                         {value === 0 ? "–" : value}
