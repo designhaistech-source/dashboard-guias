@@ -2233,6 +2233,52 @@ function heatCell(value: number, min: number, max: number) {
   return heatStepStyle(heatStep(value, min, max));
 }
 
+/** Intervalo real das quantidades exibidas (ignora células sem solicitação). */
+function heatmapRange(matrix: ProviderProcedureMatrix) {
+  const values = matrix.rows.flatMap((row) =>
+    matrix.columns.map((provider) => matrix.cells[`${row.code}|${provider}`] ?? 0),
+  );
+  const positives = values.filter((v) => v > 0);
+  return { min: positives.length ? Math.min(...positives) : 0, max: matrix.max };
+}
+
+/**
+ * Escala de intensidade do heatmap. Os valores de referência acompanham
+ * dinamicamente o intervalo dos dados filtrados.
+ */
+function HeatmapLegend({
+  min,
+  max,
+  className,
+}: {
+  min: number;
+  max: number;
+  className?: string;
+}) {
+  const ticks = Array.from({ length: HEAT_STEPS + 1 }, (_, i) =>
+    Math.round(min + ((max - min) * i) / HEAT_STEPS),
+  );
+  return (
+    <div className={cn("w-full min-w-0 lg:w-56", className)}>
+      <p className="text-xs font-medium text-muted-foreground">Quantidade de solicitações</p>
+      <div className="mt-1.5">
+        <div className="flex overflow-hidden rounded-md border border-border" aria-hidden="true">
+          {Array.from({ length: HEAT_STEPS }, (_, step) => (
+            <span key={step} className="h-3.5 flex-1" style={heatStepStyle(step)} />
+          ))}
+        </div>
+        <div className="mt-1 flex justify-between text-xs tabular-nums text-muted-foreground">
+          {ticks.map((tick, i) => (
+            <span key={i}>{tick}</span>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+
+
 
 /**
  * Heatmap procedimento (linhas) x prestador solicitante (colunas).
