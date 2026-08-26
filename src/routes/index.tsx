@@ -2505,7 +2505,7 @@ const ProviderProcedureHeatmap = memo(function ProviderProcedureHeatmap({
                       <span
                         tabIndex={0}
                         title={provider}
-                        className="mx-auto block line-clamp-2 text-center leading-tight focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                        className="mx-auto block break-normal hyphens-none text-center leading-tight focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                       >
                         {provider}
                       </span>
