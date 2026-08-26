@@ -1,0 +1,32 @@
+name: CI
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+
+jobs:
+  quality:
+    name: Lint, design system e tipos
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Instalar dependências
+        run: bun install --frozen-lockfile
+
+      - name: Design system (cores e tamanhos arbitrários)
+        run: bun run ds:tokens
+
+      - name: ESLint
+        run: bun run lint:ds
+
+      - name: Typecheck
+        run: bunx tsgo --noEmit
+
+      - name: Testes
+        run: bun run test
