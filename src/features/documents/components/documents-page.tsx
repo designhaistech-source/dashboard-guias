@@ -618,6 +618,8 @@ function ReportsTab({ onNewDocument }: { onNewDocument: () => void }) {
     templates: savedTemplates,
     requestSave: requestSaveTemplate,
     saveDialog,
+    openManage: openTemplatesManager,
+    manageDialog: templatesManagerDialog,
   } = useDocumentTemplates({
     kind: "relatorio",
     getContent: () => html || gerado,
@@ -717,6 +719,7 @@ function ReportsTab({ onNewDocument }: { onNewDocument: () => void }) {
       <div className="min-w-0 space-y-6">
       <SurfaceCard
         title="Dados do relatório"
+        actions={<ManageTemplatesButton onClick={openTemplatesManager} />}
         description="Identifique o paciente e o diagnóstico que será impresso no documento."
         icon={<FileText className="icon-optical h-4 w-4" aria-hidden />}
         padding="lg"
@@ -831,6 +834,7 @@ function ReportsTab({ onNewDocument }: { onNewDocument: () => void }) {
       />
 
       {saveDialog}
+      {templatesManagerDialog}
       {replacementDialog}
     </>
   );
@@ -908,6 +912,8 @@ function CertificateTab({ onNewDocument }: { onNewDocument: () => void }) {
     templates: savedTemplates,
     requestSave: requestSaveTemplate,
     saveDialog,
+    openManage: openTemplatesManager,
+    manageDialog: templatesManagerDialog,
   } = useDocumentTemplates({
     kind: "atestado",
     getContent: () => conteudo,
@@ -954,6 +960,7 @@ function CertificateTab({ onNewDocument }: { onNewDocument: () => void }) {
       <div className="min-w-0 space-y-6">
       <SurfaceCard
         title="Dados do atestado"
+        actions={<ManageTemplatesButton onClick={openTemplatesManager} />}
         description="O texto padrão é gerado automaticamente a partir destes campos."
         icon={<Stethoscope className="icon-optical h-4 w-4" aria-hidden />}
         padding="lg"
@@ -1070,6 +1077,7 @@ function CertificateTab({ onNewDocument }: { onNewDocument: () => void }) {
       />
 
       {saveDialog}
+      {templatesManagerDialog}
       {replacementDialog}
     </>
   );
@@ -1171,6 +1179,8 @@ function AttendanceTab({ onNewDocument }: { onNewDocument: () => void }) {
     templates: savedTemplates,
     requestSave: requestSaveTemplate,
     saveDialog,
+    openManage: openTemplatesManager,
+    manageDialog: templatesManagerDialog,
   } = useDocumentTemplates({
     kind: "comparecimento",
     getContent: () => conteudo,
@@ -1217,6 +1227,7 @@ function AttendanceTab({ onNewDocument }: { onNewDocument: () => void }) {
       <div className="min-w-0 space-y-6">
       <SurfaceCard
         title="Dados da declaração"
+        actions={<ManageTemplatesButton onClick={openTemplatesManager} />}
         description="Informe o local e os horários de permanência do paciente no atendimento."
         icon={<CalendarCheck className="icon-optical h-4 w-4" aria-hidden />}
         padding="lg"
@@ -1374,6 +1385,7 @@ function AttendanceTab({ onNewDocument }: { onNewDocument: () => void }) {
       />
 
       {saveDialog}
+      {templatesManagerDialog}
       {replacementDialog}
     </>
   );
