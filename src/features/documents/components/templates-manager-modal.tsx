@@ -41,7 +41,7 @@ export function TemplatesManagerModal({ open, onOpenChange, kind }: TemplatesMan
   const [query, setQuery] = useState("");
   const [editing, setEditing] = useState<string | null>(null);
   const [draftName, setDraftName] = useState("");
-  const [toDelete, setToDelete] = useState<SavedDocumentTemplate | null>(null);
+  const [confirmingDelete, setConfirmingDelete] = useState<string | null>(null);
   const searchRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -81,11 +81,10 @@ export function TemplatesManagerModal({ open, onOpenChange, kind }: TemplatesMan
     toast.success(`Modelo renomeado para “${name}”.`);
   }
 
-  function handleDelete() {
-    if (!toDelete) return;
-    removeTemplate(kind, toDelete.value);
-    toast.success(`Modelo “${toDelete.label}” excluído.`);
-    setToDelete(null);
+  function handleDelete(template: SavedDocumentTemplate) {
+    removeTemplate(kind, template.value);
+    toast.success(`Modelo “${template.label}” excluído.`);
+    setConfirmingDelete(null);
   }
 
   return (
