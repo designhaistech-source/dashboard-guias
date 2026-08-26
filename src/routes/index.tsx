@@ -2537,8 +2537,7 @@ const ProviderProcedureHeatmap = memo(function ProviderProcedureHeatmap({
             ))}
           </tbody>
         </table>
-
-      </div>
+      </TooltipProvider>
     </div>
   );
 });
