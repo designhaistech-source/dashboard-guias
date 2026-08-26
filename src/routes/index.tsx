@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { memo, useDeferredValue, useEffect, useMemo, useRef, useState } from "react";
 import type { RefObject } from "react";
 import jsPDF from "jspdf";
 import {
@@ -1054,6 +1054,9 @@ function DashboardPage() {
     [filteredGuides],
   );
   const providerHeatRange = useMemo(() => heatmapRange(providerMatrix), [providerMatrix]);
+  // A matriz é o bloco mais caro de renderizar: com valor deferido, cliques
+  // sucessivos em filtros atualizam a UI de imediato e a matriz recompõe depois.
+  const deferredProviderMatrix = useDeferredValue(providerMatrix);
   const hasProviderMatrix =
     providerMatrix.rows.length > 0 && providerMatrix.columns.length > 0;
 
@@ -1948,7 +1951,7 @@ function DashboardPage() {
                   max={providerHeatRange.max}
                   className="mb-4 lg:hidden"
                 />
-                <ProviderProcedureHeatmap matrix={providerMatrix} isMobile={isMobile} />
+                <ProviderProcedureHeatmap matrix={deferredProviderMatrix} isMobile={isMobile} />
               </>
             )}
           </SurfaceCard>
@@ -2313,7 +2316,7 @@ function HeatmapLegend({
  * No mobile a matriz é reagrupada por procedimento, mantendo a leitura dos
  * nomes e das quantidades sem comprimir todas as colunas na largura da tela.
  */
-function ProviderProcedureHeatmap({
+const ProviderProcedureHeatmap = memo(function ProviderProcedureHeatmap({
   matrix,
   isMobile,
 }: {
@@ -2334,7 +2337,8 @@ function ProviderProcedureHeatmap({
   const SortIcon = !nameSort ? ChevronsUpDown : nameSort === "asc" ? ChevronUp : ChevronDown;
 
   // Intervalo real dos dados exibidos (ignora células sem solicitação).
-  const { min } = heatmapRange(matrix);
+  // Memoizado: recalcular a escala em cada render encarece a troca de filtros.
+  const { min } = useMemo(() => heatmapRange(matrix), [matrix]);
 
   // Mede o espaço realmente disponível: a matriz só é usada quando cabe com
   // legibilidade; abaixo disso caímos no formato em cards (sem rolagem lateral).
@@ -2343,11 +2347,21 @@ function ProviderProcedureHeatmap({
   useEffect(() => {
     const host = hostRef.current;
     if (!host || typeof ResizeObserver === "undefined") return;
+    // Agrupa as medições em um frame e ignora variações sub-pixel: sem isso o
+    // observer dispara um render por pixel durante resize/troca de filtros.
+    let frame = 0;
     const observer = new ResizeObserver(([entry]) => {
-      setAvailable(entry.contentRect.width);
+      const width = Math.round(entry.contentRect.width);
+      cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(() => {
+        setAvailable((prev) => (prev === width ? prev : width));
+      });
     });
     observer.observe(host);
-    return () => observer.disconnect();
+    return () => {
+      cancelAnimationFrame(frame);
+      observer.disconnect();
+    };
   }, []);
 
   // Larguras legíveis: rótulo + colunas de prestador + total.
@@ -2420,7 +2434,8 @@ function ProviderProcedureHeatmap({
 
   return (
     <div ref={hostRef} className="min-w-0">
-      <div className="min-w-0">
+      {/* Um provider para toda a matriz (antes: um por célula). */}
+      <TooltipProvider delayDuration={120}>
         <table
           className="table-fixed border-separate border-spacing-1 text-sm"
           style={{ width: matrixWidth, maxWidth: "100%" }}
@@ -2485,33 +2500,31 @@ function ProviderProcedureHeatmap({
                   const value = get(row.code, provider);
                   return (
                     <td key={provider} className="p-0">
-                      <TooltipProvider delayDuration={120}>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <span
-                              tabIndex={0}
-                              className="grid h-9 w-full place-items-center rounded-md text-sm font-medium tabular-nums focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                              style={heatCell(value, min, max)}
-                            >
-                              {value === 0 ? "–" : value}
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <span
+                            tabIndex={0}
+                            className="grid h-9 w-full place-items-center rounded-md text-sm font-medium tabular-nums focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                            style={heatCell(value, min, max)}
+                          >
+                            {value === 0 ? "–" : value}
+                          </span>
+                        </TooltipTrigger>
+                        <TooltipContent className="max-w-64 rounded-lg border border-border bg-popover px-3 py-2 text-foreground shadow-md">
+                          <div className="flex flex-col gap-1 text-xs">
+                            <span className="text-xs uppercase tracking-wider text-muted-foreground">
+                              CBHPM {row.code}
                             </span>
-                          </TooltipTrigger>
-                          <TooltipContent className="max-w-64 rounded-lg border border-border bg-popover px-3 py-2 text-foreground shadow-md">
-                            <div className="flex flex-col gap-1 text-xs">
-                              <span className="text-xs uppercase tracking-wider text-muted-foreground">
-                                CBHPM {row.code}
-                              </span>
-                              <span className="font-medium leading-tight text-foreground">
-                                {row.name}
-                              </span>
-                              <span className="text-muted-foreground">{provider}</span>
-                              <span className="mt-1 border-t border-border pt-1 font-semibold tabular-nums text-foreground">
-                                {value} {value === 1 ? "solicitação" : "solicitações"}
-                              </span>
-                            </div>
-                          </TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
+                            <span className="font-medium leading-tight text-foreground">
+                              {row.name}
+                            </span>
+                            <span className="text-muted-foreground">{provider}</span>
+                            <span className="mt-1 border-t border-border pt-1 font-semibold tabular-nums text-foreground">
+                              {value} {value === 1 ? "solicitação" : "solicitações"}
+                            </span>
+                          </div>
+                        </TooltipContent>
+                      </Tooltip>
                     </td>
                   );
                 })}
@@ -2525,8 +2538,7 @@ function ProviderProcedureHeatmap({
             ))}
           </tbody>
         </table>
-
-      </div>
+      </TooltipProvider>
     </div>
   );
-}
+});
