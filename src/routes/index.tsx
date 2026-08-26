@@ -2405,12 +2405,14 @@ function ProviderProcedureHeatmap({
             Quantidade de solicitações por procedimento e prestador solicitante
           </caption>
           <colgroup>
-            <col style={{ width: `${LABEL_REM}rem` }} />
+            {/* Rótulo fixo, total estreito e prestadores dividindo o resto. */}
+            <col className="w-52" />
             {columns.map((provider) => (
-              <col key={provider} style={{ width: `${CELL_REM}rem` }} />
+              <col key={provider} style={{ width: `${(100 / columns.length).toFixed(4)}%` }} />
             ))}
-            <col style={{ width: `${TOTAL_REM}rem` }} />
+            <col className="w-14" />
           </colgroup>
+
           <thead>
             <tr>
               <th
