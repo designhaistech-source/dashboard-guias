@@ -1481,8 +1481,13 @@ function applySaved({
 /** Botão de acesso ao gerenciamento de modelos, no cabeçalho do card de dados. */
 function ManageTemplatesButton({ onClick }: { onClick: () => void }) {
   return (
-    <Button type="button" variant="secondary" size="sm" onClick={onClick}>
-      <BookMarked className="size-4" aria-hidden />
+    <Button
+      type="button"
+      variant="outline"
+      onClick={onClick}
+      className="gap-1.5 rounded-lg border border-border px-2.5 py-1.5 text-xs font-medium text-foreground hover:bg-muted [&_svg]:shrink-0"
+    >
+      <BookMarked className="h-3.5 w-3.5" aria-hidden />
       Gerenciar modelos
     </Button>
   );
