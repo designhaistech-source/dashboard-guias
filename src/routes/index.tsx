@@ -2246,14 +2246,26 @@ function ProviderProcedureHeatmap({
   matrix: ProviderProcedureMatrix;
   isMobile: boolean;
 }) {
-  const { rows, columns, cells, max } = matrix;
+  const { columns, cells, max } = matrix;
   const get = (code: string, provider: string) => cells[`${code}|${provider}`] ?? 0;
+
+  /** null = ordem original (por quantidade); asc/desc = alfabética pelo nome. */
+  const [nameSort, setNameSort] = useState<"asc" | "desc" | null>(null);
+  const rows = useMemo(() => {
+    if (!nameSort) return matrix.rows;
+    const dir = nameSort === "asc" ? 1 : -1;
+    return [...matrix.rows].sort((a, b) => dir * a.name.localeCompare(b.name, "pt-BR"));
+  }, [matrix.rows, nameSort]);
+  const toggleNameSort = () =>
+    setNameSort((s) => (s === "asc" ? "desc" : s === "desc" ? null : "asc"));
+  const SortIcon = nameSort === "asc" ? ArrowDownAZ : nameSort === "desc" ? ArrowUpAZ : ArrowUpDown;
 
   // Intervalo real dos dados exibidos (ignora células sem solicitação).
   const values = rows.flatMap((row) =>
     columns.map((provider) => get(row.code, provider)).filter((v) => v > 0),
   );
   const min = values.length ? Math.min(...values) : 0;
+
 
   /** Valores de referência: limites de cada faixa, do mínimo ao máximo. */
   const ticks = Array.from({ length: HEAT_STEPS + 1 }, (_, i) =>
