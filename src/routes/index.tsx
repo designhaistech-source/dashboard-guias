@@ -2431,7 +2431,8 @@ const ProviderProcedureHeatmap = memo(function ProviderProcedureHeatmap({
 
   return (
     <div ref={hostRef} className="min-w-0">
-      <div className="min-w-0">
+      {/* Um provider para toda a matriz (antes: um por célula). */}
+      <TooltipProvider delayDuration={120}>
         <table
           className="table-fixed border-separate border-spacing-1 text-sm"
           style={{ width: matrixWidth, maxWidth: "100%" }}
