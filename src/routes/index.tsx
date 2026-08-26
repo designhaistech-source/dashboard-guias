@@ -1758,7 +1758,7 @@ function DashboardPage() {
             {procedures.length === 0 ? (
               emptyState
             ) : (
-              <div className={`${SPLIT_GRID_CLASS} items-start`}>
+              <div className={`${SPLIT_GRID_CLASS} items-stretch`}>
                 <div className="min-w-0 flex flex-col gap-3 xl:pr-8">
 
                 <div>
@@ -1768,10 +1768,11 @@ function DashboardPage() {
                 </div>
 
                 <div
-                  className="w-full"
-                  style={{ height: horizontalBarsHeight(procedures.length, isMobile) }}
+                  className="w-full flex-1"
+                  style={{ minHeight: horizontalBarsHeight(procedures.length, isMobile) }}
                   data-chart="procedures"
                 >
+
 
                   <ResponsiveContainer width="100%" height="100%">
                     <BarChart
