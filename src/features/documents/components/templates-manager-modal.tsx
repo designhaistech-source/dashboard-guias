@@ -49,6 +49,7 @@ export function TemplatesManagerModal({ open, onOpenChange, kind }: TemplatesMan
     setTemplates(listSavedTemplates(kind));
     setQuery("");
     setEditing(null);
+    setConfirmingDelete(null);
     return subscribeTemplates(kind, () => setTemplates(listSavedTemplates(kind)));
   }, [open, kind]);
 
