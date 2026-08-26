@@ -19,6 +19,16 @@ import {
 const MAX_NAME = 60;
 const FORM_ID = "salvar-modelo-form";
 
+/** Placeholder do nome do modelo por tipo de documento. */
+const NAME_PLACEHOLDER: Record<DocumentTemplateKind, string> = {
+  relatorio: "Ex.: Relatório de acompanhamento",
+  atestado: "Ex.: Atestado de afastamento",
+  comparecimento: "Ex.: Declaração de comparecimento",
+};
+
+const MODAL_DESCRIPTION =
+  "Os dados do paciente serão substituídos por variáveis, permitindo reutilizar o modelo em outros documentos.";
+
 function hasText(html: string): boolean {
   return html.replace(/<[^>]+>/g, "").trim().length > 0;
 }
@@ -31,10 +41,8 @@ export function useDocumentTemplates(options: {
   kind: DocumentTemplateKind;
   /** Conteúdo HTML atual do editor, lido no momento do salvamento. */
   getContent: () => string;
-  /** Nome sugerido no diálogo (ex.: nome do paciente). */
-  suggestName?: () => string;
 }) {
-  const { kind, getContent, suggestName } = options;
+  const { kind, getContent } = options;
   const [templates, setTemplates] = useState<SavedDocumentTemplate[]>([]);
   const [open, setOpen] = useState(false);
   const [name, setName] = useState("");
@@ -51,9 +59,10 @@ export function useDocumentTemplates(options: {
       toast.error("Escreva o texto do documento antes de salvá-lo como modelo.");
       return;
     }
-    setName(suggestName?.().trim() ?? "");
+    // Nome sempre começa vazio: o modelo é reutilizável, não vinculado ao paciente.
+    setName("");
     setOpen(true);
-  }, [getContent, suggestName]);
+  }, [getContent]);
 
   const remove = useCallback(
     (template: SavedDocumentTemplate) => {
@@ -86,7 +95,7 @@ export function useDocumentTemplates(options: {
       onOpenChange={setOpen}
       size="md"
       title="Salvar como modelo"
-      description="O texto atual será guardado neste navegador e ficará disponível na lista de modelos deste tipo de documento."
+      description={MODAL_DESCRIPTION}
       footer={
         <>
           <Button type="button" variant="outline" onClick={() => setOpen(false)}>
@@ -121,7 +130,7 @@ export function useDocumentTemplates(options: {
               id="modelo-nome"
               autoFocus
               maxLength={MAX_NAME}
-              placeholder="Ex.: Atestado padrão 3 dias"
+              placeholder={NAME_PLACEHOLDER[kind]}
               value={name}
               onChange={(event) => setName(event.target.value)}
             />
