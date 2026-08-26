@@ -2498,7 +2498,22 @@ const ProviderProcedureHeatmap = memo(function ProviderProcedureHeatmap({
                   scope="col"
                   className="px-1 pb-1 align-bottom text-xs font-medium text-muted-foreground"
                 >
-                  <span className="block leading-tight">{provider}</span>
+                  {/* Célula estreita: o rótulo quebra em até duas linhas e o nome
+                      completo continua acessível por tooltip/title. */}
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <span
+                        tabIndex={0}
+                        title={provider}
+                        className="mx-auto block line-clamp-2 break-words text-center leading-tight focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                      >
+                        {provider}
+                      </span>
+                    </TooltipTrigger>
+                    <TooltipContent className="max-w-56 rounded-lg border border-border bg-popover px-3 py-2 text-xs text-foreground shadow-md">
+                      {provider}
+                    </TooltipContent>
+                  </Tooltip>
                 </th>
               ))}
               <th scope="col" className="px-1 pb-1 text-right align-bottom text-xs font-medium uppercase tracking-wide text-muted-foreground">
