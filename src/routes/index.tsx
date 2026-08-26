@@ -85,6 +85,7 @@ import { Combobox } from "@/components/ui/combobox";
 import { Chip } from "@/components/ui/chip";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Badge } from "@/components/ui/badge";
+import { Skeleton } from "@/components/ui/skeleton";
 import { useIsMobile } from "@/hooks/use-mobile";
 import {
   DASHBOARD_GUIDES,
@@ -1057,6 +1058,8 @@ function DashboardPage() {
   // A matriz é o bloco mais caro de renderizar: com valor deferido, cliques
   // sucessivos em filtros atualizam a UI de imediato e a matriz recompõe depois.
   const deferredProviderMatrix = useDeferredValue(providerMatrix);
+  // Enquanto o valor deferido não acompanha a matriz atual, exibimos skeleton.
+  const isHeatmapPending = deferredProviderMatrix !== providerMatrix;
   const hasProviderMatrix =
     providerMatrix.rows.length > 0 && providerMatrix.columns.length > 0;
 
@@ -1931,28 +1934,32 @@ function DashboardPage() {
             title="Procedimentos solicitados por prestador"
             description="Quantidade de procedimentos por prestador no período filtrado"
             actions={
-              hasProviderMatrix ? (
-                <HeatmapLegend
-                  min={providerHeatRange.min}
-                  max={providerHeatRange.max}
-                  className="hidden lg:block"
-                />
-              ) : undefined
+              <HeatmapLegend
+                min={providerHeatRange.min}
+                max={providerHeatRange.max}
+                className="hidden lg:block"
+                muted={!hasProviderMatrix}
+              />
             }
             headerClassName="gap-x-6"
             className="min-w-0"
           >
+            <HeatmapLegend
+              min={providerHeatRange.min}
+              max={providerHeatRange.max}
+              className="mb-4 lg:hidden"
+              muted={!hasProviderMatrix}
+            />
             {!hasProviderMatrix ? (
               emptyState
+            ) : isHeatmapPending ? (
+              <HeatmapSkeleton
+                rows={providerMatrix.rows.length}
+                columns={providerMatrix.columns.length}
+                isMobile={isMobile}
+              />
             ) : (
-              <>
-                <HeatmapLegend
-                  min={providerHeatRange.min}
-                  max={providerHeatRange.max}
-                  className="mb-4 lg:hidden"
-                />
-                <ProviderProcedureHeatmap matrix={deferredProviderMatrix} isMobile={isMobile} />
-              </>
+              <ProviderProcedureHeatmap matrix={deferredProviderMatrix} isMobile={isMobile} />
             )}
           </SurfaceCard>
 
@@ -2281,16 +2288,25 @@ function HeatmapLegend({
   min,
   max,
   className,
+  muted = false,
 }: {
   min: number;
   max: number;
   className?: string;
+  /** Sem dados no período: legenda permanece visível, apenas atenuada. */
+  muted?: boolean;
 }) {
   const ticks = Array.from({ length: HEAT_STEPS + 1 }, (_, i) =>
     Math.round(min + ((max - min) * i) / HEAT_STEPS),
   );
   return (
-    <div className={cn("w-full min-w-0 lg:w-56 lg:shrink", className)}>
+    <div
+      className={cn(
+        "w-full min-w-0 lg:w-56 lg:shrink",
+        muted && "opacity-50",
+        className,
+      )}
+    >
       <p className="text-xs font-medium text-muted-foreground">Quantidade de solicitações</p>
       <div className="mt-1.5">
         <div className="flex overflow-hidden rounded-md border border-border" aria-hidden="true">
@@ -2304,6 +2320,65 @@ function HeatmapLegend({
           ))}
         </div>
       </div>
+    </div>
+  );
+}
+
+/**
+ * Placeholder do heatmap durante o recálculo da matriz (filtros em transição).
+ * Espelha a estrutura real (matriz no desktop, cards no mobile) para evitar
+ * salto de layout ao trocar do skeleton para os dados.
+ */
+function HeatmapSkeleton({
+  rows,
+  columns,
+  isMobile,
+}: {
+  rows: number;
+  columns: number;
+  isMobile: boolean;
+}) {
+  const rowCount = Math.min(Math.max(rows, 1), 6);
+  const colCount = Math.min(Math.max(columns, 1), 7);
+
+  if (isMobile) {
+    return (
+      <div className="flex flex-col gap-4" role="status" aria-label="Recalculando heatmap">
+        {Array.from({ length: rowCount }, (_, r) => (
+          <div key={r} className="flex flex-col gap-2">
+            <Skeleton className="h-4 w-2/3" />
+            <div className="flex flex-col gap-1.5">
+              {Array.from({ length: Math.min(colCount, 4) }, (_, c) => (
+                <div key={c} className="flex items-center justify-between gap-3">
+                  <Skeleton className="h-3.5 w-1/2" />
+                  <Skeleton className="h-3.5 w-10" />
+                </div>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex flex-col gap-1.5" role="status" aria-label="Recalculando heatmap">
+      <div className="flex items-end gap-1.5">
+        <div className="w-52 shrink-0" />
+        {Array.from({ length: colCount }, (_, c) => (
+          <Skeleton key={c} className="h-4 min-w-0 flex-1" />
+        ))}
+      </div>
+      {Array.from({ length: rowCount }, (_, r) => (
+        <div key={r} className="flex items-center gap-1.5">
+          <div className="w-52 shrink-0 pr-3">
+            <Skeleton className="h-4 w-full" />
+          </div>
+          {Array.from({ length: colCount }, (_, c) => (
+            <Skeleton key={c} className="h-9 min-w-0 flex-1 rounded-md" />
+          ))}
+        </div>
+      ))}
     </div>
   );
 }
