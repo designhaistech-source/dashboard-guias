@@ -9,6 +9,7 @@
     "build:dev": "vite build --mode development",
     "preview": "vite preview",
     "lint": "eslint .",
+    "lint:ds": "eslint . -c eslint.ds.config.js",
     "test": "vitest run",
     "test:watch": "vitest",
     "format": "prettier --write .",
