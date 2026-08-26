@@ -131,3 +131,28 @@ export function renameTemplate(
   );
   return true;
 }
+
+/**
+ * Atualiza nome e conteúdo de um modelo salvo mantendo o mesmo `value`,
+ * para não criar um novo modelo nem invalidar a seleção atual.
+ * Retorna false quando já existe outro modelo com o mesmo nome.
+ */
+export function updateTemplate(
+  kind: DocumentTemplateKind,
+  value: string,
+  name: string,
+  content: string,
+): boolean {
+  const label = name.trim();
+  if (!label) return false;
+  const current = listSavedTemplates(kind);
+  const key = label.toLocaleLowerCase("pt-BR");
+  if (current.some((t) => t.value !== value && t.label.toLocaleLowerCase("pt-BR") === key)) {
+    return false;
+  }
+  persist(
+    kind,
+    current.map((t) => (t.value === value ? { ...t, label, content } : t)),
+  );
+  return true;
+}
