@@ -66,6 +66,17 @@ const RULES = [
     allowlist: PRIMITIVES_ALLOWLIST,
   },
   {
+    id: "arbitrary-color-function",
+    re: /(?:bg|text|border|fill|stroke|ring|shadow|from|via|to)-\[(?:rgb|rgba|hsl|hsla|oklch|lab|color-mix)\(/g,
+    msg: "cor literal inline — use um token semântico de src/styles.css",
+  },
+  {
+    id: "arbitrary-size",
+    re: /\b(?:w|h|size|min-w|min-h|max-w|max-h|p|px|py|pt|pb|pl|pr|m|mx|my|mt|mb|ml|mr|gap|gap-x|gap-y|space-x|space-y|rounded|leading|tracking)-\[-?\d+(?:\.\d+)?(?:px|rem|em)\]/g,
+    msg: "tamanho arbitrário — use a escala de espaçamento/raio (ex.: w-45, min-h-100, rounded-lg)",
+    allowlist: PRIMITIVES_ALLOWLIST,
+  },
+  {
     id: "native-control",
     re: /<(?:button|input|textarea|select)(?=[\s/>])/g,
     msg: "controle nativo — use Button/Input/Textarea/SelectField do design system",
