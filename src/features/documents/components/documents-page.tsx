@@ -621,7 +621,6 @@ function ReportsTab({ onNewDocument }: { onNewDocument: () => void }) {
   } = useDocumentTemplates({
     kind: "relatorio",
     getContent: () => html || gerado,
-    suggestName: () => (paciente.trim() ? `Relatório — ${paciente.trim()}` : ""),
   });
 
   // Modelo escolhido (salvo ou padrão) que serve de base ao texto gerado.
@@ -912,7 +911,6 @@ function CertificateTab({ onNewDocument }: { onNewDocument: () => void }) {
   } = useDocumentTemplates({
     kind: "atestado",
     getContent: () => conteudo,
-    suggestName: () => (dias ? `Atestado de ${dias} dia(s)` : ""),
   });
 
   const [modelo, setModelo] = useState(GENERATED_TEMPLATE);
@@ -1176,7 +1174,6 @@ function AttendanceTab({ onNewDocument }: { onNewDocument: () => void }) {
   } = useDocumentTemplates({
     kind: "comparecimento",
     getContent: () => conteudo,
-    suggestName: () => (local.trim() ? `Comparecimento — ${local.trim()}` : ""),
   });
 
   const [modelo, setModelo] = useState(GENERATED_TEMPLATE);
