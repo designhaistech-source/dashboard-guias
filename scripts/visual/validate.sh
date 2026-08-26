@@ -11,8 +11,9 @@ echo "==> 1/9 Typecheck"
 bunx tsgo --noEmit || status=1
 
 echo
-echo "==> 2/9 Tokens de cor"
+echo "==> 2/9 Tokens de cor e tamanhos arbitrários (script + ESLint)"
 node scripts/visual/check-design-tokens.mjs || status=1
+bunx eslint . -c eslint.ds.config.js || status=1
 
 echo
 echo "==> 3/9 Alinhamento ícone/texto"
