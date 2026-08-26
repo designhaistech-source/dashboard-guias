@@ -2414,10 +2414,7 @@ function ProviderProcedureHeatmap({
                               {value === 0 ? "–" : value}
                             </span>
                           </TooltipTrigger>
-                          <TooltipContent
-                            className="max-w-64 rounded-lg border border-border bg-popover px-3 py-2 text-foreground shadow-md"
-                            arrowClassName="bg-popover fill-popover"
-                          >
+                          <TooltipContent className="max-w-64 rounded-lg border border-border bg-popover px-3 py-2 text-foreground shadow-md">
                             <div className="flex flex-col gap-1 text-xs">
                               <span className="text-xs uppercase tracking-wider text-muted-foreground">
                                 CBHPM {row.code}
