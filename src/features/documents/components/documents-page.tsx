@@ -13,6 +13,7 @@ import {
   ExternalLink,
   CheckCircle2,
   Info,
+  BookMarked,
 } from "lucide-react";
 import { AlertCircle } from "lucide-react";
 import { getRouteApi, Link, useNavigate } from "@tanstack/react-router";
@@ -1475,4 +1476,14 @@ function applySaved({
       setHtml(template.content);
     },
   });
+}
+
+/** Botão de acesso ao gerenciamento de modelos, no cabeçalho do card de dados. */
+function ManageTemplatesButton({ onClick }: { onClick: () => void }) {
+  return (
+    <Button type="button" variant="secondary" size="sm" onClick={onClick}>
+      <BookMarked className="size-4" aria-hidden />
+      Gerenciar modelos
+    </Button>
+  );
 }
