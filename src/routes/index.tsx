@@ -30,6 +30,9 @@ import {
   FileStack,
   CheckCircle2,
   AlertTriangle,
+  ArrowDownAZ,
+  ArrowUpAZ,
+  ArrowUpDown,
 } from "lucide-react";
 import {
   AreaChart,
@@ -2246,14 +2249,26 @@ function ProviderProcedureHeatmap({
   matrix: ProviderProcedureMatrix;
   isMobile: boolean;
 }) {
-  const { rows, columns, cells, max } = matrix;
+  const { columns, cells, max } = matrix;
   const get = (code: string, provider: string) => cells[`${code}|${provider}`] ?? 0;
+
+  /** null = ordem original (por quantidade); asc/desc = alfabética pelo nome. */
+  const [nameSort, setNameSort] = useState<"asc" | "desc" | null>(null);
+  const rows = useMemo(() => {
+    if (!nameSort) return matrix.rows;
+    const dir = nameSort === "asc" ? 1 : -1;
+    return [...matrix.rows].sort((a, b) => dir * a.name.localeCompare(b.name, "pt-BR"));
+  }, [matrix.rows, nameSort]);
+  const toggleNameSort = () =>
+    setNameSort((s) => (s === "asc" ? "desc" : s === "desc" ? null : "asc"));
+  const SortIcon = nameSort === "asc" ? ArrowDownAZ : nameSort === "desc" ? ArrowUpAZ : ArrowUpDown;
 
   // Intervalo real dos dados exibidos (ignora células sem solicitação).
   const values = rows.flatMap((row) =>
     columns.map((provider) => get(row.code, provider)).filter((v) => v > 0),
   );
   const min = values.length ? Math.min(...values) : 0;
+
 
   /** Valores de referência: limites de cada faixa, do mínimo ao máximo. */
   const ticks = Array.from({ length: HEAT_STEPS + 1 }, (_, i) =>
@@ -2348,8 +2363,17 @@ function ProviderProcedureHeatmap({
           <thead>
             <tr>
               <th scope="col" className="text-left align-bottom text-xs font-medium uppercase tracking-wide text-muted-foreground">
-                Procedimento
+                <button
+                  type="button"
+                  onClick={toggleNameSort}
+                  aria-label="Ordenar procedimentos por nome"
+                  className="inline-flex items-center gap-1 rounded-md px-1 py-0.5 uppercase tracking-wide transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                >
+                  Procedimento
+                  <SortIcon className="h-3.5 w-3.5" aria-hidden="true" />
+                </button>
               </th>
+
               {columns.map((provider) => (
                 <th
                   key={provider}
@@ -2375,16 +2399,35 @@ function ProviderProcedureHeatmap({
                   const value = get(row.code, provider);
                   return (
                     <td key={provider} className="p-0">
-                      <span
-                        className="grid h-9 w-full place-items-center rounded-md text-sm font-medium tabular-nums"
-                        style={heatCell(value, min, max)}
-                        title={`${row.name} · ${provider}: ${value}`}
-                      >
-                        {value === 0 ? "–" : value}
-                      </span>
+                      <TooltipProvider delayDuration={120}>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <span
+                              tabIndex={0}
+                              className="grid h-9 w-full place-items-center rounded-md text-sm font-medium tabular-nums focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                              style={heatCell(value, min, max)}
+                            >
+                              {value === 0 ? "–" : value}
+                            </span>
+                          </TooltipTrigger>
+                          <TooltipContent className="max-w-64 p-0">
+                            <div className="flex flex-col gap-1 p-2.5 text-xs">
+                              <span className="font-mono text-[0.6875rem] opacity-80">
+                                CBHPM {row.code}
+                              </span>
+                              <span className="font-medium leading-tight">{row.name}</span>
+                              <span className="opacity-80">{provider}</span>
+                              <span className="mt-1 border-t border-current/20 pt-1 tabular-nums">
+                                {value} {value === 1 ? "solicitação" : "solicitações"}
+                              </span>
+                            </div>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
                     </td>
                   );
                 })}
+
                 <td className="pl-2 text-right text-sm font-medium tabular-nums text-foreground">
                   {row.total}
                 </td>
