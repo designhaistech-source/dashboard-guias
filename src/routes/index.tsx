@@ -1758,8 +1758,8 @@ function DashboardPage() {
             {procedures.length === 0 ? (
               emptyState
             ) : (
-              <div className={`${SPLIT_GRID_CLASS} items-start`}>
-                <div className="min-w-0 flex flex-col gap-3 xl:pr-8">
+              <div className={`${SPLIT_GRID_CLASS} items-stretch`}>
+                <div className="min-w-0 flex h-full flex-col gap-3 xl:pr-8">
 
                 <div>
                   <p className="text-xs font-medium text-muted-foreground">
@@ -1767,9 +1767,11 @@ function DashboardPage() {
                   </p>
                 </div>
 
+                {/* Cresce junto com a tabela ao lado: as barras mantêm a espessura
+                    e apenas os intervalos se redistribuem na altura disponível. */}
                 <div
-                  className="w-full"
-                  style={{ height: horizontalBarsHeight(procedures.length, isMobile) }}
+                  className="w-full flex-1"
+                  style={{ minHeight: horizontalBarsHeight(procedures.length, isMobile) }}
                   data-chart="procedures"
                 >
 
