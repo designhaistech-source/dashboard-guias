@@ -1,5 +1,7 @@
 import { jsPDF } from "jspdf";
 
+import { CURRENT_USER } from "@/lib/current-user";
+
 const PAGE_MARGIN = 20; // mm
 const LINE_HEIGHT = 6.4; // mm
 
