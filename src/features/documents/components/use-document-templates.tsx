@@ -15,6 +15,7 @@ import {
   type DocumentTemplateKind,
   type SavedDocumentTemplate,
 } from "../data/document-templates";
+import { TemplatesManagerModal } from "./templates-manager-modal";
 
 const MAX_NAME = 60;
 const FORM_ID = "salvar-modelo-form";
@@ -46,6 +47,7 @@ export function useDocumentTemplates(options: {
   const [templates, setTemplates] = useState<SavedDocumentTemplate[]>([]);
   const [open, setOpen] = useState(false);
   const [name, setName] = useState("");
+  const [manageOpen, setManageOpen] = useState(false);
 
   const refresh = useCallback(() => setTemplates(listSavedTemplates(kind)), [kind]);
 
