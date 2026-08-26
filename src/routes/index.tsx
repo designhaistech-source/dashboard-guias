@@ -2207,3 +2207,149 @@ function Kpi({
   );
 
 }
+
+/** Escala de azul do heatmap: intensidade proporcional à quantidade. */
+function heatCell(value: number, max: number) {
+  if (value === 0) return { background: "var(--muted)", color: "var(--muted-foreground)" };
+  const ratio = max > 0 ? value / max : 0;
+  // Piso de 12% para células com pelo menos uma solicitação continuarem legíveis.
+  const mix = Math.round(12 + ratio * 78);
+  return {
+    background: `color-mix(in oklab, var(--primary) ${mix}%, var(--card))`,
+    color: mix >= 55 ? "var(--primary-foreground)" : "var(--foreground)",
+  };
+}
+
+/**
+ * Heatmap procedimento (linhas) x prestador solicitante (colunas).
+ * No mobile a matriz é reagrupada por procedimento, mantendo a leitura dos
+ * nomes e das quantidades sem comprimir todas as colunas na largura da tela.
+ */
+function ProviderProcedureHeatmap({
+  matrix,
+  isMobile,
+}: {
+  matrix: ProviderProcedureMatrix;
+  isMobile: boolean;
+}) {
+  const { rows, columns, cells, max } = matrix;
+  const get = (code: string, provider: string) => cells[`${code}|${provider}`] ?? 0;
+
+  const legend = (
+    <div className="mt-4 flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+      <span>Menos solicitações</span>
+      <span className="flex items-center gap-1" aria-hidden="true">
+        {[0.1, 0.35, 0.6, 0.85, 1].map((r) => (
+          <span
+            key={r}
+            className="h-3 w-6 rounded-sm border border-border"
+            style={{ background: heatCell(r * max, max).background }}
+          />
+        ))}
+      </span>
+      <span>Mais solicitações</span>
+      <span className="tabular-nums">(máx. {max})</span>
+    </div>
+  );
+
+  if (isMobile) {
+    return (
+      <div className="flex flex-col gap-3">
+        {rows.map((row) => {
+          const items = columns
+            .map((provider) => ({ provider, value: get(row.code, provider) }))
+            .filter((i) => i.value > 0)
+            .sort((a, b) => b.value - a.value);
+          return (
+            <div key={row.code} className="rounded-xl border border-border bg-card p-3">
+              <div className="flex items-start justify-between gap-2">
+                <div className="min-w-0">
+                  <p className="truncate text-sm font-medium text-foreground">{row.name}</p>
+                  <p className="font-mono text-xs text-muted-foreground">{row.code}</p>
+                </div>
+                <Badge variant="secondary" className="shrink-0 tabular-nums">
+                  {row.total}
+                </Badge>
+              </div>
+              <ul className="mt-2 flex flex-col gap-1">
+                {items.map((item) => (
+                  <li key={item.provider} className="flex items-center gap-2">
+                    <span className="min-w-0 flex-1 truncate text-xs text-muted-foreground">
+                      {item.provider}
+                    </span>
+                    <span
+                      className="grid h-6 min-w-9 place-items-center rounded-md px-2 text-xs font-medium tabular-nums"
+                      style={heatCell(item.value, max)}
+                    >
+                      {item.value}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          );
+        })}
+        {legend}
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-w-0">
+      <div className="overflow-x-auto">
+        <table className="w-full min-w-[42rem] border-separate border-spacing-1 text-sm">
+          <caption className="sr-only">
+            Quantidade de solicitações por procedimento e prestador solicitante
+          </caption>
+          <thead>
+            <tr>
+              <th scope="col" className="w-64 text-left align-bottom text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                Procedimento
+              </th>
+              {columns.map((provider) => (
+                <th
+                  key={provider}
+                  scope="col"
+                  className="px-1 pb-1 align-bottom text-xs font-medium text-muted-foreground"
+                >
+                  <span className="block leading-tight">{provider}</span>
+                </th>
+              ))}
+              <th scope="col" className="px-1 pb-1 text-right align-bottom text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                Total
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {rows.map((row) => (
+              <tr key={row.code}>
+                <th scope="row" className="max-w-64 py-1 pr-3 text-left font-normal">
+                  <span className="block truncate text-sm text-foreground">{row.name}</span>
+                  <span className="block font-mono text-xs text-muted-foreground">{row.code}</span>
+                </th>
+                {columns.map((provider) => {
+                  const value = get(row.code, provider);
+                  return (
+                    <td key={provider} className="p-0">
+                      <span
+                        className="grid h-9 place-items-center rounded-md text-sm font-medium tabular-nums"
+                        style={heatCell(value, max)}
+                        title={`${row.name} · ${provider}: ${value}`}
+                      >
+                        {value === 0 ? "–" : value}
+                      </span>
+                    </td>
+                  );
+                })}
+                <td className="pl-2 text-right text-sm font-medium tabular-nums text-foreground">
+                  {row.total}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      {legend}
+    </div>
+  );
+}
