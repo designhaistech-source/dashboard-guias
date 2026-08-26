@@ -2350,12 +2350,28 @@ function ProviderProcedureHeatmap({
     return () => observer.disconnect();
   }, []);
 
-  // Larguras mínimas legíveis: rótulo + colunas de prestador + total.
+  // Larguras legíveis: rótulo + colunas de prestador + total.
+  // As células variam entre MIN_CELL e MAX_CELL para aproveitar o espaço sem
+  // ficarem estreitas nem desproporcionalmente largas; altura e espaçamento
+  // permanecem constantes em qualquer largura de tela.
   const MIN_LABEL = 208;
   const MIN_CELL = 68;
+  const MAX_CELL = 112;
   const MIN_TOTAL = 56;
-  const minMatrixWidth = MIN_LABEL + columns.length * MIN_CELL + MIN_TOTAL;
+  // border-spacing-1 => 4px de cada lado de cada célula.
+  const GAP = 8;
+  const fixedWidth = MIN_LABEL + MIN_TOTAL + GAP * (columns.length + 2);
+  const minMatrixWidth = fixedWidth + columns.length * MIN_CELL;
   const useCards = isMobile || (available !== null && available < minMatrixWidth);
+  const cellWidth = Math.min(
+    MAX_CELL,
+    Math.max(
+      MIN_CELL,
+      Math.floor(((available ?? minMatrixWidth) - fixedWidth) / Math.max(columns.length, 1)),
+    ),
+  );
+  // A matriz não estica até 100% do card quando isso distorceria as células.
+  const matrixWidth = fixedWidth + columns.length * cellWidth;
 
   if (useCards) {
     return (
