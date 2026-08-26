@@ -283,6 +283,7 @@ export function KitsModal({
             <div className="grid gap-2.5">
               {filtrados.map((kit) => {
                 const aberto = expanded.has(kit.id);
+                const confirmando = paraExcluir === kit.id;
                 return (
                   <div
                     key={kit.id}
