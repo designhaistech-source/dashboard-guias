@@ -64,6 +64,11 @@ const PROCEDURES = [
   { code: "10101012", name: "Consulta em cardiologia", tipo: "Encaminhamento", valor: 180 },
   { code: "10101039", name: "Consulta em ortopedia", tipo: "Encaminhamento", valor: 180 },
   { code: "20103077", name: "Curativo ambulatorial", tipo: "Outros", valor: 75 },
+  { code: "40901491", name: "Glicemia de jejum", tipo: "SP/SADT", valor: 48 },
+  { code: "40808149", name: "Tomografia computadorizada", tipo: "SP/SADT", valor: 890 },
+  { code: "40304387", name: "Endoscopia digestiva alta", tipo: "Solicitação de Exame", valor: 640 },
+  { code: "10101023", name: "Consulta em dermatologia", tipo: "Encaminhamento", valor: 180 },
+  { code: "20104014", name: "Aplicação de medicamento", tipo: "Outros", valor: 55 },
 ];
 
 
@@ -254,7 +259,7 @@ export function buildMetrics(
     distinctTypes: types.length,
     daily,
     types,
-    procedures: [...procMap.values()].sort((a, b) => b.count - a.count).slice(0, 6),
+    procedures: [...procMap.values()].sort((a, b) => b.count - a.count).slice(0, 10),
     totalValue: guides.reduce((s, g) => s + g.valorTotal, 0),
   };
 }
