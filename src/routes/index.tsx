@@ -1914,6 +1914,20 @@ function DashboardPage() {
             )}
           </SurfaceCard>
 
+          {/* Heatmap procedimento x prestador */}
+          <SurfaceCard
+            title="Procedimentos solicitados por prestador"
+            description="Quantidade de procedimentos por prestador no período filtrado"
+          >
+            {providerMatrix.rows.length === 0 || providerMatrix.columns.length === 0 ? (
+              emptyState
+            ) : (
+              <ProviderProcedureHeatmap matrix={providerMatrix} isMobile={isMobile} />
+            )}
+          </SurfaceCard>
+
+
+
           {/* Qualidade do processamento */}
           <SurfaceCard
             title="Qualidade do processamento"
