@@ -2334,7 +2334,8 @@ function ProviderProcedureHeatmap({
   const SortIcon = !nameSort ? ChevronsUpDown : nameSort === "asc" ? ChevronUp : ChevronDown;
 
   // Intervalo real dos dados exibidos (ignora células sem solicitação).
-  const { min } = heatmapRange(matrix);
+  // Memoizado: recalcular a escala em cada render encarece a troca de filtros.
+  const { min } = useMemo(() => heatmapRange(matrix), [matrix]);
 
   // Mede o espaço realmente disponível: a matriz só é usada quando cabe com
   // legibilidade; abaixo disso caímos no formato em cards (sem rolagem lateral).
@@ -2343,11 +2344,21 @@ function ProviderProcedureHeatmap({
   useEffect(() => {
     const host = hostRef.current;
     if (!host || typeof ResizeObserver === "undefined") return;
+    // Agrupa as medições em um frame e ignora variações sub-pixel: sem isso o
+    // observer dispara um render por pixel durante resize/troca de filtros.
+    let frame = 0;
     const observer = new ResizeObserver(([entry]) => {
-      setAvailable(entry.contentRect.width);
+      const width = Math.round(entry.contentRect.width);
+      cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(() => {
+        setAvailable((prev) => (prev === width ? prev : width));
+      });
     });
     observer.observe(host);
-    return () => observer.disconnect();
+    return () => {
+      cancelAnimationFrame(frame);
+      observer.disconnect();
+    };
   }, []);
 
   // Larguras legíveis: rótulo + colunas de prestador + total.
