@@ -2332,64 +2332,75 @@ function ProviderProcedureHeatmap({
   // Intervalo real dos dados exibidos (ignora células sem solicitação).
   const { min } = heatmapRange(matrix);
 
+  // Mede o espaço realmente disponível: a matriz só é usada quando cabe com
+  // legibilidade; abaixo disso caímos no formato em cards (sem rolagem lateral).
+  const hostRef = useRef<HTMLDivElement>(null);
+  const [available, setAvailable] = useState<number | null>(null);
+  useEffect(() => {
+    const host = hostRef.current;
+    if (!host || typeof ResizeObserver === "undefined") return;
+    const observer = new ResizeObserver(([entry]) => {
+      setAvailable(entry.contentRect.width);
+    });
+    observer.observe(host);
+    return () => observer.disconnect();
+  }, []);
 
+  // Larguras mínimas legíveis: rótulo + colunas de prestador + total.
+  const MIN_LABEL = 208;
+  const MIN_CELL = 68;
+  const MIN_TOTAL = 56;
+  const minMatrixWidth = MIN_LABEL + columns.length * MIN_CELL + MIN_TOTAL;
+  const useCards = isMobile || (available !== null && available < minMatrixWidth);
 
-
-
-  if (isMobile) {
+  if (useCards) {
     return (
-      <div className="flex flex-col gap-3">
-        {rows.map((row) => {
-          const items = columns
-            .map((provider) => ({ provider, value: get(row.code, provider) }))
-            .filter((i) => i.value > 0)
-            .sort((a, b) => b.value - a.value);
-          return (
-            <div key={row.code} className="rounded-xl border border-border bg-card p-3">
-              <div className="flex items-start justify-between gap-2">
-                <div className="min-w-0">
-                  <p className="truncate text-sm font-medium text-foreground">{row.name}</p>
-                  <p className="font-mono text-xs text-muted-foreground">{row.code}</p>
+      <div ref={hostRef} className="min-w-0">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          {rows.map((row) => {
+            const items = columns
+              .map((provider) => ({ provider, value: get(row.code, provider) }))
+              .filter((i) => i.value > 0)
+              .sort((a, b) => b.value - a.value);
+            return (
+              <div key={row.code} className="rounded-xl border border-border bg-card p-3">
+                <div className="flex items-start justify-between gap-2">
+                  <div className="min-w-0">
+                    <p className="truncate text-sm font-medium text-foreground">{row.name}</p>
+                    <p className="font-mono text-xs text-muted-foreground">{row.code}</p>
+                  </div>
+                  <Badge variant="secondary" className="shrink-0 tabular-nums">
+                    {row.total}
+                  </Badge>
                 </div>
-                <Badge variant="secondary" className="shrink-0 tabular-nums">
-                  {row.total}
-                </Badge>
+                <ul className="mt-2 flex flex-col gap-1">
+                  {items.map((item) => (
+                    <li key={item.provider} className="flex items-center gap-2">
+                      <span className="min-w-0 flex-1 truncate text-xs text-muted-foreground">
+                        {item.provider}
+                      </span>
+                      <span
+                        className="grid h-7 w-11 shrink-0 place-items-center rounded-md text-xs font-medium tabular-nums"
+                        style={heatCell(item.value, min, max)}
+                      >
+                        {item.value}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
               </div>
-              <ul className="mt-2 flex flex-col gap-1">
-                {items.map((item) => (
-                  <li key={item.provider} className="flex items-center gap-2">
-                    <span className="min-w-0 flex-1 truncate text-xs text-muted-foreground">
-                      {item.provider}
-                    </span>
-                    <span
-                      className="grid h-7 w-11 shrink-0 place-items-center rounded-md text-xs font-medium tabular-nums"
-                      style={heatCell(item.value, min, max)}
-                    >
-                      {item.value}
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          );
-        })}
+            );
+          })}
+        </div>
       </div>
     );
   }
 
-  // Células com tamanho fixo: a largura não depende do nome do prestador nem
-  // do valor exibido; nomes longos quebram no cabeçalho.
-  const CELL_REM = 6;
-  const LABEL_REM = 16;
-  const TOTAL_REM = 4;
-
   return (
-    <div className="min-w-0">
-      <div className="overflow-x-auto">
-        <table
-          className="table-fixed border-separate border-spacing-1 text-sm"
-          style={{ width: `${LABEL_REM + columns.length * CELL_REM + TOTAL_REM}rem` }}
-        >
+    <div ref={hostRef} className="min-w-0">
+      <div className="min-w-0">
+        <table className="w-full table-fixed border-separate border-spacing-1 text-sm">
+
           <caption className="sr-only">
             Quantidade de solicitações por procedimento e prestador solicitante
           </caption>
