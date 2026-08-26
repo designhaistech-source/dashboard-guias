@@ -1053,6 +1053,11 @@ function DashboardPage() {
     () => buildProviderProcedureMatrix(filteredGuides, 6),
     [filteredGuides],
   );
+  const providerHeatRange = useMemo(() => heatmapRange(providerMatrix), [providerMatrix]);
+  const hasProviderMatrix =
+    providerMatrix.rows.length > 0 && providerMatrix.columns.length > 0;
+
+
 
 
   const periodLabel = useMemo(
