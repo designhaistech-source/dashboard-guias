@@ -2259,9 +2259,8 @@ function ProviderProcedureHeatmap({
     const dir = nameSort === "asc" ? 1 : -1;
     return [...matrix.rows].sort((a, b) => dir * a.name.localeCompare(b.name, "pt-BR"));
   }, [matrix.rows, nameSort]);
-  const toggleNameSort = () =>
-    setNameSort((s) => (s === "asc" ? "desc" : s === "desc" ? null : "asc"));
-  const SortIcon = nameSort === "asc" ? ArrowDownAZ : nameSort === "desc" ? ArrowUpAZ : ArrowUpDown;
+  const toggleNameSort = () => setNameSort((s) => (s === "asc" ? "desc" : "asc"));
+  const SortIcon = !nameSort ? ChevronsUpDown : nameSort === "asc" ? ChevronUp : ChevronDown;
 
   // Intervalo real dos dados exibidos (ignora células sem solicitação).
   const values = rows.flatMap((row) =>
