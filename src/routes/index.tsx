@@ -2396,16 +2396,35 @@ function ProviderProcedureHeatmap({
                   const value = get(row.code, provider);
                   return (
                     <td key={provider} className="p-0">
-                      <span
-                        className="grid h-9 w-full place-items-center rounded-md text-sm font-medium tabular-nums"
-                        style={heatCell(value, min, max)}
-                        title={`${row.name} · ${provider}: ${value}`}
-                      >
-                        {value === 0 ? "–" : value}
-                      </span>
+                      <TooltipProvider delayDuration={120}>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <span
+                              tabIndex={0}
+                              className="grid h-9 w-full place-items-center rounded-md text-sm font-medium tabular-nums focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                              style={heatCell(value, min, max)}
+                            >
+                              {value === 0 ? "–" : value}
+                            </span>
+                          </TooltipTrigger>
+                          <TooltipContent className="max-w-64 p-0">
+                            <div className="flex flex-col gap-1 p-2.5 text-xs">
+                              <span className="font-mono text-[0.6875rem] opacity-80">
+                                CBHPM {row.code}
+                              </span>
+                              <span className="font-medium leading-tight">{row.name}</span>
+                              <span className="opacity-80">{provider}</span>
+                              <span className="mt-1 border-t border-current/20 pt-1 tabular-nums">
+                                {value} {value === 1 ? "solicitação" : "solicitações"}
+                              </span>
+                            </div>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
                     </td>
                   );
                 })}
+
                 <td className="pl-2 text-right text-sm font-medium tabular-nums text-foreground">
                   {row.total}
                 </td>
