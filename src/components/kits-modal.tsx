@@ -460,22 +460,6 @@ export function KitsModal({
       onConfirm={() => confirmar("replace")}
     />
 
-    <ConfirmDialog
-      open={!!paraExcluir}
-      onOpenChange={(v) => {
-        if (!v) setParaExcluir(null);
-      }}
-      title="Excluir kit?"
-      description={
-        <>
-          O kit <strong className="text-foreground">"{paraExcluir?.nome}"</strong> será
-          removido permanentemente. Esta ação não pode ser desfeita.
-        </>
-      }
-      confirmLabel="Excluir kit"
-      onConfirm={() => paraExcluir && excluir(paraExcluir)}
-    />
-
     </>
   );
 }
