@@ -107,3 +107,27 @@ export function subscribeTemplates(kind: DocumentTemplateKind, onChange: () => v
     window.removeEventListener("storage", handleStorage);
   };
 }
+
+/**
+ * Renomeia um modelo salvo mantendo o mesmo `value`, para não invalidar a
+ * seleção atual do select "Modelos disponíveis".
+ * Retorna false quando já existe outro modelo com o mesmo nome.
+ */
+export function renameTemplate(
+  kind: DocumentTemplateKind,
+  value: string,
+  name: string,
+): boolean {
+  const label = name.trim();
+  if (!label) return false;
+  const current = listSavedTemplates(kind);
+  const key = label.toLocaleLowerCase("pt-BR");
+  if (current.some((t) => t.value !== value && t.label.toLocaleLowerCase("pt-BR") === key)) {
+    return false;
+  }
+  persist(
+    kind,
+    current.map((t) => (t.value === value ? { ...t, label } : t)),
+  );
+  return true;
+}
