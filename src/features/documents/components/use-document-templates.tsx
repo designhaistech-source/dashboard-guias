@@ -136,31 +136,6 @@ export function useDocumentTemplates(options: {
             />
           </Field>
 
-        {templates.length > 0 && (
-          <div className="space-y-2">
-            <p className="text-xs font-medium text-muted-foreground">Modelos salvos</p>
-            <ul className="max-h-40 space-y-1.5 overflow-y-auto">
-              {templates.map((template) => (
-                <li
-                  key={template.value}
-                  className="flex items-center justify-between gap-2 rounded-md border border-border bg-muted/30 py-1.5 pl-3 pr-1.5"
-                >
-                  <span className="min-w-0 truncate text-xs">{template.label}</span>
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="icon"
-                    className="h-7 w-7 shrink-0 text-muted-foreground"
-                    aria-label={`Remover modelo ${template.label}`}
-                    onClick={() => remove(template)}
-                  >
-                    <Trash2 className="icon-optical h-4 w-4" aria-hidden />
-                  </Button>
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
       </form>
     </AppModal>
   );
