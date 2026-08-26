@@ -2280,7 +2280,7 @@ function ProviderProcedureHeatmap({
                       {item.provider}
                     </span>
                     <span
-                      className="grid h-6 min-w-9 place-items-center rounded-md px-2 text-xs font-medium tabular-nums"
+                      className="grid h-7 w-11 shrink-0 place-items-center rounded-md text-xs font-medium tabular-nums"
                       style={heatCell(item.value, max)}
                     >
                       {item.value}
