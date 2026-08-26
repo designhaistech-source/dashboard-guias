@@ -2541,6 +2541,7 @@ const ProviderProcedureHeatmap = memo(function ProviderProcedureHeatmap({
                         <TooltipTrigger asChild>
                           <span
                             tabIndex={0}
+                            aria-label={`${row.name}, ${provider}: ${value} ${value === 1 ? "solicitação" : "solicitações"}`}
                             className="mx-auto grid h-9 w-full place-items-center rounded-md text-sm font-medium tabular-nums focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                             // maxWidth garante o limite superior mesmo quando o
                             // table-fixed distribui sobra de largura nas colunas.
@@ -2549,7 +2550,11 @@ const ProviderProcedureHeatmap = memo(function ProviderProcedureHeatmap({
                             {value === 0 ? "–" : value}
                           </span>
                         </TooltipTrigger>
-                        <TooltipContent className="max-w-64 rounded-lg border border-border bg-popover px-3 py-2 text-foreground shadow-md">
+                        {/* Largura reduzida em telas menores para o tooltip não
+                            encostar nas bordas; texto quebra em vez de cortar. */}
+                        <TooltipContent
+                          collisionPadding={12}
+                          className="max-w-56 rounded-lg border border-border bg-popover px-3 py-2 text-foreground shadow-md sm:max-w-64">
                           <div className="flex flex-col gap-1 text-xs">
                             <span className="text-xs uppercase tracking-wider text-muted-foreground">
                               CBHPM {row.code}
