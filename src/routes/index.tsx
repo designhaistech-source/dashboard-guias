@@ -2493,7 +2493,9 @@ function ProviderProcedureHeatmap({
                   );
                 })}
 
-                <td className="pl-2 text-right text-sm font-medium tabular-nums text-foreground">
+                {/* Fonte mono + peso normal: evita que números repetidos (44) pareçam mais pesados. */}
+                <td className="pl-2 text-right font-mono text-sm tabular-nums text-foreground">
+
                   {row.total}
                 </td>
               </tr>
