@@ -1,5 +1,7 @@
 import { jsPDF } from "jspdf";
 
+import { CURRENT_USER } from "@/lib/current-user";
+
 const PAGE_MARGIN = 20; // mm
 const LINE_HEIGHT = 6.4; // mm
 
@@ -14,10 +16,17 @@ export const PDF_LAYOUT = {
   bodyStartY: PAGE_MARGIN + 26,
 } as const;
 
-/** Assinatura mockada exibida no fim do documento. */
+/** Dados do profissional usados no bloco de assinatura manual. */
 export const PDF_SIGNATURE = {
-  name: "Dr. Fulano de Tal — CRM 47231/RN",
+  name: CURRENT_USER.name,
+  council: CURRENT_USER.crm,
+  caption: "Assinatura e carimbo do profissional",
 } as const;
+
+/** Espaço reservado (mm) entre o fim do conteúdo e a linha de assinatura. */
+const SIGNATURE_GAP = 18;
+/** Altura total (mm) do bloco de assinatura: linha + nome + CRM + legenda. */
+const SIGNATURE_BLOCK_HEIGHT = 20;
 
 /** Uma linha posicionada dentro de uma página A4. */
 export interface DocumentPdfLine {
@@ -82,7 +91,7 @@ export function layoutDocumentPdf(bodyHtml: string): DocumentPdfPage[] {
   for (const paragraph of htmlToParagraphs(bodyHtml)) {
     const lines = pdf.splitTextToSize(paragraph, contentWidth) as string[];
     for (const line of lines) {
-      if (cursorY > pageHeight - PAGE_MARGIN - 30) {
+      if (cursorY > pageHeight - PAGE_MARGIN) {
         pages.push({ lines: [] });
         cursorY = PAGE_MARGIN;
       }
@@ -92,10 +101,15 @@ export function layoutDocumentPdf(bodyHtml: string): DocumentPdfPage[] {
     cursorY += LINE_HEIGHT * 0.6;
   }
 
-  pages[pages.length - 1].signatureY = Math.min(
-    cursorY + 26,
-    pageHeight - PAGE_MARGIN - 10,
-  );
+  // A assinatura segue o fluxo do conteúdo: apenas o espaço da assinatura
+  // manuscrita a separa do texto/data. Se o bloco não couber inteiro na
+  // página, ele vai completo para a próxima (sem páginas em branco extras).
+  const signatureY = cursorY + SIGNATURE_GAP;
+  if (signatureY + SIGNATURE_BLOCK_HEIGHT > pageHeight - PAGE_MARGIN) {
+    pages.push({ lines: [], signatureY: PAGE_MARGIN + SIGNATURE_GAP });
+  } else {
+    pages[pages.length - 1].signatureY = signatureY;
+  }
 
   return pages;
 }
@@ -144,7 +158,15 @@ export function downloadDocumentPdf(
       pdf.setTextColor(20);
       pdf.line(pageWidth / 2 - 35, signatureY, pageWidth / 2 + 35, signatureY);
       pdf.setFontSize(10);
-      pdf.text(PDF_SIGNATURE.name, pageWidth / 2, signatureY + 6, {
+      pdf.text(PDF_SIGNATURE.name, pageWidth / 2, signatureY + 5, {
+        align: "center",
+      });
+      pdf.text(PDF_SIGNATURE.council, pageWidth / 2, signatureY + 10, {
+        align: "center",
+      });
+      pdf.setFontSize(9);
+      pdf.setTextColor(90);
+      pdf.text(PDF_SIGNATURE.caption, pageWidth / 2, signatureY + 16, {
         align: "center",
       });
     }
