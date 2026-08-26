@@ -14,10 +14,17 @@ export const PDF_LAYOUT = {
   bodyStartY: PAGE_MARGIN + 26,
 } as const;
 
-/** Assinatura mockada exibida no fim do documento. */
+/** Dados do profissional usados no bloco de assinatura manual. */
 export const PDF_SIGNATURE = {
-  name: "Dr. Fulano de Tal — CRM 47231/RN",
+  name: CURRENT_USER.name,
+  council: CURRENT_USER.crm,
+  caption: "Assinatura e carimbo do profissional",
 } as const;
+
+/** Espaço reservado (mm) entre o fim do conteúdo e a linha de assinatura. */
+const SIGNATURE_GAP = 18;
+/** Altura total (mm) do bloco de assinatura: linha + nome + CRM + legenda. */
+const SIGNATURE_BLOCK_HEIGHT = 20;
 
 /** Uma linha posicionada dentro de uma página A4. */
 export interface DocumentPdfLine {
