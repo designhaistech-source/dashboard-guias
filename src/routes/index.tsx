@@ -2525,7 +2525,12 @@ const ProviderProcedureHeatmap = memo(function ProviderProcedureHeatmap({
             {rows.map((row) => (
               <tr key={row.code}>
                 <th scope="row" className="py-1 pr-3 text-left font-normal">
-                  <span className="block truncate text-sm text-foreground">{row.name}</span>
+                  <span
+                    title={row.name}
+                    className="block truncate text-sm leading-tight text-foreground"
+                  >
+                    {row.name}
+                  </span>
                   <span className="block font-mono text-xs text-muted-foreground">{row.code}</span>
                 </th>
                 {columns.map((provider) => {
