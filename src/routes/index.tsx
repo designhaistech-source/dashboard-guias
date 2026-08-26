@@ -1057,6 +1057,8 @@ function DashboardPage() {
   // A matriz é o bloco mais caro de renderizar: com valor deferido, cliques
   // sucessivos em filtros atualizam a UI de imediato e a matriz recompõe depois.
   const deferredProviderMatrix = useDeferredValue(providerMatrix);
+  // Enquanto o valor deferido não acompanha a matriz atual, exibimos skeleton.
+  const isHeatmapPending = deferredProviderMatrix !== providerMatrix;
   const hasProviderMatrix =
     providerMatrix.rows.length > 0 && providerMatrix.columns.length > 0;
 
