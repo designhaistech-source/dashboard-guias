@@ -1263,7 +1263,7 @@ function DashboardPage() {
     return (
       <div className="flex min-h-screen w-full bg-background text-foreground">
         <AppSidebar activeKey="dashboard" />
-        <main className="flex-1 flex flex-col min-h-screen">
+        <main className="min-w-0 flex-1 flex flex-col min-h-screen">
           <div className="w-full flex-1 space-y-6 px-4 py-6 pb-16 pt-20 sm:px-6 sm:py-8 md:pt-8 lg:px-10">
             <PageHeader
               title="Visão geral"
@@ -1289,7 +1289,7 @@ function DashboardPage() {
   return (
     <div className="flex min-h-screen w-full bg-background text-foreground">
       <AppSidebar activeKey="dashboard" />
-      <main className="flex-1 flex flex-col min-h-screen">
+      <main className="min-w-0 flex-1 flex flex-col min-h-screen">
         <div className="w-full flex-1 space-y-6 px-4 py-6 pb-16 pt-20 sm:px-6 sm:py-8 md:pt-8 lg:px-10">
           <AppBreadcrumb />
 
@@ -1932,7 +1932,8 @@ function DashboardPage() {
                 />
               ) : undefined
             }
-            headerClassName="lg:flex-nowrap lg:gap-6"
+            headerClassName="gap-x-6"
+            className="min-w-0"
           >
             {!hasProviderMatrix ? (
               emptyState
@@ -2282,7 +2283,7 @@ function HeatmapLegend({
     Math.round(min + ((max - min) * i) / HEAT_STEPS),
   );
   return (
-    <div className={cn("w-full min-w-0 lg:w-56", className)}>
+    <div className={cn("w-full min-w-0 lg:w-56 lg:shrink", className)}>
       <p className="text-xs font-medium text-muted-foreground">Quantidade de solicitações</p>
       <div className="mt-1.5">
         <div className="flex overflow-hidden rounded-md border border-border" aria-hidden="true">
