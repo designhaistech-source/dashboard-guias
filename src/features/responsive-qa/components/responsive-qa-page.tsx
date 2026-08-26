@@ -118,7 +118,7 @@ export function ResponsiveQaPage() {
                       }}
                       src={route}
                       title={`${route} em ${width}px`}
-                      className="block h-[620px] rounded-lg border border-border bg-background"
+                      className="block h-155 rounded-lg border border-border bg-background"
                       style={{ width: `${width}px`, maxWidth: "none" }}
                       onLoad={() => auditWidth(width)}
                     />

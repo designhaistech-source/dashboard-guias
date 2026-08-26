@@ -5,6 +5,22 @@ import reactHooks from "eslint-plugin-react-hooks";
 import reactRefresh from "eslint-plugin-react-refresh";
 import tseslint from "typescript-eslint";
 
+import { DESIGN_SYSTEM_RULES, ESLINT_EXEMPT_GLOBS } from "./scripts/visual/design-system-rules.mjs";
+
+/**
+ * Guardrails do design system: bloqueiam cores fixas e tamanhos arbitrários
+ * em classes utilitárias. As regras vêm do mesmo módulo usado no CI.
+ */
+const designSystemRestrictions = DESIGN_SYSTEM_RULES.filter(
+  (rule) => rule.id !== "native-control",
+).flatMap(({ source, msg }) => {
+  const message = `Design system: ${msg}.`;
+  return [
+    { selector: `Literal[value=/${source}/]`, message },
+    { selector: `TemplateElement[value.raw=/${source}/]`, message },
+  ];
+});
+
 export default tseslint.config(
   { ignores: ["dist", ".output", ".vinxi"] },
   {
@@ -32,9 +48,14 @@ export default tseslint.config(
           ],
         },
       ],
+      "no-restricted-syntax": ["error", ...designSystemRestrictions],
       "react-refresh/only-export-components": ["warn", { allowConstantExport: true }],
       "@typescript-eslint/no-unused-vars": "off",
     },
+  },
+  {
+    files: [...ESLINT_EXEMPT_GLOBS, "**/*.test.{ts,tsx}"],
+    rules: { "no-restricted-syntax": "off" },
   },
   eslintPluginPrettier,
 );

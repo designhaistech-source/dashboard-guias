@@ -213,7 +213,7 @@ export function ProcedureSearchPage() {
                 {/* Mobile: fallback em cards compartilhado (DataTable). */}
                 <DataTableCardList
                   divided
-                  className="max-h-[32rem] overflow-y-auto"
+                  className="max-h-128 overflow-y-auto"
                 >
                   {results.map((p) => (
                     <DataTableCard key={`${p.referencia}-${p.codigo}`} flat>
@@ -252,7 +252,7 @@ export function ProcedureSearchPage() {
                 </DataTableCardList>
 
 
-                <div className="hidden max-h-[32rem] overflow-y-auto lg:block">
+                <div className="hidden max-h-128 overflow-y-auto lg:block">
                   <DataTable className="rounded-none border-0">
                     <DataTableRoot className="table-fixed">
                       <DataTableHeader className="sticky top-0 z-10 bg-card">

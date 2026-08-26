@@ -120,7 +120,7 @@ export function IssuedDocumentsPage() {
             onClear={() => setFilters(EMPTY_FILTERS)}
             clearDisabled={activeCount === 0}
           >
-            <div className="w-full min-w-0 sm:col-span-2 lg:w-auto lg:flex-1 lg:min-w-[240px]">
+            <div className="w-full min-w-0 sm:col-span-2 lg:w-auto lg:flex-1 lg:min-w-60">
               <SearchInput
                 placeholder="Buscar por paciente"
                 aria-label="Buscar documentos emitidos por paciente"
@@ -130,7 +130,7 @@ export function IssuedDocumentsPage() {
                 onClear={() => setFilter("query", "")}
               />
             </div>
-            <div className="w-full min-w-0 lg:w-[250px]">
+            <div className="w-full min-w-0 lg:w-62">
               <Combobox
                 aria-label="Tipo de documento"
                 options={[
@@ -147,7 +147,7 @@ export function IssuedDocumentsPage() {
                 clearable
               />
             </div>
-            <div className="flex w-full min-w-0 items-center gap-2 lg:w-[200px]">
+            <div className="flex w-full min-w-0 items-center gap-2 lg:w-50">
               <label
                 htmlFor="issued-documents-from"
                 className="shrink-0 text-xs font-medium text-muted-foreground"
@@ -164,7 +164,7 @@ export function IssuedDocumentsPage() {
                 onChange={(event) => setFilter("from", event.target.value)}
               />
             </div>
-            <div className="flex w-full min-w-0 items-center gap-2 lg:w-[200px]">
+            <div className="flex w-full min-w-0 items-center gap-2 lg:w-50">
               <label
                 htmlFor="issued-documents-to"
                 className="shrink-0 text-xs font-medium text-muted-foreground"
@@ -225,7 +225,7 @@ export function IssuedDocumentsPage() {
 
               <div className="overflow-hidden rounded-xl border border-border bg-card">
                 <DataTableDesktop>
-                  <DataTableRoot className="w-full min-w-[720px] table-fixed">
+                  <DataTableRoot className="w-full min-w-180 table-fixed">
                     <DataTableHeader>
                       <DataTableRow className="hover:bg-transparent">
                         <DataTableHead className="w-[26%]">Tipo de documento</DataTableHead>

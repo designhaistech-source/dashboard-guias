@@ -211,7 +211,7 @@ export function KitsModal({
               value={ordenacao}
               onValueChange={(v) => setOrdenacao(v as typeof ordenacao)}
             >
-              <SelectTrigger className="h-9 w-[160px] text-xs" title="Ordenar por">
+              <SelectTrigger className="h-9 w-40 text-xs" title="Ordenar por">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>

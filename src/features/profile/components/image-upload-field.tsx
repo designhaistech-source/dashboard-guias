@@ -105,7 +105,7 @@ export function ImageUploadField({ label, hint, previewAlt }: ImageUploadFieldPr
           onClick={openPicker}
           aria-label={previewUrl ? `Substituir ${label}` : `Selecionar ${label}`}
           className={cn(
-            "group relative flex h-[68px] w-[100px] shrink-0 items-center justify-center overflow-hidden rounded-lg border border-dashed bg-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+            "group relative flex h-17 w-25 shrink-0 items-center justify-center overflow-hidden rounded-lg border border-dashed bg-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
             previewUrl
               ? "border-border"
               : "border-border text-muted-foreground hover:border-primary/60 hover:text-primary",

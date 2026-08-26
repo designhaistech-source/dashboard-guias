@@ -338,7 +338,7 @@ function CidList({
   }
 
   return (
-    <ul className="max-h-[28rem] space-y-2 overflow-y-auto pr-1">
+    <ul className="max-h-112 space-y-2 overflow-y-auto pr-1">
       {items.map((item) => {
         const isFavorite = favorites.includes(item.codigo);
         return (

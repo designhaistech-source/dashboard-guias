@@ -562,14 +562,14 @@ function SidebarItem({
     <Tooltip>
       <TooltipTrigger asChild>
         <span className="flex items-center justify-center">
-          <Icon className="h-[18px] w-[18px] shrink-0" />
+          <Icon className="size-4.5 shrink-0" />
         </span>
       </TooltipTrigger>
       <TooltipContent side="right">{label}</TooltipContent>
     </Tooltip>
   ) : (
     <>
-      <Icon className="h-[18px] w-[18px] shrink-0" />
+      <Icon className="size-4.5 shrink-0" />
       <span className="flex-1 text-left">{label}</span>
       {hint && (
         <Tooltip>
