@@ -1054,6 +1054,9 @@ function DashboardPage() {
     [filteredGuides],
   );
   const providerHeatRange = useMemo(() => heatmapRange(providerMatrix), [providerMatrix]);
+  // A matriz é o bloco mais caro de renderizar: com valor deferido, cliques
+  // sucessivos em filtros atualizam a UI de imediato e a matriz recompõe depois.
+  const deferredProviderMatrix = useDeferredValue(providerMatrix);
   const hasProviderMatrix =
     providerMatrix.rows.length > 0 && providerMatrix.columns.length > 0;
 
