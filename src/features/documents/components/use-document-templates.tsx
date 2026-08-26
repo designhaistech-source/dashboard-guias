@@ -130,7 +130,7 @@ export function useDocumentTemplates(options: {
               id="modelo-nome"
               autoFocus
               maxLength={MAX_NAME}
-              placeholder="Ex.: Atestado padrão 3 dias"
+              placeholder={NAME_PLACEHOLDER[kind]}
               value={name}
               onChange={(event) => setName(event.target.value)}
             />
