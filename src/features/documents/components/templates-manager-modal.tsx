@@ -4,7 +4,6 @@ import { BookMarked, Check, Pencil, Search, Trash2, X } from "lucide-react";
 import { toast } from "sonner";
 
 import { AppModal } from "@/components/app-modal";
-import { ConfirmDialog } from "@/components/confirm-dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
@@ -42,7 +41,7 @@ export function TemplatesManagerModal({ open, onOpenChange, kind }: TemplatesMan
   const [query, setQuery] = useState("");
   const [editing, setEditing] = useState<string | null>(null);
   const [draftName, setDraftName] = useState("");
-  const [toDelete, setToDelete] = useState<SavedDocumentTemplate | null>(null);
+  const [confirmingDelete, setConfirmingDelete] = useState<string | null>(null);
   const searchRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -50,6 +49,7 @@ export function TemplatesManagerModal({ open, onOpenChange, kind }: TemplatesMan
     setTemplates(listSavedTemplates(kind));
     setQuery("");
     setEditing(null);
+    setConfirmingDelete(null);
     return subscribeTemplates(kind, () => setTemplates(listSavedTemplates(kind)));
   }, [open, kind]);
 
@@ -82,11 +82,10 @@ export function TemplatesManagerModal({ open, onOpenChange, kind }: TemplatesMan
     toast.success(`Modelo renomeado para “${name}”.`);
   }
 
-  function handleDelete() {
-    if (!toDelete) return;
-    removeTemplate(kind, toDelete.value);
-    toast.success(`Modelo “${toDelete.label}” excluído.`);
-    setToDelete(null);
+  function handleDelete(template: SavedDocumentTemplate) {
+    removeTemplate(kind, template.value);
+    toast.success(`Modelo “${template.label}” excluído.`);
+    setConfirmingDelete(null);
   }
 
   return (
@@ -138,6 +137,7 @@ export function TemplatesManagerModal({ open, onOpenChange, kind }: TemplatesMan
           <ul className="grid gap-2.5">
             {filtered.map((template) => {
               const isEditing = editing === template.value;
+              const isConfirming = confirmingDelete === template.value;
               return (
                 <li
                   key={template.value}
@@ -169,6 +169,29 @@ export function TemplatesManagerModal({ open, onOpenChange, kind }: TemplatesMan
                         Cancelar
                       </Button>
                     </>
+                  ) : isConfirming ? (
+                    <>
+                      <span className="min-w-0 flex-1 text-sm font-medium text-foreground">
+                        Excluir “{template.label}”?
+                      </span>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => setConfirmingDelete(null)}
+                      >
+                        <X className="size-4" aria-hidden />
+                        Cancelar
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="destructive"
+                        autoFocus
+                        onClick={() => handleDelete(template)}
+                      >
+                        <Trash2 className="size-4" aria-hidden />
+                        Excluir modelo
+                      </Button>
+                    </>
                   ) : (
                     <>
                       <span className="min-w-0 flex-1 truncate text-sm font-medium text-foreground">
@@ -186,7 +209,7 @@ export function TemplatesManagerModal({ open, onOpenChange, kind }: TemplatesMan
                       <Button
                         size="sm"
                         variant="ghost"
-                        onClick={() => setToDelete(template)}
+                        onClick={() => setConfirmingDelete(template.value)}
                         aria-label={`Excluir modelo ${template.label}`}
                         className="text-destructive hover:text-destructive"
                       >
@@ -201,17 +224,6 @@ export function TemplatesManagerModal({ open, onOpenChange, kind }: TemplatesMan
           </ul>
         )}
       </AppModal>
-
-      <ConfirmDialog
-        open={Boolean(toDelete)}
-        onOpenChange={(v) => {
-          if (!v) setToDelete(null);
-        }}
-        title="Excluir modelo?"
-        description={`O modelo “${toDelete?.label ?? ""}” será removido deste navegador. Documentos já emitidos não são afetados.`}
-        confirmLabel="Excluir modelo"
-        onConfirm={handleDelete}
-      />
     </>
   );
 }
