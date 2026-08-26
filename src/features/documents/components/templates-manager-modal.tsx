@@ -175,25 +175,29 @@ export function TemplatesManagerModal({ open, onOpenChange, kind }: TemplatesMan
                         <span className="min-w-0 flex-1 truncate text-sm font-medium text-foreground">
                           {template.label}
                         </span>
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => startRename(template)}
-                          aria-label={`Renomear modelo ${template.label}`}
-                        >
-                          <Pencil className="size-4" aria-hidden />
-                          Renomear
-                        </Button>
-                        <Button
-                          size="sm"
-                          variant="ghost"
-                          onClick={() => setConfirmingDelete(template.value)}
-                          aria-label={`Excluir modelo ${template.label}`}
-                          className="text-destructive hover:text-destructive"
-                        >
-                          <Trash2 className="size-4" aria-hidden />
-                          Excluir
-                        </Button>
+                        {!isConfirming && (
+                          <>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => startRename(template)}
+                              aria-label={`Renomear modelo ${template.label}`}
+                            >
+                              <Pencil className="size-4" aria-hidden />
+                              Renomear
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              onClick={() => setConfirmingDelete(template.value)}
+                              aria-label={`Excluir modelo ${template.label}`}
+                              className="text-destructive hover:text-destructive"
+                            >
+                              <Trash2 className="size-4" aria-hidden />
+                              Excluir
+                            </Button>
+                          </>
+                        )}
                       </>
                     )}
                   </div>
@@ -201,38 +205,31 @@ export function TemplatesManagerModal({ open, onOpenChange, kind }: TemplatesMan
                   {isConfirming && (
                     <div
                       role="alert"
-                      className="mt-3 rounded-lg border border-destructive/40 bg-destructive/10 p-3"
+                      className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1.5 rounded-md border border-destructive/20 bg-destructive/5 px-2.5 py-1.5"
                     >
-                      <div className="flex items-start gap-2">
-                        <AlertTriangle
-                          className="mt-0.5 size-4 shrink-0 text-destructive"
-                          aria-hidden
-                        />
-                        <div className="min-w-0 flex-1">
-                          <p className="text-sm font-medium text-foreground">
-                            Excluir “{template.label}”?
-                          </p>
-                          <p className="mt-1 text-xs text-muted-foreground">
-                            Esta ação não poderá ser desfeita.
-                          </p>
-                        </div>
-                      </div>
-                      <div className="mt-3 flex flex-wrap justify-end gap-2">
+                      <AlertTriangle className="size-3.5 shrink-0 text-destructive" aria-hidden />
+                      <p className="min-w-0 flex-1 text-xs text-muted-foreground">
+                        <span className="font-medium text-foreground">
+                          Excluir “{template.label}”?
+                        </span>{" "}
+                        Esta ação não poderá ser desfeita.
+                      </p>
+                      <div className="ml-auto flex items-center gap-1.5">
                         <Button
                           size="sm"
-                          variant="outline"
+                          variant="ghost"
+                          className="h-7 px-2 text-xs"
                           onClick={() => setConfirmingDelete(null)}
                         >
-                          <X className="size-4" aria-hidden />
                           Cancelar
                         </Button>
                         <Button
                           size="sm"
                           variant="destructive"
                           autoFocus
+                          className="h-7 px-2.5 text-xs"
                           onClick={() => handleDelete(template)}
                         >
-                          <Trash2 className="size-4" aria-hidden />
                           Excluir modelo
                         </Button>
                       </div>
