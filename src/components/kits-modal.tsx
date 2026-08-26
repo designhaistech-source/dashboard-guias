@@ -58,7 +58,7 @@ export function KitsModal({
   >("recentes");
   const [expanded, setExpanded] = useState<Set<string>>(new Set());
   const [pendente, setPendente] = useState<Kit | null>(null);
-  const [paraExcluir, setParaExcluir] = useState<Kit | null>(null);
+  const [paraExcluir, setParaExcluir] = useState<string | null>(null);
   // Foco inicial no campo de busca; trava de rolagem, focus trap, Esc e
   // restauração de foco são responsabilidade do Dialog do design system.
   const buscaRef = useRef<HTMLInputElement>(null);
@@ -283,6 +283,7 @@ export function KitsModal({
             <div className="grid gap-2.5">
               {filtrados.map((kit) => {
                 const aberto = expanded.has(kit.id);
+                const confirmando = paraExcluir === kit.id;
                 return (
                   <div
                     key={kit.id}
@@ -333,30 +334,65 @@ export function KitsModal({
                         </div>
                       </div>
 
-                      <div className="flex w-full items-center justify-end gap-1 shrink-0 sm:w-auto">
-                        <Button
-                          type="button"
-                          size="sm"
-                          onClick={() => aplicar(kit)}
-                          title="Aplicar na receita atual"
-                        >
-                          <Send />
-                          Aplicar
-                        </Button>
+                      {!confirmando && (
+                        <div className="flex w-full items-center justify-end gap-1 shrink-0 sm:w-auto">
+                          <Button
+                            type="button"
+                            size="sm"
+                            onClick={() => aplicar(kit)}
+                            title="Aplicar na receita atual"
+                          >
+                            <Send />
+                            Aplicar
+                          </Button>
 
-                        <IconAction
-                          onClick={() => duplicar(kit)}
-                          label="Duplicar"
-                          icon={<Copy className="h-3.5 w-3.5" />}
-                        />
-                        <IconAction
-                          onClick={() => setParaExcluir(kit)}
-                          label="Excluir"
-                          danger
-                          icon={<Trash2 className="h-3.5 w-3.5" />}
-                        />
-                      </div>
+                          <IconAction
+                            onClick={() => duplicar(kit)}
+                            label="Duplicar"
+                            icon={<Copy className="h-3.5 w-3.5" />}
+                          />
+                          <IconAction
+                            onClick={() => setParaExcluir(kit.id)}
+                            label="Excluir"
+                            danger
+                            icon={<Trash2 className="h-3.5 w-3.5" />}
+                          />
+                        </div>
+                      )}
                     </div>
+
+                    {confirmando && (
+                      <div
+                        role="alert"
+                        className="mx-3 mb-3 flex flex-wrap items-center gap-x-2 gap-y-1.5 rounded-md border border-destructive/20 bg-destructive/5 px-2.5 py-1.5 sm:mx-4"
+                      >
+                        <AlertTriangle className="size-3.5 shrink-0 text-destructive" aria-hidden />
+                        <p className="min-w-0 flex-1 text-xs text-muted-foreground">
+                          <span className="font-medium text-foreground">Excluir este kit?</span>{" "}
+                          Esta ação não poderá ser desfeita.
+                        </p>
+                        <div className="ml-auto flex items-center gap-1.5">
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            className="h-7 px-2 text-xs"
+                            onClick={() => setParaExcluir(null)}
+                          >
+                            Cancelar
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="destructive"
+                            autoFocus
+                            className="h-7 px-2.5 text-xs"
+                            onClick={() => excluir(kit)}
+                          >
+                            Excluir kit
+                          </Button>
+                        </div>
+                      </div>
+                    )}
+
 
                     <button /* ds-allow: área expansível do card, largura total */
                       type="button"
@@ -423,22 +459,6 @@ export function KitsModal({
       onSecondary={() => confirmar("append")}
       confirmLabel="Substituir tudo"
       onConfirm={() => confirmar("replace")}
-    />
-
-    <ConfirmDialog
-      open={!!paraExcluir}
-      onOpenChange={(v) => {
-        if (!v) setParaExcluir(null);
-      }}
-      title="Excluir kit?"
-      description={
-        <>
-          O kit <strong className="text-foreground">"{paraExcluir?.nome}"</strong> será
-          removido permanentemente. Esta ação não pode ser desfeita.
-        </>
-      }
-      confirmLabel="Excluir kit"
-      onConfirm={() => paraExcluir && excluir(paraExcluir)}
     />
 
     </>
