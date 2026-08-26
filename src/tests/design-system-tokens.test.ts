@@ -29,8 +29,7 @@ const findings: Finding[] = collectFiles(SRC).flatMap((file) =>
   scanFile(relative(ROOT, file).replaceAll("\\", "/"), readFileSync(file, "utf8")),
 );
 
-const format = (list: Finding[]) =>
-  list.map((f) => `${f.rel}:${f.line} → ${f.token} (${f.msg})`);
+const format = (list: Finding[]) => list.map((f) => `${f.rel}:${f.line} → ${f.token} (${f.msg})`);
 
 describe("design system: tokens e escalas", () => {
   it("audita arquivos de UI", () => {

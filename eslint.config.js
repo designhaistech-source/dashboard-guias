@@ -5,10 +5,7 @@ import reactHooks from "eslint-plugin-react-hooks";
 import reactRefresh from "eslint-plugin-react-refresh";
 import tseslint from "typescript-eslint";
 
-import {
-  DESIGN_SYSTEM_RULES,
-  ESLINT_EXEMPT_GLOBS,
-} from "./scripts/visual/design-system-rules.mjs";
+import { DESIGN_SYSTEM_RULES, ESLINT_EXEMPT_GLOBS } from "./scripts/visual/design-system-rules.mjs";
 
 /**
  * Guardrails do design system: bloqueiam cores fixas e tamanhos arbitrários

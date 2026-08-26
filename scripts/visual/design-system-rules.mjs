@@ -114,8 +114,7 @@ export function scanFile(relPath, content) {
   content.split("\n").forEach((line, i) => {
     if (line.includes(ALLOW_MARKER)) return;
     for (const rule of DESIGN_SYSTEM_RULES) {
-      const allowlist =
-        rule.kind === "color" ? COLOR_ALLOWLIST : PRIMITIVES_ALLOWLIST;
+      const allowlist = rule.kind === "color" ? COLOR_ALLOWLIST : PRIMITIVES_ALLOWLIST;
       if (allowlist.some((a) => relPath.startsWith(a))) continue;
       for (const match of line.matchAll(new RegExp(rule.source, "g"))) {
         findings.push({

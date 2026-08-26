@@ -42,6 +42,4 @@ if (findings.length) {
   process.exit(1);
 }
 
-console.log(
-  "Design system OK — cores, escalas de tamanho e componentes base conformes.",
-);
+console.log("Design system OK — cores, escalas de tamanho e componentes base conformes.");

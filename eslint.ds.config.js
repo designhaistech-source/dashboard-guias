@@ -5,10 +5,7 @@
 import reactHooks from "eslint-plugin-react-hooks";
 import tseslint from "typescript-eslint";
 
-import {
-  DESIGN_SYSTEM_RULES,
-  ESLINT_EXEMPT_GLOBS,
-} from "./scripts/visual/design-system-rules.mjs";
+import { DESIGN_SYSTEM_RULES, ESLINT_EXEMPT_GLOBS } from "./scripts/visual/design-system-rules.mjs";
 
 const designSystemRestrictions = DESIGN_SYSTEM_RULES.filter(
   (rule) => rule.id !== "native-control",
