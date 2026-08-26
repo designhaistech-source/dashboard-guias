@@ -2465,7 +2465,7 @@ function ProviderProcedureHeatmap({
                           <TooltipTrigger asChild>
                             <span
                               tabIndex={0}
-                              className="grid h-9 w-full place-items-center rounded-md text-sm font-medium tabular-nums focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                              className="mx-auto grid h-9 w-full max-w-28 place-items-center rounded-md text-sm font-medium tabular-nums focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                               style={heatCell(value, min, max)}
                             >
                               {value === 0 ? "–" : value}
