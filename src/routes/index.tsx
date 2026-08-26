@@ -2350,12 +2350,28 @@ function ProviderProcedureHeatmap({
     return () => observer.disconnect();
   }, []);
 
-  // Larguras mínimas legíveis: rótulo + colunas de prestador + total.
+  // Larguras legíveis: rótulo + colunas de prestador + total.
+  // As células variam entre MIN_CELL e MAX_CELL para aproveitar o espaço sem
+  // ficarem estreitas nem desproporcionalmente largas; altura e espaçamento
+  // permanecem constantes em qualquer largura de tela.
   const MIN_LABEL = 208;
   const MIN_CELL = 68;
+  const MAX_CELL = 112;
   const MIN_TOTAL = 56;
-  const minMatrixWidth = MIN_LABEL + columns.length * MIN_CELL + MIN_TOTAL;
+  // border-spacing-1 => 4px de cada lado de cada célula.
+  const GAP = 8;
+  const fixedWidth = MIN_LABEL + MIN_TOTAL + GAP * (columns.length + 2);
+  const minMatrixWidth = fixedWidth + columns.length * MIN_CELL;
   const useCards = isMobile || (available !== null && available < minMatrixWidth);
+  const cellWidth = Math.min(
+    MAX_CELL,
+    Math.max(
+      MIN_CELL,
+      Math.floor(((available ?? minMatrixWidth) - fixedWidth) / Math.max(columns.length, 1)),
+    ),
+  );
+  // A matriz não estica até 100% do card quando isso distorceria as células.
+  const matrixWidth = fixedWidth + columns.length * cellWidth;
 
   if (useCards) {
     return (
@@ -2405,19 +2421,22 @@ function ProviderProcedureHeatmap({
   return (
     <div ref={hostRef} className="min-w-0">
       <div className="min-w-0">
-        <table className="w-full table-fixed border-separate border-spacing-1 text-sm">
-
+        <table
+          className="table-fixed border-separate border-spacing-1 text-sm"
+          style={{ width: matrixWidth, maxWidth: "100%" }}
+        >
           <caption className="sr-only">
             Quantidade de solicitações por procedimento e prestador solicitante
           </caption>
           <colgroup>
-            {/* Rótulo fixo, total estreito e prestadores dividindo o resto. */}
-            <col className="w-52" />
+            {/* Rótulo e total fixos; prestadores com largura limitada (min/max). */}
+            <col style={{ width: MIN_LABEL }} />
             {columns.map((provider) => (
-              <col key={provider} style={{ width: `${(100 / columns.length).toFixed(4)}%` }} />
+              <col key={provider} style={{ width: cellWidth }} />
             ))}
-            <col className="w-14" />
+            <col style={{ width: MIN_TOTAL }} />
           </colgroup>
+
 
           <thead>
             <tr>
@@ -2471,7 +2490,7 @@ function ProviderProcedureHeatmap({
                           <TooltipTrigger asChild>
                             <span
                               tabIndex={0}
-                              className="mx-auto grid h-9 w-full max-w-28 place-items-center rounded-md text-sm font-medium tabular-nums focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                              className="grid h-9 w-full place-items-center rounded-md text-sm font-medium tabular-nums focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                               style={heatCell(value, min, max)}
                             >
                               {value === 0 ? "–" : value}
