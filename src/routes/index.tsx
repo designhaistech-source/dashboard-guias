@@ -93,6 +93,7 @@ import {
   filterGuides,
   buildMetrics,
   buildProviderProcedureMatrix,
+  buildProviderCounts,
   GUIDE_TYPES,
   type DashboardMetrics,
   type ProviderProcedureMatrix,
@@ -927,8 +928,11 @@ function DailyAxisTick({
 type ProcedureSortColumn = "code" | "name" | "count";
 type ProcedureSort = { column: ProcedureSortColumn; direction: "asc" | "desc" };
 
+type ProviderSortColumn = "name" | "count";
+type ProviderSort = { column: ProviderSortColumn; direction: "asc" | "desc" };
+
 /** Cabeçalho de coluna ordenável, com estado anunciado via aria-sort. */
-function SortableHead({
+function SortableHead<C extends string>({
   label,
   column,
   sort,
@@ -936,9 +940,9 @@ function SortableHead({
   align = "left",
 }: {
   label: string;
-  column: ProcedureSortColumn;
-  sort: ProcedureSort;
-  onSort: (sort: ProcedureSort) => void;
+  column: C;
+  sort: { column: C; direction: "asc" | "desc" };
+  onSort: (sort: { column: C; direction: "asc" | "desc" }) => void;
   align?: "left" | "right";
 }) {
   const active = sort.column === column;
@@ -1092,6 +1096,25 @@ function DashboardPage() {
         : a[column].localeCompare(b[column], "pt-BR") * factor,
     );
   }, [procedures, procedureSort]);
+
+  /** Ranking de prestadores (10 maiores) reagindo aos filtros da página. */
+  const providerCounts = useMemo(
+    () => buildProviderCounts(filteredGuides, 10),
+    [filteredGuides],
+  );
+  const [providerSort, setProviderSort] = useState<ProviderSort>({
+    column: "count",
+    direction: "desc",
+  });
+  const sortedProviders = useMemo(() => {
+    const { column, direction } = providerSort;
+    const factor = direction === "asc" ? 1 : -1;
+    return [...providerCounts].sort((a, b) =>
+      column === "count"
+        ? (a.count - b.count) * factor
+        : a.name.localeCompare(b.name, "pt-BR") * factor,
+    );
+  }, [providerCounts, providerSort]);
   const dailyData = metrics.daily;
   const dailyChartRef = useRef<HTMLDivElement>(null);
   const dailyChartWidth = useElementWidth(dailyChartRef);
