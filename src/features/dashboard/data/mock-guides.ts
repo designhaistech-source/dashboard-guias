@@ -312,3 +312,23 @@ export function buildProviderProcedureMatrix(
   return { rows, columns, cells, max };
 }
 
+
+export type ProviderCount = { name: string; count: number };
+
+/**
+ * Ranking de prestadores solicitantes por quantidade de guias processadas.
+ * Considera apenas as guias já filtradas na página.
+ */
+export function buildProviderCounts(
+  guides: DashboardGuide[],
+  limit = 10,
+): ProviderCount[] {
+  const totals = new Map<string, number>();
+  for (const g of guides) {
+    totals.set(g.prestadorSolicitante, (totals.get(g.prestadorSolicitante) ?? 0) + 1);
+  }
+  return [...totals.entries()]
+    .map(([name, count]) => ({ name, count }))
+    .sort((a, b) => b.count - a.count || a.name.localeCompare(b.name, "pt-BR"))
+    .slice(0, limit);
+}
