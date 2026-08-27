@@ -271,6 +271,8 @@ function DocumentActions({
   const temTexto = html.replace(/<[^>]+>/g, "").trim().length > 0;
   const [downloading, setDownloading] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
+  const [previewOpen, setPreviewOpen] = useState(false);
+
   const summaryId = "document-actions-issues";
 
   const allIssues: FieldIssue[] = disabled
