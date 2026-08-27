@@ -93,6 +93,7 @@ import {
   filterGuides,
   buildMetrics,
   buildProviderProcedureMatrix,
+  buildProviderCounts,
   GUIDE_TYPES,
   type DashboardMetrics,
   type ProviderProcedureMatrix,
@@ -927,8 +928,11 @@ function DailyAxisTick({
 type ProcedureSortColumn = "code" | "name" | "count";
 type ProcedureSort = { column: ProcedureSortColumn; direction: "asc" | "desc" };
 
+type ProviderSortColumn = "name" | "count";
+type ProviderSort = { column: ProviderSortColumn; direction: "asc" | "desc" };
+
 /** Cabeçalho de coluna ordenável, com estado anunciado via aria-sort. */
-function SortableHead({
+function SortableHead<C extends string>({
   label,
   column,
   sort,
@@ -936,9 +940,9 @@ function SortableHead({
   align = "left",
 }: {
   label: string;
-  column: ProcedureSortColumn;
-  sort: ProcedureSort;
-  onSort: (sort: ProcedureSort) => void;
+  column: C;
+  sort: { column: C; direction: "asc" | "desc" };
+  onSort: (sort: { column: C; direction: "asc" | "desc" }) => void;
   align?: "left" | "right";
 }) {
   const active = sort.column === column;
@@ -1092,6 +1096,25 @@ function DashboardPage() {
         : a[column].localeCompare(b[column], "pt-BR") * factor,
     );
   }, [procedures, procedureSort]);
+
+  /** Ranking de prestadores (10 maiores) reagindo aos filtros da página. */
+  const providerCounts = useMemo(
+    () => buildProviderCounts(filteredGuides, 10),
+    [filteredGuides],
+  );
+  const [providerSort, setProviderSort] = useState<ProviderSort>({
+    column: "count",
+    direction: "desc",
+  });
+  const sortedProviders = useMemo(() => {
+    const { column, direction } = providerSort;
+    const factor = direction === "asc" ? 1 : -1;
+    return [...providerCounts].sort((a, b) =>
+      column === "count"
+        ? (a.count - b.count) * factor
+        : a.name.localeCompare(b.name, "pt-BR") * factor,
+    );
+  }, [providerCounts, providerSort]);
   const dailyData = metrics.daily;
   const dailyChartRef = useRef<HTMLDivElement>(null);
   const dailyChartWidth = useElementWidth(dailyChartRef);
@@ -1748,6 +1771,172 @@ function DashboardPage() {
               )}
             </SurfaceCard>
           </div>
+
+          {/* Prestadores */}
+          <SurfaceCard
+            title="Guias processadas por prestador"
+            description="Quantidade de guias processadas por prestador no período filtrado"
+          >
+            {providerCounts.length === 0 ? (
+              emptyState
+            ) : (
+              <div className={`${SPLIT_GRID_CLASS} items-stretch`}>
+                <div className="min-w-0 flex h-full flex-col gap-3 xl:pr-8">
+                  <div>
+                    <p className="text-xs font-medium text-muted-foreground">
+                      Ranking de prestadores
+                    </p>
+                  </div>
+                  <div
+                    className="w-full flex-1"
+                    style={{ minHeight: horizontalBarsHeight(providerCounts.length, isMobile) }}
+                    data-chart="providers"
+                  >
+                    <ResponsiveContainer width="100%" height="100%">
+                      <BarChart
+                        data={providerCounts.map((p) => ({ name: p.name, count: p.count }))}
+                        layout="vertical"
+                        margin={{
+                          top: 4,
+                          right: isMobile ? 20 : 28,
+                          left: isMobile ? 0 : 8,
+                          bottom: isMobile ? 4 : 16,
+                        }}
+                        barCategoryGap={HORIZONTAL_BAR_GAP}
+                      >
+                        <CartesianGrid
+                          strokeDasharray="3 3"
+                          stroke="var(--border)"
+                          horizontal={false}
+                        />
+                        <XAxis
+                          type="number"
+                          stroke="var(--muted-foreground)"
+                          fontSize={11}
+                          tickLine={false}
+                          axisLine={false}
+                          allowDecimals={false}
+                          label={
+                            isMobile
+                              ? undefined
+                              : {
+                                  value: "Quantidade de guias",
+                                  position: "insideBottom",
+                                  offset: -12,
+                                  fill: "var(--muted-foreground)",
+                                  fontSize: 11,
+                                }
+                          }
+                        />
+                        <YAxis
+                          type="category"
+                          dataKey="name"
+                          stroke="var(--muted-foreground)"
+                          fontSize={11}
+                          width={isMobile ? 104 : 158}
+                          tickLine={false}
+                          axisLine={false}
+                          label={
+                            isMobile
+                              ? undefined
+                              : {
+                                  value: "Prestador",
+                                  angle: -90,
+                                  position: "insideLeft",
+                                  fill: "var(--muted-foreground)",
+                                  fontSize: 11,
+                                  style: { textAnchor: "middle" },
+                                }
+                          }
+                        />
+                        <RTooltip
+                          content={<ChartTooltip unit="guias" />}
+                          cursor={{ fill: "var(--muted)", opacity: 0.4 }}
+                        />
+                        <Bar
+                          dataKey="count"
+                          name=""
+                          fill="var(--primary)"
+                          radius={[0, 6, 6, 0]}
+                          barSize={HORIZONTAL_BAR_SIZE}
+                          isAnimationActive={false}
+                        >
+                          <LabelList
+                            dataKey="count"
+                            position="right"
+                            className="fill-foreground"
+                            style={{ fontSize: 11, fontWeight: 600 }}
+                          />
+                        </Bar>
+                      </BarChart>
+                    </ResponsiveContainer>
+                  </div>
+                  {isMobile ? (
+                    <p className="text-xs leading-snug text-muted-foreground">
+                      Eixo vertical: prestador · Eixo horizontal: quantidade de guias
+                    </p>
+                  ) : null}
+                </div>
+                <div className="min-w-0 space-y-3 xl:pl-8">
+                  <div>
+                    <p className="text-xs font-medium text-muted-foreground">
+                      Detalhamento dos prestadores
+                    </p>
+                  </div>
+
+                  <DataTable>
+                    <DataTableDesktop breakpoint="md">
+                      <DataTableRoot className="min-w-72">
+                        <DataTableHeader>
+                          <DataTableRow>
+                            <SortableHead
+                              label="Prestador"
+                              column="name"
+                              sort={providerSort}
+                              onSort={setProviderSort}
+                            />
+                            <SortableHead
+                              label="Quantidade"
+                              column="count"
+                              sort={providerSort}
+                              onSort={setProviderSort}
+                              align="right"
+                            />
+                          </DataTableRow>
+                        </DataTableHeader>
+                        <DataTableBody>
+                          {sortedProviders.map((p) => (
+                            <DataTableRow key={p.name}>
+                              <DataTableCell title={p.name}>{p.name}</DataTableCell>
+                              <DataTableCell className="text-right font-medium tabular-nums">
+                                {p.count}
+                              </DataTableCell>
+                            </DataTableRow>
+                          ))}
+                        </DataTableBody>
+                      </DataTableRoot>
+                    </DataTableDesktop>
+
+                    <DataTableCardList breakpoint="md" divided>
+                      {sortedProviders.map((p) => (
+                        <DataTableCard key={p.name} flat>
+                          <DataTableCardHeader
+                            title={<span className="min-w-0 break-words">{p.name}</span>}
+                            trailing={
+                              <Badge variant="secondary" className="tabular-nums">
+                                {p.count}
+                              </Badge>
+                            }
+                          />
+                        </DataTableCard>
+                      ))}
+                    </DataTableCardList>
+                  </DataTable>
+                </div>
+              </div>
+            )}
+          </SurfaceCard>
+
 
           {/* Procedures */}
           <SurfaceCard
