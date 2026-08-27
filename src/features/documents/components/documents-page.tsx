@@ -499,6 +499,15 @@ function DocumentActions({
           </span>
         </p>
       </AppModal>
+
+      <DocumentPagePreview
+        open={previewOpen}
+        onOpenChange={setPreviewOpen}
+        title={title}
+        paciente={paciente}
+        html={html}
+      />
+
     </>
   );
 }
