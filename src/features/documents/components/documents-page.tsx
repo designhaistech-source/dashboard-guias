@@ -10,7 +10,6 @@ import {
   Loader2,
   Send,
   FilePlus2,
-  ExternalLink,
   Eye,
 
   CheckCircle2,
