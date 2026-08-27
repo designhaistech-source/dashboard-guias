@@ -52,6 +52,12 @@ export const PRESTADORES = [
   "Centro Médico Vida",
   "Instituto Cardio",
   "UBS Central",
+  "Clínica Bem Estar",
+  "Hospital Nossa Senhora",
+  "Policlínica Aurora",
+  "Centro de Imagem Norte",
+  "Instituto Ortopédico RN",
+  "Clínica Oftalmo Visão",
 ];
 
 const PROCEDURES = [
