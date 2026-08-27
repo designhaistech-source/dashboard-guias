@@ -368,22 +368,40 @@ function DocumentActions({
           { label: "Texto do documento", done: temTexto },
         ]}
 
-        note="Emita o documento para poder baixar ou imprimir. Para ter validade, será necessário assiná-lo manualmente."
+        note={
+          issuedDoc
+            ? undefined
+            : "Emita o documento para poder baixar ou imprimir. Para ter validade, será necessário assiná-lo manualmente."
+        }
         banner={
           issuedDoc ? (
-            <div
-              role="status"
-              className="rounded-md border border-border bg-muted/40 p-3 text-xs text-foreground sm:text-sm"
-            >
-              <p className="flex items-start gap-1.5 font-medium">
-                <CheckCircle2 className="icon-optical mt-0.5 h-4 w-4 shrink-0 text-success" aria-hidden />
-                <span>
-                  {type} {issuedDoc.id} já emitido — o formulário está em modo somente
-                  leitura. Use “Novo documento” para iniciar outra emissão.
-                </span>
+            <div className="space-y-3">
+              <div
+                role="status"
+                className="rounded-lg border border-success/30 bg-success/10 p-3 text-sm text-foreground sm:p-4"
+              >
+                <div className="flex items-start gap-2.5">
+                  <CheckCircle2
+                    className="icon-optical mt-0.5 h-5 w-5 shrink-0 text-success"
+                    aria-hidden
+                  />
+                  <div className="min-w-0">
+                    <p className="font-semibold text-success">
+                      {type} {issuedDoc.id} emitido
+                    </p>
+                    <p className="mt-0.5 text-muted-foreground">
+                      O formulário está em modo somente leitura.
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <p className="flex items-start gap-1.5 border-t border-border/60 pt-3 text-xs leading-relaxed text-muted-foreground sm:text-sm">
+                <Info className="icon-optical mt-0.5 h-4 w-4 shrink-0" aria-hidden />
+                <span>Para ter validade, será necessário assiná-lo manualmente.</span>
               </p>
             </div>
           ) : showIssues ? (
+
             <div
               id={summaryId}
               role="alert"
