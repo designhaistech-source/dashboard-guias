@@ -348,13 +348,12 @@ function DocumentActions({
 
 
   const viewIssuedButton = (
-    <Button asChild type="button" variant="outline" size="sm">
-      <Link to="/documentos-emitidos">
-        <ExternalLink className="icon-optical h-4 w-4" aria-hidden />
-        Ver documento emitido
-      </Link>
+    <Button type="button" variant="outline" size="sm" onClick={() => setPreviewOpen(true)}>
+      <Eye className="icon-optical h-4 w-4" aria-hidden />
+      Ver documento emitido
     </Button>
   );
+
 
   return (
     <>
