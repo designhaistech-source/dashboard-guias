@@ -11,6 +11,8 @@ import {
   Send,
   FilePlus2,
   ExternalLink,
+  Eye,
+
   CheckCircle2,
   Info,
   BookMarked,
