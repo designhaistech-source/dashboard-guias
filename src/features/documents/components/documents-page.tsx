@@ -17,7 +17,7 @@ import {
   BookMarked,
 } from "lucide-react";
 import { AlertCircle } from "lucide-react";
-import { getRouteApi, Link, useNavigate } from "@tanstack/react-router";
+import { getRouteApi, useNavigate } from "@tanstack/react-router";
 import { toast } from "sonner";
 
 import {
