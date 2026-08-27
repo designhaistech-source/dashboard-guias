@@ -49,7 +49,9 @@ import { improveDocumentText } from "../lib/improve-text.functions";
 
 import { CidAutocomplete } from "./cid-autocomplete";
 import { DocumentEditorHeader } from "./document-editor-header";
+import { DocumentPagePreview } from "./document-page-preview";
 import { RichTextEditor } from "./rich-text-editor";
+
 import { useTextReplacement } from "./use-text-replacement";
 import { useGeneratedSync } from "./use-generated-sync";
 import { useDocumentTemplates } from "./use-document-templates";
