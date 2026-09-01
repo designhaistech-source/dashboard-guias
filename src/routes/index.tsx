@@ -982,6 +982,27 @@ function SortableHead<C extends string>({
   );
 }
 
+/** Ícone de ajuda que abre a explicação no hover, no foco e no clique/toque. */
+function HelpHint({ label, children }: { label: string; children: React.ReactNode }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <Tooltip open={open} onOpenChange={setOpen}>
+      <TooltipTrigger asChild>
+        <button
+          type="button"
+          aria-label={`Sobre ${label}`}
+          onClick={() => setOpen((v) => !v)}
+          className="shrink-0 rounded-full text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+        >
+          <HelpCircle className="h-3.5 w-3.5" aria-hidden="true" />
+        </button>
+      </TooltipTrigger>
+      <TooltipContent className="max-w-64">{children}</TooltipContent>
+    </Tooltip>
+  );
+}
+
+
 function DashboardPage() {
   const [activeType, setActiveType] = useState<number | undefined>(undefined);
   /** Densidade e rótulos dos gráficos mudam em telas estreitas. */
