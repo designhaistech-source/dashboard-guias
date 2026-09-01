@@ -14,6 +14,7 @@ export type ProcessingStatus = "sucesso" | "falha";
  */
 export const FAILURE_TYPES = [
   "Documento inválido",
+  "Múltiplos documentos",
   "Imagem de baixa qualidade",
   "Imagem inválida",
   "Falha na extração",
@@ -22,6 +23,21 @@ export const FAILURE_TYPES = [
 ] as const;
 
 export type FailureType = (typeof FAILURE_TYPES)[number];
+
+/**
+ * Rótulos exibidos na interface. Os códigos/status internos permanecem
+ * inalterados; apenas a apresentação muda.
+ */
+export const FAILURE_LABELS: Record<FailureType, string> = {
+  "Documento inválido": "Formato não suportado",
+  "Múltiplos documentos": "Múltiplos documentos",
+  "Imagem de baixa qualidade": "Baixa qualidade",
+  "Imagem inválida": "Imagem inválida",
+  "Falha na extração": "Informações ilegíveis",
+  "Erro de processamento": "Erro no processamento",
+  "Erro de entrega": "Erro na entrega",
+};
+
 
 /** Categoria de status à qual o motivo de não processamento pertence. */
 export type FailureCategory = "unprocessable" | "processingError";
