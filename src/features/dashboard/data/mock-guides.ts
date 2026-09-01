@@ -251,6 +251,8 @@ export type DashboardMetrics = {
     /** Motivos de não processamento, com a categoria de status de origem. */
     failuresByType: {
       name: FailureType;
+      /** Rótulo exibido na interface. */
+      label: string;
       count: number;
       category: FailureCategory;
       color: string;
