@@ -186,6 +186,10 @@ export type DashboardMetrics = {
   /** Qualidade do processamento no período filtrado. */
   quality: {
     success: number;
+    /** Falhas causadas pelo arquivo/documento enviado. */
+    unprocessable: number;
+    /** Falhas técnicas ocorridas durante o processamento. */
+    processingError: number;
     failure: number;
     failuresByType: { name: FailureType; count: number }[];
   };
