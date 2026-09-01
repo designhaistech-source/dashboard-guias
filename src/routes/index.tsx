@@ -86,7 +86,7 @@ import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
 import { Combobox } from "@/components/ui/combobox";
 import { Chip } from "@/components/ui/chip";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Popover, PopoverAnchor, PopoverContent } from "@/components/ui/popover";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
