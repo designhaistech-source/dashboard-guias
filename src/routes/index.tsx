@@ -103,6 +103,7 @@ import {
   buildProviderProcedureMatrix,
   buildProviderCounts,
   GUIDE_TYPES,
+  FAILURE_CATEGORIES,
   type DashboardMetrics,
   type ProviderProcedureMatrix,
 } from "@/features/dashboard/data/mock-guides";
@@ -2255,11 +2256,32 @@ function DashboardPage() {
 
                 </div>
 
-                {/* Falhas por tipo */}
+                {/* Motivos de não processamento, coloridos pela categoria de status. */}
                 <div className="min-w-0 flex flex-col gap-3 xl:pl-8">
-                  <p className="text-xs font-medium text-muted-foreground">
-                    Falhas por tipo
-                  </p>
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    <p className="text-xs font-medium text-muted-foreground">
+                      Motivos de não processamento
+                    </p>
+                    {metrics.quality.failuresByType.length > 0 && (
+                      <ul className="flex flex-wrap items-center gap-3">
+                        {(
+                          Object.entries(FAILURE_CATEGORIES) as [
+                            keyof typeof FAILURE_CATEGORIES,
+                            { label: string; color: string },
+                          ][]
+                        ).map(([key, cat]) => (
+                          <li key={key} className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                            <span
+                              aria-hidden="true"
+                              className="size-2 rounded-full"
+                              style={{ background: cat.color }}
+                            />
+                            {cat.label}
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </div>
                   {metrics.quality.failuresByType.length === 0 ? (
                     <EmptyState
                       icon={<FileCheck2 className="h-10 w-10" />}
@@ -2327,7 +2349,7 @@ function DashboardPage() {
                                 isMobile
                                   ? undefined
                                   : {
-                                      value: "Tipo de falha",
+                                      value: "Motivo",
                                       angle: -90,
                                       position: "insideLeft",
                                       fill: "var(--muted-foreground)",
@@ -2343,11 +2365,13 @@ function DashboardPage() {
                             <Bar
                               dataKey="count"
                               name="Ocorrências"
-                              fill="var(--quality-failure)"
                               radius={[0, 6, 6, 0]}
                               barSize={HORIZONTAL_BAR_SIZE}
                               isAnimationActive={false}
                             >
+                              {metrics.quality.failuresByType.map((f) => (
+                                <Cell key={f.name} fill={f.color} />
+                              ))}
                               <LabelList
                                 dataKey="count"
                                 position="right"
