@@ -14,12 +14,17 @@ export type ProcessingStatus = "sucesso" | "falha";
  */
 export const FAILURE_TYPES = [
   "Documento inválido",
+  "Imagem de baixa qualidade",
+  "Imagem inválida",
   "Falha na extração",
   "Erro de processamento",
   "Erro de entrega",
 ] as const;
 
 export type FailureType = (typeof FAILURE_TYPES)[number];
+
+/** Categoria de status à qual o motivo de não processamento pertence. */
+export type FailureCategory = "unprocessable" | "processingError";
 
 /**
  * Falhas atribuídas ao arquivo/documento enviado (qualidade da imagem, formato
@@ -28,8 +33,27 @@ export type FailureType = (typeof FAILURE_TYPES)[number];
  */
 export const UNPROCESSABLE_FAILURES: readonly FailureType[] = [
   "Documento inválido",
+  "Imagem de baixa qualidade",
+  "Imagem inválida",
   "Falha na extração",
 ];
+
+/** Rótulos e cores das categorias, iguais aos do gráfico de rosquinha. */
+export const FAILURE_CATEGORIES: Record<
+  FailureCategory,
+  { label: string; color: string }
+> = {
+  unprocessable: {
+    label: "Arquivo não processável",
+    color: "var(--quality-unprocessable)",
+  },
+  processingError: { label: "Erro no processamento", color: "var(--quality-failure)" },
+};
+
+export function failureCategory(type: FailureType): FailureCategory {
+  return UNPROCESSABLE_FAILURES.includes(type) ? "unprocessable" : "processingError";
+}
+
 
 export type DashboardGuide = {
   id: string;
@@ -134,13 +158,17 @@ function buildGuides(): DashboardGuide[] {
       const failed = failureRoll < 0.12;
       const typeRoll = rand();
       const tipoFalha: FailureType = failed
-        ? typeRoll < 0.42
+        ? typeRoll < 0.28
           ? "Falha na extração"
-          : typeRoll < 0.7
-            ? "Documento inválido"
-            : typeRoll < 0.89
-              ? "Erro de processamento"
-              : "Erro de entrega"
+          : typeRoll < 0.48
+            ? "Imagem de baixa qualidade"
+            : typeRoll < 0.62
+              ? "Documento inválido"
+              : typeRoll < 0.72
+                ? "Imagem inválida"
+                : typeRoll < 0.9
+                  ? "Erro de processamento"
+                  : "Erro de entrega"
         : "Falha na extração";
       rows.push({
         statusProcessamento: failed ? "falha" : "sucesso",
@@ -203,7 +231,13 @@ export type DashboardMetrics = {
     /** Falhas técnicas ocorridas durante o processamento. */
     processingError: number;
     failure: number;
-    failuresByType: { name: FailureType; count: number }[];
+    /** Motivos de não processamento, com a categoria de status de origem. */
+    failuresByType: {
+      name: FailureType;
+      count: number;
+      category: FailureCategory;
+      color: string;
+    }[];
   };
 };
 
@@ -264,12 +298,25 @@ export function buildMetrics(
   }
 
   const failed = guides.filter((g) => g.statusProcessamento === "falha");
-  const failuresByType = FAILURE_TYPES.map((name) => ({
-    name,
-    count: failed.filter((g) => g.tipoFalha === name).length,
-  }))
+  const failuresByType = FAILURE_TYPES.map((name) => {
+    const category = failureCategory(name);
+    return {
+      name,
+      count: failed.filter((g) => g.tipoFalha === name).length,
+      category,
+      color: FAILURE_CATEGORIES[category].color,
+    };
+  })
     .filter((f) => f.count > 0)
-    .sort((a, b) => b.count - a.count);
+    // Agrupa por categoria (arquivo não processável primeiro) e, dentro dela,
+    // ordena por volume — mantém a leitura alinhada ao gráfico de rosquinha.
+    .sort((a, b) =>
+      a.category === b.category
+        ? b.count - a.count
+        : a.category === "unprocessable"
+          ? -1
+          : 1,
+    );
   const unprocessable = failed.filter((g) => UNPROCESSABLE_FAILURES.includes(g.tipoFalha!)).length;
 
   return {
