@@ -85,7 +85,13 @@ import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
 import { Combobox } from "@/components/ui/combobox";
 import { Chip } from "@/components/ui/chip";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+  tooltipPanelClass,
+} from "@/components/ui/tooltip";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -694,7 +700,7 @@ function ChartTooltip({ active, payload, label, suffix, unit }: any) {
   const heading = fullDate || (label !== undefined ? String(label) : "");
 
   return (
-    <div className="rounded-lg border border-border bg-popover px-3 py-2 shadow-md">
+    <div className={tooltipPanelClass}>
       {heading && (
         <div className="mb-1">
           <div className="text-xs uppercase tracking-wider text-muted-foreground">{heading}</div>
@@ -2789,7 +2795,7 @@ const ProviderProcedureHeatmap = memo(function ProviderProcedureHeatmap({
                         {provider.replace(/([+/&-])/g, "\u2060$1")}
                       </span>
                     </TooltipTrigger>
-                    <TooltipContent className="max-w-56 rounded-lg border border-border bg-popover px-3 py-2 text-xs text-foreground shadow-md">
+                    <TooltipContent variant="panel" className="max-w-56">
                       {provider}
                     </TooltipContent>
                   </Tooltip>
@@ -2832,8 +2838,9 @@ const ProviderProcedureHeatmap = memo(function ProviderProcedureHeatmap({
                         {/* Largura reduzida em telas menores para o tooltip não
                             encostar nas bordas; texto quebra em vez de cortar. */}
                         <TooltipContent
+                          variant="panel"
                           collisionPadding={12}
-                          className="max-w-56 rounded-lg border border-border bg-popover px-3 py-2 text-foreground shadow-md sm:max-w-64">
+                          className="max-w-56 sm:max-w-64">
                           <div className="flex flex-col gap-1 text-xs">
                             <span className="text-xs uppercase tracking-wider text-muted-foreground">
                               CBHPM {row.code}
