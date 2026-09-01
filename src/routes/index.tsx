@@ -1119,6 +1119,8 @@ function DashboardPage() {
 
   const total = metrics.total;
   const dailyAvg = metrics.dailyAvg;
+  /** Há ao menos um dia com processamento no período filtrado. */
+  const hasProcessingDays = metrics.activeDays > 0;
   const typeData = metrics.types;
   const procedures = metrics.procedures;
   const [procedureSort, setProcedureSort] = useState<ProcedureSort>({
@@ -1271,10 +1273,15 @@ function DashboardPage() {
     const recent = dailyData.slice(-window);
     const previous = dailyData.slice(-window * 2, -window);
     if (previous.length === 0) return undefined;
-    const avg = (rows: typeof dailyData) =>
-      rows.reduce((sum, row) => sum + row.guias, 0) / rows.length;
+    // Média por dia com processamento: dias sem guias não entram no divisor.
+    const avg = (rows: typeof dailyData) => {
+      const active = rows.filter((row) => row.guias > 0);
+      if (active.length === 0) return undefined;
+      return active.reduce((sum, row) => sum + row.guias, 0) / active.length;
+    };
     const recentAvg = avg(recent);
     const previousAvg = avg(previous);
+    if (recentAvg === undefined || previousAvg === undefined) return undefined;
     const diff = Number((recentAvg - previousAvg).toFixed(1));
     const period = `nos ${window} dias anteriores`;
     if (diff === 0) {
@@ -1328,8 +1335,8 @@ function DashboardPage() {
             : "Sem dias com dados para calcular este indicador.",
       average:
         window && recentStart && currentDate && previousStart && previousEnd
-          ? `Período atual: ${recentStart} a ${currentDate}. Período anterior: ${previousStart} a ${previousEnd}. Regra: média diária atual menos a média diária do período anterior de mesmo tamanho.`
-          : `${rangeSentence} Regra: total de guias dividido pelo número de dias. Sem período anterior para comparar.`,
+          ? "Considera apenas os dias em que houve processamento de guias no período selecionado."
+          : "Considera apenas os dias em que houve processamento de guias no período selecionado.",
       types: `${rangeSentence} Regra: contagem de tipos de guia diferentes, sem comparação com outro período.`,
     };
   }, [dailyData]);
@@ -1615,9 +1622,9 @@ function DashboardPage() {
             <Kpi
               icon={TrendingUp}
               label="Média diária de guias processadas"
-              value={String(dailyAvg)}
+              value={hasProcessingDays ? String(dailyAvg) : "—"}
               tooltip={kpiTooltips.average}
-              context="Por dia no período filtrado"
+              context={hasProcessingDays ? "Por dia com processamento" : "Sem processamento no período"}
               comparison={weekTrend?.label}
               tone="info"
               trend={weekTrend?.direction}
