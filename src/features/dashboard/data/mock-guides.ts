@@ -321,6 +321,7 @@ export function buildMetrics(
     const category = failureCategory(name);
     return {
       name,
+      label: FAILURE_LABELS[name],
       count: failed.filter((g) => g.tipoFalha === name).length,
       category,
       color: FAILURE_CATEGORIES[category].color,
