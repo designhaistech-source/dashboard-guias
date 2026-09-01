@@ -188,6 +188,8 @@ export type DashboardMetrics = {
   total: number;
   today: number;
   dailyAvg: number;
+  /** Dias do período que tiveram pelo menos 1 guia processada. */
+  activeDays: number;
   distinctTypes: number;
   daily: { day: string; date: string; guias: number }[];
   types: { name: string; value: number; color: string }[];
@@ -242,6 +244,8 @@ export function buildMetrics(
     : [];
 
 
+  const activeDays = daily.filter((d) => d.guias > 0).length;
+
   const types = GUIDE_TYPES.map((t) => ({
     name: t.name,
     color: t.color,
@@ -278,7 +282,9 @@ export function buildMetrics(
     },
     total: guides.length,
     today: guides.filter((g) => g.data === TODAY_ISO).length,
-    dailyAvg: daily.length ? Math.round(guides.length / daily.length) : 0,
+    // A média considera apenas os dias com processamento, ignorando dias vazios.
+    dailyAvg: activeDays ? Math.round(guides.length / activeDays) : 0,
+    activeDays,
     distinctTypes: types.length,
     daily,
     types,
