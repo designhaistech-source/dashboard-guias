@@ -28,8 +28,6 @@ import {
   Info,
   FileCheck2,
   FileWarning,
-  HelpCircle,
-
   FileStack,
   CheckCircle2,
   AlertTriangle,
@@ -78,6 +76,7 @@ import {
   appTabsTriggerClass,
 } from "@/components/app-tabs";
 import { SurfaceCard } from "@/components/surface-card";
+import { InfoHint } from "@/components/info-hint";
 import { cn } from "@/lib/utils";
 import { Field } from "@/components/form-field";
 import { Button } from "@/components/ui/button";
@@ -981,41 +980,6 @@ function SortableHead<C extends string>({
     </DataTableHead>
   );
 }
-
-/** Ícone de ajuda que abre a explicação no hover, no foco e no clique/toque. */
-function HelpHint({ label, children }: { label: string; children: React.ReactNode }) {
-  const [open, setOpen] = useState(false);
-  return (
-    <span
-      className="relative inline-flex shrink-0"
-      onMouseEnter={() => setOpen(true)}
-      onMouseLeave={() => setOpen(false)}
-    >
-      <button
-        type="button"
-        aria-label={`Sobre ${label}`}
-        aria-expanded={open}
-        onFocus={() => setOpen(true)}
-        onBlur={() => setOpen(false)}
-        onClick={() => setOpen(true)}
-        className="rounded-full text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-      >
-        <HelpCircle className="h-3.5 w-3.5" aria-hidden="true" />
-      </button>
-      {open ? (
-        <span
-          role="tooltip"
-          className="absolute bottom-full left-1/2 z-50 mb-2 w-56 -translate-x-1/2 rounded-md bg-popover p-3 text-xs leading-relaxed font-normal text-popover-foreground shadow-md ring-1 ring-border"
-        >
-          {children}
-        </span>
-      ) : null}
-    </span>
-  );
-}
-
-
-
 
 function DashboardPage() {
   const [activeType, setActiveType] = useState<number | undefined>(undefined);
@@ -2275,7 +2239,9 @@ function DashboardPage() {
                               style={{ background: d.color }}
                             />
                             <span className="truncate">{d.name}</span>
-                            {d.hint ? <HelpHint label={d.name}>{d.hint}</HelpHint> : null}
+                            {d.hint ? (
+                              <InfoHint label={`Sobre ${d.name}`}>{d.hint}</InfoHint>
+                            ) : null}
 
                             <span className="ml-auto text-muted-foreground tabular-nums text-xs">
                               {d.value} · {pct}%
@@ -2454,24 +2420,9 @@ function Kpi({
       <div className="flex w-full min-h-11 items-start justify-between gap-2">
         <span className="metric-label flex items-start icon-optical gap-1 text-left">
           {label}
-          {tooltip && (
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="icon"
-                    className="h-5 w-5 shrink-0 rounded-full text-muted-foreground hover:text-foreground [&_svg]:size-3.5"
-                    aria-label={`Como este indicador é calculado: ${tooltip}`}
-                  >
-                    <Info aria-hidden="true" />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent className="max-w-64 text-xs">{tooltip}</TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-          )}
+          {tooltip ? (
+            <InfoHint label={`Como este indicador é calculado: ${label}`}>{tooltip}</InfoHint>
+          ) : null}
         </span>
         <span className={`grid place-items-center h-8 w-8 shrink-0 rounded-lg ${toneClass}`}>
           <Icon className="h-4 w-4" />
