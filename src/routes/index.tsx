@@ -986,25 +986,32 @@ function SortableHead<C extends string>({
 function HelpHint({ label, children }: { label: string; children: React.ReactNode }) {
   const [open, setOpen] = useState(false);
   return (
-    <Tooltip open={open} onOpenChange={setOpen}>
-      <TooltipTrigger asChild>
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger asChild>
         <button
           type="button"
           aria-label={`Sobre ${label}`}
-          onPointerDown={(e) => {
-            // Radix fecha o tooltip no pointerdown; bloqueamos para permitir abrir por toque/clique.
-            e.preventDefault();
-            setOpen((v) => !v);
-          }}
+          onMouseEnter={() => setOpen(true)}
+          onMouseLeave={() => setOpen(false)}
+          onFocus={() => setOpen(true)}
+          onBlur={() => setOpen(false)}
           className="shrink-0 rounded-full text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
         >
           <HelpCircle className="h-3.5 w-3.5" aria-hidden="true" />
         </button>
-      </TooltipTrigger>
-      <TooltipContent className="max-w-64">{children}</TooltipContent>
-    </Tooltip>
+      </PopoverTrigger>
+      <PopoverContent
+        side="top"
+        align="center"
+        onOpenAutoFocus={(e) => e.preventDefault()}
+        className="w-64 p-3 text-xs leading-relaxed"
+      >
+        {children}
+      </PopoverContent>
+    </Popover>
   );
 }
+
 
 
 function DashboardPage() {
