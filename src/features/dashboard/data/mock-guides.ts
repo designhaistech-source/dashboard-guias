@@ -14,12 +14,17 @@ export type ProcessingStatus = "sucesso" | "falha";
  */
 export const FAILURE_TYPES = [
   "Documento inválido",
+  "Imagem de baixa qualidade",
+  "Imagem inválida",
   "Falha na extração",
   "Erro de processamento",
   "Erro de entrega",
 ] as const;
 
 export type FailureType = (typeof FAILURE_TYPES)[number];
+
+/** Categoria de status à qual o motivo de não processamento pertence. */
+export type FailureCategory = "unprocessable" | "processingError";
 
 /**
  * Falhas atribuídas ao arquivo/documento enviado (qualidade da imagem, formato
@@ -28,8 +33,27 @@ export type FailureType = (typeof FAILURE_TYPES)[number];
  */
 export const UNPROCESSABLE_FAILURES: readonly FailureType[] = [
   "Documento inválido",
+  "Imagem de baixa qualidade",
+  "Imagem inválida",
   "Falha na extração",
 ];
+
+/** Rótulos e cores das categorias, iguais aos do gráfico de rosquinha. */
+export const FAILURE_CATEGORIES: Record<
+  FailureCategory,
+  { label: string; color: string }
+> = {
+  unprocessable: {
+    label: "Arquivo não processável",
+    color: "var(--quality-unprocessable)",
+  },
+  processingError: { label: "Erro no processamento", color: "var(--quality-failure)" },
+};
+
+export function failureCategory(type: FailureType): FailureCategory {
+  return UNPROCESSABLE_FAILURES.includes(type) ? "unprocessable" : "processingError";
+}
+
 
 export type DashboardGuide = {
   id: string;
