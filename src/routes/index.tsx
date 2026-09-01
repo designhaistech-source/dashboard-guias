@@ -2254,20 +2254,8 @@ function DashboardPage() {
                               style={{ background: d.color }}
                             />
                             <span className="truncate">{d.name}</span>
-                            {d.hint ? (
-                              <Tooltip>
-                                <TooltipTrigger asChild>
-                                  <button
-                                    type="button"
-                                    aria-label={`Sobre "${d.name}"`}
-                                    className="shrink-0 rounded-full text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                                  >
-                                    <HelpCircle className="h-3.5 w-3.5" aria-hidden="true" />
-                                  </button>
-                                </TooltipTrigger>
-                                <TooltipContent className="max-w-64">{d.hint}</TooltipContent>
-                              </Tooltip>
-                            ) : null}
+                            {d.hint ? <HelpHint label={d.name}>{d.hint}</HelpHint> : null}
+
                             <span className="ml-auto text-muted-foreground tabular-nums text-xs">
                               {d.value} · {pct}%
                             </span>
