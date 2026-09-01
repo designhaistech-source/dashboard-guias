@@ -28,6 +28,8 @@ import {
   Info,
   FileCheck2,
   FileWarning,
+  HelpCircle,
+
   FileStack,
   CheckCircle2,
   AlertTriangle,
@@ -1137,7 +1139,9 @@ function DashboardPage() {
         value: metrics.quality.success,
         color: "var(--quality-success)",
         icon: CheckCircle2,
-        hint: undefined as string | undefined,
+        hint: "Guias em que os dados foram extraídos e validados sem nenhuma pendência." as
+          | string
+          | undefined,
       },
       {
         name: "Arquivo não processável",
@@ -1151,9 +1155,10 @@ function DashboardPage() {
         value: metrics.quality.processingError,
         color: "var(--quality-failure)",
         icon: AlertTriangle,
-        hint: undefined as string | undefined,
+        hint: "Falha técnica durante o processamento da guia. É possível reenviar o arquivo para nova tentativa.",
       },
     ].filter((d) => d.value > 0),
+
 
     [
       metrics.quality.success,
@@ -2217,7 +2222,6 @@ function DashboardPage() {
                     <TooltipProvider>
                       {statusData.map((d) => {
                         const pct = total > 0 ? Math.round((d.value / total) * 100) : 0;
-                        const label = <span className="flex-1 truncate">{d.name}</span>;
                         return (
                           <li
                             key={d.name}
@@ -2228,22 +2232,22 @@ function DashboardPage() {
                               className="h-2.5 w-2.5 rounded-full shrink-0"
                               style={{ background: d.color }}
                             />
+                            <span className="truncate">{d.name}</span>
                             {d.hint ? (
                               <Tooltip>
                                 <TooltipTrigger asChild>
-                                  <span
-                                    tabIndex={0}
-                                    className="flex-1 truncate underline decoration-dotted decoration-muted-foreground/60 underline-offset-4"
+                                  <button
+                                    type="button"
+                                    aria-label={`Sobre "${d.name}"`}
+                                    className="shrink-0 rounded-full text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                                   >
-                                    {d.name}
-                                  </span>
+                                    <HelpCircle className="h-3.5 w-3.5" aria-hidden="true" />
+                                  </button>
                                 </TooltipTrigger>
                                 <TooltipContent className="max-w-64">{d.hint}</TooltipContent>
                               </Tooltip>
-                            ) : (
-                              label
-                            )}
-                            <span className="text-muted-foreground tabular-nums text-xs">
+                            ) : null}
+                            <span className="ml-auto text-muted-foreground tabular-nums text-xs">
                               {d.value} · {pct}%
                             </span>
                           </li>
@@ -2251,6 +2255,7 @@ function DashboardPage() {
                       })}
                     </TooltipProvider>
                   </ul>
+
                 </div>
 
                 {/* Falhas por tipo */}
