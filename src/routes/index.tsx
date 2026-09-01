@@ -28,6 +28,8 @@ import {
   Info,
   FileCheck2,
   FileWarning,
+  HelpCircle,
+
   FileStack,
   CheckCircle2,
   AlertTriangle,
