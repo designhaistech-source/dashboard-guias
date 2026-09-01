@@ -988,19 +988,22 @@ function HelpHint({ label, children }: { label: string; children: React.ReactNod
   const [open, setOpen] = useState(false);
   return (
     <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger asChild>
+      <PopoverAnchor asChild>
         <button
           type="button"
           aria-label={`Sobre ${label}`}
+          aria-expanded={open}
           onMouseEnter={() => setOpen(true)}
           onMouseLeave={() => setOpen(false)}
           onFocus={() => setOpen(true)}
           onBlur={() => setOpen(false)}
+          onClick={() => setOpen(true)}
           className="shrink-0 rounded-full text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
         >
           <HelpCircle className="h-3.5 w-3.5" aria-hidden="true" />
         </button>
-      </PopoverTrigger>
+      </PopoverAnchor>
+
       <PopoverContent
         side="top"
         align="center"
