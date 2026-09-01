@@ -1128,7 +1128,7 @@ function DashboardPage() {
 
   const hasData = total > 0;
 
-  /** Status do processamento: sucesso vs. falha (cor + ícone, nunca só cor). */
+  /** Status do processamento: sucesso, arquivo não processável e erro técnico. */
   const statusData = useMemo(
     () => [
       {
@@ -1136,16 +1136,29 @@ function DashboardPage() {
         value: metrics.quality.success,
         color: "var(--quality-success)",
         icon: CheckCircle2,
+        hint: undefined as string | undefined,
       },
       {
-        name: "Com falha",
-        value: metrics.quality.failure,
+        name: "Arquivo não processável",
+        value: metrics.quality.unprocessable,
+        color: "var(--quality-unprocessable)",
+        icon: FileWarning,
+        hint: "O arquivo não pôde ser processado devido ao formato, conteúdo ou qualidade do documento enviado.",
+      },
+      {
+        name: "Erro no processamento",
+        value: metrics.quality.processingError,
         color: "var(--quality-failure)",
         icon: AlertTriangle,
+        hint: undefined as string | undefined,
       },
     ].filter((d) => d.value > 0),
 
-    [metrics.quality.success, metrics.quality.failure],
+    [
+      metrics.quality.success,
+      metrics.quality.unprocessable,
+      metrics.quality.processingError,
+    ],
   );
   const [generatingReport, setGeneratingReport] = useState(false);
 
