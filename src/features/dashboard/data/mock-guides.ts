@@ -49,6 +49,7 @@ export type FailureCategory = "unprocessable" | "processingError";
  */
 export const UNPROCESSABLE_FAILURES: readonly FailureType[] = [
   "Documento inválido",
+  "Múltiplos documentos",
   "Imagem de baixa qualidade",
   "Imagem inválida",
   "Falha na extração",
