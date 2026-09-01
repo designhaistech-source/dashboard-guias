@@ -1143,7 +1143,7 @@ function DashboardPage() {
   const statusData = useMemo(
     () => [
       {
-        name: "Processadas com sucesso",
+        name: "Processada com sucesso",
         value: metrics.quality.success,
         color: "var(--quality-success)",
         icon: CheckCircle2,
