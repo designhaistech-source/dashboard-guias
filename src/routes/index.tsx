@@ -991,7 +991,11 @@ function HelpHint({ label, children }: { label: string; children: React.ReactNod
         <button
           type="button"
           aria-label={`Sobre ${label}`}
-          onClick={() => setOpen((v) => !v)}
+          onPointerDown={(e) => {
+            // Radix fecha o tooltip no pointerdown; bloqueamos para permitir abrir por toque/clique.
+            e.preventDefault();
+            setOpen((v) => !v);
+          }}
           className="shrink-0 rounded-full text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
         >
           <HelpCircle className="h-3.5 w-3.5" aria-hidden="true" />
