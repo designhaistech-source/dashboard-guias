@@ -256,10 +256,13 @@ export function buildMetrics(
   }))
     .filter((f) => f.count > 0)
     .sort((a, b) => b.count - a.count);
+  const unprocessable = failed.filter((g) => UNPROCESSABLE_FAILURES.includes(g.tipoFalha!)).length;
 
   return {
     quality: {
       success: guides.length - failed.length,
+      unprocessable,
+      processingError: failed.length - unprocessable,
       failure: failed.length,
       failuresByType,
     },
