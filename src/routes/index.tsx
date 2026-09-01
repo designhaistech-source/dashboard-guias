@@ -2214,25 +2214,42 @@ function DashboardPage() {
                     </div>
                   </div>
                   <ul className="space-y-1 text-sm">
-                    {statusData.map((d) => {
-                      const pct = total > 0 ? Math.round((d.value / total) * 100) : 0;
-                      return (
-                        <li
-                          key={d.name}
-                          className="flex min-w-0 items-center gap-2 rounded-md px-2 py-1"
-                        >
-                          <span
-                            aria-hidden="true"
-                            className="h-2.5 w-2.5 rounded-full shrink-0"
-                            style={{ background: d.color }}
-                          />
-                          <span className="flex-1 truncate">{d.name}</span>
-                          <span className="text-muted-foreground tabular-nums text-xs">
-                            {d.value} · {pct}%
-                          </span>
-                        </li>
-                      );
-                    })}
+                    <TooltipProvider>
+                      {statusData.map((d) => {
+                        const pct = total > 0 ? Math.round((d.value / total) * 100) : 0;
+                        const label = <span className="flex-1 truncate">{d.name}</span>;
+                        return (
+                          <li
+                            key={d.name}
+                            className="flex min-w-0 items-center gap-2 rounded-md px-2 py-1"
+                          >
+                            <span
+                              aria-hidden="true"
+                              className="h-2.5 w-2.5 rounded-full shrink-0"
+                              style={{ background: d.color }}
+                            />
+                            {d.hint ? (
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <span
+                                    tabIndex={0}
+                                    className="flex-1 truncate underline decoration-dotted decoration-muted-foreground/60 underline-offset-4"
+                                  >
+                                    {d.name}
+                                  </span>
+                                </TooltipTrigger>
+                                <TooltipContent className="max-w-64">{d.hint}</TooltipContent>
+                              </Tooltip>
+                            ) : (
+                              label
+                            )}
+                            <span className="text-muted-foreground tabular-nums text-xs">
+                              {d.value} · {pct}%
+                            </span>
+                          </li>
+                        );
+                      })}
+                    </TooltipProvider>
                   </ul>
                 </div>
 
