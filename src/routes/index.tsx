@@ -2182,21 +2182,16 @@ function DashboardPage() {
 
 
 
-          {/* Qualidade do processamento */}
+          {/* Status do processamento de guias */}
           <SurfaceCard
-            title="Qualidade do processamento"
-            description="Resultado do processamento das guias no período filtrado"
+            title="Status do processamento de guias"
+            description="Distribuição das guias por status no período filtrado"
           >
             {!hasData ? (
               emptyState
             ) : (
               <div className={`${SPLIT_GRID_CLASS} items-start`}>
-                {/* Status do processamento */}
                 <div className="min-w-0 flex flex-col gap-3 xl:pr-8">
-
-                  <p className="text-xs font-medium text-muted-foreground">
-                    Status do processamento
-                  </p>
                   <div className="relative h-44 sm:h-48" data-chart="quality-status">
                     <ResponsiveContainer width="100%" height="100%">
                       <PieChart>
