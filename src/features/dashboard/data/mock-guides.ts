@@ -34,8 +34,8 @@ export const FAILURE_LABELS: Record<FailureType, string> = {
   "Imagem de baixa qualidade": "Baixa qualidade",
   "Imagem inválida": "Imagem inválida",
   "Falha na extração": "Informações ilegíveis",
-  "Erro de processamento": "Erro no processamento",
-  "Erro de entrega": "Erro na entrega",
+  "Erro de processamento": "Falha no processamento",
+  "Erro de entrega": "Falha na entrega",
 };
 
 
