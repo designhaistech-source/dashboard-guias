@@ -22,13 +22,19 @@ interface InfoHintProps {
  * longos fora do fluxo visual do formulário.
  */
 export function InfoHint({ children, label, className }: InfoHintProps) {
+  const [open, setOpen] = React.useState(false);
+  const tooltipId = React.useId();
+
   return (
     <TooltipProvider delayDuration={150}>
-      <Tooltip>
+      <Tooltip open={open} onOpenChange={setOpen}>
         <TooltipTrigger asChild>
           <button /* ds-allow: gatilho de ícone com área de toque mínima */
             type="button"
             aria-label={label}
+            aria-describedby={open ? tooltipId : undefined}
+            aria-expanded={open}
+            onClick={() => setOpen(true)}
             className={cn(
               "inline-flex h-5 w-5 items-center justify-center rounded-full text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
               className,
@@ -37,7 +43,9 @@ export function InfoHint({ children, label, className }: InfoHintProps) {
             <Info className="h-3.5 w-3.5" aria-hidden="true" />
           </button>
         </TooltipTrigger>
-        <TooltipContent className="max-w-56 text-pretty">{children}</TooltipContent>
+        <TooltipContent id={tooltipId} className="max-w-64 text-pretty leading-relaxed">
+          {children}
+        </TooltipContent>
       </Tooltip>
     </TooltipProvider>
   );
