@@ -987,34 +987,34 @@ function SortableHead<C extends string>({
 function HelpHint({ label, children }: { label: string; children: React.ReactNode }) {
   const [open, setOpen] = useState(false);
   return (
-    <Popover open={open} onOpenChange={setOpen}>
-      <PopoverAnchor asChild>
-        <button
-          type="button"
-          aria-label={`Sobre ${label}`}
-          aria-expanded={open}
-          onMouseEnter={() => setOpen(true)}
-          onMouseLeave={() => setOpen(false)}
-          onFocus={() => setOpen(true)}
-          onBlur={() => setOpen(false)}
-          onClick={() => setOpen(true)}
-          className="shrink-0 rounded-full text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-        >
-          <HelpCircle className="h-3.5 w-3.5" aria-hidden="true" />
-        </button>
-      </PopoverAnchor>
-
-      <PopoverContent
-        side="top"
-        align="center"
-        onOpenAutoFocus={(e: Event) => e.preventDefault()}
-        className="w-64 p-3 text-xs leading-relaxed"
+    <span
+      className="relative inline-flex shrink-0"
+      onMouseEnter={() => setOpen(true)}
+      onMouseLeave={() => setOpen(false)}
+    >
+      <button
+        type="button"
+        aria-label={`Sobre ${label}`}
+        aria-expanded={open}
+        onFocus={() => setOpen(true)}
+        onBlur={() => setOpen(false)}
+        onClick={() => setOpen((v) => !v)}
+        className="rounded-full text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
       >
-        {children}
-      </PopoverContent>
-    </Popover>
+        <HelpCircle className="h-3.5 w-3.5" aria-hidden="true" />
+      </button>
+      {open ? (
+        <span
+          role="tooltip"
+          className="absolute bottom-full left-1/2 z-50 mb-2 w-56 -translate-x-1/2 rounded-md bg-popover p-3 text-xs leading-relaxed font-normal text-popover-foreground shadow-md ring-1 ring-border"
+        >
+          {children}
+        </span>
+      ) : null}
+    </span>
   );
 }
+
 
 
 
