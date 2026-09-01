@@ -14,6 +14,7 @@ export type ProcessingStatus = "sucesso" | "falha";
  */
 export const FAILURE_TYPES = [
   "Documento inválido",
+  "Múltiplos documentos",
   "Imagem de baixa qualidade",
   "Imagem inválida",
   "Falha na extração",
@@ -22,6 +23,21 @@ export const FAILURE_TYPES = [
 ] as const;
 
 export type FailureType = (typeof FAILURE_TYPES)[number];
+
+/**
+ * Rótulos exibidos na interface. Os códigos/status internos permanecem
+ * inalterados; apenas a apresentação muda.
+ */
+export const FAILURE_LABELS: Record<FailureType, string> = {
+  "Documento inválido": "Formato não suportado",
+  "Múltiplos documentos": "Múltiplos documentos",
+  "Imagem de baixa qualidade": "Baixa qualidade",
+  "Imagem inválida": "Imagem inválida",
+  "Falha na extração": "Informações ilegíveis",
+  "Erro de processamento": "Erro no processamento",
+  "Erro de entrega": "Erro na entrega",
+};
+
 
 /** Categoria de status à qual o motivo de não processamento pertence. */
 export type FailureCategory = "unprocessable" | "processingError";
@@ -33,6 +49,7 @@ export type FailureCategory = "unprocessable" | "processingError";
  */
 export const UNPROCESSABLE_FAILURES: readonly FailureType[] = [
   "Documento inválido",
+  "Múltiplos documentos",
   "Imagem de baixa qualidade",
   "Imagem inválida",
   "Falha na extração",
@@ -234,6 +251,8 @@ export type DashboardMetrics = {
     /** Motivos de não processamento, com a categoria de status de origem. */
     failuresByType: {
       name: FailureType;
+      /** Rótulo exibido na interface. */
+      label: string;
       count: number;
       category: FailureCategory;
       color: string;
@@ -302,6 +321,7 @@ export function buildMetrics(
     const category = failureCategory(name);
     return {
       name,
+      label: FAILURE_LABELS[name],
       count: failed.filter((g) => g.tipoFalha === name).length,
       category,
       color: FAILURE_CATEGORIES[category].color,

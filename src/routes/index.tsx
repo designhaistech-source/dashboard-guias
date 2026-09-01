@@ -2349,7 +2349,7 @@ function DashboardPage() {
                             />
                             <YAxis
                               type="category"
-                              dataKey="name"
+                              dataKey="label"
                               stroke="var(--muted-foreground)"
                               fontSize={11}
                               width={isMobile ? 104 : 172}
