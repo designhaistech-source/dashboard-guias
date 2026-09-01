@@ -21,6 +21,16 @@ export const FAILURE_TYPES = [
 
 export type FailureType = (typeof FAILURE_TYPES)[number];
 
+/**
+ * Falhas atribuídas ao arquivo/documento enviado (qualidade da imagem, formato
+ * não suportado, múltiplos documentos, informações ilegíveis). As demais são
+ * consideradas erros técnicos de processamento.
+ */
+export const UNPROCESSABLE_FAILURES: readonly FailureType[] = [
+  "Documento inválido",
+  "Falha na extração",
+];
+
 export type DashboardGuide = {
   id: string;
   numGuiaPrestador: string;
