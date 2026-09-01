@@ -1139,7 +1139,9 @@ function DashboardPage() {
         value: metrics.quality.success,
         color: "var(--quality-success)",
         icon: CheckCircle2,
-        hint: undefined as string | undefined,
+        hint: "Guias em que os dados foram extraídos e validados sem nenhuma pendência." as
+          | string
+          | undefined,
       },
       {
         name: "Arquivo não processável",
@@ -1153,9 +1155,10 @@ function DashboardPage() {
         value: metrics.quality.processingError,
         color: "var(--quality-failure)",
         icon: AlertTriangle,
-        hint: undefined as string | undefined,
+        hint: "Falha técnica durante o processamento da guia. É possível reenviar o arquivo para nova tentativa.",
       },
     ].filter((d) => d.value > 0),
+
 
     [
       metrics.quality.success,
