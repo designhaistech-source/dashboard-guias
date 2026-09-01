@@ -21,6 +21,16 @@ export const FAILURE_TYPES = [
 
 export type FailureType = (typeof FAILURE_TYPES)[number];
 
+/**
+ * Falhas atribuídas ao arquivo/documento enviado (qualidade da imagem, formato
+ * não suportado, múltiplos documentos, informações ilegíveis). As demais são
+ * consideradas erros técnicos de processamento.
+ */
+export const UNPROCESSABLE_FAILURES: readonly FailureType[] = [
+  "Documento inválido",
+  "Falha na extração",
+];
+
 export type DashboardGuide = {
   id: string;
   numGuiaPrestador: string;
@@ -186,6 +196,10 @@ export type DashboardMetrics = {
   /** Qualidade do processamento no período filtrado. */
   quality: {
     success: number;
+    /** Falhas causadas pelo arquivo/documento enviado. */
+    unprocessable: number;
+    /** Falhas técnicas ocorridas durante o processamento. */
+    processingError: number;
     failure: number;
     failuresByType: { name: FailureType; count: number }[];
   };
@@ -252,10 +266,13 @@ export function buildMetrics(
   }))
     .filter((f) => f.count > 0)
     .sort((a, b) => b.count - a.count);
+  const unprocessable = failed.filter((g) => UNPROCESSABLE_FAILURES.includes(g.tipoFalha!)).length;
 
   return {
     quality: {
       success: guides.length - failed.length,
+      unprocessable,
+      processingError: failed.length - unprocessable,
       failure: failed.length,
       failuresByType,
     },

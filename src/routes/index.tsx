@@ -27,6 +27,7 @@ import {
   CalendarRange,
   Info,
   FileCheck2,
+  FileWarning,
   FileStack,
   CheckCircle2,
   AlertTriangle,
@@ -1128,7 +1129,7 @@ function DashboardPage() {
 
   const hasData = total > 0;
 
-  /** Status do processamento: sucesso vs. falha (cor + ícone, nunca só cor). */
+  /** Status do processamento: sucesso, arquivo não processável e erro técnico. */
   const statusData = useMemo(
     () => [
       {
@@ -1136,16 +1137,29 @@ function DashboardPage() {
         value: metrics.quality.success,
         color: "var(--quality-success)",
         icon: CheckCircle2,
+        hint: undefined as string | undefined,
       },
       {
-        name: "Com falha",
-        value: metrics.quality.failure,
+        name: "Arquivo não processável",
+        value: metrics.quality.unprocessable,
+        color: "var(--quality-unprocessable)",
+        icon: FileWarning,
+        hint: "O arquivo não pôde ser processado devido ao formato, conteúdo ou qualidade do documento enviado.",
+      },
+      {
+        name: "Erro no processamento",
+        value: metrics.quality.processingError,
         color: "var(--quality-failure)",
         icon: AlertTriangle,
+        hint: undefined as string | undefined,
       },
     ].filter((d) => d.value > 0),
 
-    [metrics.quality.success, metrics.quality.failure],
+    [
+      metrics.quality.success,
+      metrics.quality.unprocessable,
+      metrics.quality.processingError,
+    ],
   );
   const [generatingReport, setGeneratingReport] = useState(false);
 
@@ -2200,25 +2214,42 @@ function DashboardPage() {
                     </div>
                   </div>
                   <ul className="space-y-1 text-sm">
-                    {statusData.map((d) => {
-                      const pct = total > 0 ? Math.round((d.value / total) * 100) : 0;
-                      return (
-                        <li
-                          key={d.name}
-                          className="flex min-w-0 items-center gap-2 rounded-md px-2 py-1"
-                        >
-                          <span
-                            aria-hidden="true"
-                            className="h-2.5 w-2.5 rounded-full shrink-0"
-                            style={{ background: d.color }}
-                          />
-                          <span className="flex-1 truncate">{d.name}</span>
-                          <span className="text-muted-foreground tabular-nums text-xs">
-                            {d.value} · {pct}%
-                          </span>
-                        </li>
-                      );
-                    })}
+                    <TooltipProvider>
+                      {statusData.map((d) => {
+                        const pct = total > 0 ? Math.round((d.value / total) * 100) : 0;
+                        const label = <span className="flex-1 truncate">{d.name}</span>;
+                        return (
+                          <li
+                            key={d.name}
+                            className="flex min-w-0 items-center gap-2 rounded-md px-2 py-1"
+                          >
+                            <span
+                              aria-hidden="true"
+                              className="h-2.5 w-2.5 rounded-full shrink-0"
+                              style={{ background: d.color }}
+                            />
+                            {d.hint ? (
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <span
+                                    tabIndex={0}
+                                    className="flex-1 truncate underline decoration-dotted decoration-muted-foreground/60 underline-offset-4"
+                                  >
+                                    {d.name}
+                                  </span>
+                                </TooltipTrigger>
+                                <TooltipContent className="max-w-64">{d.hint}</TooltipContent>
+                              </Tooltip>
+                            ) : (
+                              label
+                            )}
+                            <span className="text-muted-foreground tabular-nums text-xs">
+                              {d.value} · {pct}%
+                            </span>
+                          </li>
+                        );
+                      })}
+                    </TooltipProvider>
                   </ul>
                 </div>
 
