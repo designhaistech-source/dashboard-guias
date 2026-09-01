@@ -2220,12 +2220,17 @@ function DashboardPage() {
                       </PieChart>
                     </ResponsiveContainer>
                     <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center px-6 text-center">
-                      <div className="metric-value text-foreground">{total}</div>
+                      <div className="metric-value text-foreground">
+                        {total > 0 ? Math.round((metrics.quality.success / total) * 100) : 0}%
+                      </div>
                       <div className="max-w-24 text-xs leading-tight text-muted-foreground">
-                        guias processadas
+                        com sucesso
                       </div>
                     </div>
                   </div>
+                  <p className="text-center text-xs text-muted-foreground">
+                    <span className="tabular-nums">{total}</span> guias no período
+                  </p>
                   <ul className="space-y-1 text-sm">
                     <TooltipProvider>
                       {statusData.map((d) => {
@@ -2245,14 +2250,19 @@ function DashboardPage() {
                               <InfoHint label={`Sobre ${d.name}`}>{d.hint}</InfoHint>
                             ) : null}
 
-                            <span className="ml-auto text-muted-foreground tabular-nums text-xs">
-                              {d.value} · {pct}%
+                            <span className="ml-auto shrink-0 tabular-nums text-xs">
+                              <span className="font-semibold text-foreground">{pct}%</span>
+                              <span className="font-normal text-muted-foreground">
+                                {" "}
+                                · {d.value}
+                              </span>
                             </span>
                           </li>
                         );
                       })}
                     </TooltipProvider>
                   </ul>
+
 
                 </div>
 
