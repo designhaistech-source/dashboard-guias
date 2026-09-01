@@ -985,10 +985,6 @@ function SortableHead<C extends string>({
 /** Ícone de ajuda que abre a explicação no hover, no foco e no clique/toque. */
 function HelpHint({ label, children }: { label: string; children: React.ReactNode }) {
   const [open, setOpen] = useState(false);
-  useEffect(() => {
-    console.log("HH mount", label);
-    return () => console.log("HH unmount", label);
-  }, [label]);
   return (
     <span
       className="relative inline-flex shrink-0"
