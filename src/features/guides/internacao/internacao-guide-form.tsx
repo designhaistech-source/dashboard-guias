@@ -119,22 +119,21 @@ function newItem(): RequestedItem {
 }
 
 function Grid({ cols, children }: { cols: 2 | 3 | 12; children: React.ReactNode }) {
+  // Mesmas escalas usadas no formulário SP/SADT, para que as duas guias
+  // tenham exatamente o mesmo ritmo de grade e espaçamento.
+  const colsClass =
+    cols === 2
+      ? "grid-cols-1 @md:grid-cols-2"
+      : cols === 3
+        ? "grid-cols-1 @md:grid-cols-2 @3xl:grid-cols-3"
+        : "grid-cols-1 @md:grid-cols-6 @3xl:grid-cols-12";
   return (
     <div className="@container">
-      <div
-        className={`grid gap-4 ${
-          cols === 12
-            ? "@md:grid-cols-12"
-            : cols === 2
-              ? "@md:grid-cols-2"
-              : "@md:grid-cols-2 @3xl:grid-cols-3"
-        }`}
-      >
-        {children}
-      </div>
+      <div className={`grid items-start gap-x-4 gap-y-3 ${colsClass}`}>{children}</div>
     </div>
   );
 }
+
 
 function Field({
   label,
