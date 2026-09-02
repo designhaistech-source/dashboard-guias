@@ -515,9 +515,20 @@ export function InternacaoGuideForm({
           <CollapsibleContent className="pt-4">
             <Grid cols={12}>
               <Field
+                label="4 - Data da Autorização"
+                span="@md:col-span-6 @3xl:col-span-3"
+              >
+                <Input
+                  type="date"
+                  value={dataAutorizacao}
+                  onChange={(e) => setDataAutorizacao(e.target.value)}
+                />
+              </Field>
+              <Field
                 label="3 - Número da Guia Atribuído pela Operadora"
                 span="@md:col-span-6 @3xl:col-span-6"
               >
+
                 <Input
                   value={guiaOperadora}
                   onChange={(e) => setGuiaOperadora(e.target.value)}
