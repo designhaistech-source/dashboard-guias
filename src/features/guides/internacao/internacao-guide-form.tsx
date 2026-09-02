@@ -489,17 +489,6 @@ export function InternacaoGuideForm({
               className="font-mono bg-muted text-muted-foreground cursor-default focus-visible:ring-0"
             />
           </Field>
-          <Field
-            label="4 - Data da Autorização"
-            required
-            span="@md:col-span-6 @3xl:col-span-4"
-          >
-            <Input
-              type="date"
-              value={dataAutorizacao}
-              onChange={(e) => setDataAutorizacao(e.target.value)}
-            />
-          </Field>
         </Grid>
 
         {/* Campo 2 (Nº Guia no Prestador) é gerado pelo sistema ao salvar a guia. */}
