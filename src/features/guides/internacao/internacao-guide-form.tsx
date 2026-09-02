@@ -524,19 +524,6 @@ export function InternacaoGuideForm({
                   onChange={(e) => setDataAutorizacao(e.target.value)}
                 />
               </Field>
-              <Field
-                label="3 - Número da Guia Atribuído pela Operadora"
-                span="@md:col-span-6 @3xl:col-span-6"
-              >
-
-                <Input
-                  value={guiaOperadora}
-                  onChange={(e) => setGuiaOperadora(e.target.value)}
-                  maxLength={20}
-                  placeholder="Informado pela operadora"
-                />
-              </Field>
-
               <Field label="5 - Senha" span="@md:col-span-6 @3xl:col-span-3">
                 <Input
                   value={senha}
@@ -555,7 +542,19 @@ export function InternacaoGuideForm({
                   onChange={(e) => setValidadeSenha(e.target.value)}
                 />
               </Field>
+              <Field
+                label="3 - Número da Guia Atribuído pela Operadora"
+                span="@md:col-span-6 @3xl:col-span-3"
+              >
+                <Input
+                  value={guiaOperadora}
+                  onChange={(e) => setGuiaOperadora(e.target.value)}
+                  maxLength={20}
+                  placeholder="Informado pela operadora"
+                />
+              </Field>
             </Grid>
+
           </CollapsibleContent>
         </Collapsible>
       </SectionCard>
