@@ -515,7 +515,7 @@ export function InternacaoGuideForm({
             <Grid cols={12}>
               <Field
                 label="4 - Data da Autorização"
-                span="@md:col-span-6 @4xl:col-span-3"
+                span="@md:col-span-6 @6xl:col-span-3"
               >
                 <Input
                   type="date"
@@ -523,7 +523,7 @@ export function InternacaoGuideForm({
                   onChange={(e) => setDataAutorizacao(e.target.value)}
                 />
               </Field>
-              <Field label="5 - Senha" span="@md:col-span-6 @4xl:col-span-3">
+              <Field label="5 - Senha" span="@md:col-span-6 @6xl:col-span-2">
                 <Input
                   value={senha}
                   onChange={(e) => setSenha(e.target.value)}
@@ -533,7 +533,7 @@ export function InternacaoGuideForm({
               </Field>
               <Field
                 label="6 - Data de Validade da Senha"
-                span="@md:col-span-6 @4xl:col-span-3"
+                span="@md:col-span-6 @6xl:col-span-3"
               >
                 <Input
                   type="date"
@@ -543,7 +543,7 @@ export function InternacaoGuideForm({
               </Field>
               <Field
                 label="3 - Número da Guia Atribuído pela Operadora"
-                span="@md:col-span-6 @4xl:col-span-3"
+                span="@md:col-span-6 @6xl:col-span-4"
               >
                 <Input
                   value={guiaOperadora}
