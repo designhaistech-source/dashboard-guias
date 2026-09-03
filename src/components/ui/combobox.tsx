@@ -259,8 +259,49 @@ export function MultiSelect({
   const selectedOptions = values
     .map((v) => options.find((o) => o.value === v))
     .filter((o): o is ComboboxOption => Boolean(o));
-  const visibleChips = selectedOptions.slice(0, maxChips);
+
+  // Mede a largura real dos chips para exibir o máximo que couber no campo.
+  const chipsRowRef = React.useRef<HTMLSpanElement>(null);
+  const measureRowRef = React.useRef<HTMLSpanElement>(null);
+  const [visibleCount, setVisibleCount] = React.useState(selectedOptions.length);
+
+  const selectedKey = selectedOptions.map((o) => o.value).join("|");
+
+  React.useLayoutEffect(() => {
+    if (!chips) return;
+    const row = chipsRowRef.current;
+    const measure = measureRowRef.current;
+    if (!row || !measure) return;
+
+    const compute = () => {
+      const available = row.clientWidth;
+      const widths = Array.from(measure.children).map(
+        (el) => (el as HTMLElement).getBoundingClientRect().width,
+      );
+      const gap = 6;
+      const overflowBadge = 40;
+      let used = 0;
+      let count = 0;
+      for (let i = 0; i < widths.length; i += 1) {
+        const next = used + (i === 0 ? 0 : gap) + widths[i];
+        const rest = i < widths.length - 1 ? gap + overflowBadge : 0;
+        if (next + rest > available && count > 0) break;
+        used = next;
+        count = i + 1;
+      }
+      setVisibleCount(Math.max(1, count));
+    };
+
+    compute();
+    const observer = new ResizeObserver(compute);
+    observer.observe(row);
+    return () => observer.disconnect();
+  }, [chips, selectedKey]);
+
+  const effectiveMax = chips ? Math.min(visibleCount, maxChips * 100) : maxChips;
+  const visibleChips = selectedOptions.slice(0, effectiveMax);
   const hiddenChips = selectedOptions.length - visibleChips.length;
+
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
