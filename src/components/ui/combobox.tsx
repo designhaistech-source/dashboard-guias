@@ -416,9 +416,9 @@ export function MultiSelect({
           <CommandInput placeholder={searchPlaceholder} />
 
           {showActions && (
-            <div className="flex items-center justify-between border-b border-border px-2 py-1.5 text-[11px]">
-              <span className="uppercase tracking-wide text-muted-foreground">
-                {values.length}/{options.length}
+            <div className="flex items-center justify-between border-b border-border px-2 py-1.5 text-xs">
+              <span className="text-muted-foreground">
+                {values.length} de {options.length} selecionados
               </span>
               <div className="flex items-center gap-1">
                 <button
@@ -451,11 +451,16 @@ export function MultiSelect({
                     value={opt.searchText ?? `${opt.label} ${opt.value}`}
                     disabled={opt.disabled}
                     onSelect={() => toggle(opt.value)}
-                    className="flex items-center gap-2"
+                    aria-selected={active}
+                    className={cn(
+                      "flex w-full cursor-pointer items-center gap-2 py-1.5",
+                      "data-[selected=true]:bg-muted/60 data-[selected=true]:text-foreground",
+                      active && "bg-primary/5",
+                    )}
                   >
                     <span
                       className={cn(
-                        "flex h-4 w-4 items-center justify-center rounded border transition-colors",
+                        "flex h-4 w-4 shrink-0 items-center justify-center rounded border transition-colors",
                         active
                           ? "border-primary bg-primary text-primary-foreground"
                           : "border-border bg-background",
@@ -463,10 +468,25 @@ export function MultiSelect({
                     >
                       {active && <Check className="h-3 w-3" />}
                     </span>
-                    <span className="truncate">{opt.label}</span>
+                    <span className="flex min-w-0 flex-1 items-baseline gap-2">
+                      <span
+                        className={cn(
+                          "truncate text-sm text-foreground",
+                          active && "font-medium",
+                        )}
+                      >
+                        {opt.label}
+                      </span>
+                      {opt.description && (
+                        <span className="shrink-0 font-mono text-xs text-muted-foreground">
+                          {opt.description}
+                        </span>
+                      )}
+                    </span>
                   </CommandItem>
                 );
               })}
+
             </CommandGroup>
           </CommandList>
         </Command>
