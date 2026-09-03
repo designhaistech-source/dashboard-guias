@@ -439,7 +439,8 @@ export function MultiSelect({
               </div>
             </div>
           )}
-          <CommandList>
+          <CommandList className="max-h-none flex-1 overflow-y-auto">
+
             <CommandEmpty>{emptyMessage}</CommandEmpty>
             <CommandGroup>
               {options.map((opt) => {
