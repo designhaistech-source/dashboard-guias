@@ -565,7 +565,7 @@ export function InternacaoGuideForm({
         done={beneficiarioOk}
         icon={<User className="h-4 w-4" />}
         title="Dados do Beneficiário"
-        description="Campos 7 a 11 — identificação do beneficiário na operadora."
+        description="Campos 7 a 11 e 50 da guia — identificação do beneficiário na operadora."
       >
         {/* Grade de 3 colunas: 1 campo por linha no mobile, 2 em larguras
             intermediárias e 3 em telas largas — mesma lógica do SP/SADT. */}
