@@ -83,7 +83,7 @@ import { Button } from "@/components/ui/button";
 import logoAsset from "@/assets/guiasplus-logo.png.asset.json";
 import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
-import { Combobox } from "@/components/ui/combobox";
+import { Combobox, MultiSelect } from "@/components/ui/combobox";
 import { Chip } from "@/components/ui/chip";
 import {
   Tooltip,
@@ -98,6 +98,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import {
   DASHBOARD_GUIDES,
   PRESTADORES,
+  PROCEDURE_OPTIONS,
   filterGuides,
   buildMetrics,
   buildProviderProcedureMatrix,
@@ -741,6 +742,8 @@ type GuideFilters = {
   // Dimensões de comparação
   tipoGuia: string;
   prestadorSolicitante: string;
+  /** Códigos de procedimento selecionados; vazio considera todos. */
+  procedimentos: string[];
 };
 
 const emptyFilters: GuideFilters = {
@@ -748,6 +751,7 @@ const emptyFilters: GuideFilters = {
   dataAutorizacaoAte: "",
   tipoGuia: "",
   prestadorSolicitante: "",
+  procedimentos: [],
 };
 
 /** Rótulo de grupo dentro do painel de filtros — único nível em caixa alta. */
@@ -807,6 +811,83 @@ function FilterSelect({
         searchPlaceholder="Buscar..."
         clearable
       />
+    </Field>
+  );
+}
+
+/** Máximo de chips visíveis antes de agrupar o restante em "+N". */
+const PROCEDURE_CHIP_LIMIT = 3;
+
+/**
+ * Filtro de procedimentos: multiseleção pesquisável por código TUSS ou
+ * descrição, com os selecionados exibidos como chips removíveis.
+ */
+function ProcedureFilter({
+  values,
+  onChange,
+}: {
+  values: string[];
+  onChange: (values: string[]) => void;
+}) {
+  const options = useMemo(
+    () =>
+      PROCEDURE_OPTIONS.map((p) => ({
+        value: p.code,
+        label: `${p.code} — ${p.name}`,
+        searchText: `${p.code} ${p.name}`,
+      })),
+    [],
+  );
+  const visible = values.slice(0, PROCEDURE_CHIP_LIMIT);
+  const hidden = values.length - visible.length;
+
+  return (
+    <Field label="Procedimento">
+      <div className="min-w-0 space-y-2">
+        <MultiSelect
+          options={options}
+          values={values}
+          onChange={onChange}
+          placeholder="Selecione um ou mais procedimentos"
+          emptyLabel="Selecione um ou mais procedimentos"
+          allLabel="Todos os procedimentos"
+          searchPlaceholder="Buscar por código TUSS ou descrição"
+          countLabel={(n) => `${n} procedimentos selecionados`}
+          className="w-full"
+        />
+        {values.length > 0 && (
+          <ul className="flex flex-wrap items-center gap-1.5">
+            {visible.map((code) => {
+              const option = PROCEDURE_OPTIONS.find((p) => p.code === code);
+              return (
+                <li key={code}>
+                  <Chip
+                    variant="soft"
+                    size="sm"
+                    aria-label={`Remover ${option?.name ?? code}`}
+                    onClick={() => onChange(values.filter((v) => v !== code))}
+                  >
+                    <span className="max-w-40 truncate">{option?.name ?? code}</span>
+                    <X aria-hidden="true" />
+                  </Chip>
+                </li>
+              );
+            })}
+            {hidden > 0 && (
+              <li>
+                <Chip
+                  asSpan
+                  variant="outline"
+                  size="sm"
+                  title={`Mais ${hidden} procedimento${hidden > 1 ? "s" : ""} selecionado${hidden > 1 ? "s" : ""}`}
+                >
+                  +{hidden}
+                </Chip>
+              </li>
+            )}
+          </ul>
+        )}
+      </div>
     </Field>
   );
 }
@@ -998,8 +1079,8 @@ function DashboardPage() {
 
   const activeFilters = useMemo(
     () =>
-      (Object.entries(filters) as [keyof GuideFilters, string][]).filter(
-        ([, v]) => v.trim() !== "",
+      (Object.entries(filters) as [keyof GuideFilters, string | string[]][]).filter(([, v]) =>
+        Array.isArray(v) ? v.length > 0 : v.trim() !== "",
       ),
     [filters],
   );
@@ -1009,8 +1090,10 @@ function DashboardPage() {
    * (Tipo de guia e Prestador). O período já aparece na linha de contexto.
    */
   const extraFilterCount = useMemo(
-    () => [filters.tipoGuia, filters.prestadorSolicitante].filter((v) => v.trim() !== "").length,
-    [filters.tipoGuia, filters.prestadorSolicitante],
+    () =>
+      [filters.tipoGuia, filters.prestadorSolicitante].filter((v) => v.trim() !== "").length +
+      (filters.procedimentos.length > 0 ? 1 : 0),
+    [filters.tipoGuia, filters.prestadorSolicitante, filters.procedimentos],
   );
 
   const dateRangeInvalid =
@@ -1018,8 +1101,13 @@ function DashboardPage() {
     !!filters.dataAutorizacaoAte &&
     filters.dataAutorizacaoDe > filters.dataAutorizacaoAte;
 
-  const setFilter = (key: keyof GuideFilters, value: string) =>
-    setFilters((f) => ({ ...f, [key]: value }));
+  const setFilter = (
+    key: Exclude<keyof GuideFilters, "procedimentos">,
+    value: string,
+  ) => setFilters((f) => ({ ...f, [key]: value }));
+
+  const setProcedimentos = (values: string[]) =>
+    setFilters((f) => ({ ...f, procedimentos: values }));
 
   const applyPreset = (preset: "hoje" | "7d" | "30d") => {
     const today = new Date();
@@ -1434,6 +1522,14 @@ function DashboardPage() {
                   <span className="font-medium text-foreground">{filters.tipoGuia.trim()}</span>
                 </>
               ) : null}
+              {filters.procedimentos.length > 0 ? (
+                <>
+                  {" · "}Procedimentos:{" "}
+                  <span className="font-medium text-foreground">
+                    {filters.procedimentos.length}
+                  </span>
+                </>
+              ) : null}
               {filters.prestadorSolicitante.trim() ? (
                 <>
                   {" · "}Prestador:{" "}
@@ -1543,12 +1639,18 @@ function DashboardPage() {
                       options={prestadoresList}
                     />
                   </div>
+                  <div className="min-w-0 sm:col-span-2 lg:col-span-5">
+                    <ProcedureFilter
+                      values={filters.procedimentos}
+                      onChange={setProcedimentos}
+                    />
+                  </div>
                   <Button
                     type="button"
                     variant="outline"
                     onClick={clearAllFilters}
                     disabled={activeFilters.length === 0}
-                    className="h-10 w-full justify-center sm:col-span-2 sm:h-9 lg:col-span-1 lg:w-auto"
+                    className="h-10 w-full justify-center sm:col-span-2 sm:h-9 lg:col-span-5 lg:w-auto lg:justify-self-start"
                   >
                     Limpar filtros
                   </Button>
