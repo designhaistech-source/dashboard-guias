@@ -407,10 +407,14 @@ export function MultiSelect({
       </PopoverTrigger>
       <PopoverContent
         align="start"
-        className="w-(--radix-popover-trigger-width) min-w-(--radix-popover-trigger-width) p-0"
+        side="bottom"
+        sideOffset={4}
+        avoidCollisions={false}
+        className="flex max-h-(--radix-popover-content-available-height) w-(--radix-popover-trigger-width) min-w-(--radix-popover-trigger-width) flex-col overflow-hidden p-0"
       >
-        <Command>
+        <Command className="flex max-h-full flex-col overflow-hidden">
           <CommandInput placeholder={searchPlaceholder} />
+
           {showActions && (
             <div className="flex items-center justify-between border-b border-border px-2 py-1.5 text-[11px]">
               <span className="uppercase tracking-wide text-muted-foreground">
@@ -435,7 +439,8 @@ export function MultiSelect({
               </div>
             </div>
           )}
-          <CommandList>
+          <CommandList className="max-h-none flex-1 overflow-y-auto">
+
             <CommandEmpty>{emptyMessage}</CommandEmpty>
             <CommandGroup>
               {options.map((opt) => {
