@@ -1884,6 +1884,14 @@ function EmitirPage() {
                         />
                       </Field>
 
+                      <Field label="10 - Nome" required>
+                        <Input
+                          value={pacienteNome}
+                          onChange={(e) => setPacienteNome(e.target.value)}
+                          placeholder="Nome completo"
+                        />
+                      </Field>
+
                       <Field
                         label="89 - Nome Social"
                         hint="Preencha apenas quando solicitado pelo beneficiário (Decreto nº 8.727/2016)."
@@ -1893,14 +1901,6 @@ function EmitirPage() {
                           onChange={(e) => setPacienteNomeSocial(e.target.value.slice(0, 70))}
                           placeholder="Nome social do beneficiário"
                           maxLength={70}
-                        />
-                      </Field>
-
-                      <Field label="10 - Nome" required>
-                        <Input
-                          value={pacienteNome}
-                          onChange={(e) => setPacienteNome(e.target.value)}
-                          placeholder="Nome completo"
                         />
                       </Field>
 
