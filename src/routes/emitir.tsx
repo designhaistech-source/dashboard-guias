@@ -1861,7 +1861,7 @@ function EmitirPage() {
                       <Field
                         label="8 - Número da Carteira"
                         required
-                        hint="Informe o número da carteira do beneficiário"
+                        hint="Informe o número da carteira do beneficiário."
                       >
                         <Input
                           value={pacienteCarteira}
