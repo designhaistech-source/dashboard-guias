@@ -634,7 +634,7 @@ export function InternacaoGuideForm({
 
           <Field
             label="50 - Nome Social"
-            hint="Condicionado — preencha quando requerido pelo beneficiário (Decreto nº 8.727/2016)."
+            hint="Preencha apenas quando solicitado pelo beneficiário (Decreto nº 8.727/2016)."
           >
             <Input
               value={nomeSocial}
