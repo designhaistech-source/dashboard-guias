@@ -567,11 +567,12 @@ export function InternacaoGuideForm({
         title="Dados do Beneficiário"
         description="Campos 7 a 11 — identificação do beneficiário na operadora."
       >
-        <Grid cols={12}>
+        {/* Grade de 3 colunas: 1 campo por linha no mobile, 2 em larguras
+            intermediárias e 3 em telas largas — mesma lógica do SP/SADT. */}
+        <Grid cols={3}>
           <Field
             label="7 - Número da Carteira"
             required
-            span="@md:col-span-6 @3xl:col-span-5"
             hint={
               beneficiarioStatus === "not-found"
                 ? "Beneficiário não encontrado — informe o nome manualmente."
