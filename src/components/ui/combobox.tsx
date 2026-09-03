@@ -259,8 +259,49 @@ export function MultiSelect({
   const selectedOptions = values
     .map((v) => options.find((o) => o.value === v))
     .filter((o): o is ComboboxOption => Boolean(o));
-  const visibleChips = selectedOptions.slice(0, maxChips);
+
+  // Mede a largura real dos chips para exibir o máximo que couber no campo.
+  const chipsRowRef = React.useRef<HTMLSpanElement>(null);
+  const measureRowRef = React.useRef<HTMLSpanElement>(null);
+  const [visibleCount, setVisibleCount] = React.useState(selectedOptions.length);
+
+  const selectedKey = selectedOptions.map((o) => o.value).join("|");
+
+  React.useLayoutEffect(() => {
+    if (!chips) return;
+    const row = chipsRowRef.current;
+    const measure = measureRowRef.current;
+    if (!row || !measure) return;
+
+    const compute = () => {
+      const available = row.clientWidth;
+      const widths = Array.from(measure.children).map(
+        (el) => (el as HTMLElement).getBoundingClientRect().width,
+      );
+      const gap = 6;
+      const overflowBadge = 40;
+      let used = 0;
+      let count = 0;
+      for (let i = 0; i < widths.length; i += 1) {
+        const next = used + (i === 0 ? 0 : gap) + widths[i];
+        const rest = i < widths.length - 1 ? gap + overflowBadge : 0;
+        if (next + rest > available && count > 0) break;
+        used = next;
+        count = i + 1;
+      }
+      setVisibleCount(Math.max(1, count));
+    };
+
+    compute();
+    const observer = new ResizeObserver(compute);
+    observer.observe(row);
+    return () => observer.disconnect();
+  }, [chips, selectedKey]);
+
+  const effectiveMax = chips ? Math.min(visibleCount, maxChips * 100) : maxChips;
+  const visibleChips = selectedOptions.slice(0, effectiveMax);
   const hiddenChips = selectedOptions.length - visibleChips.length;
+
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -290,7 +331,10 @@ export function MultiSelect({
               className,
             )}
           >
-            <span className="flex min-w-0 flex-1 items-center gap-1.5 overflow-hidden text-left">
+            <span
+              ref={chipsRowRef}
+              className="relative flex min-w-0 flex-1 items-center gap-1.5 overflow-hidden text-left"
+            >
               {isPlaceholder ? (
                 <span className="truncate">{placeholder}</span>
               ) : (
@@ -298,7 +342,7 @@ export function MultiSelect({
                   {visibleChips.map((option) => (
                     <span
                       key={option.value}
-                      className="inline-flex min-w-0 max-w-40 items-center gap-1 rounded-full border border-primary/40 bg-primary/10 px-2 py-0.5 text-xs text-primary"
+                      className="inline-flex min-w-0 max-w-xs shrink-0 items-center gap-1 rounded-full border border-primary/40 bg-primary/10 px-2 py-0.5 text-xs text-primary"
                     >
                       <span className="truncate">
                         {chipLabel ? chipLabel(option) : option.label}
@@ -322,9 +366,28 @@ export function MultiSelect({
                       +{hiddenChips}
                     </span>
                   )}
+                  {/* Linha oculta usada apenas para medir a largura real dos chips. */}
+                  <span
+                    ref={measureRowRef}
+                    aria-hidden="true"
+                    className="pointer-events-none absolute left-0 top-0 flex items-center gap-1.5 opacity-0"
+                  >
+                    {selectedOptions.map((option) => (
+                      <span
+                        key={option.value}
+                        className="inline-flex max-w-xs shrink-0 items-center gap-1 rounded-full border px-2 py-0.5 text-xs"
+                      >
+                        <span className="truncate">
+                          {chipLabel ? chipLabel(option) : option.label}
+                        </span>
+                        <X className="h-3 w-3" aria-hidden="true" />
+                      </span>
+                    ))}
+                  </span>
                 </>
               )}
             </span>
+
             <ChevronDown className="h-4 w-4 shrink-0 opacity-50" aria-hidden="true" />
           </div>
         ) : (
