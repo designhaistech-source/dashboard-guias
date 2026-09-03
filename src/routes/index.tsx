@@ -817,7 +817,7 @@ function FilterSelect({
 }
 
 /** Máximo de chips visíveis antes de agrupar o restante em "+N". */
-const PROCEDURE_CHIP_LIMIT = 3;
+const PROCEDURE_CHIP_LIMIT = 2;
 
 /**
  * Filtro de procedimentos: multiseleção pesquisável por código TUSS ou
