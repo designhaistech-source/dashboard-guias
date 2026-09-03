@@ -1875,7 +1875,7 @@ function EmitirPage() {
                       {/* 9 e 11 são condicionados no TISS: sem asterisco, preenchimento manual. */}
                       <Field
                         label="9 - Validade da Carteira"
-                        hint="Condicionado — informe quando a operadora exigir autorização prévia"
+                        hint="Condicionado — informe quando a operadora exigir autorização prévia."
                       >
                         <Input
                           type="date"
