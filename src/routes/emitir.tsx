@@ -1855,11 +1855,12 @@ function EmitirPage() {
                     title="Dados do Beneficiário"
                     description="Campos 8 a 12 e 89 da guia — identificação do beneficiário na operadora."
                   >
-                    <Grid cols={12}>
+                    {/* Grade de 3 colunas: 1 campo por linha no mobile, 2 em larguras
+                        intermediárias e 3 em telas largas — mesma lógica da Internação. */}
+                    <Grid cols={3}>
                       <Field
                         label="8 - Número da Carteira"
                         required
-                        span="@md:col-span-6 @3xl:col-span-5"
                         hint="Informe o número da carteira do beneficiário"
                       >
                         <Input
@@ -1874,7 +1875,6 @@ function EmitirPage() {
                       {/* 9 e 11 são condicionados no TISS: sem asterisco, preenchimento manual. */}
                       <Field
                         label="9 - Validade da Carteira"
-                        span="@md:col-span-6 @3xl:col-span-3"
                         hint="Condicionado — informe quando a operadora exigir autorização prévia"
                       >
                         <Input
@@ -1884,9 +1884,16 @@ function EmitirPage() {
                         />
                       </Field>
 
+                      <Field label="10 - Nome" required>
+                        <Input
+                          value={pacienteNome}
+                          onChange={(e) => setPacienteNome(e.target.value)}
+                          placeholder="Nome completo"
+                        />
+                      </Field>
+
                       <Field
                         label="89 - Nome Social"
-                        span="@md:col-span-6 @3xl:col-span-4"
                         hint="Preencha apenas quando solicitado pelo beneficiário (Decreto nº 8.727/2016)."
                       >
                         <Input
@@ -1897,18 +1904,9 @@ function EmitirPage() {
                         />
                       </Field>
 
-                      <Field label="10 - Nome" required span="@md:col-span-6 @3xl:col-span-4">
-                        <Input
-                          value={pacienteNome}
-                          onChange={(e) => setPacienteNome(e.target.value)}
-                          placeholder="Nome completo"
-                        />
-                      </Field>
-
                       <SelectField
                         label="12 - Atendimento a RN"
                         required
-                        className="@md:col-span-6 @3xl:col-span-4"
                         value={pacienteRn}
                         onValueChange={setPacienteRn}
                         options={[

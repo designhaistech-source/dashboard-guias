@@ -567,11 +567,12 @@ export function InternacaoGuideForm({
         title="Dados do Beneficiário"
         description="Campos 7 a 11 — identificação do beneficiário na operadora."
       >
-        <Grid cols={12}>
+        {/* Grade de 3 colunas: 1 campo por linha no mobile, 2 em larguras
+            intermediárias e 3 em telas largas — mesma lógica do SP/SADT. */}
+        <Grid cols={3}>
           <Field
             label="7 - Número da Carteira"
             required
-            span="@md:col-span-6 @3xl:col-span-5"
             hint={
               beneficiarioStatus === "not-found"
                 ? "Beneficiário não encontrado — informe o nome manualmente."
@@ -599,7 +600,6 @@ export function InternacaoGuideForm({
 
           <Field
             label="8 - Validade da Carteira"
-            span="@md:col-span-6 @3xl:col-span-3"
             hint="Condicionado — informe quando a operadora exigir autorização prévia."
           >
             <Input
@@ -613,7 +613,6 @@ export function InternacaoGuideForm({
           <Field
             label="10 - Nome"
             required
-            span="@md:col-span-6 @3xl:col-span-4"
             hint={
               beneficiarioStatus === "found"
                 ? "Preenchido pelo cadastro do beneficiário."
@@ -635,7 +634,6 @@ export function InternacaoGuideForm({
 
           <Field
             label="50 - Nome Social"
-            span="@md:col-span-6 @3xl:col-span-5"
             hint="Condicionado — preencha quando requerido pelo beneficiário (Decreto nº 8.727/2016)."
           >
             <Input
@@ -649,7 +647,6 @@ export function InternacaoGuideForm({
           <SelectField
             label="9 - Atendimento a RN"
             required
-            className="@md:col-span-6 @3xl:col-span-3"
             value={atendimentoRn}
             onValueChange={setAtendimentoRn}
             options={SIM_NAO_OPTIONS}
@@ -659,7 +656,6 @@ export function InternacaoGuideForm({
           {cns && (
             <Field
               label="11 - Cartão Nacional de Saúde"
-              span="@md:col-span-6 @3xl:col-span-4"
               hint="Preenchido pelo cadastro do beneficiário."
             >
               <Input
