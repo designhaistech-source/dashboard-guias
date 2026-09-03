@@ -600,7 +600,6 @@ export function InternacaoGuideForm({
 
           <Field
             label="8 - Validade da Carteira"
-            span="@md:col-span-6 @3xl:col-span-3"
             hint="Condicionado — informe quando a operadora exigir autorização prévia."
           >
             <Input
