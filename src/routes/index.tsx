@@ -833,9 +833,11 @@ function ProcedureFilter({
     () =>
       PROCEDURE_OPTIONS.map((p) => ({
         value: p.code,
-        label: `${p.code} — ${p.name}`,
+        label: p.name,
+        description: p.code,
         searchText: `${p.code} ${p.name}`,
       })),
+
     [],
   );
   return (
