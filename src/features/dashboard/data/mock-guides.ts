@@ -213,7 +213,15 @@ export type DashboardFilterInput = {
   dataAutorizacaoAte: string;
   tipoGuia: string;
   prestadorSolicitante: string;
+  /** Códigos de procedimento selecionados; vazio considera todos. */
+  procedimentos?: string[];
 };
+
+/** Procedimentos disponíveis para filtro (código TUSS + descrição). */
+export const PROCEDURE_OPTIONS = PROCEDURES.map((p) => ({
+  code: p.code,
+  name: p.name,
+}));
 
 export function filterGuides(
   guides: DashboardGuide[],
@@ -224,6 +232,8 @@ export function filterGuides(
     if (f.dataAutorizacaoAte && g.data > f.dataAutorizacaoAte) return false;
     if (f.tipoGuia.trim() && g.tipoGuia !== f.tipoGuia) return false;
     if (f.prestadorSolicitante.trim() && g.prestadorSolicitante !== f.prestadorSolicitante)
+      return false;
+    if (f.procedimentos && f.procedimentos.length > 0 && !f.procedimentos.includes(g.procCodigo))
       return false;
     return true;
   });
