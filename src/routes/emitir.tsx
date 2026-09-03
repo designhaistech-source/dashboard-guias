@@ -1650,7 +1650,7 @@ function EmitirPage() {
                             {guideKind === "internacao" && (
                               <Field
                                 label="3 - Número da Guia Principal"
-                                span="@md:col-span-6 @3xl:col-span-4"
+                                span="@md:col-span-6 @4xl:col-span-3"
                               >
                                 <Input
                                   value={guiaPrincipal}
@@ -1661,7 +1661,7 @@ function EmitirPage() {
                             )}
                             <Field
                               label="4 - Data da Autorização"
-                              span="@md:col-span-4 @3xl:col-span-4"
+                              span="@md:col-span-6 @4xl:col-span-3"
                             >
                               <Input
                                 type="date"
@@ -1669,7 +1669,7 @@ function EmitirPage() {
                                 onChange={(e) => setDataAutorizacao(e.target.value)}
                               />
                             </Field>
-                            <Field label="5 - Senha" span="@md:col-span-4 @3xl:col-span-4">
+                            <Field label="5 - Senha" span="@md:col-span-6 @4xl:col-span-3">
                               <Input
                                 value={senha}
                                 onChange={(e) => setSenha(e.target.value)}
@@ -1678,7 +1678,7 @@ function EmitirPage() {
                             </Field>
                             <Field
                               label="6 - Data de Validade da Senha"
-                              span="@md:col-span-4 @3xl:col-span-4"
+                              span="@md:col-span-6 @4xl:col-span-3"
                             >
                               <Input
                                 type="date"
@@ -1688,7 +1688,7 @@ function EmitirPage() {
                             </Field>
                             <Field
                               label="7 - Número da Guia Atribuído pela Operadora"
-                              span="@md:col-span-6 @3xl:col-span-4"
+                              span="@md:col-span-6 @4xl:col-span-3"
                             >
                               <Input
                                 value={guiaOperadora}
