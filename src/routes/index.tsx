@@ -31,6 +31,7 @@ import {
   FileStack,
   CheckCircle2,
   AlertTriangle,
+  X,
 } from "lucide-react";
 import {
   AreaChart,
