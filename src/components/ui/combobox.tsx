@@ -130,7 +130,7 @@ export function Combobox({
         </ComboboxTrigger>
       </PopoverTrigger>
       <PopoverContent
-        className="w-[--radix-popover-trigger-width] p-0"
+        className="w-(--radix-popover-trigger-width) min-w-(--radix-popover-trigger-width) p-0"
         align="start"
       >
         <Command>
@@ -265,7 +265,7 @@ export function MultiSelect({
       </PopoverTrigger>
       <PopoverContent
         align="start"
-        className="w-[--radix-popover-trigger-width] p-0"
+        className="w-(--radix-popover-trigger-width) min-w-(--radix-popover-trigger-width) p-0"
       >
         <Command>
           <CommandInput placeholder={searchPlaceholder} />
