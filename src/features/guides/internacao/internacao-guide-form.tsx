@@ -613,7 +613,6 @@ export function InternacaoGuideForm({
           <Field
             label="10 - Nome"
             required
-            span="@md:col-span-6 @3xl:col-span-4"
             hint={
               beneficiarioStatus === "found"
                 ? "Preenchido pelo cadastro do beneficiário."
@@ -635,7 +634,6 @@ export function InternacaoGuideForm({
 
           <Field
             label="50 - Nome Social"
-            span="@md:col-span-6 @3xl:col-span-5"
             hint="Condicionado — preencha quando requerido pelo beneficiário (Decreto nº 8.727/2016)."
           >
             <Input
@@ -649,7 +647,6 @@ export function InternacaoGuideForm({
           <SelectField
             label="9 - Atendimento a RN"
             required
-            className="@md:col-span-6 @3xl:col-span-3"
             value={atendimentoRn}
             onValueChange={setAtendimentoRn}
             options={SIM_NAO_OPTIONS}
@@ -659,7 +656,6 @@ export function InternacaoGuideForm({
           {cns && (
             <Field
               label="11 - Cartão Nacional de Saúde"
-              span="@md:col-span-6 @3xl:col-span-4"
               hint="Preenchido pelo cadastro do beneficiário."
             >
               <Input
