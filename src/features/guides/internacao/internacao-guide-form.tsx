@@ -576,7 +576,7 @@ export function InternacaoGuideForm({
             hint={
               beneficiarioStatus === "not-found"
                 ? "Beneficiário não encontrado — informe o nome manualmente."
-                : "Informe o número da carteira do beneficiário"
+                : "Informe o número da carteira do beneficiário."
             }
           >
             <div className="relative">
@@ -634,7 +634,7 @@ export function InternacaoGuideForm({
 
           <Field
             label="50 - Nome Social"
-            hint="Condicionado — preencha quando requerido pelo beneficiário (Decreto nº 8.727/2016)."
+            hint="Preencha apenas quando solicitado pelo beneficiário (Decreto nº 8.727/2016)."
           >
             <Input
               value={nomeSocial}
