@@ -31,7 +31,6 @@ import {
   FileStack,
   CheckCircle2,
   AlertTriangle,
-  X,
 } from "lucide-react";
 import {
   AreaChart,
@@ -817,7 +816,7 @@ function FilterSelect({
 }
 
 /** Máximo de chips visíveis antes de agrupar o restante em "+N". */
-const PROCEDURE_CHIP_LIMIT = 3;
+const PROCEDURE_CHIP_LIMIT = 2;
 
 /**
  * Filtro de procedimentos: multiseleção pesquisável por código TUSS ou
@@ -839,56 +838,23 @@ function ProcedureFilter({
       })),
     [],
   );
-  const visible = values.slice(0, PROCEDURE_CHIP_LIMIT);
-  const hidden = values.length - visible.length;
-
   return (
     <Field label="Procedimento">
-      <div className="min-w-0 space-y-2">
-        <MultiSelect
-          options={options}
-          values={values}
-          onChange={onChange}
-          placeholder="Selecione um ou mais procedimentos"
-          emptyLabel="Selecione um ou mais procedimentos"
-          allLabel="Todos os procedimentos"
-          searchPlaceholder="Buscar por código TUSS ou descrição"
-          countLabel={(n) => `${n} procedimentos selecionados`}
-          className="w-full"
-        />
-        {values.length > 0 && (
-          <ul className="flex flex-wrap items-center gap-1.5">
-            {visible.map((code) => {
-              const option = PROCEDURE_OPTIONS.find((p) => p.code === code);
-              return (
-                <li key={code}>
-                  <Chip
-                    variant="soft"
-                    size="sm"
-                    aria-label={`Remover ${option?.name ?? code}`}
-                    onClick={() => onChange(values.filter((v) => v !== code))}
-                  >
-                    <span className="max-w-40 truncate">{option?.name ?? code}</span>
-                    <X aria-hidden="true" />
-                  </Chip>
-                </li>
-              );
-            })}
-            {hidden > 0 && (
-              <li>
-                <Chip
-                  asSpan
-                  variant="outline"
-                  size="sm"
-                  title={`Mais ${hidden} procedimento${hidden > 1 ? "s" : ""} selecionado${hidden > 1 ? "s" : ""}`}
-                >
-                  +{hidden}
-                </Chip>
-              </li>
-            )}
-          </ul>
-        )}
-      </div>
+      <MultiSelect
+        options={options}
+        values={values}
+        onChange={onChange}
+        placeholder="Selecione um ou mais procedimentos"
+        emptyLabel="Selecione um ou mais procedimentos"
+        allLabel="Todos os procedimentos"
+        searchPlaceholder="Buscar por código TUSS ou descrição"
+        chips
+        chipLabel={(option) =>
+          PROCEDURE_OPTIONS.find((p) => p.code === option.value)?.name ?? option.label
+        }
+        maxChips={PROCEDURE_CHIP_LIMIT}
+        className="w-full"
+      />
     </Field>
   );
 }

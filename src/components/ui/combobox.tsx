@@ -208,6 +208,12 @@ interface MultiSelectProps {
   id?: string;
   showActions?: boolean;
   countLabel?: (n: number) => string;
+  /** Exibe as seleções como chips removíveis dentro do próprio campo. */
+  chips?: boolean;
+  /** Rótulo do chip (por padrão, o label da opção). */
+  chipLabel?: (option: ComboboxOption) => string;
+  /** Máximo de chips visíveis antes de agrupar o restante em "+N". */
+  maxChips?: number;
 }
 
 export function MultiSelect({
@@ -225,6 +231,9 @@ export function MultiSelect({
   id,
   showActions = true,
   countLabel = (n) => `${n} selecionados`,
+  chips = false,
+  chipLabel,
+  maxChips = 2,
 }: MultiSelectProps) {
   const [open, setOpen] = React.useState(false);
   const set = React.useMemo(() => new Set(values), [values]);
@@ -247,21 +256,91 @@ export function MultiSelect({
 
   const isPlaceholder = values.length === 0;
 
+  const selectedOptions = values
+    .map((v) => options.find((o) => o.value === v))
+    .filter((o): o is ComboboxOption => Boolean(o));
+  const visibleChips = selectedOptions.slice(0, maxChips);
+  const hiddenChips = selectedOptions.length - visibleChips.length;
+
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <ComboboxTrigger
-          id={id}
-          disabled={disabled}
-          invalid={invalid}
-          placeholder={isPlaceholder}
-          className={className}
-          aria-expanded={open}
-        >
-          <span className="truncate">
-            {isPlaceholder ? placeholder : label}
-          </span>
-        </ComboboxTrigger>
+        {chips ? (
+          // Campo com chips: o gatilho é um contêiner para permitir botões de
+          // remoção acessíveis dentro dele (botão dentro de botão é inválido).
+          <div
+            id={id}
+            role="combobox"
+            aria-expanded={open}
+            aria-haspopup="listbox"
+            aria-invalid={invalid || undefined}
+            tabIndex={disabled ? -1 : 0}
+            data-placeholder={isPlaceholder || undefined}
+            onKeyDown={(event) => {
+              if (event.key === "Enter" || event.key === " ") {
+                event.preventDefault();
+                setOpen(!open);
+              }
+            }}
+            className={cn(
+              triggerBase,
+              "cursor-pointer overflow-hidden data-[placeholder]:text-muted-foreground",
+              invalid && "border-destructive/60 focus-visible:ring-destructive/30",
+              disabled && "pointer-events-none opacity-50",
+              className,
+            )}
+          >
+            <span className="flex min-w-0 flex-1 items-center gap-1.5 overflow-hidden text-left">
+              {isPlaceholder ? (
+                <span className="truncate">{placeholder}</span>
+              ) : (
+                <>
+                  {visibleChips.map((option) => (
+                    <span
+                      key={option.value}
+                      className="inline-flex min-w-0 max-w-40 items-center gap-1 rounded-full border border-primary/40 bg-primary/10 px-2 py-0.5 text-xs text-primary"
+                    >
+                      <span className="truncate">
+                        {chipLabel ? chipLabel(option) : option.label}
+                      </span>
+                      <button
+                        type="button"
+                        aria-label={`Remover ${chipLabel ? chipLabel(option) : option.label}`}
+                        onPointerDown={(event) => event.stopPropagation()}
+                        onClick={(event) => {
+                          event.stopPropagation();
+                          onChange(values.filter((v) => v !== option.value));
+                        }}
+                        className="rounded-full text-primary/70 transition-colors hover:text-primary focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                      >
+                        <X className="h-3 w-3" aria-hidden="true" />
+                      </button>
+                    </span>
+                  ))}
+                  {hiddenChips > 0 && (
+                    <span className="inline-flex shrink-0 items-center rounded-full border border-border bg-card px-2 py-0.5 text-xs text-foreground">
+                      +{hiddenChips}
+                    </span>
+                  )}
+                </>
+              )}
+            </span>
+            <ChevronDown className="h-4 w-4 shrink-0 opacity-50" aria-hidden="true" />
+          </div>
+        ) : (
+          <ComboboxTrigger
+            id={id}
+            disabled={disabled}
+            invalid={invalid}
+            placeholder={isPlaceholder}
+            className={className}
+            aria-expanded={open}
+          >
+            <span className="truncate">
+              {isPlaceholder ? placeholder : label}
+            </span>
+          </ComboboxTrigger>
+        )}
       </PopoverTrigger>
       <PopoverContent
         align="start"
