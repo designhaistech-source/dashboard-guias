@@ -271,7 +271,7 @@ export function InternacaoGuideForm({
   const [codigoSolicitante, setCodigoSolicitante] = useState("");
   const [nomeContratado, setNomeContratado] = useState("");
   const [nomeProfissional, setNomeProfissional] = useState("");
-  const [conselho, setConselho] = useState("CRM");
+  const [conselho, setConselho] = useState("06");
   const [numeroConselho, setNumeroConselho] = useState("");
   const [ufConselho, setUfConselho] = useState("");
   const [cbo, setCbo] = useState("");
