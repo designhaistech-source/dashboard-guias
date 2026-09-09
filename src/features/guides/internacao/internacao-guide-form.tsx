@@ -1241,6 +1241,8 @@ export function InternacaoGuideForm({
         title="Pré-visualização da guia"
         description="Guia de Solicitação de Internação — padrão TISS."
         size="xl"
+        // Largura proporcional à folha A4 retrato (794px) + margens laterais ~28px.
+        className="max-w-[850px] max-h-[88dvh]"
       >
         <ScaledGuideSheet fit="width" sheetWidth={A4_PORTRAIT_SHEET_WIDTH_PX}>
           <InternacaoGuidePreview {...previewData} fullSize />
