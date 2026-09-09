@@ -391,7 +391,10 @@ export function InternacaoGuideForm({
   );
   const diagnosticoOk = Boolean(indicacaoAcidente);
   const itemsOk = useMemo(
-    () => items.length > 0 && items.every((i) => i.code && i.description && i.requestedQty > 0),
+    () =>
+      items.length > 0 &&
+      items.every((i) => i.table && i.code && i.description && i.requestedQty > 0),
+
     [items],
   );
   const finalOk = Boolean(dataSolicitacao);
