@@ -72,6 +72,7 @@ const TIPO_INTERNACAO_OPTIONS = [
   { value: "5", label: "5 - Psiquiátrica" },
 ];
 
+/** Tabela TUSS 41 — Regime de internação (código de 1 caractere). */
 const REGIME_INTERNACAO_OPTIONS = [
   { value: "1", label: "1 - Hospitalar" },
   { value: "2", label: "2 - Hospital-dia" },
