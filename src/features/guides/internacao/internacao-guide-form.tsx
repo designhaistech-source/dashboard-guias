@@ -733,8 +733,10 @@ export function InternacaoGuideForm({
             <Input
               value={numeroConselho}
               onChange={(e) => setNumeroConselho(e.target.value)}
+              maxLength={15}
               placeholder="000000"
             />
+
           </Field>
           <SelectField
             label="17 - UF"
