@@ -1131,7 +1131,7 @@ export function InternacaoGuideForm({
           { label: "Beneficiário", done: beneficiarioOk },
           { label: "Contratado solicitante", done: solicitanteOk },
           { label: "Hospital e internação", done: internacaoOk },
-          { label: "Hipóteses diagnósticas", done: diagnosticoOk },
+          { label: "Diagnósticos", done: diagnosticoOk },
           { label: "Procedimentos solicitados", done: itemsOk },
           { label: "Observação e assinaturas", done: finalOk },
         ]}
