@@ -328,6 +328,9 @@ export function InternacaoGuideForm({
 
   const [submitting, setSubmitting] = useState(false);
   const [previewOpen, setPreviewOpen] = useState(false);
+  /** Guia emitida e salva — abre o modal de confirmação da emissão. */
+  const [issuedGuide, setIssuedGuide] = useState<IssuedGuide | null>(null);
+  const navigate = useNavigate();
 
   /** Dados normalizados enviados à pré-visualização da guia impressa. */
   const previewData = {
