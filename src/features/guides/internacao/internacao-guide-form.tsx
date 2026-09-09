@@ -870,13 +870,13 @@ export function InternacaoGuideForm({
         </div>
       </SectionCard>
 
-      {/* 29 a 33 */}
+      {/* 29 a 32 */}
       <SectionCard
         number={5}
         done={diagnosticoOk}
         icon={<ClipboardList className="h-4 w-4" />}
-        title="Hipóteses Diagnósticas"
-        description="Campos 29 a 33 — CID-10 (opcionais) e indicação de acidente."
+        title="Diagnósticos"
+        description="Campos 29 a 32 — diagnósticos CID-10."
       >
         <Grid cols={3}>
           <Field label="29 - CID 10 Principal (opcional)">
