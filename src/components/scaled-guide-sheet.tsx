@@ -35,9 +35,12 @@ export function ScaledGuideSheet({
    * evitando sobra lateral na pré-visualização em tela.
    */
   fit = "print",
+  /** Largura natural da folha; menor em modelos A4 retrato. */
+  sheetWidth = GUIDE_SHEET_WIDTH_PX,
 }: {
   children: React.ReactNode;
   fit?: "print" | "width";
+  sheetWidth?: number;
 }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
