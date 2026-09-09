@@ -703,72 +703,10 @@ export function InternacaoGuideForm({
           </Field>
         </Grid>
 
-        {/* Campo 2 (Nº Guia no Prestador) é gerado pelo sistema ao salvar a guia. */}
-        <Collapsible
-          open={autorizacaoOpen}
-          onOpenChange={setAutorizacaoOpen}
-          className="mt-4 border-t pt-4"
-        >
-          <CollapsibleTrigger asChild>
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              className="w-full justify-between sm:w-auto"
-              aria-expanded={autorizacaoOpen}
-            >
-              <span>Autorização da Operadora (Opcional)</span>
-              <ChevronRight
-                className={`transition-transform ${autorizacaoOpen ? "rotate-90" : ""}`}
-                aria-hidden
-              />
-            </Button>
-          </CollapsibleTrigger>
-          <CollapsibleContent className="pt-4">
-            <Grid cols={12}>
-              <Field
-                label="4 - Data da Autorização"
-                span="@md:col-span-6 @6xl:col-span-3"
-              >
-                <Input
-                  type="date"
-                  value={dataAutorizacao}
-                  onChange={(e) => setDataAutorizacao(e.target.value)}
-                />
-              </Field>
-              <Field label="5 - Senha" span="@md:col-span-6 @6xl:col-span-2">
-                <Input
-                  value={senha}
-                  onChange={(e) => setSenha(e.target.value)}
-                  maxLength={20}
-                  placeholder="Senha de autorização"
-                />
-              </Field>
-              <Field
-                label="6 - Data de Validade da Senha"
-                span="@md:col-span-6 @6xl:col-span-3"
-              >
-                <Input
-                  type="date"
-                  value={validadeSenha}
-                  onChange={(e) => setValidadeSenha(e.target.value)}
-                />
-              </Field>
-              <Field
-                label="3 - Número da Guia Atribuído pela Operadora"
-                span="@md:col-span-6 @6xl:col-span-4"
-              >
-                <Input
-                  value={guiaOperadora}
-                  onChange={(e) => setGuiaOperadora(e.target.value)}
-                  maxLength={20}
-                  placeholder="Informado pela operadora"
-                />
-              </Field>
-            </Grid>
+        {/* Campo 2 (Nº Guia no Prestador) é gerado pelo sistema ao salvar a guia.
+            Campos 3 a 6 só existem após o retorno da operadora: permanecem na
+            estrutura da guia TISS, emitidos vazios, e fora do formulário. */}
 
-          </CollapsibleContent>
-        </Collapsible>
       </SectionCard>
 
 
