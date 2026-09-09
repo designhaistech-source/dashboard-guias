@@ -545,11 +545,8 @@ export function InternacaoGuideForm({
   /** Volta o formulário aos valores iniciais, mantendo a operadora selecionada. */
   const handleReset = () => {
     setAns(registroAns);
-    setGuiaOperadora("");
-    setDataAutorizacao("");
-    setSenha("");
-    setValidadeSenha("");
-    setAutorizacaoOpen(false);
+    // Campos 3 a 6 permanecem sempre vazios na emissão inicial.
+
     setCarteira("");
     setValidadeCarteira("");
     setAtendimentoRn("N");
