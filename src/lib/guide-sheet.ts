@@ -7,6 +7,9 @@
 /** Largura fixa do modelo oficial da guia, em px CSS. */
 export const GUIDE_SHEET_WIDTH_PX = 1100;
 
+/** Largura da folha A4 em retrato (210mm a 96dpi), usada na guia de internação. */
+export const A4_PORTRAIT_SHEET_WIDTH_PX = 794;
+
 /** Margem física da página impressa, em mm. */
 export const PRINT_PAGE_MARGIN_MM = 8;
 

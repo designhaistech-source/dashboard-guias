@@ -5,6 +5,7 @@ import {
   SectionBar,
   splitDate,
 } from "@/features/guides/components/guide-print-primitives";
+import { A4_PORTRAIT_SHEET_WIDTH_PX } from "@/lib/guide-sheet";
 
 export interface InternacaoPreviewItem {
   table: string;
@@ -73,12 +74,17 @@ function cid4Chars(value: string) {
   return (value ?? "").replace(/[^A-Za-z0-9]/g, "").slice(0, 4).toUpperCase();
 }
 
+/** Linhas do quadro de procedimentos, numeradas 01 a 12 como no modelo oficial. */
+const ITEM_ROWS = 12;
+
 /**
- * Pré-visualização da Guia de Solicitação de Internação (TISS Dez/2017),
- * com os quadros e a numeração 1 a 49 na ordem do formulário oficial.
+ * Pré-visualização da Guia de Solicitação de Internação (TISS), em folha A4
+ * retrato, reproduzindo a ordem e a distribuição dos campos 1 a 50 do modelo
+ * oficial — inclusive quando a ordem numérica não é sequencial (50 antes de 10,
+ * 33 ao lado dos CIDs).
  */
 export function InternacaoGuidePreview(props: InternacaoGuidePreviewProps) {
-  const rows = Array.from({ length: 6 }, (_, i) => props.items?.[i]);
+  const rows = Array.from({ length: ITEM_ROWS }, (_, i) => props.items?.[i]);
 
   return (
     <div className={props.fullSize ? "" : "rounded-xl border bg-card shadow-sm overflow-hidden"}>
@@ -91,36 +97,45 @@ export function InternacaoGuidePreview(props: InternacaoGuidePreviewProps) {
         </div>
       )}
 
-      <div className={props.fullSize ? "bg-muted p-4 overflow-auto" : "bg-muted p-2 overflow-hidden"}>
+      <div className={props.fullSize ? "bg-muted" : "bg-muted p-2 overflow-hidden"}>
         <div
           className="origin-top-left"
           style={
             props.fullSize
-              ? { width: 1100 }
-              : { transform: "scale(0.4)", width: 1100, height: 820, transformOrigin: "top left" }
+              ? { width: A4_PORTRAIT_SHEET_WIDTH_PX }
+              : {
+                  transform: "scale(0.4)",
+                  width: A4_PORTRAIT_SHEET_WIDTH_PX,
+                  height: 1120,
+                  transformOrigin: "top left",
+                }
           }
         >
-          <div className="w-[1100px] bg-surface text-foreground font-sans text-[9px] leading-tight border border-foreground">
-            {/* Cabeçalho */}
-            <div className="grid grid-cols-[140px_1fr_260px] border-b border-foreground">
+          <div
+            className="bg-surface text-foreground font-sans text-[9px] leading-tight border border-foreground"
+            style={{ width: A4_PORTRAIT_SHEET_WIDTH_PX }}
+          >
+            {/* Cabeçalho: logo · título · campo 2 */}
+            <div className="grid grid-cols-[130px_1fr_230px] border-b border-foreground">
               <div className="flex items-center justify-center border-r border-foreground px-2 py-2">
                 <span className="text-[9px] text-muted-foreground italic">Logo da Operadora</span>
               </div>
               <div className="flex items-center justify-center px-2 py-2 text-center">
-                <div className="font-bold text-[13px] uppercase leading-tight">
+                <div className="font-bold text-[12px] uppercase leading-tight">
                   Guia de Solicitação de Internação
                 </div>
               </div>
               <div className="border-l border-foreground px-2 py-1 flex flex-col justify-center">
                 <div className="text-[8px] font-bold">2 - Nº Guia no Prestador</div>
-                <div className="font-mono font-bold text-[11px] mt-0.5">
+                <div className="font-mono font-bold text-[11px] mt-0.5 truncate">
                   {props.guiaPrestador || "\u00A0"}
                 </div>
               </div>
             </div>
 
+            {/* Campos 1 a 6 */}
             <FieldRow>
-              <FieldBox n="1" label="Registro ANS" value={props.ans} width={140} />
+              <FieldBox n="1" label="Registro ANS" value={props.ans} width={190} />
               <FieldBox
                 n="3"
                 label="Número da Guia Atribuído pela Operadora"
@@ -140,116 +155,138 @@ export function InternacaoGuidePreview(props: InternacaoGuidePreviewProps) {
                 n="6"
                 label="Data de Validade da Senha"
                 {...splitDate(props.validadeSenha)}
-                width={220}
+                width={190}
               />
             </FieldRow>
 
             <SectionBar>Dados do Beneficiário</SectionBar>
             <FieldRow>
-              <FieldBox n="7" label="Número da Carteira" value={props.carteira} width={220} />
+              <FieldBox n="7" label="Número da Carteira" value={props.carteira} grow />
               <FieldBoxDate
                 n="8"
                 label="Validade da Carteira"
                 {...splitDate(props.validadeCarteira)}
                 width={180}
               />
-              <FieldBox
-                n="9"
-                label="Atendimento a RN"
-                value={props.atendimentoRn === "S" ? "Sim" : "Não"}
-                width={110}
-              />
-              <FieldBox n="10" label="Nome" value={props.nomeBeneficiario} grow />
-              <FieldBox n="50" label="Nome Social" value={props.nomeSocial ?? ""} grow />
-              <FieldBox n="11" label="Cartão Nacional de Saúde" value={props.cns} width={200} />
+              <FieldBox n="9" label="Atendimento a RN" value={props.atendimentoRn} width={110} />
+            </FieldRow>
+            <FieldRow>
+              <FieldBox n="50" label="Nome Social" value={props.nomeSocial ?? ""} grow minHeight={22} />
+            </FieldRow>
+            <FieldRow>
+              <FieldBox n="10" label="Nome" value={props.nomeBeneficiario} grow minHeight={22} />
             </FieldRow>
 
             <SectionBar>Dados do Contratado Solicitante</SectionBar>
             <FieldRow>
-              <FieldBox n="12" label="Código do Contratado" value={props.codigoSolicitante} width={200} />
+              <FieldBox n="12" label="Código na Operadora" value={props.codigoSolicitante} width={250} />
               <FieldBox n="13" label="Nome do Contratado" value={props.nomeContratado} grow />
             </FieldRow>
             <FieldRow>
-              <FieldBox n="14" label="Nome do Profissional Solicitante" value={props.nomeProfissional} grow />
-              <FieldBox n="15" label="Conselho Profissional" value={props.conselho} width={110} />
-              <FieldBox n="16" label="Número no Conselho" value={props.numeroConselho} width={150} />
-              <FieldBox n="17" label="UF" value={props.ufConselho} width={50} />
-              <FieldBox n="18" label="Código CBO" value={props.cbo} width={140} />
+              <FieldBox
+                n="14"
+                label="Nome do Profissional Solicitante"
+                value={props.nomeProfissional}
+                grow
+              />
+              <FieldBox n="15" label="Conselho Profissional" value={props.conselho} width={92} />
+              <FieldBox n="16" label="Número no Conselho" value={props.numeroConselho} width={130} />
+              <FieldBox n="17" label="UF" value={props.ufConselho} width={44} />
+              <FieldBox n="18" label="Código CBO" value={props.cbo} width={86} />
             </FieldRow>
 
-            <SectionBar>Dados do Hospital / Local Solicitado e da Internação</SectionBar>
+            <SectionBar>Dados do Hospital / Local Solicitado / Dados da Internação</SectionBar>
             <FieldRow>
-              <FieldBox n="19" label="Código na Operadora" value={props.codigoHospital} width={200} />
+              <FieldBox
+                n="19"
+                label="Código na Operadora / CNPJ"
+                value={props.codigoHospital}
+                width={230}
+              />
               <FieldBox n="20" label="Nome do Hospital / Local Solicitado" value={props.nomeHospital} grow />
               <FieldBoxDate
                 n="21"
-                label="Data Sugerida para Internação"
+                label="Data sugerida para internação"
                 {...splitDate(props.dataSugerida)}
-                width={200}
+                width={180}
               />
             </FieldRow>
             <FieldRow>
-              <FieldBox n="22" label="Caráter do Atendimento" value={props.carater} width={150} />
-              <FieldBox n="23" label="Tipo de Internação" value={props.tipoInternacao} width={130} />
-              <FieldBox n="24" label="Regime de Internação" value={props.regimeInternacao} width={140} />
+              <FieldBox n="22" label="Caráter do Atendimento" value={props.carater} width={132} />
+              <FieldBox n="23" label="Tipo de Internação" value={props.tipoInternacao} width={116} />
+              <FieldBox n="24" label="Regime de Internação" value={props.regimeInternacao} width={124} />
               <FieldBox
                 n="25"
-                label="Qtde. de Diárias Solicitadas"
+                label="Qtde. Diárias Solicitadas"
                 value={String(props.diariasSolicitadas || "")}
-                width={170}
+                width={130}
               />
-              <FieldBox
-                n="26"
-                label="Previsão de Uso de OPME"
-                value={props.previsaoOpme}
-                width={150}
-              />
+              <FieldBox n="26" label="Previsão de uso de OPME" value={props.previsaoOpme} width={132} />
               <FieldBox
                 n="27"
-                label="Previsão de Uso de Quimioterápico"
+                label="Previsão de uso de quimioterápico"
                 value={props.previsaoQuimio}
                 grow
               />
-
-            </FieldRow>
-            <FieldRow>
-              <FieldBox n="28" label="Indicação Clínica" value={props.indicacaoClinica} grow />
             </FieldRow>
 
-            <SectionBar>Hipóteses Diagnósticas</SectionBar>
+            {/* 28 - Indicação clínica: bloco alto, como no modelo impresso */}
             <FieldRow>
-              <FieldBox n="29" label="CID 10 Principal" value={cid4Chars(props.cid1)} width={200} />
-              <FieldBox n="30" label="CID 10 (2)" value={cid4Chars(props.cid2)} width={200} />
-              <FieldBox n="31" label="CID 10 (3)" value={cid4Chars(props.cid3)} width={200} />
-              <FieldBox n="32" label="CID 10 (4)" value={cid4Chars(props.cid4)} width={200} />
-              <FieldBox n="33" label="Indicação de Acidente" value={props.indicacaoAcidente} grow />
+              <FieldBox
+                n="28"
+                label="Indicação Clínica"
+                value={props.indicacaoClinica}
+                grow
+                minHeight={150}
+                wrap
+              />
+            </FieldRow>
+
+            {/* CIDs e indicação de acidente na mesma linha, conforme o modelo */}
+            <FieldRow>
+              <FieldBox n="29" label="CID 10 Principal" value={cid4Chars(props.cid1)} width={132} />
+              <FieldBox n="30" label="CID 10 (2)" value={cid4Chars(props.cid2)} width={116} />
+              <FieldBox n="31" label="CID 10 (3)" value={cid4Chars(props.cid3)} width={116} />
+              <FieldBox n="32" label="CID 10 (4)" value={cid4Chars(props.cid4)} width={116} />
+              <FieldBox
+                n="33"
+                label="Indicação de Acidente (acidente ou doença relacionada)"
+                value={props.indicacaoAcidente}
+                grow
+              />
             </FieldRow>
 
             <SectionBar>Procedimentos ou Itens Assistenciais Solicitados</SectionBar>
             <div className="flex border-b border-foreground bg-secondary text-[8px] font-bold">
-              <div className="w-[70px] border-r border-foreground px-1 py-0.5 text-center">34 - Tabela</div>
-              <div className="w-[160px] border-r border-foreground px-1 py-0.5">35 - Código</div>
-              <div className="flex-1 border-r border-foreground px-1 py-0.5">36 - Descrição</div>
-              <div className="w-[110px] border-r border-foreground px-1 py-0.5 text-center">
-                37 - Qtde. Solic.
+              <div className="w-[26px] border-r border-foreground px-1 py-0.5" />
+              <div className="w-[62px] border-r border-foreground px-1 py-0.5 text-center">34 - Tabela</div>
+              <div className="w-[128px] border-r border-foreground px-1 py-0.5">
+                35 - Código do Procedimento ou Item Assistencial
               </div>
-              <div className="w-[110px] px-1 py-0.5 text-center">38 - Qtde. Autoriz.</div>
+              <div className="flex-1 border-r border-foreground px-1 py-0.5">36 - Descrição</div>
+              <div className="w-[86px] border-r border-foreground px-1 py-0.5 text-center">
+                37 - Qtde Solic
+              </div>
+              <div className="w-[86px] px-1 py-0.5 text-center">38 - Qtde Aut</div>
             </div>
             {rows.map((item, index) => (
               <div key={index} className="flex border-b border-foreground">
-                <div className="w-[70px] border-r border-foreground px-1 py-0.5 text-center font-mono min-h-[14px]">
+                <div className="w-[26px] border-r border-foreground px-1 py-0.5 text-center font-mono text-[8px]">
+                  {String(index + 1).padStart(2, "0")}
+                </div>
+                <div className="w-[62px] border-r border-foreground px-1 py-0.5 text-center font-mono min-h-[14px]">
                   {item?.table ?? ""}
                 </div>
-                <div className="w-[160px] border-r border-foreground px-1 py-0.5 font-mono min-h-[14px]">
+                <div className="w-[128px] border-r border-foreground px-1 py-0.5 font-mono min-h-[14px] truncate">
                   {item?.code ?? ""}
                 </div>
                 <div className="flex-1 border-r border-foreground px-1 py-0.5 truncate min-h-[14px]">
                   {item?.description ?? ""}
                 </div>
-                <div className="w-[110px] border-r border-foreground px-1 py-0.5 text-center font-mono min-h-[14px]">
+                <div className="w-[86px] border-r border-foreground px-1 py-0.5 text-center font-mono min-h-[14px]">
                   {item ? item.requestedQty : ""}
                 </div>
-                <div className="w-[110px] px-1 py-0.5 min-h-[14px]" />
+                <div className="w-[86px] px-1 py-0.5 min-h-[14px]" />
               </div>
             ))}
 
@@ -259,37 +296,54 @@ export function InternacaoGuidePreview(props: InternacaoGuidePreviewProps) {
                 n="39"
                 label="Data Provável da Admissão Hospitalar"
                 {...splitDate(props.dataAdmissao)}
-                width={240}
+                width={250}
               />
               <FieldBox
                 n="40"
-                label="Qtde. de Diárias Autorizadas"
+                label="Qtde. Diárias Autorizadas"
                 value={props.diariasAutorizadas}
-                width={190}
+                width={170}
               />
               <FieldBox
                 n="41"
-                label="Tipo de Acomodação Autorizada"
+                label="Tipo da Acomodação Autorizada"
                 value={props.acomodacaoAutorizada}
                 grow
               />
             </FieldRow>
             <FieldRow>
-              <FieldBox n="42" label="Código na Operadora" value={props.codigoAutorizado} width={200} />
-              <FieldBox n="43" label="Nome do Hospital / Local Autorizado" value={props.hospitalAutorizado} grow />
-              <FieldBox n="44" label="Código CNES" value={props.cnes} width={160} />
+              <FieldBox
+                n="42"
+                label="Código na Operadora / CNPJ autorizado"
+                value={props.codigoAutorizado}
+                width={250}
+              />
+              <FieldBox
+                n="43"
+                label="Nome do Hospital / Local Autorizado"
+                value={props.hospitalAutorizado}
+                grow
+              />
+              <FieldBox n="44" label="Código CNES" value={props.cnes} width={140} />
             </FieldRow>
 
-            <SectionBar>Observação e Assinaturas</SectionBar>
             <FieldRow>
-              <FieldBox n="45" label="Observação / Justificativa" value={props.observacao} grow />
+              <FieldBox
+                n="45"
+                label="Observação / Justificativa"
+                value={props.observacao}
+                grow
+                minHeight={56}
+                wrap
+              />
             </FieldRow>
+
             <FieldRow>
               <FieldBoxDate
                 n="46"
                 label="Data da Solicitação"
                 {...splitDate(props.dataSolicitacao)}
-                width={200}
+                width={170}
               />
               <FieldBox
                 n="47"
@@ -297,6 +351,7 @@ export function InternacaoGuidePreview(props: InternacaoGuidePreviewProps) {
                 value=""
                 image={props.assinaturaProfissional}
                 grow
+                minHeight={34}
               />
               <FieldBox
                 n="48"
@@ -304,6 +359,7 @@ export function InternacaoGuidePreview(props: InternacaoGuidePreviewProps) {
                 value=""
                 image={props.assinaturaBeneficiario}
                 grow
+                minHeight={34}
               />
               <FieldBox
                 n="49"
@@ -311,6 +367,7 @@ export function InternacaoGuidePreview(props: InternacaoGuidePreviewProps) {
                 value=""
                 image={props.assinaturaAutorizacao}
                 grow
+                minHeight={34}
               />
             </FieldRow>
           </div>

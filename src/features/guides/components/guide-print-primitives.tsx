@@ -25,6 +25,8 @@ export function FieldBox({
   image,
   width,
   grow,
+  minHeight,
+  wrap,
 }: {
   n: string;
   label: string;
@@ -33,11 +35,15 @@ export function FieldBox({
   image?: string;
   width?: number;
   grow?: boolean;
+  /** Altura mínima do quadro, em px, para reproduzir blocos altos do modelo. */
+  minHeight?: number;
+  /** Permite que o valor ocupe várias linhas (ex.: indicação clínica). */
+  wrap?: boolean;
 }) {
   return (
     <div
       className="border-r last:border-r-0 border-foreground px-1 py-0.5"
-      style={{ width: grow ? undefined : width, flex: grow ? 1 : undefined, minWidth: 0 }}
+      style={{ width: grow ? undefined : width, flex: grow ? 1 : undefined, minWidth: 0, minHeight }}
     >
       <div className="text-[8px] font-bold">
         {n} - {label}
@@ -60,7 +66,15 @@ export function FieldBox({
           />
         </div>
       ) : (
-        <div className="text-[10px] font-mono truncate min-h-[12px]">{value}</div>
+        <div
+          className={
+            wrap
+              ? "text-[10px] font-mono min-h-[12px] whitespace-pre-wrap break-words"
+              : "text-[10px] font-mono truncate min-h-[12px]"
+          }
+        >
+          {value}
+        </div>
       )}
     </div>
   );
