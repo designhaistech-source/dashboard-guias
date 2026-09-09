@@ -306,12 +306,19 @@ export function InternacaoGuideForm({
   const hospitalAutorizado = "";
   const cnes = "";
 
-  // 45 a 49 — observação, data e assinaturas
+  // 45 — observação (único campo desta seção preenchido no formulário)
   const [observacao, setObservacao] = useState("");
-  const [dataSolicitacao, setDataSolicitacao] = useState("");
-  const [assinaturaProfissional, setAssinaturaProfissional] = useState("");
-  const [assinaturaBeneficiario, setAssinaturaBeneficiario] = useState("");
-  const [assinaturaAutorizacao, setAssinaturaAutorizacao] = useState("");
+
+  /**
+   * 46 — Data da Solicitação: preenchida automaticamente pelo sistema na emissão.
+   * 47 a 49 — assinaturas: permanecem vazias na guia para assinatura manual após a
+   * impressão (49 depende da autorização da operadora).
+   */
+  const dataSolicitacao = new Date().toISOString().slice(0, 10);
+  const assinaturaProfissional = "";
+  const assinaturaBeneficiario = "";
+  const assinaturaAutorizacao = "";
+
 
   const [submitting, setSubmitting] = useState(false);
   const [previewOpen, setPreviewOpen] = useState(false);
