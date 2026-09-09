@@ -77,8 +77,8 @@ export function IssuedGuidesPage() {
     const query = filters.query.trim().toLowerCase();
     return guides
       .filter((guide) => {
-        // Temporariamente apenas guias SP/SADT são listadas.
-        if (guide.type !== "SP/SADT") return false;
+        // Modelos já disponíveis para emissão no Guias+.
+        if (guide.type !== "SP/SADT" && guide.type !== "Internação") return false;
         if (
           query &&
           !`${guide.numero} ${guide.patient}`.toLowerCase().includes(query)
@@ -218,7 +218,9 @@ export function IssuedGuidesPage() {
                 aria-label="Tipo de guia"
                 options={[
                   { value: "", label: "Todos os tipos de guia" },
-                  ...ISSUED_GUIDE_TYPES.map((type) => ({ value: type, label: type })),
+                  ...ISSUED_GUIDE_TYPES.filter(
+                    (type) => type === "SP/SADT" || type === "Internação",
+                  ).map((type) => ({ value: type, label: type })),
                 ]}
                 value={filters.type}
                 onChange={(value) => setFilter("type", value)}
