@@ -117,7 +117,11 @@ export function IssuedGuidesPage() {
     const frame = window.requestAnimationFrame(() => {
       const markup = printAreaRef.current?.innerHTML ?? "";
 
-      void printGuideMarkup(markup, `Guia ${printTarget.numero} — Guias+`)
+      void printGuideMarkup(
+        markup,
+        `Guia ${printTarget.numero} — Guias+`,
+        printTarget.type === "Internação" ? "portrait" : "landscape",
+      )
         .then((result) => {
           if (cancelled) return;
           if (result.ok) {
