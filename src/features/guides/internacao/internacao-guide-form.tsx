@@ -843,6 +843,13 @@ export function InternacaoGuideForm({
             onValueChange={setPrevisaoQuimio}
             options={SIM_NAO_OPTIONS}
           />
+          <SelectField
+            label="33 - Indicação de Acidente"
+            required
+            value={indicacaoAcidente}
+            onValueChange={setIndicacaoAcidente}
+            options={ACIDENTE_OPTIONS}
+          />
         </Grid>
 
         <div className="mt-4">
