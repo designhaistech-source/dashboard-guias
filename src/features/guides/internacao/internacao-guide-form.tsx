@@ -1226,6 +1226,9 @@ export function InternacaoGuideForm({
           </>
         }
       >
+        <Button type="button" variant="outline" size="sm" onClick={handleReset}>
+          Limpar
+        </Button>
         <Button type="submit" size="sm" disabled={submitting}>
           <FileText className="h-4 w-4" />
           {submitting ? "Gerando..." : "Gerar guia"}
