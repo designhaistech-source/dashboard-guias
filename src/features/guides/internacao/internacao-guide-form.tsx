@@ -841,14 +841,20 @@ export function InternacaoGuideForm({
         </Grid>
 
         <div className="mt-4">
-          <Field label="28 - Indicação Clínica" required>
+          <Field
+            label="28 - Indicação Clínica"
+            required
+            hint={`${indicacaoClinica.length}/500 caracteres.`}
+          >
             <Textarea
               value={indicacaoClinica}
               onChange={(e) => setIndicacaoClinica(e.target.value.slice(0, 500))}
+              maxLength={500}
               rows={3}
               placeholder="Indicação clínica que embasa a solicitação (até 500 caracteres)."
             />
           </Field>
+
         </div>
       </SectionCard>
 
