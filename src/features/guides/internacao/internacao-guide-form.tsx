@@ -377,7 +377,12 @@ export function InternacaoGuideForm({
   const guiaOk = Boolean(operadoraValue && ans);
   const beneficiarioOk = Boolean(carteira && nomeBeneficiario);
   const solicitanteOk = Boolean(
-    codigoSolicitante && nomeContratado && conselho && numeroConselho && cbo,
+    codigoSolicitante &&
+      nomeContratado &&
+      conselho &&
+      numeroConselho &&
+      ufConselho &&
+      cbo,
   );
   const internacaoOk = Boolean(
     codigoHospital &&
