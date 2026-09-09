@@ -770,18 +770,18 @@ export function InternacaoGuideForm({
         description="Campos 19 a 28 — local solicitado, regime, diárias e indicação clínica."
       >
         <Grid cols={3}>
-          <Field label="19 - Código na Operadora / CNPJ" required>
-            <Input
-              value={codigoHospital}
-              onChange={(e) => setCodigoHospital(e.target.value)}
-              placeholder="Código ou CNPJ"
-            />
-          </Field>
           <Field label="20 - Nome do Hospital / Local Solicitado" required>
             <Input
               value={nomeHospital}
               onChange={(e) => setNomeHospital(e.target.value)}
               placeholder="Nome do hospital"
+            />
+          </Field>
+          <Field label="19 - Código na Operadora / CNPJ" required>
+            <Input
+              value={codigoHospital}
+              onChange={(e) => setCodigoHospital(e.target.value)}
+              placeholder="Código ou CNPJ"
             />
           </Field>
           <Field label="21 - Data Sugerida para Internação" required>
