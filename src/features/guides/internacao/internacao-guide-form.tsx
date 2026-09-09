@@ -303,13 +303,14 @@ export function InternacaoGuideForm({
   // 34 a 38 — procedimentos solicitados
   const [items, setItems] = useState<RequestedItem[]>([newItem()]);
 
-  // 39 a 44 — dados da autorização (operadora)
-  const [dataAdmissao, setDataAdmissao] = useState("");
-  const [diariasAutorizadas, setDiariasAutorizadas] = useState("");
-  const [acomodacaoAutorizada, setAcomodacaoAutorizada] = useState("");
-  const [codigoAutorizado, setCodigoAutorizado] = useState("");
-  const [hospitalAutorizado, setHospitalAutorizado] = useState("");
-  const [cnes, setCnes] = useState("");
+  // 39 a 44 — dados da autorização: preenchidos apenas pela operadora, por isso
+  // não aparecem no formulário e saem vazios na guia da solicitação inicial.
+  const dataAdmissao = "";
+  const diariasAutorizadas = "";
+  const acomodacaoAutorizada = "";
+  const codigoAutorizado = "";
+  const hospitalAutorizado = "";
+  const cnes = "";
 
   // 45 a 49 — observação, data e assinaturas
   const [observacao, setObservacao] = useState("");
