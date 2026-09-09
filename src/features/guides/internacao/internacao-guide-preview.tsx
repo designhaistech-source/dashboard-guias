@@ -193,15 +193,16 @@ export function InternacaoGuidePreview(props: InternacaoGuidePreviewProps) {
               <FieldBox
                 n="26"
                 label="Previsão de Uso de OPME"
-                value={props.previsaoOpme === "S" ? "Sim" : "Não"}
+                value={props.previsaoOpme}
                 width={150}
               />
               <FieldBox
                 n="27"
                 label="Previsão de Uso de Quimioterápico"
-                value={props.previsaoQuimio === "S" ? "Sim" : "Não"}
+                value={props.previsaoQuimio}
                 grow
               />
+
             </FieldRow>
             <FieldRow>
               <FieldBox n="28" label="Indicação Clínica" value={props.indicacaoClinica} grow />
