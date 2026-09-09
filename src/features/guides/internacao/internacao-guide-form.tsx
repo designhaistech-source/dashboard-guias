@@ -625,7 +625,7 @@ export function InternacaoGuideForm({
         done={guiaOk}
         icon={<Building2 className="h-4 w-4" />}
         title="Convênio"
-        description="Campos 1 a 6 — operadora responsável, autorização e senha."
+        description="Operadora responsável pela solicitação."
       >
         <Grid cols={12}>
           <Field
