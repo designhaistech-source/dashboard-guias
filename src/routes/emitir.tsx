@@ -1445,7 +1445,7 @@ function EmitirPage() {
                             <Badge
                               variant={active ? "primary-soft" : "outline"}
                               size="sm"
-                              className="mt-3 self-start uppercase tracking-wide"
+                              className="mt-3 self-start"
                             >
                               {g.badge}
                             </Badge>
