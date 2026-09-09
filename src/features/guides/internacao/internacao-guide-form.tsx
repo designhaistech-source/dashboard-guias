@@ -775,7 +775,7 @@ export function InternacaoGuideForm({
         done={internacaoOk}
         icon={<BedDouble className="h-4 w-4" />}
         title="Dados do Hospital / Local Solicitado e da Internação"
-        description="Campos 19 a 28 — local solicitado, regime, diárias e indicação clínica."
+        description="Campos 19 a 28 e 33 — local solicitado e informações da internação."
       >
         <Grid cols={3}>
           <Field label="20 - Nome do Hospital / Local Solicitado" required>
@@ -843,6 +843,13 @@ export function InternacaoGuideForm({
             onValueChange={setPrevisaoQuimio}
             options={SIM_NAO_OPTIONS}
           />
+          <SelectField
+            label="33 - Indicação de Acidente"
+            required
+            value={indicacaoAcidente}
+            onValueChange={setIndicacaoAcidente}
+            options={ACIDENTE_OPTIONS}
+          />
         </Grid>
 
         <div className="mt-4">
@@ -863,13 +870,13 @@ export function InternacaoGuideForm({
         </div>
       </SectionCard>
 
-      {/* 29 a 33 */}
+      {/* 29 a 32 */}
       <SectionCard
         number={5}
         done={diagnosticoOk}
         icon={<ClipboardList className="h-4 w-4" />}
-        title="Hipóteses Diagnósticas"
-        description="Campos 29 a 33 — CID-10 (opcionais) e indicação de acidente."
+        title="Diagnósticos"
+        description="Campos 29 a 32 — diagnósticos CID-10."
       >
         <Grid cols={3}>
           <Field label="29 - CID 10 Principal (opcional)">
@@ -908,13 +915,6 @@ export function InternacaoGuideForm({
               placeholder="Buscar CID-10"
             />
           </Field>
-          <SelectField
-            label="33 - Indicação de Acidente"
-            required
-            value={indicacaoAcidente}
-            onValueChange={setIndicacaoAcidente}
-            options={ACIDENTE_OPTIONS}
-          />
         </Grid>
       </SectionCard>
 
@@ -1131,7 +1131,7 @@ export function InternacaoGuideForm({
           { label: "Beneficiário", done: beneficiarioOk },
           { label: "Contratado solicitante", done: solicitanteOk },
           { label: "Hospital e internação", done: internacaoOk },
-          { label: "Hipóteses diagnósticas", done: diagnosticoOk },
+          { label: "Diagnósticos", done: diagnosticoOk },
           { label: "Procedimentos solicitados", done: itemsOk },
           { label: "Observação e assinaturas", done: finalOk },
         ]}
