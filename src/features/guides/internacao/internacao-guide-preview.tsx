@@ -185,11 +185,18 @@ export function InternacaoGuidePreview(props: InternacaoGuidePreviewProps) {
             </FieldRow>
             <FieldRow>
               <FieldBox n="10" label="Nome" value={props.nomeBeneficiario} grow minHeight={22} />
+              <FieldBox
+                n="11"
+                label="Cartão Nacional de Saúde"
+                value={props.cns}
+                width={230}
+                minHeight={22}
+              />
             </FieldRow>
 
             <SectionBar>Dados do Contratado Solicitante</SectionBar>
             <FieldRow>
-              <FieldBox n="12" label="Código na Operadora" value={props.codigoSolicitante} width={250} />
+              <FieldBox n="12" label="Código do Contratado" value={props.codigoSolicitante} width={250} />
               <FieldBox n="13" label="Nome do Contratado" value={props.nomeContratado} grow />
             </FieldRow>
             <FieldRow>
