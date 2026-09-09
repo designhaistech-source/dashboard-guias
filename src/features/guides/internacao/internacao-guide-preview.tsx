@@ -210,10 +210,10 @@ export function InternacaoGuidePreview(props: InternacaoGuidePreviewProps) {
 
             <SectionBar>Hipóteses Diagnósticas</SectionBar>
             <FieldRow>
-              <FieldBox n="29" label="CID 10 Principal" value={props.cid1} width={200} />
-              <FieldBox n="30" label="CID 10 (2)" value={props.cid2} width={200} />
-              <FieldBox n="31" label="CID 10 (3)" value={props.cid3} width={200} />
-              <FieldBox n="32" label="CID 10 (4)" value={props.cid4} width={200} />
+              <FieldBox n="29" label="CID 10 Principal" value={cid4Chars(props.cid1)} width={200} />
+              <FieldBox n="30" label="CID 10 (2)" value={cid4Chars(props.cid2)} width={200} />
+              <FieldBox n="31" label="CID 10 (3)" value={cid4Chars(props.cid3)} width={200} />
+              <FieldBox n="32" label="CID 10 (4)" value={cid4Chars(props.cid4)} width={200} />
               <FieldBox n="33" label="Indicação de Acidente" value={props.indicacaoAcidente} grow />
             </FieldRow>
 
