@@ -17,7 +17,6 @@ import { toast } from "sonner";
 
 import { SectionCard } from "@/components/section-card";
 import { FormActionBar } from "@/components/form-action-bar";
-import { SignatureField } from "@/components/signature-field";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -306,12 +305,19 @@ export function InternacaoGuideForm({
   const hospitalAutorizado = "";
   const cnes = "";
 
-  // 45 a 49 — observação, data e assinaturas
+  // 45 — observação (único campo desta seção preenchido no formulário)
   const [observacao, setObservacao] = useState("");
-  const [dataSolicitacao, setDataSolicitacao] = useState("");
-  const [assinaturaProfissional, setAssinaturaProfissional] = useState("");
-  const [assinaturaBeneficiario, setAssinaturaBeneficiario] = useState("");
-  const [assinaturaAutorizacao, setAssinaturaAutorizacao] = useState("");
+
+  /**
+   * 46 — Data da Solicitação: preenchida automaticamente pelo sistema na emissão.
+   * 47 a 49 — assinaturas: permanecem vazias na guia para assinatura manual após a
+   * impressão (49 depende da autorização da operadora).
+   */
+  const dataSolicitacao = new Date().toISOString().slice(0, 10);
+  const assinaturaProfissional = "";
+  const assinaturaBeneficiario = "";
+  const assinaturaAutorizacao = "";
+
 
   const [submitting, setSubmitting] = useState(false);
   const [previewOpen, setPreviewOpen] = useState(false);
@@ -397,11 +403,12 @@ export function InternacaoGuideForm({
 
     [items],
   );
-  const finalOk = Boolean(dataSolicitacao);
+  // Seção 45 não possui campos obrigatórios.
+  const finalOk = true;
 
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
-    if (!guiaOk || !beneficiarioOk || !solicitanteOk || !internacaoOk || !itemsOk || !finalOk) {
+    if (!guiaOk || !beneficiarioOk || !solicitanteOk || !internacaoOk || !itemsOk) {
       toast.error("Preencha os campos obrigatórios antes de gerar a guia.");
       return;
     }
@@ -1019,13 +1026,13 @@ export function InternacaoGuideForm({
         )}
       </SectionCard>
 
-      {/* 45 a 49 */}
+      {/* 45 */}
       <SectionCard
         number={7}
         done={finalOk}
         icon={<FileText className="h-4 w-4" />}
-        title="Observação e Assinaturas"
-        description="Campos 45 a 49 — justificativa, data da solicitação e assinaturas."
+        title="Observação"
+        description="Campo 45 — observação ou justificativa."
       >
         <Field label="45 - Observação / Justificativa">
           <Textarea
@@ -1035,40 +1042,8 @@ export function InternacaoGuideForm({
             placeholder="Observações sobre o atendimento (até 1000 caracteres)."
           />
         </Field>
-
-        <div className="mt-4">
-          <Grid cols={3}>
-            <Field label="46 - Data da Solicitação" required>
-              <Input
-                type="date"
-                value={dataSolicitacao}
-                onChange={(e) => setDataSolicitacao(e.target.value)}
-              />
-            </Field>
-          </Grid>
-        </div>
-
-        <div className="mt-5 grid gap-4 border-t pt-5 lg:grid-cols-3">
-          <SignatureField
-            label="47 - Assinatura do Profissional Solicitante"
-            value={assinaturaProfissional}
-            onChange={setAssinaturaProfissional}
-            hint="Opcional: deixe em branco para assinar à mão no papel."
-          />
-          <SignatureField
-            label="48 - Assinatura do Beneficiário ou Responsável"
-            value={assinaturaBeneficiario}
-            onChange={setAssinaturaBeneficiario}
-            hint="Opcional: deixe em branco para assinar à mão no papel."
-          />
-          <SignatureField
-            label="49 - Assinatura do Responsável pela Autorização"
-            value={assinaturaAutorizacao}
-            onChange={setAssinaturaAutorizacao}
-            hint="Preenchida pela operadora em caso de autorização."
-          />
-        </div>
       </SectionCard>
+
 
       <FormActionBar
         stepsLabel="Etapas preenchidas"
@@ -1079,7 +1054,7 @@ export function InternacaoGuideForm({
           { label: "Hospital e internação", done: internacaoOk },
           
           { label: "Procedimentos solicitados", done: itemsOk },
-          { label: "Observação e assinaturas", done: finalOk },
+          { label: "Observação", done: finalOk },
         ]}
         note={
           <>
