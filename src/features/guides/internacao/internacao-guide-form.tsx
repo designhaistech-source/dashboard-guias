@@ -135,7 +135,7 @@ function newItem(): RequestedItem {
   };
 }
 
-function Grid({ cols, children }: { cols: 2 | 3 | 12; children: React.ReactNode }) {
+function Grid({ cols, children }: { cols: 2 | 3 | 4 | 12; children: React.ReactNode }) {
   // Mesmas escalas usadas no formulário SP/SADT, para que as duas guias
   // tenham exatamente o mesmo ritmo de grade e espaçamento.
   const colsClass =
@@ -143,13 +143,16 @@ function Grid({ cols, children }: { cols: 2 | 3 | 12; children: React.ReactNode 
       ? "grid-cols-1 @md:grid-cols-2"
       : cols === 3
         ? "grid-cols-1 @md:grid-cols-2 @3xl:grid-cols-3"
-        : "grid-cols-1 @md:grid-cols-6 @3xl:grid-cols-12";
+        : cols === 4
+          ? "grid-cols-1 @md:grid-cols-2 @4xl:grid-cols-4"
+          : "grid-cols-1 @md:grid-cols-6 @3xl:grid-cols-12";
   return (
     <div className="@container">
-      <div className={`grid items-start gap-x-4 gap-y-3 ${colsClass}`}>{children}</div>
+      <div className={`grid items-start gap-x-4 gap-y-4 ${colsClass}`}>{children}</div>
     </div>
   );
 }
+
 
 
 function Field({
@@ -712,10 +715,11 @@ export function InternacaoGuideForm({
       >
         {/* Grade de 3 colunas: 1 campo por linha no mobile, 2 em larguras
             intermediárias e 3 em telas largas — mesma lógica do SP/SADT. */}
-        <Grid cols={3}>
+        <Grid cols={12}>
           <Field
             label="7 - Número da Carteira"
             required
+            span="@md:col-span-3 @3xl:col-span-3"
             hint={
               beneficiarioStatus === "not-found"
                 ? "Beneficiário não encontrado — informe o nome manualmente."
@@ -743,6 +747,7 @@ export function InternacaoGuideForm({
 
           <Field
             label="8 - Validade da Carteira"
+            span="@md:col-span-3 @3xl:col-span-3"
             hint="Condicionado — informe quando a operadora exigir autorização prévia."
           >
             <Input
@@ -756,6 +761,7 @@ export function InternacaoGuideForm({
           <Field
             label="10 - Nome"
             required
+            span="@md:col-span-6 @3xl:col-span-6"
             hint={
               beneficiarioStatus === "found"
                 ? "Preenchido pelo cadastro do beneficiário."
@@ -777,6 +783,7 @@ export function InternacaoGuideForm({
 
           <Field
             label="50 - Nome Social"
+            span="@md:col-span-6 @3xl:col-span-6"
             hint="Preencha apenas quando solicitado pelo beneficiário (Decreto nº 8.727/2016)."
           >
             <Input
@@ -789,6 +796,7 @@ export function InternacaoGuideForm({
 
           <SelectField
             label="9 - Atendimento a RN"
+            className="@md:col-span-3 @3xl:col-span-3"
             required
             value={atendimentoRn}
             onValueChange={setAtendimentoRn}
@@ -798,6 +806,7 @@ export function InternacaoGuideForm({
           {/* 11 é condicional: só aparece quando existe no cadastro. */}
           {cns && (
             <Field
+              span="@md:col-span-3 @3xl:col-span-3"
               label="11 - Cartão Nacional de Saúde"
               hint="Preenchido pelo cadastro do beneficiário."
             >
@@ -822,8 +831,12 @@ export function InternacaoGuideForm({
         title="Dados do Contratado Solicitante"
         description="Campos 12 a 18 — prestador e profissional que solicita a internação."
       >
-        <Grid cols={3}>
-          <Field label="13 - Nome do Contratado" required>
+        <Grid cols={12}>
+          <Field
+            label="13 - Nome do Contratado"
+            required
+            span="@md:col-span-6 @3xl:col-span-7"
+          >
             <Input
               value={nomeContratado}
               onChange={(e) => setNomeContratado(e.target.value)}
@@ -833,7 +846,11 @@ export function InternacaoGuideForm({
           </Field>
 
 
-          <Field label="12 - Código do Contratado" required>
+          <Field
+            label="12 - Código do Contratado"
+            required
+            span="@md:col-span-6 @3xl:col-span-5"
+          >
             <Input
               value={codigoSolicitante}
               onChange={(e) => setCodigoSolicitante(e.target.value)}
@@ -842,7 +859,10 @@ export function InternacaoGuideForm({
             />
           </Field>
 
-          <Field label="14 - Nome do Profissional Solicitante">
+          <Field
+            label="14 - Nome do Profissional Solicitante"
+            span="@md:col-span-6 @3xl:col-span-6"
+          >
             <Input
               value={nomeProfissional}
               onChange={(e) => setNomeProfissional(e.target.value)}
@@ -853,12 +873,17 @@ export function InternacaoGuideForm({
 
           <SelectField
             label="15 - Conselho Profissional"
+            className="@md:col-span-3 @3xl:col-span-3"
             required
             value={conselho}
             onValueChange={setConselho}
             options={CONSELHO_OPTIONS}
           />
-          <Field label="16 - Número no Conselho" required>
+          <Field
+            label="16 - Número no Conselho"
+            required
+            span="@md:col-span-3 @3xl:col-span-3"
+          >
             <Input
               value={numeroConselho}
               onChange={(e) => setNumeroConselho(e.target.value)}
@@ -869,6 +894,7 @@ export function InternacaoGuideForm({
           </Field>
           <SelectField
             label="17 - UF"
+            className="@md:col-span-2 @3xl:col-span-3"
             required
             value={ufConselho}
             onValueChange={setUfConselho}
@@ -878,6 +904,7 @@ export function InternacaoGuideForm({
 
           <SelectField
             label="18 - Código CBO"
+            className="@md:col-span-4 @3xl:col-span-9"
             required
             value={cbo}
             onValueChange={setCbo}
@@ -896,15 +923,23 @@ export function InternacaoGuideForm({
         title="Dados do Hospital / Local Solicitado e da Internação"
         description="Campos 19 a 28 e 33 — local solicitado e informações da internação."
       >
-        <Grid cols={3}>
-          <Field label="20 - Nome do Hospital / Local Solicitado" required>
+        <Grid cols={12}>
+          <Field
+            label="20 - Nome do Hospital / Local Solicitado"
+            required
+            span="@md:col-span-6 @3xl:col-span-8"
+          >
             <Input
               value={nomeHospital}
               onChange={(e) => setNomeHospital(e.target.value)}
               placeholder="Nome do hospital"
             />
           </Field>
-          <Field label="19 - Código na Operadora / CNPJ" required>
+          <Field
+            label="19 - Código na Operadora / CNPJ"
+            required
+            span="@md:col-span-6 @3xl:col-span-4"
+          >
             <Input
               value={codigoHospital}
               onChange={(e) => setCodigoHospital(e.target.value)}
@@ -912,7 +947,11 @@ export function InternacaoGuideForm({
               maxLength={14}
             />
           </Field>
-          <Field label="21 - Data Sugerida para Internação" required>
+          <Field
+            label="21 - Data Sugerida para Internação"
+            required
+            span="@md:col-span-3 @3xl:col-span-4"
+          >
             <Input
               type="date"
               value={dataSugerida}
@@ -921,6 +960,7 @@ export function InternacaoGuideForm({
           </Field>
           <SelectField
             label="22 - Caráter do Atendimento"
+            className="@md:col-span-3 @3xl:col-span-4"
             required
             value={carater}
             onValueChange={setCarater}
@@ -928,6 +968,7 @@ export function InternacaoGuideForm({
           />
           <SelectField
             label="23 - Tipo de Internação"
+            className="@md:col-span-3 @3xl:col-span-4"
             required
             value={tipoInternacao}
             onValueChange={setTipoInternacao}
@@ -935,12 +976,17 @@ export function InternacaoGuideForm({
           />
           <SelectField
             label="24 - Regime de Internação"
+            className="@md:col-span-3 @3xl:col-span-4"
             required
             value={regimeInternacao}
             onValueChange={setRegimeInternacao}
             options={REGIME_INTERNACAO_OPTIONS}
           />
-          <Field label="25 - Qtde. Diárias Solicitadas" required>
+          <Field
+            label="25 - Qtde. Diárias Solicitadas"
+            required
+            span="@md:col-span-3 @3xl:col-span-4"
+          >
             <Input
               type="number"
               min={1}
@@ -950,6 +996,7 @@ export function InternacaoGuideForm({
           </Field>
           <SelectField
             label="26 - Previsão de Uso de OPME"
+            className="@md:col-span-3 @3xl:col-span-4"
             required
             value={previsaoOpme}
             onValueChange={setPrevisaoOpme}
@@ -957,6 +1004,7 @@ export function InternacaoGuideForm({
           />
           <SelectField
             label="27 - Previsão de Uso de Quimioterápico"
+            className="@md:col-span-3 @3xl:col-span-6"
             required
             value={previsaoQuimio}
             onValueChange={setPrevisaoQuimio}
@@ -964,6 +1012,7 @@ export function InternacaoGuideForm({
           />
           <SelectField
             label="33 - Indicação de Acidente"
+            className="@md:col-span-3 @3xl:col-span-6"
             required
             value={indicacaoAcidente}
             onValueChange={setIndicacaoAcidente}
@@ -997,7 +1046,7 @@ export function InternacaoGuideForm({
         title="Diagnósticos"
         description="Campos 29 a 32 — diagnósticos CID-10."
       >
-        <Grid cols={3}>
+        <Grid cols={4}>
           <Field label="29 - CID 10 Principal">
             <Combobox
               options={CID_OPTIONS}
@@ -1059,7 +1108,7 @@ export function InternacaoGuideForm({
           />
         ) : (
           <div className="space-y-3 @container">
-            <div className="hidden gap-3 px-1 text-xs font-medium text-muted-foreground @3xl:grid @3xl:grid-cols-[1fr_130px_110px_90px_40px]">
+            <div className="hidden gap-3 px-1 text-xs font-medium text-muted-foreground @2xl:grid @2xl:grid-cols-[minmax(200px,1fr)_120px_96px_88px_40px]">
               <span>
                 36 - Descrição <span className="text-destructive">*</span>
               </span>
@@ -1078,9 +1127,9 @@ export function InternacaoGuideForm({
             {items.map((item, idx) => (
               <div
                 key={item.id}
-                className="grid gap-3 rounded-lg border p-3 @3xl:grid-cols-[1fr_130px_110px_90px_40px] @3xl:items-center @3xl:border-0 @3xl:p-0"
+                className="grid gap-3 rounded-lg border p-3 @2xl:grid-cols-[minmax(200px,1fr)_120px_96px_88px_40px] @2xl:items-center @2xl:border-0 @2xl:p-0"
               >
-                <div className="@3xl:hidden text-xs font-semibold text-muted-foreground">
+                <div className="text-xs font-semibold text-muted-foreground @2xl:hidden">
                   Item {idx + 1}
                 </div>
                 <Combobox
