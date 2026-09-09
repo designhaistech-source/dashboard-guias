@@ -45,7 +45,7 @@ import { UF_SELECT_OPTIONS } from "@/lib/uf-options";
 import { CBO_OPTIONS } from "@/lib/cbo-options";
 
 
-import { TUSS, TUSS_OPTIONS } from "@/lib/tuss";
+import { TUSS, TUSS_OPTIONS, resolveTissTable } from "@/lib/tuss";
 
 /** Item do quadro "Procedimentos ou Itens Assistenciais Solicitados" (campos 34 a 38). */
 interface RequestedItem {
@@ -935,41 +935,21 @@ export function InternacaoGuideForm({
           />
         ) : (
           <div className="space-y-3 @container">
-            <div className="hidden gap-3 px-1 text-eyebrow @3xl:grid @3xl:grid-cols-[110px_130px_1fr_90px_90px_40px]">
-              <span>34 - Tabela</span>
-              <span>35 - Código</span>
+            <div className="hidden gap-3 px-1 text-eyebrow @3xl:grid @3xl:grid-cols-[1fr_130px_110px_90px_40px]">
               <span>36 - Descrição</span>
+              <span>35 - Código</span>
+              <span>34 - Tabela</span>
               <span className="text-center">37 - Qtde Solic.</span>
-              <span className="text-center">38 - Qtde Aut.</span>
               <span />
             </div>
             {items.map((item, idx) => (
               <div
                 key={item.id}
-                className="grid gap-3 rounded-lg border p-3 @3xl:grid-cols-[110px_130px_1fr_90px_90px_40px] @3xl:items-center @3xl:border-0 @3xl:p-0"
+                className="grid gap-3 rounded-lg border p-3 @3xl:grid-cols-[1fr_130px_110px_90px_40px] @3xl:items-center @3xl:border-0 @3xl:p-0"
               >
                 <div className="@3xl:hidden text-xs font-semibold text-muted-foreground">
                   Item {idx + 1}
                 </div>
-                <SelectField
-                  id={`tabela-${item.id}`}
-                  label="34 - Tabela"
-                  labelClassName="@3xl:hidden"
-                  className="min-w-0 @3xl:space-y-0"
-                  triggerClassName="w-full"
-                  value={item.table}
-                  onValueChange={(table) => updateItem(item.id, { table })}
-                  options={TABELA_OPTIONS}
-                  placeholder="Tabela"
-                />
-
-                <Input
-                  value={item.code}
-                  onChange={(e) => updateItem(item.id, { code: e.target.value })}
-                  placeholder="Código"
-                  aria-label="35 - Código do procedimento"
-                  className="font-mono"
-                />
                 <Combobox
                   options={TUSS_OPTIONS}
                   value={item.code}
@@ -978,10 +958,27 @@ export function InternacaoGuideForm({
                     updateItem(item.id, {
                       code,
                       description: found?.descricao ?? item.description,
+                      table: code ? resolveTissTable(code) : item.table,
                     });
                   }}
                   placeholder="Descrição do procedimento"
                   searchPlaceholder="Buscar procedimento (TUSS)"
+                />
+                <Input
+                  readOnly
+                  value={item.code}
+                  placeholder="—"
+                  aria-label="35 - Código do procedimento (automático)"
+                  className="bg-muted font-mono"
+                />
+                <Input
+                  readOnly
+                  value={
+                    TABELA_OPTIONS.find((t) => t.value === item.table)?.value ?? item.table
+                  }
+                  placeholder="—"
+                  aria-label="34 - Tabela (automático)"
+                  className="bg-muted font-mono"
                 />
                 <Input
                   type="number"
@@ -995,12 +992,7 @@ export function InternacaoGuideForm({
                   aria-label="37 - Quantidade solicitada"
                   className="text-center"
                 />
-                <Input
-                  disabled
-                  placeholder="—"
-                  aria-label="38 - Quantidade autorizada (operadora)"
-                  className="text-center"
-                />
+
                 <div className="flex justify-end">
                   <Button
                     type="button"
