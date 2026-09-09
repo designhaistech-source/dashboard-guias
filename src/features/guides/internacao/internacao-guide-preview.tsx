@@ -66,6 +66,14 @@ export interface InternacaoGuidePreviewProps {
 }
 
 /**
+ * Campos 29 a 32 aceitam no máximo 4 caracteres na guia: o ponto separador do
+ * CID-10 é removido e o código é truncado (ex.: "I20.0" -> "I200").
+ */
+function cid4Chars(value: string) {
+  return (value ?? "").replace(/[^A-Za-z0-9]/g, "").slice(0, 4).toUpperCase();
+}
+
+/**
  * Pré-visualização da Guia de Solicitação de Internação (TISS Dez/2017),
  * com os quadros e a numeração 1 a 49 na ordem do formulário oficial.
  */
