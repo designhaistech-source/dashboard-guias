@@ -38,6 +38,10 @@ import {
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 import { AppModal } from "@/components/app-modal";
+import { useNavigate } from "@tanstack/react-router";
+import { CheckCircle2, Download, Printer } from "lucide-react";
+import { addIssuedGuide, downloadIssuedGuide, type IssuedGuide } from "@/features/issued-guides";
+import { nextGuiaNumber } from "@/lib/guia-number";
 import { ScaledGuideSheet } from "@/components/scaled-guide-sheet";
 import { A4_PORTRAIT_SHEET_WIDTH_PX } from "@/lib/guide-sheet";
 import { InternacaoGuidePreview } from "./internacao-guide-preview";
