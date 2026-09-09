@@ -15,6 +15,8 @@ export interface InternacaoPreviewItem {
 }
 
 export interface InternacaoGuidePreviewProps {
+  /** URL da logo da operadora exibida no cabeçalho da guia. */
+  operadoraLogo?: string;
   ans: string;
   guiaPrestador: string;
   guiaOperadora: string;
@@ -118,7 +120,15 @@ export function InternacaoGuidePreview(props: InternacaoGuidePreviewProps) {
             {/* Cabeçalho: logo · título · campo 2 */}
             <div className="grid grid-cols-[130px_1fr_230px] border-b border-foreground">
               <div className="flex items-center justify-center border-r border-foreground px-2 py-2">
-                <span className="text-[9px] text-muted-foreground italic">Logo da Operadora</span>
+                {props.operadoraLogo ? (
+                  <img
+                    src={props.operadoraLogo}
+                    alt="Logo da operadora"
+                    className="max-h-10 w-auto max-w-full object-contain"
+                  />
+                ) : (
+                  <span className="text-[9px] text-muted-foreground italic">Logo da Operadora</span>
+                )}
               </div>
               <div className="flex items-center justify-center px-2 py-2 text-center">
                 <div className="font-bold text-[12px] uppercase leading-tight">

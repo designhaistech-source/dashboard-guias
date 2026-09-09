@@ -26,6 +26,7 @@ export function IssuedGuidePreview({ guide }: { guide: IssuedGuide }) {
       <InternacaoGuidePreview
         fullSize
         {...({
+          operadoraLogo: operadoraLogoUrl(guide.operadora),
           ans: derived.registroAns,
           guiaPrestador: guide.numero,
           guiaOperadora: derived.guiaOperadora,

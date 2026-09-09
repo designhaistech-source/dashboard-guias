@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 
+import { operadoraLogoUrl } from "@/features/guides/data/operadora-logos";
 import { SectionCard } from "@/components/section-card";
 import { FormActionBar } from "@/components/form-action-bar";
 import { Button } from "@/components/ui/button";
@@ -326,6 +327,9 @@ export function InternacaoGuideForm({
 
   /** Dados normalizados enviados à pré-visualização da guia impressa. */
   const previewData = {
+    operadoraLogo: operadoraLogoUrl(
+      operadoras.find((o) => o.value === operadoraValue)?.label ?? operadoraValue,
+    ),
     ans,
     guiaPrestador,
     guiaOperadora,
