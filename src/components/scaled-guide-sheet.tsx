@@ -110,7 +110,8 @@ export function ScaledGuideSheet({
       ) : (
         <div
           ref={contentRef}
-          style={{ zoom: scale, width: "max-content", minWidth: sheetWidth }}
+          // Folhas mais estreitas que o container (A4 retrato) ficam centradas.
+          style={{ zoom: scale, width: "max-content", minWidth: sheetWidth, margin: "0 auto" }}
         >
           {children}
         </div>
