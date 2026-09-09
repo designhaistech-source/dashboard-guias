@@ -283,7 +283,7 @@ export function InternacaoGuideForm({
   const [codigoHospital, setCodigoHospital] = useState("");
   const [nomeHospital, setNomeHospital] = useState("");
   const [dataSugerida, setDataSugerida] = useState("");
-  const [carater, setCarater] = useState("E");
+  const [carater, setCarater] = useState("1");
   const [tipoInternacao, setTipoInternacao] = useState("1");
   const [regimeInternacao, setRegimeInternacao] = useState("1");
   const [diariasSolicitadas, setDiariasSolicitadas] = useState(1);
