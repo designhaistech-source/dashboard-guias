@@ -1061,8 +1061,8 @@ export function InternacaoGuideForm({
           { label: "Beneficiário", done: beneficiarioOk },
           { label: "Contratado solicitante", done: solicitanteOk },
           { label: "Hospital e internação", done: internacaoOk },
-          
           { label: "Procedimentos solicitados", done: itemsOk },
+
         ]}
         note={
           <>
