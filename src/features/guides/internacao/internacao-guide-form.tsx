@@ -946,10 +946,19 @@ export function InternacaoGuideForm({
         ) : (
           <div className="space-y-3 @container">
             <div className="hidden gap-3 px-1 text-xs font-medium text-muted-foreground @3xl:grid @3xl:grid-cols-[1fr_130px_110px_90px_40px]">
-              <span>36 - Descrição</span>
-              <span>35 - Código</span>
-              <span>34 - Tabela</span>
-              <span className="text-center">37 - Qtde Solic.</span>
+              <span>
+                36 - Descrição <span className="text-destructive">*</span>
+              </span>
+              <span>
+                35 - Código <span className="text-destructive">*</span>
+              </span>
+              <span>
+                34 - Tabela <span className="text-destructive">*</span>
+              </span>
+              <span className="text-center">
+                37 - Qtde Solic. <span className="text-destructive">*</span>
+              </span>
+
               <span />
             </div>
             {items.map((item, idx) => (
