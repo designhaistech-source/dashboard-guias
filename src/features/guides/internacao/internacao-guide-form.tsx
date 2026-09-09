@@ -717,13 +717,14 @@ export function InternacaoGuideForm({
               placeholder="000000"
             />
           </Field>
-          <Field label="17 - UF">
-            <Input
-              value={ufConselho}
-              onChange={(e) => setUfConselho(e.target.value.toUpperCase().slice(0, 2))}
-              placeholder="RN"
-            />
-          </Field>
+          <SelectField
+            label="17 - UF"
+            value={ufConselho}
+            onValueChange={setUfConselho}
+            options={UF_SELECT_OPTIONS}
+            placeholder="Selecione a UF"
+          />
+
           <Field label="18 - Código CBO" required>
             <Input value={cbo} onChange={(e) => setCbo(e.target.value)} placeholder="225125" />
           </Field>
