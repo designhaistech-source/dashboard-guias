@@ -77,8 +77,8 @@ export function IssuedGuidesPage() {
     const query = filters.query.trim().toLowerCase();
     return guides
       .filter((guide) => {
-        // Temporariamente apenas guias SP/SADT são listadas.
-        if (guide.type !== "SP/SADT") return false;
+        // Modelos já disponíveis para emissão no Guias+.
+        if (guide.type !== "SP/SADT" && guide.type !== "Internação") return false;
         if (
           query &&
           !`${guide.numero} ${guide.patient}`.toLowerCase().includes(query)
