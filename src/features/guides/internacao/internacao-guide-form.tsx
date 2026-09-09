@@ -5,7 +5,6 @@ import {
   ChevronRight,
   ClipboardList,
   FileText,
-  Hospital,
   Loader2,
   Plus,
   Eye,
