@@ -1019,13 +1019,13 @@ export function InternacaoGuideForm({
         )}
       </SectionCard>
 
-      {/* 45 a 49 */}
+      {/* 45 */}
       <SectionCard
         number={7}
         done={finalOk}
         icon={<FileText className="h-4 w-4" />}
-        title="Observação e Assinaturas"
-        description="Campos 45 a 49 — justificativa, data da solicitação e assinaturas."
+        title="Observação"
+        description="Campo 45 — observação ou justificativa."
       >
         <Field label="45 - Observação / Justificativa">
           <Textarea
@@ -1035,40 +1035,8 @@ export function InternacaoGuideForm({
             placeholder="Observações sobre o atendimento (até 1000 caracteres)."
           />
         </Field>
-
-        <div className="mt-4">
-          <Grid cols={3}>
-            <Field label="46 - Data da Solicitação" required>
-              <Input
-                type="date"
-                value={dataSolicitacao}
-                onChange={(e) => setDataSolicitacao(e.target.value)}
-              />
-            </Field>
-          </Grid>
-        </div>
-
-        <div className="mt-5 grid gap-4 border-t pt-5 lg:grid-cols-3">
-          <SignatureField
-            label="47 - Assinatura do Profissional Solicitante"
-            value={assinaturaProfissional}
-            onChange={setAssinaturaProfissional}
-            hint="Opcional: deixe em branco para assinar à mão no papel."
-          />
-          <SignatureField
-            label="48 - Assinatura do Beneficiário ou Responsável"
-            value={assinaturaBeneficiario}
-            onChange={setAssinaturaBeneficiario}
-            hint="Opcional: deixe em branco para assinar à mão no papel."
-          />
-          <SignatureField
-            label="49 - Assinatura do Responsável pela Autorização"
-            value={assinaturaAutorizacao}
-            onChange={setAssinaturaAutorizacao}
-            hint="Preenchida pela operadora em caso de autorização."
-          />
-        </div>
       </SectionCard>
+
 
       <FormActionBar
         stepsLabel="Etapas preenchidas"
