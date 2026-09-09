@@ -158,7 +158,7 @@ export function InternacaoGuidePreview(props: InternacaoGuidePreviewProps) {
 
             <SectionBar>Dados do Contratado Solicitante</SectionBar>
             <FieldRow>
-              <FieldBox n="12" label="Código na Operadora" value={props.codigoSolicitante} width={200} />
+              <FieldBox n="12" label="Código do Contratado" value={props.codigoSolicitante} width={200} />
               <FieldBox n="13" label="Nome do Contratado" value={props.nomeContratado} grow />
             </FieldRow>
             <FieldRow>

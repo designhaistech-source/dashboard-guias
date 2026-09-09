@@ -680,13 +680,15 @@ export function InternacaoGuideForm({
         description="Campos 12 a 18 — prestador e profissional que solicita a internação."
       >
         <Grid cols={3}>
-          <Field label="12 - Código na Operadora" required>
+          <Field label="12 - Código do Contratado" required>
             <Input
               value={codigoSolicitante}
               onChange={(e) => setCodigoSolicitante(e.target.value)}
+              maxLength={14}
               placeholder="Código do contratado"
             />
           </Field>
+
           <Field label="13 - Nome do Contratado" required>
             <Input
               value={nomeContratado}
