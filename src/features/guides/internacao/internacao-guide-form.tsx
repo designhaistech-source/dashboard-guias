@@ -43,6 +43,8 @@ import { InternacaoGuidePreview } from "./internacao-guide-preview";
 import { lookupBeneficiary, normalizeCarteira } from "@/features/beneficiaries";
 import { CID_OPTIONS } from "@/lib/cid";
 import { UF_SELECT_OPTIONS } from "@/lib/uf-options";
+import { CBO_OPTIONS } from "@/lib/cbo-options";
+
 
 import { TUSS, TUSS_OPTIONS } from "@/lib/tuss";
 
