@@ -2,7 +2,6 @@ import { useMemo, useRef, useState } from "react";
 import {
   BedDouble,
   Building2,
-  ChevronRight,
   ClipboardList,
   FileText,
   Loader2,
@@ -32,11 +31,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@/components/ui/collapsible";
 import { AppModal } from "@/components/app-modal";
 import { useNavigate } from "@tanstack/react-router";
 import { CheckCircle2, Download, Printer } from "lucide-react";
