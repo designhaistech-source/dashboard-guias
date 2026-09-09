@@ -1127,61 +1127,80 @@ export function InternacaoGuideForm({
             {items.map((item, idx) => (
               <div
                 key={item.id}
-                className="grid gap-3 rounded-lg border p-3 @2xl:grid-cols-[minmax(200px,1fr)_120px_96px_88px_40px] @2xl:items-center @2xl:border-0 @2xl:p-0"
+                className="grid grid-cols-2 items-start gap-3 rounded-lg border p-3 @2xl:grid-cols-[minmax(220px,1fr)_120px_96px_88px_40px] @2xl:items-center @2xl:border-0 @2xl:p-0"
               >
-                <div className="text-xs font-semibold text-muted-foreground @2xl:hidden">
+                <div className="col-span-2 text-xs font-semibold text-muted-foreground @2xl:hidden">
                   Item {idx + 1}
                 </div>
-                <Combobox
-                  options={TUSS_OPTIONS}
-                  value={item.code}
-                  onChange={(code) => {
-                    const found = TUSS.find((t) => t.codigo === code);
-                    updateItem(item.id, {
-                      code,
-                      description: found?.descricao ?? item.description,
-                      table: code ? resolveTissTable(code) : item.table,
-                    });
-                  }}
-                  placeholder="Descrição do procedimento"
-                  searchPlaceholder="Buscar procedimento (TUSS)"
-                />
-                <Input
-                  readOnly
-                  value={item.code}
-                  placeholder="—"
-                  aria-label="35 - Código do procedimento (automático)"
-                  className="bg-muted font-mono"
-                />
-                <Input
-                  readOnly
-                  value={
-                    TABELA_OPTIONS.find((t) => t.value === item.table)?.value ?? item.table
-                  }
-                  placeholder="—"
-                  aria-label="34 - Tabela (automático)"
-                  className="bg-muted font-mono"
-                />
-                <Input
-                  type="number"
-                  min={1}
-                  max={999}
-                  step={1}
-                  value={item.requestedQty}
-                  onChange={(e) =>
-                    updateItem(item.id, {
-                      requestedQty: Math.min(
-                        999,
-                        Math.max(1, Math.trunc(Number(e.target.value)) || 1),
-                      ),
-                    })
-                  }
-                  aria-label="37 - Quantidade solicitada"
-                  className="text-center"
-                />
+                <div className="col-span-2 min-w-0 space-y-1.5 @2xl:col-span-1 @2xl:space-y-0">
+                  <span className="block text-xs font-medium text-muted-foreground @2xl:hidden">
+                    36 - Descrição <span className="text-destructive">*</span>
+                  </span>
+                  <Combobox
+                    options={TUSS_OPTIONS}
+                    value={item.code}
+                    onChange={(code) => {
+                      const found = TUSS.find((t) => t.codigo === code);
+                      updateItem(item.id, {
+                        code,
+                        description: found?.descricao ?? item.description,
+                        table: code ? resolveTissTable(code) : item.table,
+                      });
+                    }}
+                    placeholder="Descrição do procedimento"
+                    searchPlaceholder="Buscar procedimento (TUSS)"
+                  />
+                </div>
+                <div className="min-w-0 space-y-1.5 @2xl:space-y-0">
+                  <span className="block text-xs font-medium text-muted-foreground @2xl:hidden">
+                    35 - Código <span className="text-destructive">*</span>
+                  </span>
+                  <Input
+                    readOnly
+                    value={item.code}
+                    placeholder="—"
+                    aria-label="35 - Código do procedimento (automático)"
+                    className="bg-muted font-mono"
+                  />
+                </div>
+                <div className="min-w-0 space-y-1.5 @2xl:space-y-0">
+                  <span className="block text-xs font-medium text-muted-foreground @2xl:hidden">
+                    34 - Tabela <span className="text-destructive">*</span>
+                  </span>
+                  <Input
+                    readOnly
+                    value={
+                      TABELA_OPTIONS.find((t) => t.value === item.table)?.value ?? item.table
+                    }
+                    placeholder="—"
+                    aria-label="34 - Tabela (automático)"
+                    className="bg-muted font-mono"
+                  />
+                </div>
+                <div className="min-w-0 space-y-1.5 @2xl:space-y-0">
+                  <span className="block text-xs font-medium text-muted-foreground @2xl:hidden">
+                    37 - Qtde Solic. <span className="text-destructive">*</span>
+                  </span>
+                  <Input
+                    type="number"
+                    min={1}
+                    max={999}
+                    step={1}
+                    value={item.requestedQty}
+                    onChange={(e) =>
+                      updateItem(item.id, {
+                        requestedQty: Math.min(
+                          999,
+                          Math.max(1, Math.trunc(Number(e.target.value)) || 1),
+                        ),
+                      })
+                    }
+                    aria-label="37 - Quantidade solicitada"
+                    className="text-center"
+                  />
+                </div>
 
-
-                <div className="flex justify-end">
+                <div className="flex items-end justify-end @2xl:items-center">
                   <Button
                     type="button"
                     variant="ghost"
@@ -1194,6 +1213,7 @@ export function InternacaoGuideForm({
                 </div>
               </div>
             ))}
+
           </div>
         )}
       </SectionCard>
