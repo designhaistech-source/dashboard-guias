@@ -705,9 +705,11 @@ export function InternacaoGuideForm({
             <Input
               value={nomeProfissional}
               onChange={(e) => setNomeProfissional(e.target.value)}
+              maxLength={70}
               placeholder="Nome do profissional"
             />
           </Field>
+
           <SelectField
             label="15 - Conselho Profissional"
             required
