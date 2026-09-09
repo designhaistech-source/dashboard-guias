@@ -92,16 +92,28 @@ const ACIDENTE_OPTIONS = [
   { value: "9", label: "9 - Não acidente" },
 ];
 
+/** Tabela 26 TISS — conselhos profissionais. O valor gravado na guia é o código. */
 const CONSELHO_OPTIONS = [
-  "CRM",
-  "CRO",
-  "CRF",
-  "COREN",
-  "CRP",
-  "CREFITO",
-  "CRFA",
-  "CRN",
-].map((c) => ({ value: c, label: c }));
+  { value: "01", label: "01 - Conselho Regional de Serviço Social (CRESS)" },
+  { value: "02", label: "02 - Conselho Regional de Enfermagem (COREN)" },
+  { value: "03", label: "03 - Conselho Regional de Farmácia (CRF)" },
+  { value: "04", label: "04 - Conselho Regional de Fonoaudiologia (CREFONO)" },
+  {
+    value: "05",
+    label: "05 - Conselho Regional de Fisioterapia e Terapia Ocupacional (CREFITO)",
+  },
+  { value: "06", label: "06 - Conselho Regional de Medicina (CRM)" },
+  { value: "07", label: "07 - Conselho Regional de Nutrição (CRN)" },
+  { value: "08", label: "08 - Conselho Regional de Odontologia (CRO)" },
+  { value: "09", label: "09 - Conselho Regional de Psicologia (CRP)" },
+  { value: "10", label: "10 - Outros Conselhos" },
+  { value: "11", label: "11 - Conselho Regional de Biologia (CRBio)" },
+  { value: "12", label: "12 - Conselho Regional de Biomedicina (CRBM)" },
+  { value: "13", label: "13 - Conselho Regional de Educação Física (CREF)" },
+  { value: "14", label: "14 - Conselho Regional de Medicina Veterinária (CRMV)" },
+  { value: "15", label: "15 - Conselho Regional de Técnicos em Radiologia (CRTR)" },
+];
+
 
 const TABELA_OPTIONS = [
   { value: "22", label: "22 - TUSS Procedimentos" },
