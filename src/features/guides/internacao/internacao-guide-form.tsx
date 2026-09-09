@@ -38,6 +38,10 @@ import {
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 import { AppModal } from "@/components/app-modal";
+import { useNavigate } from "@tanstack/react-router";
+import { CheckCircle2, Download, Printer } from "lucide-react";
+import { addIssuedGuide, downloadIssuedGuide, type IssuedGuide } from "@/features/issued-guides";
+import { nextGuiaNumber } from "@/lib/guia-number";
 import { ScaledGuideSheet } from "@/components/scaled-guide-sheet";
 import { A4_PORTRAIT_SHEET_WIDTH_PX } from "@/lib/guide-sheet";
 import { InternacaoGuidePreview } from "./internacao-guide-preview";
@@ -324,6 +328,9 @@ export function InternacaoGuideForm({
 
   const [submitting, setSubmitting] = useState(false);
   const [previewOpen, setPreviewOpen] = useState(false);
+  /** Guia emitida e salva — abre o modal de confirmação da emissão. */
+  const [issuedGuide, setIssuedGuide] = useState<IssuedGuide | null>(null);
+  const navigate = useNavigate();
 
   /** Dados normalizados enviados à pré-visualização da guia impressa. */
   const previewData = {
@@ -412,6 +419,99 @@ export function InternacaoGuideForm({
   // Seção 45 não possui campos obrigatórios.
   const finalOk = true;
 
+  const operadoraLabel =
+    operadoras.find((o) => o.value === operadoraValue)?.label ?? operadoraValue;
+
+  /** Documento da guia emitida, agrupado por seção (mesmo formato do SP/SADT). */
+  const buildIssuedGuide = (numero: string, issuedAt: Date): IssuedGuide => ({
+    numero,
+    issuedAt: issuedAt.toISOString(),
+    patient: nomeBeneficiario,
+    operadora: operadoraLabel,
+    type: "Internação",
+    status: "Emitida",
+    professional: nomeProfissional
+      ? `${nomeProfissional} (${conselho} ${numeroConselho}/${ufConselho})`
+      : "—",
+    procedure: items[0] ? `${items[0].code} — ${items[0].description}` : "—",
+    total: 0,
+    sections: [
+      {
+        title: "Convênio e autorização",
+        items: [
+          { label: "1 - Registro ANS", value: ans },
+          { label: "2 - Nº da guia no prestador", value: numero },
+          { label: "3 - Nº da guia na operadora", value: guiaOperadora },
+          { label: "4 - Data da autorização", value: dataAutorizacao },
+          { label: "5 - Senha", value: senha },
+          { label: "6 - Validade da senha", value: validadeSenha },
+        ],
+      },
+      {
+        title: "Dados do beneficiário",
+        items: [
+          { label: "7 - Número da carteira", value: carteira },
+          { label: "8 - Validade da carteira", value: validadeCarteira },
+          { label: "9 - Atendimento a RN", value: atendimentoRn },
+          { label: "10 - Nome", value: nomeBeneficiario },
+          { label: "11 - CNS", value: cns },
+          { label: "50 - Nome social", value: nomeSocial },
+        ],
+      },
+      {
+        title: "Dados do contratado solicitante",
+        items: [
+          { label: "12 - Código do contratado", value: codigoSolicitante },
+          { label: "13 - Nome do contratado", value: nomeContratado },
+          { label: "14 - Profissional solicitante", value: nomeProfissional },
+          { label: "15 - Conselho", value: conselho },
+          { label: "16 - Número no conselho", value: numeroConselho },
+          { label: "17 - UF", value: ufConselho },
+          { label: "18 - Código CBO", value: cbo },
+        ],
+      },
+      {
+        title: "Hospital e internação",
+        items: [
+          { label: "19 - Código na operadora / CNPJ", value: codigoHospital },
+          { label: "20 - Nome do hospital", value: nomeHospital },
+          { label: "21 - Data sugerida", value: dataSugerida },
+          { label: "22 - Caráter do atendimento", value: carater },
+          { label: "23 - Tipo de internação", value: tipoInternacao },
+          { label: "24 - Regime de internação", value: regimeInternacao },
+          { label: "25 - Diárias solicitadas", value: String(diariasSolicitadas) },
+          { label: "26 - Previsão de OPME", value: previsaoOpme },
+          { label: "27 - Previsão de quimioterápico", value: previsaoQuimio },
+          { label: "28 - Indicação clínica", value: indicacaoClinica },
+          { label: "33 - Indicação de acidente", value: indicacaoAcidente },
+        ],
+      },
+      {
+        title: "Diagnósticos",
+        items: [
+          { label: "29 - CID 10 principal", value: cid1 },
+          { label: "30 - CID 10 (2)", value: cid2 },
+          { label: "31 - CID 10 (3)", value: cid3 },
+          { label: "32 - CID 10 (4)", value: cid4 },
+        ],
+      },
+      {
+        title: "Procedimentos solicitados",
+        items: items.map((item, index) => ({
+          label: `Item ${String(index + 1).padStart(2, "0")}`,
+          value: `${item.table} · ${item.code} — ${item.description} (qtde. ${item.requestedQty})`,
+        })),
+      },
+      {
+        title: "Observação",
+        items: [
+          { label: "45 - Observação / Justificativa", value: observacao },
+          { label: "46 - Data da solicitação", value: dataSolicitacao },
+        ],
+      },
+    ],
+  });
+
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
     if (!guiaOk || !beneficiarioOk || !solicitanteOk || !internacaoOk || !itemsOk) {
@@ -421,7 +521,13 @@ export function InternacaoGuideForm({
     setSubmitting(true);
     setTimeout(() => {
       setSubmitting(false);
-      toast.success("Guia de solicitação de internação gerada.");
+      // Campo 2 gerado no momento da emissão; a guia é salva automaticamente.
+      const numero = nextGuiaNumber(operadoraLabel);
+      const saved = addIssuedGuide(buildIssuedGuide(numero, new Date()));
+      setIssuedGuide(saved);
+      toast.success("Guia gerada e salva em Guias emitidas", {
+        description: `Nº ${numero} — Solicitação de Internação`,
+      });
     }, 700);
   };
 
@@ -1094,6 +1200,78 @@ export function InternacaoGuideForm({
           <InternacaoGuidePreview {...previewData} fullSize />
         </ScaledGuideSheet>
       </AppModal>
+
+      <AppModal
+        open={!!issuedGuide}
+        onOpenChange={(open) => !open && setIssuedGuide(null)}
+        title="Guia gerada e salva automaticamente"
+        description="Guia de Solicitação de Internação — padrão TISS."
+        descriptionHidden
+        icon={<CheckCircle2 className="h-5 w-5" aria-hidden="true" />}
+        bodyClassName="space-y-3 text-sm"
+        footer={
+          <>
+            <Button type="button" variant="outline" onClick={() => window.print()}>
+              <Printer className="h-4 w-4" /> Imprimir
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => navigate({ to: "/guias-emitidas" })}
+            >
+              <FileText className="h-4 w-4" /> Ver em Guias emitidas
+            </Button>
+            <Button
+              type="button"
+              onClick={() => {
+                if (!issuedGuide) return;
+                downloadIssuedGuide(issuedGuide);
+                toast.success("Download da guia iniciado");
+              }}
+            >
+              <Download className="h-4 w-4" /> Baixar guia
+            </Button>
+          </>
+        }
+      >
+        {issuedGuide && (
+          <>
+            <IssuedRow label="Número da guia" value={issuedGuide.numero} mono />
+            <IssuedRow label="Convênio" value="Guias Padronizadas TISS" />
+            <IssuedRow label="Tipo" value="Solicitação de Internação" />
+            <IssuedRow label="Paciente" value={issuedGuide.patient} />
+            <IssuedRow label="Operadora" value={issuedGuide.operadora} />
+            <IssuedRow
+              label="Emitida em"
+              value={new Date(issuedGuide.issuedAt).toLocaleString("pt-BR")}
+            />
+            <IssuedRow label="Diárias solicitadas" value={String(diariasSolicitadas)} />
+            <IssuedRow label="Procedimentos" value={String(items.length)} />
+          </>
+        )}
+      </AppModal>
     </form>
+  );
+}
+
+/** Linha rótulo/valor do resumo da guia emitida. */
+function IssuedRow({
+  label,
+  value,
+  mono,
+}: {
+  label: string;
+  value: string;
+  mono?: boolean;
+}) {
+  return (
+    <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-0.5 border-b pb-2 last:border-0 last:pb-0">
+      <span className="text-muted-foreground">{label}</span>
+      <span
+        className={`min-w-0 flex-1 break-words text-right font-medium ${mono ? "font-mono" : ""}`}
+      >
+        {value || "—"}
+      </span>
+    </div>
   );
 }
