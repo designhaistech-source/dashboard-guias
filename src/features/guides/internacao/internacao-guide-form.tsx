@@ -1200,6 +1200,78 @@ export function InternacaoGuideForm({
           <InternacaoGuidePreview {...previewData} fullSize />
         </ScaledGuideSheet>
       </AppModal>
+
+      <AppModal
+        open={!!issuedGuide}
+        onOpenChange={(open) => !open && setIssuedGuide(null)}
+        title="Guia gerada e salva automaticamente"
+        description="Guia de Solicitação de Internação — padrão TISS."
+        descriptionHidden
+        icon={<CheckCircle2 className="h-5 w-5" aria-hidden="true" />}
+        bodyClassName="space-y-3 text-sm"
+        footer={
+          <>
+            <Button type="button" variant="outline" onClick={() => window.print()}>
+              <Printer className="h-4 w-4" /> Imprimir
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => navigate({ to: "/guias-emitidas" })}
+            >
+              <FileText className="h-4 w-4" /> Ver em Guias emitidas
+            </Button>
+            <Button
+              type="button"
+              onClick={() => {
+                if (!issuedGuide) return;
+                downloadIssuedGuide(issuedGuide);
+                toast.success("Download da guia iniciado");
+              }}
+            >
+              <Download className="h-4 w-4" /> Baixar guia
+            </Button>
+          </>
+        }
+      >
+        {issuedGuide && (
+          <>
+            <IssuedRow label="Número da guia" value={issuedGuide.numero} mono />
+            <IssuedRow label="Convênio" value="Guias Padronizadas TISS" />
+            <IssuedRow label="Tipo" value="Solicitação de Internação" />
+            <IssuedRow label="Paciente" value={issuedGuide.patient} />
+            <IssuedRow label="Operadora" value={issuedGuide.operadora} />
+            <IssuedRow
+              label="Emitida em"
+              value={new Date(issuedGuide.issuedAt).toLocaleString("pt-BR")}
+            />
+            <IssuedRow label="Diárias solicitadas" value={String(diariasSolicitadas)} />
+            <IssuedRow label="Procedimentos" value={String(items.length)} />
+          </>
+        )}
+      </AppModal>
     </form>
+  );
+}
+
+/** Linha rótulo/valor do resumo da guia emitida. */
+function IssuedRow({
+  label,
+  value,
+  mono,
+}: {
+  label: string;
+  value: string;
+  mono?: boolean;
+}) {
+  return (
+    <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-0.5 border-b pb-2 last:border-0 last:pb-0">
+      <span className="text-muted-foreground">{label}</span>
+      <span
+        className={`min-w-0 flex-1 break-words text-right font-medium ${mono ? "font-mono" : ""}`}
+      >
+        {value || "—"}
+      </span>
+    </div>
   );
 }
