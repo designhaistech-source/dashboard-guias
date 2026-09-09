@@ -7,13 +7,6 @@ import {
 } from "@/lib/guide-sheet";
 
 /**
- * Ajusta o modelo impresso da guia (largura fixa compartilhada com o gerador de
- * PDF) à largura disponível, evitando corte de conteúdo em telas menores. Em
- * telas largas o documento é exibido em escala 1:1.
- */
-const SHEET_WIDTH = GUIDE_SHEET_WIDTH_PX;
-
-/**
  * `zoom` refaz o layout e mantém o container rolável, mas em WebKit móvel
  * (iOS) o recálculo durante a rolagem causa travamentos. Nesses casos usamos
  * `transform: scale()` com altura medida — o scroll continua nativo e suave.
@@ -42,9 +35,12 @@ export function ScaledGuideSheet({
    * evitando sobra lateral na pré-visualização em tela.
    */
   fit = "print",
+  /** Largura natural da folha; menor em modelos A4 retrato. */
+  sheetWidth = GUIDE_SHEET_WIDTH_PX,
 }: {
   children: React.ReactNode;
   fit?: "print" | "width";
+  sheetWidth?: number;
 }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
@@ -70,7 +66,7 @@ export function ScaledGuideSheet({
       const naturalWidth = Math.max(
         content?.scrollWidth || 0,
         content?.offsetWidth || 0,
-        SHEET_WIDTH,
+        sheetWidth,
       );
       const naturalHeight = content?.scrollHeight || content?.offsetHeight || 0;
       // Mesma escala relativa da página exportada (ver getPreviewSheetScale).
@@ -87,7 +83,7 @@ export function ScaledGuideSheet({
     observer.observe(container);
     if (contentRef.current) observer.observe(contentRef.current);
     return () => observer.disconnect();
-  }, [useTransform, fit]);
+  }, [useTransform, fit, sheetWidth]);
 
   return (
     <div
@@ -102,7 +98,7 @@ export function ScaledGuideSheet({
             ref={contentRef}
             style={{
               width: "max-content",
-              minWidth: SHEET_WIDTH,
+              minWidth: sheetWidth,
               transform: `scale(${scale})`,
               transformOrigin: "top left",
               willChange: "transform",
@@ -114,7 +110,8 @@ export function ScaledGuideSheet({
       ) : (
         <div
           ref={contentRef}
-          style={{ zoom: scale, width: "max-content", minWidth: SHEET_WIDTH }}
+          // Folhas mais estreitas que o container (A4 retrato) ficam centradas.
+          style={{ zoom: scale, width: "max-content", minWidth: sheetWidth, margin: "0 auto" }}
         >
           {children}
         </div>

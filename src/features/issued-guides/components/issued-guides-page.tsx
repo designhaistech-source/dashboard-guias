@@ -17,6 +17,7 @@ import { AppSidebar } from "@/components/app-sidebar";
 import { AppModal } from "@/components/app-modal";
 import { IssuedGuidePreview } from "./issued-guide-preview";
 import { ScaledGuideSheet } from "@/components/scaled-guide-sheet";
+import { A4_PORTRAIT_SHEET_WIDTH_PX } from "@/lib/guide-sheet";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { EmptyState } from "@/components/data-state";
@@ -116,7 +117,11 @@ export function IssuedGuidesPage() {
     const frame = window.requestAnimationFrame(() => {
       const markup = printAreaRef.current?.innerHTML ?? "";
 
-      void printGuideMarkup(markup, `Guia ${printTarget.numero} — Guias+`)
+      void printGuideMarkup(
+        markup,
+        `Guia ${printTarget.numero} — Guias+`,
+        printTarget.type === "Internação" ? "portrait" : "landscape",
+      )
         .then((result) => {
           if (cancelled) return;
           if (result.ok) {
@@ -498,7 +503,12 @@ function IssuedGuideModal({
           aria-label={`Pré-visualização da guia ${guide.numero}`}
           className="w-full"
         >
-          <ScaledGuideSheet fit="width">
+          <ScaledGuideSheet
+            fit="width"
+            sheetWidth={
+              guide.type === "Internação" ? A4_PORTRAIT_SHEET_WIDTH_PX : undefined
+            }
+          >
             <IssuedGuidePreview guide={guide} />
           </ScaledGuideSheet>
         </section>

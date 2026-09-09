@@ -7,6 +7,9 @@
 /** Largura fixa do modelo oficial da guia, em px CSS. */
 export const GUIDE_SHEET_WIDTH_PX = 1100;
 
+/** Largura da folha A4 em retrato (210mm a 96dpi), usada na guia de internação. */
+export const A4_PORTRAIT_SHEET_WIDTH_PX = 794;
+
 /** Margem física da página impressa, em mm. */
 export const PRINT_PAGE_MARGIN_MM = 8;
 
@@ -70,6 +73,33 @@ export function getPreviewSheetScale(
 }
 
 
+/* Interseção entre A4 retrato (210x297mm) e Letter retrato (215,9x279,4mm). */
+const NARROWEST_PORTRAIT_WIDTH_MM = 210;
+const SHORTEST_PORTRAIT_HEIGHT_MM = 279.4;
+
+export const PRINT_PORTRAIT_CONTENT_WIDTH_PX =
+  (NARROWEST_PORTRAIT_WIDTH_MM - PRINT_PAGE_MARGIN_MM * 2) *
+    MM_TO_PX *
+    PRINT_SAFETY_FACTOR -
+  PRINT_EDGE_GUARD_PX * 2;
+
+export const PRINT_PORTRAIT_CONTENT_HEIGHT_PX =
+  (SHORTEST_PORTRAIT_HEIGHT_MM - PRINT_PAGE_MARGIN_MM * 2) *
+    MM_TO_PX *
+    PRINT_SAFETY_FACTOR -
+  PRINT_EDGE_GUARD_PX * 2;
+
+/** Escala de impressão da folha A4 retrato (guia de internação). */
+export function getPortraitSheetScale(naturalWidth: number, naturalHeight: number) {
+  const width = Math.max(naturalWidth, A4_PORTRAIT_SHEET_WIDTH_PX);
+  const height = naturalHeight || 1;
+  return Math.min(
+    1,
+    PRINT_PORTRAIT_CONTENT_WIDTH_PX / width,
+    PRINT_PORTRAIT_CONTENT_HEIGHT_PX / height,
+  );
+}
+
 /**
  * CSS de impressão. Reproduz o container do modal (`ScaledGuideSheet`): mesma
  * largura natural, mesma origem de transformação e sem estouro horizontal.
@@ -87,4 +117,18 @@ html, body { margin: 0; padding: 0; background: #fff; }
 /* Assinaturas: nunca esticar, nunca quebrar entre páginas. */
 img { max-width: 100%; max-height: 100%; break-inside: avoid; page-break-inside: avoid; }
 
+`;
+
+/** Mesma folha, em retrato: usada na Guia de Solicitação de Internação. */
+export const PRINT_SHEET_PORTRAIT_CSS = `
+@page { size: portrait; margin: ${PRINT_PAGE_MARGIN_MM}mm; }
+html, body { margin: 0; padding: 0; background: #fff; }
+.print-guard { padding: ${PRINT_EDGE_GUARD_PX}px; overflow: hidden; }
+.print-scale {
+  width: max-content;
+  min-width: ${A4_PORTRAIT_SHEET_WIDTH_PX}px;
+  transform-origin: top left;
+}
+* { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+img { max-width: 100%; max-height: 100%; break-inside: avoid; page-break-inside: avoid; }
 `;
