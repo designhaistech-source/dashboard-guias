@@ -17,7 +17,6 @@ import { toast } from "sonner";
 
 import { SectionCard } from "@/components/section-card";
 import { FormActionBar } from "@/components/form-action-bar";
-import { SignatureField } from "@/components/signature-field";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -404,11 +403,12 @@ export function InternacaoGuideForm({
 
     [items],
   );
-  const finalOk = Boolean(dataSolicitacao);
+  // Seção 45 não possui campos obrigatórios.
+  const finalOk = true;
 
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
-    if (!guiaOk || !beneficiarioOk || !solicitanteOk || !internacaoOk || !itemsOk || !finalOk) {
+    if (!guiaOk || !beneficiarioOk || !solicitanteOk || !internacaoOk || !itemsOk) {
       toast.error("Preencha os campos obrigatórios antes de gerar a guia.");
       return;
     }
@@ -1054,7 +1054,7 @@ export function InternacaoGuideForm({
           { label: "Hospital e internação", done: internacaoOk },
           
           { label: "Procedimentos solicitados", done: itemsOk },
-          { label: "Observação e assinaturas", done: finalOk },
+          { label: "Observação", done: finalOk },
         ]}
         note={
           <>
