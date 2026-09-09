@@ -326,6 +326,9 @@ export function InternacaoGuideForm({
 
   /** Dados normalizados enviados à pré-visualização da guia impressa. */
   const previewData = {
+    operadoraLogo: operadoraLogoUrl(
+      operadoras.find((o) => o.value === operadoraValue)?.label ?? operadoraValue,
+    ),
     ans,
     guiaPrestador,
     guiaOperadora,
