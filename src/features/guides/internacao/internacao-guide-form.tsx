@@ -879,7 +879,7 @@ export function InternacaoGuideForm({
         description="Campos 29 a 32 — diagnósticos CID-10."
       >
         <Grid cols={3}>
-          <Field label="29 - CID 10 Principal (opcional)">
+          <Field label="29 - CID 10 Principal">
             <Combobox
               options={CID_OPTIONS}
               value={cid1}
@@ -888,7 +888,7 @@ export function InternacaoGuideForm({
               placeholder="Buscar CID-10"
             />
           </Field>
-          <Field label="30 - CID 10 (2) (opcional)">
+          <Field label="30 - CID 10 (2)">
             <Combobox
               options={CID_OPTIONS}
               value={cid2}
@@ -897,7 +897,7 @@ export function InternacaoGuideForm({
               placeholder="Buscar CID-10"
             />
           </Field>
-          <Field label="31 - CID 10 (3) (opcional)">
+          <Field label="31 - CID 10 (3)">
             <Combobox
               options={CID_OPTIONS}
               value={cid3}
@@ -906,7 +906,7 @@ export function InternacaoGuideForm({
               placeholder="Buscar CID-10"
             />
           </Field>
-          <Field label="32 - CID 10 (4) (opcional)">
+          <Field label="32 - CID 10 (4)">
             <Combobox
               options={CID_OPTIONS}
               value={cid4}
