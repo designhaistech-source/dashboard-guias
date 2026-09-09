@@ -20,6 +20,20 @@ async function getServerEntry(): Promise<ServerEntry> {
 
 // h3 swallows in-handler throws into a normal 500 Response with body
 // {"unhandled":true,"message":"HTTPError"} — try/catch alone never fires for those.
+/**
+ * Recarregar/navegar durante o SSR aborta a conexão (ECONNRESET / "aborted").
+ * Não é falha da aplicação: nada deve ser logado nem renderizado como erro.
+ */
+function isClientAbort(value: unknown, depth = 0): boolean {
+  if (!value || depth > 3) return false;
+  if (typeof value === "string") return /aborted|ECONNRESET/i.test(value);
+  if (typeof value !== "object") return false;
+  const err = value as { code?: unknown; message?: unknown; cause?: unknown; name?: unknown };
+  if (err.code === "ECONNRESET" || err.name === "AbortError") return true;
+  if (typeof err.message === "string" && isClientAbort(err.message, depth + 1)) return true;
+  return isClientAbort(err.cause, depth + 1);
+}
+
 async function normalizeCatastrophicSsrResponse(response: Response): Promise<Response> {
   if (response.status < 500) return response;
   const contentType = response.headers.get("content-type") ?? "";
