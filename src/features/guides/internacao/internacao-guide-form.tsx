@@ -42,6 +42,8 @@ import { AppModal } from "@/components/app-modal";
 import { InternacaoGuidePreview } from "./internacao-guide-preview";
 import { lookupBeneficiary, normalizeCarteira } from "@/features/beneficiaries";
 import { CID_OPTIONS } from "@/lib/cid";
+import { UF_SELECT_OPTIONS } from "@/lib/uf-options";
+
 import { TUSS, TUSS_OPTIONS } from "@/lib/tuss";
 
 /** Item do quadro "Procedimentos ou Itens Assistenciais Solicitados" (campos 34 a 38). */
