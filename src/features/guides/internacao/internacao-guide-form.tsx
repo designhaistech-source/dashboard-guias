@@ -43,6 +43,8 @@ import { InternacaoGuidePreview } from "./internacao-guide-preview";
 import { lookupBeneficiary, normalizeCarteira } from "@/features/beneficiaries";
 import { CID_OPTIONS } from "@/lib/cid";
 import { UF_SELECT_OPTIONS } from "@/lib/uf-options";
+import { CBO_OPTIONS } from "@/lib/cbo-options";
+
 
 import { TUSS, TUSS_OPTIONS } from "@/lib/tuss";
 
@@ -746,9 +748,15 @@ export function InternacaoGuideForm({
             placeholder="Selecione a UF"
           />
 
-          <Field label="18 - Código CBO" required>
-            <Input value={cbo} onChange={(e) => setCbo(e.target.value)} placeholder="225125" />
-          </Field>
+          <SelectField
+            label="18 - Código CBO"
+            required
+            value={cbo}
+            onValueChange={setCbo}
+            options={CBO_OPTIONS}
+            placeholder="Selecione o CBO"
+          />
+
         </Grid>
       </SectionCard>
 
