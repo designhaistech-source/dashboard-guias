@@ -45,7 +45,7 @@ import { UF_SELECT_OPTIONS } from "@/lib/uf-options";
 import { CBO_OPTIONS } from "@/lib/cbo-options";
 
 
-import { TUSS, TUSS_OPTIONS } from "@/lib/tuss";
+import { TUSS, TUSS_OPTIONS, resolveTissTable } from "@/lib/tuss";
 
 /** Item do quadro "Procedimentos ou Itens Assistenciais Solicitados" (campos 34 a 38). */
 interface RequestedItem {
