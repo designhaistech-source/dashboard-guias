@@ -1288,7 +1288,15 @@ export function InternacaoGuideForm({
         bodyClassName="space-y-3 text-sm"
         footer={
           <>
-            <Button type="button" variant="outline" onClick={() => window.print()}>
+            <Button
+              type="button"
+              variant="outline"
+              disabled={printing}
+              onClick={() => {
+                if (!issuedGuide) return;
+                void printTissSheet(issuedGuide.numero);
+              }}
+            >
               <Printer className="h-4 w-4" /> Imprimir
             </Button>
             <Button
@@ -1300,10 +1308,10 @@ export function InternacaoGuideForm({
             </Button>
             <Button
               type="button"
+              disabled={printing}
               onClick={() => {
                 if (!issuedGuide) return;
-                downloadIssuedGuide(issuedGuide);
-                toast.success("Download da guia iniciado");
+                void printTissSheet(issuedGuide.numero);
               }}
             >
               <Download className="h-4 w-4" /> Baixar guia
