@@ -5,7 +5,6 @@ import {
   ChevronRight,
   ClipboardList,
   FileText,
-  Hospital,
   Loader2,
   Plus,
   Eye,
@@ -79,11 +78,6 @@ const REGIME_INTERNACAO_OPTIONS = [
   { value: "3", label: "3 - Domiciliar" },
 ];
 
-const ACOMODACAO_OPTIONS = [
-  { value: "1", label: "1 - Enfermaria" },
-  { value: "2", label: "2 - Apartamento" },
-  { value: "3", label: "3 - UTI" },
-];
 
 const SIM_NAO_OPTIONS = [
   { value: "S", label: "S - Sim" },
@@ -303,13 +297,14 @@ export function InternacaoGuideForm({
   // 34 a 38 — procedimentos solicitados
   const [items, setItems] = useState<RequestedItem[]>([newItem()]);
 
-  // 39 a 44 — dados da autorização (operadora)
-  const [dataAdmissao, setDataAdmissao] = useState("");
-  const [diariasAutorizadas, setDiariasAutorizadas] = useState("");
-  const [acomodacaoAutorizada, setAcomodacaoAutorizada] = useState("");
-  const [codigoAutorizado, setCodigoAutorizado] = useState("");
-  const [hospitalAutorizado, setHospitalAutorizado] = useState("");
-  const [cnes, setCnes] = useState("");
+  // 39 a 44 — dados da autorização: preenchidos apenas pela operadora, por isso
+  // não aparecem no formulário e saem vazios na guia da solicitação inicial.
+  const dataAdmissao = "";
+  const diariasAutorizadas = "";
+  const acomodacaoAutorizada = "";
+  const codigoAutorizado = "";
+  const hospitalAutorizado = "";
+  const cnes = "";
 
   // 45 a 49 — observação, data e assinaturas
   const [observacao, setObservacao] = useState("");
@@ -1023,59 +1018,9 @@ export function InternacaoGuideForm({
         )}
       </SectionCard>
 
-      {/* 39 a 44 */}
-      <SectionCard
-        number={7}
-        icon={<Hospital className="h-4 w-4" />}
-        title="Dados da Autorização"
-        description="Campos 39 a 44 — preenchidos pela operadora em caso de autorização."
-      >
-        <Grid cols={3}>
-          <Field label="39 - Data Provável da Admissão Hospitalar">
-            <Input
-              type="date"
-              value={dataAdmissao}
-              onChange={(e) => setDataAdmissao(e.target.value)}
-            />
-          </Field>
-          <Field label="40 - Qtde. Diárias Autorizadas">
-            <Input
-              type="number"
-              min={0}
-              value={diariasAutorizadas}
-              onChange={(e) => setDiariasAutorizadas(e.target.value)}
-              placeholder="Informado pela operadora"
-            />
-          </Field>
-          <SelectField
-            label="41 - Tipo da Acomodação Autorizada"
-            value={acomodacaoAutorizada}
-            onValueChange={setAcomodacaoAutorizada}
-            options={ACOMODACAO_OPTIONS}
-          />
-          <Field label="42 - Código na Operadora / CNPJ Autorizado">
-            <Input
-              value={codigoAutorizado}
-              onChange={(e) => setCodigoAutorizado(e.target.value)}
-              placeholder="Código ou CNPJ"
-            />
-          </Field>
-          <Field label="43 - Nome do Hospital / Local Autorizado">
-            <Input
-              value={hospitalAutorizado}
-              onChange={(e) => setHospitalAutorizado(e.target.value)}
-              placeholder="Nome do hospital autorizado"
-            />
-          </Field>
-          <Field label="44 - Código CNES">
-            <Input value={cnes} onChange={(e) => setCnes(e.target.value)} placeholder="0000000" />
-          </Field>
-        </Grid>
-      </SectionCard>
-
       {/* 45 a 49 */}
       <SectionCard
-        number={8}
+        number={7}
         done={finalOk}
         icon={<FileText className="h-4 w-4" />}
         title="Observação e Assinaturas"
