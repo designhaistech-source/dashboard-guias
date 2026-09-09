@@ -66,7 +66,7 @@ export function ScaledGuideSheet({
       const naturalWidth = Math.max(
         content?.scrollWidth || 0,
         content?.offsetWidth || 0,
-        SHEET_WIDTH,
+        sheetWidth,
       );
       const naturalHeight = content?.scrollHeight || content?.offsetHeight || 0;
       // Mesma escala relativa da página exportada (ver getPreviewSheetScale).
@@ -83,7 +83,7 @@ export function ScaledGuideSheet({
     observer.observe(container);
     if (contentRef.current) observer.observe(contentRef.current);
     return () => observer.disconnect();
-  }, [useTransform, fit]);
+  }, [useTransform, fit, sheetWidth]);
 
   return (
     <div
@@ -98,7 +98,7 @@ export function ScaledGuideSheet({
             ref={contentRef}
             style={{
               width: "max-content",
-              minWidth: SHEET_WIDTH,
+              minWidth: sheetWidth,
               transform: `scale(${scale})`,
               transformOrigin: "top left",
               willChange: "transform",
@@ -110,7 +110,7 @@ export function ScaledGuideSheet({
       ) : (
         <div
           ref={contentRef}
-          style={{ zoom: scale, width: "max-content", minWidth: SHEET_WIDTH }}
+          style={{ zoom: scale, width: "max-content", minWidth: sheetWidth }}
         >
           {children}
         </div>
