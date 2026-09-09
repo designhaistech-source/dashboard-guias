@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 
+import { operadoraLogoUrl } from "@/features/guides/data/operadora-logos";
 import { SectionCard } from "@/components/section-card";
 import { FormActionBar } from "@/components/form-action-bar";
 import { Button } from "@/components/ui/button";
