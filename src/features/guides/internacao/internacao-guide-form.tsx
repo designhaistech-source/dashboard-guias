@@ -686,9 +686,11 @@ export function InternacaoGuideForm({
             <Input
               value={nomeContratado}
               onChange={(e) => setNomeContratado(e.target.value)}
+              maxLength={70}
               placeholder="Razão social ou nome"
             />
           </Field>
+
 
           <Field label="12 - Código do Contratado" required>
             <Input
