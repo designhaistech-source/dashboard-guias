@@ -66,6 +66,14 @@ export interface InternacaoGuidePreviewProps {
 }
 
 /**
+ * Campos 29 a 32 aceitam no máximo 4 caracteres na guia: o ponto separador do
+ * CID-10 é removido e o código é truncado (ex.: "I20.0" -> "I200").
+ */
+function cid4Chars(value: string) {
+  return (value ?? "").replace(/[^A-Za-z0-9]/g, "").slice(0, 4).toUpperCase();
+}
+
+/**
  * Pré-visualização da Guia de Solicitação de Internação (TISS Dez/2017),
  * com os quadros e a numeração 1 a 49 na ordem do formulário oficial.
  */
@@ -210,10 +218,10 @@ export function InternacaoGuidePreview(props: InternacaoGuidePreviewProps) {
 
             <SectionBar>Hipóteses Diagnósticas</SectionBar>
             <FieldRow>
-              <FieldBox n="29" label="CID 10 Principal" value={props.cid1} width={200} />
-              <FieldBox n="30" label="CID 10 (2)" value={props.cid2} width={200} />
-              <FieldBox n="31" label="CID 10 (3)" value={props.cid3} width={200} />
-              <FieldBox n="32" label="CID 10 (4)" value={props.cid4} width={200} />
+              <FieldBox n="29" label="CID 10 Principal" value={cid4Chars(props.cid1)} width={200} />
+              <FieldBox n="30" label="CID 10 (2)" value={cid4Chars(props.cid2)} width={200} />
+              <FieldBox n="31" label="CID 10 (3)" value={cid4Chars(props.cid3)} width={200} />
+              <FieldBox n="32" label="CID 10 (4)" value={cid4Chars(props.cid4)} width={200} />
               <FieldBox n="33" label="Indicação de Acidente" value={props.indicacaoAcidente} grow />
             </FieldRow>
 
