@@ -775,7 +775,7 @@ export function InternacaoGuideForm({
         done={internacaoOk}
         icon={<BedDouble className="h-4 w-4" />}
         title="Dados do Hospital / Local Solicitado e da Internação"
-        description="Campos 19 a 28 — local solicitado, regime, diárias e indicação clínica."
+        description="Campos 19 a 28 e 33 — local solicitado e informações da internação."
       >
         <Grid cols={3}>
           <Field label="20 - Nome do Hospital / Local Solicitado" required>
