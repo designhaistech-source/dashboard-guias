@@ -218,7 +218,9 @@ export function IssuedGuidesPage() {
                 aria-label="Tipo de guia"
                 options={[
                   { value: "", label: "Todos os tipos de guia" },
-                  ...ISSUED_GUIDE_TYPES.map((type) => ({ value: type, label: type })),
+                  ...ISSUED_GUIDE_TYPES.filter(
+                    (type) => type === "SP/SADT" || type === "Internação",
+                  ).map((type) => ({ value: type, label: type })),
                 ]}
                 value={filters.type}
                 onChange={(value) => setFilter("type", value)}
