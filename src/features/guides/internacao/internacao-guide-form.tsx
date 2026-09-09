@@ -78,11 +78,6 @@ const REGIME_INTERNACAO_OPTIONS = [
   { value: "3", label: "3 - Domiciliar" },
 ];
 
-const ACOMODACAO_OPTIONS = [
-  { value: "1", label: "1 - Enfermaria" },
-  { value: "2", label: "2 - Apartamento" },
-  { value: "3", label: "3 - UTI" },
-];
 
 const SIM_NAO_OPTIONS = [
   { value: "S", label: "S - Sim" },
