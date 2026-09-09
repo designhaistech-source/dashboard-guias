@@ -742,6 +742,7 @@ export function InternacaoGuideForm({
           </Field>
           <SelectField
             label="17 - UF"
+            required
             value={ufConselho}
             onValueChange={setUfConselho}
             options={UF_SELECT_OPTIONS}
