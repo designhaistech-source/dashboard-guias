@@ -57,9 +57,10 @@ interface RequestedItem {
   requestedQty: number;
 }
 
+/** Tabela TUSS 23 — Caráter do atendimento (código de 1 caractere). */
 const CARATER_OPTIONS = [
-  { value: "E", label: "E - Eletiva" },
-  { value: "U", label: "U - Urgência / Emergência" },
+  { value: "1", label: "1 - Eletivo" },
+  { value: "2", label: "2 - Urgência/Emergência" },
 ];
 
 const TIPO_INTERNACAO_OPTIONS = [
