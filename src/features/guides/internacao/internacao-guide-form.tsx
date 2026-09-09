@@ -221,16 +221,17 @@ export function InternacaoGuideForm({
   operadoras = [],
   onOperadoraChange,
 }: InternacaoGuideFormProps) {
-  // 1 a 6 — identificação da guia e autorização
+  // 1 e 2 — identificação da guia
   const [operadoraValue, setOperadoraValue] = useState(operadora ?? "");
-  const [autorizacaoOpen, setAutorizacaoOpen] = useState(false);
   const [ans, setAns] = useState(registroAns);
   /** Campo 2 — gerado pelo sistema; apenas repassado para a pré-visualização. */
   const guiaPrestador = numeroGuia;
-  const [guiaOperadora, setGuiaOperadora] = useState("");
-  const [dataAutorizacao, setDataAutorizacao] = useState("");
-  const [senha, setSenha] = useState("");
-  const [validadeSenha, setValidadeSenha] = useState("");
+  /** Campos 3 a 6 — preenchidos somente após o retorno da operadora. */
+  const guiaOperadora = "";
+  const dataAutorizacao = "";
+  const senha = "";
+  const validadeSenha = "";
+
 
   // 7 a 11 — beneficiário
   const [carteira, setCarteira] = useState("");
