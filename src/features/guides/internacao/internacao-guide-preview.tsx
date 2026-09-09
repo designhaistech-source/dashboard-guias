@@ -15,6 +15,8 @@ export interface InternacaoPreviewItem {
 }
 
 export interface InternacaoGuidePreviewProps {
+  /** URL da logo da operadora exibida no cabeçalho da guia. */
+  operadoraLogo?: string;
   ans: string;
   guiaPrestador: string;
   guiaOperadora: string;
