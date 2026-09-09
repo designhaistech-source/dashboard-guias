@@ -1335,6 +1335,19 @@ export function InternacaoGuideForm({
           </>
         )}
       </AppModal>
+
+      {/* Fonte única da guia impressa/baixada: mesma folha da pré-visualização. */}
+      {issuedGuide && (
+        <div
+          aria-hidden="true"
+          className="pointer-events-none fixed left-[-10000px] top-0"
+          style={{ width: A4_PORTRAIT_SHEET_WIDTH_PX }}
+        >
+          <div ref={printAreaRef}>
+            <InternacaoGuidePreview {...previewData} fullSize />
+          </div>
+        </div>
+      )}
     </form>
   );
 }
