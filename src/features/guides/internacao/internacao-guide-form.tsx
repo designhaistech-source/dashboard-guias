@@ -782,6 +782,7 @@ export function InternacaoGuideForm({
               value={codigoHospital}
               onChange={(e) => setCodigoHospital(e.target.value)}
               placeholder="Código ou CNPJ"
+              maxLength={14}
             />
           </Field>
           <Field label="21 - Data Sugerida para Internação" required>
