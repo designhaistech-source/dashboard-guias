@@ -7,13 +7,6 @@ import {
 } from "@/lib/guide-sheet";
 
 /**
- * Ajusta o modelo impresso da guia (largura fixa compartilhada com o gerador de
- * PDF) à largura disponível, evitando corte de conteúdo em telas menores. Em
- * telas largas o documento é exibido em escala 1:1.
- */
-const SHEET_WIDTH = GUIDE_SHEET_WIDTH_PX;
-
-/**
  * `zoom` refaz o layout e mantém o container rolável, mas em WebKit móvel
  * (iOS) o recálculo durante a rolagem causa travamentos. Nesses casos usamos
  * `transform: scale()` com altura medida — o scroll continua nativo e suave.
