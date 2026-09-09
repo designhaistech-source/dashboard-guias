@@ -63,6 +63,7 @@ const CARATER_OPTIONS = [
   { value: "2", label: "2 - Urgência/Emergência" },
 ];
 
+/** Tabela TUSS 57 — Tipo de internação (código de 1 caractere). */
 const TIPO_INTERNACAO_OPTIONS = [
   { value: "1", label: "1 - Clínica" },
   { value: "2", label: "2 - Cirúrgica" },
