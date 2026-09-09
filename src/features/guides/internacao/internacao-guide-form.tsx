@@ -512,6 +512,49 @@ export function InternacaoGuideForm({
     ],
   });
 
+  /** Volta o formulário aos valores iniciais, mantendo a operadora selecionada. */
+  const handleReset = () => {
+    setAns(registroAns);
+    setGuiaOperadora("");
+    setDataAutorizacao("");
+    setSenha("");
+    setValidadeSenha("");
+    setAutorizacaoOpen(false);
+    setCarteira("");
+    setValidadeCarteira("");
+    setAtendimentoRn("N");
+    setNomeBeneficiario("");
+    setCns("");
+    setNomeSocial("");
+    setBeneficiarioStatus("idle");
+    setCarteiraConsultada("");
+    setCodigoSolicitante("");
+    setNomeContratado("");
+    setNomeProfissional("");
+    setConselho("06");
+    setNumeroConselho("");
+    setUfConselho("");
+    setCbo("");
+    setCodigoHospital("");
+    setNomeHospital("");
+    setDataSugerida("");
+    setCarater("1");
+    setTipoInternacao("1");
+    setRegimeInternacao("1");
+    setDiariasSolicitadas(1);
+    setPrevisaoOpme("N");
+    setPrevisaoQuimio("N");
+    setIndicacaoClinica("");
+    setCid1("");
+    setCid2("");
+    setCid3("");
+    setCid4("");
+    setIndicacaoAcidente("9");
+    setItems([newItem()]);
+    setObservacao("");
+    toast.success("Formulário limpo");
+  };
+
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
     if (!guiaOk || !beneficiarioOk || !solicitanteOk || !internacaoOk || !itemsOk) {
