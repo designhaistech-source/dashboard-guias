@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import {
   BedDouble,
   Building2,
@@ -40,7 +40,11 @@ import {
 import { AppModal } from "@/components/app-modal";
 import { useNavigate } from "@tanstack/react-router";
 import { CheckCircle2, Download, Printer } from "lucide-react";
-import { addIssuedGuide, downloadIssuedGuide, type IssuedGuide } from "@/features/issued-guides";
+import { addIssuedGuide, type IssuedGuide } from "@/features/issued-guides";
+import {
+  PRINT_FAILURE_MESSAGES,
+  printGuideMarkup,
+} from "@/features/issued-guides/utils/print-guide";
 import { nextGuiaNumber } from "@/lib/guia-number";
 import { ScaledGuideSheet } from "@/components/scaled-guide-sheet";
 import { A4_PORTRAIT_SHEET_WIDTH_PX } from "@/lib/guide-sheet";
@@ -331,6 +335,31 @@ export function InternacaoGuideForm({
   /** Guia emitida e salva — abre o modal de confirmação da emissão. */
   const [issuedGuide, setIssuedGuide] = useState<IssuedGuide | null>(null);
   const navigate = useNavigate();
+  /**
+   * Área oculta com a mesma folha TISS da pré-visualização: serve de fonte
+   * única para as ações Imprimir e Baixar guia (PDF via diálogo do navegador).
+   */
+  const printAreaRef = useRef<HTMLDivElement>(null);
+  const [printing, setPrinting] = useState(false);
+
+  const printTissSheet = async (numero: string) => {
+    if (printing) return;
+    setPrinting(true);
+    const toastId = toast.loading(`Gerando a guia ${numero}…`);
+    try {
+      const markup = printAreaRef.current?.innerHTML ?? "";
+      const result = await printGuideMarkup(markup, `Guia ${numero} — Guias+`, "portrait");
+      if (result.ok) {
+        toast.success(`Guia ${numero} pronta para imprimir ou salvar em PDF.`, { id: toastId });
+      } else {
+        toast.error(PRINT_FAILURE_MESSAGES[result.reason], { id: toastId });
+      }
+    } catch {
+      toast.error(PRINT_FAILURE_MESSAGES.unknown, { id: toastId });
+    } finally {
+      setPrinting(false);
+    }
+  };
 
   /** Dados normalizados enviados à pré-visualização da guia impressa. */
   const previewData = {
@@ -1259,7 +1288,15 @@ export function InternacaoGuideForm({
         bodyClassName="space-y-3 text-sm"
         footer={
           <>
-            <Button type="button" variant="outline" onClick={() => window.print()}>
+            <Button
+              type="button"
+              variant="outline"
+              disabled={printing}
+              onClick={() => {
+                if (!issuedGuide) return;
+                void printTissSheet(issuedGuide.numero);
+              }}
+            >
               <Printer className="h-4 w-4" /> Imprimir
             </Button>
             <Button
@@ -1271,10 +1308,10 @@ export function InternacaoGuideForm({
             </Button>
             <Button
               type="button"
+              disabled={printing}
               onClick={() => {
                 if (!issuedGuide) return;
-                downloadIssuedGuide(issuedGuide);
-                toast.success("Download da guia iniciado");
+                void printTissSheet(issuedGuide.numero);
               }}
             >
               <Download className="h-4 w-4" /> Baixar guia
@@ -1298,6 +1335,19 @@ export function InternacaoGuideForm({
           </>
         )}
       </AppModal>
+
+      {/* Fonte única da guia impressa/baixada: mesma folha da pré-visualização. */}
+      {issuedGuide && (
+        <div
+          aria-hidden="true"
+          className="pointer-events-none fixed left-[-10000px] top-0"
+          style={{ width: A4_PORTRAIT_SHEET_WIDTH_PX }}
+        >
+          <div ref={printAreaRef}>
+            <InternacaoGuidePreview {...previewData} fullSize />
+          </div>
+        </div>
+      )}
     </form>
   );
 }
