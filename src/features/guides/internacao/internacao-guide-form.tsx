@@ -915,13 +915,6 @@ export function InternacaoGuideForm({
               placeholder="Buscar CID-10"
             />
           </Field>
-          <SelectField
-            label="33 - Indicação de Acidente"
-            required
-            value={indicacaoAcidente}
-            onValueChange={setIndicacaoAcidente}
-            options={ACIDENTE_OPTIONS}
-          />
         </Grid>
       </SectionCard>
 
