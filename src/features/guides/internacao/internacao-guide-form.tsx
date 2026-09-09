@@ -37,6 +37,8 @@ import {
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 import { AppModal } from "@/components/app-modal";
+import { ScaledGuideSheet } from "@/components/scaled-guide-sheet";
+import { A4_PORTRAIT_SHEET_WIDTH_PX } from "@/lib/guide-sheet";
 import { InternacaoGuidePreview } from "./internacao-guide-preview";
 import { lookupBeneficiary, normalizeCarteira } from "@/features/beneficiaries";
 import { CID_OPTIONS } from "@/lib/cid";
@@ -1084,7 +1086,9 @@ export function InternacaoGuideForm({
         description="Guia de Solicitação de Internação — padrão TISS."
         size="xl"
       >
-        <InternacaoGuidePreview {...previewData} fullSize />
+        <ScaledGuideSheet fit="width" sheetWidth={A4_PORTRAIT_SHEET_WIDTH_PX}>
+          <InternacaoGuidePreview {...previewData} fullSize />
+        </ScaledGuideSheet>
       </AppModal>
     </form>
   );

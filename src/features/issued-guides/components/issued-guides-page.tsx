@@ -498,7 +498,12 @@ function IssuedGuideModal({
           aria-label={`Pré-visualização da guia ${guide.numero}`}
           className="w-full"
         >
-          <ScaledGuideSheet fit="width">
+          <ScaledGuideSheet
+            fit="width"
+            sheetWidth={
+              guide.type === "Internação" ? A4_PORTRAIT_SHEET_WIDTH_PX : undefined
+            }
+          >
             <IssuedGuidePreview guide={guide} />
           </ScaledGuideSheet>
         </section>
