@@ -5,10 +5,16 @@
  * saia idêntica ao que o usuário vê na tela.
  */
 import {
+  A4_PORTRAIT_SHEET_WIDTH_PX,
   GUIDE_SHEET_WIDTH_PX,
   PRINT_SHEET_CSS,
+  PRINT_SHEET_PORTRAIT_CSS,
   getGuideSheetScale,
+  getPortraitSheetScale,
 } from "@/lib/guide-sheet";
+
+/** Orientação do papel; a guia de internação é impressa em retrato. */
+export type PrintOrientation = "landscape" | "portrait";
 
 
 /**
