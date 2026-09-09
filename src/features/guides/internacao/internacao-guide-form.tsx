@@ -1057,13 +1057,12 @@ export function InternacaoGuideForm({
       <FormActionBar
         stepsLabel="Etapas preenchidas"
         steps={[
-          { label: "Guia e autorização", done: guiaOk },
+          { label: "Convênio", done: guiaOk },
           { label: "Beneficiário", done: beneficiarioOk },
           { label: "Contratado solicitante", done: solicitanteOk },
           { label: "Hospital e internação", done: internacaoOk },
           
           { label: "Procedimentos solicitados", done: itemsOk },
-          { label: "Observação", done: finalOk },
         ]}
         note={
           <>
