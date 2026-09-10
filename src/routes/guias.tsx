@@ -262,6 +262,25 @@ function Upload_Section({ onProcessed }: { onProcessed: (row: Row) => void }) {
             Tirar foto
           </Button>
         </div>
+        <div className="mt-4 flex items-start gap-2 text-left">
+          <Checkbox
+            id="upload-guia-internacao"
+            checked={isInternacao}
+            onCheckedChange={(checked) => setIsInternacao(checked === true)}
+            className="mt-0.5"
+          />
+          <div className="space-y-0.5">
+            <label
+              htmlFor="upload-guia-internacao"
+              className="cursor-pointer text-xs font-medium text-muted-foreground"
+            >
+              Guia de internação
+            </label>
+            <p className="text-xs text-muted-foreground">
+              Marque se os arquivos deste envio forem guias de internação.
+            </p>
+          </div>
+        </div>
       </div>
 
       <CameraCaptureDialog
@@ -270,13 +289,6 @@ function Upload_Section({ onProcessed }: { onProcessed: (row: Row) => void }) {
         onCapture={(file) => handleFiles([file])}
       />
 
-      <ProcessConfirmModal
-        files={pending}
-        value={pendingIsInternacao}
-        onValueChange={setPendingIsInternacao}
-        onCancel={closePending}
-        onConfirm={confirmPending}
-      />
 
 
       {queue.length > 0 && (
