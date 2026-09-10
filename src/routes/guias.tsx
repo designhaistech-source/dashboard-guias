@@ -268,26 +268,31 @@ function Upload_Section({ onProcessed }: { onProcessed: (row: Row) => void }) {
             event.target.value = "";
           }}
         />
-        <div className="mt-6 flex items-start gap-2 text-left">
-          <Checkbox
-            id="upload-guia-internacao"
-            checked={isInternacao}
-            onCheckedChange={(checked) => setIsInternacao(checked === true)}
-            aria-describedby="upload-guia-internacao-hint"
-            className="mt-1"
-          />
-          <div className="space-y-0.5">
-            <label
-              htmlFor="upload-guia-internacao"
-              className="flex min-h-6 cursor-pointer items-center text-sm font-medium text-foreground"
-            >
-              Processar como guia de internação
-            </label>
-            <p id="upload-guia-internacao-hint" className="text-xs text-muted-foreground">
-              Marque antes de enviar. Vale para todos os arquivos deste envio, então envie
-              guias de internação separadamente dos outros tipos.
-            </p>
-          </div>
+        <div className="mt-6 text-left">
+          <label
+            htmlFor="upload-guia-internacao"
+            className="flex min-h-11 cursor-pointer items-start gap-3 rounded-md py-2 pr-2"
+          >
+            <Checkbox
+              id="upload-guia-internacao"
+              checked={isInternacao}
+              onCheckedChange={(checked) => setIsInternacao(checked === true)}
+              aria-describedby="upload-guia-internacao-hint"
+              className="mt-0.5"
+            />
+            <span className="space-y-1">
+              <span className="block text-sm text-foreground">
+                Processar como guia de internação
+              </span>
+              <span
+                id="upload-guia-internacao-hint"
+                className="block text-xs text-muted-foreground/80"
+              >
+                Marque antes de enviar. Vale para todos os arquivos deste envio, então envie
+                guias de internação separadamente dos outros tipos.
+              </span>
+            </span>
+          </label>
         </div>
         <div className="mt-4 flex w-full flex-col items-stretch gap-3 sm:w-auto sm:flex-row sm:items-center">
           <Button variant="outline" asChild className="justify-center">
