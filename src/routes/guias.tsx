@@ -144,11 +144,27 @@ type QueueItem = {
 function Upload_Section({ onProcessed }: { onProcessed: (row: Row) => void }) {
   const [queue, setQueue] = useState<QueueItem[]>([]);
   const [cameraOpen, setCameraOpen] = useState(false);
+  /** Arquivos aguardando confirmação do tipo antes de entrar na fila. */
+  const [pending, setPending] = useState<File[] | null>(null);
+  const [pendingIsInternacao, setPendingIsInternacao] = useState("nao");
 
   const handleFiles = (files: FileList | File[] | null) => {
     const list = files ? Array.from(files) : [];
     if (!list.length) return;
+    setPendingIsInternacao("nao");
+    setPending(list);
+  };
 
+  const closePending = () => setPending(null);
+
+  const confirmPending = () => {
+    const list = pending ?? [];
+    const isInternacao = pendingIsInternacao === "sim";
+    setPending(null);
+    if (list.length) startProcessing(list, isInternacao);
+  };
+
+  const startProcessing = (list: File[], isInternacao: boolean) => {
     const newItems: QueueItem[] = list.map((file, idx) => ({
 
       id: Date.now() + idx,
