@@ -140,16 +140,27 @@ type QueueItem = {
   progress: number;
   stage: string;
   done: boolean;
+  isInternacao: boolean;
 };
 
-/* TODO(temporário): remover o checkbox "Guia de internação" quando a
-   identificação automática reconhecer esse tipo de guia. */
+/* TODO(temporário): remover o checkbox "Processar como guia de internação"
+   quando a identificação automática reconhecer esse tipo de guia. */
 
 function Upload_Section({ onProcessed }: { onProcessed: (row: Row) => void }) {
   const [queue, setQueue] = useState<QueueItem[]>([]);
   const [cameraOpen, setCameraOpen] = useState(false);
   /** Marcação temporária: trata todos os arquivos do envio como internação. */
   const [isInternacao, setIsInternacao] = useState(false);
+  /** Timers ativos, para permitir cancelar um processamento em andamento. */
+  const timersRef = useRef<Map<number, ReturnType<typeof setInterval>>>(new Map());
+
+  useEffect(
+    () => () => {
+      timersRef.current.forEach((timer) => clearInterval(timer));
+      timersRef.current.clear();
+    },
+    [],
+  );
 
   const handleFiles = (files: FileList | File[] | null) => {
     const list = files ? Array.from(files) : [];
@@ -158,24 +169,24 @@ function Upload_Section({ onProcessed }: { onProcessed: (row: Row) => void }) {
     setIsInternacao(false);
   };
 
-
-  const startProcessing = (list: File[], isInternacao: boolean) => {
+  const startProcessing = (list: File[], asInternacao: boolean) => {
     const newItems: QueueItem[] = list.map((file, idx) => ({
-
       id: Date.now() + idx,
       name: file.name,
       progress: 0,
       stage: "Enviando documento...",
       done: false,
+      isInternacao: asInternacao,
     }));
 
     setQueue((prev) => [...newItems, ...prev]);
+    const typeLabel = asInternacao ? "como guia de internação" : "com tipo identificado automaticamente";
     toast.success(
       list.length === 1
-        ? `Processando: ${list[0].name}`
-        : `Processando ${list.length} arquivos`,
+        ? `Processando ${list[0].name} ${typeLabel}`
+        : `Processando ${list.length} arquivos ${typeLabel}`,
+      { description: "Use “Cancelar” na fila se o tipo estiver errado." },
     );
-
 
     newItems.forEach((item) => {
       const interval = setInterval(() => {
@@ -190,13 +201,14 @@ function Upload_Section({ onProcessed }: { onProcessed: (row: Row) => void }) {
             else stage = "Processamento concluído";
             if (next >= 100) {
               clearInterval(interval);
+              timersRef.current.delete(item.id);
               const now = new Date();
               const date = `${String(now.getDate()).padStart(2, "0")}/${String(now.getMonth() + 1).padStart(2, "0")}/${now.getFullYear()}, ${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
               onProcessed({
                 file: item.name,
                 id: Number(item.id.toString().slice(-4)),
                 patient: "CONCEICAO APARECIDA LIMA DOS SANTOS",
-                type: isInternacao ? "Internação" : "SADT",
+                type: item.isInternacao ? "Internação" : "SADT",
                 date,
                 status: "Concluído",
               });
@@ -210,10 +222,16 @@ function Upload_Section({ onProcessed }: { onProcessed: (row: Row) => void }) {
           }),
         );
       }, 500);
+      timersRef.current.set(item.id, interval);
     });
   };
 
   const removeItem = (id: number) => {
+    const timer = timersRef.current.get(id);
+    if (timer) {
+      clearInterval(timer);
+      timersRef.current.delete(id);
+    }
     setQueue((prev) => prev.filter((q) => q.id !== id));
   };
 
@@ -250,7 +268,28 @@ function Upload_Section({ onProcessed }: { onProcessed: (row: Row) => void }) {
             event.target.value = "";
           }}
         />
-        <div className="mt-6 flex w-full flex-col items-stretch gap-3 sm:w-auto sm:flex-row sm:items-center">
+        <div className="mt-6 flex items-start gap-2 text-left">
+          <Checkbox
+            id="upload-guia-internacao"
+            checked={isInternacao}
+            onCheckedChange={(checked) => setIsInternacao(checked === true)}
+            aria-describedby="upload-guia-internacao-hint"
+            className="mt-1"
+          />
+          <div className="space-y-0.5">
+            <label
+              htmlFor="upload-guia-internacao"
+              className="flex min-h-6 cursor-pointer items-center text-sm font-medium text-foreground"
+            >
+              Processar como guia de internação
+            </label>
+            <p id="upload-guia-internacao-hint" className="text-xs text-muted-foreground">
+              Marque antes de enviar. Vale para todos os arquivos deste envio, então envie
+              guias de internação separadamente dos outros tipos.
+            </p>
+          </div>
+        </div>
+        <div className="mt-4 flex w-full flex-col items-stretch gap-3 sm:w-auto sm:flex-row sm:items-center">
           <Button variant="outline" asChild className="justify-center">
             <label htmlFor="guide-file-upload" className="cursor-pointer">
               <FileUp className="h-4 w-4" />
@@ -261,25 +300,6 @@ function Upload_Section({ onProcessed }: { onProcessed: (row: Row) => void }) {
             <Camera className="h-4 w-4" aria-hidden="true" />
             Tirar foto
           </Button>
-        </div>
-        <div className="mt-4 flex items-start gap-2 text-left">
-          <Checkbox
-            id="upload-guia-internacao"
-            checked={isInternacao}
-            onCheckedChange={(checked) => setIsInternacao(checked === true)}
-            className="mt-0.5"
-          />
-          <div className="space-y-0.5">
-            <label
-              htmlFor="upload-guia-internacao"
-              className="cursor-pointer text-xs font-medium text-muted-foreground"
-            >
-              Guia de internação
-            </label>
-            <p className="text-xs text-muted-foreground">
-              Marque se os arquivos deste envio forem guias de internação.
-            </p>
-          </div>
         </div>
       </div>
 
@@ -307,6 +327,9 @@ function Upload_Section({ onProcessed }: { onProcessed: (row: Row) => void }) {
                   <p className="text-sm font-medium truncate">{item.name}</p>
                   <p className="text-xs text-muted-foreground">ID: {item.id.toString().slice(-3)}</p>
                 </div>
+                <Badge variant={item.isInternacao ? "info-soft" : "secondary"} size="lg">
+                  {item.isInternacao ? "Internação" : "Tipo automático"}
+                </Badge>
                 <Badge variant={item.done ? "success-soft" : "primary-soft"} size="lg">
                   {item.done ? (
                     <CheckCircle2 className="h-3.5 w-3.5" />
@@ -320,7 +343,8 @@ function Upload_Section({ onProcessed }: { onProcessed: (row: Row) => void }) {
                   size="icon"
                   onClick={() => removeItem(item.id)}
                   className="h-7 w-7 text-muted-foreground"
-                  aria-label="Remover"
+                  aria-label={item.done ? "Remover da fila" : "Cancelar processamento"}
+                  title={item.done ? "Remover da fila" : "Cancelar processamento"}
                 >
                   <X className="h-4 w-4" />
                 </Button>
