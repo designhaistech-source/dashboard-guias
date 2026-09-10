@@ -227,6 +227,11 @@ function Upload_Section({ onProcessed }: { onProcessed: (row: Row) => void }) {
   };
 
   const removeItem = (id: number) => {
+    const timer = timersRef.current.get(id);
+    if (timer) {
+      clearInterval(timer);
+      timersRef.current.delete(id);
+    }
     setQueue((prev) => prev.filter((q) => q.id !== id));
   };
 
