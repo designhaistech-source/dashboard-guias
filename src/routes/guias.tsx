@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useRef, useState, type ChangeEvent } from "react";
+import { useEffect, useRef, useState, type ChangeEvent } from "react";
 import {
   Upload,
   Camera,
@@ -64,6 +64,7 @@ import {
   DataTableDesktop,
 } from "@/components/data-table";
 import { Chip } from "@/components/ui/chip";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { CameraCaptureDialog } from "@/components/camera-capture-dialog";
 import { ProcedureCodeModal } from "@/components/procedure-code-modal";
 import { cn } from "@/lib/utils";
@@ -86,7 +87,7 @@ type Row = {
   file: string;
   id: number;
   patient: string;
-  type: "SADT" | "Não válido" | "Encaminhamento";
+  type: "SADT" | "Não válido" | "Encaminhamento" | "Internação";
   date: string;
   status: "Concluído" | "Erro";
   warn?: boolean;
@@ -141,14 +142,135 @@ type QueueItem = {
   done: boolean;
 };
 
+function formatFileSize(bytes: number) {
+  if (bytes < 1024) return `${bytes} B`;
+  const kb = bytes / 1024;
+  if (kb < 1024) return `${kb.toFixed(0)} KB`;
+  return `${(kb / 1024).toFixed(1).replace(".", ",")} MB`;
+}
+
+/**
+ * Confirma o arquivo selecionado/capturado e pergunta se ele é uma guia de
+ * internação antes de iniciar o processamento.
+ */
+function ProcessConfirmModal({
+  files,
+  value,
+  onValueChange,
+  onCancel,
+  onConfirm,
+}: {
+  files: File[] | null;
+  value: string;
+  onValueChange: (value: string) => void;
+  onCancel: () => void;
+  onConfirm: () => void;
+}) {
+  const first = files?.[0] ?? null;
+  const [thumb, setThumb] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!first || !first.type.startsWith("image/")) {
+      setThumb(null);
+      return;
+    }
+    const url = URL.createObjectURL(first);
+    setThumb(url);
+    return () => URL.revokeObjectURL(url);
+  }, [first]);
+
+  return (
+    <AppModal
+      open={Boolean(files?.length)}
+      onOpenChange={(open) => {
+        if (!open) onCancel();
+      }}
+      size="sm"
+      title="Arquivo pronto para processar"
+      description="Confirme o arquivo e o tipo de guia antes de iniciar o processamento."
+      descriptionHidden
+      footer={
+        <>
+          <Button variant="outline" onClick={onCancel}>
+            Cancelar
+          </Button>
+          <Button onClick={onConfirm}>Processar guia</Button>
+        </>
+      }
+    >
+      <div className="space-y-5">
+        <div className="flex items-center gap-3 border-b border-border pb-4">
+          <div className="grid h-16 w-16 shrink-0 place-items-center overflow-hidden rounded-lg border border-border bg-muted">
+            {thumb ? (
+              <img src={thumb} alt="" className="h-full w-full object-cover" />
+            ) : (
+              <FileUp className="h-6 w-6 text-muted-foreground" aria-hidden="true" />
+            )}
+          </div>
+          <div className="min-w-0">
+            <p className="truncate text-sm font-semibold text-foreground">{first?.name}</p>
+            <p className="text-xs text-muted-foreground">
+              {first ? formatFileSize(first.size) : null}
+              {files && files.length > 1 ? ` · +${files.length - 1} arquivo(s)` : ""}
+            </p>
+          </div>
+        </div>
+
+        <fieldset className="space-y-3">
+          <legend className="text-sm font-semibold text-foreground">
+            Esta é uma guia de internação?
+          </legend>
+          <RadioGroup value={value} onValueChange={onValueChange}>
+            <div className="flex items-center gap-2">
+              <RadioGroupItem value="nao" id="guia-internacao-nao" />
+              <label htmlFor="guia-internacao-nao" className="cursor-pointer text-sm text-foreground">
+                Não
+              </label>
+            </div>
+            <div className="flex items-center gap-2">
+              <RadioGroupItem value="sim" id="guia-internacao-sim" />
+              <label htmlFor="guia-internacao-sim" className="cursor-pointer text-sm text-foreground">
+                Sim
+              </label>
+            </div>
+          </RadioGroup>
+        </fieldset>
+
+        <div className="flex items-start gap-2 rounded-lg bg-muted p-3">
+          <Info className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" aria-hidden="true" />
+          <p className="text-xs text-muted-foreground">
+            Essa informação é necessária para processar corretamente guias de internação.
+          </p>
+        </div>
+      </div>
+    </AppModal>
+  );
+}
+
 function Upload_Section({ onProcessed }: { onProcessed: (row: Row) => void }) {
   const [queue, setQueue] = useState<QueueItem[]>([]);
   const [cameraOpen, setCameraOpen] = useState(false);
+  /** Arquivos aguardando confirmação do tipo antes de entrar na fila. */
+  const [pending, setPending] = useState<File[] | null>(null);
+  const [pendingIsInternacao, setPendingIsInternacao] = useState("nao");
 
   const handleFiles = (files: FileList | File[] | null) => {
     const list = files ? Array.from(files) : [];
     if (!list.length) return;
+    setPendingIsInternacao("nao");
+    setPending(list);
+  };
 
+  const closePending = () => setPending(null);
+
+  const confirmPending = () => {
+    const list = pending ?? [];
+    const isInternacao = pendingIsInternacao === "sim";
+    setPending(null);
+    if (list.length) startProcessing(list, isInternacao);
+  };
+
+  const startProcessing = (list: File[], isInternacao: boolean) => {
     const newItems: QueueItem[] = list.map((file, idx) => ({
 
       id: Date.now() + idx,
@@ -161,8 +283,8 @@ function Upload_Section({ onProcessed }: { onProcessed: (row: Row) => void }) {
     setQueue((prev) => [...newItems, ...prev]);
     toast.success(
       list.length === 1
-        ? `Arquivo selecionado: ${list[0].name}`
-        : `${list.length} arquivos selecionados`,
+        ? `Processando: ${list[0].name}`
+        : `Processando ${list.length} arquivos`,
     );
 
 
@@ -185,7 +307,7 @@ function Upload_Section({ onProcessed }: { onProcessed: (row: Row) => void }) {
                 file: item.name,
                 id: Number(item.id.toString().slice(-4)),
                 patient: "CONCEICAO APARECIDA LIMA DOS SANTOS",
-                type: "SADT",
+                type: isInternacao ? "Internação" : "SADT",
                 date,
                 status: "Concluído",
               });
@@ -257,6 +379,14 @@ function Upload_Section({ onProcessed }: { onProcessed: (row: Row) => void }) {
         open={cameraOpen}
         onOpenChange={setCameraOpen}
         onCapture={(file) => handleFiles([file])}
+      />
+
+      <ProcessConfirmModal
+        files={pending}
+        value={pendingIsInternacao}
+        onValueChange={setPendingIsInternacao}
+        onCancel={closePending}
+        onConfirm={confirmPending}
       />
 
 
