@@ -285,7 +285,7 @@ function Upload_Section({ onProcessed }: { onProcessed: (row: Row) => void }) {
             Marque se os arquivos deste envio forem guias de internação.
           </p>
         </div>
-        <div className="mt-4 flex w-full flex-col items-stretch gap-3 sm:w-auto sm:flex-row sm:items-center">
+        <div className="mt-6 flex w-full flex-col items-stretch gap-3 sm:w-auto sm:flex-row sm:items-center">
           <Button variant="outline" asChild className="justify-center">
             <label htmlFor="guide-file-upload" className="cursor-pointer">
               <FileUp className="h-4 w-4" />
