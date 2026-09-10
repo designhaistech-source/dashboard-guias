@@ -140,16 +140,27 @@ type QueueItem = {
   progress: number;
   stage: string;
   done: boolean;
+  isInternacao: boolean;
 };
 
-/* TODO(temporário): remover o checkbox "Guia de internação" quando a
-   identificação automática reconhecer esse tipo de guia. */
+/* TODO(temporário): remover o checkbox "Processar como guia de internação"
+   quando a identificação automática reconhecer esse tipo de guia. */
 
 function Upload_Section({ onProcessed }: { onProcessed: (row: Row) => void }) {
   const [queue, setQueue] = useState<QueueItem[]>([]);
   const [cameraOpen, setCameraOpen] = useState(false);
   /** Marcação temporária: trata todos os arquivos do envio como internação. */
   const [isInternacao, setIsInternacao] = useState(false);
+  /** Timers ativos, para permitir cancelar um processamento em andamento. */
+  const timersRef = useRef<Map<number, ReturnType<typeof setInterval>>>(new Map());
+
+  useEffect(
+    () => () => {
+      timersRef.current.forEach((timer) => clearInterval(timer));
+      timersRef.current.clear();
+    },
+    [],
+  );
 
   const handleFiles = (files: FileList | File[] | null) => {
     const list = files ? Array.from(files) : [];
@@ -158,24 +169,24 @@ function Upload_Section({ onProcessed }: { onProcessed: (row: Row) => void }) {
     setIsInternacao(false);
   };
 
-
-  const startProcessing = (list: File[], isInternacao: boolean) => {
+  const startProcessing = (list: File[], asInternacao: boolean) => {
     const newItems: QueueItem[] = list.map((file, idx) => ({
-
       id: Date.now() + idx,
       name: file.name,
       progress: 0,
       stage: "Enviando documento...",
       done: false,
+      isInternacao: asInternacao,
     }));
 
     setQueue((prev) => [...newItems, ...prev]);
+    const typeLabel = asInternacao ? "como guia de internação" : "com tipo identificado automaticamente";
     toast.success(
       list.length === 1
-        ? `Processando: ${list[0].name}`
-        : `Processando ${list.length} arquivos`,
+        ? `Processando ${list[0].name} ${typeLabel}`
+        : `Processando ${list.length} arquivos ${typeLabel}`,
+      { description: "Use “Cancelar” na fila se o tipo estiver errado." },
     );
-
 
     newItems.forEach((item) => {
       const interval = setInterval(() => {
@@ -190,13 +201,14 @@ function Upload_Section({ onProcessed }: { onProcessed: (row: Row) => void }) {
             else stage = "Processamento concluído";
             if (next >= 100) {
               clearInterval(interval);
+              timersRef.current.delete(item.id);
               const now = new Date();
               const date = `${String(now.getDate()).padStart(2, "0")}/${String(now.getMonth() + 1).padStart(2, "0")}/${now.getFullYear()}, ${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
               onProcessed({
                 file: item.name,
                 id: Number(item.id.toString().slice(-4)),
                 patient: "CONCEICAO APARECIDA LIMA DOS SANTOS",
-                type: isInternacao ? "Internação" : "SADT",
+                type: item.isInternacao ? "Internação" : "SADT",
                 date,
                 status: "Concluído",
               });
@@ -210,6 +222,7 @@ function Upload_Section({ onProcessed }: { onProcessed: (row: Row) => void }) {
           }),
         );
       }, 500);
+      timersRef.current.set(item.id, interval);
     });
   };
 
