@@ -201,7 +201,7 @@ function Upload_Section({ onProcessed }: { onProcessed: (row: Row) => void }) {
                 file: item.name,
                 id: Number(item.id.toString().slice(-4)),
                 patient: "CONCEICAO APARECIDA LIMA DOS SANTOS",
-                type: "SADT",
+                type: isInternacao ? "Internação" : "SADT",
                 date,
                 status: "Concluído",
               });
