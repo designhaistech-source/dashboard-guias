@@ -1,3 +1,4 @@
+import type { InternacaoGuidePreviewProps } from "@/features/guides/internacao/internacao-guide-preview";
 import { formatGuiaNumber } from "@/lib/guia-number";
 
 export type IssuedGuideStatus =
