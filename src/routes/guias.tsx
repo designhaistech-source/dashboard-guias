@@ -268,10 +268,10 @@ function Upload_Section({ onProcessed }: { onProcessed: (row: Row) => void }) {
             event.target.value = "";
           }}
         />
-        <div className="mt-6">
+        <div className="mt-6 flex flex-col items-center text-center">
           <label
             htmlFor="upload-guia-internacao"
-            className="inline-flex min-h-11 cursor-pointer items-center gap-2 rounded-md px-2 text-left"
+            className="inline-flex min-h-11 cursor-pointer items-center justify-center gap-2 rounded-md px-2"
           >
             <Checkbox
               id="upload-guia-internacao"
@@ -279,17 +279,11 @@ function Upload_Section({ onProcessed }: { onProcessed: (row: Row) => void }) {
               onCheckedChange={(checked) => setIsInternacao(checked === true)}
               aria-describedby="upload-guia-internacao-hint"
             />
-            <span className="text-sm text-foreground">Processar como guia de internação</span>
+            <span className="text-sm text-foreground">Guia de internação</span>
           </label>
-          <span id="upload-guia-internacao-hint" className="sr-only">
-            Marque antes de enviar. Vale para todos os arquivos deste envio, então envie guias
-            de internação separadamente dos outros tipos.
-          </span>
-          {isInternacao ? (
-            <p className="mt-1 text-xs text-muted-foreground">
-              Vale para todos os arquivos deste envio.
-            </p>
-          ) : null}
+          <p id="upload-guia-internacao-hint" className="-mt-0.5 text-xs text-muted-foreground">
+            Marque se os arquivos deste envio forem guias de internação.
+          </p>
         </div>
         <div className="mt-4 flex w-full flex-col items-stretch gap-3 sm:w-auto sm:flex-row sm:items-center">
           <Button variant="outline" asChild className="justify-center">
