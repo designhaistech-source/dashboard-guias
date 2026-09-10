@@ -327,7 +327,7 @@ function Upload_Section({ onProcessed }: { onProcessed: (row: Row) => void }) {
                   <p className="text-sm font-medium truncate">{item.name}</p>
                   <p className="text-xs text-muted-foreground">ID: {item.id.toString().slice(-3)}</p>
                 </div>
-                <Badge variant={item.isInternacao ? "primary-soft" : "neutral-soft"} size="lg">
+                <Badge variant={item.isInternacao ? "info-soft" : "secondary"} size="lg">
                   {item.isInternacao ? "Internação" : "Tipo automático"}
                 </Badge>
                 <Badge variant={item.done ? "success-soft" : "primary-soft"} size="lg">
