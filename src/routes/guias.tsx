@@ -279,7 +279,9 @@ function Upload_Section({ onProcessed }: { onProcessed: (row: Row) => void }) {
               onCheckedChange={(checked) => setIsInternacao(checked === true)}
               aria-describedby="upload-guia-internacao-hint"
             />
-            <span className="text-sm text-foreground">Guia de internação</span>
+            <span className="text-sm leading-none text-box-trim text-box-cap text-foreground">
+              Guia de internação
+            </span>
           </label>
           <p id="upload-guia-internacao-hint" className="-mt-0.5 text-xs text-muted-foreground">
             Marque para processar todas as guias deste envio como internação.
