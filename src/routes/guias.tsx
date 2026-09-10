@@ -177,8 +177,8 @@ function Upload_Section({ onProcessed }: { onProcessed: (row: Row) => void }) {
     setQueue((prev) => [...newItems, ...prev]);
     toast.success(
       list.length === 1
-        ? `Arquivo selecionado: ${list[0].name}`
-        : `${list.length} arquivos selecionados`,
+        ? `Processando: ${list[0].name}`
+        : `Processando ${list.length} arquivos`,
     );
 
 
