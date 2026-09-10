@@ -275,6 +275,14 @@ function Upload_Section({ onProcessed }: { onProcessed: (row: Row) => void }) {
         onCapture={(file) => handleFiles([file])}
       />
 
+      <ProcessConfirmModal
+        files={pending}
+        value={pendingIsInternacao}
+        onValueChange={setPendingIsInternacao}
+        onCancel={closePending}
+        onConfirm={confirmPending}
+      />
+
 
       {queue.length > 0 && (
         <div className="space-y-3">
