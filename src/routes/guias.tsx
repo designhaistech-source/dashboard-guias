@@ -279,7 +279,9 @@ function Upload_Section({ onProcessed }: { onProcessed: (row: Row) => void }) {
               onCheckedChange={(checked) => setIsInternacao(checked === true)}
               aria-describedby="upload-guia-internacao-hint"
             />
-            <span className="text-sm leading-none text-box-trim text-box-cap text-foreground">
+            {/* pt-0.5 compensa o espaço dos descendentes da fonte: desloca o
+                texto ~1px para baixo, centralizando-o opticamente com a caixa. */}
+            <span className="text-sm leading-none pt-0.5 text-foreground">
               Guia de internação
             </span>
           </label>
