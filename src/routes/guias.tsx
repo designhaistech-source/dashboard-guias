@@ -282,7 +282,7 @@ function Upload_Section({ onProcessed }: { onProcessed: (row: Row) => void }) {
             <span className="text-sm text-foreground">Guia de internação</span>
           </label>
           <p id="upload-guia-internacao-hint" className="-mt-0.5 text-xs text-muted-foreground">
-            Vale para todos os arquivos deste envio.
+            Marque para processar todas as guias deste envio como internação.
           </p>
         </div>
         <div className="mt-6 flex w-full flex-col items-stretch gap-3 sm:w-auto sm:flex-row sm:items-center">
