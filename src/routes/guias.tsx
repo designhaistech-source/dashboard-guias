@@ -301,7 +301,6 @@ function Upload_Section({ onProcessed }: { onProcessed: (row: Row) => void }) {
             Tirar foto
           </Button>
         </div>
-        </div>
       </div>
 
       <CameraCaptureDialog
