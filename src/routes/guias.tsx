@@ -141,6 +141,111 @@ type QueueItem = {
   done: boolean;
 };
 
+function formatFileSize(bytes: number) {
+  if (bytes < 1024) return `${bytes} B`;
+  const kb = bytes / 1024;
+  if (kb < 1024) return `${kb.toFixed(0)} KB`;
+  return `${(kb / 1024).toFixed(1).replace(".", ",")} MB`;
+}
+
+/**
+ * Confirma o arquivo selecionado/capturado e pergunta se ele é uma guia de
+ * internação antes de iniciar o processamento.
+ */
+function ProcessConfirmModal({
+  files,
+  value,
+  onValueChange,
+  onCancel,
+  onConfirm,
+}: {
+  files: File[] | null;
+  value: string;
+  onValueChange: (value: string) => void;
+  onCancel: () => void;
+  onConfirm: () => void;
+}) {
+  const first = files?.[0] ?? null;
+  const [thumb, setThumb] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!first || !first.type.startsWith("image/")) {
+      setThumb(null);
+      return;
+    }
+    const url = URL.createObjectURL(first);
+    setThumb(url);
+    return () => URL.revokeObjectURL(url);
+  }, [first]);
+
+  return (
+    <AppModal
+      open={Boolean(files?.length)}
+      onOpenChange={(open) => {
+        if (!open) onCancel();
+      }}
+      size="sm"
+      title="Arquivo pronto para processar"
+      description="Confirme o arquivo e o tipo de guia antes de iniciar o processamento."
+      descriptionHidden
+      footer={
+        <>
+          <Button variant="outline" onClick={onCancel}>
+            Cancelar
+          </Button>
+          <Button onClick={onConfirm}>Processar guia</Button>
+        </>
+      }
+    >
+      <div className="space-y-5">
+        <div className="flex items-center gap-3 border-b border-border pb-4">
+          <div className="grid h-16 w-16 shrink-0 place-items-center overflow-hidden rounded-lg border border-border bg-muted">
+            {thumb ? (
+              <img src={thumb} alt="" className="h-full w-full object-cover" />
+            ) : (
+              <FileUp className="h-6 w-6 text-muted-foreground" aria-hidden="true" />
+            )}
+          </div>
+          <div className="min-w-0">
+            <p className="truncate text-sm font-semibold text-foreground">{first?.name}</p>
+            <p className="text-xs text-muted-foreground">
+              {first ? formatFileSize(first.size) : null}
+              {files && files.length > 1 ? ` · +${files.length - 1} arquivo(s)` : ""}
+            </p>
+          </div>
+        </div>
+
+        <fieldset className="space-y-3">
+          <legend className="text-sm font-semibold text-foreground">
+            Esta é uma guia de internação?
+          </legend>
+          <RadioGroup value={value} onValueChange={onValueChange}>
+            <div className="flex items-center gap-2">
+              <RadioGroupItem value="nao" id="guia-internacao-nao" />
+              <label htmlFor="guia-internacao-nao" className="cursor-pointer text-sm text-foreground">
+                Não
+              </label>
+            </div>
+            <div className="flex items-center gap-2">
+              <RadioGroupItem value="sim" id="guia-internacao-sim" />
+              <label htmlFor="guia-internacao-sim" className="cursor-pointer text-sm text-foreground">
+                Sim
+              </label>
+            </div>
+          </RadioGroup>
+        </fieldset>
+
+        <div className="flex items-start gap-2 rounded-lg bg-muted p-3">
+          <Info className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" aria-hidden="true" />
+          <p className="text-xs text-muted-foreground">
+            Essa informação é necessária para processar corretamente guias de internação.
+          </p>
+        </div>
+      </div>
+    </AppModal>
+  );
+}
+
 function Upload_Section({ onProcessed }: { onProcessed: (row: Row) => void }) {
   const [queue, setQueue] = useState<QueueItem[]>([]);
   const [cameraOpen, setCameraOpen] = useState(false);
