@@ -64,7 +64,7 @@ import {
   DataTableDesktop,
 } from "@/components/data-table";
 import { Chip } from "@/components/ui/chip";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Checkbox } from "@/components/ui/checkbox";
 import { CameraCaptureDialog } from "@/components/camera-capture-dialog";
 import { ProcedureCodeModal } from "@/components/procedure-code-modal";
 import { cn } from "@/lib/utils";
