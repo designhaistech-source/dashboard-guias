@@ -86,7 +86,7 @@ type Row = {
   file: string;
   id: number;
   patient: string;
-  type: "SADT" | "Não válido" | "Encaminhamento";
+  type: "SADT" | "Não válido" | "Encaminhamento" | "Internação";
   date: string;
   status: "Concluído" | "Erro";
   warn?: boolean;
