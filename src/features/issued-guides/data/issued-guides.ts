@@ -1,3 +1,4 @@
+import type { InternacaoGuidePreviewProps } from "@/features/guides/internacao/internacao-guide-preview";
 import { formatGuiaNumber } from "@/lib/guia-number";
 
 export type IssuedGuideStatus =
@@ -34,7 +35,18 @@ export interface IssuedGuide {
   total: number;
   /** Conteúdo completo da guia gerada, agrupado por seção. */
   sections?: IssuedGuideSection[];
+  /**
+   * Campos exatos informados na emissão da Guia de Internação (TISS), usados
+   * para reimprimir a folha sem recriar valores sintéticos.
+   */
+  internacaoData?: IssuedInternacaoData;
 }
+
+/** Snapshot dos campos da Guia de Internação, como enviados à pré-visualização. */
+export type IssuedInternacaoData = Omit<
+  InternacaoGuidePreviewProps,
+  "fullSize"
+>;
 
 /** Histórico fictício de guias emitidas (dados sintéticos de protótipo). */
 export const ISSUED_GUIDES: IssuedGuide[] = [

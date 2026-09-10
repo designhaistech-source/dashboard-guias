@@ -462,6 +462,8 @@ export function InternacaoGuideForm({
       : "—",
     procedure: items[0] ? `${items[0].code} — ${items[0].description}` : "—",
     total: 0,
+    // Snapshot fiel dos campos: a reimpressão usa exatamente o que foi digitado.
+    internacaoData: { ...previewData, guiaPrestador: numero, items: [...items] },
     sections: [
       {
         title: "Convênio e autorização",

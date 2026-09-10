@@ -22,6 +22,11 @@ export function IssuedGuidePreview({ guide }: { guide: IssuedGuide }) {
   const derived = deriveGuideData(guide);
 
   if (guide.type === "Internação") {
+    // Guias emitidas pelo formulário guardam os campos reais informados.
+    if (guide.internacaoData) {
+      return <InternacaoGuidePreview {...guide.internacaoData} fullSize />;
+    }
+
     return (
       <InternacaoGuidePreview
         fullSize
