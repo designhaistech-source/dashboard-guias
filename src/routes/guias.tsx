@@ -327,6 +327,9 @@ function Upload_Section({ onProcessed }: { onProcessed: (row: Row) => void }) {
                   <p className="text-sm font-medium truncate">{item.name}</p>
                   <p className="text-xs text-muted-foreground">ID: {item.id.toString().slice(-3)}</p>
                 </div>
+                <Badge variant={item.isInternacao ? "primary-soft" : "neutral-soft"} size="lg">
+                  {item.isInternacao ? "Internação" : "Tipo automático"}
+                </Badge>
                 <Badge variant={item.done ? "success-soft" : "primary-soft"} size="lg">
                   {item.done ? (
                     <CheckCircle2 className="h-3.5 w-3.5" />
@@ -340,7 +343,8 @@ function Upload_Section({ onProcessed }: { onProcessed: (row: Row) => void }) {
                   size="icon"
                   onClick={() => removeItem(item.id)}
                   className="h-7 w-7 text-muted-foreground"
-                  aria-label="Remover"
+                  aria-label={item.done ? "Remover da fila" : "Cancelar processamento"}
+                  title={item.done ? "Remover da fila" : "Cancelar processamento"}
                 >
                   <X className="h-4 w-4" />
                 </Button>
