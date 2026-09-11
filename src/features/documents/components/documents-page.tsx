@@ -1682,7 +1682,8 @@ function RequestTab({ onNewDocument }: { onNewDocument: () => void }) {
       </div>
 
       <DocumentActions
-        title="Solicitação médica"
+        title="Solicitação"
+        variant="letterhead"
         html={previewHtml}
         paciente={paciente}
         pacienteFieldId="solicitacao-paciente"
