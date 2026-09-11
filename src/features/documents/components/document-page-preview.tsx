@@ -15,14 +15,17 @@ export function DocumentPagePreview({
   title,
   paciente,
   html,
+  variant = "default",
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   title: string;
   paciente: string;
   html: string;
+  /** "letterhead": folha timbrada de consultório. */
+  variant?: "default" | "letterhead";
 }) {
-  const pages = useDocumentPages(html, open);
+  const pages = useDocumentPages(html, open, variant);
   const total = pages?.length ?? 0;
 
   return (
