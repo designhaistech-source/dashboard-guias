@@ -73,9 +73,13 @@ function htmlToParagraphs(html: string): string[] {
     "text/html",
   );
 
-  const blocks = doc.querySelectorAll("p, div, li, h1, h2, h3");
+  // Apenas blocos "folha": um container que envolve outros blocos repetiria
+  // o mesmo texto e faria o conteúdo aparecer duas vezes no documento.
+  const blocks = Array.from(doc.querySelectorAll("p, div, li, h1, h2, h3")).filter(
+    (el) => !el.querySelector("p, div, li, h1, h2, h3"),
+  );
   const raw = blocks.length
-    ? Array.from(blocks).map((el) => el.textContent ?? "")
+    ? blocks.map((el) => el.textContent ?? "")
     : [(doc.body.textContent ?? "")];
 
   return raw
