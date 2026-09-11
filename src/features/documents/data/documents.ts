@@ -1,4 +1,7 @@
+import logoUrl from "@/assets/haisguias-logo.png";
+
 import { todayLocalIsoDate } from "@/lib/date";
+import { CURRENT_USER } from "@/lib/current-user";
 
 export interface ReportTemplate {
   value: string;
@@ -265,10 +268,11 @@ export function printHtml(title: string, paciente: string, bodyHtml: string) {
 
 </style></head><body>
 
+<div class="marca"><img src="${logoUrl}" alt="HaisGuias" /></div>
 <h1>${title}</h1>
 <p class="paciente">Paciente: ${paciente || "—"}</p>
 ${bodyHtml}
-<div class="assinatura"><span>Dr. Fulano de Tal — CRM 47231/RN</span></div>
+<div class="assinatura"><span>${CURRENT_USER.name}</span><small>${CURRENT_USER.crm}</small><small>Assinatura e carimbo do profissional</small></div>
 </body></html>`);
   doc.close();
 
