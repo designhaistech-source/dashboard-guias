@@ -276,7 +276,19 @@ ${bodyHtml}
 </body></html>`);
   doc.close();
 
-  frame.contentWindow?.focus();
-  frame.contentWindow?.print();
+  // Espera a logo carregar para que o cabeçalho saia impresso.
+  const logo = doc.querySelector("img");
+  const ready =
+    logo && !logo.complete
+      ? new Promise<void>((resolve) => {
+          logo.addEventListener("load", () => resolve(), { once: true });
+          logo.addEventListener("error", () => resolve(), { once: true });
+        })
+      : Promise.resolve();
+
+  void ready.then(() => {
+    frame.contentWindow?.focus();
+    frame.contentWindow?.print();
+  });
   window.setTimeout(() => frame.remove(), 1000);
 }
