@@ -93,8 +93,14 @@ const documentsRoute = getRouteApi("/documentos");
 export function DocumentsPage() {
   const { aba } = documentsRoute.useSearch();
   // "Novo documento" limpa o formulário remontando a aba correspondente.
-  const [resetKeys, setResetKeys] = useState({ relatorios: 0, atestados: 0, comparecimento: 0 });
-  const resetTab = useCallback((tab: "relatorios" | "atestados" | "comparecimento") => {
+  const [resetKeys, setResetKeys] = useState({
+    relatorios: 0,
+    atestados: 0,
+    comparecimento: 0,
+    solicitacoes: 0,
+  });
+  const resetTab = useCallback(
+    (tab: "relatorios" | "atestados" | "comparecimento" | "solicitacoes") => {
     setResetKeys((prev) => ({ ...prev, [tab]: prev[tab] + 1 }));
   }, []);
   const navigate = useNavigate({ from: "/documentos" });
