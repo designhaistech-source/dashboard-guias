@@ -129,11 +129,14 @@ export function DocumentSheets({
   title,
   paciente,
   ariaLabel,
+  variant = "default",
 }: {
   pages: DocumentPdfPage[] | null;
   title: string;
   paciente: string;
   ariaLabel?: string;
+  /** "letterhead": papel timbrado, sem título nem identificação no topo. */
+  variant?: "default" | "letterhead";
 }) {
   if (!pages) {
     return (
@@ -148,6 +151,11 @@ export function DocumentSheets({
   }
 
   const total = pages.length;
+  const letterhead = variant === "letterhead";
+  const margin = letterhead ? LETTERHEAD_LAYOUT.margin : PDF_LAYOUT.margin;
+  const signatureName = letterhead
+    ? `Dr(a). ${PDF_SIGNATURE.name.replace(/^Dr\.?a?\.?\s*/i, "")}`
+    : PDF_SIGNATURE.name;
 
   return (
     <div
@@ -164,7 +172,9 @@ export function DocumentSheets({
               height: mm(PDF_LAYOUT.pageHeight),
             }}
           >
-            {index === 0 && (
+            {letterhead && <LetterheadFrame />}
+
+            {!letterhead && index === 0 && (
               <>
                 <span
                   className="absolute w-full text-center font-semibold uppercase text-foreground"
@@ -190,7 +200,13 @@ export function DocumentSheets({
             )}
 
             {page.lines.map((line, lineIndex) => (
-              <PageLine key={`${index}-${lineIndex}`} text={line.text} y={line.y} size={11} />
+              <PageLine
+                key={`${index}-${lineIndex}`}
+                text={line.text}
+                y={line.y}
+                size={11}
+                margin={margin}
+              />
             ))}
 
             {page.signatureY !== undefined && (
@@ -207,7 +223,7 @@ export function DocumentSheets({
                     marginTop: mm(1.5),
                   }}
                 >
-                  {PDF_SIGNATURE.name}
+                  {signatureName}
                 </span>
                 <span
                   className="block text-foreground"
