@@ -259,6 +259,10 @@ export function printHtml(title: string, paciente: string, bodyHtml: string) {
   .paciente { font-size: 13px; margin-bottom: 24px; text-align: center; color: #444; }
   .assinatura { margin-top: 72px; text-align: center; font-size: 13px; }
   .assinatura span { display: block; border-top: 1px solid #111; padding-top: 6px; width: 260px; margin: 0 auto; }
+  .marca { display: flex; align-items: center; justify-content: center; gap: 10px; padding-bottom: 12px; margin-bottom: 20px; border-bottom: 1px solid #ddd; }
+  .marca img { height: 34px; }
+  .assinatura small { display: block; margin-top: 4px; color: #555; font-size: 11px; }
+
 </style></head><body>
 
 <h1>${title}</h1>
