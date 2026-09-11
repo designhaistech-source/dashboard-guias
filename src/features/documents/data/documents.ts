@@ -231,7 +231,7 @@ export function buildComparecimento({
   ].join("");
 }
 
-/** Abre a janela de impressão com o documento formatado. */
+/** Abre a janela de impressão com o documento formatado (marca HaisGuias). */
 export function printHtml(title: string, paciente: string, bodyHtml: string) {
   if (typeof window === "undefined") return;
 
