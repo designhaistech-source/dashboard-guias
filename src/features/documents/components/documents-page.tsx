@@ -277,6 +277,7 @@ function DocumentActions({
   issuedDoc,
   onIssued,
   onNewDocument,
+  variant = "default",
 }: {
   title: string;
   /** Tipo registrado em "Documentos emitidos". */
