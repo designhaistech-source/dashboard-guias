@@ -101,8 +101,10 @@ export function DocumentsPage() {
   });
   const resetTab = useCallback(
     (tab: "relatorios" | "atestados" | "comparecimento" | "solicitacoes") => {
-    setResetKeys((prev) => ({ ...prev, [tab]: prev[tab] + 1 }));
-  }, []);
+      setResetKeys((prev) => ({ ...prev, [tab]: prev[tab] + 1 }));
+    },
+    [],
+  );
   const navigate = useNavigate({ from: "/documentos" });
   const activeTab = aba ?? "relatorios";
 
@@ -146,7 +148,15 @@ export function DocumentsPage() {
                   <span className="hidden xs:inline">Comparecimento</span>
                 </span>
               </TabsTrigger>
+              <TabsTrigger value="solicitacoes" className={appTabsTriggerClass}>
+                <ClipboardList className={appTabsIconClass} aria-hidden />
+                <span className={appTabsLabelClass}>
+                  <span className="xs:hidden">Solicit.</span>
+                  <span className="hidden xs:inline">Solicitações</span>
+                </span>
+              </TabsTrigger>
             </TabsList>
+
 
             <TabsContent value="relatorios" className="space-y-6">
               <ReportsTab
@@ -164,6 +174,12 @@ export function DocumentsPage() {
               <AttendanceTab
                 key={`comparecimento-${resetKeys.comparecimento}`}
                 onNewDocument={() => resetTab("comparecimento")}
+              />
+            </TabsContent>
+            <TabsContent value="solicitacoes" className="space-y-6">
+              <RequestTab
+                key={`solicitacoes-${resetKeys.solicitacoes}`}
+                onNewDocument={() => resetTab("solicitacoes")}
               />
             </TabsContent>
           </Tabs>
