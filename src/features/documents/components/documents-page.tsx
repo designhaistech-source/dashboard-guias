@@ -339,7 +339,7 @@ function DocumentActions({
   }
 
   function handlePrint() {
-    printHtml(title, paciente, html);
+    printHtml(title, paciente, html, variant);
   }
 
   async function handleDownload() {
@@ -347,7 +347,7 @@ function DocumentActions({
     const toastId = toast.loading("Gerando PDF do documento…");
     try {
       const { downloadDocumentPdf } = await import("../data/document-pdf");
-      const fileName = downloadDocumentPdf(title, paciente, html);
+      const fileName = await downloadDocumentPdf(title, paciente, html, variant);
       toast.success(`PDF gerado: ${fileName}`, { id: toastId });
     } catch {
       toast.error("Não foi possível gerar o PDF. Tente novamente.", { id: toastId });
