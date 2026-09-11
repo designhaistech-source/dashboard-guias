@@ -289,6 +289,6 @@ ${bodyHtml}
   void ready.then(() => {
     frame.contentWindow?.focus();
     frame.contentWindow?.print();
+    window.setTimeout(() => frame.remove(), 1000);
   });
-  window.setTimeout(() => frame.remove(), 1000);
 }
