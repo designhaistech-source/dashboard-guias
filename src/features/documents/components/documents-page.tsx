@@ -292,6 +292,8 @@ function DocumentActions({
   issuedDoc: IssuedDocument | null;
   onIssued: (doc: IssuedDocument) => void;
   onNewDocument: () => void;
+  /** "letterhead": PDF/impressão em papel timbrado de consultório. */
+  variant?: "default" | "letterhead";
 }) {
   const disabled = !paciente.trim();
   const temTexto = html.replace(/<[^>]+>/g, "").trim().length > 0;
