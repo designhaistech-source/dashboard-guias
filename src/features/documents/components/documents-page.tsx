@@ -1448,6 +1448,256 @@ function AttendanceTab({ onNewDocument }: { onNewDocument: () => void }) {
   );
 }
 
+/* ---------------- Solicitações ---------------- */
+
+/**
+ * Solicitação médica genérica: o médico escreve livremente pedidos de exames,
+ * fisioterapia, procedimentos ou encaminhamentos, sem campos específicos.
+ */
+function RequestTab({ onNewDocument }: { onNewDocument: () => void }) {
+  const [issuedDoc, setIssuedDoc] = useState<IssuedDocument | null>(null);
+  const [paciente, setPaciente] = useState("");
+  const [cid, setCid] = useState("");
+  const [diagnosticoSelecionado, setDiagnosticoSelecionado] = useState("");
+  const [modelo, setModelo] = useState(REQUEST_TEMPLATES[0].value);
+  const [data, setData] = useState(todayIso());
+  const [cidade, setCidade] = useState("");
+  const [html, setHtml] = useState("");
+
+  const diagnostico =
+    diagnosticoSelecionado || (CID10.find((c) => c.codigo === cid)?.descricao ?? "");
+
+  function handleCid(codigo: string, descricao: string) {
+    setCid(codigo);
+    setDiagnosticoSelecionado(descricao);
+  }
+
+  const { requestReplace, replacementDialog } = useTextReplacement(html, setHtml);
+
+  const {
+    templates: savedTemplates,
+    requestSave: requestSaveTemplate,
+    saveDialog,
+    openManage: openTemplatesManager,
+    manageDialog: templatesManagerDialog,
+  } = useDocumentTemplates({
+    kind: "solicitacao",
+    getContent: () => html || gerado,
+  });
+
+  const baseTemplate = useMemo(() => {
+    const found = [...savedTemplates, ...REQUEST_TEMPLATES].find((t) => t.value === modelo);
+    return found?.content ?? REQUEST_TEMPLATES[0].content;
+  }, [savedTemplates, modelo]);
+
+  const gerado = useMemo(
+    () => buildSolicitacao({ base: baseTemplate, data, cidade }),
+    [baseTemplate, data, cidade],
+  );
+
+  const conteudo = html || gerado;
+
+  const { staleNotice } = useGeneratedSync({ generated: gerado, html, setHtml });
+
+  const variableValues = useMemo(
+    () => ({ paciente, data, cidade, cid, diagnostico, emissao: data }),
+    [paciente, data, cidade, cid, diagnostico],
+  );
+  const tokenValues = useMemo(() => variableTokenValues(variableValues), [variableValues]);
+  const previewHtml = useMemo(
+    () => resolveDocumentVariables(conteudo, variableValues),
+    [conteudo, variableValues],
+  );
+  const pending = useMemo(
+    () => findPendingVariables(conteudo, variableValues).map((v) => VARIABLE_LABELS[v] ?? v),
+    [conteudo, variableValues],
+  );
+
+  const pacienteError = useMemo(() => validatePaciente(paciente), [paciente]);
+  const cidError = useMemo(() => validateCid(cid), [cid]);
+  const cidadeError = useMemo(() => validateCidade(cidade), [cidade]);
+  const dataStatus = useMemo(() => getDocumentDateStatus(data), [data]);
+  const dataError = dataStatus.error ?? (data ? undefined : "Informe a data do documento.");
+
+  const issues = useMemo(
+    () =>
+      buildIssues([
+        { fieldId: "solicitacao-paciente", label: "Paciente", message: pacienteError },
+        { fieldId: "solicitacao-cid", label: "CID", message: cidError },
+        { fieldId: "solicitacao-data", label: "Data do documento", message: dataError },
+        { fieldId: "solicitacao-cidade", label: "Cidade", message: cidadeError },
+      ]),
+    [pacienteError, cidError, dataError, cidadeError],
+  );
+
+  function applyTemplate(value: string) {
+    const template = [...savedTemplates, ...REQUEST_TEMPLATES].find((t) => t.value === value);
+    if (!template) return;
+    requestReplace({
+      title: "Aplicar modelo?",
+      description: `O texto atual da solicitação será substituído pelo modelo “${template.label}”. Você poderá desfazer pelo aviso exibido após a troca.`,
+      confirmLabel: "Aplicar modelo",
+      successMessage: `Modelo “${template.label}” aplicado.`,
+      apply: () => {
+        setModelo(value);
+        setHtml("");
+      },
+    });
+  }
+
+  const { improving, improve } = useImproveWithAi(
+    "Solicitação médica",
+    conteudo,
+    setHtml,
+    requestReplace,
+  );
+
+  const modeloPadrao = REQUEST_TEMPLATES[0];
+
+  function restoreDefault() {
+    requestReplace({
+      title: "Restaurar texto padrão?",
+      description: `O texto atual da solicitação será substituído pelo modelo padrão “${modeloPadrao.label}”. Você poderá desfazer pelo aviso exibido após a troca.`,
+      confirmLabel: "Restaurar texto",
+      successMessage: "Texto padrão restaurado.",
+      apply: () => {
+        setModelo(modeloPadrao.value);
+        setHtml("");
+      },
+    });
+  }
+
+  const locked = Boolean(issuedDoc);
+
+  return (
+    <>
+      <div className="min-w-0 space-y-6">
+        <SurfaceCard
+          title="Dados da solicitação"
+          actions={<ManageTemplatesButton onClick={openTemplatesManager} />}
+          description="Identifique o paciente e, se necessário, o diagnóstico que justifica a solicitação."
+          icon={<ClipboardList className="icon-optical h-4 w-4" aria-hidden />}
+          padding="lg"
+        >
+          <div className="space-y-4">
+            <PatientField
+              id="solicitacao-paciente"
+              value={paciente}
+              onChange={setPaciente}
+              error={pacienteError}
+              readOnly={locked}
+            />
+            <CidFields
+              id="solicitacao-cid"
+              cid={cid}
+              descricao={diagnostico}
+              onChange={handleCid}
+              error={cidError}
+              readOnly={locked}
+            />
+            <SelectField
+              id="solicitacao-modelo"
+              label="Modelos disponíveis"
+              placeholder="Selecione um modelo salvo"
+              value={modelo}
+              onValueChange={applyTemplate}
+              readOnly={locked}
+              options={[
+                ...savedTemplates.map((t) => ({ value: t.value, label: `${t.label} (salvo)` })),
+                ...REQUEST_TEMPLATES.map((t) => ({ value: t.value, label: t.label })),
+              ]}
+              hint={
+                savedTemplates.length > 0
+                  ? `${savedTemplates.length} ${savedTemplates.length === 1 ? "modelo salvo" : "modelos salvos"} neste navegador, além dos modelos padrão.`
+                  : "Use “Salvar como modelo” após redigir o texto para reaproveitá-lo depois."
+              }
+            />
+            <div className="grid min-w-0 gap-4 sm:grid-cols-2 [&>*]:min-w-0">
+              <Field
+                id="solicitacao-data"
+                label="Data do documento"
+                required
+                error={dataError}
+                hint={dataStatus.warning}
+              >
+                <Input
+                  id="solicitacao-data"
+                  readOnly={locked}
+                  aria-readonly={locked || undefined}
+                  type="date"
+                  max={todayIsoDate()}
+                  value={data}
+                  onChange={(e) => setData(e.target.value)}
+                />
+              </Field>
+              <Field id="solicitacao-cidade" label="Cidade" optional error={cidadeError}>
+                <Input
+                  id="solicitacao-cidade"
+                  readOnly={locked}
+                  aria-readonly={locked || undefined}
+                  placeholder="Cidade de emissão"
+                  maxLength={60}
+                  value={cidade}
+                  onChange={(e) => setCidade(e.target.value)}
+                />
+              </Field>
+            </div>
+          </div>
+        </SurfaceCard>
+
+        {staleNotice}
+        <RichTextEditor
+          readOnly={locked}
+          ariaLabel="Texto da solicitação médica"
+          pagePreview={{ title: "Solicitação médica", paciente }}
+          value={conteudo}
+          onChange={setHtml}
+          onImproveWithAi={improve}
+          improving={improving}
+          variables={DOCUMENT_VARIABLES}
+          variableValues={tokenValues}
+          previewHtml={previewHtml}
+          pendingVariables={pending}
+          placeholder="Descreva livremente a solicitação (exames, fisioterapia, procedimentos, encaminhamentos...)"
+          header={
+            <DocumentEditorHeader
+              title="Solicitação médica"
+              meta={
+                <>
+                  Paciente: {paciente || "—"} · {formatDateLong(data)}
+                  {diagnostico && ` · ${cid} — ${diagnostico}`}
+                </>
+              }
+              actions={
+                <Button type="button" variant="ghost" size="sm" onClick={restoreDefault}>
+                  Restaurar texto padrão
+                </Button>
+              }
+            />
+          }
+        />
+      </div>
+
+      <DocumentActions
+        title="Solicitação médica"
+        html={previewHtml}
+        paciente={paciente}
+        pacienteFieldId="solicitacao-paciente"
+        type="Solicitação"
+        issuedDoc={issuedDoc}
+        onIssued={setIssuedDoc}
+        onNewDocument={onNewDocument}
+        issues={issues}
+        onSaveTemplate={requestSaveTemplate}
+      />
+
+      {saveDialog}
+      {templatesManagerDialog}
+      {replacementDialog}
+    </>
+  );
+}
+
 /* ---------------- Modelos salvos ---------------- */
 
 /** Select de modelos: opção de texto gerado, modelos padrão e modelos salvos. */
