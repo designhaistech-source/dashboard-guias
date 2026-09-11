@@ -31,7 +31,11 @@ function PageLine({ text, y, size }: { text: string; y: number; size: number }) 
 }
 
 /** Calcula as páginas A4 do documento (mesmo layout do PDF gerado). */
-export function useDocumentPages(html: string, enabled = true): DocumentPdfPage[] | null {
+export function useDocumentPages(
+  html: string,
+  enabled = true,
+  variant: "default" | "letterhead" = "default",
+): DocumentPdfPage[] | null {
   const [pages, setPages] = useState<DocumentPdfPage[] | null>(null);
 
   useEffect(() => {
@@ -41,12 +45,12 @@ export function useDocumentPages(html: string, enabled = true): DocumentPdfPage[
     }
     let active = true;
     void import("../data/document-pdf").then(({ layoutDocumentPdf }) => {
-      if (active) setPages(layoutDocumentPdf(html));
+      if (active) setPages(layoutDocumentPdf(html, variant));
     });
     return () => {
       active = false;
     };
-  }, [enabled, html]);
+  }, [enabled, html, variant]);
 
   return pages;
 }
