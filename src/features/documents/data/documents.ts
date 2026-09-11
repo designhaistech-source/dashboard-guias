@@ -237,7 +237,12 @@ export function buildComparecimento({
 }
 
 /** Abre a janela de impressão com o documento formatado (marca HaisGuias). */
-export function printHtml(title: string, paciente: string, bodyHtml: string) {
+export function printHtml(
+  title: string,
+  paciente: string,
+  bodyHtml: string,
+  variant: "default" | "letterhead" = "default",
+) {
   if (typeof window === "undefined") return;
 
   const frame = document.createElement("iframe");
@@ -252,8 +257,53 @@ export function printHtml(title: string, paciente: string, bodyHtml: string) {
   const doc = frame.contentDocument;
   if (!doc) return;
 
-  doc.open();
-  doc.write(`<!doctype html><html lang="pt-BR"><head><meta charset="utf-8" />
+  const nomeMedico = `Dr(a). ${CURRENT_USER.name.replace(/^Dr\.?a?\.?\s*/i, "")}`;
+
+  const letterhead = `<!doctype html><html lang="pt-BR"><head><meta charset="utf-8" />
+<title>${title}</title>
+<style>
+  @page { size: A4; margin: 0; }
+  html, body { margin: 0; }
+  body { font-family: Arial, Helvetica, sans-serif; color: #111; line-height: 1.7; }
+  .folha { position: relative; box-sizing: border-box; min-height: 297mm; padding: 20mm 24mm 26mm 24mm; overflow: hidden; }
+  .filete { position: absolute; left: 0; top: 0; bottom: 0; width: 3mm; background: #d6e4f0; }
+  .filete::after { content: ""; position: absolute; left: 0; top: 28mm; width: 3mm; height: 44mm; background: #2563ac; }
+  .bolha { position: absolute; border-radius: 50%; background: #eef4fa; }
+  .bolha-1 { width: 24mm; height: 24mm; right: 2mm; bottom: 22mm; }
+  .bolha-2 { width: 14mm; height: 14mm; right: 19mm; bottom: 19mm; background: #f6fafd; }
+  .timbre { display: flex; align-items: flex-end; justify-content: space-between; padding-bottom: 6mm; border-bottom: 1px solid #dbe2ea; }
+  .timbre img { height: 9mm; display: block; }
+  .timbre .assinatura-marca { font-size: 8px; color: #82898f; letter-spacing: .04em; margin: 3mm 0 0; }
+  .rotulo { font-size: 9px; color: #7a828a; letter-spacing: .08em; text-transform: none; }
+  .conteudo { position: relative; margin-top: 14mm; font-size: 13px; }
+  .conteudo p { margin: 0 0 10px; }
+  .assinatura { position: relative; margin-top: 26mm; text-align: center; font-size: 12px; }
+  .assinatura span { display: block; border-top: 1px solid #333; padding-top: 5px; width: 68mm; margin: 0 auto; }
+  .assinatura small { display: block; margin-top: 3px; color: #555; font-size: 10px; }
+  .rodape { position: absolute; left: 24mm; right: 24mm; bottom: 12mm; display: flex; justify-content: space-between; padding-top: 3mm; border-top: 1px solid #e4eaf0; font-size: 7.5px; color: #969ca2; }
+</style></head><body>
+<div class="folha">
+  <div class="filete"></div>
+  <div class="bolha bolha-1"></div>
+  <div class="bolha bolha-2"></div>
+  <header class="timbre">
+    <div>
+      <img src="${logoUrl}" alt="HaisGuias" />
+      <p class="assinatura-marca">HaisTech · Saúde digital</p>
+    </div>
+    <span class="rotulo">Solicitação</span>
+  </header>
+  <main class="conteudo">${bodyHtml}</main>
+  <div class="assinatura">
+    <span>${nomeMedico}</span>
+    <small>${CURRENT_USER.crm}</small>
+    <small>Assinatura e carimbo</small>
+  </div>
+  <footer class="rodape"><span>HaisTech · HaisGuias</span><span></span></footer>
+</div>
+</body></html>`;
+
+  const padrao = `<!doctype html><html lang="pt-BR"><head><meta charset="utf-8" />
 <title>${title}</title>
 <style>
   /* margin: 0 remove cabeçalho/rodapé automático do navegador (URL e data) */
@@ -275,7 +325,10 @@ export function printHtml(title: string, paciente: string, bodyHtml: string) {
 <p class="paciente">Paciente: ${paciente || "—"}</p>
 ${bodyHtml}
 <div class="assinatura"><span>${CURRENT_USER.name}</span><small>${CURRENT_USER.crm}</small><small>Assinatura e carimbo do profissional</small></div>
-</body></html>`);
+</body></html>`;
+
+  doc.open();
+  doc.write(variant === "letterhead" ? letterhead : padrao);
   doc.close();
 
   // Espera a logo carregar para que o cabeçalho saia impresso.

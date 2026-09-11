@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import { Loader2 } from "lucide-react";
 
+import logoAsset from "@/assets/haisguias-logo.png.asset.json";
 import type { DocumentPdfPage } from "../data/document-pdf";
-import { PDF_LAYOUT, PDF_SIGNATURE } from "../data/document-pdf";
+import { LETTERHEAD_LAYOUT, PDF_LAYOUT, PDF_SIGNATURE } from "../data/document-pdf";
 
 /** Escala de exibição: pixels por milímetro da folha A4. */
 const PX_PER_MM = 2.7;
@@ -12,13 +13,23 @@ const PT_TO_MM = 0.3528;
 const mm = (value: number) => `${value * PX_PER_MM}px`;
 
 /** Linha de texto posicionada na folha, na mesma coordenada usada no PDF. */
-function PageLine({ text, y, size }: { text: string; y: number; size: number }) {
+function PageLine({
+  text,
+  y,
+  size,
+  margin,
+}: {
+  text: string;
+  y: number;
+  size: number;
+  margin: number;
+}) {
   const heightMm = size * PT_TO_MM;
   return (
     <span
       className="absolute whitespace-pre text-foreground"
       style={{
-        left: mm(PDF_LAYOUT.margin),
+        left: mm(margin),
         top: mm(y - heightMm * 0.8),
         fontFamily: "Helvetica, Arial, sans-serif",
         fontSize: mm(heightMm),
@@ -30,8 +41,66 @@ function PageLine({ text, y, size }: { text: string; y: number; size: number }) 
   );
 }
 
+/** Timbre discreto da HaisTech na pré-visualização da folha. */
+function LetterheadFrame() {
+  const m = LETTERHEAD_LAYOUT.margin;
+  return (
+    <>
+      <span className="absolute inset-y-0 left-0 bg-primary/15" style={{ width: mm(3) }} />
+      <span
+        className="absolute left-0 bg-primary"
+        style={{ width: mm(3), top: mm(28), height: mm(44) }}
+      />
+      <span
+        className="absolute rounded-full bg-primary/5"
+        style={{ width: mm(24), height: mm(24), right: mm(2), bottom: mm(22) }}
+      />
+      <span
+        className="absolute rounded-full bg-primary/5"
+        style={{ width: mm(14), height: mm(14), right: mm(19), bottom: mm(19) }}
+      />
+      <img
+        src={logoAsset.url}
+        alt="HaisGuias"
+        className="absolute"
+        style={{ left: mm(m), top: mm(20), height: mm(LETTERHEAD_LAYOUT.logoHeight) }}
+      />
+      <span
+        className="absolute text-muted-foreground"
+        style={{ left: mm(m), top: mm(31), fontSize: mm(8 * PT_TO_MM) }}
+      >
+        HaisTech · Saúde digital
+      </span>
+      <span
+        className="absolute text-muted-foreground"
+        style={{ right: mm(m), top: mm(24), fontSize: mm(9 * PT_TO_MM) }}
+      >
+        Solicitação
+      </span>
+      <span
+        className="absolute bg-border"
+        style={{ left: mm(m), right: mm(m), top: mm(LETTERHEAD_LAYOUT.headerRuleY), height: "1px" }}
+      />
+      <span
+        className="absolute bg-border"
+        style={{ left: mm(m), right: mm(m), bottom: mm(19), height: "1px" }}
+      />
+      <span
+        className="absolute text-muted-foreground"
+        style={{ left: mm(m), bottom: mm(13), fontSize: mm(7.5 * PT_TO_MM) }}
+      >
+        HaisTech · HaisGuias
+      </span>
+    </>
+  );
+}
+
 /** Calcula as páginas A4 do documento (mesmo layout do PDF gerado). */
-export function useDocumentPages(html: string, enabled = true): DocumentPdfPage[] | null {
+export function useDocumentPages(
+  html: string,
+  enabled = true,
+  variant: "default" | "letterhead" = "default",
+): DocumentPdfPage[] | null {
   const [pages, setPages] = useState<DocumentPdfPage[] | null>(null);
 
   useEffect(() => {
@@ -41,12 +110,12 @@ export function useDocumentPages(html: string, enabled = true): DocumentPdfPage[
     }
     let active = true;
     void import("../data/document-pdf").then(({ layoutDocumentPdf }) => {
-      if (active) setPages(layoutDocumentPdf(html));
+      if (active) setPages(layoutDocumentPdf(html, variant));
     });
     return () => {
       active = false;
     };
-  }, [enabled, html]);
+  }, [enabled, html, variant]);
 
   return pages;
 }
@@ -60,11 +129,14 @@ export function DocumentSheets({
   title,
   paciente,
   ariaLabel,
+  variant = "default",
 }: {
   pages: DocumentPdfPage[] | null;
   title: string;
   paciente: string;
   ariaLabel?: string;
+  /** "letterhead": papel timbrado, sem título nem identificação no topo. */
+  variant?: "default" | "letterhead";
 }) {
   if (!pages) {
     return (
@@ -79,6 +151,11 @@ export function DocumentSheets({
   }
 
   const total = pages.length;
+  const letterhead = variant === "letterhead";
+  const margin = letterhead ? LETTERHEAD_LAYOUT.margin : PDF_LAYOUT.margin;
+  const signatureName = letterhead
+    ? `Dr(a). ${PDF_SIGNATURE.name.replace(/^Dr\.?a?\.?\s*/i, "")}`
+    : PDF_SIGNATURE.name;
 
   return (
     <div
@@ -95,7 +172,9 @@ export function DocumentSheets({
               height: mm(PDF_LAYOUT.pageHeight),
             }}
           >
-            {index === 0 && (
+            {letterhead && <LetterheadFrame />}
+
+            {!letterhead && index === 0 && (
               <>
                 <span
                   className="absolute w-full text-center font-semibold uppercase text-foreground"
@@ -121,7 +200,13 @@ export function DocumentSheets({
             )}
 
             {page.lines.map((line, lineIndex) => (
-              <PageLine key={`${index}-${lineIndex}`} text={line.text} y={line.y} size={11} />
+              <PageLine
+                key={`${index}-${lineIndex}`}
+                text={line.text}
+                y={line.y}
+                size={11}
+                margin={margin}
+              />
             ))}
 
             {page.signatureY !== undefined && (
@@ -138,7 +223,7 @@ export function DocumentSheets({
                     marginTop: mm(1.5),
                   }}
                 >
-                  {PDF_SIGNATURE.name}
+                  {signatureName}
                 </span>
                 <span
                   className="block text-foreground"
