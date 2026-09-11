@@ -1,4 +1,6 @@
-import logoUrl from "@/assets/haisguias-logo.png";
+import logoAsset from "@/assets/haisguias-logo.png.asset.json";
+
+const logoUrl = logoAsset.url;
 
 import { todayLocalIsoDate } from "@/lib/date";
 import { CURRENT_USER } from "@/lib/current-user";
