@@ -535,6 +535,7 @@ function DocumentActions({
         title={title}
         paciente={paciente}
         html={html}
+        variant={variant}
       />
 
     </>
