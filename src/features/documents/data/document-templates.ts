@@ -1,7 +1,11 @@
 import type { ReportTemplate } from "./documents";
 
 /** Tipos de documento que podem ter modelos salvos pelo usuário. */
-export type DocumentTemplateKind = "relatorio" | "atestado" | "comparecimento";
+export type DocumentTemplateKind =
+  | "relatorio"
+  | "atestado"
+  | "comparecimento"
+  | "solicitacao";
 
 export interface SavedDocumentTemplate extends ReportTemplate {
   /** ISO da criação, usada para ordenar do mais recente para o mais antigo. */

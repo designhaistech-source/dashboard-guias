@@ -1,4 +1,7 @@
+import logoUrl from "@/assets/haisguias-logo.png";
+
 import { todayLocalIsoDate } from "@/lib/date";
+import { CURRENT_USER } from "@/lib/current-user";
 
 export interface ReportTemplate {
   value: string;
@@ -85,6 +88,31 @@ export const ATTENDANCE_TEMPLATES: ReportTemplate[] = [
   },
 ];
 
+/**
+ * Modelos padrão da solicitação médica. O documento é genérico: o texto pode
+ * ser reescrito livremente para exames, fisioterapia, procedimentos etc.
+ */
+export const REQUEST_TEMPLATES: ReportTemplate[] = [
+  {
+    value: "solicitacao-exames",
+    label: "Solicitação de exames",
+    content:
+      "<p>Solicito, para o(a) paciente @paciente, a realização dos exames abaixo relacionados:</p><p>—</p><p>Indicação clínica: @diagnostico (CID @cid).</p>",
+  },
+  {
+    value: "solicitacao-fisioterapia",
+    label: "Solicitação de fisioterapia",
+    content:
+      "<p>Solicito sessões de fisioterapia para o(a) paciente @paciente, em razão de @diagnostico (CID @cid).</p><p>Sugiro reavaliação após o término das sessões.</p>",
+  },
+  {
+    value: "solicitacao-procedimento",
+    label: "Solicitação de procedimento",
+    content:
+      "<p>Solicito a realização do procedimento indicado para o(a) paciente @paciente, em razão de @diagnostico (CID @cid).</p><p>Fico à disposição para informações complementares.</p>",
+  },
+];
+
 export const AFASTAMENTO_OPTIONS = [
   { value: "1", label: "1 dia" },
   { value: "2", label: "2 dias" },
@@ -147,6 +175,11 @@ export function buildRelatorio({ base, data, cidade }: RelatorioInput): string {
   return `${base}<p>${formatLocalAndDate(cidade, data)}</p>`;
 }
 
+/** Texto padrão da solicitação médica: modelo escolhido + cidade e data. */
+export function buildSolicitacao({ base, data, cidade }: RelatorioInput): string {
+  return `${base}<p>${formatLocalAndDate(cidade, data)}</p>`;
+}
+
 interface AtestadoInput {
   paciente: string;
   dias: string;
@@ -201,7 +234,7 @@ export function buildComparecimento({
   ].join("");
 }
 
-/** Abre a janela de impressão com o documento formatado. */
+/** Abre a janela de impressão com o documento formatado (marca HaisGuias). */
 export function printHtml(title: string, paciente: string, bodyHtml: string) {
   if (typeof window === "undefined") return;
 
@@ -229,16 +262,33 @@ export function printHtml(title: string, paciente: string, bodyHtml: string) {
   .paciente { font-size: 13px; margin-bottom: 24px; text-align: center; color: #444; }
   .assinatura { margin-top: 72px; text-align: center; font-size: 13px; }
   .assinatura span { display: block; border-top: 1px solid #111; padding-top: 6px; width: 260px; margin: 0 auto; }
+  .marca { display: flex; align-items: center; justify-content: center; gap: 10px; padding-bottom: 12px; margin-bottom: 20px; border-bottom: 1px solid #ddd; }
+  .marca img { height: 34px; }
+  .assinatura small { display: block; margin-top: 4px; color: #555; font-size: 11px; }
+
 </style></head><body>
 
+<div class="marca"><img src="${logoUrl}" alt="HaisGuias" /></div>
 <h1>${title}</h1>
 <p class="paciente">Paciente: ${paciente || "—"}</p>
 ${bodyHtml}
-<div class="assinatura"><span>Dr. Fulano de Tal — CRM 47231/RN</span></div>
+<div class="assinatura"><span>${CURRENT_USER.name}</span><small>${CURRENT_USER.crm}</small><small>Assinatura e carimbo do profissional</small></div>
 </body></html>`);
   doc.close();
 
-  frame.contentWindow?.focus();
-  frame.contentWindow?.print();
-  window.setTimeout(() => frame.remove(), 1000);
+  // Espera a logo carregar para que o cabeçalho saia impresso.
+  const logo = doc.querySelector("img");
+  const ready =
+    logo && !logo.complete
+      ? new Promise<void>((resolve) => {
+          logo.addEventListener("load", () => resolve(), { once: true });
+          logo.addEventListener("error", () => resolve(), { once: true });
+        })
+      : Promise.resolve();
+
+  void ready.then(() => {
+    frame.contentWindow?.focus();
+    frame.contentWindow?.print();
+    window.setTimeout(() => frame.remove(), 1000);
+  });
 }

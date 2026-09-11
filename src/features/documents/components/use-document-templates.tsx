@@ -25,6 +25,7 @@ const NAME_PLACEHOLDER: Record<DocumentTemplateKind, string> = {
   relatorio: "Ex.: Relatório de acompanhamento",
   atestado: "Ex.: Atestado de afastamento",
   comparecimento: "Ex.: Declaração de comparecimento",
+  solicitacao: "Ex.: Solicitação de exames",
 };
 
 const MODAL_DESCRIPTION =

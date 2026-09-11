@@ -25,6 +25,7 @@ const KIND_LABEL: Record<DocumentTemplateKind, string> = {
   relatorio: "relatório",
   atestado: "atestado",
   comparecimento: "declaração de comparecimento",
+  solicitacao: "solicitação médica",
 };
 
 function hasText(html: string): boolean {
