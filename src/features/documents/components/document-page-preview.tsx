@@ -50,6 +50,7 @@ export function DocumentPagePreview({
         pages={pages}
         title={title}
         paciente={paciente}
+        variant={variant}
         ariaLabel="Pré-visualização paginada do documento"
       />
     </AppModal>
