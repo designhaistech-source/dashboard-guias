@@ -237,7 +237,12 @@ export function buildComparecimento({
 }
 
 /** Abre a janela de impressão com o documento formatado (marca HaisGuias). */
-export function printHtml(title: string, paciente: string, bodyHtml: string) {
+export function printHtml(
+  title: string,
+  paciente: string,
+  bodyHtml: string,
+  variant: "default" | "letterhead" = "default",
+) {
   if (typeof window === "undefined") return;
 
   const frame = document.createElement("iframe");
