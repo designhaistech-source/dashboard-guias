@@ -2,7 +2,12 @@ import { createFileRoute } from "@tanstack/react-router";
 
 import { DocumentsPage } from "@/features/documents";
 
-const DOCUMENT_TABS = ["relatorios", "atestados", "comparecimento"] as const;
+const DOCUMENT_TABS = [
+  "relatorios",
+  "atestados",
+  "comparecimento",
+  "solicitacoes",
+] as const;
 type DocumentTab = (typeof DOCUMENT_TABS)[number];
 
 export const Route = createFileRoute("/documentos")({

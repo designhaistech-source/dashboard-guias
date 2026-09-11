@@ -85,6 +85,31 @@ export const ATTENDANCE_TEMPLATES: ReportTemplate[] = [
   },
 ];
 
+/**
+ * Modelos padrão da solicitação médica. O documento é genérico: o texto pode
+ * ser reescrito livremente para exames, fisioterapia, procedimentos etc.
+ */
+export const REQUEST_TEMPLATES: ReportTemplate[] = [
+  {
+    value: "solicitacao-exames",
+    label: "Solicitação de exames",
+    content:
+      "<p>Solicito, para o(a) paciente @paciente, a realização dos exames abaixo relacionados:</p><p>—</p><p>Indicação clínica: @diagnostico (CID @cid).</p>",
+  },
+  {
+    value: "solicitacao-fisioterapia",
+    label: "Solicitação de fisioterapia",
+    content:
+      "<p>Solicito sessões de fisioterapia para o(a) paciente @paciente, em razão de @diagnostico (CID @cid).</p><p>Sugiro reavaliação após o término das sessões.</p>",
+  },
+  {
+    value: "solicitacao-procedimento",
+    label: "Solicitação de procedimento",
+    content:
+      "<p>Solicito a realização do procedimento indicado para o(a) paciente @paciente, em razão de @diagnostico (CID @cid).</p><p>Fico à disposição para informações complementares.</p>",
+  },
+];
+
 export const AFASTAMENTO_OPTIONS = [
   { value: "1", label: "1 dia" },
   { value: "2", label: "2 dias" },
@@ -144,6 +169,11 @@ interface RelatorioInput {
  * As variáveis (@paciente, @cid…) são resolvidas na camada de variáveis.
  */
 export function buildRelatorio({ base, data, cidade }: RelatorioInput): string {
+  return `${base}<p>${formatLocalAndDate(cidade, data)}</p>`;
+}
+
+/** Texto padrão da solicitação médica: modelo escolhido + cidade e data. */
+export function buildSolicitacao({ base, data, cidade }: RelatorioInput): string {
   return `${base}<p>${formatLocalAndDate(cidade, data)}</p>`;
 }
 
