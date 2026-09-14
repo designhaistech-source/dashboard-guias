@@ -416,11 +416,13 @@ export async function downloadDocumentPdf(
       pdf.text(PDF_SIGNATURE.council, pageWidth / 2, signatureY + s.councilDy, {
         align: "center",
       });
-      pdf.setFontSize(s.captionPt);
-      pdf.setTextColor(90);
-      pdf.text(PDF_SIGNATURE.caption, pageWidth / 2, signatureY + s.captionDy, {
-        align: "center",
-      });
+      if (s.caption) {
+        pdf.setFontSize(s.captionPt);
+        pdf.setTextColor(90);
+        pdf.text(PDF_SIGNATURE.caption, pageWidth / 2, signatureY + s.captionDy, {
+          align: "center",
+        });
+      }
     }
   });
 
