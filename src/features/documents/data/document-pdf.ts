@@ -32,6 +32,27 @@ export const LETTERHEAD_PAGE = {
   pageHeight: 210,
 } as const;
 
+/**
+ * Formato exato passado ao jsPDF, em mm. Usar os números em vez do apelido
+ * "a5" evita a diferença de arredondamento do alias (148,17 × 209,98), que
+ * fazia o visualizador reescalar a folha ao imprimir.
+ */
+const LETTERHEAD_FORMAT: [number, number] = [
+  LETTERHEAD_PAGE.pageWidth,
+  LETTERHEAD_PAGE.pageHeight,
+];
+const A4_FORMAT: [number, number] = [PDF_LAYOUT.pageWidth, PDF_LAYOUT.pageHeight];
+
+/** Cria o documento jsPDF já com a folha física correta da variante. */
+function createPdf(variant: DocumentPdfVariant): jsPDF {
+  return new jsPDF({
+    unit: "mm",
+    format: variant === "letterhead" ? LETTERHEAD_FORMAT : A4_FORMAT,
+    orientation: "portrait",
+    compress: true,
+  });
+}
+
 /** Papel timbrado A5: composição proporcional ao A4 anterior. */
 export const LETTERHEAD_LAYOUT = {
   margin: 14,
@@ -46,7 +67,8 @@ export const LETTERHEAD_LAYOUT = {
   /** Marca gráfica suave no canto inferior direito. */
   watermarkWidth: 55,
   watermarkHeight: 65,
-  watermarkBottom: 18,
+  /** Fica acima da faixa tricolor: nada é cortado na borda da folha A5. */
+  watermarkBottom: 28,
 } as const;
 
 /** Dimensões (mm) da folha conforme a variante. */
@@ -161,11 +183,7 @@ export function layoutDocumentPdf(
   variant: DocumentPdfVariant = "default",
 ): DocumentPdfPage[] {
   const letterhead = variant === "letterhead";
-  const pdf = new jsPDF({
-    unit: "mm",
-    format: letterhead ? "a5" : "a4",
-    orientation: "portrait",
-  });
+  const pdf = createPdf(variant);
   const { pageHeight, pageWidth } = pageSizeFor(variant);
   const m = metricsFor(variant);
   const contentWidth = pageWidth - m.margin * 2;
@@ -294,12 +312,8 @@ export async function downloadDocumentPdf(
   bodyHtml: string,
   variant: DocumentPdfVariant = "default",
 ): Promise<string> {
-  const pdf = new jsPDF({
-    unit: "mm",
-    format: variant === "letterhead" ? "a5" : "a4",
-    orientation: "portrait",
-  });
-  const pageWidth = pdf.internal.pageSize.getWidth();
+  const pdf = createPdf(variant);
+  const pageWidth = pageSizeFor(variant).pageWidth;
   const pages = layoutDocumentPdf(bodyHtml, variant);
   const letterhead = variant === "letterhead";
   const margin = letterhead ? LETTERHEAD_LAYOUT.margin : PAGE_MARGIN;
