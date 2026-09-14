@@ -59,7 +59,7 @@ import { useGeneratedSync } from "./use-generated-sync";
 import { useDocumentTemplates } from "./use-document-templates";
 import type { SavedDocumentTemplate } from "../data/document-templates";
 import { documentTemplateFor } from "../data/document-paper";
-import { PDF_SIGNATURE } from "../data/document-pdf";
+
 import {
   pendingVariables as findPendingVariables,
   resolveDocumentVariables,
