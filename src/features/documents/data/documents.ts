@@ -268,8 +268,11 @@ export function printHtml(
 <title>${title}</title>
 <style>
   /* A5 real: a página física é 148mm x 210mm, não um A4 reduzido. */
-  @page { size: A5 portrait; margin: 0; }
-  html, body { margin: 0; }
+  @page { size: 148mm 210mm; margin: 0; }
+  html, body { width: 148mm; height: 210mm; margin: 0; padding: 0; }
+  @media print {
+    html, body { width: 148mm; height: 210mm; margin: 0; padding: 0; }
+  }
   body { font-family: Arial, Helvetica, sans-serif; color: #111; line-height: 1.6; }
   .folha { position: relative; box-sizing: border-box; width: 148mm; height: 210mm; padding: 14mm 14mm 34mm 14mm; overflow: hidden; }
   .marca-agua { position: absolute; right: 0; bottom: 18mm; width: 55mm; height: 65mm; }
