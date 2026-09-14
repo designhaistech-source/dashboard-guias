@@ -200,28 +200,20 @@ export function DocumentSheets({
           >
             {letterhead && <LetterheadFrame />}
 
-            {!letterhead && index === 0 && (
+            {index === 0 && geometry.header && (
               <>
-                <span
-                  className="absolute w-full text-center font-semibold uppercase text-foreground"
-                  style={{
-                    top: mm(PDF_LAYOUT.titleY - 14 * PT_TO_MM * 0.8),
-                    fontFamily: "Helvetica, Arial, sans-serif",
-                    fontSize: mm(14 * PT_TO_MM),
-                  }}
-                >
-                  {title}
-                </span>
-                <span
-                  className="absolute w-full text-center text-muted-foreground"
-                  style={{
-                    top: mm(PDF_LAYOUT.patientY - 10 * PT_TO_MM * 0.8),
-                    fontFamily: "Helvetica, Arial, sans-serif",
-                    fontSize: mm(10 * PT_TO_MM),
-                  }}
-                >
-                  Paciente: {paciente || "—"}
-                </span>
+                <CenteredLine
+                  text={title.toUpperCase()}
+                  y={geometry.header.titleY}
+                  size={geometry.header.titlePt}
+                  className="font-semibold text-foreground"
+                />
+                <CenteredLine
+                  text={`Paciente: ${paciente || "—"}`}
+                  y={geometry.header.patientY}
+                  size={geometry.header.patientPt}
+                  className="text-muted-foreground"
+                />
               </>
             )}
 
@@ -230,48 +222,40 @@ export function DocumentSheets({
                 key={`${index}-${lineIndex}`}
                 text={line.text}
                 y={line.y}
-                size={11}
+                size={geometry.bodyPt}
                 margin={margin}
               />
             ))}
 
             {page.signatureY !== undefined && (
-              <div className="absolute w-full text-center" style={{ top: mm(page.signatureY) }}>
+              <>
                 <span
-                  className="mx-auto block border-t border-foreground"
-                  style={{ width: mm(70) }}
+                  className="absolute block border-t border-foreground"
+                  style={{
+                    left: mm(sheet.pageWidth / 2 - signature.halfLine),
+                    top: mm(page.signatureY),
+                    width: mm(signature.halfLine * 2),
+                  }}
                 />
-                <span
-                  className="block text-foreground"
-                  style={{
-                    fontFamily: "Helvetica, Arial, sans-serif",
-                    fontSize: mm(10 * PT_TO_MM),
-                    marginTop: mm(1.5),
-                  }}
-                >
-                  {signatureName}
-                </span>
-                <span
-                  className="block text-foreground"
-                  style={{
-                    fontFamily: "Helvetica, Arial, sans-serif",
-                    fontSize: mm(10 * PT_TO_MM),
-                    marginTop: mm(1),
-                  }}
-                >
-                  {PDF_SIGNATURE.council}
-                </span>
-                <span
-                  className="block text-muted-foreground"
-                  style={{
-                    fontFamily: "Helvetica, Arial, sans-serif",
-                    fontSize: mm(9 * PT_TO_MM),
-                    marginTop: mm(1.5),
-                  }}
-                >
-                  {PDF_SIGNATURE.caption}
-                </span>
-              </div>
+                <CenteredLine
+                  text={signature.name}
+                  y={page.signatureY + signature.nameDy}
+                  size={signature.namePt}
+                  className="text-foreground"
+                />
+                <CenteredLine
+                  text={PDF_SIGNATURE.council}
+                  y={page.signatureY + signature.councilDy}
+                  size={signature.namePt}
+                  className="text-foreground"
+                />
+                <CenteredLine
+                  text={PDF_SIGNATURE.caption}
+                  y={page.signatureY + signature.captionDy}
+                  size={signature.captionPt}
+                  className="text-muted-foreground"
+                />
+              </>
             )}
           </div>
           <figcaption className="font-mono text-xs text-muted-foreground">
