@@ -221,6 +221,8 @@ function metricsFor(variant: DocumentPdfVariant) {
 export function layoutDocumentPdf(
   bodyHtml: string,
   variant: DocumentPdfVariant = "default",
+  /** Nome do paciente: abre o conteúdo do timbrado, sem rótulo. */
+  paciente = "",
 ): DocumentPdfPage[] {
   const letterhead = variant === "letterhead";
   const pdf = createPdf(variant);
