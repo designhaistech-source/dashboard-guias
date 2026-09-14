@@ -67,7 +67,8 @@ export const LETTERHEAD_LAYOUT = {
   /** Marca gráfica suave no canto inferior direito. */
   watermarkWidth: 55,
   watermarkHeight: 65,
-  watermarkBottom: 18,
+  /** Fica acima da faixa tricolor: nada é cortado na borda da folha A5. */
+  watermarkBottom: 28,
 } as const;
 
 /** Dimensões (mm) da folha conforme a variante. */
@@ -182,11 +183,7 @@ export function layoutDocumentPdf(
   variant: DocumentPdfVariant = "default",
 ): DocumentPdfPage[] {
   const letterhead = variant === "letterhead";
-  const pdf = new jsPDF({
-    unit: "mm",
-    format: letterhead ? "a5" : "a4",
-    orientation: "portrait",
-  });
+  const pdf = createPdf(variant);
   const { pageHeight, pageWidth } = pageSizeFor(variant);
   const m = metricsFor(variant);
   const contentWidth = pageWidth - m.margin * 2;
