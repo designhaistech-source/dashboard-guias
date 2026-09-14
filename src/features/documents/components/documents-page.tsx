@@ -278,6 +278,7 @@ function DocumentActions({
   issuedDoc,
   onIssued,
   onNewDocument,
+  blankSheet = false,
 }: {
   title: string;
   /** Tipo registrado em "Documentos emitidos". */
@@ -293,11 +294,16 @@ function DocumentActions({
   issuedDoc: IssuedDocument | null;
   onIssued: (doc: IssuedDocument) => void;
   onNewDocument: () => void;
+  /**
+   * Folha em branco: dispensa paciente e texto — o documento sai apenas com o
+   * timbrado e a assinatura, para preenchimento à mão após imprimir.
+   */
+  blankSheet?: boolean;
 }) {
   // O template (e o tamanho da folha) vem do tipo de documento.
   const variant = documentTemplateFor(type);
-  const disabled = !paciente.trim();
-  const temTexto = html.replace(/<[^>]+>/g, "").trim().length > 0;
+  const disabled = !blankSheet && !paciente.trim();
+  const temTexto = blankSheet || html.replace(/<[^>]+>/g, "").trim().length > 0;
   const [downloading, setDownloading] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [previewOpen, setPreviewOpen] = useState(false);
