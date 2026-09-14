@@ -38,6 +38,14 @@ import {
 } from "../data/issued-documents";
 import { listIssuedDocuments, subscribeIssuedDocuments } from "../data/issued-documents-store";
 
+/**
+ * A Solicitação usa o papel timbrado HaisTech em A5 real (148 × 210 mm) — o
+ * mesmo template usado na pré-visualização, na impressão e no PDF baixado.
+ */
+function variantFor(doc: IssuedDocument): DocumentPdfVariant {
+  return doc.type === "Solicitação" ? "letterhead" : "default";
+}
+
 const EMPTY_FILTERS = {
   query: "",
   type: "",
@@ -85,13 +93,16 @@ export function IssuedDocumentsPage() {
   }, [documents, filters, sortDirection]);
 
   const handlePrint = (doc: IssuedDocument) => {
-    printDocumentHtml(doc.type, doc.patient, doc.body);
+    printDocumentHtml(doc.type, doc.patient, doc.body, variantFor(doc));
     toast.success(`${doc.type} enviado para impressão.`);
   };
 
   const handleDownload = (doc: IssuedDocument) => {
-    printDocumentHtml(doc.type, doc.patient, doc.body);
-    toast.success(`${doc.type} pronto para salvar em PDF.`);
+    void import("@/features/documents/data/document-pdf").then(({ downloadDocumentPdf }) =>
+      downloadDocumentPdf(doc.type, doc.patient, doc.body, variantFor(doc)).then(() =>
+        toast.success(`${doc.type} salvo em PDF.`),
+      ),
+    );
   };
 
   return (
