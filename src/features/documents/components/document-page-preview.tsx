@@ -27,6 +27,8 @@ export function DocumentPagePreview({
 }) {
   const pages = useDocumentPages(html, open, variant);
   const total = pages?.length ?? 0;
+  // A Solicitação (timbrado) usa folha A5 real; os demais documentos, A4.
+  const formato = variant === "letterhead" ? "A5" : "A4";
 
   return (
     <AppModal
@@ -37,7 +39,7 @@ export function DocumentPagePreview({
       title="Pré-visualizar documento"
       description={
         total > 0
-          ? `${total} ${total === 1 ? "página" : "páginas"} A4 — quebras iguais às do PDF.`
+          ? `${total} ${total === 1 ? "página" : "páginas"} ${formato} — quebras iguais às do PDF.`
           : "Calculando as quebras de página…"
       }
       footer={
