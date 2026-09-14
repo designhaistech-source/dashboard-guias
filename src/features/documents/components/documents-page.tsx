@@ -410,7 +410,9 @@ function DocumentActions({
         note={
           issuedDoc
             ? undefined
-            : "Emita o documento para poder baixar ou imprimir. Para ter validade, será necessário assiná-lo manualmente."
+            : blankSheet
+              ? "Emita a folha em branco para poder baixar ou imprimir. O conteúdo será preenchido à mão, com assinatura manual."
+              : "Emita o documento para poder baixar ou imprimir. Para ter validade, será necessário assiná-lo manualmente."
         }
         banner={
           issuedDoc ? (
