@@ -283,9 +283,9 @@ function drawLetterhead(pdf: jsPDF, logo: string | null, watermark: string | nul
 }
 
 /**
- * Gera e baixa o PDF do documento (A4 retrato). Na variante "letterhead" o
- * arquivo sai como papel timbrado de consultório, com o texto do editor como
- * elemento principal da página.
+ * Gera e baixa o PDF do documento. "default" sai em A4 retrato; "letterhead"
+ * sai em A5 retrato real (148 × 210 mm), como papel timbrado de consultório,
+ * com o texto do editor como elemento principal da página.
  * Retorna o nome do arquivo salvo.
  */
 export async function downloadDocumentPdf(
@@ -294,7 +294,11 @@ export async function downloadDocumentPdf(
   bodyHtml: string,
   variant: DocumentPdfVariant = "default",
 ): Promise<string> {
-  const pdf = new jsPDF({ unit: "mm", format: "a4", orientation: "portrait" });
+  const pdf = new jsPDF({
+    unit: "mm",
+    format: variant === "letterhead" ? "a5" : "a4",
+    orientation: "portrait",
+  });
   const pageWidth = pdf.internal.pageSize.getWidth();
   const pages = layoutDocumentPdf(bodyHtml, variant);
   const letterhead = variant === "letterhead";
