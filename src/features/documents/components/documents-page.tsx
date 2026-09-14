@@ -1589,6 +1589,48 @@ function RequestTab({ onNewDocument }: { onNewDocument: () => void }) {
     <>
       <div className="min-w-0 space-y-6">
         <SurfaceCard
+          title="Formato da solicitação"
+          description="Escolha entre redigir o texto agora ou gerar uma folha em branco para preencher à mão."
+          icon={<FileText className="icon-optical h-4 w-4" aria-hidden />}
+          padding="lg"
+        >
+          <div className="flex items-start gap-3">
+            <Switch
+              id="solicitacao-em-branco"
+              checked={blank}
+              onCheckedChange={setBlank}
+              disabled={locked}
+              aria-describedby="solicitacao-em-branco-apoio"
+              className="mt-0.5"
+            />
+            <div className="min-w-0 space-y-1">
+              <Label htmlFor="solicitacao-em-branco" className="leading-none">
+                Solicitação em branco
+              </Label>
+              <p id="solicitacao-em-branco-apoio" className="text-sm text-muted-foreground">
+                Gera a folha timbrada A5 com logo, assinatura, marca gráfica e rodapé, sem
+                paciente, data ou texto — pronta para imprimir e preencher à mão.
+              </p>
+            </div>
+          </div>
+        </SurfaceCard>
+
+        {blank ? (
+          <SurfaceCard
+            title="Folha em branco"
+            description="Nada mais precisa ser preenchido: emita e imprima a folha para escrever à mão."
+            icon={<ClipboardList className="icon-optical h-4 w-4" aria-hidden />}
+            padding="lg"
+          >
+            <p className="text-sm text-muted-foreground">
+              O documento sai no mesmo padrão A5 da Solicitação, com a logo HaisTech no topo,
+              grande área central livre, linha de assinatura com {PDF_SIGNATURE.name} —{" "}
+              {PDF_SIGNATURE.council}, marca gráfica e rodapé institucional.
+            </p>
+          </SurfaceCard>
+        ) : (
+          <>
+        <SurfaceCard
           title="Dados da solicitação"
           actions={<ManageTemplatesButton onClick={openTemplatesManager} />}
           description="Identifique o paciente e, se necessário, o diagnóstico que justifica a solicitação."
