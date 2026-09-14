@@ -9,7 +9,6 @@ import {
   LETTERHEAD_INSTITUTION,
   LETTERHEAD_LAYOUT,
   LETTERHEAD_PAGE,
-  PDF_LAYOUT,
   PDF_SIGNATURE,
   sheetGeometry,
 } from "../data/document-pdf";
