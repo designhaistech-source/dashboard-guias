@@ -1,6 +1,7 @@
 import { jsPDF } from "jspdf";
 
-import logoAsset from "@/assets/haisguias-logo.png.asset.json";
+import letterheadLogoAsset from "@/assets/haistech-logo.png.asset.json";
+import watermarkAsset from "@/assets/haistech-marca-agua.png.asset.json";
 import { CURRENT_USER } from "@/lib/current-user";
 
 const PAGE_MARGIN = 20; // mm
@@ -259,13 +260,18 @@ export async function downloadDocumentPdf(
   const pages = layoutDocumentPdf(bodyHtml, variant);
   const letterhead = variant === "letterhead";
   const margin = letterhead ? LETTERHEAD_LAYOUT.margin : PAGE_MARGIN;
-  const logo = letterhead ? await loadLogoDataUrl() : null;
+  const [logo, watermark] = letterhead
+    ? await Promise.all([
+        loadImageDataUrl(letterheadLogoAsset.url),
+        loadImageDataUrl(watermarkAsset.url),
+      ])
+    : [null, null];
 
   pages.forEach((page, index) => {
     if (index > 0) pdf.addPage();
 
     if (letterhead) {
-      drawLetterhead(pdf, logo, index);
+      drawLetterhead(pdf, logo, watermark);
     } else if (index === 0) {
       pdf.setFont("helvetica", "bold");
       pdf.setFontSize(14);
