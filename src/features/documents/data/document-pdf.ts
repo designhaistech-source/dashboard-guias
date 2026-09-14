@@ -236,7 +236,10 @@ export function layoutDocumentPdf(
   const pages: DocumentPdfPage[] = [{ lines: [] }];
   let cursorY = m.bodyStartY;
 
-  for (const paragraph of htmlToParagraphs(bodyHtml)) {
+  const paragraphs = htmlToParagraphs(bodyHtml);
+  const opening = letterhead && paciente.trim() ? [paciente.trim()] : [];
+
+  for (const paragraph of [...opening, ...paragraphs]) {
     const lines = pdf.splitTextToSize(paragraph, contentWidth) as string[];
     for (const line of lines) {
       if (cursorY > m.bottomLimit) {
