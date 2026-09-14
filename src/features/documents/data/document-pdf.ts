@@ -264,7 +264,7 @@ export function layoutDocumentPdf(
   // No timbrado a assinatura fica ancorada na região inferior da folha (logo
   // acima do rodapé), com espaço em branco livre acima da linha para assinar.
   if (letterhead) {
-    const anchorY = signatureLimit - block;
+    const anchorY = signatureLimit - block - LETTERHEAD_SIGNATURE_CLEARANCE;
     if (anchorY >= cursorY + gap) {
       pages[pages.length - 1].signatureY = anchorY;
     } else {
