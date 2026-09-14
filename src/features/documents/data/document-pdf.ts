@@ -140,8 +140,8 @@ function metricsFor(variant: DocumentPdfVariant) {
     return {
       margin: LETTERHEAD_LAYOUT.margin,
       bodyStartY: LETTERHEAD_LAYOUT.bodyStartY,
-      bottomLimit: PDF_LAYOUT.pageHeight - LETTERHEAD_LAYOUT.footerReserve - 12,
-      topY: LETTERHEAD_LAYOUT.bodyStartY - 12,
+      bottomLimit: LETTERHEAD_PAGE.pageHeight - LETTERHEAD_LAYOUT.footerReserve - 8,
+      topY: LETTERHEAD_LAYOUT.bodyStartY - 8,
     };
   }
   return {
