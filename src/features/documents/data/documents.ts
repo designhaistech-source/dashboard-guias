@@ -1,6 +1,11 @@
 import logoAsset from "@/assets/haisguias-logo.png.asset.json";
 
+import letterheadLogoAsset from "@/assets/haistech-logo.png.asset.json";
+import watermarkAsset from "@/assets/haistech-marca-agua.png.asset.json";
+
 const logoUrl = logoAsset.url;
+const letterheadLogoUrl = letterheadLogoAsset.url;
+const watermarkUrl = watermarkAsset.url;
 
 import { todayLocalIsoDate } from "@/lib/date";
 import { CURRENT_USER } from "@/lib/current-user";
@@ -265,41 +270,34 @@ export function printHtml(
   @page { size: A4; margin: 0; }
   html, body { margin: 0; }
   body { font-family: Arial, Helvetica, sans-serif; color: #111; line-height: 1.7; }
-  .folha { position: relative; box-sizing: border-box; min-height: 297mm; padding: 20mm 24mm 26mm 24mm; overflow: hidden; }
-  .filete { position: absolute; left: 0; top: 0; bottom: 0; width: 3mm; background: #d6e4f0; }
-  .filete::after { content: ""; position: absolute; left: 0; top: 28mm; width: 3mm; height: 44mm; background: #2563ac; }
-  .bolha { position: absolute; border-radius: 50%; background: #eef4fa; }
-  .bolha-1 { width: 24mm; height: 24mm; right: 2mm; bottom: 22mm; }
-  .bolha-2 { width: 14mm; height: 14mm; right: 19mm; bottom: 19mm; background: #f6fafd; }
-  .timbre { display: flex; align-items: flex-end; justify-content: space-between; padding-bottom: 6mm; border-bottom: 1px solid #dbe2ea; }
-  .timbre img { height: 9mm; display: block; }
-  .timbre .assinatura-marca { font-size: 8px; color: #82898f; letter-spacing: .04em; margin: 3mm 0 0; }
-  .rotulo { font-size: 9px; color: #7a828a; letter-spacing: .08em; text-transform: none; }
-  .conteudo { position: relative; margin-top: 14mm; font-size: 13px; }
+  .folha { position: relative; box-sizing: border-box; width: 210mm; min-height: 297mm; padding: 20mm 24mm 46mm 24mm; overflow: hidden; }
+  .marca-agua { position: absolute; right: 0; bottom: 26mm; width: 78mm; height: 92mm; }
+  .timbre { text-align: center; }
+  .timbre img { height: 13mm; display: inline-block; }
+  .conteudo { position: relative; margin-top: 18mm; font-size: 13px; }
   .conteudo p { margin: 0 0 10px; }
   .assinatura { position: relative; margin-top: 26mm; text-align: center; font-size: 12px; }
   .assinatura span { display: block; border-top: 1px solid #333; padding-top: 5px; width: 68mm; margin: 0 auto; }
   .assinatura small { display: block; margin-top: 3px; color: #555; font-size: 10px; }
-  .rodape { position: absolute; left: 24mm; right: 24mm; bottom: 12mm; display: flex; justify-content: space-between; padding-top: 3mm; border-top: 1px solid #e4eaf0; font-size: 7.5px; color: #969ca2; }
+  .faixa { position: absolute; left: 0; right: 0; bottom: 33mm; display: flex; height: 1.8mm; }
+  .faixa i { flex: 1; }
+  .rodape { position: absolute; left: 24mm; right: 24mm; bottom: 12mm; display: flex; font-size: 8.5px; color: #3c3c3c; line-height: 1.5; }
+  .rodape div { flex: 1; text-align: center; }
 </style></head><body>
 <div class="folha">
-  <div class="filete"></div>
-  <div class="bolha bolha-1"></div>
-  <div class="bolha bolha-2"></div>
-  <header class="timbre">
-    <div>
-      <img src="${logoUrl}" alt="HaisGuias" />
-      <p class="assinatura-marca">HaisTech · Saúde digital</p>
-    </div>
-    <span class="rotulo">Solicitação</span>
-  </header>
+  <img class="marca-agua" src="${watermarkUrl}" alt="" aria-hidden="true" />
+  <header class="timbre"><img src="${letterheadLogoUrl}" alt="HaisTech" /></header>
   <main class="conteudo">${bodyHtml}</main>
   <div class="assinatura">
     <span>${nomeMedico}</span>
     <small>${CURRENT_USER.crm}</small>
     <small>Assinatura e carimbo</small>
   </div>
-  <footer class="rodape"><span>HaisTech · HaisGuias</span><span></span></footer>
+  <div class="faixa"><i style="background:#125794"></i><i style="background:#5caafd"></i><i style="background:#94c08f"></i></div>
+  <footer class="rodape">
+    <div>Av. Senador Salgado Filho, 3000 - Bloco Reitoria<br />59078-900 - Lagoa Nova - Natal/RN<br />SALA - B418</div>
+    <div>CNPJ: 54.128.652/0001-35<br />haisolutionsbr@gmail.com<br />(84) 99640-5345</div>
+  </footer>
 </div>
 </body></html>`;
 
