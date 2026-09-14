@@ -30,13 +30,21 @@ import {
   DataTableRoot,
   DataTableRow,
 } from "@/components/data-table";
-import { printDocumentHtml } from "@/features/documents";
+import { printDocumentHtml, type DocumentPdfVariant } from "@/features/documents";
 import {
   ISSUED_DOCUMENT_TYPES,
   formatIssuedDocumentDate,
   type IssuedDocument,
 } from "../data/issued-documents";
 import { listIssuedDocuments, subscribeIssuedDocuments } from "../data/issued-documents-store";
+
+/**
+ * A Solicitação usa o papel timbrado HaisTech em A5 real (148 × 210 mm) — o
+ * mesmo template usado na pré-visualização, na impressão e no PDF baixado.
+ */
+function variantFor(doc: IssuedDocument): DocumentPdfVariant {
+  return doc.type === "Solicitação" ? "letterhead" : "default";
+}
 
 const EMPTY_FILTERS = {
   query: "",
@@ -85,13 +93,16 @@ export function IssuedDocumentsPage() {
   }, [documents, filters, sortDirection]);
 
   const handlePrint = (doc: IssuedDocument) => {
-    printDocumentHtml(doc.type, doc.patient, doc.body);
+    printDocumentHtml(doc.type, doc.patient, doc.body, variantFor(doc));
     toast.success(`${doc.type} enviado para impressão.`);
   };
 
   const handleDownload = (doc: IssuedDocument) => {
-    printDocumentHtml(doc.type, doc.patient, doc.body);
-    toast.success(`${doc.type} pronto para salvar em PDF.`);
+    void import("@/features/documents/data/document-pdf").then(({ downloadDocumentPdf }) =>
+      downloadDocumentPdf(doc.type, doc.patient, doc.body, variantFor(doc)).then(() =>
+        toast.success(`${doc.type} salvo em PDF.`),
+      ),
+    );
   };
 
   return (
@@ -345,8 +356,10 @@ function IssuedDocumentModal({
   onDownload,
   onPrint,
 }: { doc: IssuedDocument | null; onClose: () => void } & DocumentActions) {
-  const pages = useDocumentPages(doc?.body ?? "", doc !== null);
+  const variant = doc ? variantFor(doc) : "default";
+  const pages = useDocumentPages(doc?.body ?? "", doc !== null, variant);
   const total = pages?.length ?? 0;
+  const formato = variant === "letterhead" ? "A5" : "A4";
 
   return (
     <AppModal
@@ -359,7 +372,7 @@ function IssuedDocumentModal({
       description={
         doc
           ? `${doc.patient} · emitido em ${formatIssuedDocumentDate(doc.issuedAt)}${
-              total > 0 ? ` · ${total} ${total === 1 ? "página" : "páginas"} A4` : ""
+              total > 0 ? ` · ${total} ${total === 1 ? "página" : "páginas"} ${formato}` : ""
             }`
           : undefined
       }
@@ -385,6 +398,7 @@ function IssuedDocumentModal({
             pages={pages}
             title={doc.type}
             paciente={doc.patient}
+            variant={variant}
             ariaLabel={`Documento emitido de ${doc.patient}, somente leitura`}
           />
           <p className="mt-4 text-center text-xs text-muted-foreground">
