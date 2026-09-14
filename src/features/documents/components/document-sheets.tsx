@@ -174,12 +174,13 @@ export function DocumentSheets({
 
   const total = pages.length;
   const letterhead = variant === "letterhead";
-  const margin = letterhead ? LETTERHEAD_LAYOUT.margin : PDF_LAYOUT.margin;
-  const signatureName = letterhead
-    ? `Dr(a). ${PDF_SIGNATURE.name.replace(/^Dr\.?a?\.?\s*/i, "")}`
-    : PDF_SIGNATURE.name;
-  // A folha da Solicitação é A5 real (148 × 210 mm); os demais documentos, A4.
-  const sheet = pageSizeFor(variant);
+  // Mesma geometria usada pelo PDF e pela impressão: a pré-visualização apenas
+  // reduz a folha para caber na tela, sem mudar layout nem proporção.
+  const geometry = sheetGeometry(variant);
+  const margin = geometry.margin;
+  const signature = geometry.signature;
+  const sheet = geometry.page;
+
 
 
   return (
