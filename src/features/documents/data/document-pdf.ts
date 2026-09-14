@@ -378,7 +378,7 @@ export async function downloadDocumentPdf(
   const pdf = createPdf(variant);
   const geometry = sheetGeometry(variant);
   const pageWidth = geometry.page.pageWidth;
-  const pages = layoutDocumentPdf(bodyHtml, variant);
+  const pages = layoutDocumentPdf(bodyHtml, variant, paciente);
   const letterhead = variant === "letterhead";
   const margin = geometry.margin;
   const [logo, watermark] = letterhead
