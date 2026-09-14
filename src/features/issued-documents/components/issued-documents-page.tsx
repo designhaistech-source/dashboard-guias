@@ -356,8 +356,10 @@ function IssuedDocumentModal({
   onDownload,
   onPrint,
 }: { doc: IssuedDocument | null; onClose: () => void } & DocumentActions) {
-  const pages = useDocumentPages(doc?.body ?? "", doc !== null);
+  const variant = doc ? variantFor(doc) : "default";
+  const pages = useDocumentPages(doc?.body ?? "", doc !== null, variant);
   const total = pages?.length ?? 0;
+  const formato = variant === "letterhead" ? "A5" : "A4";
 
   return (
     <AppModal
@@ -370,7 +372,7 @@ function IssuedDocumentModal({
       description={
         doc
           ? `${doc.patient} · emitido em ${formatIssuedDocumentDate(doc.issuedAt)}${
-              total > 0 ? ` · ${total} ${total === 1 ? "página" : "páginas"} A4` : ""
+              total > 0 ? ` · ${total} ${total === 1 ? "página" : "páginas"} ${formato}` : ""
             }`
           : undefined
       }
@@ -396,6 +398,7 @@ function IssuedDocumentModal({
             pages={pages}
             title={doc.type}
             paciente={doc.patient}
+            variant={variant}
             ariaLabel={`Documento emitido de ${doc.patient}, somente leitura`}
           />
           <p className="mt-4 text-center text-xs text-muted-foreground">
