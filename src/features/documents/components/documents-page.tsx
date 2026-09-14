@@ -277,7 +277,6 @@ function DocumentActions({
   issuedDoc,
   onIssued,
   onNewDocument,
-  variant = "default",
 }: {
   title: string;
   /** Tipo registrado em "Documentos emitidos". */
@@ -293,9 +292,9 @@ function DocumentActions({
   issuedDoc: IssuedDocument | null;
   onIssued: (doc: IssuedDocument) => void;
   onNewDocument: () => void;
-  /** "letterhead": PDF/impressão em papel timbrado de consultório. */
-  variant?: "default" | "letterhead";
 }) {
+  // O template (e o tamanho da folha) vem do tipo de documento.
+  const variant = documentTemplateFor(type);
   const disabled = !paciente.trim();
   const temTexto = html.replace(/<[^>]+>/g, "").trim().length > 0;
   const [downloading, setDownloading] = useState(false);
