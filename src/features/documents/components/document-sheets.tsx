@@ -1,9 +1,16 @@
 import { useEffect, useState } from "react";
 import { Loader2 } from "lucide-react";
 
-import logoAsset from "@/assets/haisguias-logo.png.asset.json";
+import letterheadLogoAsset from "@/assets/haistech-logo.png.asset.json";
+import watermarkAsset from "@/assets/haistech-marca-agua.png.asset.json";
 import type { DocumentPdfPage } from "../data/document-pdf";
-import { LETTERHEAD_LAYOUT, PDF_LAYOUT, PDF_SIGNATURE } from "../data/document-pdf";
+import {
+  LETTERHEAD_BAR,
+  LETTERHEAD_INSTITUTION,
+  LETTERHEAD_LAYOUT,
+  PDF_LAYOUT,
+  PDF_SIGNATURE,
+} from "../data/document-pdf";
 
 /** Escala de exibição: pixels por milímetro da folha A4. */
 const PX_PER_MM = 2.7;
@@ -41,56 +48,51 @@ function PageLine({
   );
 }
 
-/** Timbre discreto da HaisTech na pré-visualização da folha. */
+/** Papel timbrado HaisTech na pré-visualização da folha. */
 function LetterheadFrame() {
   const m = LETTERHEAD_LAYOUT.margin;
+  const barTop = LETTERHEAD_LAYOUT.footerBarY;
+  const columnWidth = `calc(50% - ${mm(m)})`;
   return (
     <>
-      <span className="absolute inset-y-0 left-0 bg-primary/15" style={{ width: mm(3) }} />
-      <span
-        className="absolute left-0 bg-primary"
-        style={{ width: mm(3), top: mm(28), height: mm(44) }}
-      />
-      <span
-        className="absolute rounded-full bg-primary/5"
-        style={{ width: mm(24), height: mm(24), right: mm(2), bottom: mm(22) }}
-      />
-      <span
-        className="absolute rounded-full bg-primary/5"
-        style={{ width: mm(14), height: mm(14), right: mm(19), bottom: mm(19) }}
+      <img
+        src={watermarkAsset.url}
+        alt=""
+        aria-hidden
+        className="absolute"
+        style={{ right: 0, top: mm(PDF_LAYOUT.pageHeight - 118), width: mm(78), height: mm(92) }}
       />
       <img
-        src={logoAsset.url}
-        alt="HaisGuias"
-        className="absolute"
-        style={{ left: mm(m), top: mm(20), height: mm(LETTERHEAD_LAYOUT.logoHeight) }}
+        src={letterheadLogoAsset.url}
+        alt="HaisTech"
+        className="absolute left-1/2 -translate-x-1/2"
+        style={{ top: mm(20), height: mm(LETTERHEAD_LAYOUT.logoHeight) }}
       />
-      <span
-        className="absolute text-muted-foreground"
-        style={{ left: mm(m), top: mm(31), fontSize: mm(8 * PT_TO_MM) }}
-      >
-        HaisTech · Saúde digital
+      <span className="absolute flex" style={{ left: 0, right: 0, top: mm(barTop) }}>
+        {LETTERHEAD_BAR.map(([r, g, b], index) => (
+          <span
+            key={index}
+            className="flex-1"
+            style={{ height: mm(1.8), backgroundColor: `rgb(${r} ${g} ${b})` }}
+          />
+        ))}
       </span>
-      <span
-        className="absolute text-muted-foreground"
-        style={{ right: mm(m), top: mm(24), fontSize: mm(9 * PT_TO_MM) }}
+      <div
+        className="absolute flex flex-col items-center gap-[2px] text-center text-foreground"
+        style={{ left: mm(m), top: mm(barTop + 5), width: columnWidth, fontSize: mm(8.5 * PT_TO_MM) }}
       >
-        Solicitação
-      </span>
-      <span
-        className="absolute bg-border"
-        style={{ left: mm(m), right: mm(m), top: mm(LETTERHEAD_LAYOUT.headerRuleY), height: "1px" }}
-      />
-      <span
-        className="absolute bg-border"
-        style={{ left: mm(m), right: mm(m), bottom: mm(19), height: "1px" }}
-      />
-      <span
-        className="absolute text-muted-foreground"
-        style={{ left: mm(m), bottom: mm(13), fontSize: mm(7.5 * PT_TO_MM) }}
+        {LETTERHEAD_INSTITUTION.addressLines.map((line) => (
+          <span key={line}>{line}</span>
+        ))}
+      </div>
+      <div
+        className="absolute flex flex-col items-center gap-[2px] text-center text-foreground"
+        style={{ right: mm(m), top: mm(barTop + 5), width: columnWidth, fontSize: mm(8.5 * PT_TO_MM) }}
       >
-        HaisTech · HaisGuias
-      </span>
+        {LETTERHEAD_INSTITUTION.contactLines.map((line) => (
+          <span key={line}>{line}</span>
+        ))}
+      </div>
     </>
   );
 }

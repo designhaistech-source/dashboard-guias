@@ -1,6 +1,7 @@
 import { jsPDF } from "jspdf";
 
-import logoAsset from "@/assets/haisguias-logo.png.asset.json";
+import letterheadLogoAsset from "@/assets/haistech-logo.png.asset.json";
+import watermarkAsset from "@/assets/haistech-marca-agua.png.asset.json";
 import { CURRENT_USER } from "@/lib/current-user";
 
 const PAGE_MARGIN = 20; // mm
@@ -28,15 +29,32 @@ export type DocumentPdfVariant = "default" | "letterhead";
 /** Papel timbrado: margens mais generosas e área de conteúdo ampla. */
 export const LETTERHEAD_LAYOUT = {
   margin: 24,
-  /** Início do corpo, abaixo da faixa da marca. */
-  bodyStartY: 54,
+  /** Início do corpo, abaixo da marca centralizada. */
+  bodyStartY: 62,
   /** Altura reservada ao rodapé timbrado. */
-  footerReserve: 26,
-  /** Linha fina sob o cabeçalho. */
-  headerRuleY: 40,
-  logoHeight: 9,
-  logoWidth: 30,
+  footerReserve: 42,
+  /** Faixa tricolor acima dos dados institucionais. */
+  footerBarY: 262,
+  logoHeight: 13,
+  logoWidth: 44,
 } as const;
+
+/** Dados institucionais impressos no rodapé do papel timbrado. */
+export const LETTERHEAD_INSTITUTION = {
+  addressLines: [
+    "Av. Senador Salgado Filho, 3000 - Bloco Reitoria",
+    "59078-900 - Lagoa Nova - Natal/RN",
+    "SALA - B418",
+  ],
+  contactLines: ["CNPJ: 54.128.652/0001-35", "haisolutionsbr@gmail.com", "(84) 99640-5345"],
+} as const;
+
+/** Cores da faixa tricolor do rodapé (identidade HaisTech). */
+export const LETTERHEAD_BAR = [
+  [18, 87, 148],
+  [92, 170, 253],
+  [148, 192, 143],
+] as const;
 
 /** Dados do profissional usados no bloco de assinatura manual. */
 export const PDF_SIGNATURE = {
@@ -164,10 +182,10 @@ export function layoutDocumentPdf(
   return pages;
 }
 
-/** Carrega a logo como data URL para embutir no PDF (falha silenciosa). */
-async function loadLogoDataUrl(): Promise<string | null> {
+/** Carrega uma imagem como data URL para embutir no PDF (falha silenciosa). */
+async function loadImageDataUrl(url: string): Promise<string | null> {
   try {
-    const response = await fetch(logoAsset.url);
+    const response = await fetch(url);
     if (!response.ok) return null;
     const blob = await response.blob();
     return await new Promise<string | null>((resolve) => {
@@ -181,54 +199,48 @@ async function loadLogoDataUrl(): Promise<string | null> {
   }
 }
 
-/** Desenha o timbre HaisTech: marca no topo, filete lateral e rodapé leve. */
-function drawLetterhead(pdf: jsPDF, logo: string | null, pageIndex: number) {
+/**
+ * Desenha o papel timbrado HaisTech: marca centralizada no topo, marca d'água
+ * discreta no canto inferior direito e rodapé institucional com faixa tricolor.
+ */
+function drawLetterhead(pdf: jsPDF, logo: string | null, watermark: string | null) {
   const { pageWidth, pageHeight } = PDF_LAYOUT;
   const m = LETTERHEAD_LAYOUT.margin;
+  const { logoWidth, logoHeight, footerBarY } = LETTERHEAD_LAYOUT;
 
-  // Filete vertical discreto na borda esquerda (elemento gráfico da marca).
-  pdf.setFillColor(214, 228, 240);
-  pdf.rect(0, 0, 3, pageHeight, "F");
-  pdf.setFillColor(37, 99, 172);
-  pdf.rect(0, 28, 3, 44, "F");
-
-  if (logo) {
-    pdf.addImage(logo, "PNG", m, 20, LETTERHEAD_LAYOUT.logoWidth, LETTERHEAD_LAYOUT.logoHeight);
-  } else {
-    pdf.setFont("helvetica", "bold");
-    pdf.setFontSize(12);
-    pdf.setTextColor(37, 99, 172);
-    pdf.text("HaisGuias", m, 27);
+  // Marca d'água atrás de tudo (proporção original 292x346).
+  if (watermark) {
+    pdf.addImage(watermark, "PNG", pageWidth - 78, pageHeight - 118, 78, 92);
   }
 
+  if (logo) {
+    pdf.addImage(logo, "PNG", (pageWidth - logoWidth) / 2, 20, logoWidth, logoHeight);
+  } else {
+    pdf.setFont("helvetica", "bold");
+    pdf.setFontSize(18);
+    pdf.setTextColor(18, 51, 82);
+    pdf.text("HaisTech", pageWidth / 2, 30, { align: "center" });
+  }
+
+  // Faixa tricolor da identidade, dividida em três blocos.
+  const barWidth = pageWidth / 3;
+  LETTERHEAD_BAR.forEach(([r, g, b], index) => {
+    pdf.setFillColor(r, g, b);
+    pdf.rect(index * barWidth, footerBarY, barWidth + 0.2, 1.8, "F");
+  });
+
+  // Dados institucionais em duas colunas centralizadas.
   pdf.setFont("helvetica", "normal");
-  pdf.setFontSize(8);
-  pdf.setTextColor(130);
-  pdf.text("HaisTech · Saúde digital", m, 34);
-
-  // Rótulo discreto do tipo de documento, alinhado à direita.
-  pdf.setFontSize(9);
-  pdf.setTextColor(120);
-  pdf.text("Solicitação", pageWidth - m, 27, { align: "right" });
-
-  pdf.setDrawColor(219, 226, 234);
-  pdf.setLineWidth(0.3);
-  pdf.line(m, LETTERHEAD_LAYOUT.headerRuleY, pageWidth - m, LETTERHEAD_LAYOUT.headerRuleY);
-
-  // Rodapé timbrado.
-  const footerY = pageHeight - 16;
-  pdf.setDrawColor(228, 234, 240);
-  pdf.line(m, footerY - 6, pageWidth - m, footerY - 6);
-  pdf.setFontSize(7.5);
-  pdf.setTextColor(150);
-  pdf.text("HaisTech · HaisGuias", m, footerY);
-  pdf.text(`Página ${pageIndex + 1}`, pageWidth - m, footerY, { align: "right" });
-
-  // Marca gráfica suave no canto inferior direito (não centralizada).
-  pdf.setFillColor(238, 244, 250);
-  pdf.circle(pageWidth - 14, pageHeight - 34, 12, "F");
-  pdf.setFillColor(246, 250, 253);
-  pdf.circle(pageWidth - 26, pageHeight - 26, 7, "F");
+  pdf.setFontSize(8.5);
+  pdf.setTextColor(60);
+  const leftCenter = m + (pageWidth / 2 - m) / 2;
+  const rightCenter = pageWidth / 2 + (pageWidth / 2 - m) / 2;
+  LETTERHEAD_INSTITUTION.addressLines.forEach((line, index) => {
+    pdf.text(line, leftCenter, footerBarY + 8 + index * 5, { align: "center" });
+  });
+  LETTERHEAD_INSTITUTION.contactLines.forEach((line, index) => {
+    pdf.text(line, rightCenter, footerBarY + 8 + index * 5, { align: "center" });
+  });
 }
 
 /**
@@ -248,13 +260,18 @@ export async function downloadDocumentPdf(
   const pages = layoutDocumentPdf(bodyHtml, variant);
   const letterhead = variant === "letterhead";
   const margin = letterhead ? LETTERHEAD_LAYOUT.margin : PAGE_MARGIN;
-  const logo = letterhead ? await loadLogoDataUrl() : null;
+  const [logo, watermark] = letterhead
+    ? await Promise.all([
+        loadImageDataUrl(letterheadLogoAsset.url),
+        loadImageDataUrl(watermarkAsset.url),
+      ])
+    : [null, null];
 
   pages.forEach((page, index) => {
     if (index > 0) pdf.addPage();
 
     if (letterhead) {
-      drawLetterhead(pdf, logo, index);
+      drawLetterhead(pdf, logo, watermark);
     } else if (index === 0) {
       pdf.setFont("helvetica", "bold");
       pdf.setFontSize(14);
