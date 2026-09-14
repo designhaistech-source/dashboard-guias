@@ -102,6 +102,44 @@ export const PDF_SIGNATURE = {
   caption: "Assinatura e carimbo do profissional",
 } as const;
 
+/** Conversão de pontos tipográficos para milímetros. */
+export const PT_TO_MM = 0.3528;
+
+/**
+ * Geometria única da folha, em mm, compartilhada pelo PDF, pela impressão e
+ * pela pré-visualização. Todo desenho do documento deve sair daqui para que os
+ * três caminhos produzam exatamente o mesmo layout.
+ */
+export function sheetGeometry(variant: DocumentPdfVariant) {
+  const letterhead = variant === "letterhead";
+  return {
+    page: pageSizeFor(variant),
+    margin: letterhead ? LETTERHEAD_LAYOUT.margin : PAGE_MARGIN,
+    bodyPt: 11,
+    signature: {
+      halfLine: letterhead ? 26 : 35,
+      namePt: letterhead ? 9 : 10,
+      nameDy: letterhead ? 4 : 5,
+      councilDy: letterhead ? 8 : 10,
+      captionPt: letterhead ? 8 : 9,
+      captionDy: letterhead ? 12.5 : 16,
+      /** No timbrado o nome sai como "Dr(a). ..."; no A4, o nome cadastrado. */
+      name: letterhead
+        ? `Dr(a). ${PDF_SIGNATURE.name.replace(/^Dr\.?a?\.?\s*/i, "")}`
+        : PDF_SIGNATURE.name,
+    },
+    /** Cabeçalho com título e paciente existe apenas na folha A4 padrão. */
+    header: letterhead
+      ? null
+      : {
+          titlePt: 14,
+          titleY: PDF_LAYOUT.titleY,
+          patientPt: 10,
+          patientY: PDF_LAYOUT.patientY,
+        },
+  };
+}
+
 /** Espaço reservado (mm) entre o fim do conteúdo e a linha de assinatura. */
 const SIGNATURE_GAP = 18;
 /** Altura total (mm) do bloco de assinatura: linha + nome + CRM + legenda. */
