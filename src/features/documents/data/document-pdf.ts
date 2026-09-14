@@ -160,8 +160,13 @@ export function layoutDocumentPdf(
   bodyHtml: string,
   variant: DocumentPdfVariant = "default",
 ): DocumentPdfPage[] {
-  const pdf = new jsPDF({ unit: "mm", format: "a4", orientation: "portrait" });
-  const { pageHeight, pageWidth } = PDF_LAYOUT;
+  const letterhead = variant === "letterhead";
+  const pdf = new jsPDF({
+    unit: "mm",
+    format: letterhead ? "a5" : "a4",
+    orientation: "portrait",
+  });
+  const { pageHeight, pageWidth } = pageSizeFor(variant);
   const m = metricsFor(variant);
   const contentWidth = pageWidth - m.margin * 2;
 
