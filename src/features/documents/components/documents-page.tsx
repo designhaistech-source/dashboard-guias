@@ -41,6 +41,7 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { CID10 } from "@/lib/cid";
+import { CURRENT_USER } from "@/lib/current-user";
 import type {
   IssuedDocument,
   IssuedDocumentType,
