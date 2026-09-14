@@ -192,11 +192,14 @@ export function layoutDocumentPdf(
   // A assinatura segue o fluxo do conteúdo: apenas o espaço da assinatura
   // manuscrita a separa do texto/data. Se o bloco não couber inteiro na
   // página, ele vai completo para a próxima (sem páginas em branco extras).
-  const signatureY = cursorY + SIGNATURE_GAP;
-  const signatureLimit =
-    variant === "letterhead" ? pageHeight - LETTERHEAD_LAYOUT.footerReserve : pageHeight - PAGE_MARGIN;
-  if (signatureY + SIGNATURE_BLOCK_HEIGHT > signatureLimit) {
-    pages.push({ lines: [], signatureY: m.topY + SIGNATURE_GAP });
+  const gap = letterhead ? 12 : SIGNATURE_GAP;
+  const block = letterhead ? 16 : SIGNATURE_BLOCK_HEIGHT;
+  const signatureY = cursorY + gap;
+  const signatureLimit = letterhead
+    ? pageHeight - LETTERHEAD_LAYOUT.footerReserve
+    : pageHeight - PAGE_MARGIN;
+  if (signatureY + block > signatureLimit) {
+    pages.push({ lines: [], signatureY: m.topY + gap });
   } else {
     pages[pages.length - 1].signatureY = signatureY;
   }
