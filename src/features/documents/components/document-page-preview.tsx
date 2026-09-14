@@ -3,6 +3,7 @@ import { FileText } from "lucide-react";
 import { AppModal } from "@/components/app-modal";
 import { Button } from "@/components/ui/button";
 import { DocumentSheets, useDocumentPages } from "./document-sheets";
+import { paperFormatLabel } from "../data/document-paper";
 
 /**
  * Pré-visualização paginada do documento: mostra as folhas A4 com as
@@ -28,7 +29,7 @@ export function DocumentPagePreview({
   const pages = useDocumentPages(html, open, variant);
   const total = pages?.length ?? 0;
   // A Solicitação (timbrado) usa folha A5 real; os demais documentos, A4.
-  const formato = variant === "letterhead" ? "A5" : "A4";
+  const formato = paperFormatLabel(variant);
 
   return (
     <AppModal

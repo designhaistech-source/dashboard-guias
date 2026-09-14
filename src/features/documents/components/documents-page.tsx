@@ -56,6 +56,7 @@ import { useTextReplacement } from "./use-text-replacement";
 import { useGeneratedSync } from "./use-generated-sync";
 import { useDocumentTemplates } from "./use-document-templates";
 import type { SavedDocumentTemplate } from "../data/document-templates";
+import { documentTemplateFor } from "../data/document-paper";
 import {
   pendingVariables as findPendingVariables,
   resolveDocumentVariables,
@@ -277,7 +278,6 @@ function DocumentActions({
   issuedDoc,
   onIssued,
   onNewDocument,
-  variant = "default",
 }: {
   title: string;
   /** Tipo registrado em "Documentos emitidos". */
@@ -293,9 +293,9 @@ function DocumentActions({
   issuedDoc: IssuedDocument | null;
   onIssued: (doc: IssuedDocument) => void;
   onNewDocument: () => void;
-  /** "letterhead": PDF/impressão em papel timbrado de consultório. */
-  variant?: "default" | "letterhead";
 }) {
+  // O template (e o tamanho da folha) vem do tipo de documento.
+  const variant = documentTemplateFor(type);
   const disabled = !paciente.trim();
   const temTexto = html.replace(/<[^>]+>/g, "").trim().length > 0;
   const [downloading, setDownloading] = useState(false);
@@ -1653,7 +1653,11 @@ function RequestTab({ onNewDocument }: { onNewDocument: () => void }) {
         <RichTextEditor
           readOnly={locked}
           ariaLabel="Texto da solicitação médica"
-          pagePreview={{ title: "Solicitação", paciente, variant: "letterhead" }}
+          pagePreview={{
+            title: "Solicitação",
+            paciente,
+            variant: documentTemplateFor("Solicitação"),
+          }}
           value={conteudo}
           onChange={setHtml}
           onImproveWithAi={improve}
@@ -1684,7 +1688,6 @@ function RequestTab({ onNewDocument }: { onNewDocument: () => void }) {
 
       <DocumentActions
         title="Solicitação"
-        variant="letterhead"
         html={previewHtml}
         paciente={paciente}
         pacienteFieldId="solicitacao-paciente"

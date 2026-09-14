@@ -30,7 +30,11 @@ import {
   DataTableRoot,
   DataTableRow,
 } from "@/components/data-table";
-import { printDocumentHtml, type DocumentPdfVariant } from "@/features/documents";
+import {
+  printDocumentHtml,
+  documentTemplateFor,
+  paperFormatLabel,
+} from "@/features/documents";
 import {
   ISSUED_DOCUMENT_TYPES,
   formatIssuedDocumentDate,
@@ -39,11 +43,11 @@ import {
 import { listIssuedDocuments, subscribeIssuedDocuments } from "../data/issued-documents-store";
 
 /**
- * A Solicitação usa o papel timbrado HaisTech em A5 real (148 × 210 mm) — o
- * mesmo template usado na pré-visualização, na impressão e no PDF baixado.
+ * O template segue o tipo do documento (fonte única em document-paper):
+ * a Solicitação sai no papel timbrado A5 e os demais tipos seguem em A4.
  */
-function variantFor(doc: IssuedDocument): DocumentPdfVariant {
-  return doc.type === "Solicitação" ? "letterhead" : "default";
+function variantFor(doc: IssuedDocument) {
+  return documentTemplateFor(doc.type);
 }
 
 const EMPTY_FILTERS = {
@@ -359,7 +363,7 @@ function IssuedDocumentModal({
   const variant = doc ? variantFor(doc) : "default";
   const pages = useDocumentPages(doc?.body ?? "", doc !== null, variant);
   const total = pages?.length ?? 0;
-  const formato = variant === "letterhead" ? "A5" : "A4";
+  const formato = paperFormatLabel(variant);
 
   return (
     <AppModal
