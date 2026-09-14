@@ -50,6 +50,14 @@ function variantFor(doc: IssuedDocument) {
   return documentTemplateFor(doc.type);
 }
 
+/**
+ * Rótulo do paciente na listagem. Folhas em branco são emitidas sem paciente
+ * (o médico preenche à mão), por isso recebem uma identificação própria.
+ */
+function patientLabel(doc: IssuedDocument): string {
+  return doc.patient.trim() || "Em branco";
+}
+
 const EMPTY_FILTERS = {
   query: "",
   type: "",
@@ -217,7 +225,7 @@ export function IssuedDocumentsPage() {
                   <DataTableCard key={doc.id}>
                     <DataTableCardHeader
                       title={<span className="truncate">{doc.type}</span>}
-                      subtitle={doc.patient}
+                      subtitle={patientLabel(doc)}
                     />
                     <DataTableCardFields
                       fields={[
@@ -279,7 +287,7 @@ export function IssuedDocumentsPage() {
                               {doc.type}
                             </Badge>
                           </DataTableCell>
-                          <DataTableCell className="truncate">{doc.patient}</DataTableCell>
+                          <DataTableCell className="truncate">{patientLabel(doc)}</DataTableCell>
                           <DataTableCell className="whitespace-nowrap text-muted-foreground">
                             {formatIssuedDocumentDate(doc.issuedAt)}
                           </DataTableCell>
@@ -288,7 +296,7 @@ export function IssuedDocumentsPage() {
                               <Button
                                 variant="ghost"
                                 size="icon"
-                                aria-label={`Visualizar ${doc.type} de ${doc.patient}`}
+                                aria-label={`Visualizar ${doc.type} de ${patientLabel(doc)}`}
                                 className="h-7 w-7 text-muted-foreground hover:text-foreground"
                                 onClick={() => setDetail(doc)}
                               >
@@ -335,7 +343,7 @@ function RowActions({ doc, onDownload, onPrint }: { doc: IssuedDocument } & Docu
       <Button
         variant="ghost"
         size="icon"
-        aria-label={`Baixar PDF do documento de ${doc.patient}`}
+        aria-label={`Baixar PDF do documento de ${patientLabel(doc)}`}
         className="h-7 w-7 text-muted-foreground hover:text-foreground"
         onClick={() => onDownload(doc)}
       >
@@ -344,7 +352,7 @@ function RowActions({ doc, onDownload, onPrint }: { doc: IssuedDocument } & Docu
       <Button
         variant="ghost"
         size="icon"
-        aria-label={`Imprimir documento de ${doc.patient}`}
+        aria-label={`Imprimir documento de ${patientLabel(doc)}`}
         className="h-7 w-7 text-muted-foreground hover:text-foreground"
         onClick={() => onPrint(doc)}
       >
@@ -375,7 +383,7 @@ function IssuedDocumentModal({
       title={doc ? doc.type : "Documento emitido"}
       description={
         doc
-          ? `${doc.patient} · emitido em ${formatIssuedDocumentDate(doc.issuedAt)}${
+          ? `${patientLabel(doc)} · emitido em ${formatIssuedDocumentDate(doc.issuedAt)}${
               total > 0 ? ` · ${total} ${total === 1 ? "página" : "páginas"} ${formato}` : ""
             }`
           : undefined
@@ -397,13 +405,13 @@ function IssuedDocumentModal({
       }
     >
       {doc && (
-        <section aria-label={`Pré-visualização do documento de ${doc.patient}`}>
+        <section aria-label={`Pré-visualização do documento de ${patientLabel(doc)}`}>
           <DocumentSheets
             pages={pages}
             title={doc.type}
             paciente={doc.patient}
             variant={variant}
-            ariaLabel={`Documento emitido de ${doc.patient}, somente leitura`}
+            ariaLabel={`Documento emitido de ${patientLabel(doc)}, somente leitura`}
           />
           <p className="mt-4 text-center text-xs text-muted-foreground">
             Documento já emitido, exibido em modo somente leitura — imprima para assinar

@@ -37,8 +37,11 @@ import { SurfaceCard } from "@/components/surface-card";
 import { Field, SelectField } from "@/components/form-field";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { CID10 } from "@/lib/cid";
+import { CURRENT_USER } from "@/lib/current-user";
 import type {
   IssuedDocument,
   IssuedDocumentType,
@@ -57,6 +60,7 @@ import { useGeneratedSync } from "./use-generated-sync";
 import { useDocumentTemplates } from "./use-document-templates";
 import type { SavedDocumentTemplate } from "../data/document-templates";
 import { documentTemplateFor } from "../data/document-paper";
+
 import {
   pendingVariables as findPendingVariables,
   resolveDocumentVariables,
@@ -278,6 +282,7 @@ function DocumentActions({
   issuedDoc,
   onIssued,
   onNewDocument,
+  blankSheet = false,
 }: {
   title: string;
   /** Tipo registrado em "Documentos emitidos". */
@@ -293,11 +298,16 @@ function DocumentActions({
   issuedDoc: IssuedDocument | null;
   onIssued: (doc: IssuedDocument) => void;
   onNewDocument: () => void;
+  /**
+   * Folha em branco: dispensa paciente e texto — o documento sai apenas com o
+   * timbrado e a assinatura, para preenchimento à mão após imprimir.
+   */
+  blankSheet?: boolean;
 }) {
   // O template (e o tamanho da folha) vem do tipo de documento.
   const variant = documentTemplateFor(type);
-  const disabled = !paciente.trim();
-  const temTexto = html.replace(/<[^>]+>/g, "").trim().length > 0;
+  const disabled = !blankSheet && !paciente.trim();
+  const temTexto = blankSheet || html.replace(/<[^>]+>/g, "").trim().length > 0;
   const [downloading, setDownloading] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [previewOpen, setPreviewOpen] = useState(false);
@@ -392,15 +402,21 @@ function DocumentActions({
     <>
       <FormActionBar
         stepsLabel="Etapas para emissão"
-        steps={[
-          { label: "Dados preenchidos", done: !hasIssues },
-          { label: "Texto do documento", done: temTexto },
-        ]}
+        steps={
+          blankSheet
+            ? [{ label: "Folha em branco pronta", done: true }]
+            : [
+                { label: "Dados preenchidos", done: !hasIssues },
+                { label: "Texto do documento", done: temTexto },
+              ]
+        }
 
         note={
           issuedDoc
             ? undefined
-            : "Emita o documento para poder baixar ou imprimir. Para ter validade, será necessário assiná-lo manualmente."
+            : blankSheet
+              ? "Emita a folha em branco para poder baixar ou imprimir. O conteúdo será preenchido à mão, com assinatura manual."
+              : "Emita o documento para poder baixar ou imprimir. Para ter validade, será necessário assiná-lo manualmente."
         }
         banner={
           issuedDoc ? (
@@ -1467,6 +1483,8 @@ function RequestTab({ onNewDocument }: { onNewDocument: () => void }) {
   const [data, setData] = useState(todayIso());
   const [cidade, setCidade] = useState("");
   const [html, setHtml] = useState("");
+  /** Folha timbrada sem conteúdo, para preenchimento manual após imprimir. */
+  const [blank, setBlank] = useState(false);
 
   const diagnostico =
     diagnosticoSelecionado || (CID10.find((c) => c.codigo === cid)?.descricao ?? "");
@@ -1577,6 +1595,48 @@ function RequestTab({ onNewDocument }: { onNewDocument: () => void }) {
     <>
       <div className="min-w-0 space-y-6">
         <SurfaceCard
+          title="Formato da solicitação"
+          description="Escolha entre redigir o texto agora ou gerar uma folha em branco para preencher à mão."
+          icon={<FileText className="icon-optical h-4 w-4" aria-hidden />}
+          padding="lg"
+        >
+          <div className="flex items-start gap-3">
+            <Switch
+              id="solicitacao-em-branco"
+              checked={blank}
+              onCheckedChange={setBlank}
+              disabled={locked}
+              aria-describedby="solicitacao-em-branco-apoio"
+              className="mt-0.5"
+            />
+            <div className="min-w-0 space-y-1">
+              <Label htmlFor="solicitacao-em-branco" className="leading-none">
+                Solicitação em branco
+              </Label>
+              <p id="solicitacao-em-branco-apoio" className="text-sm text-muted-foreground">
+                Gera a folha timbrada A5 com logo, assinatura, marca gráfica e rodapé, sem
+                paciente, data ou texto — pronta para imprimir e preencher à mão.
+              </p>
+            </div>
+          </div>
+        </SurfaceCard>
+
+        {blank ? (
+          <SurfaceCard
+            title="Folha em branco"
+            description="Nada mais precisa ser preenchido: emita e imprima a folha para escrever à mão."
+            icon={<ClipboardList className="icon-optical h-4 w-4" aria-hidden />}
+            padding="lg"
+          >
+            <p className="text-sm text-muted-foreground">
+              O documento sai no mesmo padrão A5 da Solicitação, com a logo HaisTech no topo,
+              grande área central livre, linha de assinatura com {CURRENT_USER.name} —{" "}
+              {CURRENT_USER.crm}, marca gráfica e rodapé institucional.
+            </p>
+          </SurfaceCard>
+        ) : (
+          <>
+        <SurfaceCard
           title="Dados da solicitação"
           actions={<ManageTemplatesButton onClick={openTemplatesManager} />}
           description="Identifique o paciente e, se necessário, o diagnóstico que justifica a solicitação."
@@ -1684,19 +1744,22 @@ function RequestTab({ onNewDocument }: { onNewDocument: () => void }) {
             />
           }
         />
+          </>
+        )}
       </div>
 
       <DocumentActions
         title="Solicitação"
-        html={previewHtml}
-        paciente={paciente}
+        html={blank ? "" : previewHtml}
+        paciente={blank ? "" : paciente}
         pacienteFieldId="solicitacao-paciente"
         type="Solicitação"
         issuedDoc={issuedDoc}
         onIssued={setIssuedDoc}
         onNewDocument={onNewDocument}
-        issues={issues}
-        onSaveTemplate={requestSaveTemplate}
+        issues={blank ? [] : issues}
+        blankSheet={blank}
+        onSaveTemplate={blank ? undefined : requestSaveTemplate}
       />
 
       {saveDialog}
