@@ -312,12 +312,8 @@ export async function downloadDocumentPdf(
   bodyHtml: string,
   variant: DocumentPdfVariant = "default",
 ): Promise<string> {
-  const pdf = new jsPDF({
-    unit: "mm",
-    format: variant === "letterhead" ? "a5" : "a4",
-    orientation: "portrait",
-  });
-  const pageWidth = pdf.internal.pageSize.getWidth();
+  const pdf = createPdf(variant);
+  const pageWidth = pageSizeFor(variant).pageWidth;
   const pages = layoutDocumentPdf(bodyHtml, variant);
   const letterhead = variant === "letterhead";
   const margin = letterhead ? LETTERHEAD_LAYOUT.margin : PAGE_MARGIN;
