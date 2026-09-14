@@ -166,6 +166,9 @@ export function DocumentSheets({
   const signatureName = letterhead
     ? `Dr(a). ${PDF_SIGNATURE.name.replace(/^Dr\.?a?\.?\s*/i, "")}`
     : PDF_SIGNATURE.name;
+  // A folha da Solicitação é A5 real (148 × 210 mm); os demais documentos, A4.
+  const sheet = pageSizeFor(variant);
+
 
   return (
     <div
