@@ -123,6 +123,8 @@ export function sheetGeometry(variant: DocumentPdfVariant) {
       councilDy: letterhead ? 8 : 10,
       captionPt: letterhead ? 8 : 9,
       captionDy: letterhead ? 12.5 : 16,
+      /** No timbrado não há legenda: apenas linha, nome e CRM. */
+      caption: !letterhead,
       /** No timbrado o nome sai como "Dr(a). ..."; no A4, o nome cadastrado. */
       name: letterhead
         ? `Dr(a). ${PDF_SIGNATURE.name.replace(/^Dr\.?a?\.?\s*/i, "")}`
@@ -248,12 +250,25 @@ export function layoutDocumentPdf(
   // A assinatura segue o fluxo do conteúdo: apenas o espaço da assinatura
   // manuscrita a separa do texto/data. Se o bloco não couber inteiro na
   // página, ele vai completo para a próxima (sem páginas em branco extras).
-  const gap = letterhead ? 12 : SIGNATURE_GAP;
-  const block = letterhead ? 16 : SIGNATURE_BLOCK_HEIGHT;
-  const signatureY = cursorY + gap;
+  const gap = letterhead ? 24 : SIGNATURE_GAP;
+  const block = letterhead ? 12 : SIGNATURE_BLOCK_HEIGHT;
   const signatureLimit = letterhead
     ? pageHeight - LETTERHEAD_LAYOUT.footerReserve
     : pageHeight - PAGE_MARGIN;
+
+  // No timbrado a assinatura fica ancorada na região inferior da folha (logo
+  // acima do rodapé), com espaço em branco livre acima da linha para assinar.
+  if (letterhead) {
+    const anchorY = signatureLimit - block;
+    if (anchorY >= cursorY + gap) {
+      pages[pages.length - 1].signatureY = anchorY;
+    } else {
+      pages.push({ lines: [], signatureY: anchorY });
+    }
+    return pages;
+  }
+
+  const signatureY = cursorY + gap;
   if (signatureY + block > signatureLimit) {
     pages.push({ lines: [], signatureY: m.topY + gap });
   } else {
@@ -401,11 +416,13 @@ export async function downloadDocumentPdf(
       pdf.text(PDF_SIGNATURE.council, pageWidth / 2, signatureY + s.councilDy, {
         align: "center",
       });
-      pdf.setFontSize(s.captionPt);
-      pdf.setTextColor(90);
-      pdf.text(PDF_SIGNATURE.caption, pageWidth / 2, signatureY + s.captionDy, {
-        align: "center",
-      });
+      if (s.caption) {
+        pdf.setFontSize(s.captionPt);
+        pdf.setTextColor(90);
+        pdf.text(PDF_SIGNATURE.caption, pageWidth / 2, signatureY + s.captionDy, {
+          align: "center",
+        });
+      }
     }
   });
 

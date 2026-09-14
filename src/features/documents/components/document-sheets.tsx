@@ -276,12 +276,14 @@ export function DocumentSheets({
                   size={signature.namePt}
                   className="text-foreground"
                 />
-                <CenteredLine
-                  text={PDF_SIGNATURE.caption}
-                  y={page.signatureY + signature.captionDy}
-                  size={signature.captionPt}
-                  className="text-muted-foreground"
-                />
+                {signature.caption && (
+                  <CenteredLine
+                    text={PDF_SIGNATURE.caption}
+                    y={page.signatureY + signature.captionDy}
+                    size={signature.captionPt}
+                    className="text-muted-foreground"
+                  />
+                )}
               </>
             )}
           </div>

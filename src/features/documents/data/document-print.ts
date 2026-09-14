@@ -111,12 +111,14 @@ function sheet(
           s.namePt,
           `${centered}color:#141414`,
         ) +
-        textAt(
-          PDF_SIGNATURE.caption,
-          page.signatureY + s.captionDy,
-          s.captionPt,
-          `${centered}color:#5a5a5a`,
-        );
+        (s.caption
+          ? textAt(
+              PDF_SIGNATURE.caption,
+              page.signatureY + s.captionDy,
+              s.captionPt,
+              `${centered}color:#5a5a5a`,
+            )
+          : "");
 
   return `<div class="folha" style="width:${mm(pageWidth)};height:${mm(pageHeight)}">
     ${letterhead ? letterheadFrame() : ""}
