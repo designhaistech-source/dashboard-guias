@@ -26,18 +26,35 @@ export const PDF_LAYOUT = {
  */
 export type DocumentPdfVariant = "default" | "letterhead";
 
-/** Papel timbrado: margens mais generosas e área de conteúdo ampla. */
-export const LETTERHEAD_LAYOUT = {
-  margin: 24,
-  /** Início do corpo, abaixo da marca centralizada. */
-  bodyStartY: 62,
-  /** Altura reservada ao rodapé timbrado. */
-  footerReserve: 42,
-  /** Faixa tricolor acima dos dados institucionais. */
-  footerBarY: 262,
-  logoHeight: 13,
-  logoWidth: 44,
+/** Folha física do papel timbrado: A5 retrato real (148 × 210 mm). */
+export const LETTERHEAD_PAGE = {
+  pageWidth: 148,
+  pageHeight: 210,
 } as const;
+
+/** Papel timbrado A5: composição proporcional ao A4 anterior. */
+export const LETTERHEAD_LAYOUT = {
+  margin: 14,
+  /** Início do corpo, abaixo da marca centralizada. */
+  bodyStartY: 44,
+  /** Altura reservada ao rodapé timbrado. */
+  footerReserve: 30,
+  /** Faixa tricolor acima dos dados institucionais. */
+  footerBarY: 184,
+  logoHeight: 10,
+  logoWidth: 34,
+  /** Marca gráfica suave no canto inferior direito. */
+  watermarkWidth: 55,
+  watermarkHeight: 65,
+  watermarkBottom: 18,
+} as const;
+
+/** Dimensões (mm) da folha conforme a variante. */
+export function pageSizeFor(variant: DocumentPdfVariant) {
+  return variant === "letterhead"
+    ? { pageWidth: LETTERHEAD_PAGE.pageWidth, pageHeight: LETTERHEAD_PAGE.pageHeight }
+    : { pageWidth: PDF_LAYOUT.pageWidth, pageHeight: PDF_LAYOUT.pageHeight };
+}
 
 /** Dados institucionais impressos no rodapé do papel timbrado. */
 export const LETTERHEAD_INSTITUTION = {
