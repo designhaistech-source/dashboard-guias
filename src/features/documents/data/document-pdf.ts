@@ -351,10 +351,11 @@ export async function downloadDocumentPdf(
   variant: DocumentPdfVariant = "default",
 ): Promise<string> {
   const pdf = createPdf(variant);
-  const pageWidth = pageSizeFor(variant).pageWidth;
+  const geometry = sheetGeometry(variant);
+  const pageWidth = geometry.page.pageWidth;
   const pages = layoutDocumentPdf(bodyHtml, variant);
   const letterhead = variant === "letterhead";
-  const margin = letterhead ? LETTERHEAD_LAYOUT.margin : PAGE_MARGIN;
+  const margin = geometry.margin;
   const [logo, watermark] = letterhead
     ? await Promise.all([
         loadImageDataUrl(letterheadLogoAsset.url),
