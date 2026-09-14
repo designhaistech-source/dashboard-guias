@@ -8,8 +8,10 @@ import {
   LETTERHEAD_BAR,
   LETTERHEAD_INSTITUTION,
   LETTERHEAD_LAYOUT,
+  LETTERHEAD_PAGE,
   PDF_LAYOUT,
   PDF_SIGNATURE,
+  pageSizeFor,
 } from "../data/document-pdf";
 
 /** Escala de exibição: pixels por milímetro da folha A4. */
