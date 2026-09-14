@@ -11,7 +11,7 @@ import {
   LETTERHEAD_PAGE,
   PDF_LAYOUT,
   PDF_SIGNATURE,
-  pageSizeFor,
+  sheetGeometry,
 } from "../data/document-pdf";
 
 /** Escala de exibição: pixels por milímetro da folha A4. */
