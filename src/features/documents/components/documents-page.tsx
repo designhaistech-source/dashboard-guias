@@ -1483,6 +1483,8 @@ function RequestTab({ onNewDocument }: { onNewDocument: () => void }) {
   const [data, setData] = useState(todayIso());
   const [cidade, setCidade] = useState("");
   const [html, setHtml] = useState("");
+  /** Folha timbrada sem conteúdo, para preenchimento manual após imprimir. */
+  const [blank, setBlank] = useState(false);
 
   const diagnostico =
     diagnosticoSelecionado || (CID10.find((c) => c.codigo === cid)?.descricao ?? "");
@@ -1628,8 +1630,8 @@ function RequestTab({ onNewDocument }: { onNewDocument: () => void }) {
           >
             <p className="text-sm text-muted-foreground">
               O documento sai no mesmo padrão A5 da Solicitação, com a logo HaisTech no topo,
-              grande área central livre, linha de assinatura com {PDF_SIGNATURE.name} —{" "}
-              {PDF_SIGNATURE.council}, marca gráfica e rodapé institucional.
+              grande área central livre, linha de assinatura com {CURRENT_USER.name} —{" "}
+              {CURRENT_USER.crm}, marca gráfica e rodapé institucional.
             </p>
           </SurfaceCard>
         ) : (
