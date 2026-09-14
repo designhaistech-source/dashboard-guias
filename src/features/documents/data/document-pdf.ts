@@ -265,20 +265,20 @@ function drawLetterhead(pdf: jsPDF, logo: string | null, watermark: string | nul
   const barWidth = pageWidth / 3;
   LETTERHEAD_BAR.forEach(([r, g, b], index) => {
     pdf.setFillColor(r, g, b);
-    pdf.rect(index * barWidth, footerBarY, barWidth + 0.2, 1.8, "F");
+    pdf.rect(index * barWidth, footerBarY, barWidth + 0.2, 1.4, "F");
   });
 
   // Dados institucionais em duas colunas centralizadas.
   pdf.setFont("helvetica", "normal");
-  pdf.setFontSize(8.5);
+  pdf.setFontSize(6.5);
   pdf.setTextColor(60);
   const leftCenter = m + (pageWidth / 2 - m) / 2;
   const rightCenter = pageWidth / 2 + (pageWidth / 2 - m) / 2;
   LETTERHEAD_INSTITUTION.addressLines.forEach((line, index) => {
-    pdf.text(line, leftCenter, footerBarY + 8 + index * 5, { align: "center" });
+    pdf.text(line, leftCenter, footerBarY + 6 + index * 3.4, { align: "center" });
   });
   LETTERHEAD_INSTITUTION.contactLines.forEach((line, index) => {
-    pdf.text(line, rightCenter, footerBarY + 8 + index * 5, { align: "center" });
+    pdf.text(line, rightCenter, footerBarY + 6 + index * 3.4, { align: "center" });
   });
 }
 
