@@ -241,7 +241,10 @@ export function buildComparecimento({
   ].join("");
 }
 
-/** Abre a janela de impressão com o documento formatado (marca HaisGuias). */
+/**
+ * Abre a janela de impressão usando o MESMO template do PDF e da
+ * pré-visualização (buildPrintDocument), no tamanho físico da variante.
+ */
 export function printHtml(
   title: string,
   paciente: string,
