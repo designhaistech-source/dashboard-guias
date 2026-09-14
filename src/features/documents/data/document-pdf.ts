@@ -144,6 +144,11 @@ export function sheetGeometry(variant: DocumentPdfVariant) {
 
 /** Espaço reservado (mm) entre o fim do conteúdo e a linha de assinatura. */
 const SIGNATURE_GAP = 18;
+/**
+ * Folga (mm) entre o bloco de assinatura do timbrado e a marca gráfica/rodapé,
+ * para que a assinatura não se misture à identidade visual.
+ */
+const LETTERHEAD_SIGNATURE_CLEARANCE = 16;
 /** Altura total (mm) do bloco de assinatura: linha + nome + CRM + legenda. */
 const SIGNATURE_BLOCK_HEIGHT = 20;
 
