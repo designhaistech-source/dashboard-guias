@@ -32,6 +32,27 @@ export const LETTERHEAD_PAGE = {
   pageHeight: 210,
 } as const;
 
+/**
+ * Formato exato passado ao jsPDF, em mm. Usar os números em vez do apelido
+ * "a5" evita a diferença de arredondamento do alias (148,17 × 209,98), que
+ * fazia o visualizador reescalar a folha ao imprimir.
+ */
+const LETTERHEAD_FORMAT: [number, number] = [
+  LETTERHEAD_PAGE.pageWidth,
+  LETTERHEAD_PAGE.pageHeight,
+];
+const A4_FORMAT: [number, number] = [PDF_LAYOUT.pageWidth, PDF_LAYOUT.pageHeight];
+
+/** Cria o documento jsPDF já com a folha física correta da variante. */
+function createPdf(variant: DocumentPdfVariant): jsPDF {
+  return new jsPDF({
+    unit: "mm",
+    format: variant === "letterhead" ? LETTERHEAD_FORMAT : A4_FORMAT,
+    orientation: "portrait",
+    compress: true,
+  });
+}
+
 /** Papel timbrado A5: composição proporcional ao A4 anterior. */
 export const LETTERHEAD_LAYOUT = {
   margin: 14,
