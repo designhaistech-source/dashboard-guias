@@ -1696,19 +1696,22 @@ function RequestTab({ onNewDocument }: { onNewDocument: () => void }) {
             />
           }
         />
+          </>
+        )}
       </div>
 
       <DocumentActions
         title="Solicitação"
-        html={previewHtml}
-        paciente={paciente}
+        html={blank ? "" : previewHtml}
+        paciente={blank ? "" : paciente}
         pacienteFieldId="solicitacao-paciente"
         type="Solicitação"
         issuedDoc={issuedDoc}
         onIssued={setIssuedDoc}
         onNewDocument={onNewDocument}
-        issues={issues}
-        onSaveTemplate={requestSaveTemplate}
+        issues={blank ? [] : issues}
+        blankSheet={blank}
+        onSaveTemplate={blank ? undefined : requestSaveTemplate}
       />
 
       {saveDialog}
