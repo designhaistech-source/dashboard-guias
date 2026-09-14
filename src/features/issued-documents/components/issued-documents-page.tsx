@@ -50,6 +50,14 @@ function variantFor(doc: IssuedDocument) {
   return documentTemplateFor(doc.type);
 }
 
+/**
+ * Rótulo do paciente na listagem. Folhas em branco são emitidas sem paciente
+ * (o médico preenche à mão), por isso recebem uma identificação própria.
+ */
+function patientLabel(doc: IssuedDocument): string {
+  return doc.patient.trim() || "Em branco";
+}
+
 const EMPTY_FILTERS = {
   query: "",
   type: "",
