@@ -1653,7 +1653,11 @@ function RequestTab({ onNewDocument }: { onNewDocument: () => void }) {
         <RichTextEditor
           readOnly={locked}
           ariaLabel="Texto da solicitação médica"
-          pagePreview={{ title: "Solicitação", paciente, variant: "letterhead" }}
+          pagePreview={{
+            title: "Solicitação",
+            paciente,
+            variant: documentTemplateFor("Solicitação"),
+          }}
           value={conteudo}
           onChange={setHtml}
           onImproveWithAi={improve}
