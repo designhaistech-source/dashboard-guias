@@ -181,8 +181,8 @@ export function DocumentSheets({
           <div
             className="relative shrink-0 overflow-hidden rounded-sm border border-border bg-card shadow-sm"
             style={{
-              width: mm(PDF_LAYOUT.pageWidth),
-              height: mm(PDF_LAYOUT.pageHeight),
+              width: mm(sheet.pageWidth),
+              height: mm(sheet.pageHeight),
             }}
           >
             {letterhead && <LetterheadFrame />}
