@@ -319,6 +319,7 @@ export function RichTextEditor({
             title={pagePreview.title}
             paciente={pagePreview.paciente}
             html={previewHtml ?? value}
+            variant={pagePreview.variant}
           />
         )}
 
