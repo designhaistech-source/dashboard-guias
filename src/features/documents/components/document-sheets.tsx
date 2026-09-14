@@ -149,6 +149,7 @@ export function useDocumentPages(
   html: string,
   enabled = true,
   variant: "default" | "letterhead" = "default",
+  paciente = "",
 ): DocumentPdfPage[] | null {
   const [pages, setPages] = useState<DocumentPdfPage[] | null>(null);
 
@@ -159,12 +160,12 @@ export function useDocumentPages(
     }
     let active = true;
     void import("../data/document-pdf").then(({ layoutDocumentPdf }) => {
-      if (active) setPages(layoutDocumentPdf(html, variant));
+      if (active) setPages(layoutDocumentPdf(html, variant, paciente));
     });
     return () => {
       active = false;
     };
-  }, [enabled, html, variant]);
+  }, [enabled, html, variant, paciente]);
 
   return pages;
 }

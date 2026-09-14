@@ -136,7 +136,7 @@ export function buildPrintDocument(
   variant: DocumentPdfVariant = "default",
 ): string {
   const { pageWidth, pageHeight } = sheetGeometry(variant).page;
-  const pages = layoutDocumentPdf(bodyHtml, variant);
+  const pages = layoutDocumentPdf(bodyHtml, variant, paciente);
   const size = `${pageWidth}mm ${pageHeight}mm`;
 
   return `<!doctype html><html lang="pt-BR"><head><meta charset="utf-8" />

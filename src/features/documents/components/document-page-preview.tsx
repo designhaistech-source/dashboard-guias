@@ -26,7 +26,7 @@ export function DocumentPagePreview({
   /** "letterhead": folha timbrada de consultório. */
   variant?: "default" | "letterhead";
 }) {
-  const pages = useDocumentPages(html, open, variant);
+  const pages = useDocumentPages(html, open, variant, paciente);
   const total = pages?.length ?? 0;
   // A Solicitação (timbrado) usa folha A5 real; os demais documentos, A4.
   const formato = paperFormatLabel(variant);

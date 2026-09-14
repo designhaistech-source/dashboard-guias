@@ -361,7 +361,7 @@ function IssuedDocumentModal({
   onPrint,
 }: { doc: IssuedDocument | null; onClose: () => void } & DocumentActions) {
   const variant = doc ? variantFor(doc) : "default";
-  const pages = useDocumentPages(doc?.body ?? "", doc !== null, variant);
+  const pages = useDocumentPages(doc?.body ?? "", doc !== null, variant, doc?.patient ?? "");
   const total = pages?.length ?? 0;
   const formato = paperFormatLabel(variant);
 

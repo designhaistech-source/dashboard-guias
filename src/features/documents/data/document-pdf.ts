@@ -144,6 +144,11 @@ export function sheetGeometry(variant: DocumentPdfVariant) {
 
 /** Espaço reservado (mm) entre o fim do conteúdo e a linha de assinatura. */
 const SIGNATURE_GAP = 18;
+/**
+ * Folga (mm) entre o bloco de assinatura do timbrado e a marca gráfica/rodapé,
+ * para que a assinatura não se misture à identidade visual.
+ */
+const LETTERHEAD_SIGNATURE_CLEARANCE = 16;
 /** Altura total (mm) do bloco de assinatura: linha + nome + CRM + legenda. */
 const SIGNATURE_BLOCK_HEIGHT = 20;
 
@@ -221,6 +226,8 @@ function metricsFor(variant: DocumentPdfVariant) {
 export function layoutDocumentPdf(
   bodyHtml: string,
   variant: DocumentPdfVariant = "default",
+  /** Nome do paciente: abre o conteúdo do timbrado, sem rótulo. */
+  paciente = "",
 ): DocumentPdfPage[] {
   const letterhead = variant === "letterhead";
   const pdf = createPdf(variant);
@@ -234,7 +241,10 @@ export function layoutDocumentPdf(
   const pages: DocumentPdfPage[] = [{ lines: [] }];
   let cursorY = m.bodyStartY;
 
-  for (const paragraph of htmlToParagraphs(bodyHtml)) {
+  const paragraphs = htmlToParagraphs(bodyHtml);
+  const opening = letterhead && paciente.trim() ? [paciente.trim()] : [];
+
+  for (const paragraph of [...opening, ...paragraphs]) {
     const lines = pdf.splitTextToSize(paragraph, contentWidth) as string[];
     for (const line of lines) {
       if (cursorY > m.bottomLimit) {
@@ -259,7 +269,7 @@ export function layoutDocumentPdf(
   // No timbrado a assinatura fica ancorada na região inferior da folha (logo
   // acima do rodapé), com espaço em branco livre acima da linha para assinar.
   if (letterhead) {
-    const anchorY = signatureLimit - block;
+    const anchorY = signatureLimit - block - LETTERHEAD_SIGNATURE_CLEARANCE;
     if (anchorY >= cursorY + gap) {
       pages[pages.length - 1].signatureY = anchorY;
     } else {
@@ -368,7 +378,7 @@ export async function downloadDocumentPdf(
   const pdf = createPdf(variant);
   const geometry = sheetGeometry(variant);
   const pageWidth = geometry.page.pageWidth;
-  const pages = layoutDocumentPdf(bodyHtml, variant);
+  const pages = layoutDocumentPdf(bodyHtml, variant, paciente);
   const letterhead = variant === "letterhead";
   const margin = geometry.margin;
   const [logo, watermark] = letterhead
