@@ -30,7 +30,7 @@ import {
   DataTableRoot,
   DataTableRow,
 } from "@/components/data-table";
-import { printDocumentHtml } from "@/features/documents";
+import { printDocumentHtml, type DocumentPdfVariant } from "@/features/documents";
 import {
   ISSUED_DOCUMENT_TYPES,
   formatIssuedDocumentDate,
