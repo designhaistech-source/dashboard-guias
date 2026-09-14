@@ -265,75 +265,8 @@ export function printHtml(
   const doc = frame.contentDocument;
   if (!doc) return;
 
-  const nomeMedico = `Dr(a). ${CURRENT_USER.name.replace(/^Dr\.?a?\.?\s*/i, "")}`;
-
-  const letterhead = `<!doctype html><html lang="pt-BR"><head><meta charset="utf-8" />
-<title>${title}</title>
-<style>
-  /* A5 real: a página física é 148mm x 210mm, não um A4 reduzido. */
-  @page { size: 148mm 210mm; margin: 0; }
-  html, body { width: 148mm; height: 210mm; margin: 0; padding: 0; }
-  @media print {
-    html, body { width: 148mm; height: 210mm; margin: 0; padding: 0; }
-  }
-  body { font-family: Arial, Helvetica, sans-serif; color: #111; line-height: 1.6; }
-  .folha { position: relative; box-sizing: border-box; width: 148mm; height: 210mm; padding: 14mm 14mm 34mm 14mm; overflow: hidden; }
-  .marca-agua { position: absolute; right: 0; bottom: 18mm; width: 55mm; height: 65mm; }
-  .timbre { text-align: center; }
-  .timbre img { height: 10mm; display: inline-block; }
-  .conteudo { position: relative; margin-top: 12mm; font-size: 11px; }
-  .conteudo p { margin: 0 0 8px; }
-  .assinatura { position: relative; margin-top: 16mm; text-align: center; font-size: 10px; }
-  .assinatura span { display: block; border-top: 1px solid #333; padding-top: 4px; width: 52mm; margin: 0 auto; }
-  .assinatura small { display: block; margin-top: 2px; color: #555; font-size: 8px; }
-  .faixa { position: absolute; left: 0; right: 0; bottom: 24.6mm; display: flex; height: 1.4mm; }
-  .faixa i { flex: 1; }
-  .rodape { position: absolute; left: 14mm; right: 14mm; bottom: 9mm; display: flex; font-size: 6.5px; color: #3c3c3c; line-height: 1.5; }
-  .rodape div { flex: 1; text-align: center; }
-</style></head><body>
-<div class="folha">
-  <img class="marca-agua" src="${watermarkUrl}" alt="" aria-hidden="true" />
-  <header class="timbre"><img src="${letterheadLogoUrl}" alt="HaisTech" /></header>
-  <main class="conteudo">${bodyHtml}</main>
-  <div class="assinatura">
-    <span>${nomeMedico}</span>
-    <small>${CURRENT_USER.crm}</small>
-    <small>Assinatura e carimbo</small>
-  </div>
-  <div class="faixa"><i style="background:#125794"></i><i style="background:#5caafd"></i><i style="background:#94c08f"></i></div>
-  <footer class="rodape">
-    <div>Av. Senador Salgado Filho, 3000 - Bloco Reitoria<br />59078-900 - Lagoa Nova - Natal/RN<br />SALA - B418</div>
-    <div>CNPJ: 54.128.652/0001-35<br />haisolutionsbr@gmail.com<br />(84) 99640-5345</div>
-  </footer>
-</div>
-</body></html>`;
-
-  const padrao = `<!doctype html><html lang="pt-BR"><head><meta charset="utf-8" />
-<title>${title}</title>
-<style>
-  /* margin: 0 remove cabeçalho/rodapé automático do navegador (URL e data) */
-  @page { size: A4; margin: 0; }
-  html, body { margin: 0; }
-  body { font-family: Arial, Helvetica, sans-serif; color: #111; padding: 20mm; line-height: 1.6; }
-  h1 { font-size: 18px; text-transform: uppercase; letter-spacing: .06em; text-align: center; }
-  .paciente { font-size: 13px; margin-bottom: 24px; text-align: center; color: #444; }
-  .assinatura { margin-top: 72px; text-align: center; font-size: 13px; }
-  .assinatura span { display: block; border-top: 1px solid #111; padding-top: 6px; width: 260px; margin: 0 auto; }
-  .marca { display: flex; align-items: center; justify-content: center; gap: 10px; padding-bottom: 12px; margin-bottom: 20px; border-bottom: 1px solid #ddd; }
-  .marca img { height: 34px; }
-  .assinatura small { display: block; margin-top: 4px; color: #555; font-size: 11px; }
-
-</style></head><body>
-
-<div class="marca"><img src="${logoUrl}" alt="HaisGuias" /></div>
-<h1>${title}</h1>
-<p class="paciente">Paciente: ${paciente || "—"}</p>
-${bodyHtml}
-<div class="assinatura"><span>${CURRENT_USER.name}</span><small>${CURRENT_USER.crm}</small><small>Assinatura e carimbo do profissional</small></div>
-</body></html>`;
-
   doc.open();
-  doc.write(variant === "letterhead" ? letterhead : padrao);
+  doc.write(buildPrintDocument(title, paciente, bodyHtml, variant));
   doc.close();
 
   // Espera todas as imagens do timbre carregarem antes de imprimir.
