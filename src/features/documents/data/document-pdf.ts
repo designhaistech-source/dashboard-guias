@@ -26,18 +26,35 @@ export const PDF_LAYOUT = {
  */
 export type DocumentPdfVariant = "default" | "letterhead";
 
-/** Papel timbrado: margens mais generosas e área de conteúdo ampla. */
-export const LETTERHEAD_LAYOUT = {
-  margin: 24,
-  /** Início do corpo, abaixo da marca centralizada. */
-  bodyStartY: 62,
-  /** Altura reservada ao rodapé timbrado. */
-  footerReserve: 42,
-  /** Faixa tricolor acima dos dados institucionais. */
-  footerBarY: 262,
-  logoHeight: 13,
-  logoWidth: 44,
+/** Folha física do papel timbrado: A5 retrato real (148 × 210 mm). */
+export const LETTERHEAD_PAGE = {
+  pageWidth: 148,
+  pageHeight: 210,
 } as const;
+
+/** Papel timbrado A5: composição proporcional ao A4 anterior. */
+export const LETTERHEAD_LAYOUT = {
+  margin: 14,
+  /** Início do corpo, abaixo da marca centralizada. */
+  bodyStartY: 44,
+  /** Altura reservada ao rodapé timbrado. */
+  footerReserve: 30,
+  /** Faixa tricolor acima dos dados institucionais. */
+  footerBarY: 184,
+  logoHeight: 10,
+  logoWidth: 34,
+  /** Marca gráfica suave no canto inferior direito. */
+  watermarkWidth: 55,
+  watermarkHeight: 65,
+  watermarkBottom: 18,
+} as const;
+
+/** Dimensões (mm) da folha conforme a variante. */
+export function pageSizeFor(variant: DocumentPdfVariant) {
+  return variant === "letterhead"
+    ? { pageWidth: LETTERHEAD_PAGE.pageWidth, pageHeight: LETTERHEAD_PAGE.pageHeight }
+    : { pageWidth: PDF_LAYOUT.pageWidth, pageHeight: PDF_LAYOUT.pageHeight };
+}
 
 /** Dados institucionais impressos no rodapé do papel timbrado. */
 export const LETTERHEAD_INSTITUTION = {
@@ -123,8 +140,8 @@ function metricsFor(variant: DocumentPdfVariant) {
     return {
       margin: LETTERHEAD_LAYOUT.margin,
       bodyStartY: LETTERHEAD_LAYOUT.bodyStartY,
-      bottomLimit: PDF_LAYOUT.pageHeight - LETTERHEAD_LAYOUT.footerReserve - 12,
-      topY: LETTERHEAD_LAYOUT.bodyStartY - 12,
+      bottomLimit: LETTERHEAD_PAGE.pageHeight - LETTERHEAD_LAYOUT.footerReserve - 8,
+      topY: LETTERHEAD_LAYOUT.bodyStartY - 8,
     };
   }
   return {
@@ -143,8 +160,13 @@ export function layoutDocumentPdf(
   bodyHtml: string,
   variant: DocumentPdfVariant = "default",
 ): DocumentPdfPage[] {
-  const pdf = new jsPDF({ unit: "mm", format: "a4", orientation: "portrait" });
-  const { pageHeight, pageWidth } = PDF_LAYOUT;
+  const letterhead = variant === "letterhead";
+  const pdf = new jsPDF({
+    unit: "mm",
+    format: letterhead ? "a5" : "a4",
+    orientation: "portrait",
+  });
+  const { pageHeight, pageWidth } = pageSizeFor(variant);
   const m = metricsFor(variant);
   const contentWidth = pageWidth - m.margin * 2;
 
@@ -170,11 +192,14 @@ export function layoutDocumentPdf(
   // A assinatura segue o fluxo do conteúdo: apenas o espaço da assinatura
   // manuscrita a separa do texto/data. Se o bloco não couber inteiro na
   // página, ele vai completo para a próxima (sem páginas em branco extras).
-  const signatureY = cursorY + SIGNATURE_GAP;
-  const signatureLimit =
-    variant === "letterhead" ? pageHeight - LETTERHEAD_LAYOUT.footerReserve : pageHeight - PAGE_MARGIN;
-  if (signatureY + SIGNATURE_BLOCK_HEIGHT > signatureLimit) {
-    pages.push({ lines: [], signatureY: m.topY + SIGNATURE_GAP });
+  const gap = letterhead ? 12 : SIGNATURE_GAP;
+  const block = letterhead ? 16 : SIGNATURE_BLOCK_HEIGHT;
+  const signatureY = cursorY + gap;
+  const signatureLimit = letterhead
+    ? pageHeight - LETTERHEAD_LAYOUT.footerReserve
+    : pageHeight - PAGE_MARGIN;
+  if (signatureY + block > signatureLimit) {
+    pages.push({ lines: [], signatureY: m.topY + gap });
   } else {
     pages[pages.length - 1].signatureY = signatureY;
   }
@@ -204,49 +229,63 @@ async function loadImageDataUrl(url: string): Promise<string | null> {
  * discreta no canto inferior direito e rodapé institucional com faixa tricolor.
  */
 function drawLetterhead(pdf: jsPDF, logo: string | null, watermark: string | null) {
-  const { pageWidth, pageHeight } = PDF_LAYOUT;
+  const { pageWidth, pageHeight } = LETTERHEAD_PAGE;
   const m = LETTERHEAD_LAYOUT.margin;
-  const { logoWidth, logoHeight, footerBarY } = LETTERHEAD_LAYOUT;
+  const {
+    logoWidth,
+    logoHeight,
+    footerBarY,
+    watermarkWidth,
+    watermarkHeight,
+    watermarkBottom,
+  } = LETTERHEAD_LAYOUT;
 
   // Marca d'água atrás de tudo (proporção original 292x346).
   if (watermark) {
-    pdf.addImage(watermark, "PNG", pageWidth - 78, pageHeight - 118, 78, 92);
+    pdf.addImage(
+      watermark,
+      "PNG",
+      pageWidth - watermarkWidth,
+      pageHeight - watermarkHeight - watermarkBottom,
+      watermarkWidth,
+      watermarkHeight,
+    );
   }
 
   if (logo) {
-    pdf.addImage(logo, "PNG", (pageWidth - logoWidth) / 2, 20, logoWidth, logoHeight);
+    pdf.addImage(logo, "PNG", (pageWidth - logoWidth) / 2, 14, logoWidth, logoHeight);
   } else {
     pdf.setFont("helvetica", "bold");
-    pdf.setFontSize(18);
+    pdf.setFontSize(15);
     pdf.setTextColor(18, 51, 82);
-    pdf.text("HaisTech", pageWidth / 2, 30, { align: "center" });
+    pdf.text("HaisTech", pageWidth / 2, 22, { align: "center" });
   }
 
   // Faixa tricolor da identidade, dividida em três blocos.
   const barWidth = pageWidth / 3;
   LETTERHEAD_BAR.forEach(([r, g, b], index) => {
     pdf.setFillColor(r, g, b);
-    pdf.rect(index * barWidth, footerBarY, barWidth + 0.2, 1.8, "F");
+    pdf.rect(index * barWidth, footerBarY, barWidth + 0.2, 1.4, "F");
   });
 
   // Dados institucionais em duas colunas centralizadas.
   pdf.setFont("helvetica", "normal");
-  pdf.setFontSize(8.5);
+  pdf.setFontSize(6.5);
   pdf.setTextColor(60);
   const leftCenter = m + (pageWidth / 2 - m) / 2;
   const rightCenter = pageWidth / 2 + (pageWidth / 2 - m) / 2;
   LETTERHEAD_INSTITUTION.addressLines.forEach((line, index) => {
-    pdf.text(line, leftCenter, footerBarY + 8 + index * 5, { align: "center" });
+    pdf.text(line, leftCenter, footerBarY + 6 + index * 3.4, { align: "center" });
   });
   LETTERHEAD_INSTITUTION.contactLines.forEach((line, index) => {
-    pdf.text(line, rightCenter, footerBarY + 8 + index * 5, { align: "center" });
+    pdf.text(line, rightCenter, footerBarY + 6 + index * 3.4, { align: "center" });
   });
 }
 
 /**
- * Gera e baixa o PDF do documento (A4 retrato). Na variante "letterhead" o
- * arquivo sai como papel timbrado de consultório, com o texto do editor como
- * elemento principal da página.
+ * Gera e baixa o PDF do documento. "default" sai em A4 retrato; "letterhead"
+ * sai em A5 retrato real (148 × 210 mm), como papel timbrado de consultório,
+ * com o texto do editor como elemento principal da página.
  * Retorna o nome do arquivo salvo.
  */
 export async function downloadDocumentPdf(
@@ -255,7 +294,11 @@ export async function downloadDocumentPdf(
   bodyHtml: string,
   variant: DocumentPdfVariant = "default",
 ): Promise<string> {
-  const pdf = new jsPDF({ unit: "mm", format: "a4", orientation: "portrait" });
+  const pdf = new jsPDF({
+    unit: "mm",
+    format: variant === "letterhead" ? "a5" : "a4",
+    orientation: "portrait",
+  });
   const pageWidth = pdf.internal.pageSize.getWidth();
   const pages = layoutDocumentPdf(bodyHtml, variant);
   const letterhead = variant === "letterhead";
@@ -296,23 +339,24 @@ export async function downloadDocumentPdf(
 
     if (page.signatureY !== undefined) {
       const signatureY = page.signatureY;
+      const halfLine = letterhead ? 26 : 35;
       pdf.setTextColor(20);
       pdf.setDrawColor(60);
       pdf.setLineWidth(0.2);
-      pdf.line(pageWidth / 2 - 35, signatureY, pageWidth / 2 + 35, signatureY);
-      pdf.setFontSize(10);
+      pdf.line(pageWidth / 2 - halfLine, signatureY, pageWidth / 2 + halfLine, signatureY);
+      pdf.setFontSize(letterhead ? 9 : 10);
       pdf.text(
         letterhead ? `Dr(a). ${PDF_SIGNATURE.name.replace(/^Dr\.?a?\.?\s*/i, "")}` : PDF_SIGNATURE.name,
         pageWidth / 2,
-        signatureY + 5,
+        signatureY + (letterhead ? 4 : 5),
         { align: "center" },
       );
-      pdf.text(PDF_SIGNATURE.council, pageWidth / 2, signatureY + 10, {
+      pdf.text(PDF_SIGNATURE.council, pageWidth / 2, signatureY + (letterhead ? 8 : 10), {
         align: "center",
       });
-      pdf.setFontSize(9);
+      pdf.setFontSize(letterhead ? 8 : 9);
       pdf.setTextColor(90);
-      pdf.text(PDF_SIGNATURE.caption, pageWidth / 2, signatureY + 16, {
+      pdf.text(PDF_SIGNATURE.caption, pageWidth / 2, signatureY + (letterhead ? 12.5 : 16), {
         align: "center",
       });
     }

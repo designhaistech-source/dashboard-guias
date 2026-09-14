@@ -8,8 +8,10 @@ import {
   LETTERHEAD_BAR,
   LETTERHEAD_INSTITUTION,
   LETTERHEAD_LAYOUT,
+  LETTERHEAD_PAGE,
   PDF_LAYOUT,
   PDF_SIGNATURE,
+  pageSizeFor,
 } from "../data/document-pdf";
 
 /** Escala de exibição: pixels por milímetro da folha A4. */
@@ -48,11 +50,12 @@ function PageLine({
   );
 }
 
-/** Papel timbrado HaisTech na pré-visualização da folha. */
+/** Papel timbrado HaisTech (A5) na pré-visualização da folha. */
 function LetterheadFrame() {
   const m = LETTERHEAD_LAYOUT.margin;
   const barTop = LETTERHEAD_LAYOUT.footerBarY;
   const columnWidth = `calc(50% - ${mm(m)})`;
+  const { watermarkWidth, watermarkHeight, watermarkBottom } = LETTERHEAD_LAYOUT;
   return (
     <>
       <img
@@ -60,34 +63,39 @@ function LetterheadFrame() {
         alt=""
         aria-hidden
         className="absolute"
-        style={{ right: 0, top: mm(PDF_LAYOUT.pageHeight - 118), width: mm(78), height: mm(92) }}
+        style={{
+          right: 0,
+          top: mm(LETTERHEAD_PAGE.pageHeight - watermarkHeight - watermarkBottom),
+          width: mm(watermarkWidth),
+          height: mm(watermarkHeight),
+        }}
       />
       <img
         src={letterheadLogoAsset.url}
         alt="HaisTech"
         className="absolute left-1/2 -translate-x-1/2"
-        style={{ top: mm(20), height: mm(LETTERHEAD_LAYOUT.logoHeight) }}
+        style={{ top: mm(14), height: mm(LETTERHEAD_LAYOUT.logoHeight) }}
       />
       <span className="absolute flex" style={{ left: 0, right: 0, top: mm(barTop) }}>
         {LETTERHEAD_BAR.map(([r, g, b], index) => (
           <span
             key={index}
             className="flex-1"
-            style={{ height: mm(1.8), backgroundColor: `rgb(${r} ${g} ${b})` }}
+            style={{ height: mm(1.4), backgroundColor: `rgb(${r} ${g} ${b})` }}
           />
         ))}
       </span>
       <div
-        className="absolute flex flex-col items-center gap-[2px] text-center text-foreground"
-        style={{ left: mm(m), top: mm(barTop + 5), width: columnWidth, fontSize: mm(8.5 * PT_TO_MM) }}
+        className="absolute flex flex-col items-center gap-[1px] text-center text-foreground"
+        style={{ left: mm(m), top: mm(barTop + 4), width: columnWidth, fontSize: mm(6.5 * PT_TO_MM) }}
       >
         {LETTERHEAD_INSTITUTION.addressLines.map((line) => (
           <span key={line}>{line}</span>
         ))}
       </div>
       <div
-        className="absolute flex flex-col items-center gap-[2px] text-center text-foreground"
-        style={{ right: mm(m), top: mm(barTop + 5), width: columnWidth, fontSize: mm(8.5 * PT_TO_MM) }}
+        className="absolute flex flex-col items-center gap-[1px] text-center text-foreground"
+        style={{ right: mm(m), top: mm(barTop + 4), width: columnWidth, fontSize: mm(6.5 * PT_TO_MM) }}
       >
         {LETTERHEAD_INSTITUTION.contactLines.map((line) => (
           <span key={line}>{line}</span>
@@ -158,6 +166,9 @@ export function DocumentSheets({
   const signatureName = letterhead
     ? `Dr(a). ${PDF_SIGNATURE.name.replace(/^Dr\.?a?\.?\s*/i, "")}`
     : PDF_SIGNATURE.name;
+  // A folha da Solicitação é A5 real (148 × 210 mm); os demais documentos, A4.
+  const sheet = pageSizeFor(variant);
+
 
   return (
     <div
@@ -170,8 +181,8 @@ export function DocumentSheets({
           <div
             className="relative shrink-0 overflow-hidden rounded-sm border border-border bg-card shadow-sm"
             style={{
-              width: mm(PDF_LAYOUT.pageWidth),
-              height: mm(PDF_LAYOUT.pageHeight),
+              width: mm(sheet.pageWidth),
+              height: mm(sheet.pageHeight),
             }}
           >
             {letterhead && <LetterheadFrame />}

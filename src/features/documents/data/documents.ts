@@ -267,21 +267,22 @@ export function printHtml(
   const letterhead = `<!doctype html><html lang="pt-BR"><head><meta charset="utf-8" />
 <title>${title}</title>
 <style>
-  @page { size: A4; margin: 0; }
+  /* A5 real: a página física é 148mm x 210mm, não um A4 reduzido. */
+  @page { size: A5 portrait; margin: 0; }
   html, body { margin: 0; }
-  body { font-family: Arial, Helvetica, sans-serif; color: #111; line-height: 1.7; }
-  .folha { position: relative; box-sizing: border-box; width: 210mm; min-height: 297mm; padding: 20mm 24mm 46mm 24mm; overflow: hidden; }
-  .marca-agua { position: absolute; right: 0; bottom: 26mm; width: 78mm; height: 92mm; }
+  body { font-family: Arial, Helvetica, sans-serif; color: #111; line-height: 1.6; }
+  .folha { position: relative; box-sizing: border-box; width: 148mm; height: 210mm; padding: 14mm 14mm 34mm 14mm; overflow: hidden; }
+  .marca-agua { position: absolute; right: 0; bottom: 18mm; width: 55mm; height: 65mm; }
   .timbre { text-align: center; }
-  .timbre img { height: 13mm; display: inline-block; }
-  .conteudo { position: relative; margin-top: 18mm; font-size: 13px; }
-  .conteudo p { margin: 0 0 10px; }
-  .assinatura { position: relative; margin-top: 26mm; text-align: center; font-size: 12px; }
-  .assinatura span { display: block; border-top: 1px solid #333; padding-top: 5px; width: 68mm; margin: 0 auto; }
-  .assinatura small { display: block; margin-top: 3px; color: #555; font-size: 10px; }
-  .faixa { position: absolute; left: 0; right: 0; bottom: 33mm; display: flex; height: 1.8mm; }
+  .timbre img { height: 10mm; display: inline-block; }
+  .conteudo { position: relative; margin-top: 12mm; font-size: 11px; }
+  .conteudo p { margin: 0 0 8px; }
+  .assinatura { position: relative; margin-top: 16mm; text-align: center; font-size: 10px; }
+  .assinatura span { display: block; border-top: 1px solid #333; padding-top: 4px; width: 52mm; margin: 0 auto; }
+  .assinatura small { display: block; margin-top: 2px; color: #555; font-size: 8px; }
+  .faixa { position: absolute; left: 0; right: 0; bottom: 24.6mm; display: flex; height: 1.4mm; }
   .faixa i { flex: 1; }
-  .rodape { position: absolute; left: 24mm; right: 24mm; bottom: 12mm; display: flex; font-size: 8.5px; color: #3c3c3c; line-height: 1.5; }
+  .rodape { position: absolute; left: 14mm; right: 14mm; bottom: 9mm; display: flex; font-size: 6.5px; color: #3c3c3c; line-height: 1.5; }
   .rodape div { flex: 1; text-align: center; }
 </style></head><body>
 <div class="folha">
