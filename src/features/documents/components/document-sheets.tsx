@@ -50,6 +50,34 @@ function PageLine({
   );
 }
 
+/** Texto centralizado na folha, posicionado pela linha de base como no PDF. */
+function CenteredLine({
+  text,
+  y,
+  size,
+  className,
+}: {
+  text: string;
+  y: number;
+  size: number;
+  className?: string;
+}) {
+  const heightMm = size * PT_TO_MM;
+  return (
+    <span
+      className={`absolute left-0 right-0 text-center ${className ?? ""}`}
+      style={{
+        top: mm(y - heightMm * 0.8),
+        fontFamily: "Helvetica, Arial, sans-serif",
+        fontSize: mm(heightMm),
+        lineHeight: 1.1,
+      }}
+    >
+      {text}
+    </span>
+  );
+}
+
 /** Papel timbrado HaisTech (A5) na pré-visualização da folha. */
 function LetterheadFrame() {
   const m = LETTERHEAD_LAYOUT.margin;
