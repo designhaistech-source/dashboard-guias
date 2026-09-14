@@ -250,12 +250,25 @@ export function layoutDocumentPdf(
   // A assinatura segue o fluxo do conteúdo: apenas o espaço da assinatura
   // manuscrita a separa do texto/data. Se o bloco não couber inteiro na
   // página, ele vai completo para a próxima (sem páginas em branco extras).
-  const gap = letterhead ? 12 : SIGNATURE_GAP;
-  const block = letterhead ? 16 : SIGNATURE_BLOCK_HEIGHT;
-  const signatureY = cursorY + gap;
+  const gap = letterhead ? 24 : SIGNATURE_GAP;
+  const block = letterhead ? 12 : SIGNATURE_BLOCK_HEIGHT;
   const signatureLimit = letterhead
     ? pageHeight - LETTERHEAD_LAYOUT.footerReserve
     : pageHeight - PAGE_MARGIN;
+
+  // No timbrado a assinatura fica ancorada na região inferior da folha (logo
+  // acima do rodapé), com espaço em branco livre acima da linha para assinar.
+  if (letterhead) {
+    const anchorY = signatureLimit - block;
+    if (anchorY >= cursorY + gap) {
+      pages[pages.length - 1].signatureY = anchorY;
+    } else {
+      pages.push({ lines: [], signatureY: anchorY });
+    }
+    return pages;
+  }
+
+  const signatureY = cursorY + gap;
   if (signatureY + block > signatureLimit) {
     pages.push({ lines: [], signatureY: m.topY + gap });
   } else {
