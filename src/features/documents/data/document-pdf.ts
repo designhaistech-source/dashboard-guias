@@ -123,6 +123,8 @@ export function sheetGeometry(variant: DocumentPdfVariant) {
       councilDy: letterhead ? 8 : 10,
       captionPt: letterhead ? 8 : 9,
       captionDy: letterhead ? 12.5 : 16,
+      /** No timbrado não há legenda: apenas linha, nome e CRM. */
+      caption: !letterhead,
       /** No timbrado o nome sai como "Dr(a). ..."; no A4, o nome cadastrado. */
       name: letterhead
         ? `Dr(a). ${PDF_SIGNATURE.name.replace(/^Dr\.?a?\.?\s*/i, "")}`
