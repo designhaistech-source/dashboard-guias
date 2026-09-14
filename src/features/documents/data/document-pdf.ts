@@ -28,15 +28,32 @@ export type DocumentPdfVariant = "default" | "letterhead";
 /** Papel timbrado: margens mais generosas e área de conteúdo ampla. */
 export const LETTERHEAD_LAYOUT = {
   margin: 24,
-  /** Início do corpo, abaixo da faixa da marca. */
-  bodyStartY: 54,
+  /** Início do corpo, abaixo da marca centralizada. */
+  bodyStartY: 62,
   /** Altura reservada ao rodapé timbrado. */
-  footerReserve: 26,
-  /** Linha fina sob o cabeçalho. */
-  headerRuleY: 40,
-  logoHeight: 9,
-  logoWidth: 30,
+  footerReserve: 42,
+  /** Faixa tricolor acima dos dados institucionais. */
+  footerBarY: 262,
+  logoHeight: 13,
+  logoWidth: 44,
 } as const;
+
+/** Dados institucionais impressos no rodapé do papel timbrado. */
+export const LETTERHEAD_INSTITUTION = {
+  addressLines: [
+    "Av. Senador Salgado Filho, 3000 - Bloco Reitoria",
+    "59078-900 - Lagoa Nova - Natal/RN",
+    "SALA - B418",
+  ],
+  contactLines: ["CNPJ: 54.128.652/0001-35", "haisolutionsbr@gmail.com", "(84) 99640-5345"],
+} as const;
+
+/** Cores da faixa tricolor do rodapé (identidade HaisTech). */
+export const LETTERHEAD_BAR = [
+  [18, 87, 148],
+  [92, 170, 253],
+  [148, 192, 143],
+] as const;
 
 /** Dados do profissional usados no bloco de assinatura manual. */
 export const PDF_SIGNATURE = {
