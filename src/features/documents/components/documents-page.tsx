@@ -398,10 +398,14 @@ function DocumentActions({
     <>
       <FormActionBar
         stepsLabel="Etapas para emissão"
-        steps={[
-          { label: "Dados preenchidos", done: !hasIssues },
-          { label: "Texto do documento", done: temTexto },
-        ]}
+        steps={
+          blankSheet
+            ? [{ label: "Folha em branco pronta", done: true }]
+            : [
+                { label: "Dados preenchidos", done: !hasIssues },
+                { label: "Texto do documento", done: temTexto },
+              ]
+        }
 
         note={
           issuedDoc
