@@ -368,48 +368,42 @@ export async function downloadDocumentPdf(
 
     if (letterhead) {
       drawLetterhead(pdf, logo, watermark);
-    } else if (index === 0) {
+    } else if (index === 0 && geometry.header) {
+      const header = geometry.header;
       pdf.setFont("helvetica", "bold");
-      pdf.setFontSize(14);
-      pdf.text(title.toUpperCase(), pageWidth / 2, PDF_LAYOUT.titleY, {
-        align: "center",
-      });
+      pdf.setFontSize(header.titlePt);
+      pdf.text(title.toUpperCase(), pageWidth / 2, header.titleY, { align: "center" });
 
       pdf.setFont("helvetica", "normal");
-      pdf.setFontSize(10);
+      pdf.setFontSize(header.patientPt);
       pdf.setTextColor(90);
-      pdf.text(`Paciente: ${paciente || "—"}`, pageWidth / 2, PDF_LAYOUT.patientY, {
+      pdf.text(`Paciente: ${paciente || "—"}`, pageWidth / 2, header.patientY, {
         align: "center",
       });
     }
 
     pdf.setFont("helvetica", "normal");
     pdf.setTextColor(20);
-    pdf.setFontSize(11);
+    pdf.setFontSize(geometry.bodyPt);
     for (const line of page.lines) {
       pdf.text(line.text, margin, line.y);
     }
 
     if (page.signatureY !== undefined) {
       const signatureY = page.signatureY;
-      const halfLine = letterhead ? 26 : 35;
+      const s = geometry.signature;
       pdf.setTextColor(20);
       pdf.setDrawColor(60);
       pdf.setLineWidth(0.2);
-      pdf.line(pageWidth / 2 - halfLine, signatureY, pageWidth / 2 + halfLine, signatureY);
-      pdf.setFontSize(letterhead ? 9 : 10);
-      pdf.text(
-        letterhead ? `Dr(a). ${PDF_SIGNATURE.name.replace(/^Dr\.?a?\.?\s*/i, "")}` : PDF_SIGNATURE.name,
-        pageWidth / 2,
-        signatureY + (letterhead ? 4 : 5),
-        { align: "center" },
-      );
-      pdf.text(PDF_SIGNATURE.council, pageWidth / 2, signatureY + (letterhead ? 8 : 10), {
+      pdf.line(pageWidth / 2 - s.halfLine, signatureY, pageWidth / 2 + s.halfLine, signatureY);
+      pdf.setFontSize(s.namePt);
+      pdf.text(s.name, pageWidth / 2, signatureY + s.nameDy, { align: "center" });
+      pdf.text(PDF_SIGNATURE.council, pageWidth / 2, signatureY + s.councilDy, {
         align: "center",
       });
-      pdf.setFontSize(letterhead ? 8 : 9);
+      pdf.setFontSize(s.captionPt);
       pdf.setTextColor(90);
-      pdf.text(PDF_SIGNATURE.caption, pageWidth / 2, signatureY + (letterhead ? 12.5 : 16), {
+      pdf.text(PDF_SIGNATURE.caption, pageWidth / 2, signatureY + s.captionDy, {
         align: "center",
       });
     }
