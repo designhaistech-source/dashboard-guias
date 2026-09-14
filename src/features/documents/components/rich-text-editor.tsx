@@ -77,8 +77,11 @@ interface RichTextEditorProps {
   pendingVariables?: readonly string[];
   /** Valor atual de cada variável (ex.: { "@paciente": "Maria" }); usado ao inserir o chip. */
   variableValues?: Readonly<Record<string, string>>;
-  /** Quando informado, "Pré-visualizar" abre o documento paginado em A4 (só conferência). */
-  pagePreview?: { title: string; paciente: string };
+  /**
+   * Quando informado, "Pré-visualizar" abre o documento paginado (só conferência).
+   * "letterhead" usa a folha timbrada A5 da Solicitação; o padrão é A4.
+   */
+  pagePreview?: { title: string; paciente: string; variant?: "default" | "letterhead" };
   /** Documento já emitido: exibe o texto somente leitura, sem edição. */
   readOnly?: boolean;
 }
