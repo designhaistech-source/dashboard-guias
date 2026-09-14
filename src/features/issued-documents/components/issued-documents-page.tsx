@@ -363,7 +363,7 @@ function IssuedDocumentModal({
   const variant = doc ? variantFor(doc) : "default";
   const pages = useDocumentPages(doc?.body ?? "", doc !== null, variant);
   const total = pages?.length ?? 0;
-  const formato = variant === "letterhead" ? "A5" : "A4";
+  const formato = paperFormatLabel(variant);
 
   return (
     <AppModal
