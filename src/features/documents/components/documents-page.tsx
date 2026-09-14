@@ -56,6 +56,7 @@ import { useTextReplacement } from "./use-text-replacement";
 import { useGeneratedSync } from "./use-generated-sync";
 import { useDocumentTemplates } from "./use-document-templates";
 import type { SavedDocumentTemplate } from "../data/document-templates";
+import { documentTemplateFor } from "../data/document-paper";
 import {
   pendingVariables as findPendingVariables,
   resolveDocumentVariables,
@@ -1683,7 +1684,6 @@ function RequestTab({ onNewDocument }: { onNewDocument: () => void }) {
 
       <DocumentActions
         title="Solicitação"
-        variant="letterhead"
         html={previewHtml}
         paciente={paciente}
         pacienteFieldId="solicitacao-paciente"
