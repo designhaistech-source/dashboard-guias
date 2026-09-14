@@ -229,22 +229,36 @@ async function loadImageDataUrl(url: string): Promise<string | null> {
  * discreta no canto inferior direito e rodapé institucional com faixa tricolor.
  */
 function drawLetterhead(pdf: jsPDF, logo: string | null, watermark: string | null) {
-  const { pageWidth, pageHeight } = PDF_LAYOUT;
+  const { pageWidth, pageHeight } = LETTERHEAD_PAGE;
   const m = LETTERHEAD_LAYOUT.margin;
-  const { logoWidth, logoHeight, footerBarY } = LETTERHEAD_LAYOUT;
+  const {
+    logoWidth,
+    logoHeight,
+    footerBarY,
+    watermarkWidth,
+    watermarkHeight,
+    watermarkBottom,
+  } = LETTERHEAD_LAYOUT;
 
   // Marca d'água atrás de tudo (proporção original 292x346).
   if (watermark) {
-    pdf.addImage(watermark, "PNG", pageWidth - 78, pageHeight - 118, 78, 92);
+    pdf.addImage(
+      watermark,
+      "PNG",
+      pageWidth - watermarkWidth,
+      pageHeight - watermarkHeight - watermarkBottom,
+      watermarkWidth,
+      watermarkHeight,
+    );
   }
 
   if (logo) {
-    pdf.addImage(logo, "PNG", (pageWidth - logoWidth) / 2, 20, logoWidth, logoHeight);
+    pdf.addImage(logo, "PNG", (pageWidth - logoWidth) / 2, 14, logoWidth, logoHeight);
   } else {
     pdf.setFont("helvetica", "bold");
-    pdf.setFontSize(18);
+    pdf.setFontSize(15);
     pdf.setTextColor(18, 51, 82);
-    pdf.text("HaisTech", pageWidth / 2, 30, { align: "center" });
+    pdf.text("HaisTech", pageWidth / 2, 22, { align: "center" });
   }
 
   // Faixa tricolor da identidade, dividida em três blocos.
