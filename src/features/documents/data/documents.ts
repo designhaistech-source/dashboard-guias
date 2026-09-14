@@ -1,14 +1,6 @@
-import logoAsset from "@/assets/haisguias-logo.png.asset.json";
-
-import letterheadLogoAsset from "@/assets/haistech-logo.png.asset.json";
-import watermarkAsset from "@/assets/haistech-marca-agua.png.asset.json";
-
-const logoUrl = logoAsset.url;
-const letterheadLogoUrl = letterheadLogoAsset.url;
-const watermarkUrl = watermarkAsset.url;
-
 import { todayLocalIsoDate } from "@/lib/date";
-import { CURRENT_USER } from "@/lib/current-user";
+
+import { buildPrintDocument } from "./document-print";
 
 export interface ReportTemplate {
   value: string;
