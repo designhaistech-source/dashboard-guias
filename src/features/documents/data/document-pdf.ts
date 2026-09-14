@@ -339,23 +339,24 @@ export async function downloadDocumentPdf(
 
     if (page.signatureY !== undefined) {
       const signatureY = page.signatureY;
+      const halfLine = letterhead ? 26 : 35;
       pdf.setTextColor(20);
       pdf.setDrawColor(60);
       pdf.setLineWidth(0.2);
-      pdf.line(pageWidth / 2 - 35, signatureY, pageWidth / 2 + 35, signatureY);
-      pdf.setFontSize(10);
+      pdf.line(pageWidth / 2 - halfLine, signatureY, pageWidth / 2 + halfLine, signatureY);
+      pdf.setFontSize(letterhead ? 9 : 10);
       pdf.text(
         letterhead ? `Dr(a). ${PDF_SIGNATURE.name.replace(/^Dr\.?a?\.?\s*/i, "")}` : PDF_SIGNATURE.name,
         pageWidth / 2,
-        signatureY + 5,
+        signatureY + (letterhead ? 4 : 5),
         { align: "center" },
       );
-      pdf.text(PDF_SIGNATURE.council, pageWidth / 2, signatureY + 10, {
+      pdf.text(PDF_SIGNATURE.council, pageWidth / 2, signatureY + (letterhead ? 8 : 10), {
         align: "center",
       });
-      pdf.setFontSize(9);
+      pdf.setFontSize(letterhead ? 8 : 9);
       pdf.setTextColor(90);
-      pdf.text(PDF_SIGNATURE.caption, pageWidth / 2, signatureY + 16, {
+      pdf.text(PDF_SIGNATURE.caption, pageWidth / 2, signatureY + (letterhead ? 12.5 : 16), {
         align: "center",
       });
     }
