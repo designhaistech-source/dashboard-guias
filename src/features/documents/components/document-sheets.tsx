@@ -86,16 +86,28 @@ function LetterheadFrame() {
         ))}
       </span>
       <div
-        className="absolute flex flex-col items-center gap-[1px] text-center text-foreground"
-        style={{ left: mm(m), top: mm(barTop + 4), width: columnWidth, fontSize: mm(6.5 * PT_TO_MM) }}
+        className="absolute flex flex-col items-center text-center text-foreground"
+        style={{
+          left: mm(m),
+          top: mm(barTop + 4),
+          width: columnWidth,
+          fontSize: mm(6.5 * PT_TO_MM),
+          rowGap: "1px",
+        }}
       >
         {LETTERHEAD_INSTITUTION.addressLines.map((line) => (
           <span key={line}>{line}</span>
         ))}
       </div>
       <div
-        className="absolute flex flex-col items-center gap-[1px] text-center text-foreground"
-        style={{ right: mm(m), top: mm(barTop + 4), width: columnWidth, fontSize: mm(6.5 * PT_TO_MM) }}
+        className="absolute flex flex-col items-center text-center text-foreground"
+        style={{
+          right: mm(m),
+          top: mm(barTop + 4),
+          width: columnWidth,
+          fontSize: mm(6.5 * PT_TO_MM),
+          rowGap: "1px",
+        }}
       >
         {LETTERHEAD_INSTITUTION.contactLines.map((line) => (
           <span key={line}>{line}</span>
