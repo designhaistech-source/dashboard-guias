@@ -329,15 +329,19 @@ ${bodyHtml}
   doc.write(variant === "letterhead" ? letterhead : padrao);
   doc.close();
 
-  // Espera a logo carregar para que o cabeçalho saia impresso.
-  const logo = doc.querySelector("img");
-  const ready =
-    logo && !logo.complete
-      ? new Promise<void>((resolve) => {
-          logo.addEventListener("load", () => resolve(), { once: true });
-          logo.addEventListener("error", () => resolve(), { once: true });
-        })
-      : Promise.resolve();
+  // Espera todas as imagens do timbre carregarem antes de imprimir.
+  const images = Array.from(doc.querySelectorAll("img"));
+  const ready = Promise.all(
+    images
+      .filter((image) => !image.complete)
+      .map(
+        (image) =>
+          new Promise<void>((resolve) => {
+            image.addEventListener("load", () => resolve(), { once: true });
+            image.addEventListener("error", () => resolve(), { once: true });
+          }),
+      ),
+  );
 
   void ready.then(() => {
     frame.contentWindow?.focus();
