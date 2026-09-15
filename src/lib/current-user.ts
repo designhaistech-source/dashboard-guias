@@ -9,7 +9,7 @@ export interface CurrentUser {
 }
 
 export const CURRENT_USER: CurrentUser = {
-  name: "Dr Fulano",
+  name: "Dr Fulano da Silva",
   crm: "CRM 1234/RN",
   email: "dr.fulano@haistech.com",
   specialty: "Clínica médica",
