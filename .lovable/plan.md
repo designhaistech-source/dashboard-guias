@@ -1,66 +1,58 @@
-## Objetivo
-Substituir a página densa de "Emitir prescrição" por um fluxo em 3 etapas (wizard), reduzindo a poluição visual sem perder funcionalidades existentes (autosave, histórico, kits, validações, receita especial, drag-and-drop, PDF).
+# Design System HaisTech — organização sem redesenho
 
-## Estrutura do wizard
+## Objetivo e limite
+Organizar a base existente para reutilização em outros produtos HaisTech, preservando a aparência, o layout e o comportamento de todas as telas, inclusive documentos impressos. Não trocar bibliotecas, fontes, cores ou componentes por alternativas novas.
 
-```text
-┌─────────────────────────────────────────────────────────┐
-│  Emitir prescrição                     [rascunho salvo] │
-│  ●──────────●──────────○                                │
-│  1 Paciente   2 Medicamentos   3 Revisar e emitir       │
-└─────────────────────────────────────────────────────────┘
-```
+## Diagnóstico inicial confirmado
+- Os tokens de cores e famílias tipográficas já estão centralizados em `src/styles.css`, com temas claro e escuro. Há papéis equivalentes com nomes diferentes (`text`/`foreground`, superfícies e cores de apoio); alguns deixam de ser equivalentes no tema escuro. Não serão fundidos automaticamente.
+- A documentação apresenta rótulos de campos como 14px e cor principal, mas `Field` utiliza 12px, peso 500, altura de linha `leading-snug` e cor de apoio. Documentar a implementação real, sem alterar os campos.
+- A página de referência descreve duas famílias, embora existam três: Plus Jakarta Sans, Vazirmatn e JetBrains Mono.
+- `Button` usa altura padrão de 36px; `Input` usa 40px em telas pequenas e 36px nas maiores. O checklist generaliza alturas iguais. Preservar a diferença e documentá-la.
+- `SurfaceCard` e `SectionCard` compartilham aparência básica, mas diferem em espaçamento, texto auxiliar e comportamento de expansão. Não são intercambiáveis sem análise.
+- O botão primário usa `primary/90` no estado de passagem do mouse, embora exista `primary-hover`. Trocar a referência mudaria a cor: fica pendente de aprovação específica.
+- Tamanhos, alturas de linha, sombras e parte dos raios dependem dos padrões do Tailwind. Precisam constar no catálogo com seus valores efetivos, sem aproximar medidas.
+- As verificações atuais de tokens e lint identificaram duas ocorrências de `max-w-[850px]` nos modais de guias de internação e guias emitidas. Uma referência compartilhada deve manter exatamente 850px.
 
-Header fino com:
-- Título + indicador discreto de autosave (só ícone + tooltip)
-- Stepper clicável (permite voltar a etapas já visitadas)
-- Botão "Histórico" e "Kits" recolhidos num menu "..."
+## Organização proposta
+### 1. Inventário completo e classificação
+Catalogar os componentes efetivamente usados, suas variantes, tamanhos, estados e dependências:
+- Botões e ações; inputs, selects, buscas, checkboxes, switches e demais campos.
+- Tabelas, paginação, cards, tags, badges e filtros.
+- Dropdowns, menus, modais, tooltips e navegação.
+- Sucesso, alerta, erro, carregamento, vazio, somente leitura e desabilitado.
+- Outros padrões reutilizáveis: cabeçalhos, barras de ação, indicadores de salvamento e composições de formulário.
 
-### Etapa 1 — Paciente
-- Nome, CPF, CEP, endereço (CPF/CEP/endereço só obrigatórios se Receita especial estiver ligada)
-- Toggle "Receituário especial" com explicação inline (tarja vermelha)
-- Botão "Continuar" desabilitado até nome preenchido (e demais campos se especial)
-- Sem painel de pendências no topo — validação inline por campo
+Separar **fundamentos**, **componentes básicos**, **composições compartilhadas** e **componentes específicos de produto**. Documentos A4/A5 e formulários TISS permanecem específicos do HaisGuias.
 
-### Etapa 2 — Medicamentos
-- Coluna única: busca em cima, resultados abaixo, receita montada em painel lateral colapsável (drawer à direita) OU abaixo em mobile
-- Chips de tipo movidos para dentro de um popover "Filtros" (mostra contador)
-- Cada resultado abre posologia inline (como hoje), mas sem sticky bar
-- Lista de medicamentos selecionados fica visível sempre com contador; drag-and-drop mantido
-- Botão "Continuar" mostra qtd. de itens
+### 2. Referência única dos fundamentos
+Manter uma única fonte dos valores de cor e tema. Organizar os estilos globais em seções ou módulos com importação central, preservando a ordem da cascata e todos os valores.
 
-### Etapa 3 — Revisar e emitir
-- Preview limpo da receita (paciente + itens numerados + posologias)
-- Se houver pendências (posologia inválida, campos faltando), aparecem como lista compacta com link "corrigir" que volta à etapa
-- Ações: **Imprimir**, **Baixar PDF**, **Salvar como kit** (recolhido em menu secundário)
-- Botão "Voltar" para etapa 2
+Registrar famílias, tamanhos, pesos, alturas de linha, espaçamentos, raios, bordas, sombras, ícones e ajustes ópticos. Tornar explícitos os valores herdados apenas quando houver comprovação de equivalência com o resultado atual.
 
-## Elementos removidos/movidos
-- Banner "Rascunho recuperado" → toast único ao carregar
-- Indicador "salvo às HH:MM" → ícone de nuvem com tooltip
-- Painel de pendências grande → validação inline por campo/etapa
-- Card "Dados obrigatórios" duplicado → integrado na etapa 1
-- Sticky bar da receita → substituído pelo footer do wizard
-- Kits/Histórico → botões no menu "..." (Sheet/Dialog)
-- Atalhos Ctrl+P/Ctrl+S mantidos, mas hint só na etapa 3
+### 3. Componentes prontos para reutilização
+Definir uma entrada pública e documentação de uso para o núcleo reutilizável, reaproveitando as implementações existentes, sem criar uma biblioteca paralela.
 
-## Preservado (sem mudanças de lógica)
-- Autosave em localStorage (`hg:prescricao:rascunho`)
-- Histórico (`hg:prescricao:historico`) e reutilização
-- Kits salvos
-- Validação de CPF (dígito verificador), CEP, endereço
-- Validação de posologia (intervalo/quantidade mínimos)
-- Drag-and-drop de reordenação
-- Geração de PDF (jsPDF) com tarja vermelha no modo especial
-- Auto-preenchimento por convênio
+Preservar os caminhos de importação atuais por compatibilidade. Consolidar apenas duplicações realmente equivalentes; diferenças visuais ou comportamentais serão registradas, não substituídas. Separar dependências de marca, navegação, dados médicos e preferências específicas do produto.
+
+### 4. Documentação e adoção
+Organizar o catálogo existente e os guias de uso com exemplos das implementações reais. Documentar quais componentes escolher, quais são específicos do produto e como adotar o padrão em outro produto HaisTech, incluindo fontes, tema e dependências mínimas.
+
+Correções textuais no catálogo serão apenas documentação; não haverá redesenho da página de referência nem das telas de uso.
+
+### 5. Verificação de preservação
+- Registrar referências visuais antes de qualquer extração que afete estilos compartilhados.
+- Comparar as telas e componentes afetados em temas claro/escuro e larguras pequenas/grandes.
+- Executar verificações de tokens, lint e testes relevantes; conferir as verificações automáticas de compilação.
+- Validar estados e interações dos componentes envolvidos, não apenas suas capturas de tela.
+- Relatar falhas preexistentes separadamente, sem declarar conformidade total indevida.
+
+## Mudanças que exigirão aviso e aprovação específicos
+Não executar nesta etapa: unificar alturas ou espaçamentos diferentes; trocar cores de hover/foco; alterar pesos, alinhamento óptico ou espaçamento entre letras; substituir cards com geometrias distintas; modificar contraste, bordas, sombras ou estilos de feedback.
+
+Cada proposta posterior deverá informar a inconsistência, as telas afetadas e a mudança visual necessária antes da implementação.
 
 ## Detalhes técnicos
-- Estado `step: 1 | 2 | 3` controla a renderização; validação por etapa determina se `Continuar` habilita
-- Componentes internos: `StepPaciente`, `StepMedicamentos`, `StepRevisar`, `WizardHeader`, `WizardFooter`
-- Reaproveitar componentes existentes (`MedRow`, `PosologiaPanel`, `HistoricoPanel`) sem reescrever lógica
-- Um único arquivo `src/routes/prescricao.tsx` continua sendo o ponto de entrada; se ficar acima de ~1.5k linhas depois da limpeza, extraio os steps em `src/components/prescricao/*.tsx`
+Preservar React 19, TanStack Start, Tailwind v4, Radix, CVA e Lucide existentes. Manter tokens semânticos, compatibilidade dos imports, ausência de ciclos e separação entre o núcleo visual e funcionalidades de domínio. Não criar infraestrutura, publicar pacote, alterar dados ou adicionar serviços.
 
-## Fora do escopo
-- Não mexer em rotas/sidebar
-- Não alterar dados mockados (medicamentos, kits)
-- Sem mudanças em outras páginas
+## Entrega
+Base visual organizada, inventário rastreável, referência de uso entre produtos e lista de inconsistências pendentes — sem mudar as telas atuais.
