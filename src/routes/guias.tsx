@@ -234,9 +234,10 @@ function Upload_Section({ onProcessed }: { onProcessed: (row: Row) => void }) {
                 file: item.name,
                 id: Number(item.id.toString().slice(-4)),
                 patient: "CONCEICAO APARECIDA LIMA DOS SANTOS",
-                type: item.isInternacao ? "Internação" : "SADT",
+                type: item.isInternacao ? "Internação" : "SP/SADT",
                 date,
-                status: "Concluído",
+                processing: "Extração concluída",
+                delivery: "Pendente",
               });
               setTimeout(() => {
                 setQueue((p) => p.filter((x) => x.id !== item.id));
