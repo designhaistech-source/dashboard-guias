@@ -1008,32 +1008,34 @@ function DateField({ label }: { label: string }) {
   );
 }
 
+/** Categoria da guia: identificação discreta, sem cor por tipo. */
 function TypeBadge({ type }: { type: Row["type"] }) {
-  const variant =
-    type === "SADT"
-      ? "info"
-      : type === "Não válido"
-        ? "destructive"
-        : "purple";
   return (
-    <Badge variant={variant} size="sm">
+    <Badge variant="info-soft" size="sm" className="whitespace-nowrap">
       {type}
     </Badge>
   );
 }
 
-function StatusBadge({ status }: { status: Row["status"] }) {
-  if (status === "Concluído") {
-    return (
-      <Badge variant="success" size="sm">
-        <CheckCircle2 className="h-3.5 w-3.5" /> Concluído
-      </Badge>
-    );
-  }
+/** Indicador principal do histórico: badge pastel, sem ícone. */
+function ProcessingBadge({ row }: { row: Row }) {
+  const variant =
+    row.processing === "Extração concluída"
+      ? "success-soft"
+      : row.processing === "Falha no processamento"
+        ? "destructive-soft"
+        : row.processing === "Processando"
+          ? "info-soft"
+          : "warning-soft";
   return (
-    <Badge variant="destructive" size="sm">
-      <XCircle className="h-3.5 w-3.5" /> Erro
-    </Badge>
+    <div className="flex min-w-0 flex-col gap-1">
+      <Badge variant={variant} size="sm" className="w-fit whitespace-nowrap">
+        {row.processing}
+      </Badge>
+      {row.processingReason && (
+        <span className="text-xs text-muted-foreground">{row.processingReason}</span>
+      )}
+    </div>
   );
 }
 
