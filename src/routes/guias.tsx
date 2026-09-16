@@ -513,16 +513,17 @@ function History_Section({ extraRows }: { extraRows: Row[] }) {
       <div className="overflow-hidden rounded-xl border border-border bg-card">
         <DataTableDesktop>
 
-          <DataTableRoot className="min-w-250">
+          <DataTableRoot className="min-w-275">
             <DataTableHeader>
               <DataTableRow className="hover:bg-transparent">
                 <DataTableHead>Arquivo</DataTableHead>
                 <DataTableHead>ID da guia</DataTableHead>
-                <DataTableHead>Nº Guia no Prestador</DataTableHead>
                 <DataTableHead>Paciente</DataTableHead>
                 <DataTableHead>Tipo de guia</DataTableHead>
                 <DataTableHead>Data de envio</DataTableHead>
-                <DataTableHead>Status</DataTableHead>
+                <DataTableHead>Processamento</DataTableHead>
+                <DataTableHead>Entrega</DataTableHead>
+                <DataTableHead>Duplicidade</DataTableHead>
                 <DataTableHead className="text-right">Ações</DataTableHead>
               </DataTableRow>
             </DataTableHeader>
@@ -536,16 +537,27 @@ function History_Section({ extraRows }: { extraRows: Row[] }) {
                     </div>
                   </DataTableCell>
                   <DataTableCell className="text-muted-foreground">{r.id}</DataTableCell>
-                  <DataTableCell className="whitespace-nowrap font-mono text-muted-foreground">
-                    {r.guiaPrestador ?? "—"}
-                  </DataTableCell>
                   <DataTableCell className="max-w-50 truncate sm:max-w-65">{r.patient}</DataTableCell>
                   <DataTableCell>
                     <TypeBadge type={r.type} />
                   </DataTableCell>
                   <DataTableCell className="whitespace-nowrap text-muted-foreground">{r.date}</DataTableCell>
                   <DataTableCell>
-                    <StatusBadge status={r.status} />
+                    <ProcessingBadge row={r} />
+                  </DataTableCell>
+                  <DataTableCell className="whitespace-nowrap">
+                    {r.delivery === "Não aplicável" ? (
+                      <span className="text-muted-foreground">—</span>
+                    ) : (
+                      r.delivery
+                    )}
+                  </DataTableCell>
+                  <DataTableCell className="whitespace-nowrap">
+                    {r.duplicate ? (
+                      "Possível duplicidade"
+                    ) : (
+                      <span className="text-muted-foreground">—</span>
+                    )}
                   </DataTableCell>
                   <DataTableCell className="text-right">
                     <div className="inline-flex items-center icon-optical gap-3 text-muted-foreground">
@@ -554,7 +566,7 @@ function History_Section({ extraRows }: { extraRows: Row[] }) {
                         size="icon"
                         aria-label="Visualizar"
                         onClick={() => setDetailRow(r)}
-                        disabled={r.status === "Erro"}
+                        disabled={isFailed(r)}
                         className="h-7 w-7 text-muted-foreground hover:text-foreground"
                       >
                         <Eye className="h-4 w-4" />
@@ -564,7 +576,7 @@ function History_Section({ extraRows }: { extraRows: Row[] }) {
                         size="icon"
                         aria-label="Códigos de procedimento"
                         onClick={() => setCodeRow(r)}
-                        disabled={r.status === "Erro"}
+                        disabled={isFailed(r)}
                         className="h-7 w-7 text-muted-foreground hover:text-foreground"
                       >
                         <ClipboardCopy className="h-4 w-4" />
