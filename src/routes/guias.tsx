@@ -414,28 +414,55 @@ function History_Section({ extraRows }: { extraRows: Row[] }) {
         <div className="w-full min-w-0 sm:col-span-2 lg:w-auto lg:flex-1 lg:min-w-60">
           <SearchInput placeholder="Buscar por arquivo ou paciente" />
         </div>
+        <div className="w-full min-w-0 lg:w-52">
+          <Combobox
+            options={[
+              { value: "processando", label: "Processando" },
+              { value: "concluida", label: "Extração concluída" },
+              { value: "pendencias", label: "Extração com pendências" },
+              { value: "nao-processavel", label: "Arquivo não processável" },
+              { value: "falha", label: "Falha no processamento" },
+            ]}
+            placeholder="Todos os processamentos"
+            searchPlaceholder="Buscar processamento..."
+            clearable
+          />
+        </div>
         <div className="w-full min-w-0 lg:w-45">
           <Combobox
             options={[
-              { value: "sucesso", label: "Sucesso" },
-              { value: "erro", label: "Erro" },
-              { value: "processando", label: "Processando" },
+              { value: "entregue", label: "Entregue" },
+              { value: "pendente", label: "Pendente" },
+              { value: "falha", label: "Falha" },
+              { value: "nao-aplicavel", label: "Não aplicável" },
             ]}
-            placeholder="Todos os status"
-            searchPlaceholder="Buscar status..."
+            placeholder="Todas as entregas"
+            searchPlaceholder="Buscar entrega..."
+            clearable
+          />
+        </div>
+        <div className="w-full min-w-0 lg:w-48">
+          <Combobox
+            options={[
+              { value: "duplicidade", label: "Possível duplicidade" },
+              { value: "sem-duplicidade", label: "Sem duplicidade" },
+            ]}
+            placeholder="Todas as duplicidades"
+            searchPlaceholder="Buscar duplicidade..."
             clearable
           />
         </div>
         <div className="w-full min-w-0 lg:w-50">
           <Combobox
             options={[
-              { value: "sadt", label: "SADT" },
-              { value: "consulta", label: "Consulta" },
+              { value: "sadt", label: "SP/SADT" },
               { value: "internacao", label: "Internação" },
-              { value: "honorario", label: "Honorário" },
+              { value: "encaminhamento", label: "Encaminhamento" },
+              { value: "solicitacao-exame", label: "Solicitação de exame" },
+              { value: "outros", label: "Outros" },
             ]}
-            placeholder="Todos os tipos"
-            searchPlaceholder="Buscar tipo..."
+            placeholder="Todos os tipos de guia"
+            searchPlaceholder="Buscar tipo de guia..."
             clearable
           />
         </div>
