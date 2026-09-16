@@ -472,13 +472,15 @@ function History_Section({ extraRows }: { extraRows: Row[] }) {
                 </>
               }
               subtitle={r.patient}
-              trailing={<StatusBadge status={r.status} />}
+              trailing={<ProcessingBadge row={r} />}
             />
             <DataTableCardFields
               fields={[
                 { label: "ID da guia", value: `ID ${r.id}`, hideLabel: true },
                 { label: "Nº Guia no Prestador", value: r.guiaPrestador ?? "—" },
                 { label: "Data de envio", value: r.date, hideLabel: true },
+                { label: "Entrega", value: r.delivery === "Não aplicável" ? "—" : r.delivery },
+                { label: "Duplicidade", value: r.duplicate ? "Possível duplicidade" : "—" },
               ]}
             />
             <DataTableCardActions>
@@ -487,7 +489,7 @@ function History_Section({ extraRows }: { extraRows: Row[] }) {
                 <Button
                   variant="secondary"
                   size="sm"
-                  disabled={r.status === "Erro"}
+                  disabled={isFailed(r)}
                   onClick={() => setDetailRow(r)}
                 >
                   <Eye className="h-4 w-4" aria-hidden="true" />
@@ -497,7 +499,7 @@ function History_Section({ extraRows }: { extraRows: Row[] }) {
                   variant="ghost"
                   size="sm"
                   aria-label="Códigos de procedimento"
-                  disabled={r.status === "Erro"}
+                  disabled={isFailed(r)}
                   onClick={() => setCodeRow(r)}
                 >
                   <ClipboardCopy className="h-4 w-4" aria-hidden="true" />
