@@ -11,7 +11,6 @@ import {
   ClipboardCopy,
   AlertTriangle,
   CheckCircle2,
-  XCircle,
   ChevronDown,
   SlidersHorizontal,
   ChevronLeft,
@@ -83,13 +82,34 @@ export const Route = createFileRoute("/guias")({
   component: Page,
 });
 
+/** Situação da extração de dados (indicador principal do histórico). */
+type ProcessingStatus =
+  | "Processando"
+  | "Extração concluída"
+  | "Extração com pendências"
+  | "Arquivo não processável"
+  | "Falha no processamento";
+
+/** Situação do envio dos dados extraídos para a operadora. */
+type DeliveryStatus =
+  | "Entregue"
+  | "Pendente"
+  | "Buscando códigos"
+  | "Falha na entrega"
+  | "Não aplicável";
+
 type Row = {
   file: string;
   id: number;
   patient: string;
-  type: "SADT" | "Não válido" | "Encaminhamento" | "Internação";
+  type: "SP/SADT" | "Internação" | "Encaminhamento" | "Solicitação de exame" | "Outros";
   date: string;
-  status: "Concluído" | "Erro";
+  processing: ProcessingStatus;
+  /** Motivo específico associado ao processamento (informação secundária). */
+  processingReason?: string;
+  delivery: DeliveryStatus;
+  /** Guia possivelmente já enviada antes (duplicidade). */
+  duplicate?: boolean;
   warn?: boolean;
   /** Operadora responsável pela guia (define a sequência de numeração). */
   operadora?: string;
@@ -98,17 +118,22 @@ type Row = {
 };
 
 const rows: Row[] = [
-  { file: "guia_001_paciente_silva.pdf", id: 1042, patient: "Ana Beatriz Silva Rodrigues", type: "SADT", date: "06/07/2026, 14:32", status: "Concluído", operadora: "Humanas", guiaPrestador: formatGuiaNumber("Humanas", 128) },
-  { file: "guia_002_exame_ressonancia.pdf", id: 1041, patient: "Carlos Eduardo Mendes", type: "SADT", date: "06/07/2026, 11:15", status: "Concluído", operadora: "Unimed", guiaPrestador: formatGuiaNumber("Unimed", 341) },
-  { file: "documento_ilegivel.jpg", id: 1040, patient: "—", type: "Não válido", date: "05/07/2026, 18:07", status: "Erro" },
-  { file: "encaminhamento_cardio.pdf", id: 1039, patient: "Juliana Ferreira Costa", type: "Encaminhamento", date: "05/07/2026, 16:44", status: "Concluído", operadora: "CAURN", guiaPrestador: formatGuiaNumber("CAURN", 57) },
-  { file: "guia_004_consulta.png", id: 1038, patient: "Roberto Almeida Souza", type: "SADT", date: "05/07/2026, 10:28", status: "Concluído", warn: true, operadora: "Humanas", guiaPrestador: formatGuiaNumber("Humanas", 127) },
-  { file: "guia_005_fisioterapia.pdf", id: 1037, patient: "Patrícia Oliveira Lima", type: "SADT", date: "04/07/2026, 15:53", status: "Concluído", operadora: "Unimed", guiaPrestador: formatGuiaNumber("Unimed", 340) },
-  { file: "scan_borrado_003.jpg", id: 1036, patient: "—", type: "Não válido", date: "04/07/2026, 13:21", status: "Erro" },
-  { file: "encaminhamento_neuro.pdf", id: 1035, patient: "Fernando Batista Nogueira", type: "Encaminhamento", date: "03/07/2026, 17:09", status: "Concluído", warn: true, operadora: "CAURN", guiaPrestador: formatGuiaNumber("CAURN", 56) },
-  { file: "guia_007_laboratorio.pdf", id: 1034, patient: "Mariana Santos Pereira", type: "SADT", date: "03/07/2026, 09:47", status: "Concluído", operadora: "Humanas", guiaPrestador: formatGuiaNumber("Humanas", 126) },
-  { file: "guia_008_ultrassom.png", id: 1033, patient: "Lucas Henrique Barbosa", type: "SADT", date: "02/07/2026, 19:12", status: "Concluído", operadora: "Unimed", guiaPrestador: formatGuiaNumber("Unimed", 339) },
+  { file: "guia_001_paciente_silva.pdf", id: 1042, patient: "Ana Beatriz Silva Rodrigues", type: "SP/SADT", date: "06/07/2026, 14:32", processing: "Extração concluída", delivery: "Entregue", operadora: "Humanas", guiaPrestador: formatGuiaNumber("Humanas", 128) },
+  { file: "guia_002_exame_ressonancia.pdf", id: 1041, patient: "Carlos Eduardo Mendes", type: "Solicitação de exame", date: "06/07/2026, 11:15", processing: "Extração concluída", delivery: "Buscando códigos", operadora: "Unimed", guiaPrestador: formatGuiaNumber("Unimed", 341) },
+  { file: "documento_ilegivel.jpg", id: 1040, patient: "—", type: "Outros", date: "05/07/2026, 18:07", processing: "Arquivo não processável", processingReason: "Informações ilegíveis", delivery: "Não aplicável" },
+  { file: "encaminhamento_cardio.pdf", id: 1039, patient: "Juliana Ferreira Costa", type: "Encaminhamento", date: "05/07/2026, 16:44", processing: "Extração concluída", delivery: "Pendente", duplicate: true, operadora: "CAURN", guiaPrestador: formatGuiaNumber("CAURN", 57) },
+  { file: "guia_004_consulta.png", id: 1038, patient: "Roberto Almeida Souza", type: "SP/SADT", date: "05/07/2026, 10:28", processing: "Extração com pendências", processingReason: "Baixa qualidade", delivery: "Pendente", warn: true, operadora: "Humanas", guiaPrestador: formatGuiaNumber("Humanas", 127) },
+  { file: "guia_005_fisioterapia.pdf", id: 1037, patient: "Patrícia Oliveira Lima", type: "SP/SADT", date: "04/07/2026, 15:53", processing: "Extração concluída", delivery: "Falha na entrega", operadora: "Unimed", guiaPrestador: formatGuiaNumber("Unimed", 340) },
+  { file: "scan_borrado_003.jpg", id: 1036, patient: "—", type: "Outros", date: "04/07/2026, 13:21", processing: "Falha no processamento", processingReason: "Falha ao receber o resultado da IA", delivery: "Não aplicável" },
+  { file: "encaminhamento_neuro.pdf", id: 1035, patient: "Fernando Batista Nogueira", type: "Encaminhamento", date: "03/07/2026, 17:09", processing: "Extração com pendências", processingReason: "Resposta fora do contrato", delivery: "Pendente", warn: true, operadora: "CAURN", guiaPrestador: formatGuiaNumber("CAURN", 56) },
+  { file: "guia_007_laboratorio.pdf", id: 1034, patient: "Mariana Santos Pereira", type: "Internação", date: "03/07/2026, 09:47", processing: "Extração concluída", delivery: "Entregue", duplicate: true, operadora: "Humanas", guiaPrestador: formatGuiaNumber("Humanas", 126) },
+  { file: "guia_008_ultrassom.png", id: 1033, patient: "Lucas Henrique Barbosa", type: "SP/SADT", date: "02/07/2026, 19:12", processing: "Processando", delivery: "Pendente", operadora: "Unimed", guiaPrestador: formatGuiaNumber("Unimed", 339) },
 ];
+
+/** Linhas cuja extração falhou não permitem visualizar dados nem códigos. */
+function isFailed(row: Row): boolean {
+  return row.processing === "Arquivo não processável" || row.processing === "Falha no processamento";
+}
 
 
 function Page() {
@@ -208,9 +233,10 @@ function Upload_Section({ onProcessed }: { onProcessed: (row: Row) => void }) {
                 file: item.name,
                 id: Number(item.id.toString().slice(-4)),
                 patient: "CONCEICAO APARECIDA LIMA DOS SANTOS",
-                type: item.isInternacao ? "Internação" : "SADT",
+                type: item.isInternacao ? "Internação" : "SP/SADT",
                 date,
-                status: "Concluído",
+                processing: "Extração concluída",
+                delivery: "Pendente",
               });
               setTimeout(() => {
                 setQueue((p) => p.filter((x) => x.id !== item.id));
@@ -387,28 +413,55 @@ function History_Section({ extraRows }: { extraRows: Row[] }) {
         <div className="w-full min-w-0 sm:col-span-2 lg:w-auto lg:flex-1 lg:min-w-60">
           <SearchInput placeholder="Buscar por arquivo ou paciente" />
         </div>
+        <div className="w-full min-w-0 lg:w-52">
+          <Combobox
+            options={[
+              { value: "processando", label: "Processando" },
+              { value: "concluida", label: "Extração concluída" },
+              { value: "pendencias", label: "Extração com pendências" },
+              { value: "nao-processavel", label: "Arquivo não processável" },
+              { value: "falha", label: "Falha no processamento" },
+            ]}
+            placeholder="Todos os processamentos"
+            searchPlaceholder="Buscar processamento..."
+            clearable
+          />
+        </div>
         <div className="w-full min-w-0 lg:w-45">
           <Combobox
             options={[
-              { value: "sucesso", label: "Sucesso" },
-              { value: "erro", label: "Erro" },
-              { value: "processando", label: "Processando" },
+              { value: "entregue", label: "Entregue" },
+              { value: "pendente", label: "Pendente" },
+              { value: "falha", label: "Falha" },
+              { value: "nao-aplicavel", label: "Não aplicável" },
             ]}
-            placeholder="Todos os status"
-            searchPlaceholder="Buscar status..."
+            placeholder="Todas as entregas"
+            searchPlaceholder="Buscar entrega..."
+            clearable
+          />
+        </div>
+        <div className="w-full min-w-0 lg:w-48">
+          <Combobox
+            options={[
+              { value: "duplicidade", label: "Possível duplicidade" },
+              { value: "sem-duplicidade", label: "Sem duplicidade" },
+            ]}
+            placeholder="Todas as duplicidades"
+            searchPlaceholder="Buscar duplicidade..."
             clearable
           />
         </div>
         <div className="w-full min-w-0 lg:w-50">
           <Combobox
             options={[
-              { value: "sadt", label: "SADT" },
-              { value: "consulta", label: "Consulta" },
+              { value: "sadt", label: "SP/SADT" },
               { value: "internacao", label: "Internação" },
-              { value: "honorario", label: "Honorário" },
+              { value: "encaminhamento", label: "Encaminhamento" },
+              { value: "solicitacao-exame", label: "Solicitação de exame" },
+              { value: "outros", label: "Outros" },
             ]}
-            placeholder="Todos os tipos"
-            searchPlaceholder="Buscar tipo..."
+            placeholder="Todos os tipos de guia"
+            searchPlaceholder="Buscar tipo de guia..."
             clearable
           />
         </div>
@@ -445,13 +498,15 @@ function History_Section({ extraRows }: { extraRows: Row[] }) {
                 </>
               }
               subtitle={r.patient}
-              trailing={<StatusBadge status={r.status} />}
+              trailing={<ProcessingBadge row={r} />}
             />
             <DataTableCardFields
               fields={[
                 { label: "ID da guia", value: `ID ${r.id}`, hideLabel: true },
                 { label: "Nº Guia no Prestador", value: r.guiaPrestador ?? "—" },
                 { label: "Data de envio", value: r.date, hideLabel: true },
+                { label: "Entrega", value: r.delivery === "Não aplicável" ? "—" : r.delivery },
+                { label: "Duplicidade", value: r.duplicate ? "Possível duplicidade" : "—" },
               ]}
             />
             <DataTableCardActions>
@@ -460,7 +515,7 @@ function History_Section({ extraRows }: { extraRows: Row[] }) {
                 <Button
                   variant="secondary"
                   size="sm"
-                  disabled={r.status === "Erro"}
+                  disabled={isFailed(r)}
                   onClick={() => setDetailRow(r)}
                 >
                   <Eye className="h-4 w-4" aria-hidden="true" />
@@ -470,7 +525,7 @@ function History_Section({ extraRows }: { extraRows: Row[] }) {
                   variant="ghost"
                   size="sm"
                   aria-label="Códigos de procedimento"
-                  disabled={r.status === "Erro"}
+                  disabled={isFailed(r)}
                   onClick={() => setCodeRow(r)}
                 >
                   <ClipboardCopy className="h-4 w-4" aria-hidden="true" />
@@ -484,16 +539,17 @@ function History_Section({ extraRows }: { extraRows: Row[] }) {
       <div className="overflow-hidden rounded-xl border border-border bg-card">
         <DataTableDesktop>
 
-          <DataTableRoot className="min-w-250">
+          <DataTableRoot className="min-w-275">
             <DataTableHeader>
               <DataTableRow className="hover:bg-transparent">
                 <DataTableHead>Arquivo</DataTableHead>
                 <DataTableHead>ID da guia</DataTableHead>
-                <DataTableHead>Nº Guia no Prestador</DataTableHead>
                 <DataTableHead>Paciente</DataTableHead>
                 <DataTableHead>Tipo de guia</DataTableHead>
                 <DataTableHead>Data de envio</DataTableHead>
-                <DataTableHead>Status</DataTableHead>
+                <DataTableHead>Processamento</DataTableHead>
+                <DataTableHead>Entrega</DataTableHead>
+                <DataTableHead>Duplicidade</DataTableHead>
                 <DataTableHead className="text-right">Ações</DataTableHead>
               </DataTableRow>
             </DataTableHeader>
@@ -507,16 +563,27 @@ function History_Section({ extraRows }: { extraRows: Row[] }) {
                     </div>
                   </DataTableCell>
                   <DataTableCell className="text-muted-foreground">{r.id}</DataTableCell>
-                  <DataTableCell className="whitespace-nowrap font-mono text-muted-foreground">
-                    {r.guiaPrestador ?? "—"}
-                  </DataTableCell>
                   <DataTableCell className="max-w-50 truncate sm:max-w-65">{r.patient}</DataTableCell>
                   <DataTableCell>
                     <TypeBadge type={r.type} />
                   </DataTableCell>
                   <DataTableCell className="whitespace-nowrap text-muted-foreground">{r.date}</DataTableCell>
                   <DataTableCell>
-                    <StatusBadge status={r.status} />
+                    <ProcessingBadge row={r} />
+                  </DataTableCell>
+                  <DataTableCell className="whitespace-nowrap">
+                    {r.delivery === "Não aplicável" ? (
+                      <span className="text-muted-foreground">—</span>
+                    ) : (
+                      r.delivery
+                    )}
+                  </DataTableCell>
+                  <DataTableCell className="whitespace-nowrap">
+                    {r.duplicate ? (
+                      "Possível duplicidade"
+                    ) : (
+                      <span className="text-muted-foreground">—</span>
+                    )}
                   </DataTableCell>
                   <DataTableCell className="text-right">
                     <div className="inline-flex items-center icon-optical gap-3 text-muted-foreground">
@@ -525,7 +592,7 @@ function History_Section({ extraRows }: { extraRows: Row[] }) {
                         size="icon"
                         aria-label="Visualizar"
                         onClick={() => setDetailRow(r)}
-                        disabled={r.status === "Erro"}
+                        disabled={isFailed(r)}
                         className="h-7 w-7 text-muted-foreground hover:text-foreground"
                       >
                         <Eye className="h-4 w-4" />
@@ -535,7 +602,7 @@ function History_Section({ extraRows }: { extraRows: Row[] }) {
                         size="icon"
                         aria-label="Códigos de procedimento"
                         onClick={() => setCodeRow(r)}
-                        disabled={r.status === "Erro"}
+                        disabled={isFailed(r)}
                         className="h-7 w-7 text-muted-foreground hover:text-foreground"
                       >
                         <ClipboardCopy className="h-4 w-4" />
@@ -982,32 +1049,34 @@ function DateField({ label }: { label: string }) {
   );
 }
 
+/** Categoria da guia: identificação discreta, sem cor por tipo. */
 function TypeBadge({ type }: { type: Row["type"] }) {
-  const variant =
-    type === "SADT"
-      ? "info"
-      : type === "Não válido"
-        ? "destructive"
-        : "purple";
   return (
-    <Badge variant={variant} size="sm">
+    <Badge variant="info-soft" size="sm" className="whitespace-nowrap">
       {type}
     </Badge>
   );
 }
 
-function StatusBadge({ status }: { status: Row["status"] }) {
-  if (status === "Concluído") {
-    return (
-      <Badge variant="success" size="sm">
-        <CheckCircle2 className="h-3.5 w-3.5" /> Concluído
-      </Badge>
-    );
-  }
+/** Indicador principal do histórico: badge pastel, sem ícone. */
+function ProcessingBadge({ row }: { row: Row }) {
+  const variant =
+    row.processing === "Extração concluída"
+      ? "success-soft"
+      : row.processing === "Falha no processamento"
+        ? "destructive-soft"
+        : row.processing === "Processando"
+          ? "info-soft"
+          : "warning-soft";
   return (
-    <Badge variant="destructive" size="sm">
-      <XCircle className="h-3.5 w-3.5" /> Erro
-    </Badge>
+    <div className="flex min-w-0 flex-col gap-1">
+      <Badge variant={variant} size="sm" className="w-fit whitespace-nowrap">
+        {row.processing}
+      </Badge>
+      {row.processingReason && (
+        <span className="text-xs text-muted-foreground">{row.processingReason}</span>
+      )}
+    </div>
   );
 }
 
