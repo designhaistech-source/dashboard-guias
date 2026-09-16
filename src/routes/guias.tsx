@@ -83,13 +83,34 @@ export const Route = createFileRoute("/guias")({
   component: Page,
 });
 
+/** Situação da extração de dados (indicador principal do histórico). */
+type ProcessingStatus =
+  | "Processando"
+  | "Extração concluída"
+  | "Extração com pendências"
+  | "Arquivo não processável"
+  | "Falha no processamento";
+
+/** Situação do envio dos dados extraídos para a operadora. */
+type DeliveryStatus =
+  | "Entregue"
+  | "Pendente"
+  | "Buscando códigos"
+  | "Falha na entrega"
+  | "Não aplicável";
+
 type Row = {
   file: string;
   id: number;
   patient: string;
-  type: "SADT" | "Não válido" | "Encaminhamento" | "Internação";
+  type: "SP/SADT" | "Internação" | "Encaminhamento" | "Solicitação de exame" | "Outros";
   date: string;
-  status: "Concluído" | "Erro";
+  processing: ProcessingStatus;
+  /** Motivo específico associado ao processamento (informação secundária). */
+  processingReason?: string;
+  delivery: DeliveryStatus;
+  /** Guia possivelmente já enviada antes (duplicidade). */
+  duplicate?: boolean;
   warn?: boolean;
   /** Operadora responsável pela guia (define a sequência de numeração). */
   operadora?: string;
@@ -98,17 +119,22 @@ type Row = {
 };
 
 const rows: Row[] = [
-  { file: "guia_001_paciente_silva.pdf", id: 1042, patient: "Ana Beatriz Silva Rodrigues", type: "SADT", date: "06/07/2026, 14:32", status: "Concluído", operadora: "Humanas", guiaPrestador: formatGuiaNumber("Humanas", 128) },
-  { file: "guia_002_exame_ressonancia.pdf", id: 1041, patient: "Carlos Eduardo Mendes", type: "SADT", date: "06/07/2026, 11:15", status: "Concluído", operadora: "Unimed", guiaPrestador: formatGuiaNumber("Unimed", 341) },
-  { file: "documento_ilegivel.jpg", id: 1040, patient: "—", type: "Não válido", date: "05/07/2026, 18:07", status: "Erro" },
-  { file: "encaminhamento_cardio.pdf", id: 1039, patient: "Juliana Ferreira Costa", type: "Encaminhamento", date: "05/07/2026, 16:44", status: "Concluído", operadora: "CAURN", guiaPrestador: formatGuiaNumber("CAURN", 57) },
-  { file: "guia_004_consulta.png", id: 1038, patient: "Roberto Almeida Souza", type: "SADT", date: "05/07/2026, 10:28", status: "Concluído", warn: true, operadora: "Humanas", guiaPrestador: formatGuiaNumber("Humanas", 127) },
-  { file: "guia_005_fisioterapia.pdf", id: 1037, patient: "Patrícia Oliveira Lima", type: "SADT", date: "04/07/2026, 15:53", status: "Concluído", operadora: "Unimed", guiaPrestador: formatGuiaNumber("Unimed", 340) },
-  { file: "scan_borrado_003.jpg", id: 1036, patient: "—", type: "Não válido", date: "04/07/2026, 13:21", status: "Erro" },
-  { file: "encaminhamento_neuro.pdf", id: 1035, patient: "Fernando Batista Nogueira", type: "Encaminhamento", date: "03/07/2026, 17:09", status: "Concluído", warn: true, operadora: "CAURN", guiaPrestador: formatGuiaNumber("CAURN", 56) },
-  { file: "guia_007_laboratorio.pdf", id: 1034, patient: "Mariana Santos Pereira", type: "SADT", date: "03/07/2026, 09:47", status: "Concluído", operadora: "Humanas", guiaPrestador: formatGuiaNumber("Humanas", 126) },
-  { file: "guia_008_ultrassom.png", id: 1033, patient: "Lucas Henrique Barbosa", type: "SADT", date: "02/07/2026, 19:12", status: "Concluído", operadora: "Unimed", guiaPrestador: formatGuiaNumber("Unimed", 339) },
+  { file: "guia_001_paciente_silva.pdf", id: 1042, patient: "Ana Beatriz Silva Rodrigues", type: "SP/SADT", date: "06/07/2026, 14:32", processing: "Extração concluída", delivery: "Entregue", operadora: "Humanas", guiaPrestador: formatGuiaNumber("Humanas", 128) },
+  { file: "guia_002_exame_ressonancia.pdf", id: 1041, patient: "Carlos Eduardo Mendes", type: "Solicitação de exame", date: "06/07/2026, 11:15", processing: "Extração concluída", delivery: "Buscando códigos", operadora: "Unimed", guiaPrestador: formatGuiaNumber("Unimed", 341) },
+  { file: "documento_ilegivel.jpg", id: 1040, patient: "—", type: "Outros", date: "05/07/2026, 18:07", processing: "Arquivo não processável", processingReason: "Informações ilegíveis", delivery: "Não aplicável" },
+  { file: "encaminhamento_cardio.pdf", id: 1039, patient: "Juliana Ferreira Costa", type: "Encaminhamento", date: "05/07/2026, 16:44", processing: "Extração concluída", delivery: "Pendente", duplicate: true, operadora: "CAURN", guiaPrestador: formatGuiaNumber("CAURN", 57) },
+  { file: "guia_004_consulta.png", id: 1038, patient: "Roberto Almeida Souza", type: "SP/SADT", date: "05/07/2026, 10:28", processing: "Extração com pendências", processingReason: "Baixa qualidade", delivery: "Pendente", warn: true, operadora: "Humanas", guiaPrestador: formatGuiaNumber("Humanas", 127) },
+  { file: "guia_005_fisioterapia.pdf", id: 1037, patient: "Patrícia Oliveira Lima", type: "SP/SADT", date: "04/07/2026, 15:53", processing: "Extração concluída", delivery: "Falha na entrega", operadora: "Unimed", guiaPrestador: formatGuiaNumber("Unimed", 340) },
+  { file: "scan_borrado_003.jpg", id: 1036, patient: "—", type: "Outros", date: "04/07/2026, 13:21", processing: "Falha no processamento", processingReason: "Falha ao receber o resultado da IA", delivery: "Não aplicável" },
+  { file: "encaminhamento_neuro.pdf", id: 1035, patient: "Fernando Batista Nogueira", type: "Encaminhamento", date: "03/07/2026, 17:09", processing: "Extração com pendências", processingReason: "Resposta fora do contrato", delivery: "Pendente", warn: true, operadora: "CAURN", guiaPrestador: formatGuiaNumber("CAURN", 56) },
+  { file: "guia_007_laboratorio.pdf", id: 1034, patient: "Mariana Santos Pereira", type: "Internação", date: "03/07/2026, 09:47", processing: "Extração concluída", delivery: "Entregue", duplicate: true, operadora: "Humanas", guiaPrestador: formatGuiaNumber("Humanas", 126) },
+  { file: "guia_008_ultrassom.png", id: 1033, patient: "Lucas Henrique Barbosa", type: "SP/SADT", date: "02/07/2026, 19:12", processing: "Processando", delivery: "Pendente", operadora: "Unimed", guiaPrestador: formatGuiaNumber("Unimed", 339) },
 ];
+
+/** Linhas cuja extração falhou não permitem visualizar dados nem códigos. */
+function isFailed(row: Row): boolean {
+  return row.processing === "Arquivo não processável" || row.processing === "Falha no processamento";
+}
 
 
 function Page() {
