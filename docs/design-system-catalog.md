@@ -10,6 +10,8 @@ produtos HaisTech reutilizem a mesma base.
 - Guia vivo navegável: rota `/design-system`
 - Checklist de aplicação: `docs/design-system-checklist.md`
 - Adoção em outro produto: `docs/design-system-adoption.md`
+- Base tecnológica (Radix, Lucide, Recharts) e o que é compartilhável:
+  `docs/design-system-libraries.md`
 
 ## Camadas
 
