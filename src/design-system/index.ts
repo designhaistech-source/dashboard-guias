@@ -224,3 +224,15 @@ export {
   LoadingState,
   TableSkeleton,
 } from "@/components/data-state";
+
+/* ---------------- Gráficos (Recharts) ---------------- */
+
+export {
+  ChartContainer,
+  ChartLegend,
+  ChartLegendContent,
+  ChartStyle,
+  ChartTooltip,
+  ChartTooltipContent,
+  type ChartConfig,
+} from "@/components/ui/chart";
