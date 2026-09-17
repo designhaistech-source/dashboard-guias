@@ -41,7 +41,10 @@ import {
 } from "@/features/issued-guides/utils/print-guide";
 import { nextGuiaNumber } from "@/lib/guia-number";
 import { ScaledGuideSheet } from "@/components/scaled-guide-sheet";
-import { A4_PORTRAIT_SHEET_WIDTH_PX } from "@/lib/guide-sheet";
+import {
+  A4_PORTRAIT_SHEET_WIDTH_PX,
+  PORTRAIT_PREVIEW_MODAL_CLASS,
+} from "@/lib/guide-sheet";
 import { InternacaoGuidePreview } from "./internacao-guide-preview";
 import { lookupBeneficiary, normalizeCarteira } from "@/features/beneficiaries";
 import { CID_OPTIONS } from "@/lib/cid";
