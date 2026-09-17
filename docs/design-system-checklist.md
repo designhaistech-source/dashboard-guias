@@ -3,6 +3,9 @@
 Use este checklist ao criar ou revisar qualquer página. Cada item é verificável no
 código e, quando possível, coberto por `bash scripts/visual/validate.sh`.
 
+Referências: catálogo em `docs/design-system-catalog.md`, entrada pública em
+`src/design-system/`, adoção em outros produtos em `docs/design-system-adoption.md`.
+
 ## 1. Cores
 
 - [ ] Nenhum `#hex`, `bg-white/black` ou cor da paleta Tailwind (`text-slate-500`…).
