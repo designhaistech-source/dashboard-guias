@@ -45,6 +45,17 @@ export {
   MultiSelect,
   type ComboboxOption,
 } from "@/components/ui/combobox";
+export {
+  Command,
+  CommandDialog,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+  CommandSeparator,
+  CommandShortcut,
+} from "@/components/ui/command";
 export { Calendar } from "@/components/ui/calendar";
 
 /* ---------------- Composições de formulário ---------------- */
