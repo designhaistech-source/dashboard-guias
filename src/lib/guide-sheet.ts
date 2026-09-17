@@ -132,3 +132,12 @@ html, body { margin: 0; padding: 0; background: #fff; }
 * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
 img { max-width: 100%; max-height: 100%; break-inside: avoid; page-break-inside: avoid; }
 `;
+
+/**
+ * Classes do modal de pré-visualização da folha A4 retrato. Referência única
+ * usada pela emissão da guia de internação e por "Guias emitidas" — a largura
+ * de 850px é a folha A4 (794px) mais as margens laterais (~28px), portanto
+ * uma medida de papel e não da escala de UI.
+ */
+export const PORTRAIT_PREVIEW_MODAL_CLASS =
+  "max-w-[850px] max-h-[88dvh]"; /* ds-allow: medida física da folha A4 retrato */
