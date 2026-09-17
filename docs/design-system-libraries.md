@@ -118,3 +118,46 @@ recriar com a marca do novo produto, reaproveitando os tokens `sidebar-*`.
 
 Detalhes de componentes por categoria: `docs/design-system-catalog.md`.
 Passo a passo de adoção: `docs/design-system-adoption.md`.
+
+## Navegação e layout: base compartilhável vs. específico do produto
+
+Auditoria feita sem alterar nenhuma tela: o esqueleto de página está repetido
+manualmente em 12 telas (`div.flex.min-h-screen` + `AppSidebar` + `main` +
+coluna de conteúdo + `AppBreadcrumb` + `PageHeader`), com pequenas divergências
+de espaçamento entre elas.
+
+### Compartilhável (estrutura e comportamento genéricos)
+
+| Padrão | Referência oficial | Observação |
+| --- | --- | --- |
+| Esqueleto da página | `AppShell` (`src/components/app-shell.tsx`) | Sidebar como slot; nenhuma rota ou item de menu embutido. |
+| Coluna de conteúdo | `PageContainer` | Respiro lateral progressivo e `pt-20` para o gatilho flutuante da navegação em telas estreitas. |
+| Título de página | `PageHeader` | Título + descrição + ações; sem conteúdo fixo. |
+| Trilha de navegação | `Breadcrumb` (`src/components/ui/breadcrumb.tsx`) | Primitivo Radix-compatível, sem mapa de rotas. |
+| Anatomia da navegação lateral | `src/components/ui/sidebar.tsx` + tokens `sidebar-*` | Provider, colapso, gatilho mobile, foco e teclado. |
+| Abas de seção | `app-tabs` | Classes compartilhadas sobre Radix Tabs. |
+| Layout de busca | `SearchPageLayout` | Estrutura de tela de consulta. |
+
+### Específico do produto (não portar)
+
+- `src/components/app-sidebar.tsx`: itens de menu, rotas, ícones, agrupamentos,
+  marca "Guias+" e menu do usuário. Serve apenas como referência de anatomia.
+- `src/components/app-breadcrumb.tsx`: mapa `ROUTE_META` de rotas → rótulos.
+- `src/components/site-footer.tsx`: conteúdo institucional.
+- Textos, ícones (`lucide-react`) e ações de cada `PageHeader`.
+
+### Inconsistências encontradas (nenhuma corrigida — exigem aprovação)
+
+Todas mudariam pixels em telas existentes, por isso foram apenas registradas:
+
+1. Espaçamento lateral/vertical da coluna de conteúdo divergente:
+   `px-4 py-6 sm:px-6 sm:py-8` (perfil, guias emitidas) vs. `px-6 py-8`
+   (relatórios, OPME, extrair dados).
+2. `md:pt-8` na maioria das telas vs. `md:pt-6` em "Guias emitidas".
+3. `overflow-x-hidden` no `main` em quase todas as telas, ausente em
+   "Guias emitidas" (tabela larga) — divergência intencional na prática.
+4. `min-w-0` aplicado só em parte das telas.
+
+Decisão vigente: `AppShell` + `PageContainer` são a referência para telas e
+produtos novos; as 12 telas atuais permanecem com o markup próprio até uma
+migração aprovada explicitamente, que unificaria os itens 1–4 acima.

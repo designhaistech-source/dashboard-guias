@@ -92,6 +92,12 @@ export { Separator } from "@/components/ui/separator";
 export { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 export { AspectRatio } from "@/components/ui/aspect-ratio";
 export { SearchPageLayout } from "@/components/search-page-layout";
+export {
+  AppShell,
+  PageContainer,
+  type AppShellProps,
+  type PageContainerProps,
+} from "@/components/app-shell";
 
 /* ---------------- Tabelas ---------------- */
 
