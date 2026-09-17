@@ -17,7 +17,10 @@ import { AppSidebar } from "@/components/app-sidebar";
 import { AppModal } from "@/components/app-modal";
 import { IssuedGuidePreview } from "./issued-guide-preview";
 import { ScaledGuideSheet } from "@/components/scaled-guide-sheet";
-import { A4_PORTRAIT_SHEET_WIDTH_PX } from "@/lib/guide-sheet";
+import {
+  A4_PORTRAIT_SHEET_WIDTH_PX,
+  PORTRAIT_PREVIEW_MODAL_CLASS,
+} from "@/lib/guide-sheet";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { EmptyState } from "@/components/data-state";
@@ -486,10 +489,9 @@ function IssuedGuideModal({
         guide ? `${guide.type} · emitida em ${formatIssuedAt(guide.issuedAt)}` : undefined
       }
       size="xl"
-      // Internação usa folha A4 retrato (794px) + margens laterais ~28px.
       className={
         guide?.type === "Internação"
-          ? "w-[95vw] max-w-[850px] max-h-[88dvh]"
+          ? `w-[95vw] ${PORTRAIT_PREVIEW_MODAL_CLASS}`
           : "w-[95vw] max-w-300"
       }
       headerClassName="gap-0.5 px-4 py-3 sm:px-4 sm:py-3"

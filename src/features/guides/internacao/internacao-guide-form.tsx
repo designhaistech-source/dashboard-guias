@@ -41,7 +41,10 @@ import {
 } from "@/features/issued-guides/utils/print-guide";
 import { nextGuiaNumber } from "@/lib/guia-number";
 import { ScaledGuideSheet } from "@/components/scaled-guide-sheet";
-import { A4_PORTRAIT_SHEET_WIDTH_PX } from "@/lib/guide-sheet";
+import {
+  A4_PORTRAIT_SHEET_WIDTH_PX,
+  PORTRAIT_PREVIEW_MODAL_CLASS,
+} from "@/lib/guide-sheet";
 import { InternacaoGuidePreview } from "./internacao-guide-preview";
 import { lookupBeneficiary, normalizeCarteira } from "@/features/beneficiaries";
 import { CID_OPTIONS } from "@/lib/cid";
@@ -1271,8 +1274,7 @@ export function InternacaoGuideForm({
         title="Pré-visualização da guia"
         description="Guia de Solicitação de Internação — padrão TISS."
         size="xl"
-        // Largura proporcional à folha A4 retrato (794px) + margens laterais ~28px.
-        className="max-w-[850px] max-h-[88dvh]"
+        className={PORTRAIT_PREVIEW_MODAL_CLASS}
       >
         <ScaledGuideSheet fit="width" sheetWidth={A4_PORTRAIT_SHEET_WIDTH_PX}>
           <InternacaoGuidePreview {...previewData} fullSize />

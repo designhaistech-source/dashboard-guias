@@ -3,6 +3,9 @@
 Use este checklist ao criar ou revisar qualquer página. Cada item é verificável no
 código e, quando possível, coberto por `bash scripts/visual/validate.sh`.
 
+Referências: catálogo em `docs/design-system-catalog.md`, entrada pública em
+`src/design-system/`, adoção em outros produtos em `docs/design-system-adoption.md`.
+
 ## 1. Cores
 
 - [ ] Nenhum `#hex`, `bg-white/black` ou cor da paleta Tailwind (`text-slate-500`…).
@@ -14,9 +17,12 @@ código e, quando possível, coberto por `bash scripts/visual/validate.sh`.
 
 ## 2. Tipografia
 
+Três famílias: `font-display` (Plus Jakarta Sans) em títulos, `font-sans`
+(Vazirmatn) no corpo e `font-mono` (JetBrains Mono) em números e códigos.
+
 - [ ] H1 da página: `font-display text-2xl font-semibold tracking-tight` (via `PageHeader`).
 - [ ] H2 de seção/card: `font-display text-base font-semibold tracking-tight`.
-- [ ] Rótulo de campo: `text-xs font-medium` (via `Field`/`SelectField`).
+- [ ] Rótulo de campo: `text-xs font-medium leading-snug text-muted-foreground` (via `Field`/`SelectField`).
 - [ ] Corpo: `text-sm`; metadado/hint: `text-xs text-muted-foreground`.
 - [ ] Números, códigos (CID, TUSS, carteira): `font-mono`.
 - [ ] Sem `text-[13px]` e afins — apenas a escala (`text-xs`, `text-sm`, `text-base`…).
@@ -33,7 +39,8 @@ código e, quando possível, coberto por `bash scripts/visual/validate.sh`.
 
 - [ ] Cards e blocos de conteúdo: `rounded-2xl shadow-xs`.
 - [ ] Controles (input, botão, select): `rounded-md`; badges/pills: `rounded-full`.
-- [ ] Alturas de controle iguais às do `Input`: `h-10 sm:h-9`.
+- [ ] Campos de formulário: `h-10 sm:h-9` (área de toque maior no mobile).
+- [ ] Botões: `h-9` (`sm` = `h-8`, `lg` = `h-10`) — diferença intencional em relação ao `Input`.
 
 ## 5. Componentes
 
