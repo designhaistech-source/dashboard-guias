@@ -1775,7 +1775,7 @@ function DashboardPage() {
               className="flex h-full min-w-0 flex-col"
               bodyClassName="flex flex-1 flex-col"
               title={`${cfg.label} por tipo`}
-              description={`Distribuição dos ${cfg.noun === "guias" ? "registros" : "documentos"} ${cfg.verb === "processadas" ? "processados" : "emitidos"} no período filtrado`}
+              description={`Distribuição de ${cfg.noun} ${cfg.verb} no período filtrado`}
             >
               {!hasData ? (
                 emptyState
