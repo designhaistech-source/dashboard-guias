@@ -473,6 +473,15 @@ export function ReceptionDashboard() {
         description={viewing?.id}
         icon={<FileText className="h-5 w-5" aria-hidden="true" />}
         size="sm"
+        footer={
+          viewing && (
+            <Button asChild size="sm">
+              <Link to="/autorizacoes" search={{ status: viewing.status }}>
+                Ver em Autorizações
+              </Link>
+            </Button>
+          )
+        }
       >
         {viewing && (
           <dl className="grid grid-cols-1 gap-3 text-sm sm:grid-cols-2">

@@ -21,6 +21,7 @@ import {
   X,
   Wrench,
   Check,
+  ClipboardCheck,
   FileSpreadsheet,
   FolderCheck,
   BookMarked,
@@ -79,6 +80,7 @@ import { useTheme } from "@/lib/theme";
 
 export type ItemKey =
   | "dashboard"
+  | "autorizacoes"
   | "emitir"
   | "emitidas"
   | "extrair"
@@ -229,6 +231,21 @@ function SidebarNav({
         />
       </SidebarGroup>
 
+      {!isDoctor && (
+        <SidebarGroup label="Autorizações" collapsed={collapsed}>
+          <SidebarItem
+            icon={ClipboardCheck}
+            label="Autorizações"
+            to="/autorizacoes"
+            active={activeKey === "autorizacoes"}
+            hint="Acompanhe e gerencie as solicitações de exames enviadas pelos médicos."
+            collapsed={collapsed}
+            onNavigate={onNavigate}
+          />
+        </SidebarGroup>
+      )}
+
+      {isDoctor && (
       <SidebarGroup label="Guias" collapsed={collapsed}>
         <SidebarItem
           icon={FileText}
@@ -267,7 +284,9 @@ function SidebarNav({
           onNavigate={onNavigate}
         />
       </SidebarGroup>
+      )}
 
+      {isDoctor && (
       <SidebarGroup label="Atendimento clínico" collapsed={collapsed}>
         {isDoctor && (
           <>
@@ -321,6 +340,7 @@ function SidebarNav({
           />
         )}
       </SidebarGroup>
+      )}
     </nav>
 
   );
