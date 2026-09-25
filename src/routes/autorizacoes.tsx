@@ -1,6 +1,4 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { zodValidator, fallback } from "@tanstack/zod-adapter";
-import { z } from "zod";
 import { AppSidebar } from "@/components/app-sidebar";
 import { AppBreadcrumb } from "@/components/app-breadcrumb";
 import { SiteFooter } from "@/components/site-footer";
@@ -15,10 +13,10 @@ import {
   type AuthorizationStatus,
 } from "@/features/authorizations";
 
-const searchSchema = z.object({ status: fallback(z.string(), "").default("") });
-
 export const Route = createFileRoute("/autorizacoes")({
-  validateSearch: zodValidator(searchSchema),
+  validateSearch: (search: Record<string, unknown>) => ({
+    status: typeof search.status === "string" ? search.status : "",
+  }),
   head: () => ({
     meta: [
       { title: "Autorizações | Guias+" },

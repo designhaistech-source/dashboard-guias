@@ -471,7 +471,7 @@ export function ReceptionDashboard() {
         onOpenChange={(o) => !o && setViewing(null)}
         title="Solicitação de exame"
         description={viewing?.id}
-        icon={FileText}
+        icon={<FileText className="h-5 w-5" aria-hidden="true" />}
         size="sm"
       >
         {viewing && (
