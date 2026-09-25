@@ -19,7 +19,7 @@ import {
   byLongestWaiting,
 } from "@/features/authorizations";
 
-const str = (v: unknown) => (typeof v === "string" ? v : "");
+const str = (v: unknown) => (typeof v === "string" && v ? v : undefined);
 
 export const Route = createFileRoute("/autorizacoes/")({
   validateSearch: (search: Record<string, unknown>) => ({
@@ -47,10 +47,11 @@ type SearchKey = "status" | "q" | "operadora" | "medico" | "de" | "ate";
 const EMPTY = { status: "", q: "", operadora: "", medico: "", de: "", ate: "" };
 
 function AuthorizationsPage() {
-  const search = Route.useSearch();
+  const raw = Route.useSearch();
+  const search = { ...EMPTY, ...Object.fromEntries(Object.entries(raw).filter(([, v]) => v !== undefined)) };
   const navigate = useNavigate({ from: "/autorizacoes/" });
   const set = (key: SearchKey, value: string) =>
-    navigate({ to: ".", search: (prev) => ({ ...prev, [key]: value }), replace: true });
+    navigate({ to: ".", search: (prev) => ({ ...prev, [key]: value || undefined }), replace: true });
 
   const q = search.q.trim().toLowerCase();
   const rows = AUTHORIZATION_REQUESTS.filter((r) => {
@@ -81,7 +82,7 @@ function AuthorizationsPage() {
           <FilterCard
             id="authorizations-filters"
             activeCount={activeCount}
-            onClear={() => navigate({ to: ".", search: EMPTY, replace: true })}
+            onClear={() => navigate({ to: ".", search: {}, replace: true })}
             clearDisabled={activeCount === 0}
           >
             <div className="w-full min-w-0 sm:col-span-2 lg:w-auto lg:flex-1 lg:min-w-60">
