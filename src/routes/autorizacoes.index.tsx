@@ -10,7 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Combobox } from "@/components/ui/combobox";
 import { toLocalIsoDate } from "@/lib/date";
 import {
-  AUTHORIZATION_REQUESTS,
+  useExamRequests,
   AUTHORIZATION_STATUS_LABEL,
   AUTHORIZATION_STATUS_ORDER,
   DOCTORS,
@@ -54,7 +54,8 @@ function AuthorizationsPage() {
     navigate({ to: ".", search: (prev) => ({ ...prev, [key]: value || undefined }), replace: true });
 
   const q = search.q.trim().toLowerCase();
-  const rows = AUTHORIZATION_REQUESTS.filter((r) => {
+  const all = useExamRequests();
+  const rows = all.filter((r) => {
     const d = toLocalIsoDate(new Date(r.receivedAt));
     return (
       (!search.status || r.status === search.status) &&

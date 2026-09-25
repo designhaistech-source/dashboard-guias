@@ -81,6 +81,7 @@ import { useTheme } from "@/lib/theme";
 export type ItemKey =
   | "dashboard"
   | "autorizacoes"
+  | "solicitacoes"
   | "emitir"
   | "emitidas"
   | "extrair"

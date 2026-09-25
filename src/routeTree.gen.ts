@@ -28,6 +28,8 @@ import { Route as QaResponsividadeRouteImport } from './routes/qa-responsividade
 import { Route as ApiCidRouteImport } from './routes/api/cid'
 import { Route as AutorizacoesIndexRouteImport } from './routes/autorizacoes.index'
 import { Route as AutorizacoesIdRouteImport } from './routes/autorizacoes.$id'
+import { Route as SolicitacoesIndexRouteImport } from './routes/solicitacoes.index'
+import { Route as SolicitacoesIdRouteImport } from './routes/solicitacoes.$id'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -124,6 +126,16 @@ const AutorizacoesIdRoute = AutorizacoesIdRouteImport.update({
   path: '/autorizacoes/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SolicitacoesIndexRoute = SolicitacoesIndexRouteImport.update({
+  id: '/solicitacoes/',
+  path: '/solicitacoes/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SolicitacoesIdRoute = SolicitacoesIdRouteImport.update({
+  id: '/solicitacoes/$id',
+  path: '/solicitacoes/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -144,7 +156,9 @@ export interface FileRoutesByFullPath {
   '/qa-responsividade': typeof QaResponsividadeRoute
   '/api/cid': typeof ApiCidRoute
   '/autorizacoes/$id': typeof AutorizacoesIdRoute
+  '/solicitacoes/$id': typeof SolicitacoesIdRoute
   '/autorizacoes/': typeof AutorizacoesIndexRoute
+  '/solicitacoes/': typeof SolicitacoesIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -165,7 +179,9 @@ export interface FileRoutesByTo {
   '/qa-responsividade': typeof QaResponsividadeRoute
   '/api/cid': typeof ApiCidRoute
   '/autorizacoes/$id': typeof AutorizacoesIdRoute
+  '/solicitacoes/$id': typeof SolicitacoesIdRoute
   '/autorizacoes': typeof AutorizacoesIndexRoute
+  '/solicitacoes': typeof SolicitacoesIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -187,7 +203,9 @@ export interface FileRoutesById {
   '/qa-responsividade': typeof QaResponsividadeRoute
   '/api/cid': typeof ApiCidRoute
   '/autorizacoes/$id': typeof AutorizacoesIdRoute
+  '/solicitacoes/$id': typeof SolicitacoesIdRoute
   '/autorizacoes/': typeof AutorizacoesIndexRoute
+  '/solicitacoes/': typeof SolicitacoesIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -210,7 +228,9 @@ export interface FileRouteTypes {
     | '/qa-responsividade'
     | '/api/cid'
     | '/autorizacoes/$id'
+    | '/solicitacoes/$id'
     | '/autorizacoes/'
+    | '/solicitacoes/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -231,7 +251,9 @@ export interface FileRouteTypes {
     | '/qa-responsividade'
     | '/api/cid'
     | '/autorizacoes/$id'
+    | '/solicitacoes/$id'
     | '/autorizacoes'
+    | '/solicitacoes'
   id:
     | '__root__'
     | '/'
@@ -252,7 +274,9 @@ export interface FileRouteTypes {
     | '/qa-responsividade'
     | '/api/cid'
     | '/autorizacoes/$id'
+    | '/solicitacoes/$id'
     | '/autorizacoes/'
+    | '/solicitacoes/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -274,7 +298,9 @@ export interface RootRouteChildren {
   QaResponsividadeRoute: typeof QaResponsividadeRoute
   ApiCidRoute: typeof ApiCidRoute
   AutorizacoesIdRoute: typeof AutorizacoesIdRoute
+  SolicitacoesIdRoute: typeof SolicitacoesIdRoute
   AutorizacoesIndexRoute: typeof AutorizacoesIndexRoute
+  SolicitacoesIndexRoute: typeof SolicitacoesIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -412,6 +438,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AutorizacoesIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/solicitacoes/': {
+      id: '/solicitacoes/'
+      path: '/solicitacoes'
+      fullPath: '/solicitacoes/'
+      preLoaderRoute: typeof SolicitacoesIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/solicitacoes/$id': {
+      id: '/solicitacoes/$id'
+      path: '/solicitacoes/$id'
+      fullPath: '/solicitacoes/$id'
+      preLoaderRoute: typeof SolicitacoesIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -434,7 +474,9 @@ const rootRouteChildren: RootRouteChildren = {
   QaResponsividadeRoute: QaResponsividadeRoute,
   ApiCidRoute: ApiCidRoute,
   AutorizacoesIdRoute: AutorizacoesIdRoute,
+  SolicitacoesIdRoute: SolicitacoesIdRoute,
   AutorizacoesIndexRoute: AutorizacoesIndexRoute,
+  SolicitacoesIndexRoute: SolicitacoesIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

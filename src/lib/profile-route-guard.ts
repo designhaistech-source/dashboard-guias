@@ -8,6 +8,8 @@ const RESTRICTED_ROUTES: Record<string, ProfileRole[]> = {
   "/opme": ["medico"],
   "/documentos": ["medico"],
   "/cid": ["medico"],
+  "/solicitacoes": ["medico"],
+  "/autorizacoes": ["recepcao"],
 };
 
 export function canAccessRoute(pathname: string, role: ProfileRole): boolean {
