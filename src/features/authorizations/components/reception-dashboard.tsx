@@ -375,7 +375,7 @@ export function ReceptionDashboard() {
             {attention.length > 8 && (
               <div className="mt-4">
                 <Button asChild variant="outline" size="sm">
-                  <Link to="/autorizacoes">Ver todas as {attention.length} pendências</Link>
+                  <Link to="/autorizacoes" search={{ status: "" }}>Ver todas as {attention.length} pendências</Link>
                 </Button>
               </div>
             )}
