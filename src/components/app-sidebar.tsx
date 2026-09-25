@@ -215,7 +215,7 @@ function SidebarNav({
   collapsed?: boolean;
   onNavigate?: () => void;
 }) {
-  // Recepção vê só o fluxo administrativo; itens clínicos ficam com o Médico.
+  // Recepção vê só o fluxo administrativo; itens clínicos ficam com o Profissional de saúde.
   const isDoctor = useCurrentProfile().role === "medico";
   return (
     <nav className="flex-1 overflow-y-auto px-3 py-4 space-y-6">
@@ -238,7 +238,7 @@ function SidebarNav({
             label="Autorizações"
             to="/autorizacoes"
             active={activeKey === "autorizacoes"}
-            hint="Acompanhe e gerencie as solicitações de exames enviadas pelos médicos."
+            hint="Acompanhe e gerencie as solicitações de exames enviadas pelos profissionais de saúde."
             collapsed={collapsed}
             onNavigate={onNavigate}
           />

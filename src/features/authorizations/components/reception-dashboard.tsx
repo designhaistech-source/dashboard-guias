@@ -137,7 +137,7 @@ export function ReceptionDashboard() {
       icon: Inbox,
       value: rows.length,
       prev: previous?.length,
-      context: "Enviadas pelos médicos no período",
+      context: "Enviadas pelos profissionais de saúde no período",
       tone: "bg-primary/10 text-primary",
     },
     {
@@ -268,7 +268,7 @@ export function ReceptionDashboard() {
                       clearable
                     />
                   </Field>
-                  <Field label="Médico solicitante">
+                  <Field label="Profissional solicitante">
                     <Combobox
                       value={filters.doctor}
                       onChange={(v) => set("doctor", v)}
@@ -485,7 +485,7 @@ export function ReceptionDashboard() {
             {[
               ["Paciente", viewing.patient],
               ["Procedimento", `${viewing.procedureCode} · ${viewing.procedure}`],
-              ["Médico solicitante", viewing.doctor],
+              ["Profissional solicitante", viewing.doctor],
               ["Operadora", viewing.operadora],
               ["Recebida em", formatIsoToBr(toLocalIsoDate(new Date(viewing.receivedAt)))],
               ["Tempo na situação", formatElapsed(viewing.statusSince)],

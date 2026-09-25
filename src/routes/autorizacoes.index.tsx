@@ -76,7 +76,7 @@ function AuthorizationsPage() {
           <AppBreadcrumb />
           <PageHeader
             title="Autorizações"
-            description="Solicitações de exame enviadas pelos médicos e sua situação junto às operadoras."
+            description="Acompanhe as solicitações de exame e as autorizações junto às operadoras."
           />
 
           <FilterCard
@@ -121,13 +121,13 @@ function AuthorizationsPage() {
             </div>
             <div className="w-full min-w-0 lg:w-48">
               <Combobox
-                aria-label="Médico solicitante"
+                aria-label="Profissional solicitante"
                 options={DOCTORS.map((d) => ({ value: d, label: d }))}
                 value={search.medico}
                 onChange={(v) => set("medico", v)}
-                placeholder="Todos os médicos"
-                searchPlaceholder="Buscar médico..."
-                allOptionLabel="Todos os médicos"
+                placeholder="Todos os profissionais"
+                searchPlaceholder="Buscar profissional..."
+                allOptionLabel="Todos os profissionais"
                 clearable
               />
             </div>
