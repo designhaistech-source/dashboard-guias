@@ -1,4 +1,5 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { submitExamRequest } from "@/features/authorizations";
 import { useEffect, useRef, useState, type ChangeEvent } from "react";
 import {
   Upload,
@@ -174,6 +175,7 @@ type QueueItem = {
 function Upload_Section({ onProcessed }: { onProcessed: (row: Row) => void }) {
   const [queue, setQueue] = useState<QueueItem[]>([]);
   const [cameraOpen, setCameraOpen] = useState(false);
+  const navigate = useNavigate();
   /** Marcação temporária: trata todos os arquivos do envio como internação. */
   const [isInternacao, setIsInternacao] = useState(false);
   /** Timers ativos, para permitir cancelar um processamento em andamento. */
@@ -229,11 +231,20 @@ function Upload_Section({ onProcessed }: { onProcessed: (row: Row) => void }) {
               timersRef.current.delete(item.id);
               const now = new Date();
               const date = `${String(now.getDate()).padStart(2, "0")}/${String(now.getMonth() + 1).padStart(2, "0")}/${now.getFullYear()}, ${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
+              // Protótipo: sem IA real, o tipo "Solicitação de exame" é inferido pelo nome do arquivo.
+              const isExam = !item.isInternacao && /exame|solicit/i.test(item.name);
+              if (isExam) {
+                submitExamRequest({ patient: "Conceição Aparecida Lima dos Santos" });
+                toast.success("Solicitação de exame encaminhada para a Recepção", {
+                  description: "Acompanhe o andamento em Solicitações de exames.",
+                  action: { label: "Acompanhar", onClick: () => navigate({ to: "/solicitacoes" }) },
+                });
+              }
               onProcessed({
                 file: item.name,
                 id: Number(item.id.toString().slice(-4)),
                 patient: "CONCEICAO APARECIDA LIMA DOS SANTOS",
-                type: item.isInternacao ? "Internação" : "SP/SADT",
+                type: item.isInternacao ? "Internação" : isExam ? "Solicitação de exame" : "SP/SADT",
                 date,
                 processing: "Extração concluída",
                 delivery: "Pendente",

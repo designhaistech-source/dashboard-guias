@@ -50,7 +50,7 @@ import { toLocalIsoDate, todayLocalIsoDate, formatIsoToBr } from "@/lib/date";
 import { cn } from "@/lib/utils";
 import {
   ATTENTION_STATUSES,
-  AUTHORIZATION_REQUESTS,
+
   AUTHORIZATION_STATUS_LABEL,
   AUTHORIZATION_STATUS_ORDER,
   DOCTORS,
@@ -61,6 +61,7 @@ import {
   type AuthorizationRequest,
   type AuthorizationStatus,
 } from "../data/authorization-requests";
+import { useExamRequests } from "../data/requests-store";
 import { RequestsTable, StatusLabel } from "./requests-table";
 
 interface Filters {
@@ -114,7 +115,8 @@ export function ReceptionDashboard() {
     setFilters((p) => ({ ...p, from, to: today }));
   };
 
-  const scoped = useMemo(() => applyDimensions(AUTHORIZATION_REQUESTS, filters), [filters]);
+  const allRequests = useExamRequests();
+  const scoped = useMemo(() => applyDimensions(allRequests, filters), [allRequests, filters]);
   const rows = useMemo(
     () => (dateInvalid ? [] : scoped.filter((r) => inRange(r, filters.from, filters.to))),
     [scoped, filters.from, filters.to, dateInvalid],
