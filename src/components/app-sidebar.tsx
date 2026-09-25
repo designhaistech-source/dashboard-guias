@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import { Link, useRouterState } from "@tanstack/react-router";
+import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
+import { useProfileRouteGuard } from "@/lib/profile-route-guard";
 import {
   LayoutGrid,
   FileText,
@@ -19,6 +20,7 @@ import {
   Menu,
   X,
   Wrench,
+  Check,
   FileSpreadsheet,
   FolderCheck,
   BookMarked,
@@ -38,8 +40,6 @@ import {
   DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
-  DropdownMenuRadioGroup,
-  DropdownMenuRadioItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
@@ -98,6 +98,7 @@ export type ItemKey =
 
 
 export function AppSidebar({ activeKey }: { activeKey: ItemKey }) {
+  useProfileRouteGuard();
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
 
@@ -334,6 +335,15 @@ function UserMenu({ collapsed }: { collapsed: boolean }) {
   const [logoutOpen, setLogoutOpen] = useState(false);
   const pathname = useRouterState({ select: (state) => state.location.pathname });
   const profile = useCurrentProfile();
+  const navigate = useNavigate();
+
+  const switchProfile = (role: ProfileRole) => {
+    setMenuOpen(false);
+    if (role === profile.role) return;
+    setProfileRole(role);
+    toast.success(`Perfil alterado para ${PROFILES[role].roleLabel}.`);
+    navigate({ to: "/" });
+  };
 
   const itemClass = "gap-3 px-4 py-2.5 min-h-11 text-sm";
 
@@ -396,26 +406,29 @@ function UserMenu({ collapsed }: { collapsed: boolean }) {
         <DropdownMenuLabel className="px-4 pb-1 pt-0 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
           Trocar perfil
         </DropdownMenuLabel>
-        <DropdownMenuRadioGroup
-          value={profile.role}
-          onValueChange={(value) => {
-            const role = value as ProfileRole;
-            if (role === profile.role) return;
-            setProfileRole(role);
-            toast.success(`Perfil alterado para ${PROFILES[role].roleLabel}.`);
-          }}
-        >
-          {(Object.values(PROFILES)).map((p) => (
-            <DropdownMenuRadioItem key={p.role} value={p.role} className="py-2 pr-4 min-h-11">
+        {Object.values(PROFILES).map((p) => {
+          const active = p.role === profile.role;
+          return (
+            <DropdownMenuItem
+              key={p.role}
+              role="menuitemradio"
+              aria-checked={active}
+              className={`${itemClass} items-start`}
+              onSelect={() => switchProfile(p.role)}
+            >
+              <Check
+                className={`mt-0.5 h-4 w-4 shrink-0 text-primary ${active ? "" : "invisible"}`}
+                aria-hidden="true"
+              />
               <div className="min-w-0">
                 <div className="text-sm font-semibold">{p.roleLabel}</div>
                 <div className="text-xs text-muted-foreground">
                   {p.name} · {p.subtitle}
                 </div>
               </div>
-            </DropdownMenuRadioItem>
-          ))}
-        </DropdownMenuRadioGroup>
+            </DropdownMenuItem>
+          );
+        })}
       </DropdownMenuGroup>
       <DropdownMenuSeparator className="mx-0 my-0" />
 
