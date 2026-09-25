@@ -103,3 +103,21 @@ export function formatElapsed(iso: string, now = Date.now()): string {
   const days = Math.floor(hours / 24);
   return `${days} ${days === 1 ? "dia" : "dias"}`;
 }
+
+/**
+ * Próxima ação operacional por situação atual. Ainda não executável: será
+ * oferecida na página de detalhes da solicitação.
+ */
+export const NEXT_ACTION: Record<AuthorizationStatus, string> = {
+  pendente: "Solicitar autorização",
+  aguardando: "Registrar retorno",
+  pendencia: "Resolver pendência",
+  autorizada: "Registrar realização",
+  negada: "Consultar retorno da operadora",
+  realizada: "Somente acompanhamento",
+};
+
+/** Mais tempo na situação atual primeiro. */
+export function byLongestWaiting(a: AuthorizationRequest, b: AuthorizationRequest) {
+  return a.statusSince.localeCompare(b.statusSince);
+}

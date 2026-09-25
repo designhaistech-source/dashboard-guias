@@ -10,7 +10,6 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as AutorizacoesRouteImport } from './routes/autorizacoes'
 import { Route as CidRouteImport } from './routes/cid'
 import { Route as ConfiguracoesRouteImport } from './routes/configuracoes'
 import { Route as DashboardRouteImport } from './routes/dashboard'
@@ -27,15 +26,11 @@ import { Route as PrescricaoRouteImport } from './routes/prescricao'
 import { Route as ProcedimentosRouteImport } from './routes/procedimentos'
 import { Route as QaResponsividadeRouteImport } from './routes/qa-responsividade'
 import { Route as ApiCidRouteImport } from './routes/api/cid'
+import { Route as AutorizacoesIndexRouteImport } from './routes/autorizacoes.index'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AutorizacoesRoute = AutorizacoesRouteImport.update({
-  id: '/autorizacoes',
-  path: '/autorizacoes',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CidRoute = CidRouteImport.update({
@@ -118,10 +113,14 @@ const ApiCidRoute = ApiCidRouteImport.update({
   path: '/api/cid',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AutorizacoesIndexRoute = AutorizacoesIndexRouteImport.update({
+  id: '/autorizacoes/',
+  path: '/autorizacoes/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/autorizacoes': typeof AutorizacoesRoute
   '/cid': typeof CidRoute
   '/configuracoes': typeof ConfiguracoesRoute
   '/dashboard': typeof DashboardRoute
@@ -138,10 +137,10 @@ export interface FileRoutesByFullPath {
   '/procedimentos': typeof ProcedimentosRoute
   '/qa-responsividade': typeof QaResponsividadeRoute
   '/api/cid': typeof ApiCidRoute
+  '/autorizacoes/': typeof AutorizacoesIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/autorizacoes': typeof AutorizacoesRoute
   '/cid': typeof CidRoute
   '/configuracoes': typeof ConfiguracoesRoute
   '/dashboard': typeof DashboardRoute
@@ -158,11 +157,11 @@ export interface FileRoutesByTo {
   '/procedimentos': typeof ProcedimentosRoute
   '/qa-responsividade': typeof QaResponsividadeRoute
   '/api/cid': typeof ApiCidRoute
+  '/autorizacoes': typeof AutorizacoesIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/autorizacoes': typeof AutorizacoesRoute
   '/cid': typeof CidRoute
   '/configuracoes': typeof ConfiguracoesRoute
   '/dashboard': typeof DashboardRoute
@@ -179,12 +178,12 @@ export interface FileRoutesById {
   '/procedimentos': typeof ProcedimentosRoute
   '/qa-responsividade': typeof QaResponsividadeRoute
   '/api/cid': typeof ApiCidRoute
+  '/autorizacoes/': typeof AutorizacoesIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/autorizacoes'
     | '/cid'
     | '/configuracoes'
     | '/dashboard'
@@ -201,10 +200,10 @@ export interface FileRouteTypes {
     | '/procedimentos'
     | '/qa-responsividade'
     | '/api/cid'
+    | '/autorizacoes/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/autorizacoes'
     | '/cid'
     | '/configuracoes'
     | '/dashboard'
@@ -221,10 +220,10 @@ export interface FileRouteTypes {
     | '/procedimentos'
     | '/qa-responsividade'
     | '/api/cid'
+    | '/autorizacoes'
   id:
     | '__root__'
     | '/'
-    | '/autorizacoes'
     | '/cid'
     | '/configuracoes'
     | '/dashboard'
@@ -241,11 +240,11 @@ export interface FileRouteTypes {
     | '/procedimentos'
     | '/qa-responsividade'
     | '/api/cid'
+    | '/autorizacoes/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  AutorizacoesRoute: typeof AutorizacoesRoute
   CidRoute: typeof CidRoute
   ConfiguracoesRoute: typeof ConfiguracoesRoute
   DashboardRoute: typeof DashboardRoute
@@ -262,6 +261,7 @@ export interface RootRouteChildren {
   ProcedimentosRoute: typeof ProcedimentosRoute
   QaResponsividadeRoute: typeof QaResponsividadeRoute
   ApiCidRoute: typeof ApiCidRoute
+  AutorizacoesIndexRoute: typeof AutorizacoesIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -271,13 +271,6 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/autorizacoes': {
-      id: '/autorizacoes'
-      path: '/autorizacoes'
-      fullPath: '/autorizacoes'
-      preLoaderRoute: typeof AutorizacoesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/cid': {
@@ -392,12 +385,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiCidRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/autorizacoes/': {
+      id: '/autorizacoes/'
+      path: '/autorizacoes'
+      fullPath: '/autorizacoes/'
+      preLoaderRoute: typeof AutorizacoesIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  AutorizacoesRoute: AutorizacoesRoute,
   CidRoute: CidRoute,
   ConfiguracoesRoute: ConfiguracoesRoute,
   DashboardRoute: DashboardRoute,
@@ -414,6 +413,7 @@ const rootRouteChildren: RootRouteChildren = {
   ProcedimentosRoute: ProcedimentosRoute,
   QaResponsividadeRoute: QaResponsividadeRoute,
   ApiCidRoute: ApiCidRoute,
+  AutorizacoesIndexRoute: AutorizacoesIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
