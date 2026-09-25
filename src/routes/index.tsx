@@ -52,6 +52,8 @@ import {
 
 import { AppBreadcrumb } from "@/components/app-breadcrumb";
 import { AppSidebar } from "@/components/app-sidebar";
+import { useCurrentProfile } from "@/lib/current-profile";
+import { ReceptionDashboard } from "@/features/authorizations";
 import { SiteFooter } from "@/components/site-footer";
 import { EmptyState } from "@/components/data-state";
 import {
@@ -134,8 +136,14 @@ export const Route = createFileRoute("/")({
       { name: "description", content: "Visão geral das guias médicas processadas." },
     ],
   }),
-  component: DashboardPage,
+  component: OverviewByProfile,
 });
+
+/** Médico mantém o painel atual; Recepção vê o acompanhamento de autorizações. */
+function OverviewByProfile() {
+  const { role } = useCurrentProfile();
+  return role === "recepcao" ? <ReceptionDashboard /> : <DashboardPage />;
+}
 
 /** Human label for the period actually filtered by the user. */
 /**
