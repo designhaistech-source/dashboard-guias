@@ -22,7 +22,7 @@ import {
 const str = (v: unknown) => (typeof v === "string" && v ? v : undefined);
 
 export const Route = createFileRoute("/autorizacoes/")({
-  validateSearch: (search: Record<string, unknown>) => ({
+  validateSearch: (search: Record<string, unknown>): Partial<Record<SearchKey, string>> => ({
     status: str(search.status),
     q: str(search.q),
     operadora: str(search.operadora),
