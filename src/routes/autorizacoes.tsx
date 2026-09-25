@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { zodValidator, fallback } from "@tanstack/zod-adapter";
 import { z } from "zod";
 import { AppSidebar } from "@/components/app-sidebar";
@@ -6,26 +6,14 @@ import { AppBreadcrumb } from "@/components/app-breadcrumb";
 import { SiteFooter } from "@/components/site-footer";
 import { PageHeader } from "@/components/page-header";
 import { SurfaceCard } from "@/components/surface-card";
-import { Badge } from "@/components/ui/badge";
 import { Chip } from "@/components/ui/chip";
 import {
   AUTHORIZATION_REQUESTS,
   AUTHORIZATION_STATUS_LABEL,
   AUTHORIZATION_STATUS_ORDER,
-  formatElapsed,
+  RequestsTable,
   type AuthorizationStatus,
-} from "@/features/authorizations/data/authorization-requests";
-import {
-  DataTable,
-  DataTableBody,
-  DataTableCell,
-  DataTableDesktop,
-  DataTableHead,
-  DataTableHeader,
-  DataTableRoot,
-  DataTableRow,
-  DataTableEmptyRow,
-} from "@/components/data-table";
+} from "@/features/authorizations";
 
 const searchSchema = z.object({ status: fallback(z.string(), "").default("") });
 
@@ -46,10 +34,12 @@ export const Route = createFileRoute("/autorizacoes")({
 
 function AuthorizationsPage() {
   const { status } = Route.useSearch();
+  const navigate = useNavigate({ from: "/autorizacoes" });
   const active = (AUTHORIZATION_STATUS_ORDER as string[]).includes(status)
     ? (status as AuthorizationStatus)
     : undefined;
   const rows = AUTHORIZATION_REQUESTS.filter((r) => !active || r.status === active);
+  const setStatus = (s: string) => navigate({ to: ".", search: { status: s } });
 
   return (
     <div className="flex min-h-dvh w-full bg-background text-foreground">
@@ -61,53 +51,23 @@ function AuthorizationsPage() {
             title="Autorizações"
             description="Solicitações de exame enviadas pelos médicos e sua situação junto às operadoras."
           />
-          <div className="flex flex-wrap gap-2" aria-label="Filtrar por situação">
-            <Chip asChild selected={!active}>
-              <Link to="/autorizacoes" search={{ status: "" }}>Todas</Link>
+          <div className="flex flex-wrap gap-2" role="group" aria-label="Filtrar por situação">
+            <Chip variant={active ? "default" : "selected"} aria-pressed={!active} onClick={() => setStatus("")}>
+              Todas
             </Chip>
             {AUTHORIZATION_STATUS_ORDER.map((s) => (
-              <Chip key={s} asChild selected={active === s}>
-                <Link to="/autorizacoes" search={{ status: s }}>{AUTHORIZATION_STATUS_LABEL[s]}</Link>
+              <Chip
+                key={s}
+                variant={active === s ? "selected" : "default"}
+                aria-pressed={active === s}
+                onClick={() => setStatus(s)}
+              >
+                {AUTHORIZATION_STATUS_LABEL[s]}
               </Chip>
             ))}
           </div>
           <SurfaceCard title="Solicitações" description={`${rows.length} solicitações`}>
-            <DataTable>
-              <DataTableDesktop breakpoint="sm">
-                <DataTableRoot className="min-w-200">
-                  <DataTableHeader>
-                    <DataTableRow>
-                      <DataTableHead>Paciente</DataTableHead>
-                      <DataTableHead>Procedimento</DataTableHead>
-                      <DataTableHead>Médico solicitante</DataTableHead>
-                      <DataTableHead>Operadora</DataTableHead>
-                      <DataTableHead>Situação</DataTableHead>
-                      <DataTableHead>Tempo</DataTableHead>
-                    </DataTableRow>
-                  </DataTableHeader>
-                  <DataTableBody>
-                    {rows.length === 0 ? (
-                      <DataTableEmptyRow colSpan={6}>Nenhuma solicitação nesta situação.</DataTableEmptyRow>
-                    ) : (
-                      rows.map((r) => (
-                        <DataTableRow key={r.id}>
-                          <DataTableCell>{r.patient}</DataTableCell>
-                          <DataTableCell>{r.procedure}</DataTableCell>
-                          <DataTableCell>{r.doctor}</DataTableCell>
-                          <DataTableCell>{r.operadora}</DataTableCell>
-                          <DataTableCell>
-                            <Badge variant="outline" size="sm" className="whitespace-nowrap">
-                              {AUTHORIZATION_STATUS_LABEL[r.status]}
-                            </Badge>
-                          </DataTableCell>
-                          <DataTableCell className="tabular-nums">{formatElapsed(r.statusSince)}</DataTableCell>
-                        </DataTableRow>
-                      ))
-                    )}
-                  </DataTableBody>
-                </DataTableRoot>
-              </DataTableDesktop>
-            </DataTable>
+            <RequestsTable rows={rows} emptyLabel="Nenhuma solicitação nesta situação." />
           </SurfaceCard>
         </div>
         <SiteFooter />
