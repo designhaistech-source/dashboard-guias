@@ -1328,10 +1328,10 @@ function DashboardPage() {
     return {
       direction: diff > 0 ? "up" : "down",
       label: `${Math.abs(diff).toLocaleString("pt-BR")} ${
-        Math.abs(diff) === 1 ? "guia" : "guias"
+        Math.abs(diff) === 1 ? cfg.noun.slice(0, -1) : cfg.noun
       } por dia ${diff > 0 ? "a mais" : "a menos"} que ${period}`,
     };
-  }, [dailyData]);
+  }, [dailyData, cfg.noun]);
 
   /**
    * Explains, in one short sentence per card, the exact dates used in the
@@ -1649,7 +1649,7 @@ function DashboardPage() {
               label={`Média diária de ${cfg.noun} ${cfg.verb}`}
               value={hasProcessingDays ? String(dailyAvg) : "—"}
               tooltip={kpiTooltips.average}
-              context={hasProcessingDays ? "Por dia com processamento" : "Sem processamento no período"}
+              context={hasProcessingDays ? "Por dia com registros" : "Sem registros no período"}
               comparison={weekTrend?.label}
               tone="info"
               trend={weekTrend?.direction}
