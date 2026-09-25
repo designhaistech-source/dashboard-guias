@@ -70,13 +70,6 @@ import {
   DataTableRow,
 } from "@/components/data-table";
 import { PageHeader } from "@/components/page-header";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import {
-  appTabsIconClass,
-  appTabsLabelClass,
-  appTabsListClass,
-  appTabsTriggerClass,
-} from "@/components/app-tabs";
 import { SurfaceCard } from "@/components/surface-card";
 import { InfoHint } from "@/components/info-hint";
 import { cn } from "@/lib/utils";
@@ -1531,6 +1524,21 @@ function DashboardPage() {
                 id="dashboard-filters-panel"
                 className="space-y-4 border-t border-border px-4 py-4 sm:px-5 sm:py-5"
               >
+                <div className="min-w-0 sm:max-w-xs">
+                  <Field label="Tipo de dado">
+                    <Combobox
+                      value={dataKind}
+                      onChange={(v) => v && changeDataKind(v as DashboardDataKind)}
+                      options={(Object.keys(DASHBOARD_DATA_KINDS) as DashboardDataKind[]).map((k) => ({
+                        value: k,
+                        label: DASHBOARD_DATA_KINDS[k].label,
+                      }))}
+                      placeholder="Guias processadas"
+                      searchPlaceholder="Buscar..."
+                    />
+                  </Field>
+                </div>
+
                 <div className="space-y-1.5">
                   <span className="block text-xs font-medium leading-snug text-muted-foreground">
                     Períodos predefinidos
