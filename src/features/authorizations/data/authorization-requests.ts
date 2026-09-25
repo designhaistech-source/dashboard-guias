@@ -71,7 +71,8 @@ const STATUS_CYCLE: AuthorizationStatus[] = [
 const HOUR = 3_600_000;
 
 function build(): AuthorizationRequest[] {
-  const now = Date.now();
+  // Arredondado à hora para que servidor e navegador gerem os mesmos dados.
+  const now = Math.floor(Date.now() / HOUR) * HOUR;
   return Array.from({ length: 48 }, (_, i) => {
     const status = STATUS_CYCLE[i % STATUS_CYCLE.length];
     const proc = PROCEDURES[(i * 5) % PROCEDURES.length];

@@ -22,6 +22,7 @@ import {
   Wrench,
   Check,
   ClipboardCheck,
+  ClipboardList,
   FileSpreadsheet,
   FolderCheck,
   BookMarked,
@@ -81,6 +82,7 @@ import { useTheme } from "@/lib/theme";
 export type ItemKey =
   | "dashboard"
   | "autorizacoes"
+  | "solicitacoes"
   | "emitir"
   | "emitidas"
   | "extrair"
@@ -271,6 +273,15 @@ function SidebarNav({
           to="/guias"
           active={activeKey === "extrair"}
           hint="Extraia automaticamente os dados de uma guia por meio de IA."
+          collapsed={collapsed}
+          onNavigate={onNavigate}
+        />
+        <SidebarItem
+          icon={ClipboardList}
+          label="Solicitações de exames"
+          to="/solicitacoes"
+          active={activeKey === "solicitacoes"}
+          hint="Acompanhe a autorização das solicitações de exame encaminhadas à Recepção."
           collapsed={collapsed}
           onNavigate={onNavigate}
         />
