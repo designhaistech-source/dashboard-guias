@@ -4,23 +4,36 @@ import { AppBreadcrumb } from "@/components/app-breadcrumb";
 import { SiteFooter } from "@/components/site-footer";
 import { PageHeader } from "@/components/page-header";
 import { SurfaceCard } from "@/components/surface-card";
-import { Chip } from "@/components/ui/chip";
+import { FilterCard } from "@/components/filter-card";
+import { SearchInput } from "@/components/form-field";
+import { Input } from "@/components/ui/input";
+import { Combobox } from "@/components/ui/combobox";
+import { toLocalIsoDate } from "@/lib/date";
 import {
   AUTHORIZATION_REQUESTS,
   AUTHORIZATION_STATUS_LABEL,
   AUTHORIZATION_STATUS_ORDER,
+  DOCTORS,
+  OPERADORAS,
   RequestsTable,
-  type AuthorizationStatus,
+  byLongestWaiting,
 } from "@/features/authorizations";
+
+const str = (v: unknown) => (typeof v === "string" ? v : "");
 
 export const Route = createFileRoute("/autorizacoes/")({
   validateSearch: (search: Record<string, unknown>) => ({
-    status: typeof search.status === "string" ? search.status : "",
+    status: str(search.status),
+    q: str(search.q),
+    operadora: str(search.operadora),
+    medico: str(search.medico),
+    de: str(search.de),
+    ate: str(search.ate),
   }),
   head: () => ({
     meta: [
       { title: "Autorizações | Guias+" },
-      { name: "description", content: "Acompanhe as solicitações de exame e as autorizações junto às operadoras." },
+      { name: "description", content: "Fila de solicitações de exame e autorizações junto às operadoras." },
       { property: "og:title", content: "Autorizações | Guias+" },
       { property: "og:description", content: "Solicitações de exame e autorizações no Guias+." },
       { property: "og:type", content: "website" },
@@ -30,14 +43,29 @@ export const Route = createFileRoute("/autorizacoes/")({
   component: AuthorizationsPage,
 });
 
+type SearchKey = "status" | "q" | "operadora" | "medico" | "de" | "ate";
+const EMPTY = { status: "", q: "", operadora: "", medico: "", de: "", ate: "" };
+
 function AuthorizationsPage() {
-  const { status } = Route.useSearch();
-  const navigate = useNavigate({ from: "/autorizacoes" });
-  const active = (AUTHORIZATION_STATUS_ORDER as string[]).includes(status)
-    ? (status as AuthorizationStatus)
-    : undefined;
-  const rows = AUTHORIZATION_REQUESTS.filter((r) => !active || r.status === active);
-  const setStatus = (s: string) => navigate({ to: ".", search: { status: s } });
+  const search = Route.useSearch();
+  const navigate = useNavigate({ from: "/autorizacoes/" });
+  const set = (key: SearchKey, value: string) =>
+    navigate({ to: ".", search: (prev) => ({ ...prev, [key]: value }), replace: true });
+
+  const q = search.q.trim().toLowerCase();
+  const rows = AUTHORIZATION_REQUESTS.filter((r) => {
+    const d = toLocalIsoDate(new Date(r.receivedAt));
+    return (
+      (!search.status || r.status === search.status) &&
+      (!search.operadora || r.operadora === search.operadora) &&
+      (!search.medico || r.doctor === search.medico) &&
+      (!search.de || d >= search.de) &&
+      (!search.ate || d <= search.ate) &&
+      (!q || r.patient.toLowerCase().includes(q) || r.procedure.toLowerCase().includes(q) || r.procedureCode.includes(q))
+    );
+  }).sort(byLongestWaiting);
+
+  const activeCount = Object.values(search).filter(Boolean).length;
 
   return (
     <div className="flex min-h-dvh w-full bg-background text-foreground">
@@ -49,23 +77,96 @@ function AuthorizationsPage() {
             title="Autorizações"
             description="Solicitações de exame enviadas pelos médicos e sua situação junto às operadoras."
           />
-          <div className="flex flex-wrap gap-2" role="group" aria-label="Filtrar por situação">
-            <Chip variant={active ? "default" : "selected"} aria-pressed={!active} onClick={() => setStatus("")}>
-              Todas
-            </Chip>
-            {AUTHORIZATION_STATUS_ORDER.map((s) => (
-              <Chip
-                key={s}
-                variant={active === s ? "selected" : "default"}
-                aria-pressed={active === s}
-                onClick={() => setStatus(s)}
-              >
-                {AUTHORIZATION_STATUS_LABEL[s]}
-              </Chip>
-            ))}
-          </div>
-          <SurfaceCard title="Solicitações" description={`${rows.length} solicitações`}>
-            <RequestsTable rows={rows} emptyLabel="Nenhuma solicitação nesta situação." />
+
+          <FilterCard
+            id="authorizations-filters"
+            activeCount={activeCount}
+            onClear={() => navigate({ to: ".", search: EMPTY, replace: true })}
+            clearDisabled={activeCount === 0}
+          >
+            <div className="w-full min-w-0 sm:col-span-2 lg:w-auto lg:flex-1 lg:min-w-60">
+              <SearchInput
+                placeholder="Buscar por paciente ou procedimento"
+                aria-label="Buscar solicitações"
+                value={search.q}
+                clearable
+                onChange={(e) => set("q", e.target.value)}
+                onClear={() => set("q", "")}
+              />
+            </div>
+            <div className="w-full min-w-0 lg:w-48">
+              <Combobox
+                aria-label="Operadora"
+                options={OPERADORAS.map((o) => ({ value: o, label: o }))}
+                value={search.operadora}
+                onChange={(v) => set("operadora", v)}
+                placeholder="Todas as operadoras"
+                searchPlaceholder="Buscar operadora..."
+                allOptionLabel="Todas as operadoras"
+                clearable
+              />
+            </div>
+            <div className="w-full min-w-0 lg:w-52">
+              <Combobox
+                aria-label="Situação"
+                options={AUTHORIZATION_STATUS_ORDER.map((s) => ({ value: s, label: AUTHORIZATION_STATUS_LABEL[s] }))}
+                value={search.status}
+                onChange={(v) => set("status", v)}
+                placeholder="Todas as situações"
+                searchPlaceholder="Buscar situação..."
+                allOptionLabel="Todas as situações"
+                clearable
+              />
+            </div>
+            <div className="w-full min-w-0 lg:w-48">
+              <Combobox
+                aria-label="Médico solicitante"
+                options={DOCTORS.map((d) => ({ value: d, label: d }))}
+                value={search.medico}
+                onChange={(v) => set("medico", v)}
+                placeholder="Todos os médicos"
+                searchPlaceholder="Buscar médico..."
+                allOptionLabel="Todos os médicos"
+                clearable
+              />
+            </div>
+            <div className="flex w-full min-w-0 items-center gap-2 lg:w-50">
+              <label htmlFor="authorizations-from" className="shrink-0 text-xs font-medium text-muted-foreground">
+                De
+              </label>
+              <Input
+                id="authorizations-from"
+                type="date"
+                aria-label="Data inicial"
+                max={search.ate || undefined}
+                value={search.de}
+                onChange={(e) => set("de", e.target.value)}
+              />
+            </div>
+            <div className="flex w-full min-w-0 items-center gap-2 lg:w-50">
+              <label htmlFor="authorizations-to" className="shrink-0 text-xs font-medium text-muted-foreground">
+                Até
+              </label>
+              <Input
+                id="authorizations-to"
+                type="date"
+                aria-label="Data final"
+                min={search.de || undefined}
+                value={search.ate}
+                onChange={(e) => set("ate", e.target.value)}
+              />
+            </div>
+          </FilterCard>
+
+          <SurfaceCard
+            title="Solicitações"
+            description={rows.length === 1 ? "1 solicitação" : `${rows.length} solicitações`}
+          >
+            <RequestsTable
+              rows={rows}
+              emptyLabel="Nenhuma solicitação encontrada com os filtros aplicados."
+              onView={(r) => navigate({ to: "/autorizacoes/$id", params: { id: r.id } })}
+            />
           </SurfaceCard>
         </div>
         <SiteFooter />
