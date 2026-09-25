@@ -41,7 +41,7 @@ function AuthorizationsPage() {
 
   return (
     <div className="flex min-h-dvh w-full bg-background text-foreground">
-      <AppSidebar activeKey="dashboard" />
+      <AppSidebar activeKey="autorizacoes" />
       <main className="min-w-0 flex-1 flex flex-col min-h-dvh">
         <div className="w-full flex-1 space-y-6 px-4 py-6 pb-16 pt-20 sm:px-6 sm:py-8 md:pt-8 lg:px-10">
           <AppBreadcrumb />
