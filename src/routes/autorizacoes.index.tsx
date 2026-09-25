@@ -13,7 +13,7 @@ import {
   type AuthorizationStatus,
 } from "@/features/authorizations";
 
-export const Route = createFileRoute("/autorizacoes")({
+export const Route = createFileRoute("/autorizacoes/")({
   validateSearch: (search: Record<string, unknown>) => ({
     status: typeof search.status === "string" ? search.status : "",
   }),
