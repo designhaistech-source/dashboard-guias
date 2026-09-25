@@ -28,7 +28,6 @@ import {
   Info,
   FileCheck2,
   FileWarning,
-  FileStack,
   CheckCircle2,
   AlertTriangle,
 } from "lucide-react";
@@ -70,13 +69,6 @@ import {
   DataTableRow,
 } from "@/components/data-table";
 import { PageHeader } from "@/components/page-header";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import {
-  appTabsIconClass,
-  appTabsLabelClass,
-  appTabsListClass,
-  appTabsTriggerClass,
-} from "@/components/app-tabs";
 import { SurfaceCard } from "@/components/surface-card";
 import { InfoHint } from "@/components/info-hint";
 import { cn } from "@/lib/utils";
@@ -98,7 +90,8 @@ import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useIsMobile } from "@/hooks/use-mobile";
 import {
-  DASHBOARD_GUIDES,
+  DASHBOARD_DATA_KINDS,
+  type DashboardDataKind,
   PRESTADORES,
   PROCEDURE_OPTIONS,
   filterGuides,
@@ -1116,15 +1109,24 @@ function DashboardPage() {
 
   const firstFieldRef = useRef<HTMLInputElement | null>(null);
 
-  const filteredGuides = useMemo(() => filterGuides(DASHBOARD_GUIDES, filters), [filters]);
+  const [dataKind, setDataKind] = useState<DashboardDataKind>("processadas");
+  const cfg = DASHBOARD_DATA_KINDS[dataKind];
+  /** Tipos e procedimentos variam por conjunto de dados; período e prestador são mantidos. */
+  const changeDataKind = (kind: DashboardDataKind) => {
+    setDataKind(kind);
+    setActiveType(undefined);
+    setFilters((f) => ({ ...f, tipoGuia: "", procedimentos: [] }));
+  };
+
+  const filteredGuides = useMemo(() => filterGuides(cfg.rows, filters), [cfg.rows, filters]);
 
   const metrics = useMemo(
     () =>
       buildMetrics(filteredGuides, {
         from: filters.dataAutorizacaoDe || undefined,
         to: filters.dataAutorizacaoAte || undefined,
-      }),
-    [filteredGuides, filters.dataAutorizacaoDe, filters.dataAutorizacaoAte],
+      }, cfg.types),
+    [filteredGuides, filters.dataAutorizacaoDe, filters.dataAutorizacaoAte, cfg.types],
   );
 
   /** Matriz procedimento x prestador (heatmap), limitada aos 6 mais solicitados. */
@@ -1326,10 +1328,10 @@ function DashboardPage() {
     return {
       direction: diff > 0 ? "up" : "down",
       label: `${Math.abs(diff).toLocaleString("pt-BR")} ${
-        Math.abs(diff) === 1 ? "guia" : "guias"
+        Math.abs(diff) === 1 ? cfg.noun.slice(0, -1) : cfg.noun
       } por dia ${diff > 0 ? "a mais" : "a menos"} que ${period}`,
     };
-  }, [dailyData]);
+  }, [dailyData, cfg.noun]);
 
   /**
    * Explains, in one short sentence per card, the exact dates used in the
@@ -1443,49 +1445,7 @@ function DashboardPage() {
             }
           />
 
-          <Tabs defaultValue="extraidas" className="space-y-6">
-            <TooltipProvider>
-              <TabsList className={appTabsListClass}>
-                <TabsTrigger value="extraidas" className={appTabsTriggerClass}>
-                  <FileText className={appTabsIconClass} aria-hidden />
-                  <span className={appTabsLabelClass}>Guias processadas</span>
-                </TabsTrigger>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <span className="flex min-w-0">
-                      <TabsTrigger
-                        value="emitidas"
-                        disabled
-                        aria-disabled="true"
-                        className={cn(appTabsTriggerClass, "w-full opacity-50")}
-                      >
-                        <FileCheck2 className={appTabsIconClass} aria-hidden />
-                        <span className={appTabsLabelClass}>Guias emitidas</span>
-                      </TabsTrigger>
-                    </span>
-                  </TooltipTrigger>
-                  <TooltipContent>Disponível em breve</TooltipContent>
-                </Tooltip>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <span className="flex min-w-0">
-                      <TabsTrigger
-                        value="documentos"
-                        disabled
-                        aria-disabled="true"
-                        className={cn(appTabsTriggerClass, "w-full opacity-50")}
-                      >
-                        <FileStack className={appTabsIconClass} aria-hidden />
-                        <span className={appTabsLabelClass}>Documentos emitidos</span>
-                      </TabsTrigger>
-                    </span>
-                  </TooltipTrigger>
-                  <TooltipContent>Disponível em breve</TooltipContent>
-                </Tooltip>
-              </TabsList>
-            </TooltipProvider>
-
-            <TabsContent value="extraidas" className="space-y-6">
+          <div className="space-y-6">
           {/* Recorte aplicado — sempre visível, sem abrir os filtros */}
           <p className="flex items-center gap-2 text-sm leading-5 text-muted-foreground" aria-live="polite">
             <span className="flex h-5 shrink-0 items-center" aria-hidden="true">
@@ -1495,7 +1455,7 @@ function DashboardPage() {
               Dados exibidos: <span className="font-medium text-foreground">{periodLabel}</span>
               {filters.tipoGuia.trim() ? (
                 <>
-                  {" · "}Tipo de guia:{" "}
+                  {" · "}{cfg.typeLabel}:{" "}
                   <span className="font-medium text-foreground">{filters.tipoGuia.trim()}</span>
                 </>
               ) : null}
@@ -1563,6 +1523,21 @@ function DashboardPage() {
                 id="dashboard-filters-panel"
                 className="space-y-4 border-t border-border px-4 py-4 sm:px-5 sm:py-5"
               >
+                <div className="min-w-0 sm:max-w-xs">
+                  <Field label="Tipo de dado">
+                    <Combobox
+                      value={dataKind}
+                      onChange={(v) => v && changeDataKind(v as DashboardDataKind)}
+                      options={(Object.keys(DASHBOARD_DATA_KINDS) as DashboardDataKind[]).map((k) => ({
+                        value: k,
+                        label: DASHBOARD_DATA_KINDS[k].label,
+                      }))}
+                      placeholder="Guias processadas"
+                      searchPlaceholder="Buscar..."
+                    />
+                  </Field>
+                </div>
+
                 <div className="space-y-1.5">
                   <span className="block text-xs font-medium leading-snug text-muted-foreground">
                     Períodos predefinidos
@@ -1602,10 +1577,10 @@ function DashboardPage() {
                   />
                   <div className="min-w-0 sm:col-span-2 lg:col-span-1">
                     <FilterSelect
-                      label="Tipo de guia"
+                      label={cfg.typeLabel}
                       value={filters.tipoGuia}
                       onChange={(v) => setFilter("tipoGuia", v)}
-                      options={GUIDE_TYPES.map((t) => t.name)}
+                      options={cfg.types.map((t) => t.name)}
                     />
                   </div>
                   <div className="min-w-0 sm:col-span-2 lg:col-span-1">
@@ -1653,15 +1628,15 @@ function DashboardPage() {
           >
             <Kpi
               icon={FileText}
-              label="Total de guias processadas"
+              label={`Total de ${cfg.noun} ${cfg.verb}`}
               value={String(total)}
               tooltip={kpiTooltips.total}
-              context={dayCount > 0 ? "No período filtrado" : "Nenhuma guia no período filtrado"}
+              context={dayCount > 0 ? "No período filtrado" : `Nenhum registro no período filtrado`}
               tone="primary"
             />
             <Kpi
               icon={Activity}
-              label="Guias processadas hoje"
+              label={`${cfg.label} hoje`}
               value={String(metrics.today)}
               tooltip={kpiTooltips.today}
               context={`Hoje, ${todayLabel}`}
@@ -1671,17 +1646,17 @@ function DashboardPage() {
             />
             <Kpi
               icon={TrendingUp}
-              label="Média diária de guias processadas"
+              label={`Média diária de ${cfg.noun} ${cfg.verb}`}
               value={hasProcessingDays ? String(dailyAvg) : "—"}
               tooltip={kpiTooltips.average}
-              context={hasProcessingDays ? "Por dia com processamento" : "Sem processamento no período"}
+              context={hasProcessingDays ? "Por dia com registros" : "Sem registros no período"}
               comparison={weekTrend?.label}
               tone="info"
               trend={weekTrend?.direction}
             />
             <Kpi
               icon={Layers}
-              label="Tipos de guias processadas"
+              label={`Tipos de ${cfg.noun} ${cfg.verb}`}
               value={String(metrics.distinctTypes)}
               tooltip={kpiTooltips.types}
               context="Tipos distintos no período filtrado"
@@ -1695,8 +1670,8 @@ function DashboardPage() {
             <SurfaceCard
               className="xl:col-span-2 flex h-full min-w-0 flex-col"
               bodyClassName="flex flex-1 flex-col"
-              title="Guias processadas por dia"
-              description="Quantidade de guias processadas por dia no período filtrado"
+              title={`${cfg.label} por dia`}
+              description={`Quantidade de ${cfg.noun} ${cfg.verb} por dia no período filtrado`}
             >
 
               {!hasData ? (
@@ -1757,7 +1732,7 @@ function DashboardPage() {
                           isMobile
                             ? undefined
                             : {
-                                value: "Quantidade de guias",
+                                value: `Quantidade de ${cfg.noun}`,
                                 angle: -90,
                                 position: "insideLeft",
                                 fill: "var(--muted-foreground)",
@@ -1774,7 +1749,7 @@ function DashboardPage() {
                       <Area
                         type="monotone"
                         dataKey="guias"
-                        name="Guias processadas"
+                        name={cfg.label}
                         stroke="var(--primary)"
                         strokeWidth={2.5}
                         fill="url(#gradPrimary)"
@@ -1789,7 +1764,7 @@ function DashboardPage() {
                 </div>
                 {isMobile ? (
                   <p className="mt-2 text-xs leading-snug text-muted-foreground">
-                    Eixo vertical: quantidade de guias · Eixo horizontal: dia do período
+                    Eixo vertical: quantidade de {cfg.noun} · Eixo horizontal: dia do período
                   </p>
                 ) : null}
                 </>
@@ -1799,8 +1774,8 @@ function DashboardPage() {
             <SurfaceCard
               className="flex h-full min-w-0 flex-col"
               bodyClassName="flex flex-1 flex-col"
-              title="Guias processadas por tipo"
-              description="Distribuição das guias processadas no período filtrado"
+              title={`${cfg.label} por tipo`}
+              description={`Distribuição de ${cfg.noun} ${cfg.verb} no período filtrado`}
             >
               {!hasData ? (
                 emptyState
@@ -1811,9 +1786,9 @@ function DashboardPage() {
                     data-chart="types"
 
                     role="img"
-                    aria-label={`Guias processadas por tipo: ${typeData
+                    aria-label={`${cfg.label} por tipo: ${typeData
                       .map((d) => `${d.name} ${d.value}`)
-                      .join(", ")}. Total ${total} guias.`}
+                      .join(", ")}. Total ${total} ${cfg.noun}.`}
                   >
 
                     <ResponsiveContainer width="100%" height="100%">
@@ -1838,7 +1813,7 @@ function DashboardPage() {
                             <Cell key={i} fill={d.color} />
                           ))}
                         </Pie>
-                        <RTooltip content={<ChartTooltip unit="guias" />} wrapperStyle={{ zIndex: 30 }} />
+                        <RTooltip content={<ChartTooltip unit={cfg.noun} />} wrapperStyle={{ zIndex: 30 }} />
                       </PieChart>
                     </ResponsiveContainer>
                     <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center px-6 text-center">
@@ -1847,8 +1822,8 @@ function DashboardPage() {
                       </div>
                       <div className="max-w-24 text-xs leading-tight text-muted-foreground">
                         {activeType !== undefined
-                          ? `guias de ${typeData[activeType].name}`
-                          : "guias processadas"}
+                          ? `${cfg.noun} de ${typeData[activeType].name}`
+                          : `${cfg.noun} ${cfg.verb}`}
                       </div>
                     </div>
                   </div>
@@ -1885,8 +1860,8 @@ function DashboardPage() {
 
           {/* Prestadores */}
           <SurfaceCard
-            title="Guias processadas por prestador"
-            description="Quantidade de guias processadas por prestador no período filtrado"
+            title={`${cfg.label} por prestador`}
+            description={`Quantidade de ${cfg.noun} ${cfg.verb} por prestador no período filtrado`}
           >
             {providerCounts.length === 0 ? (
               emptyState
@@ -1931,7 +1906,7 @@ function DashboardPage() {
                             isMobile
                               ? undefined
                               : {
-                                  value: "Quantidade de guias",
+                                  value: `Quantidade de ${cfg.noun}`,
                                   position: "insideBottom",
                                   offset: -12,
                                   fill: "var(--muted-foreground)",
@@ -1961,7 +1936,7 @@ function DashboardPage() {
                           }
                         />
                         <RTooltip
-                          content={<ChartTooltip unit="guias" />}
+                          content={<ChartTooltip unit={cfg.noun} />}
                           cursor={{ fill: "var(--muted)", opacity: 0.4 }}
                         />
                         <Bar
@@ -1984,7 +1959,7 @@ function DashboardPage() {
                   </div>
                   {isMobile ? (
                     <p className="text-xs leading-snug text-muted-foreground">
-                      Eixo vertical: prestador · Eixo horizontal: quantidade de guias
+                      Eixo vertical: prestador · Eixo horizontal: quantidade de {cfg.noun}
                     </p>
                   ) : null}
                 </div>
@@ -2052,7 +2027,7 @@ function DashboardPage() {
           {/* Procedures */}
           <SurfaceCard
             title="Procedimentos mais solicitados"
-            description="Procedimentos mais frequentes nas guias processadas no período filtrado"
+            description={`Procedimentos mais frequentes nos registros de ${cfg.label.toLowerCase()} no período filtrado`}
 
           >
             {procedures.length === 0 ? (
@@ -2103,7 +2078,7 @@ function DashboardPage() {
                           isMobile
                             ? undefined
                             : {
-                                value: "Quantidade de guias",
+                                value: `Quantidade de ${cfg.noun}`,
                                 position: "insideBottom",
                                 offset: -12,
                                 fill: "var(--muted-foreground)",
@@ -2134,7 +2109,7 @@ function DashboardPage() {
                       />
 
                       <RTooltip
-                        content={<ChartTooltip unit="guias" />}
+                        content={<ChartTooltip unit={cfg.noun} />}
                         cursor={{ fill: "var(--muted)", opacity: 0.4 }}
                       />
                       <Bar
@@ -2157,7 +2132,7 @@ function DashboardPage() {
                 </div>
                 {isMobile ? (
                    <p className="text-xs leading-snug text-muted-foreground">
-                    Eixo vertical: procedimento · Eixo horizontal: quantidade de guias
+                    Eixo vertical: procedimento · Eixo horizontal: quantidade de {cfg.noun}
                   </p>
                 ) : null}
                 </div>
@@ -2268,7 +2243,7 @@ function DashboardPage() {
 
 
 
-          {/* Status do processamento de guias */}
+          {cfg.hasProcessingStatus && (<>          {/* Status do processamento de guias */}
           <SurfaceCard
             title="Status do processamento de guias"
             description="Distribuição das guias por status no período filtrado"
@@ -2295,7 +2270,7 @@ function DashboardPage() {
                             <Cell key={d.name} fill={d.color} />
                           ))}
                         </Pie>
-                        <RTooltip content={<ChartTooltip unit="guias" />} wrapperStyle={{ zIndex: 30 }} />
+                        <RTooltip content={<ChartTooltip unit={cfg.noun} />} wrapperStyle={{ zIndex: 30 }} />
                       </PieChart>
                     </ResponsiveContainer>
                     <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center px-6 text-center">
@@ -2482,13 +2457,9 @@ function DashboardPage() {
                 </div>
               </div>
             )}
-          </SurfaceCard>
-            </TabsContent>
+          </SurfaceCard></>)}
+          </div>
 
-            {/* Reservado para indicadores, filtros e gráficos próprios de cada aba. */}
-            <TabsContent value="emitidas" />
-            <TabsContent value="documentos" />
-          </Tabs>
         </div>
         <SiteFooter />
       </main>
