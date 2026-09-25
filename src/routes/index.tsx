@@ -139,7 +139,7 @@ export const Route = createFileRoute("/")({
   component: OverviewByProfile,
 });
 
-/** Médico mantém o painel atual; Recepção vê o acompanhamento de autorizações. */
+/** Profissional de saúde mantém o painel atual; Recepção vê o acompanhamento de autorizações. */
 function OverviewByProfile() {
   const { role } = useCurrentProfile();
   return role === "recepcao" ? <ReceptionDashboard /> : <DashboardPage />;
