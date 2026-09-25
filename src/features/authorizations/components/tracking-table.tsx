@@ -63,7 +63,7 @@ export function TrackingTable({
                 <DataTableRow key={r.id}>
                   <DataTableCell className="font-medium">{r.patient}</DataTableCell>
                   <DataTableCell title={r.procedure}>{r.procedure}</DataTableCell>
-                  <DataTableCell className="font-mono tabular-nums whitespace-nowrap">{formatDateTime(r.receivedAt)}</DataTableCell>
+                  <DataTableCell className="font-mono tabular-nums whitespace-nowrap" suppressHydrationWarning>{formatDateTime(r.receivedAt)}</DataTableCell>
                   <DataTableCell><Assignee name={r.assignee} /></DataTableCell>
                   <DataTableCell><TrackingStatus request={r} /></DataTableCell>
                   <DataTableCell className="text-right">

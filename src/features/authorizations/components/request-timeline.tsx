@@ -25,7 +25,7 @@ export function RequestTimeline({ history }: { history: HistoryEntry[] }) {
               {i === 0 && <span className="sr-only"> (etapa atual)</span>}
             </p>
             <p className="mt-0.5 text-xs text-muted-foreground">
-              <time dateTime={h.at} className="font-mono tabular-nums">
+              <time dateTime={h.at} className="font-mono tabular-nums" suppressHydrationWarning>
                 {dateFmt.format(d)} às {timeFmt.format(d)}
               </time>
               {" · "}

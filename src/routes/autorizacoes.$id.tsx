@@ -98,7 +98,7 @@ function RequestDetailPage() {
           {fields.map(([k, v]) => (
             <div key={k} className="min-w-0">
               <dt className="text-xs font-medium text-muted-foreground">{k}</dt>
-              <dd className="mt-0.5 break-words text-foreground">{v}</dd>
+              <dd className="mt-0.5 break-words text-foreground" suppressHydrationWarning>{v}</dd>
             </div>
           ))}
         </dl>
