@@ -56,6 +56,7 @@ import {
   DOCTORS,
   OPERADORAS,
   PROCEDURES,
+  byLongestWaiting,
   formatElapsed,
   type AuthorizationRequest,
   type AuthorizationStatus,
@@ -172,7 +173,7 @@ export function ReceptionDashboard() {
     () =>
       rows
         .filter((r) => ATTENTION_STATUSES.includes(r.status))
-        .sort((a, b) => a.statusSince.localeCompare(b.statusSince)),
+        .sort(byLongestWaiting),
     [rows],
   );
 
@@ -186,9 +187,7 @@ export function ReceptionDashboard() {
     return {
       operadora: op,
       total: list.length,
-      autorizadas: list.filter((r) => r.status === "autorizada" || r.status === "realizada").length,
-      negadas: countBy(list, "negada"),
-      aguardando: countBy(list, "aguardando"),
+      counts: AUTHORIZATION_STATUS_ORDER.map((s) => countBy(list, s)),
     };
   }).filter((o) => o.total > 0);
 
@@ -418,14 +417,14 @@ export function ReceptionDashboard() {
             >
               <DataTable>
                 <DataTableDesktop breakpoint="md">
-                  <DataTableRoot className="min-w-120">
+                  <DataTableRoot className="min-w-200">
                     <DataTableHeader>
                       <DataTableRow>
                         <DataTableHead>Operadora</DataTableHead>
                         <DataTableHead className="text-right">Total</DataTableHead>
-                        <DataTableHead className="text-right">Autorizadas</DataTableHead>
-                        <DataTableHead className="text-right">Não autorizadas</DataTableHead>
-                        <DataTableHead className="text-right">Aguardando retorno</DataTableHead>
+                        {AUTHORIZATION_STATUS_ORDER.map((s) => (
+                          <DataTableHead key={s} className="text-right">{AUTHORIZATION_STATUS_LABEL[s]}</DataTableHead>
+                        ))}
                       </DataTableRow>
                     </DataTableHeader>
                     <DataTableBody>
@@ -433,9 +432,9 @@ export function ReceptionDashboard() {
                         <DataTableRow key={o.operadora}>
                           <DataTableCell className="font-medium">{o.operadora}</DataTableCell>
                           <DataTableCell className="text-right font-mono tabular-nums">{o.total}</DataTableCell>
-                          <DataTableCell className="text-right tabular-nums">{o.autorizadas}</DataTableCell>
-                          <DataTableCell className="text-right tabular-nums">{o.negadas}</DataTableCell>
-                          <DataTableCell className="text-right tabular-nums">{o.aguardando}</DataTableCell>
+                          {o.counts.map((c, i) => (
+                            <DataTableCell key={AUTHORIZATION_STATUS_ORDER[i]} className="text-right tabular-nums">{c}</DataTableCell>
+                          ))}
                         </DataTableRow>
                       ))}
                     </DataTableBody>
@@ -446,11 +445,10 @@ export function ReceptionDashboard() {
                     <DataTableCard key={o.operadora} flat>
                       <DataTableCardHeader title={o.operadora} trailing={<span className="font-mono text-sm">{o.total}</span>} />
                       <DataTableCardFields
-                        fields={[
-                          { label: "Autorizadas", value: o.autorizadas },
-                          { label: "Não autorizadas", value: o.negadas },
-                          { label: "Aguardando retorno", value: o.aguardando },
-                        ]}
+                        fields={AUTHORIZATION_STATUS_ORDER.map((s, i) => ({
+                          label: AUTHORIZATION_STATUS_LABEL[s],
+                          value: o.counts[i],
+                        }))}
                       />
                     </DataTableCard>
                   ))}
@@ -459,7 +457,6 @@ export function ReceptionDashboard() {
               {byOperadora.length === 0 && (
                 <p className="py-10 text-center text-sm text-muted-foreground">Nenhuma solicitação no período filtrado.</p>
               )}
-              <p className="mt-3 text-xs text-muted-foreground">Autorizadas inclui exames já realizados.</p>
             </SurfaceCard>
           </div>
         </div>
@@ -476,7 +473,7 @@ export function ReceptionDashboard() {
         footer={
           viewing && (
             <Button asChild size="sm">
-              <Link to="/autorizacoes" search={{ status: viewing.status }}>
+              <Link to="/autorizacoes" search={{ status: viewing.status, q: viewing.patient }}>
                 Ver em Autorizações
               </Link>
             </Button>
