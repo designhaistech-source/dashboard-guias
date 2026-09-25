@@ -153,8 +153,13 @@ const isoDaysAgo = localIsoDaysAgo;
 
 export const TODAY_ISO = isoDaysAgo(0);
 
-function buildGuides(): DashboardGuide[] {
-  const rand = seeded(20260813);
+function buildGuides(
+  seed = 20260813,
+  opts: { types?: readonly string[]; failRate?: number; scale?: number } = {},
+): DashboardGuide[] {
+  const rand = seeded(seed);
+  const failRate = opts.failRate ?? 0.12;
+  const scale = opts.scale ?? 1;
   const rows: DashboardGuide[] = [];
   // Amount of guides per day across the last 30 days (index 0 = 29 days ago).
   const perDay = [
@@ -162,7 +167,8 @@ function buildGuides(): DashboardGuide[] {
     11, 15, 9, 12, 7, 10, 14, 16, 11, 13, 9, 12, 15, 14, 18,
   ];
 
-  perDay.forEach((count, dayIdx) => {
+  perDay.forEach((baseCount, dayIdx) => {
+    const count = Math.round(baseCount * scale);
     const data = isoDaysAgo(perDay.length - 1 - dayIdx);
     for (let i = 0; i < count; i++) {
       const proc = PROCEDURES[Math.floor(rand() * PROCEDURES.length)];
@@ -172,7 +178,7 @@ function buildGuides(): DashboardGuide[] {
       const variation = 0.75 + rand() * 0.7;
       // ~12% das guias falham; distribuição desigual entre os tipos de falha.
       const failureRoll = rand();
-      const failed = failureRoll < 0.12;
+      const failed = failureRoll < failRate;
       const typeRoll = rand();
       const tipoFalha: FailureType = failed
         ? typeRoll < 0.28
@@ -194,7 +200,7 @@ function buildGuides(): DashboardGuide[] {
         numGuiaPrestador: String(100000 + rows.length * 7 + Math.floor(rand() * 6)),
         data,
         beneficiarioNome: beneficiario,
-        tipoGuia: proc.tipo,
+        tipoGuia: opts.types ? opts.types[Math.floor(rand() * opts.types.length)] : proc.tipo,
         prestadorSolicitante: PRESTADORES[Math.floor(rand() * PRESTADORES.length)],
         procCodigo: proc.code,
         procDescricao: proc.name,
@@ -207,6 +213,52 @@ function buildGuides(): DashboardGuide[] {
 }
 
 export const DASHBOARD_GUIDES: DashboardGuide[] = buildGuides();
+
+/** Tipos por conjunto de dados da Visão geral (cores reaproveitam a paleta de tipos). */
+export const ISSUED_GUIDE_TYPES = [
+  { name: "SP/SADT", color: "var(--guide-type-1)" },
+  { name: "Internação", color: "var(--guide-type-2)" },
+  { name: "Solicitação de Exame", color: "var(--guide-type-3)" },
+  { name: "Encaminhamento", color: "var(--guide-type-4)" },
+] as const;
+export const DOCUMENT_TYPES = [
+  { name: "Relatório", color: "var(--guide-type-1)" },
+  { name: "Atestado", color: "var(--guide-type-2)" },
+  { name: "Comparecimento", color: "var(--guide-type-3)" },
+  { name: "Solicitação", color: "var(--guide-type-4)" },
+] as const;
+
+export type DashboardDataKind = "processadas" | "emitidas" | "documentos";
+
+export interface DashboardDataKindConfig {
+  label: string;
+  /** Substantivo no plural ("guias" / "documentos"). */
+  noun: string;
+  /** Particípio concordando com o substantivo ("processadas", "emitidos"...). */
+  verb: string;
+  typeLabel: string;
+  types: readonly { name: string; color: string }[];
+  rows: DashboardGuide[];
+  /** Só guias processadas têm status de processamento. */
+  hasProcessingStatus: boolean;
+}
+
+export const DASHBOARD_DATA_KINDS: Record<DashboardDataKind, DashboardDataKindConfig> = {
+  processadas: {
+    label: "Guias processadas", noun: "guias", verb: "processadas", typeLabel: "Tipo de guia",
+    types: GUIDE_TYPES, rows: DASHBOARD_GUIDES, hasProcessingStatus: true,
+  },
+  emitidas: {
+    label: "Guias emitidas", noun: "guias", verb: "emitidas", typeLabel: "Tipo de guia",
+    types: ISSUED_GUIDE_TYPES, hasProcessingStatus: false,
+    rows: buildGuides(20260921, { types: ISSUED_GUIDE_TYPES.map((t) => t.name), failRate: 0, scale: 0.6 }),
+  },
+  documentos: {
+    label: "Documentos emitidos", noun: "documentos", verb: "emitidos", typeLabel: "Tipo de documento",
+    types: DOCUMENT_TYPES, hasProcessingStatus: false,
+    rows: buildGuides(20260922, { types: DOCUMENT_TYPES.map((t) => t.name), failRate: 0, scale: 0.45 }),
+  },
+};
 
 export type DashboardFilterInput = {
   dataAutorizacaoDe: string;
@@ -290,6 +342,7 @@ function isoDateRange(from: string, to: string): string[] {
 export function buildMetrics(
   guides: DashboardGuide[],
   period?: { from?: string; to?: string },
+  typeList: readonly { name: string; color: string }[] = GUIDE_TYPES,
 ): DashboardMetrics {
   const byDate = new Map<string, number>();
   for (const g of guides) byDate.set(g.data, (byDate.get(g.data) ?? 0) + 1);
@@ -309,7 +362,7 @@ export function buildMetrics(
 
   const activeDays = daily.filter((d) => d.guias > 0).length;
 
-  const types = GUIDE_TYPES.map((t) => ({
+  const types = typeList.map((t) => ({
     name: t.name,
     color: t.color,
     value: guides.filter((g) => g.tipoGuia === t.name).length,
