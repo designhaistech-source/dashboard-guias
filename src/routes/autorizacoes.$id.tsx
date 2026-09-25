@@ -67,7 +67,7 @@ function RequestDetailPage() {
   const fields: [string, string][] = [
     ["Paciente", r.patient],
     ["Procedimento", `${r.procedureCode} · ${r.procedure}`],
-    ["Médico solicitante", r.doctor],
+    ["Profissional solicitante", r.doctor],
     ["Operadora", r.operadora],
     ["Tempo na situação", formatElapsed(r.statusSince)],
     ["Próxima ação", NEXT_ACTION[r.status]],

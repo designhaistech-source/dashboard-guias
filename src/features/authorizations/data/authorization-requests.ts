@@ -40,7 +40,7 @@ export interface AuthorizationRequest {
   doctor: string;
   operadora: string;
   status: AuthorizationStatus;
-  /** Quando o médico enviou a solicitação (ISO). */
+  /** Quando o profissional enviou a solicitação (ISO). */
   receivedAt: string;
   /** Desde quando está na situação atual (ISO). */
   statusSince: string;

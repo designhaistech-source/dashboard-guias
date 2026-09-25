@@ -15,7 +15,7 @@ export interface Profile {
 export const PROFILES: Record<ProfileRole, Profile> = {
   medico: {
     role: "medico",
-    roleLabel: "Médico",
+    roleLabel: "Profissional de saúde",
     name: CURRENT_USER.name,
     subtitle: CURRENT_USER.crm,
     email: CURRENT_USER.email,

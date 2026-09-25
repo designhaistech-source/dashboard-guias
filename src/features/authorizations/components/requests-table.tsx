@@ -49,7 +49,7 @@ export function RequestsTable({
             <DataTableRow>
               <DataTableHead>Paciente</DataTableHead>
               <DataTableHead>Procedimento</DataTableHead>
-              <DataTableHead>Médico solicitante</DataTableHead>
+              <DataTableHead>Profissional solicitante</DataTableHead>
               <DataTableHead>Operadora</DataTableHead>
               <DataTableHead>Situação</DataTableHead>
               <DataTableHead>Tempo</DataTableHead>
@@ -103,7 +103,7 @@ export function RequestsTable({
               />
               <DataTableCardFields
                 fields={[
-                  { label: "Médico solicitante", value: r.doctor },
+                  { label: "Profissional solicitante", value: r.doctor },
                   { label: "Operadora", value: r.operadora },
                   { label: "Tempo", value: formatElapsed(r.statusSince) },
                 ]}
