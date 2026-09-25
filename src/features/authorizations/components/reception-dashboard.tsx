@@ -381,7 +381,7 @@ export function ReceptionDashboard() {
             )}
           </SurfaceCard>
 
-          <div className="grid gap-4 grid-cols-1 xl:grid-cols-2 items-stretch">
+          <div className="grid gap-4 grid-cols-1 items-stretch">
             <SurfaceCard
               className="min-w-0"
               title="Solicitações por status"
