@@ -38,6 +38,8 @@ import {
   DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
@@ -45,7 +47,12 @@ import { Switch } from "@/components/ui/switch";
 import { ConfirmDialog } from "@/components/confirm-dialog";
 import { toast } from "sonner";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { CURRENT_USER } from "@/lib/current-user";
+import {
+  PROFILES,
+  setProfileRole,
+  useCurrentProfile,
+  type ProfileRole,
+} from "@/lib/current-profile";
 import logoAsset from "@/assets/guiasplus-logo.png.asset.json";
 import logoDarkAsset from "@/assets/guiasplus-logo-dark.png.asset.json";
 
@@ -205,6 +212,8 @@ function SidebarNav({
   collapsed?: boolean;
   onNavigate?: () => void;
 }) {
+  // Recepção vê só o fluxo administrativo; itens clínicos ficam com o Médico.
+  const isDoctor = useCurrentProfile().role === "medico";
   return (
     <nav className="flex-1 overflow-y-auto px-3 py-4 space-y-6">
       <SidebarGroup label="Início" collapsed={collapsed}>
@@ -259,33 +268,37 @@ function SidebarNav({
       </SidebarGroup>
 
       <SidebarGroup label="Atendimento clínico" collapsed={collapsed}>
-        <SidebarItem
-          icon={Pill}
-          label="Emitir prescrição"
-          to="/prescricao"
-          active={activeKey === "prescricao"}
-          hint="Emita prescrições médicas para os pacientes."
-          collapsed={collapsed}
-          onNavigate={onNavigate}
-        />
-        <SidebarItem
-          icon={Wrench}
-          label="Solicitar OPME"
-          to="/opme"
-          active={activeKey === "opme"}
-          hint="Solicite Órteses, Próteses e Materiais Especiais para procedimentos."
-          collapsed={collapsed}
-          onNavigate={onNavigate}
-        />
-        <SidebarItem
-          icon={FileSpreadsheet}
-          label="Relatórios e documentos"
-          to="/documentos"
-          active={activeKey === "relatorios"}
-          hint="Gere e gerencie relatórios, atestados e documentos clínicos."
-          collapsed={collapsed}
-          onNavigate={onNavigate}
-        />
+        {isDoctor && (
+          <>
+            <SidebarItem
+              icon={Pill}
+              label="Emitir prescrição"
+              to="/prescricao"
+              active={activeKey === "prescricao"}
+              hint="Emita prescrições médicas para os pacientes."
+              collapsed={collapsed}
+              onNavigate={onNavigate}
+            />
+            <SidebarItem
+              icon={Wrench}
+              label="Solicitar OPME"
+              to="/opme"
+              active={activeKey === "opme"}
+              hint="Solicite Órteses, Próteses e Materiais Especiais para procedimentos."
+              collapsed={collapsed}
+              onNavigate={onNavigate}
+            />
+            <SidebarItem
+              icon={FileSpreadsheet}
+              label="Relatórios e documentos"
+              to="/documentos"
+              active={activeKey === "relatorios"}
+              hint="Gere e gerencie relatórios, atestados e documentos clínicos."
+              collapsed={collapsed}
+              onNavigate={onNavigate}
+            />
+          </>
+        )}
         <SidebarItem
           icon={FolderCheck}
           label="Documentos emitidos"
@@ -295,15 +308,17 @@ function SidebarNav({
           collapsed={collapsed}
           onNavigate={onNavigate}
         />
-        <SidebarItem
-          icon={ScanLine}
-          label="Buscar CID-10"
-          to="/cid"
-          active={activeKey === "cid"}
-          hint="Pesquise códigos da Classificação Internacional de Doenças (CID-10)."
-          collapsed={collapsed}
-          onNavigate={onNavigate}
-        />
+        {isDoctor && (
+          <SidebarItem
+            icon={ScanLine}
+            label="Buscar CID-10"
+            to="/cid"
+            active={activeKey === "cid"}
+            hint="Pesquise códigos da Classificação Internacional de Doenças (CID-10)."
+            collapsed={collapsed}
+            onNavigate={onNavigate}
+          />
+        )}
       </SidebarGroup>
     </nav>
 
@@ -318,11 +333,12 @@ function UserMenu({ collapsed }: { collapsed: boolean }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [logoutOpen, setLogoutOpen] = useState(false);
   const pathname = useRouterState({ select: (state) => state.location.pathname });
+  const profile = useCurrentProfile();
 
   const itemClass = "gap-3 px-4 py-2.5 min-h-11 text-sm";
 
   // Iniciais do nome: evita repetir o mesmo ícone do item "Meu Perfil".
-  const userInitials = CURRENT_USER.name
+  const userInitials = profile.name
     .split(" ")
     .filter(Boolean)
     .slice(-2)
@@ -365,14 +381,42 @@ function UserMenu({ collapsed }: { collapsed: boolean }) {
           </Avatar>
           <div className="min-w-0">
             <div className="text-sm font-semibold text-foreground">
-              {CURRENT_USER.name}
+              {profile.name}
             </div>
             <div className="text-xs text-muted-foreground break-all">
-              {CURRENT_USER.email}
+              {profile.email}
             </div>
           </div>
         </div>
       </DropdownMenuLabel>
+      <DropdownMenuSeparator className="mx-0 my-0" />
+
+      {/* Seletor de perfil do protótipo: alterna a experiência demonstrada. */}
+      <DropdownMenuGroup className="py-2">
+        <DropdownMenuLabel className="px-4 pb-1 pt-0 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+          Trocar perfil
+        </DropdownMenuLabel>
+        <DropdownMenuRadioGroup
+          value={profile.role}
+          onValueChange={(value) => {
+            const role = value as ProfileRole;
+            if (role === profile.role) return;
+            setProfileRole(role);
+            toast.success(`Perfil alterado para ${PROFILES[role].roleLabel}.`);
+          }}
+        >
+          {(Object.values(PROFILES)).map((p) => (
+            <DropdownMenuRadioItem key={p.role} value={p.role} className="py-2 pr-4 min-h-11">
+              <div className="min-w-0">
+                <div className="text-sm font-semibold">{p.roleLabel}</div>
+                <div className="text-xs text-muted-foreground">
+                  {p.name} · {p.subtitle}
+                </div>
+              </div>
+            </DropdownMenuRadioItem>
+          ))}
+        </DropdownMenuRadioGroup>
+      </DropdownMenuGroup>
       <DropdownMenuSeparator className="mx-0 my-0" />
 
       {/* Bloco 1 — conta, sistema e preferência de interface. */}
@@ -463,7 +507,7 @@ function UserMenu({ collapsed }: { collapsed: boolean }) {
                 </Button>
               </DropdownMenuTrigger>
             </TooltipTrigger>
-            <TooltipContent side="right">{CURRENT_USER.name}</TooltipContent>
+            <TooltipContent side="right">{profile.name}</TooltipContent>
           </Tooltip>
           {content}
         </DropdownMenu>
@@ -482,8 +526,8 @@ function UserMenu({ collapsed }: { collapsed: boolean }) {
           >
             <CircleUser className="h-9 w-9 text-sidebar-muted shrink-0" strokeWidth={1.5} />
             <div className="flex-1 min-w-0">
-              <div className="text-sm font-semibold truncate">{CURRENT_USER.name}</div>
-              <div className="text-xs text-sidebar-muted">{CURRENT_USER.crm}</div>
+              <div className="text-sm font-semibold truncate">{profile.name}</div>
+              <div className="text-xs text-sidebar-muted">{profile.subtitle}</div>
             </div>
           </button>
         </DropdownMenuTrigger>
