@@ -1679,21 +1679,6 @@ function DashboardPage() {
             )}
           </section>
 
-          <Tabs value={tab} onValueChange={(v) => changeTab(v as DashboardTab)} className="space-y-6">
-            <TabsList className={appTabsListClass} aria-label="Seções da visão geral">
-              <TabsTrigger value="geral" className={appTabsTriggerClass}>
-                <LayoutDashboard className={appTabsIconClass} aria-hidden="true" />
-                <span className={appTabsLabelClass}>Visão geral</span>
-              </TabsTrigger>
-              <TabsTrigger value="producao" className={appTabsTriggerClass}>
-                <BarChart3 className={appTabsIconClass} aria-hidden="true" />
-                <span className={appTabsLabelClass}>Produção</span>
-              </TabsTrigger>
-              <TabsTrigger value="faturamento" className={appTabsTriggerClass}>
-                <Wallet className={appTabsIconClass} aria-hidden="true" />
-                <span className={appTabsLabelClass}>Faturamento</span>
-              </TabsTrigger>
-            </TabsList>
             <TabsContent value="geral" className="mt-0 space-y-6">
           {/* KPIs */}
           <div
@@ -1933,6 +1918,8 @@ function DashboardPage() {
             </SurfaceCard>
           </div>
 
+            </TabsContent>
+            <TabsContent value="producao" className="mt-0 space-y-6">
           {cfg.hasProcessingStatus && (<>          {/* Status do processamento de guias */}
           <SurfaceCard
             title="Status do processamento de guias"
@@ -2148,8 +2135,6 @@ function DashboardPage() {
               </div>
             )}
           </SurfaceCard></>)}
-            </TabsContent>
-            <TabsContent value="producao" className="mt-0 space-y-6">
           {/* Prestadores */}
           <SurfaceCard
             title={`${cfg.label} por prestador`}
