@@ -2578,18 +2578,30 @@ function DashboardPage() {
                 >
                   <Kpi
                     icon={Wallet}
-                    label="Faturamento total"
+                    label="Faturamento previsto"
                     value={formatBRL(metrics.totalValue)}
-                    tooltip={`Soma dos valores de ${cfg.noun} ${cfg.verb} no período filtrado.`}
+                    tooltip={`Soma dos valores previstos de ${cfg.noun} ${cfg.verb} no período filtrado.`}
                     context="No período filtrado"
+                    tone="success"
+                  />
+                  <Kpi
+                    icon={Wallet}
+                    label="Faturamento previsto hoje"
+                    value={formatBRL(
+                      filteredGuides
+                        .filter((g) => g.data === todayLocalIsoDate())
+                        .reduce((sum, g) => sum + g.valorTotal, 0),
+                    )}
+                    tooltip="Soma dos valores previstos das guias processadas hoje."
+                    context="Hoje"
                     tone="success"
                   />
                 </div>
                 {/* Faturamento por dia */}
                 <SurfaceCard
                   className="min-w-0"
-                  title="Faturamento por dia"
-                  description={`Evolução do faturamento de ${cfg.noun} ${cfg.verb} por dia no período filtrado`}
+                  title="Faturamento previsto por dia"
+                  description={`Evolução do faturamento previsto de ${cfg.noun} ${cfg.verb} por dia no período filtrado`}
                 >
                   {!hasData ? (
                     emptyState
@@ -2655,7 +2667,7 @@ function DashboardPage() {
                                 isMobile
                                   ? undefined
                                   : {
-                                      value: "Faturamento (R$)",
+                                      value: "Valor previsto (R$)",
                                       angle: -90,
                                       position: "insideLeft",
                                       fill: "var(--muted-foreground)",
@@ -2675,7 +2687,7 @@ function DashboardPage() {
                             <Area
                               type="monotone"
                               dataKey="faturamento"
-                              name="Faturamento"
+                              name="Faturamento previsto"
                               stroke="var(--primary)"
                               strokeWidth={2.5}
                               fill="url(#gradRevenue)"
@@ -2688,7 +2700,7 @@ function DashboardPage() {
                       </div>
                       {isMobile ? (
                         <p className="mt-2 text-xs leading-snug text-muted-foreground">
-                          Eixo vertical: faturamento em R$ · Eixo horizontal: dia do período
+                          Eixo vertical: valor previsto em R$ · Eixo horizontal: dia do período
                         </p>
                       ) : null}
                     </>
@@ -2697,8 +2709,8 @@ function DashboardPage() {
 
                 {/* Faturamento por prestador */}
                 <SurfaceCard
-                  title="Faturamento por prestador"
-                  description={`Soma dos valores de ${cfg.noun} ${cfg.verb} por prestador no período filtrado`}
+                  title="Faturamento previsto por prestador"
+                  description={`Soma dos valores previstos de ${cfg.noun} ${cfg.verb} por prestador no período filtrado`}
                 >
                   {providerRevenue.length === 0 ? (
                     emptyState
@@ -2745,7 +2757,7 @@ function DashboardPage() {
                                   isMobile
                                     ? undefined
                                     : {
-                                        value: "Faturamento (R$)",
+                                        value: "Valor previsto (R$)",
                                         position: "insideBottom",
                                         offset: -12,
                                         fill: "var(--muted-foreground)",
@@ -2799,7 +2811,7 @@ function DashboardPage() {
                         </div>
                         {isMobile ? (
                           <p className="text-xs leading-snug text-muted-foreground">
-                            Eixo vertical: prestador · Eixo horizontal: faturamento em R$
+                            Eixo vertical: prestador · Eixo horizontal: valor previsto em R$
                           </p>
                         ) : null}
                       </div>
@@ -2822,7 +2834,7 @@ function DashboardPage() {
                                     onSort={setRevenueSort}
                                   />
                                   <SortableHead
-                                    label="Faturamento"
+                                    label="Valor previsto"
                                     column="count"
                                     sort={revenueSort}
                                     onSort={setRevenueSort}
