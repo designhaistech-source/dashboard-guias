@@ -109,6 +109,7 @@ import {
   buildProviderProcedureMatrix,
   buildProviderCounts,
   buildProviderRevenue,
+  buildMonthlyRevenue,
   GUIDE_TYPES,
   FAILURE_CATEGORIES,
   type DashboardMetrics,
@@ -1220,6 +1221,14 @@ function DashboardPage() {
         : a.name.localeCompare(b.name, "pt-BR") * factor,
     );
   }, [providerCounts, providerSort]);
+  const monthlyRevenue = useMemo(
+    () =>
+      buildMonthlyRevenue(filteredGuides, {
+        from: filters.dataAutorizacaoDe || undefined,
+        to: filters.dataAutorizacaoAte || undefined,
+      }),
+    [filteredGuides, filters.dataAutorizacaoDe, filters.dataAutorizacaoAte],
+  );
   const providerRevenue = useMemo(() => buildProviderRevenue(filteredGuides, 10), [filteredGuides]);
   const [revenueSort, setRevenueSort] = useState<ProviderSort>({
     column: "count",
@@ -2701,6 +2710,98 @@ function DashboardPage() {
                       {isMobile ? (
                         <p className="mt-2 text-xs leading-snug text-muted-foreground">
                           Eixo vertical: valor previsto em R$ · Eixo horizontal: dia do período
+                        </p>
+                      ) : null}
+                    </>
+                  )}
+                </SurfaceCard>
+
+                {/* Faturamento por mês */}
+                <SurfaceCard
+                  className="min-w-0"
+                  title="Faturamento previsto por mês"
+                  description="Evolução mensal do faturamento previsto das guias processadas."
+                >
+                  {!hasData ? (
+                    emptyState
+                  ) : (
+                    <>
+                      <div className="h-60 sm:h-72 xl:h-80" data-chart="monthly-revenue">
+                        <ResponsiveContainer width="100%" height="100%">
+                          <BarChart
+                            data={monthlyRevenue}
+                            margin={{
+                              top: 10,
+                              right: 12,
+                              left: isMobile ? 4 : 6,
+                              bottom: isMobile ? 0 : 6,
+                            }}
+                          >
+                            <CartesianGrid
+                              strokeDasharray="3 3"
+                              stroke="var(--border)"
+                              vertical={false}
+                            />
+                            <XAxis
+                              dataKey="label"
+                              stroke="var(--muted-foreground)"
+                              fontSize={11}
+                              tickLine={false}
+                              axisLine={false}
+                              tickMargin={6}
+                              height={isMobile ? 32 : 48}
+                              interval="preserveStartEnd"
+                              minTickGap={isMobile ? 8 : 4}
+                              label={
+                                isMobile
+                                  ? undefined
+                                  : {
+                                      value: "Mês",
+                                      position: "insideBottom",
+                                      offset: 2,
+                                      fill: "var(--muted-foreground)",
+                                      fontSize: 11,
+                                    }
+                              }
+                            />
+                            <YAxis
+                              stroke="var(--muted-foreground)"
+                              fontSize={11}
+                              tickLine={false}
+                              axisLine={false}
+                              width={isMobile ? 56 : 84}
+                              tickFormatter={(v: number) => formatBRLCompact(v)}
+                              label={
+                                isMobile
+                                  ? undefined
+                                  : {
+                                      value: "Valor previsto (R$)",
+                                      angle: -90,
+                                      position: "insideLeft",
+                                      fill: "var(--muted-foreground)",
+                                      fontSize: 11,
+                                      style: { textAnchor: "middle" },
+                                    }
+                              }
+                            />
+                            <RTooltip
+                              content={<ChartTooltip currency />}
+                              cursor={{ fill: "var(--muted)", opacity: 0.4 }}
+                            />
+                            <Bar
+                              dataKey="faturamento"
+                              name="Faturamento previsto"
+                              fill="var(--primary)"
+                              radius={[6, 6, 0, 0]}
+                              maxBarSize={48}
+                              isAnimationActive={false}
+                            />
+                          </BarChart>
+                        </ResponsiveContainer>
+                      </div>
+                      {isMobile ? (
+                        <p className="mt-2 text-xs leading-snug text-muted-foreground">
+                          Eixo vertical: valor previsto em R$ · Eixo horizontal: mês
                         </p>
                       ) : null}
                     </>
