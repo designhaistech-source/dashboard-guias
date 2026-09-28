@@ -1259,6 +1259,15 @@ function DashboardPage() {
     [dailyData, dailyMaxTicks],
   );
   const dailyMonthStarts = useMemo(() => monthStartTicks(dailyTicks), [dailyTicks]);
+  // Tabs unmount inactive panels, so the revenue chart measures its own width.
+  const revenueChartRef = useRef<HTMLDivElement>(null);
+  const revenueChartWidth = useElementWidth(revenueChartRef);
+  const revenueMaxTicks = Math.max(3, Math.floor((revenueChartWidth || 640) / 52));
+  const revenueTicks = useMemo(
+    () => dailyAxisTicks(dailyData, revenueMaxTicks),
+    [dailyData, revenueMaxTicks],
+  );
+  const revenueMonthStarts = useMemo(() => monthStartTicks(revenueTicks), [revenueTicks]);
 
   const hasData = total > 0;
 
@@ -2563,7 +2572,7 @@ function DashboardPage() {
               emptyState
             ) : (
               <>
-                <div className="h-60 sm:h-72 xl:h-80" data-chart="daily-revenue">
+                <div className="h-60 sm:h-72 xl:h-80" data-chart="daily-revenue" ref={revenueChartRef}>
                   <ResponsiveContainer width="100%" height="100%">
                     <AreaChart
                       data={dailyData}
@@ -2584,9 +2593,9 @@ function DashboardPage() {
                         axisLine={false}
                         tickMargin={4}
                         height={isMobile ? 46 : 48}
-                        ticks={dailyTicks}
+                        ticks={revenueTicks}
                         interval={0}
-                        tick={<DailyAxisTick monthStarts={dailyMonthStarts} />}
+                        tick={<DailyAxisTick monthStarts={revenueMonthStarts} />}
                         label={
                           isMobile
                             ? undefined
