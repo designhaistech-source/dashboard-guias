@@ -2592,14 +2592,6 @@ function DashboardPage() {
                 >
                   <Kpi
                     icon={Wallet}
-                    label="Faturamento previsto"
-                    value={formatBRL(metrics.totalValue)}
-                    tooltip={`Soma dos valores previstos de ${cfg.noun} ${cfg.verb} no período filtrado.`}
-                    context="No período filtrado"
-                    tone="success"
-                  />
-                  <Kpi
-                    icon={Wallet}
                     label="Faturamento previsto hoje"
                     value={formatBRL(
                       filteredGuides
@@ -2608,6 +2600,14 @@ function DashboardPage() {
                     )}
                     tooltip="Soma dos valores previstos das guias processadas hoje."
                     context="Hoje"
+                    tone="success"
+                  />
+                  <Kpi
+                    icon={Wallet}
+                    label="Faturamento previsto"
+                    value={formatBRL(metrics.totalValue)}
+                    tooltip={`Soma dos valores previstos de ${cfg.noun} ${cfg.verb} no período filtrado.`}
+                    context="No período filtrado"
                     tone="success"
                   />
                 </div>
