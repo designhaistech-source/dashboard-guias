@@ -14,6 +14,8 @@ import {
   FileText,
   TrendingUp,
   Wallet,
+  LayoutDashboard,
+  BarChart3,
   Layers,
   Download,
   Activity,
@@ -89,6 +91,13 @@ import {
   tooltipPanelClass,
 } from "@/components/ui/tooltip";
 import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  appTabsIconClass,
+  appTabsLabelClass,
+  appTabsListClass,
+  appTabsTriggerClass,
+} from "@/components/app-tabs";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useIsMobile } from "@/hooks/use-mobile";
 import {
@@ -1005,6 +1014,7 @@ function DailyAxisTick({
 type ProcedureSortColumn = "code" | "name" | "count";
 type ProcedureSort = { column: ProcedureSortColumn; direction: "asc" | "desc" };
 
+type DashboardTab = "geral" | "producao" | "faturamento";
 type ProviderSortColumn = "name" | "count";
 type ProviderSort = { column: ProviderSortColumn; direction: "asc" | "desc" };
 
@@ -1127,7 +1137,19 @@ function DashboardPage() {
   const firstFieldRef = useRef<HTMLInputElement | null>(null);
 
   const [dataKind, setDataKind] = useState<DashboardDataKind>("processadas");
-  const cfg = DASHBOARD_DATA_KINDS[dataKind];
+  const [tab, setTab] = useState<DashboardTab>("geral");
+  /** Faturamento considera apenas guias processadas, independentemente do tipo de dado. */
+  const effectiveKind: DashboardDataKind = tab === "faturamento" ? "processadas" : dataKind;
+  const cfg = DASHBOARD_DATA_KINDS[effectiveKind];
+  const changeTab = (next: DashboardTab) => {
+    const nextKind = next === "faturamento" ? "processadas" : dataKind;
+    // Tipo e procedimentos dependem do conjunto de dados; só são limpos se ele mudar.
+    if (nextKind !== effectiveKind) {
+      setActiveType(undefined);
+      setFilters((f) => ({ ...f, tipoGuia: "", procedimentos: [] }));
+    }
+    setTab(next);
+  };
   /** Tipos e procedimentos variam por conjunto de dados; período e prestador são mantidos. */
   const changeDataKind = (kind: DashboardDataKind) => {
     setDataKind(kind);
@@ -1557,6 +1579,7 @@ function DashboardPage() {
                 id="dashboard-filters-panel"
                 className="space-y-4 border-t border-border px-4 py-4 sm:px-5 sm:py-5"
               >
+                {tab !== "faturamento" && (
                 <div className="min-w-0 sm:max-w-xs">
                   <Field label="Tipo de dado">
                     <Combobox
@@ -1571,6 +1594,7 @@ function DashboardPage() {
                     />
                   </Field>
                 </div>
+                )}
 
                 <div className="space-y-1.5">
                   <span className="block text-xs font-medium leading-snug text-muted-foreground">
@@ -1655,9 +1679,25 @@ function DashboardPage() {
             )}
           </section>
 
+          <Tabs value={tab} onValueChange={(v) => changeTab(v as DashboardTab)} className="space-y-6">
+            <TabsList className={appTabsListClass} aria-label="Seções da visão geral">
+              <TabsTrigger value="geral" className={appTabsTriggerClass}>
+                <LayoutDashboard className={appTabsIconClass} aria-hidden="true" />
+                <span className={appTabsLabelClass}>Visão geral</span>
+              </TabsTrigger>
+              <TabsTrigger value="producao" className={appTabsTriggerClass}>
+                <BarChart3 className={appTabsIconClass} aria-hidden="true" />
+                <span className={appTabsLabelClass}>Produção</span>
+              </TabsTrigger>
+              <TabsTrigger value="faturamento" className={appTabsTriggerClass}>
+                <Wallet className={appTabsIconClass} aria-hidden="true" />
+                <span className={appTabsLabelClass}>Faturamento</span>
+              </TabsTrigger>
+            </TabsList>
+            <TabsContent value="geral" className="mt-0 space-y-6">
           {/* KPIs */}
           <div
-            className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-5"
+            className="grid gap-4 grid-cols-1 sm:grid-cols-2 xl:grid-cols-4"
             data-testid="kpi-grid"
           >
             <Kpi
@@ -1696,14 +1736,7 @@ function DashboardPage() {
               context="Tipos distintos no período filtrado"
               tone="purple"
             />
-            <Kpi
-              icon={Wallet}
-              label="Faturamento total"
-              value={formatBRL(metrics.totalValue)}
-              tooltip={`Soma dos valores de ${cfg.noun} ${cfg.verb} no período filtrado.`}
-              context="No período filtrado"
-              tone="success"
-            />
+
 
           </div>
 
@@ -1900,80 +1933,223 @@ function DashboardPage() {
             </SurfaceCard>
           </div>
 
-          {/* Faturamento por dia */}
+          {cfg.hasProcessingStatus && (<>          {/* Status do processamento de guias */}
           <SurfaceCard
-            className="min-w-0"
-            title="Faturamento por dia"
-            description={`Evolução do faturamento de ${cfg.noun} ${cfg.verb} por dia no período filtrado`}
+            title="Status do processamento de guias"
+            description="Distribuição das guias por status no período filtrado"
           >
             {!hasData ? (
               emptyState
             ) : (
-              <>
-                <div className="h-60 sm:h-72" data-chart="daily-revenue">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <LineChart
-                      data={dailyData}
-                      margin={{ top: 10, right: 12, left: isMobile ? 4 : 6, bottom: isMobile ? 0 : 6 }}
-                    >
-                      <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" vertical={false} />
-                      <XAxis
-                        dataKey="date"
-                        stroke="var(--muted-foreground)"
-                        fontSize={11}
-                        tickLine={false}
-                        axisLine={false}
-                        tickMargin={4}
-                        height={isMobile ? 46 : 48}
-                        ticks={dailyTicks}
-                        interval={0}
-                        tick={<DailyAxisTick monthStarts={dailyMonthStarts} />}
-                        label={
-                          isMobile
-                            ? undefined
-                            : {
-                                value: "Dia do período",
-                                position: "insideBottom",
-                                offset: 2,
-                                fill: "var(--muted-foreground)",
-                                fontSize: 11,
-                              }
-                        }
-                      />
-                      <YAxis
-                        stroke="var(--muted-foreground)"
-                        fontSize={11}
-                        tickLine={false}
-                        axisLine={false}
-                        width={isMobile ? 56 : 72}
-                        tickFormatter={(v: number) => formatBRLCompact(v)}
-                      />
-                      <RTooltip
-                        content={<ChartTooltip currency />}
-                        cursor={{ stroke: "var(--primary)", strokeOpacity: 0.25, strokeWidth: 1 }}
-                      />
-                      <Line
-                        type="monotone"
-                        dataKey="faturamento"
-                        name="Faturamento"
-                        stroke="var(--success)"
-                        strokeWidth={2.5}
-                        dot={false}
-                        activeDot={{ r: 5, strokeWidth: 2, stroke: "var(--card)" }}
-                        isAnimationActive={false}
-                      />
-                    </LineChart>
-                  </ResponsiveContainer>
-                </div>
-                {isMobile ? (
-                  <p className="mt-2 text-xs leading-snug text-muted-foreground">
-                    Eixo vertical: faturamento em R$ · Eixo horizontal: dia do período
+              <div className={`${SPLIT_GRID_CLASS} items-start`}>
+                <div className="min-w-0 flex flex-col gap-3 xl:pr-8">
+                  <div className="relative h-44 sm:h-48" data-chart="quality-status">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <PieChart>
+                        <Pie
+                          data={statusData}
+                          innerRadius={58}
+                          outerRadius={82}
+                          paddingAngle={statusData.length > 1 ? 2 : 0}
+                          dataKey="value"
+                          stroke="var(--card)"
+                          strokeWidth={statusData.length > 1 ? 2 : 0}
+                          isAnimationActive={false}
+                        >
+                          {statusData.map((d) => (
+                            <Cell key={d.name} fill={d.color} />
+                          ))}
+                        </Pie>
+                        <RTooltip content={<ChartTooltip unit={cfg.noun} />} wrapperStyle={{ zIndex: 30 }} />
+                      </PieChart>
+                    </ResponsiveContainer>
+                    <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center px-6 text-center">
+                      <div className="metric-value text-foreground">
+                        {total > 0 ? Math.round((metrics.quality.success / total) * 100) : 0}%
+                      </div>
+                      <div className="max-w-24 text-xs leading-tight text-muted-foreground">
+                        com sucesso
+                      </div>
+                    </div>
+                  </div>
+                  <p className="text-center text-xs text-muted-foreground">
+                    <span className="tabular-nums">{total}</span> guias no período
                   </p>
-                ) : null}
-              </>
-            )}
-          </SurfaceCard>
+                  <ul className="space-y-1 text-sm">
+                    <TooltipProvider>
+                      {statusData.map((d) => {
+                        const pct = total > 0 ? Math.round((d.value / total) * 100) : 0;
+                        return (
+                          <li
+                            key={d.name}
+                            className="flex min-w-0 items-center gap-2 rounded-md px-2 py-1"
+                          >
+                            <span
+                              aria-hidden="true"
+                              className="h-2.5 w-2.5 rounded-full shrink-0"
+                              style={{ background: d.color }}
+                            />
+                            <span className="truncate">{d.name}</span>
+                            {d.hint ? (
+                              <InfoHint label={`Sobre ${d.name}`}>{d.hint}</InfoHint>
+                            ) : null}
 
+                            <span className="ml-auto shrink-0 tabular-nums text-xs">
+                              <span className="font-semibold text-foreground">{pct}%</span>
+                              <span className="font-normal text-muted-foreground">
+                                {" "}
+                                · {d.value}
+                              </span>
+                            </span>
+                          </li>
+                        );
+                      })}
+                    </TooltipProvider>
+                  </ul>
+
+
+                </div>
+
+                {/* Motivos de não processamento, coloridos pela categoria de status. */}
+                <div className="min-w-0 flex flex-col gap-3 xl:pl-8">
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    <p className="text-xs font-medium text-muted-foreground">
+                      Motivos de não processamento
+                    </p>
+                    {metrics.quality.failuresByType.length > 0 && (
+                      <ul className="flex flex-wrap items-center gap-3">
+                        {(
+                          Object.entries(FAILURE_CATEGORIES) as [
+                            keyof typeof FAILURE_CATEGORIES,
+                            { label: string; color: string },
+                          ][]
+                        ).map(([key, cat]) => (
+                          <li key={key} className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                            <span
+                              aria-hidden="true"
+                              className="size-2 rounded-full"
+                              style={{ background: cat.color }}
+                            />
+                            {cat.label}
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </div>
+                  {metrics.quality.failuresByType.length === 0 ? (
+                    <EmptyState
+                      icon={<FileCheck2 className="h-10 w-10" />}
+                      title="Nenhuma falha no período"
+                      description="Todas as guias do período filtrado foram processadas com sucesso."
+                    />
+                  ) : (
+                    <div className="flex flex-1 flex-col gap-3">
+                      <div
+                        className="w-full"
+                        style={{
+                          height: horizontalBarsHeight(
+                            metrics.quality.failuresByType.length,
+                            isMobile,
+                          ),
+                        }}
+                        data-chart="quality-failures"
+                      >
+
+                        <ResponsiveContainer width="100%" height="100%">
+                          <BarChart
+                            data={metrics.quality.failuresByType}
+                            layout="vertical"
+                            margin={{
+                              top: 4,
+                              right: isMobile ? 20 : 28,
+                              left: isMobile ? 0 : 8,
+                              bottom: isMobile ? 4 : 16,
+                            }}
+                            barCategoryGap={HORIZONTAL_BAR_GAP}
+                          >
+                            <CartesianGrid
+                              strokeDasharray="3 3"
+                              stroke="var(--border)"
+                              horizontal={false}
+                            />
+                            <XAxis
+                              type="number"
+                              stroke="var(--muted-foreground)"
+                              fontSize={11}
+                              tickLine={false}
+                              axisLine={false}
+                              allowDecimals={false}
+                              label={
+                                isMobile
+                                  ? undefined
+                                  : {
+                                      value: "Quantidade de ocorrências",
+                                      position: "insideBottom",
+                                      offset: -12,
+                                      fill: "var(--muted-foreground)",
+                                      fontSize: 11,
+                                    }
+                              }
+                            />
+                            <YAxis
+                              type="category"
+                              dataKey="label"
+                              stroke="var(--muted-foreground)"
+                              fontSize={11}
+                              width={isMobile ? 104 : 172}
+                              tickLine={false}
+                              axisLine={false}
+                              label={
+                                isMobile
+                                  ? undefined
+                                  : {
+                                      value: "Motivo",
+                                      angle: -90,
+                                      position: "insideLeft",
+                                      fill: "var(--muted-foreground)",
+                                      fontSize: 11,
+                                      style: { textAnchor: "middle" },
+                                    }
+                              }
+                            />
+                            <RTooltip
+                              content={<ChartTooltip unit="ocorrências" />}
+                              cursor={{ fill: "var(--muted)", opacity: 0.4 }}
+                            />
+                            <Bar
+                              dataKey="count"
+                              name="Ocorrências"
+                              radius={[0, 6, 6, 0]}
+                              barSize={HORIZONTAL_BAR_SIZE}
+                              isAnimationActive={false}
+                            >
+                              {metrics.quality.failuresByType.map((f) => (
+                                <Cell key={f.name} fill={f.color} />
+                              ))}
+                              <LabelList
+                                dataKey="count"
+                                position="right"
+                                className="fill-foreground"
+                                style={{ fontSize: 11, fontWeight: 600 }}
+                              />
+                            </Bar>
+                          </BarChart>
+                        </ResponsiveContainer>
+                      </div>
+                      {isMobile ? (
+                        <p className="text-xs leading-snug text-muted-foreground">
+                          Eixo vertical: tipo de falha · Eixo horizontal: quantidade de ocorrências
+                        </p>
+                      ) : null}
+                    </div>
+
+                  )}
+                </div>
+              </div>
+            )}
+          </SurfaceCard></>)}
+            </TabsContent>
+            <TabsContent value="producao" className="mt-0 space-y-6">
           {/* Prestadores */}
           <SurfaceCard
             title={`${cfg.label} por prestador`}
@@ -2127,173 +2303,6 @@ function DashboardPage() {
                             trailing={
                               <Badge variant="secondary" className="tabular-nums">
                                 {p.count}
-                              </Badge>
-                            }
-                          />
-                        </DataTableCard>
-                      ))}
-                    </DataTableCardList>
-                  </DataTable>
-                </div>
-              </div>
-            )}
-          </SurfaceCard>
-
-
-          {/* Faturamento por prestador */}
-          <SurfaceCard
-            title="Faturamento por prestador"
-            description={`Soma dos valores de ${cfg.noun} ${cfg.verb} por prestador no período filtrado`}
-          >
-            {providerRevenue.length === 0 ? (
-              emptyState
-            ) : (
-              <div className={`${SPLIT_GRID_CLASS} items-stretch`}>
-                <div className="min-w-0 flex h-full flex-col gap-3 xl:pr-8">
-                  <div>
-                    <p className="text-xs font-medium text-muted-foreground">
-                      Ranking de prestadores
-                    </p>
-                  </div>
-                  <div
-                    className="w-full flex-1"
-                    style={{ minHeight: horizontalBarsHeight(providerRevenue.length, isMobile) }}
-                    data-chart="providers-revenue"
-                  >
-                    <ResponsiveContainer width="100%" height="100%">
-                      <BarChart
-                        data={providerRevenue}
-                        layout="vertical"
-                        margin={{
-                          top: 4,
-                          right: isMobile ? 48 : 64,
-                          left: isMobile ? 0 : 8,
-                          bottom: isMobile ? 4 : 16,
-                        }}
-                        barCategoryGap={HORIZONTAL_BAR_GAP}
-                      >
-                        <CartesianGrid
-                          strokeDasharray="3 3"
-                          stroke="var(--border)"
-                          horizontal={false}
-                        />
-                        <XAxis
-                          type="number"
-                          stroke="var(--muted-foreground)"
-                          fontSize={11}
-                          tickLine={false}
-                          axisLine={false}
-                          tickFormatter={(v: number) => formatBRLCompact(v)}
-                          label={
-                            isMobile
-                              ? undefined
-                              : {
-                                  value: "Faturamento (R$)",
-                                  position: "insideBottom",
-                                  offset: -12,
-                                  fill: "var(--muted-foreground)",
-                                  fontSize: 11,
-                                }
-                          }
-                        />
-                        <YAxis
-                          type="category"
-                          dataKey="name"
-                          stroke="var(--muted-foreground)"
-                          fontSize={11}
-                          width={isMobile ? 104 : 158}
-                          tickLine={false}
-                          axisLine={false}
-                          label={
-                            isMobile
-                              ? undefined
-                              : {
-                                  value: "Prestador",
-                                  angle: -90,
-                                  position: "insideLeft",
-                                  fill: "var(--muted-foreground)",
-                                  fontSize: 11,
-                                  style: { textAnchor: "middle" },
-                                }
-                          }
-                        />
-                        <RTooltip
-                          content={<ChartTooltip currency />}
-                          cursor={{ fill: "var(--muted)", opacity: 0.4 }}
-                        />
-                        <Bar
-                          dataKey="value"
-                          name=""
-                          fill="var(--primary)"
-                          radius={[0, 6, 6, 0]}
-                          barSize={HORIZONTAL_BAR_SIZE}
-                          isAnimationActive={false}
-                        >
-                          <LabelList
-                            dataKey="value"
-                            position="right"
-                            className="fill-foreground"
-                            style={{ fontSize: 11, fontWeight: 600 }}
-                            formatter={(v: number) => formatBRLCompact(v)}
-                          />
-                        </Bar>
-                      </BarChart>
-                    </ResponsiveContainer>
-                  </div>
-                  {isMobile ? (
-                    <p className="text-xs leading-snug text-muted-foreground">
-                      Eixo vertical: prestador · Eixo horizontal: faturamento em R$
-                    </p>
-                  ) : null}
-                </div>
-                <div className="min-w-0 space-y-3 xl:pl-8">
-                  <div>
-                    <p className="text-xs font-medium text-muted-foreground">
-                      Detalhamento dos prestadores
-                    </p>
-                  </div>
-
-                  <DataTable>
-                    <DataTableDesktop breakpoint="md">
-                      <DataTableRoot className="min-w-72">
-                        <DataTableHeader>
-                          <DataTableRow>
-                            <SortableHead
-                              label="Prestador"
-                              column="name"
-                              sort={revenueSort}
-                              onSort={setRevenueSort}
-                            />
-                            <SortableHead
-                              label="Faturamento"
-                              column="count"
-                              sort={revenueSort}
-                              onSort={setRevenueSort}
-                              align="right"
-                            />
-                          </DataTableRow>
-                        </DataTableHeader>
-                        <DataTableBody>
-                          {sortedRevenue.map((p) => (
-                            <DataTableRow key={p.name}>
-                              <DataTableCell title={p.name}>{p.name}</DataTableCell>
-                              <DataTableCell className="text-right font-medium tabular-nums">
-                                {formatBRL(p.value)}
-                              </DataTableCell>
-                            </DataTableRow>
-                          ))}
-                        </DataTableBody>
-                      </DataTableRoot>
-                    </DataTableDesktop>
-
-                    <DataTableCardList breakpoint="md" divided>
-                      {sortedRevenue.map((p) => (
-                        <DataTableCard key={p.name} flat>
-                          <DataTableCardHeader
-                            title={<span className="min-w-0 break-words">{p.name}</span>}
-                            trailing={
-                              <Badge variant="secondary" className="tabular-nums">
-                                {formatBRL(p.value)}
                               </Badge>
                             }
                           />
@@ -2526,221 +2535,261 @@ function DashboardPage() {
 
 
 
-          {cfg.hasProcessingStatus && (<>          {/* Status do processamento de guias */}
+            </TabsContent>
+            <TabsContent value="faturamento" className="mt-0 space-y-6">
+          <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3" data-testid="billing-kpi-grid">
+            <Kpi
+              icon={Wallet}
+              label="Faturamento total"
+              value={formatBRL(metrics.totalValue)}
+              tooltip={`Soma dos valores de ${cfg.noun} ${cfg.verb} no período filtrado.`}
+              context="No período filtrado"
+              tone="success"
+            />
+          </div>
+          {/* Faturamento por dia */}
           <SurfaceCard
-            title="Status do processamento de guias"
-            description="Distribuição das guias por status no período filtrado"
+            className="min-w-0"
+            title="Faturamento por dia"
+            description={`Evolução do faturamento de ${cfg.noun} ${cfg.verb} por dia no período filtrado`}
           >
             {!hasData ? (
               emptyState
             ) : (
-              <div className={`${SPLIT_GRID_CLASS} items-start`}>
-                <div className="min-w-0 flex flex-col gap-3 xl:pr-8">
-                  <div className="relative h-44 sm:h-48" data-chart="quality-status">
+              <>
+                <div className="h-60 sm:h-72" data-chart="daily-revenue">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <LineChart
+                      data={dailyData}
+                      margin={{ top: 10, right: 12, left: isMobile ? 4 : 6, bottom: isMobile ? 0 : 6 }}
+                    >
+                      <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" vertical={false} />
+                      <XAxis
+                        dataKey="date"
+                        stroke="var(--muted-foreground)"
+                        fontSize={11}
+                        tickLine={false}
+                        axisLine={false}
+                        tickMargin={4}
+                        height={isMobile ? 46 : 48}
+                        ticks={dailyTicks}
+                        interval={0}
+                        tick={<DailyAxisTick monthStarts={dailyMonthStarts} />}
+                        label={
+                          isMobile
+                            ? undefined
+                            : {
+                                value: "Dia do período",
+                                position: "insideBottom",
+                                offset: 2,
+                                fill: "var(--muted-foreground)",
+                                fontSize: 11,
+                              }
+                        }
+                      />
+                      <YAxis
+                        stroke="var(--muted-foreground)"
+                        fontSize={11}
+                        tickLine={false}
+                        axisLine={false}
+                        width={isMobile ? 56 : 72}
+                        tickFormatter={(v: number) => formatBRLCompact(v)}
+                      />
+                      <RTooltip
+                        content={<ChartTooltip currency />}
+                        cursor={{ stroke: "var(--primary)", strokeOpacity: 0.25, strokeWidth: 1 }}
+                      />
+                      <Line
+                        type="monotone"
+                        dataKey="faturamento"
+                        name="Faturamento"
+                        stroke="var(--success)"
+                        strokeWidth={2.5}
+                        dot={false}
+                        activeDot={{ r: 5, strokeWidth: 2, stroke: "var(--card)" }}
+                        isAnimationActive={false}
+                      />
+                    </LineChart>
+                  </ResponsiveContainer>
+                </div>
+                {isMobile ? (
+                  <p className="mt-2 text-xs leading-snug text-muted-foreground">
+                    Eixo vertical: faturamento em R$ · Eixo horizontal: dia do período
+                  </p>
+                ) : null}
+              </>
+            )}
+          </SurfaceCard>
+
+          {/* Faturamento por prestador */}
+          <SurfaceCard
+            title="Faturamento por prestador"
+            description={`Soma dos valores de ${cfg.noun} ${cfg.verb} por prestador no período filtrado`}
+          >
+            {providerRevenue.length === 0 ? (
+              emptyState
+            ) : (
+              <div className={`${SPLIT_GRID_CLASS} items-stretch`}>
+                <div className="min-w-0 flex h-full flex-col gap-3 xl:pr-8">
+                  <div>
+                    <p className="text-xs font-medium text-muted-foreground">
+                      Ranking de prestadores
+                    </p>
+                  </div>
+                  <div
+                    className="w-full flex-1"
+                    style={{ minHeight: horizontalBarsHeight(providerRevenue.length, isMobile) }}
+                    data-chart="providers-revenue"
+                  >
                     <ResponsiveContainer width="100%" height="100%">
-                      <PieChart>
-                        <Pie
-                          data={statusData}
-                          innerRadius={58}
-                          outerRadius={82}
-                          paddingAngle={statusData.length > 1 ? 2 : 0}
+                      <BarChart
+                        data={providerRevenue}
+                        layout="vertical"
+                        margin={{
+                          top: 4,
+                          right: isMobile ? 48 : 64,
+                          left: isMobile ? 0 : 8,
+                          bottom: isMobile ? 4 : 16,
+                        }}
+                        barCategoryGap={HORIZONTAL_BAR_GAP}
+                      >
+                        <CartesianGrid
+                          strokeDasharray="3 3"
+                          stroke="var(--border)"
+                          horizontal={false}
+                        />
+                        <XAxis
+                          type="number"
+                          stroke="var(--muted-foreground)"
+                          fontSize={11}
+                          tickLine={false}
+                          axisLine={false}
+                          tickFormatter={(v: number) => formatBRLCompact(v)}
+                          label={
+                            isMobile
+                              ? undefined
+                              : {
+                                  value: "Faturamento (R$)",
+                                  position: "insideBottom",
+                                  offset: -12,
+                                  fill: "var(--muted-foreground)",
+                                  fontSize: 11,
+                                }
+                          }
+                        />
+                        <YAxis
+                          type="category"
+                          dataKey="name"
+                          stroke="var(--muted-foreground)"
+                          fontSize={11}
+                          width={isMobile ? 104 : 158}
+                          tickLine={false}
+                          axisLine={false}
+                          label={
+                            isMobile
+                              ? undefined
+                              : {
+                                  value: "Prestador",
+                                  angle: -90,
+                                  position: "insideLeft",
+                                  fill: "var(--muted-foreground)",
+                                  fontSize: 11,
+                                  style: { textAnchor: "middle" },
+                                }
+                          }
+                        />
+                        <RTooltip
+                          content={<ChartTooltip currency />}
+                          cursor={{ fill: "var(--muted)", opacity: 0.4 }}
+                        />
+                        <Bar
                           dataKey="value"
-                          stroke="var(--card)"
-                          strokeWidth={statusData.length > 1 ? 2 : 0}
+                          name=""
+                          fill="var(--primary)"
+                          radius={[0, 6, 6, 0]}
+                          barSize={HORIZONTAL_BAR_SIZE}
                           isAnimationActive={false}
                         >
-                          {statusData.map((d) => (
-                            <Cell key={d.name} fill={d.color} />
-                          ))}
-                        </Pie>
-                        <RTooltip content={<ChartTooltip unit={cfg.noun} />} wrapperStyle={{ zIndex: 30 }} />
-                      </PieChart>
+                          <LabelList
+                            dataKey="value"
+                            position="right"
+                            className="fill-foreground"
+                            style={{ fontSize: 11, fontWeight: 600 }}
+                            formatter={(v: number) => formatBRLCompact(v)}
+                          />
+                        </Bar>
+                      </BarChart>
                     </ResponsiveContainer>
-                    <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center px-6 text-center">
-                      <div className="metric-value text-foreground">
-                        {total > 0 ? Math.round((metrics.quality.success / total) * 100) : 0}%
-                      </div>
-                      <div className="max-w-24 text-xs leading-tight text-muted-foreground">
-                        com sucesso
-                      </div>
-                    </div>
                   </div>
-                  <p className="text-center text-xs text-muted-foreground">
-                    <span className="tabular-nums">{total}</span> guias no período
-                  </p>
-                  <ul className="space-y-1 text-sm">
-                    <TooltipProvider>
-                      {statusData.map((d) => {
-                        const pct = total > 0 ? Math.round((d.value / total) * 100) : 0;
-                        return (
-                          <li
-                            key={d.name}
-                            className="flex min-w-0 items-center gap-2 rounded-md px-2 py-1"
-                          >
-                            <span
-                              aria-hidden="true"
-                              className="h-2.5 w-2.5 rounded-full shrink-0"
-                              style={{ background: d.color }}
-                            />
-                            <span className="truncate">{d.name}</span>
-                            {d.hint ? (
-                              <InfoHint label={`Sobre ${d.name}`}>{d.hint}</InfoHint>
-                            ) : null}
-
-                            <span className="ml-auto shrink-0 tabular-nums text-xs">
-                              <span className="font-semibold text-foreground">{pct}%</span>
-                              <span className="font-normal text-muted-foreground">
-                                {" "}
-                                · {d.value}
-                              </span>
-                            </span>
-                          </li>
-                        );
-                      })}
-                    </TooltipProvider>
-                  </ul>
-
-
-                </div>
-
-                {/* Motivos de não processamento, coloridos pela categoria de status. */}
-                <div className="min-w-0 flex flex-col gap-3 xl:pl-8">
-                  <div className="flex flex-wrap items-center justify-between gap-2">
-                    <p className="text-xs font-medium text-muted-foreground">
-                      Motivos de não processamento
+                  {isMobile ? (
+                    <p className="text-xs leading-snug text-muted-foreground">
+                      Eixo vertical: prestador · Eixo horizontal: faturamento em R$
                     </p>
-                    {metrics.quality.failuresByType.length > 0 && (
-                      <ul className="flex flex-wrap items-center gap-3">
-                        {(
-                          Object.entries(FAILURE_CATEGORIES) as [
-                            keyof typeof FAILURE_CATEGORIES,
-                            { label: string; color: string },
-                          ][]
-                        ).map(([key, cat]) => (
-                          <li key={key} className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                            <span
-                              aria-hidden="true"
-                              className="size-2 rounded-full"
-                              style={{ background: cat.color }}
-                            />
-                            {cat.label}
-                          </li>
-                        ))}
-                      </ul>
-                    )}
+                  ) : null}
+                </div>
+                <div className="min-w-0 space-y-3 xl:pl-8">
+                  <div>
+                    <p className="text-xs font-medium text-muted-foreground">
+                      Detalhamento dos prestadores
+                    </p>
                   </div>
-                  {metrics.quality.failuresByType.length === 0 ? (
-                    <EmptyState
-                      icon={<FileCheck2 className="h-10 w-10" />}
-                      title="Nenhuma falha no período"
-                      description="Todas as guias do período filtrado foram processadas com sucesso."
-                    />
-                  ) : (
-                    <div className="flex flex-1 flex-col gap-3">
-                      <div
-                        className="w-full"
-                        style={{
-                          height: horizontalBarsHeight(
-                            metrics.quality.failuresByType.length,
-                            isMobile,
-                          ),
-                        }}
-                        data-chart="quality-failures"
-                      >
 
-                        <ResponsiveContainer width="100%" height="100%">
-                          <BarChart
-                            data={metrics.quality.failuresByType}
-                            layout="vertical"
-                            margin={{
-                              top: 4,
-                              right: isMobile ? 20 : 28,
-                              left: isMobile ? 0 : 8,
-                              bottom: isMobile ? 4 : 16,
-                            }}
-                            barCategoryGap={HORIZONTAL_BAR_GAP}
-                          >
-                            <CartesianGrid
-                              strokeDasharray="3 3"
-                              stroke="var(--border)"
-                              horizontal={false}
+                  <DataTable>
+                    <DataTableDesktop breakpoint="md">
+                      <DataTableRoot className="min-w-72">
+                        <DataTableHeader>
+                          <DataTableRow>
+                            <SortableHead
+                              label="Prestador"
+                              column="name"
+                              sort={revenueSort}
+                              onSort={setRevenueSort}
                             />
-                            <XAxis
-                              type="number"
-                              stroke="var(--muted-foreground)"
-                              fontSize={11}
-                              tickLine={false}
-                              axisLine={false}
-                              allowDecimals={false}
-                              label={
-                                isMobile
-                                  ? undefined
-                                  : {
-                                      value: "Quantidade de ocorrências",
-                                      position: "insideBottom",
-                                      offset: -12,
-                                      fill: "var(--muted-foreground)",
-                                      fontSize: 11,
-                                    }
-                              }
+                            <SortableHead
+                              label="Faturamento"
+                              column="count"
+                              sort={revenueSort}
+                              onSort={setRevenueSort}
+                              align="right"
                             />
-                            <YAxis
-                              type="category"
-                              dataKey="label"
-                              stroke="var(--muted-foreground)"
-                              fontSize={11}
-                              width={isMobile ? 104 : 172}
-                              tickLine={false}
-                              axisLine={false}
-                              label={
-                                isMobile
-                                  ? undefined
-                                  : {
-                                      value: "Motivo",
-                                      angle: -90,
-                                      position: "insideLeft",
-                                      fill: "var(--muted-foreground)",
-                                      fontSize: 11,
-                                      style: { textAnchor: "middle" },
-                                    }
-                              }
-                            />
-                            <RTooltip
-                              content={<ChartTooltip unit="ocorrências" />}
-                              cursor={{ fill: "var(--muted)", opacity: 0.4 }}
-                            />
-                            <Bar
-                              dataKey="count"
-                              name="Ocorrências"
-                              radius={[0, 6, 6, 0]}
-                              barSize={HORIZONTAL_BAR_SIZE}
-                              isAnimationActive={false}
-                            >
-                              {metrics.quality.failuresByType.map((f) => (
-                                <Cell key={f.name} fill={f.color} />
-                              ))}
-                              <LabelList
-                                dataKey="count"
-                                position="right"
-                                className="fill-foreground"
-                                style={{ fontSize: 11, fontWeight: 600 }}
-                              />
-                            </Bar>
-                          </BarChart>
-                        </ResponsiveContainer>
-                      </div>
-                      {isMobile ? (
-                        <p className="text-xs leading-snug text-muted-foreground">
-                          Eixo vertical: tipo de falha · Eixo horizontal: quantidade de ocorrências
-                        </p>
-                      ) : null}
-                    </div>
+                          </DataTableRow>
+                        </DataTableHeader>
+                        <DataTableBody>
+                          {sortedRevenue.map((p) => (
+                            <DataTableRow key={p.name}>
+                              <DataTableCell title={p.name}>{p.name}</DataTableCell>
+                              <DataTableCell className="text-right font-medium tabular-nums">
+                                {formatBRL(p.value)}
+                              </DataTableCell>
+                            </DataTableRow>
+                          ))}
+                        </DataTableBody>
+                      </DataTableRoot>
+                    </DataTableDesktop>
 
-                  )}
+                    <DataTableCardList breakpoint="md" divided>
+                      {sortedRevenue.map((p) => (
+                        <DataTableCard key={p.name} flat>
+                          <DataTableCardHeader
+                            title={<span className="min-w-0 break-words">{p.name}</span>}
+                            trailing={
+                              <Badge variant="secondary" className="tabular-nums">
+                                {formatBRL(p.value)}
+                              </Badge>
+                            }
+                          />
+                        </DataTableCard>
+                      ))}
+                    </DataTableCardList>
+                  </DataTable>
                 </div>
               </div>
             )}
-          </SurfaceCard></>)}
+          </SurfaceCard>
+
+
+            </TabsContent>
+          </Tabs>
           </div>
 
         </div>
