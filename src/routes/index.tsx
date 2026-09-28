@@ -902,7 +902,6 @@ const MONTH_ABBR = [
   "dez",
 ] as const;
 
-/** Largura observada de um elemento, para adaptar a densidade de rótulos. */
 /**
  * Mede a largura de um elemento via callback ref, para que a medição recomece
  * quando o elemento é montado depois (abas desmontam painéis inativos).
