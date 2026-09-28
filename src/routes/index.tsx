@@ -2567,9 +2567,9 @@ function DashboardPage() {
                       margin={{ top: 10, right: 12, left: isMobile ? 4 : 6, bottom: isMobile ? 0 : 6 }}
                     >
                       <defs>
-                        <linearGradient id="gradSuccess" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="0%" stopColor="var(--success)" stopOpacity={0.45} />
-                          <stop offset="100%" stopColor="var(--success)" stopOpacity={0} />
+                        <linearGradient id="gradRevenue" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="0%" stopColor="var(--primary)" stopOpacity={0.45} />
+                          <stop offset="100%" stopColor="var(--primary)" stopOpacity={0} />
                         </linearGradient>
                       </defs>
                       <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" vertical={false} />
@@ -2618,15 +2618,15 @@ function DashboardPage() {
                       />
                       <RTooltip
                         content={<ChartTooltip currency />}
-                        cursor={{ stroke: "var(--success)", strokeOpacity: 0.25, strokeWidth: 1 }}
+                        cursor={{ stroke: "var(--primary)", strokeOpacity: 0.25, strokeWidth: 1 }}
                       />
                       <Area
                         type="monotone"
                         dataKey="faturamento"
                         name="Faturamento"
-                        stroke="var(--success)"
+                        stroke="var(--primary)"
                         strokeWidth={2.5}
-                        fill="url(#gradSuccess)"
+                        fill="url(#gradRevenue)"
                         dot={{ r: 0 }}
                         activeDot={{ r: 5, strokeWidth: 2, stroke: "var(--card)" }}
                         isAnimationActive={false}
