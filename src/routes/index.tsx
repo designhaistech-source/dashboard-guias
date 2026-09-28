@@ -1900,6 +1900,80 @@ function DashboardPage() {
             </SurfaceCard>
           </div>
 
+          {/* Faturamento por dia */}
+          <SurfaceCard
+            className="min-w-0"
+            title="Faturamento por dia"
+            description={`Evolução do faturamento de ${cfg.noun} ${cfg.verb} por dia no período filtrado`}
+          >
+            {!hasData ? (
+              emptyState
+            ) : (
+              <>
+                <div className="h-60 sm:h-72" data-chart="daily-revenue">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <LineChart
+                      data={dailyData}
+                      margin={{ top: 10, right: 12, left: isMobile ? 4 : 6, bottom: isMobile ? 0 : 6 }}
+                    >
+                      <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" vertical={false} />
+                      <XAxis
+                        dataKey="date"
+                        stroke="var(--muted-foreground)"
+                        fontSize={11}
+                        tickLine={false}
+                        axisLine={false}
+                        tickMargin={4}
+                        height={isMobile ? 46 : 48}
+                        ticks={dailyTicks}
+                        interval={0}
+                        tick={<DailyAxisTick monthStarts={dailyMonthStarts} />}
+                        label={
+                          isMobile
+                            ? undefined
+                            : {
+                                value: "Dia do período",
+                                position: "insideBottom",
+                                offset: 2,
+                                fill: "var(--muted-foreground)",
+                                fontSize: 11,
+                              }
+                        }
+                      />
+                      <YAxis
+                        stroke="var(--muted-foreground)"
+                        fontSize={11}
+                        tickLine={false}
+                        axisLine={false}
+                        width={isMobile ? 56 : 72}
+                        tickFormatter={(v: number) => formatBRLCompact(v)}
+                      />
+                      <RTooltip
+                        content={<ChartTooltip currency />}
+                        cursor={{ stroke: "var(--primary)", strokeOpacity: 0.25, strokeWidth: 1 }}
+                      />
+                      <Line
+                        type="monotone"
+                        dataKey="faturamento"
+                        name="Faturamento"
+                        stroke="var(--success)"
+                        strokeWidth={2.5}
+                        dot={false}
+                        activeDot={{ r: 5, strokeWidth: 2, stroke: "var(--card)" }}
+                        isAnimationActive={false}
+                      />
+                    </LineChart>
+                  </ResponsiveContainer>
+                </div>
+                {isMobile ? (
+                  <p className="mt-2 text-xs leading-snug text-muted-foreground">
+                    Eixo vertical: faturamento em R$ · Eixo horizontal: dia do período
+                  </p>
+                ) : null}
+              </>
+            )}
+          </SurfaceCard>
+
           {/* Prestadores */}
           <SurfaceCard
             title={`${cfg.label} por prestador`}
