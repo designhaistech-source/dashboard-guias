@@ -904,10 +904,14 @@ const MONTH_ABBR = [
 ] as const;
 
 /** Largura observada de um elemento, para adaptar a densidade de rótulos. */
-function useElementWidth(ref: RefObject<HTMLElement | null>): number {
+/**
+ * Mede a largura de um elemento via callback ref, para que a medição recomece
+ * quando o elemento é montado depois (abas desmontam painéis inativos).
+ */
+function useElementWidth(): [(node: HTMLElement | null) => void, number] {
+  const [element, setElement] = useState<HTMLElement | null>(null);
   const [width, setWidth] = useState(0);
   useEffect(() => {
-    const element = ref.current;
     if (!element || typeof ResizeObserver === "undefined") return;
     const observer = new ResizeObserver((entries) => {
       const next = entries[0]?.contentRect.width ?? 0;
@@ -915,8 +919,8 @@ function useElementWidth(ref: RefObject<HTMLElement | null>): number {
     });
     observer.observe(element);
     return () => observer.disconnect();
-  }, [ref]);
-  return width;
+  }, [element]);
+  return [setElement, width];
 }
 
 /**
@@ -1250,8 +1254,7 @@ function DashboardPage() {
     );
   }, [providerRevenue, revenueSort]);
   const dailyData = metrics.daily;
-  const dailyChartRef = useRef<HTMLDivElement>(null);
-  const dailyChartWidth = useElementWidth(dailyChartRef);
+  const [dailyChartRef, dailyChartWidth] = useElementWidth();
   /** Quantidade de rótulos proporcional ao espaço disponível (~52px por rótulo). */
   const dailyMaxTicks = Math.max(3, Math.floor((dailyChartWidth || 640) / 52));
   const dailyTicks = useMemo(
@@ -1260,8 +1263,7 @@ function DashboardPage() {
   );
   const dailyMonthStarts = useMemo(() => monthStartTicks(dailyTicks), [dailyTicks]);
   // Tabs unmount inactive panels, so the revenue chart measures its own width.
-  const revenueChartRef = useRef<HTMLDivElement>(null);
-  const revenueChartWidth = useElementWidth(revenueChartRef);
+  const [revenueChartRef, revenueChartWidth] = useElementWidth();
   const revenueMaxTicks = Math.max(3, Math.floor((revenueChartWidth || 640) / 52));
   const revenueTicks = useMemo(
     () => dailyAxisTicks(dailyData, revenueMaxTicks),
