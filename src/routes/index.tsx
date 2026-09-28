@@ -133,6 +133,9 @@ async function loadImageDataUrl(url: string): Promise<{ dataUrl: string; w: numb
   return { dataUrl, ...dims };
 }
 
+/** Report export is hidden until the feature is delivered; the code path stays ready. */
+const SHOW_REPORT_ACTION = false;
+
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
@@ -260,7 +263,6 @@ async function captureChartPng(
     }
   });
   colorProbe.remove();
-
 
   const xml = new XMLSerializer().serializeToString(clone);
   const svgBlob = new Blob([xml], { type: "image/svg+xml;charset=utf-8" });
@@ -431,9 +433,7 @@ async function generateReportPdf(
 
     const sectionTitle = (text: string, keepNextH = 0, description?: string) => {
       applyType(TYPE.subtitle);
-      const descLines = description
-        ? doc.splitTextToSize(description, pageWidth - margin * 2)
-        : [];
+      const descLines = description ? doc.splitTextToSize(description, pageWidth - margin * 2) : [];
       const titleBlock = 28 + descLines.length * 12;
       // The title, its description and the following block always travel together.
       keepTogether(titleBlock + keepNextH);
@@ -450,7 +450,6 @@ async function generateReportPdf(
       }
       applyType(TYPE.body);
     };
-
 
     // Fit image into a box preserving aspect ratio (contain).
     const fitSize = (img: { w: number; h: number }, maxW: number, maxH: number) => {
@@ -632,7 +631,6 @@ async function generateReportPdf(
       showHead: "everyPage",
     });
 
-
     // "Gerado por" — bloco final, quebra página se não couber
     const lastY =
       (doc as unknown as { lastAutoTable?: { finalY: number } }).lastAutoTable?.finalY ?? y;
@@ -697,8 +695,6 @@ function horizontalBarsHeight(categories: number, isMobile: boolean) {
   const axisSpace = isMobile ? 32 : 60;
   return Math.max(1, categories) * (HORIZONTAL_BAR_SIZE + HORIZONTAL_BAR_GAP) + axisSpace;
 }
-
-
 
 /** Two-column split with a vertical divider on desktop and a centered horizontal divider (24px above/below) on mobile/tablet. */
 const SPLIT_GRID_CLASS =
@@ -781,7 +777,6 @@ const emptyFilters: GuideFilters = {
 };
 
 /** Rótulo de grupo dentro do painel de filtros — único nível em caixa alta. */
-
 
 function FilterField({
   label,
@@ -1001,21 +996,13 @@ function DailyAxisTick({
         {day}
       </text>
       {isMonthStart ? (
-        <text
-          textAnchor="middle"
-          dy={26}
-          fontSize={10}
-          fontWeight={600}
-          fill="var(--foreground)"
-        >
+        <text textAnchor="middle" dy={26} fontSize={10} fontWeight={600} fill="var(--foreground)">
           {monthLabel}
         </text>
       ) : null}
     </g>
   );
 }
-
-
 
 type ProcedureSortColumn = "code" | "name" | "count";
 type ProcedureSort = { column: ProcedureSortColumn; direction: "asc" | "desc" };
@@ -1104,10 +1091,8 @@ function DashboardPage() {
     !!filters.dataAutorizacaoAte &&
     filters.dataAutorizacaoDe > filters.dataAutorizacaoAte;
 
-  const setFilter = (
-    key: Exclude<keyof GuideFilters, "procedimentos">,
-    value: string,
-  ) => setFilters((f) => ({ ...f, [key]: value }));
+  const setFilter = (key: Exclude<keyof GuideFilters, "procedimentos">, value: string) =>
+    setFilters((f) => ({ ...f, [key]: value }));
 
   const setProcedimentos = (values: string[]) =>
     setFilters((f) => ({ ...f, procedimentos: values }));
@@ -1167,10 +1152,14 @@ function DashboardPage() {
 
   const metrics = useMemo(
     () =>
-      buildMetrics(filteredGuides, {
-        from: filters.dataAutorizacaoDe || undefined,
-        to: filters.dataAutorizacaoAte || undefined,
-      }, cfg.types),
+      buildMetrics(
+        filteredGuides,
+        {
+          from: filters.dataAutorizacaoDe || undefined,
+          to: filters.dataAutorizacaoAte || undefined,
+        },
+        cfg.types,
+      ),
     [filteredGuides, filters.dataAutorizacaoDe, filters.dataAutorizacaoAte, cfg.types],
   );
 
@@ -1185,11 +1174,7 @@ function DashboardPage() {
   const deferredProviderMatrix = useDeferredValue(providerMatrix);
   // Enquanto o valor deferido não acompanha a matriz atual, exibimos skeleton.
   const isHeatmapPending = deferredProviderMatrix !== providerMatrix;
-  const hasProviderMatrix =
-    providerMatrix.rows.length > 0 && providerMatrix.columns.length > 0;
-
-
-
+  const hasProviderMatrix = providerMatrix.rows.length > 0 && providerMatrix.columns.length > 0;
 
   const periodLabel = useMemo(
     () =>
@@ -1221,10 +1206,7 @@ function DashboardPage() {
   }, [procedures, procedureSort]);
 
   /** Ranking de prestadores (10 maiores) reagindo aos filtros da página. */
-  const providerCounts = useMemo(
-    () => buildProviderCounts(filteredGuides, 10),
-    [filteredGuides],
-  );
+  const providerCounts = useMemo(() => buildProviderCounts(filteredGuides, 10), [filteredGuides]);
   const [providerSort, setProviderSort] = useState<ProviderSort>({
     column: "count",
     direction: "desc",
@@ -1238,10 +1220,7 @@ function DashboardPage() {
         : a.name.localeCompare(b.name, "pt-BR") * factor,
     );
   }, [providerCounts, providerSort]);
-  const providerRevenue = useMemo(
-    () => buildProviderRevenue(filteredGuides, 10),
-    [filteredGuides],
-  );
+  const providerRevenue = useMemo(() => buildProviderRevenue(filteredGuides, 10), [filteredGuides]);
   const [revenueSort, setRevenueSort] = useState<ProviderSort>({
     column: "count",
     direction: "desc",
@@ -1277,38 +1256,34 @@ function DashboardPage() {
 
   /** Status do processamento: sucesso, arquivo não processável e erro técnico. */
   const statusData = useMemo(
-    () => [
-      {
-        name: "Processada com sucesso",
-        value: metrics.quality.success,
-        color: "var(--quality-success)",
-        icon: CheckCircle2,
-        hint: "Guias em que os dados foram extraídos e validados sem nenhuma pendência." as
-          | string
-          | undefined,
-      },
-      {
-        name: "Arquivo não processável",
-        value: metrics.quality.unprocessable,
-        color: "var(--quality-unprocessable)",
-        icon: FileWarning,
-        hint: "O arquivo não pôde ser processado devido ao formato, conteúdo ou qualidade do documento enviado.",
-      },
-      {
-        name: "Erro no processamento",
-        value: metrics.quality.processingError,
-        color: "var(--quality-failure)",
-        icon: AlertTriangle,
-        hint: "Falha técnica durante o processamento da guia. É possível reenviar o arquivo para nova tentativa.",
-      },
-    ].filter((d) => d.value > 0),
+    () =>
+      [
+        {
+          name: "Processada com sucesso",
+          value: metrics.quality.success,
+          color: "var(--quality-success)",
+          icon: CheckCircle2,
+          hint: "Guias em que os dados foram extraídos e validados sem nenhuma pendência." as
+            | string
+            | undefined,
+        },
+        {
+          name: "Arquivo não processável",
+          value: metrics.quality.unprocessable,
+          color: "var(--quality-unprocessable)",
+          icon: FileWarning,
+          hint: "O arquivo não pôde ser processado devido ao formato, conteúdo ou qualidade do documento enviado.",
+        },
+        {
+          name: "Erro no processamento",
+          value: metrics.quality.processingError,
+          color: "var(--quality-failure)",
+          icon: AlertTriangle,
+          hint: "Falha técnica durante o processamento da guia. É possível reenviar o arquivo para nova tentativa.",
+        },
+      ].filter((d) => d.value > 0),
 
-
-    [
-      metrics.quality.success,
-      metrics.quality.unprocessable,
-      metrics.quality.processingError,
-    ],
+    [metrics.quality.success, metrics.quality.unprocessable, metrics.quality.processingError],
   );
   const [generatingReport, setGeneratingReport] = useState(false);
 
@@ -1362,7 +1337,6 @@ function DashboardPage() {
       label: `${Math.abs(diff)} ${diff > 0 ? "a mais" : "a menos"} que ontem`,
     };
   }, [dailyData]);
-
 
   /** Reference date of the "today" KPI, shown discreetly in the card. */
   const todayLabel = formatIsoToBrFull(todayLocalIsoDate());
@@ -1472,7 +1446,10 @@ function DashboardPage() {
               aria-label="Carregando indicadores"
             >
               {[0, 1, 2, 3].map((i) => (
-                <div key={i} className="h-32 animate-pulse rounded-2xl border border-border bg-card" />
+                <div
+                  key={i}
+                  className="h-32 animate-pulse rounded-2xl border border-border bg-card"
+                />
               ))}
             </div>
             <div className="h-72 animate-pulse rounded-2xl border border-border bg-card" />
@@ -1496,631 +1473,1189 @@ function DashboardPage() {
             title="Visão geral"
             description="Acompanhe suas guias, documentos e atividades recentes."
             actions={
-              <Button
-                size="sm"
-                onClick={handleGenerateReport}
-                disabled={!hasData || generatingReport}
-                aria-busy={generatingReport}
-                title={!hasData ? "Sem dados para gerar o relatório" : undefined}
-                className="w-full justify-center sm:w-auto"
-              >
-                {generatingReport ? (
-                  <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
-                ) : (
-                  <Download className="h-4 w-4" aria-hidden="true" />
-                )}
-                {generatingReport ? "Gerando…" : "Gerar relatório"}
-              </Button>
+              SHOW_REPORT_ACTION && (
+                <Button
+                  size="sm"
+                  onClick={handleGenerateReport}
+                  disabled={!hasData || generatingReport}
+                  aria-busy={generatingReport}
+                  title={!hasData ? "Sem dados para gerar o relatório" : undefined}
+                  className="w-full justify-center sm:w-auto"
+                >
+                  {generatingReport ? (
+                    <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
+                  ) : (
+                    <Download className="h-4 w-4" aria-hidden="true" />
+                  )}
+                  {generatingReport ? "Gerando…" : "Gerar relatório"}
+                </Button>
+              )
             }
           />
 
           <div className="space-y-6">
-          {/* Recorte aplicado — sempre visível, sem abrir os filtros */}
-          <p className="flex items-center gap-2 text-sm leading-5 text-muted-foreground" aria-live="polite">
-            <span className="flex h-5 shrink-0 items-center" aria-hidden="true">
-              <CalendarRange className="block h-4 w-4" />
-            </span>
-            <span className="leading-5">
-              Dados exibidos: <span className="font-medium text-foreground">{periodLabel}</span>
-              {filters.tipoGuia.trim() ? (
-                <>
-                  {" · "}{cfg.typeLabel}:{" "}
-                  <span className="font-medium text-foreground">{filters.tipoGuia.trim()}</span>
-                </>
-              ) : null}
-              {filters.procedimentos.length > 0 ? (
-                <>
-                  {" · "}Procedimentos:{" "}
-                  <span className="font-medium text-foreground">
-                    {filters.procedimentos.length}
-                  </span>
-                </>
-              ) : null}
-              {filters.prestadorSolicitante.trim() ? (
-                <>
-                  {" · "}Prestador:{" "}
-                  <span className="font-medium text-foreground">
-                    {filters.prestadorSolicitante.trim()}
-                  </span>
-                </>
-              ) : null}
-            </span>
-          </p>
+            {/* Recorte aplicado — sempre visível, sem abrir os filtros */}
+            <p
+              className="flex items-center gap-2 text-sm leading-5 text-muted-foreground"
+              aria-live="polite"
+            >
+              <span className="flex h-5 shrink-0 items-center" aria-hidden="true">
+                <CalendarRange className="block h-4 w-4" />
+              </span>
+              <span className="leading-5">
+                Dados exibidos: <span className="font-medium text-foreground">{periodLabel}</span>
+                {filters.tipoGuia.trim() ? (
+                  <>
+                    {" · "}
+                    {cfg.typeLabel}:{" "}
+                    <span className="font-medium text-foreground">{filters.tipoGuia.trim()}</span>
+                  </>
+                ) : null}
+                {filters.procedimentos.length > 0 ? (
+                  <>
+                    {" · "}Procedimentos:{" "}
+                    <span className="font-medium text-foreground">
+                      {filters.procedimentos.length}
+                    </span>
+                  </>
+                ) : null}
+                {filters.prestadorSolicitante.trim() ? (
+                  <>
+                    {" · "}Prestador:{" "}
+                    <span className="font-medium text-foreground">
+                      {filters.prestadorSolicitante.trim()}
+                    </span>
+                  </>
+                ) : null}
+              </span>
+            </p>
 
-          {/* Container de filtros — cabeçalho próprio com expandir/recolher */}
-          <Tabs value={tab} onValueChange={(v) => changeTab(v as DashboardTab)} className="space-y-6">
-            <TabsList className={appTabsListClass} aria-label="Seções da visão geral">
-              <TabsTrigger value="geral" className={appTabsTriggerClass}>
-                <LayoutDashboard className={appTabsIconClass} aria-hidden="true" />
-                <span className={appTabsLabelClass}>Geral</span>
-              </TabsTrigger>
-              <TabsTrigger value="producao" className={appTabsTriggerClass}>
-                <BarChart3 className={appTabsIconClass} aria-hidden="true" />
-                <span className={appTabsLabelClass}>Operação</span>
-              </TabsTrigger>
-              <TabsTrigger value="faturamento" className={appTabsTriggerClass}>
-                <Wallet className={appTabsIconClass} aria-hidden="true" />
-                <span className={appTabsLabelClass}>Faturamento</span>
-              </TabsTrigger>
-            </TabsList>
-          <section
-            aria-label="Filtros"
-            className="rounded-2xl border border-border bg-card shadow-xs"
-          >
-            <div className="flex items-center justify-between gap-3 px-4 py-3 sm:px-5">
-              <div className="flex items-center gap-2">
-                <SlidersHorizontal
-                  className="icon-optical h-4 w-4 text-muted-foreground"
-                  aria-hidden="true"
-                />
-                <h2 className="font-display text-base font-semibold tracking-tight text-foreground">
-                  Filtros
-                </h2>
-                {extraFilterCount > 0 && (
-                  <Badge
-                    variant="secondary"
-                    size="sm"
-                    aria-label={`${extraFilterCount} filtro${extraFilterCount > 1 ? "s" : ""} adicional${extraFilterCount > 1 ? "is" : ""} ativo${extraFilterCount > 1 ? "s" : ""}`}
-                  >
-                    {extraFilterCount}
-                  </Badge>
-                )}
-              </div>
-              <Button
-                type="button"
-                variant="ghost"
-                size="sm"
-                onClick={() => setFiltersOpen((open) => !open)}
-                aria-expanded={filtersOpen}
-                aria-controls="dashboard-filters-panel"
+            {/* Container de filtros — cabeçalho próprio com expandir/recolher */}
+            <Tabs
+              value={tab}
+              onValueChange={(v) => changeTab(v as DashboardTab)}
+              className="space-y-6"
+            >
+              <TabsList className={appTabsListClass} aria-label="Seções da visão geral">
+                <TabsTrigger value="geral" className={appTabsTriggerClass}>
+                  <LayoutDashboard className={appTabsIconClass} aria-hidden="true" />
+                  <span className={appTabsLabelClass}>Geral</span>
+                </TabsTrigger>
+                <TabsTrigger value="producao" className={appTabsTriggerClass}>
+                  <BarChart3 className={appTabsIconClass} aria-hidden="true" />
+                  <span className={appTabsLabelClass}>Operação</span>
+                </TabsTrigger>
+                <TabsTrigger value="faturamento" className={appTabsTriggerClass}>
+                  <Wallet className={appTabsIconClass} aria-hidden="true" />
+                  <span className={appTabsLabelClass}>Faturamento</span>
+                </TabsTrigger>
+              </TabsList>
+              <section
+                aria-label="Filtros"
+                className="rounded-2xl border border-border bg-card shadow-xs"
               >
-                {filtersOpen ? "Recolher" : "Expandir"}
-                <ChevronDown
-                  className={cn("h-4 w-4 transition-transform", filtersOpen && "rotate-180")}
-                  aria-hidden="true"
-                />
-              </Button>
-            </div>
-
-            {filtersOpen && (
-              <div
-                id="dashboard-filters-panel"
-                className="space-y-4 border-t border-border px-4 py-4 sm:px-5 sm:py-5"
-              >
-                {tab !== "faturamento" && (
-                <div className="min-w-0 sm:max-w-xs">
-                  <Field label="Tipo de dado">
-                    <Combobox
-                      value={dataKind}
-                      onChange={(v) => v && changeDataKind(v as DashboardDataKind)}
-                      options={(Object.keys(DASHBOARD_DATA_KINDS) as DashboardDataKind[]).map((k) => ({
-                        value: k,
-                        label: DASHBOARD_DATA_KINDS[k].label,
-                      }))}
-                      placeholder="Guias processadas"
-                      searchPlaceholder="Buscar..."
+                <div className="flex items-center justify-between gap-3 px-4 py-3 sm:px-5">
+                  <div className="flex items-center gap-2">
+                    <SlidersHorizontal
+                      className="icon-optical h-4 w-4 text-muted-foreground"
+                      aria-hidden="true"
                     />
-                  </Field>
-                </div>
-                )}
-
-                <div className="space-y-1.5">
-                  <span className="block text-xs font-medium leading-snug text-muted-foreground">
-                    Períodos predefinidos
-                  </span>
-                  <div className="flex flex-wrap gap-2">
-                    {[
-                      { id: "hoje", label: "Hoje" },
-                      { id: "7d", label: "Últimos 7 dias" },
-                      { id: "30d", label: "Últimos 30 dias" },
-                    ].map((p) => (
-                      <Chip
-                        key={p.id}
-                        onClick={() => applyPreset(p.id as "hoje" | "7d" | "30d")}
-                        className="text-foreground hover:border-primary hover:bg-primary/5 hover:text-primary"
+                    <h2 className="font-display text-base font-semibold tracking-tight text-foreground">
+                      Filtros
+                    </h2>
+                    {extraFilterCount > 0 && (
+                      <Badge
+                        variant="secondary"
+                        size="sm"
+                        aria-label={`${extraFilterCount} filtro${extraFilterCount > 1 ? "s" : ""} adicional${extraFilterCount > 1 ? "is" : ""} ativo${extraFilterCount > 1 ? "s" : ""}`}
                       >
-                        {p.label}
-                      </Chip>
-                    ))}
+                        {extraFilterCount}
+                      </Badge>
+                    )}
                   </div>
-                </div>
-
-                <div className="grid grid-cols-1 items-end gap-3 sm:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] sm:gap-4 xl:grid-cols-[10rem_10rem_minmax(0,1fr)_minmax(0,1fr)]">
-                  <FilterField
-                    label="Data inicial"
-                    type="date"
-                    error={dateRangeInvalid}
-                    value={filters.dataAutorizacaoDe}
-                    onChange={(v) => setFilter("dataAutorizacaoDe", v)}
-                    inputRef={firstFieldRef}
-                  />
-                  <FilterField
-                    label="Data final"
-                    type="date"
-                    error={dateRangeInvalid}
-                    value={filters.dataAutorizacaoAte}
-                    onChange={(v) => setFilter("dataAutorizacaoAte", v)}
-                  />
-                  <div className="min-w-0 sm:col-span-2 lg:col-span-1 xl:col-span-1">
-                    <FilterSelect
-                      label={cfg.typeLabel}
-                      value={filters.tipoGuia}
-                      onChange={(v) => setFilter("tipoGuia", v)}
-                      options={cfg.types.map((t) => t.name)}
-                    />
-                  </div>
-                  <div className="min-w-0 sm:col-span-2 lg:col-span-1 xl:col-span-1">
-                    <FilterSelect
-                      label="Prestador solicitante"
-                      value={filters.prestadorSolicitante}
-                      onChange={(v) => setFilter("prestadorSolicitante", v)}
-                      options={prestadoresList}
-                    />
-                  </div>
-                  {cfg.hasProcedures && (
-                  <div className="min-w-0 sm:col-span-2 xl:col-span-4">
-                    <ProcedureFilter
-                      values={filters.procedimentos}
-                      onChange={setProcedimentos}
-                    />
-                  </div>
-                  )}
                   <Button
                     type="button"
-                    variant="outline"
-                    onClick={clearAllFilters}
-                    disabled={activeFilters.length === 0}
-                    className="h-10 w-full justify-center sm:col-span-2 sm:h-9 lg:w-auto lg:justify-self-start xl:col-span-4"
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setFiltersOpen((open) => !open)}
+                    aria-expanded={filtersOpen}
+                    aria-controls="dashboard-filters-panel"
                   >
-                    Limpar filtros
+                    {filtersOpen ? "Recolher" : "Expandir"}
+                    <ChevronDown
+                      className={cn("h-4 w-4 transition-transform", filtersOpen && "rotate-180")}
+                      aria-hidden="true"
+                    />
                   </Button>
                 </div>
 
-                {dateRangeInvalid && (
-                  <p className="text-xs text-destructive">
-                    A data inicial deve ser anterior ou igual à data final.
-                  </p>
-                )}
-                {tab !== "faturamento" && (
-                <p className="text-xs text-muted-foreground">
-                  Para localizar uma guia específica por paciente, número ou procedimento, use a
-                  página Guias processadas.
-                </p>
-                )}
-              </div>
-            )}
-          </section>
-
-            <TabsContent value="geral" className="mt-0 space-y-6">
-          {/* KPIs */}
-          <div
-            className="grid gap-4 grid-cols-1 sm:grid-cols-2 xl:grid-cols-4"
-            data-testid="kpi-grid"
-          >
-            <Kpi
-              icon={FileText}
-              label={`Total de ${cfg.noun} ${cfg.verb}`}
-              value={String(total)}
-              tooltip={kpiTooltips.total}
-              context={dayCount > 0 ? "No período filtrado" : `Nenhum registro no período filtrado`}
-              tone="primary"
-            />
-            <Kpi
-              icon={Activity}
-              label={`${cfg.label} hoje`}
-              value={String(metrics.today)}
-              tooltip={kpiTooltips.today}
-              context={`Hoje, ${todayLabel}`}
-              comparison={todayTrend?.label}
-              tone="success"
-              trend={todayTrend?.direction}
-            />
-            <Kpi
-              icon={TrendingUp}
-              label={`Média diária de ${cfg.noun} ${cfg.verb}`}
-              value={hasProcessingDays ? String(dailyAvg) : "—"}
-              tooltip={kpiTooltips.average}
-              context={hasProcessingDays ? "Por dia com registros" : "Sem registros no período"}
-              comparison={weekTrend?.label}
-              tone="info"
-              trend={weekTrend?.direction}
-            />
-            <Kpi
-              icon={Layers}
-              label={`Tipos de ${cfg.noun} ${cfg.verb}`}
-              value={String(metrics.distinctTypes)}
-              tooltip={kpiTooltips.types}
-              context="Tipos distintos no período filtrado"
-              tone="purple"
-            />
-
-
-          </div>
-
-          {/* Charts row */}
-          <div className="grid gap-4 grid-cols-1 xl:grid-cols-3 items-stretch">
-            <SurfaceCard
-              className="xl:col-span-2 flex h-full min-w-0 flex-col"
-              bodyClassName="flex flex-1 flex-col"
-              title={`${cfg.label} por dia`}
-              description={`Quantidade de ${cfg.noun} ${cfg.verb} por dia no período filtrado`}
-            >
-
-              {!hasData ? (
-                emptyState
-              ) : (
-                <>
-                <div className="min-h-60 flex-1 sm:min-h-72 xl:min-h-80" data-chart="daily" ref={dailyChartRef}>
-                  <ResponsiveContainer width="100%" height="100%">
-                    <AreaChart
-                      data={dailyData}
-                      margin={{ top: 10, right: 12, left: isMobile ? 4 : 6, bottom: isMobile ? 0 : 6 }}
-                    >
-                      <defs>
-                        <linearGradient id="gradPrimary" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="0%" stopColor="var(--primary)" stopOpacity={0.45} />
-                          <stop offset="100%" stopColor="var(--primary)" stopOpacity={0} />
-                        </linearGradient>
-                      </defs>
-                      <CartesianGrid
-                        strokeDasharray="3 3"
-                        stroke="var(--border)"
-                        vertical={false}
-                      />
-                      <XAxis
-                        dataKey="date"
-                        stroke="var(--muted-foreground)"
-                        fontSize={11}
-                        tickLine={false}
-                        axisLine={false}
-                        tickMargin={4}
-                        height={isMobile ? 46 : 48}
-                        ticks={dailyTicks}
-                        interval={0}
-                        tick={<DailyAxisTick monthStarts={dailyMonthStarts} />}
-                        label={
-                          isMobile
-                            ? undefined
-                            : {
-                                value: "Dia do período",
-                                position: "insideBottom",
-                                offset: 2,
-                                fill: "var(--muted-foreground)",
-                                fontSize: 11,
-                              }
-                        }
-                      />
-
-
-
-                      <YAxis
-                        stroke="var(--muted-foreground)"
-                        fontSize={11}
-                        tickLine={false}
-                        axisLine={false}
-                        width={isMobile ? 28 : 44}
-                        allowDecimals={false}
-                        label={
-                          isMobile
-                            ? undefined
-                            : {
-                                value: `Quantidade de ${cfg.noun}`,
-                                angle: -90,
-                                position: "insideLeft",
-                                fill: "var(--muted-foreground)",
-                                fontSize: 11,
-                                style: { textAnchor: "middle" },
-                              }
-                        }
-                      />
-
-                      <RTooltip
-                        content={<ChartTooltip />}
-                        cursor={{ stroke: "var(--primary)", strokeOpacity: 0.25, strokeWidth: 1 }}
-                      />
-                      <Area
-                        type="monotone"
-                        dataKey="guias"
-                        name={cfg.label}
-                        stroke="var(--primary)"
-                        strokeWidth={2.5}
-                        fill="url(#gradPrimary)"
-                        dot={{ r: 0 }}
-                        activeDot={{ r: 5, strokeWidth: 2, stroke: "var(--card)" }}
-                        isAnimationActive={false}
-                      />
-
-
-                    </AreaChart>
-                  </ResponsiveContainer>
-                </div>
-                {isMobile ? (
-                  <p className="mt-2 text-xs leading-snug text-muted-foreground">
-                    Eixo vertical: quantidade de {cfg.noun} · Eixo horizontal: dia do período
-                  </p>
-                ) : null}
-                </>
-              )}
-            </SurfaceCard>
-
-            <SurfaceCard
-              className="flex h-full min-w-0 flex-col"
-              bodyClassName="flex flex-1 flex-col"
-              title={`${cfg.label} por tipo`}
-              description={`Distribuição de ${cfg.noun} ${cfg.verb} no período filtrado`}
-            >
-              {!hasData ? (
-                emptyState
-              ) : (
-                <div className="flex flex-1 flex-col gap-4">
+                {filtersOpen && (
                   <div
-                    className="relative min-h-44 flex-1 sm:min-h-48"
-                    data-chart="types"
-
-                    role="img"
-                    aria-label={`${cfg.label} por tipo: ${typeData
-                      .map((d) => `${d.name} ${d.value}`)
-                      .join(", ")}. Total ${total} ${cfg.noun}.`}
+                    id="dashboard-filters-panel"
+                    className="space-y-4 border-t border-border px-4 py-4 sm:px-5 sm:py-5"
                   >
-
-                    <ResponsiveContainer width="100%" height="100%">
-                      <PieChart>
-                        <Pie
-                          data={typeData}
-                          innerRadius={58}
-                          outerRadius={82}
-                          paddingAngle={typeData.length > 1 ? 2 : 0}
-                          dataKey="value"
-                          stroke="var(--card)"
-                          strokeWidth={typeData.length > 1 ? 2 : 0}
-                          activeIndex={activeType}
-                          activeShape={(props: any) => (
-                            <Sector {...props} outerRadius={props.outerRadius + 6} />
-                          )}
-                          onMouseEnter={(_, i) => setActiveType(i)}
-                          onMouseLeave={() => setActiveType(undefined)}
-                          isAnimationActive={false}
-                        >
-                          {typeData.map((d, i) => (
-                            <Cell key={i} fill={d.color} />
-                          ))}
-                        </Pie>
-                        <RTooltip content={<ChartTooltip unit={cfg.noun} />} wrapperStyle={{ zIndex: 30 }} />
-                      </PieChart>
-                    </ResponsiveContainer>
-                    <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center px-6 text-center">
-                      <div className="metric-value text-foreground">
-                        {activeType !== undefined ? typeData[activeType].value : total}
-                      </div>
-                      <div className="max-w-24 text-xs leading-tight text-muted-foreground">
-                        {activeType !== undefined
-                          ? `${cfg.noun} de ${typeData[activeType].name}`
-                          : `${cfg.noun} ${cfg.verb}`}
-                      </div>
-                    </div>
-                  </div>
-                  <ul className="space-y-1 text-sm">
-                    {typeData.map((d, i) => {
-                      const pct = total > 0 ? (d.value / total) * 100 : 0;
-                      const isActive = activeType === i;
-                      return (
-                        <li
-                          key={d.name}
-                          onMouseEnter={() => setActiveType(i)}
-                          onMouseLeave={() => setActiveType(undefined)}
-                          className={[
-                            "flex min-w-0 items-center gap-2 rounded-md px-2 py-1 cursor-default transition-colors",
-                            isActive ? "bg-muted/60" : "",
-                          ].join(" ")}
-                        >
-                          <span
-                            className="h-2.5 w-2.5 rounded-full shrink-0"
-                            style={{ background: d.color }}
+                    {tab !== "faturamento" && (
+                      <div className="min-w-0 sm:max-w-xs">
+                        <Field label="Tipo de dado">
+                          <Combobox
+                            value={dataKind}
+                            onChange={(v) => v && changeDataKind(v as DashboardDataKind)}
+                            options={(Object.keys(DASHBOARD_DATA_KINDS) as DashboardDataKind[]).map(
+                              (k) => ({
+                                value: k,
+                                label: DASHBOARD_DATA_KINDS[k].label,
+                              }),
+                            )}
+                            placeholder="Guias processadas"
+                            searchPlaceholder="Buscar..."
                           />
-                          <span className="flex-1 truncate">{d.name}</span>
-                          <span className="text-muted-foreground tabular-nums text-xs">
-                            {d.value} · {Math.round(pct)}%
-                          </span>
-                        </li>
-                      );
-                    })}
-                  </ul>
-                </div>
-              )}
-            </SurfaceCard>
-          </div>
-
-          {cfg.hasProcessingStatus && (<>          {/* Status do processamento de guias */}
-          <SurfaceCard
-            title="Status do processamento de guias"
-            description="Distribuição das guias por status no período filtrado"
-          >
-            {!hasData ? (
-              emptyState
-            ) : (
-              <div className={`${SPLIT_GRID_CLASS} items-start`}>
-                <div className="min-w-0 flex flex-col gap-3 xl:pr-8">
-                  <div className="relative h-44 sm:h-48" data-chart="quality-status">
-                    <ResponsiveContainer width="100%" height="100%">
-                      <PieChart>
-                        <Pie
-                          data={statusData}
-                          innerRadius={58}
-                          outerRadius={82}
-                          paddingAngle={statusData.length > 1 ? 2 : 0}
-                          dataKey="value"
-                          stroke="var(--card)"
-                          strokeWidth={statusData.length > 1 ? 2 : 0}
-                          isAnimationActive={false}
-                        >
-                          {statusData.map((d) => (
-                            <Cell key={d.name} fill={d.color} />
-                          ))}
-                        </Pie>
-                        <RTooltip content={<ChartTooltip unit={cfg.noun} />} wrapperStyle={{ zIndex: 30 }} />
-                      </PieChart>
-                    </ResponsiveContainer>
-                    <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center px-6 text-center">
-                      <div className="metric-value text-foreground">
-                        {total > 0 ? Math.round((metrics.quality.success / total) * 100) : 0}%
+                        </Field>
                       </div>
-                      <div className="max-w-24 text-xs leading-tight text-muted-foreground">
-                        com sucesso
+                    )}
+
+                    <div className="space-y-1.5">
+                      <span className="block text-xs font-medium leading-snug text-muted-foreground">
+                        Períodos predefinidos
+                      </span>
+                      <div className="flex flex-wrap gap-2">
+                        {[
+                          { id: "hoje", label: "Hoje" },
+                          { id: "7d", label: "Últimos 7 dias" },
+                          { id: "30d", label: "Últimos 30 dias" },
+                        ].map((p) => (
+                          <Chip
+                            key={p.id}
+                            onClick={() => applyPreset(p.id as "hoje" | "7d" | "30d")}
+                            className="text-foreground hover:border-primary hover:bg-primary/5 hover:text-primary"
+                          >
+                            {p.label}
+                          </Chip>
+                        ))}
                       </div>
                     </div>
-                  </div>
-                  <p className="text-center text-xs text-muted-foreground">
-                    <span className="tabular-nums">{total}</span> guias no período
-                  </p>
-                  <ul className="space-y-1 text-sm">
-                    <TooltipProvider>
-                      {statusData.map((d) => {
-                        const pct = total > 0 ? Math.round((d.value / total) * 100) : 0;
-                        return (
-                          <li
-                            key={d.name}
-                            className="flex min-w-0 items-center gap-2 rounded-md px-2 py-1"
-                          >
-                            <span
-                              aria-hidden="true"
-                              className="h-2.5 w-2.5 rounded-full shrink-0"
-                              style={{ background: d.color }}
-                            />
-                            <span className="truncate">{d.name}</span>
-                            {d.hint ? (
-                              <InfoHint label={`Sobre ${d.name}`}>{d.hint}</InfoHint>
-                            ) : null}
 
-                            <span className="ml-auto shrink-0 tabular-nums text-xs">
-                              <span className="font-semibold text-foreground">{pct}%</span>
-                              <span className="font-normal text-muted-foreground">
-                                {" "}
-                                · {d.value}
-                              </span>
-                            </span>
-                          </li>
-                        );
-                      })}
-                    </TooltipProvider>
-                  </ul>
+                    <div className="grid grid-cols-1 items-end gap-3 sm:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] sm:gap-4 xl:grid-cols-[10rem_10rem_minmax(0,1fr)_minmax(0,1fr)]">
+                      <FilterField
+                        label="Data inicial"
+                        type="date"
+                        error={dateRangeInvalid}
+                        value={filters.dataAutorizacaoDe}
+                        onChange={(v) => setFilter("dataAutorizacaoDe", v)}
+                        inputRef={firstFieldRef}
+                      />
+                      <FilterField
+                        label="Data final"
+                        type="date"
+                        error={dateRangeInvalid}
+                        value={filters.dataAutorizacaoAte}
+                        onChange={(v) => setFilter("dataAutorizacaoAte", v)}
+                      />
+                      <div className="min-w-0 sm:col-span-2 lg:col-span-1 xl:col-span-1">
+                        <FilterSelect
+                          label={cfg.typeLabel}
+                          value={filters.tipoGuia}
+                          onChange={(v) => setFilter("tipoGuia", v)}
+                          options={cfg.types.map((t) => t.name)}
+                        />
+                      </div>
+                      <div className="min-w-0 sm:col-span-2 lg:col-span-1 xl:col-span-1">
+                        <FilterSelect
+                          label="Prestador solicitante"
+                          value={filters.prestadorSolicitante}
+                          onChange={(v) => setFilter("prestadorSolicitante", v)}
+                          options={prestadoresList}
+                        />
+                      </div>
+                      {cfg.hasProcedures && (
+                        <div className="min-w-0 sm:col-span-2 xl:col-span-4">
+                          <ProcedureFilter
+                            values={filters.procedimentos}
+                            onChange={setProcedimentos}
+                          />
+                        </div>
+                      )}
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={clearAllFilters}
+                        disabled={activeFilters.length === 0}
+                        className="h-10 w-full justify-center sm:col-span-2 sm:h-9 lg:w-auto lg:justify-self-start xl:col-span-4"
+                      >
+                        Limpar filtros
+                      </Button>
+                    </div>
 
-
-                </div>
-
-                {/* Motivos de não processamento, coloridos pela categoria de status. */}
-                <div className="min-w-0 flex flex-col gap-3 xl:pl-8">
-                  <div className="flex flex-wrap items-center justify-between gap-2">
-                    <p className="text-xs font-medium text-muted-foreground">
-                      Motivos de não processamento
-                    </p>
-                    {metrics.quality.failuresByType.length > 0 && (
-                      <ul className="flex flex-wrap items-center gap-3">
-                        {(
-                          Object.entries(FAILURE_CATEGORIES) as [
-                            keyof typeof FAILURE_CATEGORIES,
-                            { label: string; color: string },
-                          ][]
-                        ).map(([key, cat]) => (
-                          <li key={key} className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                            <span
-                              aria-hidden="true"
-                              className="size-2 rounded-full"
-                              style={{ background: cat.color }}
-                            />
-                            {cat.label}
-                          </li>
-                        ))}
-                      </ul>
+                    {dateRangeInvalid && (
+                      <p className="text-xs text-destructive">
+                        A data inicial deve ser anterior ou igual à data final.
+                      </p>
+                    )}
+                    {tab !== "faturamento" && (
+                      <p className="text-xs text-muted-foreground">
+                        Para localizar uma guia específica por paciente, número ou procedimento, use
+                        a página Guias processadas.
+                      </p>
                     )}
                   </div>
-                  {metrics.quality.failuresByType.length === 0 ? (
-                    <EmptyState
-                      icon={<FileCheck2 className="h-10 w-10" />}
-                      title="Nenhuma falha no período"
-                      description="Todas as guias do período filtrado foram processadas com sucesso."
-                    />
-                  ) : (
-                    <div className="flex flex-1 flex-col gap-3">
-                      <div
-                        className="w-full"
-                        style={{
-                          height: horizontalBarsHeight(
-                            metrics.quality.failuresByType.length,
-                            isMobile,
-                          ),
-                        }}
-                        data-chart="quality-failures"
-                      >
+                )}
+              </section>
 
+              <TabsContent value="geral" className="mt-0 space-y-6">
+                {/* KPIs */}
+                <div
+                  className="grid gap-4 grid-cols-1 sm:grid-cols-2 xl:grid-cols-4"
+                  data-testid="kpi-grid"
+                >
+                  <Kpi
+                    icon={FileText}
+                    label={`Total de ${cfg.noun} ${cfg.verb}`}
+                    value={String(total)}
+                    tooltip={kpiTooltips.total}
+                    context={
+                      dayCount > 0 ? "No período filtrado" : `Nenhum registro no período filtrado`
+                    }
+                    tone="primary"
+                  />
+                  <Kpi
+                    icon={Activity}
+                    label={`${cfg.label} hoje`}
+                    value={String(metrics.today)}
+                    tooltip={kpiTooltips.today}
+                    context={`Hoje, ${todayLabel}`}
+                    comparison={todayTrend?.label}
+                    tone="success"
+                    trend={todayTrend?.direction}
+                  />
+                  <Kpi
+                    icon={TrendingUp}
+                    label={`Média diária de ${cfg.noun} ${cfg.verb}`}
+                    value={hasProcessingDays ? String(dailyAvg) : "—"}
+                    tooltip={kpiTooltips.average}
+                    context={
+                      hasProcessingDays ? "Por dia com registros" : "Sem registros no período"
+                    }
+                    comparison={weekTrend?.label}
+                    tone="info"
+                    trend={weekTrend?.direction}
+                  />
+                  <Kpi
+                    icon={Layers}
+                    label={`Tipos de ${cfg.noun} ${cfg.verb}`}
+                    value={String(metrics.distinctTypes)}
+                    tooltip={kpiTooltips.types}
+                    context="Tipos distintos no período filtrado"
+                    tone="purple"
+                  />
+                </div>
+
+                {/* Charts row */}
+                <div className="grid gap-4 grid-cols-1 xl:grid-cols-3 items-stretch">
+                  <SurfaceCard
+                    className="xl:col-span-2 flex h-full min-w-0 flex-col"
+                    bodyClassName="flex flex-1 flex-col"
+                    title={`${cfg.label} por dia`}
+                    description={`Quantidade de ${cfg.noun} ${cfg.verb} por dia no período filtrado`}
+                  >
+                    {!hasData ? (
+                      emptyState
+                    ) : (
+                      <>
+                        <div
+                          className="min-h-60 flex-1 sm:min-h-72 xl:min-h-80"
+                          data-chart="daily"
+                          ref={dailyChartRef}
+                        >
+                          <ResponsiveContainer width="100%" height="100%">
+                            <AreaChart
+                              data={dailyData}
+                              margin={{
+                                top: 10,
+                                right: 12,
+                                left: isMobile ? 4 : 6,
+                                bottom: isMobile ? 0 : 6,
+                              }}
+                            >
+                              <defs>
+                                <linearGradient id="gradPrimary" x1="0" y1="0" x2="0" y2="1">
+                                  <stop offset="0%" stopColor="var(--primary)" stopOpacity={0.45} />
+                                  <stop offset="100%" stopColor="var(--primary)" stopOpacity={0} />
+                                </linearGradient>
+                              </defs>
+                              <CartesianGrid
+                                strokeDasharray="3 3"
+                                stroke="var(--border)"
+                                vertical={false}
+                              />
+                              <XAxis
+                                dataKey="date"
+                                stroke="var(--muted-foreground)"
+                                fontSize={11}
+                                tickLine={false}
+                                axisLine={false}
+                                tickMargin={4}
+                                height={isMobile ? 46 : 48}
+                                ticks={dailyTicks}
+                                interval={0}
+                                tick={<DailyAxisTick monthStarts={dailyMonthStarts} />}
+                                label={
+                                  isMobile
+                                    ? undefined
+                                    : {
+                                        value: "Dia do período",
+                                        position: "insideBottom",
+                                        offset: 2,
+                                        fill: "var(--muted-foreground)",
+                                        fontSize: 11,
+                                      }
+                                }
+                              />
+
+                              <YAxis
+                                stroke="var(--muted-foreground)"
+                                fontSize={11}
+                                tickLine={false}
+                                axisLine={false}
+                                width={isMobile ? 28 : 44}
+                                allowDecimals={false}
+                                label={
+                                  isMobile
+                                    ? undefined
+                                    : {
+                                        value: `Quantidade de ${cfg.noun}`,
+                                        angle: -90,
+                                        position: "insideLeft",
+                                        fill: "var(--muted-foreground)",
+                                        fontSize: 11,
+                                        style: { textAnchor: "middle" },
+                                      }
+                                }
+                              />
+
+                              <RTooltip
+                                content={<ChartTooltip />}
+                                cursor={{
+                                  stroke: "var(--primary)",
+                                  strokeOpacity: 0.25,
+                                  strokeWidth: 1,
+                                }}
+                              />
+                              <Area
+                                type="monotone"
+                                dataKey="guias"
+                                name={cfg.label}
+                                stroke="var(--primary)"
+                                strokeWidth={2.5}
+                                fill="url(#gradPrimary)"
+                                dot={{ r: 0 }}
+                                activeDot={{ r: 5, strokeWidth: 2, stroke: "var(--card)" }}
+                                isAnimationActive={false}
+                              />
+                            </AreaChart>
+                          </ResponsiveContainer>
+                        </div>
+                        {isMobile ? (
+                          <p className="mt-2 text-xs leading-snug text-muted-foreground">
+                            Eixo vertical: quantidade de {cfg.noun} · Eixo horizontal: dia do
+                            período
+                          </p>
+                        ) : null}
+                      </>
+                    )}
+                  </SurfaceCard>
+
+                  <SurfaceCard
+                    className="flex h-full min-w-0 flex-col"
+                    bodyClassName="flex flex-1 flex-col"
+                    title={`${cfg.label} por tipo`}
+                    description={`Distribuição de ${cfg.noun} ${cfg.verb} no período filtrado`}
+                  >
+                    {!hasData ? (
+                      emptyState
+                    ) : (
+                      <div className="flex flex-1 flex-col gap-4">
+                        <div
+                          className="relative min-h-44 flex-1 sm:min-h-48"
+                          data-chart="types"
+                          role="img"
+                          aria-label={`${cfg.label} por tipo: ${typeData
+                            .map((d) => `${d.name} ${d.value}`)
+                            .join(", ")}. Total ${total} ${cfg.noun}.`}
+                        >
+                          <ResponsiveContainer width="100%" height="100%">
+                            <PieChart>
+                              <Pie
+                                data={typeData}
+                                innerRadius={58}
+                                outerRadius={82}
+                                paddingAngle={typeData.length > 1 ? 2 : 0}
+                                dataKey="value"
+                                stroke="var(--card)"
+                                strokeWidth={typeData.length > 1 ? 2 : 0}
+                                activeIndex={activeType}
+                                activeShape={(props: any) => (
+                                  <Sector {...props} outerRadius={props.outerRadius + 6} />
+                                )}
+                                onMouseEnter={(_, i) => setActiveType(i)}
+                                onMouseLeave={() => setActiveType(undefined)}
+                                isAnimationActive={false}
+                              >
+                                {typeData.map((d, i) => (
+                                  <Cell key={i} fill={d.color} />
+                                ))}
+                              </Pie>
+                              <RTooltip
+                                content={<ChartTooltip unit={cfg.noun} />}
+                                wrapperStyle={{ zIndex: 30 }}
+                              />
+                            </PieChart>
+                          </ResponsiveContainer>
+                          <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center px-6 text-center">
+                            <div className="metric-value text-foreground">
+                              {activeType !== undefined ? typeData[activeType].value : total}
+                            </div>
+                            <div className="max-w-24 text-xs leading-tight text-muted-foreground">
+                              {activeType !== undefined
+                                ? `${cfg.noun} de ${typeData[activeType].name}`
+                                : `${cfg.noun} ${cfg.verb}`}
+                            </div>
+                          </div>
+                        </div>
+                        <ul className="space-y-1 text-sm">
+                          {typeData.map((d, i) => {
+                            const pct = total > 0 ? (d.value / total) * 100 : 0;
+                            const isActive = activeType === i;
+                            return (
+                              <li
+                                key={d.name}
+                                onMouseEnter={() => setActiveType(i)}
+                                onMouseLeave={() => setActiveType(undefined)}
+                                className={[
+                                  "flex min-w-0 items-center gap-2 rounded-md px-2 py-1 cursor-default transition-colors",
+                                  isActive ? "bg-muted/60" : "",
+                                ].join(" ")}
+                              >
+                                <span
+                                  className="h-2.5 w-2.5 rounded-full shrink-0"
+                                  style={{ background: d.color }}
+                                />
+                                <span className="flex-1 truncate">{d.name}</span>
+                                <span className="text-muted-foreground tabular-nums text-xs">
+                                  {d.value} · {Math.round(pct)}%
+                                </span>
+                              </li>
+                            );
+                          })}
+                        </ul>
+                      </div>
+                    )}
+                  </SurfaceCard>
+                </div>
+
+                {cfg.hasProcessingStatus && (
+                  <>
+                    {" "}
+                    {/* Status do processamento de guias */}
+                    <SurfaceCard
+                      title="Status do processamento de guias"
+                      description="Distribuição das guias por status no período filtrado"
+                    >
+                      {!hasData ? (
+                        emptyState
+                      ) : (
+                        <div className={`${SPLIT_GRID_CLASS} items-start`}>
+                          <div className="min-w-0 flex flex-col gap-3 xl:pr-8">
+                            <div className="relative h-44 sm:h-48" data-chart="quality-status">
+                              <ResponsiveContainer width="100%" height="100%">
+                                <PieChart>
+                                  <Pie
+                                    data={statusData}
+                                    innerRadius={58}
+                                    outerRadius={82}
+                                    paddingAngle={statusData.length > 1 ? 2 : 0}
+                                    dataKey="value"
+                                    stroke="var(--card)"
+                                    strokeWidth={statusData.length > 1 ? 2 : 0}
+                                    isAnimationActive={false}
+                                  >
+                                    {statusData.map((d) => (
+                                      <Cell key={d.name} fill={d.color} />
+                                    ))}
+                                  </Pie>
+                                  <RTooltip
+                                    content={<ChartTooltip unit={cfg.noun} />}
+                                    wrapperStyle={{ zIndex: 30 }}
+                                  />
+                                </PieChart>
+                              </ResponsiveContainer>
+                              <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center px-6 text-center">
+                                <div className="metric-value text-foreground">
+                                  {total > 0
+                                    ? Math.round((metrics.quality.success / total) * 100)
+                                    : 0}
+                                  %
+                                </div>
+                                <div className="max-w-24 text-xs leading-tight text-muted-foreground">
+                                  com sucesso
+                                </div>
+                              </div>
+                            </div>
+                            <p className="text-center text-xs text-muted-foreground">
+                              <span className="tabular-nums">{total}</span> guias no período
+                            </p>
+                            <ul className="space-y-1 text-sm">
+                              <TooltipProvider>
+                                {statusData.map((d) => {
+                                  const pct = total > 0 ? Math.round((d.value / total) * 100) : 0;
+                                  return (
+                                    <li
+                                      key={d.name}
+                                      className="flex min-w-0 items-center gap-2 rounded-md px-2 py-1"
+                                    >
+                                      <span
+                                        aria-hidden="true"
+                                        className="h-2.5 w-2.5 rounded-full shrink-0"
+                                        style={{ background: d.color }}
+                                      />
+                                      <span className="truncate">{d.name}</span>
+                                      {d.hint ? (
+                                        <InfoHint label={`Sobre ${d.name}`}>{d.hint}</InfoHint>
+                                      ) : null}
+
+                                      <span className="ml-auto shrink-0 tabular-nums text-xs">
+                                        <span className="font-semibold text-foreground">
+                                          {pct}%
+                                        </span>
+                                        <span className="font-normal text-muted-foreground">
+                                          {" "}
+                                          · {d.value}
+                                        </span>
+                                      </span>
+                                    </li>
+                                  );
+                                })}
+                              </TooltipProvider>
+                            </ul>
+                          </div>
+
+                          {/* Motivos de não processamento, coloridos pela categoria de status. */}
+                          <div className="min-w-0 flex flex-col gap-3 xl:pl-8">
+                            <div className="flex flex-wrap items-center justify-between gap-2">
+                              <p className="text-xs font-medium text-muted-foreground">
+                                Motivos de não processamento
+                              </p>
+                              {metrics.quality.failuresByType.length > 0 && (
+                                <ul className="flex flex-wrap items-center gap-3">
+                                  {(
+                                    Object.entries(FAILURE_CATEGORIES) as [
+                                      keyof typeof FAILURE_CATEGORIES,
+                                      { label: string; color: string },
+                                    ][]
+                                  ).map(([key, cat]) => (
+                                    <li
+                                      key={key}
+                                      className="flex items-center gap-1.5 text-xs text-muted-foreground"
+                                    >
+                                      <span
+                                        aria-hidden="true"
+                                        className="size-2 rounded-full"
+                                        style={{ background: cat.color }}
+                                      />
+                                      {cat.label}
+                                    </li>
+                                  ))}
+                                </ul>
+                              )}
+                            </div>
+                            {metrics.quality.failuresByType.length === 0 ? (
+                              <EmptyState
+                                icon={<FileCheck2 className="h-10 w-10" />}
+                                title="Nenhuma falha no período"
+                                description="Todas as guias do período filtrado foram processadas com sucesso."
+                              />
+                            ) : (
+                              <div className="flex flex-1 flex-col gap-3">
+                                <div
+                                  className="w-full"
+                                  style={{
+                                    height: horizontalBarsHeight(
+                                      metrics.quality.failuresByType.length,
+                                      isMobile,
+                                    ),
+                                  }}
+                                  data-chart="quality-failures"
+                                >
+                                  <ResponsiveContainer width="100%" height="100%">
+                                    <BarChart
+                                      data={metrics.quality.failuresByType}
+                                      layout="vertical"
+                                      margin={{
+                                        top: 4,
+                                        right: isMobile ? 20 : 28,
+                                        left: isMobile ? 0 : 8,
+                                        bottom: isMobile ? 4 : 16,
+                                      }}
+                                      barCategoryGap={HORIZONTAL_BAR_GAP}
+                                    >
+                                      <CartesianGrid
+                                        strokeDasharray="3 3"
+                                        stroke="var(--border)"
+                                        horizontal={false}
+                                      />
+                                      <XAxis
+                                        type="number"
+                                        stroke="var(--muted-foreground)"
+                                        fontSize={11}
+                                        tickLine={false}
+                                        axisLine={false}
+                                        allowDecimals={false}
+                                        label={
+                                          isMobile
+                                            ? undefined
+                                            : {
+                                                value: "Quantidade de ocorrências",
+                                                position: "insideBottom",
+                                                offset: -12,
+                                                fill: "var(--muted-foreground)",
+                                                fontSize: 11,
+                                              }
+                                        }
+                                      />
+                                      <YAxis
+                                        type="category"
+                                        dataKey="label"
+                                        stroke="var(--muted-foreground)"
+                                        fontSize={11}
+                                        width={isMobile ? 104 : 172}
+                                        tickLine={false}
+                                        axisLine={false}
+                                        label={
+                                          isMobile
+                                            ? undefined
+                                            : {
+                                                value: "Motivo",
+                                                angle: -90,
+                                                position: "insideLeft",
+                                                fill: "var(--muted-foreground)",
+                                                fontSize: 11,
+                                                style: { textAnchor: "middle" },
+                                              }
+                                        }
+                                      />
+                                      <RTooltip
+                                        content={<ChartTooltip unit="ocorrências" />}
+                                        cursor={{ fill: "var(--muted)", opacity: 0.4 }}
+                                      />
+                                      <Bar
+                                        dataKey="count"
+                                        name="Ocorrências"
+                                        radius={[0, 6, 6, 0]}
+                                        barSize={HORIZONTAL_BAR_SIZE}
+                                        isAnimationActive={false}
+                                      >
+                                        {metrics.quality.failuresByType.map((f) => (
+                                          <Cell key={f.name} fill={f.color} />
+                                        ))}
+                                        <LabelList
+                                          dataKey="count"
+                                          position="right"
+                                          className="fill-foreground"
+                                          style={{ fontSize: 11, fontWeight: 600 }}
+                                        />
+                                      </Bar>
+                                    </BarChart>
+                                  </ResponsiveContainer>
+                                </div>
+                                {isMobile ? (
+                                  <p className="text-xs leading-snug text-muted-foreground">
+                                    Eixo vertical: tipo de falha · Eixo horizontal: quantidade de
+                                    ocorrências
+                                  </p>
+                                ) : null}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      )}
+                    </SurfaceCard>
+                  </>
+                )}
+              </TabsContent>
+              <TabsContent value="producao" className="mt-0 space-y-6">
+                {cfg.hasProcedures && (
+                  <>
+                    {/* Procedures */}
+                    <SurfaceCard
+                      title="Procedimentos mais solicitados"
+                      description={`Procedimentos mais frequentes nos registros de ${cfg.label.toLowerCase()} no período filtrado`}
+                    >
+                      {procedures.length === 0 ? (
+                        emptyState
+                      ) : (
+                        <div className={`${SPLIT_GRID_CLASS} items-stretch`}>
+                          <div className="min-w-0 flex h-full flex-col gap-3 xl:pr-8">
+                            <div>
+                              <p className="text-xs font-medium text-muted-foreground">
+                                Ranking de procedimentos
+                              </p>
+                            </div>
+
+                            {/* Cresce junto com a tabela ao lado: as barras mantêm a espessura
+                    e apenas os intervalos se redistribuem na altura disponível. */}
+                            <div
+                              className="w-full flex-1"
+                              style={{
+                                minHeight: horizontalBarsHeight(procedures.length, isMobile),
+                              }}
+                              data-chart="procedures"
+                            >
+                              <ResponsiveContainer width="100%" height="100%">
+                                <BarChart
+                                  data={procedures.map((p) => ({ name: p.name, count: p.count }))}
+                                  layout="vertical"
+                                  margin={{
+                                    top: 4,
+                                    right: isMobile ? 20 : 28,
+                                    left: isMobile ? 0 : 8,
+                                    bottom: isMobile ? 4 : 16,
+                                  }}
+                                  barCategoryGap={HORIZONTAL_BAR_GAP}
+                                >
+                                  <CartesianGrid
+                                    strokeDasharray="3 3"
+                                    stroke="var(--border)"
+                                    horizontal={false}
+                                  />
+                                  <XAxis
+                                    type="number"
+                                    stroke="var(--muted-foreground)"
+                                    fontSize={11}
+                                    tickLine={false}
+                                    axisLine={false}
+                                    allowDecimals={false}
+                                    label={
+                                      isMobile
+                                        ? undefined
+                                        : {
+                                            value: `Quantidade de ${cfg.noun}`,
+                                            position: "insideBottom",
+                                            offset: -12,
+                                            fill: "var(--muted-foreground)",
+                                            fontSize: 11,
+                                          }
+                                    }
+                                  />
+                                  <YAxis
+                                    type="category"
+                                    dataKey="name"
+                                    stroke="var(--muted-foreground)"
+                                    fontSize={11}
+                                    width={isMobile ? 104 : 158}
+                                    tickLine={false}
+                                    axisLine={false}
+                                    label={
+                                      isMobile
+                                        ? undefined
+                                        : {
+                                            value: "Procedimento",
+                                            angle: -90,
+                                            position: "insideLeft",
+                                            fill: "var(--muted-foreground)",
+                                            fontSize: 11,
+                                            style: { textAnchor: "middle" },
+                                          }
+                                    }
+                                  />
+
+                                  <RTooltip
+                                    content={<ChartTooltip unit={cfg.noun} />}
+                                    cursor={{ fill: "var(--muted)", opacity: 0.4 }}
+                                  />
+                                  <Bar
+                                    dataKey="count"
+                                    name=""
+                                    fill="var(--primary)"
+                                    radius={[0, 6, 6, 0]}
+                                    barSize={HORIZONTAL_BAR_SIZE}
+                                    isAnimationActive={false}
+                                  >
+                                    <LabelList
+                                      dataKey="count"
+                                      position="right"
+                                      className="fill-foreground"
+                                      style={{ fontSize: 11, fontWeight: 600 }}
+                                    />
+                                  </Bar>
+                                </BarChart>
+                              </ResponsiveContainer>
+                            </div>
+                            {isMobile ? (
+                              <p className="text-xs leading-snug text-muted-foreground">
+                                Eixo vertical: procedimento · Eixo horizontal: quantidade de{" "}
+                                {cfg.noun}
+                              </p>
+                            ) : null}
+                          </div>
+                          <div className="min-w-0 space-y-3 xl:pl-8">
+                            <div>
+                              <p className="text-xs font-medium text-muted-foreground">
+                                Detalhamento dos procedimentos
+                              </p>
+                            </div>
+
+                            <DataTable>
+                              <DataTableDesktop breakpoint="md">
+                                <DataTableRoot className="min-w-72">
+                                  <DataTableHeader>
+                                    <DataTableRow>
+                                      <SortableHead
+                                        label="Código"
+                                        column="code"
+                                        sort={procedureSort}
+                                        onSort={setProcedureSort}
+                                      />
+                                      <SortableHead
+                                        label="Procedimento"
+                                        column="name"
+                                        sort={procedureSort}
+                                        onSort={setProcedureSort}
+                                      />
+                                      <SortableHead
+                                        label="Quantidade"
+                                        column="count"
+                                        sort={procedureSort}
+                                        onSort={setProcedureSort}
+                                        align="right"
+                                      />
+                                    </DataTableRow>
+                                  </DataTableHeader>
+                                  <DataTableBody>
+                                    {sortedProcedures.map((p) => (
+                                      <DataTableRow key={p.code}>
+                                        <DataTableCell className="text-muted-foreground tabular-nums">
+                                          {p.code}
+                                        </DataTableCell>
+                                        <DataTableCell title={p.name}>{p.name}</DataTableCell>
+                                        <DataTableCell className="text-right font-medium tabular-nums">
+                                          {p.count}
+                                        </DataTableCell>
+                                      </DataTableRow>
+                                    ))}
+                                  </DataTableBody>
+                                </DataTableRoot>
+                              </DataTableDesktop>
+
+                              <DataTableCardList breakpoint="md" divided>
+                                {sortedProcedures.map((p) => (
+                                  <DataTableCard key={p.code} flat>
+                                    <DataTableCardHeader
+                                      title={<span className="min-w-0 break-words">{p.name}</span>}
+                                      subtitle={<span className="tabular-nums">{p.code}</span>}
+                                      trailing={
+                                        <Badge variant="secondary" className="tabular-nums">
+                                          {p.count}
+                                        </Badge>
+                                      }
+                                    />
+                                  </DataTableCard>
+                                ))}
+                              </DataTableCardList>
+                            </DataTable>
+                          </div>
+                        </div>
+                      )}
+                    </SurfaceCard>
+
+                    {/* Heatmap procedimento x prestador */}
+                    <SurfaceCard
+                      title="Procedimentos solicitados por prestador"
+                      description="Quantidade de procedimentos por prestador no período filtrado"
+                      actions={
+                        <HeatmapLegend
+                          min={providerHeatRange.min}
+                          max={providerHeatRange.max}
+                          className="hidden lg:block"
+                          muted={!hasProviderMatrix}
+                        />
+                      }
+                      headerClassName="gap-x-6"
+                      className="min-w-0"
+                    >
+                      <HeatmapLegend
+                        min={providerHeatRange.min}
+                        max={providerHeatRange.max}
+                        className="mb-4 lg:hidden"
+                        muted={!hasProviderMatrix}
+                      />
+                      {!hasProviderMatrix ? (
+                        emptyState
+                      ) : isHeatmapPending ? (
+                        <HeatmapSkeleton
+                          rows={providerMatrix.rows.length}
+                          columns={providerMatrix.columns.length}
+                          isMobile={isMobile}
+                        />
+                      ) : (
+                        <ProviderProcedureHeatmap
+                          matrix={deferredProviderMatrix}
+                          isMobile={isMobile}
+                        />
+                      )}
+                    </SurfaceCard>
+                  </>
+                )}
+
+                {/* Prestadores */}
+                <SurfaceCard
+                  title={`${cfg.label} por prestador`}
+                  description={`Quantidade de ${cfg.noun} ${cfg.verb} por prestador no período filtrado`}
+                >
+                  {providerCounts.length === 0 ? (
+                    emptyState
+                  ) : (
+                    <div className={`${SPLIT_GRID_CLASS} items-stretch`}>
+                      <div className="min-w-0 flex h-full flex-col gap-3 xl:pr-8">
+                        <div>
+                          <p className="text-xs font-medium text-muted-foreground">
+                            Ranking de prestadores
+                          </p>
+                        </div>
+                        <div
+                          className="w-full flex-1"
+                          style={{
+                            minHeight: horizontalBarsHeight(providerCounts.length, isMobile),
+                          }}
+                          data-chart="providers"
+                        >
+                          <ResponsiveContainer width="100%" height="100%">
+                            <BarChart
+                              data={providerCounts.map((p) => ({ name: p.name, count: p.count }))}
+                              layout="vertical"
+                              margin={{
+                                top: 4,
+                                right: isMobile ? 20 : 28,
+                                left: isMobile ? 0 : 8,
+                                bottom: isMobile ? 4 : 16,
+                              }}
+                              barCategoryGap={HORIZONTAL_BAR_GAP}
+                            >
+                              <CartesianGrid
+                                strokeDasharray="3 3"
+                                stroke="var(--border)"
+                                horizontal={false}
+                              />
+                              <XAxis
+                                type="number"
+                                stroke="var(--muted-foreground)"
+                                fontSize={11}
+                                tickLine={false}
+                                axisLine={false}
+                                allowDecimals={false}
+                                label={
+                                  isMobile
+                                    ? undefined
+                                    : {
+                                        value: `Quantidade de ${cfg.noun}`,
+                                        position: "insideBottom",
+                                        offset: -12,
+                                        fill: "var(--muted-foreground)",
+                                        fontSize: 11,
+                                      }
+                                }
+                              />
+                              <YAxis
+                                type="category"
+                                dataKey="name"
+                                stroke="var(--muted-foreground)"
+                                fontSize={11}
+                                width={isMobile ? 104 : 158}
+                                tickLine={false}
+                                axisLine={false}
+                                label={
+                                  isMobile
+                                    ? undefined
+                                    : {
+                                        value: "Prestador",
+                                        angle: -90,
+                                        position: "insideLeft",
+                                        fill: "var(--muted-foreground)",
+                                        fontSize: 11,
+                                        style: { textAnchor: "middle" },
+                                      }
+                                }
+                              />
+                              <RTooltip
+                                content={<ChartTooltip unit={cfg.noun} />}
+                                cursor={{ fill: "var(--muted)", opacity: 0.4 }}
+                              />
+                              <Bar
+                                dataKey="count"
+                                name=""
+                                fill="var(--primary)"
+                                radius={[0, 6, 6, 0]}
+                                barSize={HORIZONTAL_BAR_SIZE}
+                                isAnimationActive={false}
+                              >
+                                <LabelList
+                                  dataKey="count"
+                                  position="right"
+                                  className="fill-foreground"
+                                  style={{ fontSize: 11, fontWeight: 600 }}
+                                />
+                              </Bar>
+                            </BarChart>
+                          </ResponsiveContainer>
+                        </div>
+                        {isMobile ? (
+                          <p className="text-xs leading-snug text-muted-foreground">
+                            Eixo vertical: prestador · Eixo horizontal: quantidade de {cfg.noun}
+                          </p>
+                        ) : null}
+                      </div>
+                      <div className="min-w-0 space-y-3 xl:pl-8">
+                        <div>
+                          <p className="text-xs font-medium text-muted-foreground">
+                            Detalhamento dos prestadores
+                          </p>
+                        </div>
+
+                        <DataTable>
+                          <DataTableDesktop breakpoint="md">
+                            <DataTableRoot className="min-w-72">
+                              <DataTableHeader>
+                                <DataTableRow>
+                                  <SortableHead
+                                    label="Prestador"
+                                    column="name"
+                                    sort={providerSort}
+                                    onSort={setProviderSort}
+                                  />
+                                  <SortableHead
+                                    label="Quantidade"
+                                    column="count"
+                                    sort={providerSort}
+                                    onSort={setProviderSort}
+                                    align="right"
+                                  />
+                                </DataTableRow>
+                              </DataTableHeader>
+                              <DataTableBody>
+                                {sortedProviders.map((p) => (
+                                  <DataTableRow key={p.name}>
+                                    <DataTableCell title={p.name}>{p.name}</DataTableCell>
+                                    <DataTableCell className="text-right font-medium tabular-nums">
+                                      {p.count}
+                                    </DataTableCell>
+                                  </DataTableRow>
+                                ))}
+                              </DataTableBody>
+                            </DataTableRoot>
+                          </DataTableDesktop>
+
+                          <DataTableCardList breakpoint="md" divided>
+                            {sortedProviders.map((p) => (
+                              <DataTableCard key={p.name} flat>
+                                <DataTableCardHeader
+                                  title={<span className="min-w-0 break-words">{p.name}</span>}
+                                  trailing={
+                                    <Badge variant="secondary" className="tabular-nums">
+                                      {p.count}
+                                    </Badge>
+                                  }
+                                />
+                              </DataTableCard>
+                            ))}
+                          </DataTableCardList>
+                        </DataTable>
+                      </div>
+                    </div>
+                  )}
+                </SurfaceCard>
+              </TabsContent>
+              <TabsContent value="faturamento" className="mt-0 space-y-6">
+                <div
+                  className="grid gap-4 grid-cols-[repeat(auto-fill,minmax(min(100%,20rem),1fr))]"
+                  data-testid="billing-kpi-grid"
+                >
+                  <Kpi
+                    icon={Wallet}
+                    label="Faturamento total"
+                    value={formatBRL(metrics.totalValue)}
+                    tooltip={`Soma dos valores de ${cfg.noun} ${cfg.verb} no período filtrado.`}
+                    context="No período filtrado"
+                    tone="success"
+                  />
+                </div>
+                {/* Faturamento por dia */}
+                <SurfaceCard
+                  className="min-w-0"
+                  title="Faturamento por dia"
+                  description={`Evolução do faturamento de ${cfg.noun} ${cfg.verb} por dia no período filtrado`}
+                >
+                  {!hasData ? (
+                    emptyState
+                  ) : (
+                    <>
+                      <div
+                        className="h-60 sm:h-72 xl:h-80"
+                        data-chart="daily-revenue"
+                        ref={revenueChartRef}
+                      >
                         <ResponsiveContainer width="100%" height="100%">
-                          <BarChart
-                            data={metrics.quality.failuresByType}
-                            layout="vertical"
+                          <AreaChart
+                            data={dailyData}
                             margin={{
-                              top: 4,
-                              right: isMobile ? 20 : 28,
-                              left: isMobile ? 0 : 8,
-                              bottom: isMobile ? 4 : 16,
+                              top: 10,
+                              right: 12,
+                              left: isMobile ? 4 : 6,
+                              bottom: isMobile ? 0 : 6,
                             }}
-                            barCategoryGap={HORIZONTAL_BAR_GAP}
                           >
+                            <defs>
+                              <linearGradient id="gradRevenue" x1="0" y1="0" x2="0" y2="1">
+                                <stop offset="0%" stopColor="var(--primary)" stopOpacity={0.45} />
+                                <stop offset="100%" stopColor="var(--primary)" stopOpacity={0} />
+                              </linearGradient>
+                            </defs>
                             <CartesianGrid
                               strokeDasharray="3 3"
                               stroke="var(--border)"
-                              horizontal={false}
+                              vertical={false}
                             />
                             <XAxis
-                              type="number"
+                              dataKey="date"
                               stroke="var(--muted-foreground)"
                               fontSize={11}
                               tickLine={false}
                               axisLine={false}
-                              allowDecimals={false}
+                              tickMargin={4}
+                              height={isMobile ? 46 : 48}
+                              ticks={revenueTicks}
+                              interval={0}
+                              tick={<DailyAxisTick monthStarts={revenueMonthStarts} />}
                               label={
                                 isMobile
                                   ? undefined
                                   : {
-                                      value: "Quantidade de ocorrências",
+                                      value: "Dia do período",
                                       position: "insideBottom",
-                                      offset: -12,
+                                      offset: 2,
                                       fill: "var(--muted-foreground)",
                                       fontSize: 11,
                                     }
                               }
                             />
                             <YAxis
-                              type="category"
-                              dataKey="label"
                               stroke="var(--muted-foreground)"
                               fontSize={11}
-                              width={isMobile ? 104 : 172}
                               tickLine={false}
                               axisLine={false}
+                              width={isMobile ? 56 : 84}
+                              tickFormatter={(v: number) => formatBRLCompact(v)}
                               label={
                                 isMobile
                                   ? undefined
                                   : {
-                                      value: "Motivo",
+                                      value: "Faturamento (R$)",
                                       angle: -90,
                                       position: "insideLeft",
                                       fill: "var(--muted-foreground)",
@@ -2130,706 +2665,206 @@ function DashboardPage() {
                               }
                             />
                             <RTooltip
-                              content={<ChartTooltip unit="ocorrências" />}
-                              cursor={{ fill: "var(--muted)", opacity: 0.4 }}
+                              content={<ChartTooltip currency />}
+                              cursor={{
+                                stroke: "var(--primary)",
+                                strokeOpacity: 0.25,
+                                strokeWidth: 1,
+                              }}
                             />
-                            <Bar
-                              dataKey="count"
-                              name="Ocorrências"
-                              radius={[0, 6, 6, 0]}
-                              barSize={HORIZONTAL_BAR_SIZE}
+                            <Area
+                              type="monotone"
+                              dataKey="faturamento"
+                              name="Faturamento"
+                              stroke="var(--primary)"
+                              strokeWidth={2.5}
+                              fill="url(#gradRevenue)"
+                              dot={{ r: 0 }}
+                              activeDot={{ r: 5, strokeWidth: 2, stroke: "var(--card)" }}
                               isAnimationActive={false}
-                            >
-                              {metrics.quality.failuresByType.map((f) => (
-                                <Cell key={f.name} fill={f.color} />
-                              ))}
-                              <LabelList
-                                dataKey="count"
-                                position="right"
-                                className="fill-foreground"
-                                style={{ fontSize: 11, fontWeight: 600 }}
-                              />
-                            </Bar>
-                          </BarChart>
+                            />
+                          </AreaChart>
                         </ResponsiveContainer>
                       </div>
                       {isMobile ? (
-                        <p className="text-xs leading-snug text-muted-foreground">
-                          Eixo vertical: tipo de falha · Eixo horizontal: quantidade de ocorrências
+                        <p className="mt-2 text-xs leading-snug text-muted-foreground">
+                          Eixo vertical: faturamento em R$ · Eixo horizontal: dia do período
                         </p>
                       ) : null}
-                    </div>
-
+                    </>
                   )}
-                </div>
-              </div>
-            )}
-          </SurfaceCard></>)}
-            </TabsContent>
-            <TabsContent value="producao" className="mt-0 space-y-6">
-          {cfg.hasProcedures && (<>
-          {/* Procedures */}
-          <SurfaceCard
-            title="Procedimentos mais solicitados"
-            description={`Procedimentos mais frequentes nos registros de ${cfg.label.toLowerCase()} no período filtrado`}
+                </SurfaceCard>
 
-          >
-            {procedures.length === 0 ? (
-              emptyState
-            ) : (
-              <div className={`${SPLIT_GRID_CLASS} items-stretch`}>
-                <div className="min-w-0 flex h-full flex-col gap-3 xl:pr-8">
-
-                <div>
-                  <p className="text-xs font-medium text-muted-foreground">
-                    Ranking de procedimentos
-                  </p>
-                </div>
-
-                {/* Cresce junto com a tabela ao lado: as barras mantêm a espessura
-                    e apenas os intervalos se redistribuem na altura disponível. */}
-                <div
-                  className="w-full flex-1"
-                  style={{ minHeight: horizontalBarsHeight(procedures.length, isMobile) }}
-                  data-chart="procedures"
+                {/* Faturamento por prestador */}
+                <SurfaceCard
+                  title="Faturamento por prestador"
+                  description={`Soma dos valores de ${cfg.noun} ${cfg.verb} por prestador no período filtrado`}
                 >
-
-                  <ResponsiveContainer width="100%" height="100%">
-                    <BarChart
-                      data={procedures.map((p) => ({ name: p.name, count: p.count }))}
-                      layout="vertical"
-                      margin={{
-                        top: 4,
-                        right: isMobile ? 20 : 28,
-                        left: isMobile ? 0 : 8,
-                        bottom: isMobile ? 4 : 16,
-                      }}
-                      barCategoryGap={HORIZONTAL_BAR_GAP}
-                    >
-                      <CartesianGrid
-                        strokeDasharray="3 3"
-                        stroke="var(--border)"
-                        horizontal={false}
-                      />
-                      <XAxis
-                        type="number"
-                        stroke="var(--muted-foreground)"
-                        fontSize={11}
-                        tickLine={false}
-                        axisLine={false}
-                        allowDecimals={false}
-                        label={
-                          isMobile
-                            ? undefined
-                            : {
-                                value: `Quantidade de ${cfg.noun}`,
-                                position: "insideBottom",
-                                offset: -12,
-                                fill: "var(--muted-foreground)",
-                                fontSize: 11,
-                              }
-                        }
-                      />
-                      <YAxis
-                        type="category"
-                        dataKey="name"
-                        stroke="var(--muted-foreground)"
-                        fontSize={11}
-                        width={isMobile ? 104 : 158}
-                        tickLine={false}
-                        axisLine={false}
-                        label={
-                          isMobile
-                            ? undefined
-                            : {
-                                value: "Procedimento",
-                                angle: -90,
-                                position: "insideLeft",
-                                fill: "var(--muted-foreground)",
-                                fontSize: 11,
-                                style: { textAnchor: "middle" },
-                              }
-                        }
-                      />
-
-                      <RTooltip
-                        content={<ChartTooltip unit={cfg.noun} />}
-                        cursor={{ fill: "var(--muted)", opacity: 0.4 }}
-                      />
-                      <Bar
-                        dataKey="count"
-                        name=""
-                        fill="var(--primary)"
-                        radius={[0, 6, 6, 0]}
-                        barSize={HORIZONTAL_BAR_SIZE}
-                        isAnimationActive={false}
-                      >
-                        <LabelList
-                          dataKey="count"
-                          position="right"
-                          className="fill-foreground"
-                          style={{ fontSize: 11, fontWeight: 600 }}
-                        />
-                      </Bar>
-                    </BarChart>
-                  </ResponsiveContainer>
-                </div>
-                {isMobile ? (
-                   <p className="text-xs leading-snug text-muted-foreground">
-                    Eixo vertical: procedimento · Eixo horizontal: quantidade de {cfg.noun}
-                  </p>
-                ) : null}
-                </div>
-                <div className="min-w-0 space-y-3 xl:pl-8">
-                <div>
-                  <p className="text-xs font-medium text-muted-foreground">
-                    Detalhamento dos procedimentos
-                  </p>
-                </div>
-
-                <DataTable>
-                  <DataTableDesktop breakpoint="md">
-                    <DataTableRoot className="min-w-72">
-                      <DataTableHeader>
-                        <DataTableRow>
-                          <SortableHead
-                            label="Código"
-                            column="code"
-                            sort={procedureSort}
-                            onSort={setProcedureSort}
-                          />
-                          <SortableHead
-                            label="Procedimento"
-                            column="name"
-                            sort={procedureSort}
-                            onSort={setProcedureSort}
-                          />
-                          <SortableHead
-                            label="Quantidade"
-                            column="count"
-                            sort={procedureSort}
-                            onSort={setProcedureSort}
-                            align="right"
-                          />
-                        </DataTableRow>
-                      </DataTableHeader>
-                      <DataTableBody>
-                        {sortedProcedures.map((p) => (
-                          <DataTableRow key={p.code}>
-                            <DataTableCell className="text-muted-foreground tabular-nums">
-                              {p.code}
-                            </DataTableCell>
-                            <DataTableCell title={p.name}>{p.name}</DataTableCell>
-                            <DataTableCell className="text-right font-medium tabular-nums">
-                              {p.count}
-                            </DataTableCell>
-                          </DataTableRow>
-                        ))}
-                      </DataTableBody>
-                    </DataTableRoot>
-                  </DataTableDesktop>
-
-                  <DataTableCardList breakpoint="md" divided>
-                    {sortedProcedures.map((p) => (
-                      <DataTableCard key={p.code} flat>
-                        <DataTableCardHeader
-                          title={<span className="min-w-0 break-words">{p.name}</span>}
-                          subtitle={<span className="tabular-nums">{p.code}</span>}
-                          trailing={
-                            <Badge variant="secondary" className="tabular-nums">
-                              {p.count}
-                            </Badge>
-                          }
-                        />
-                      </DataTableCard>
-                    ))}
-                  </DataTableCardList>
-                </DataTable>
-                </div>
-              </div>
-            )}
-          </SurfaceCard>
-
-          {/* Heatmap procedimento x prestador */}
-          <SurfaceCard
-            title="Procedimentos solicitados por prestador"
-            description="Quantidade de procedimentos por prestador no período filtrado"
-            actions={
-              <HeatmapLegend
-                min={providerHeatRange.min}
-                max={providerHeatRange.max}
-                className="hidden lg:block"
-                muted={!hasProviderMatrix}
-              />
-            }
-            headerClassName="gap-x-6"
-            className="min-w-0"
-          >
-            <HeatmapLegend
-              min={providerHeatRange.min}
-              max={providerHeatRange.max}
-              className="mb-4 lg:hidden"
-              muted={!hasProviderMatrix}
-            />
-            {!hasProviderMatrix ? (
-              emptyState
-            ) : isHeatmapPending ? (
-              <HeatmapSkeleton
-                rows={providerMatrix.rows.length}
-                columns={providerMatrix.columns.length}
-                isMobile={isMobile}
-              />
-            ) : (
-              <ProviderProcedureHeatmap matrix={deferredProviderMatrix} isMobile={isMobile} />
-            )}
-          </SurfaceCard></>)}
-
-
-
-
-          {/* Prestadores */}
-          <SurfaceCard
-            title={`${cfg.label} por prestador`}
-            description={`Quantidade de ${cfg.noun} ${cfg.verb} por prestador no período filtrado`}
-          >
-            {providerCounts.length === 0 ? (
-              emptyState
-            ) : (
-              <div className={`${SPLIT_GRID_CLASS} items-stretch`}>
-                <div className="min-w-0 flex h-full flex-col gap-3 xl:pr-8">
-                  <div>
-                    <p className="text-xs font-medium text-muted-foreground">
-                      Ranking de prestadores
-                    </p>
-                  </div>
-                  <div
-                    className="w-full flex-1"
-                    style={{ minHeight: horizontalBarsHeight(providerCounts.length, isMobile) }}
-                    data-chart="providers"
-                  >
-                    <ResponsiveContainer width="100%" height="100%">
-                      <BarChart
-                        data={providerCounts.map((p) => ({ name: p.name, count: p.count }))}
-                        layout="vertical"
-                        margin={{
-                          top: 4,
-                          right: isMobile ? 20 : 28,
-                          left: isMobile ? 0 : 8,
-                          bottom: isMobile ? 4 : 16,
-                        }}
-                        barCategoryGap={HORIZONTAL_BAR_GAP}
-                      >
-                        <CartesianGrid
-                          strokeDasharray="3 3"
-                          stroke="var(--border)"
-                          horizontal={false}
-                        />
-                        <XAxis
-                          type="number"
-                          stroke="var(--muted-foreground)"
-                          fontSize={11}
-                          tickLine={false}
-                          axisLine={false}
-                          allowDecimals={false}
-                          label={
-                            isMobile
-                              ? undefined
-                              : {
-                                  value: `Quantidade de ${cfg.noun}`,
-                                  position: "insideBottom",
-                                  offset: -12,
-                                  fill: "var(--muted-foreground)",
-                                  fontSize: 11,
-                                }
-                          }
-                        />
-                        <YAxis
-                          type="category"
-                          dataKey="name"
-                          stroke="var(--muted-foreground)"
-                          fontSize={11}
-                          width={isMobile ? 104 : 158}
-                          tickLine={false}
-                          axisLine={false}
-                          label={
-                            isMobile
-                              ? undefined
-                              : {
-                                  value: "Prestador",
-                                  angle: -90,
-                                  position: "insideLeft",
-                                  fill: "var(--muted-foreground)",
-                                  fontSize: 11,
-                                  style: { textAnchor: "middle" },
-                                }
-                          }
-                        />
-                        <RTooltip
-                          content={<ChartTooltip unit={cfg.noun} />}
-                          cursor={{ fill: "var(--muted)", opacity: 0.4 }}
-                        />
-                        <Bar
-                          dataKey="count"
-                          name=""
-                          fill="var(--primary)"
-                          radius={[0, 6, 6, 0]}
-                          barSize={HORIZONTAL_BAR_SIZE}
-                          isAnimationActive={false}
+                  {providerRevenue.length === 0 ? (
+                    emptyState
+                  ) : (
+                    <div className={`${SPLIT_GRID_CLASS} items-stretch`}>
+                      <div className="min-w-0 flex h-full flex-col gap-3 xl:pr-8">
+                        <div>
+                          <p className="text-xs font-medium text-muted-foreground">
+                            Ranking de prestadores
+                          </p>
+                        </div>
+                        <div
+                          className="w-full flex-1"
+                          style={{
+                            minHeight: horizontalBarsHeight(providerRevenue.length, isMobile),
+                          }}
+                          data-chart="providers-revenue"
                         >
-                          <LabelList
-                            dataKey="count"
-                            position="right"
-                            className="fill-foreground"
-                            style={{ fontSize: 11, fontWeight: 600 }}
-                          />
-                        </Bar>
-                      </BarChart>
-                    </ResponsiveContainer>
-                  </div>
-                  {isMobile ? (
-                    <p className="text-xs leading-snug text-muted-foreground">
-                      Eixo vertical: prestador · Eixo horizontal: quantidade de {cfg.noun}
-                    </p>
-                  ) : null}
-                </div>
-                <div className="min-w-0 space-y-3 xl:pl-8">
-                  <div>
-                    <p className="text-xs font-medium text-muted-foreground">
-                      Detalhamento dos prestadores
-                    </p>
-                  </div>
-
-                  <DataTable>
-                    <DataTableDesktop breakpoint="md">
-                      <DataTableRoot className="min-w-72">
-                        <DataTableHeader>
-                          <DataTableRow>
-                            <SortableHead
-                              label="Prestador"
-                              column="name"
-                              sort={providerSort}
-                              onSort={setProviderSort}
-                            />
-                            <SortableHead
-                              label="Quantidade"
-                              column="count"
-                              sort={providerSort}
-                              onSort={setProviderSort}
-                              align="right"
-                            />
-                          </DataTableRow>
-                        </DataTableHeader>
-                        <DataTableBody>
-                          {sortedProviders.map((p) => (
-                            <DataTableRow key={p.name}>
-                              <DataTableCell title={p.name}>{p.name}</DataTableCell>
-                              <DataTableCell className="text-right font-medium tabular-nums">
-                                {p.count}
-                              </DataTableCell>
-                            </DataTableRow>
-                          ))}
-                        </DataTableBody>
-                      </DataTableRoot>
-                    </DataTableDesktop>
-
-                    <DataTableCardList breakpoint="md" divided>
-                      {sortedProviders.map((p) => (
-                        <DataTableCard key={p.name} flat>
-                          <DataTableCardHeader
-                            title={<span className="min-w-0 break-words">{p.name}</span>}
-                            trailing={
-                              <Badge variant="secondary" className="tabular-nums">
-                                {p.count}
-                              </Badge>
-                            }
-                          />
-                        </DataTableCard>
-                      ))}
-                    </DataTableCardList>
-                  </DataTable>
-                </div>
-              </div>
-            )}
-          </SurfaceCard>
-
-
-
-            </TabsContent>
-            <TabsContent value="faturamento" className="mt-0 space-y-6">
-          <div className="grid gap-4 grid-cols-[repeat(auto-fill,minmax(min(100%,20rem),1fr))]" data-testid="billing-kpi-grid">
-            <Kpi
-              icon={Wallet}
-              label="Faturamento total"
-              value={formatBRL(metrics.totalValue)}
-              tooltip={`Soma dos valores de ${cfg.noun} ${cfg.verb} no período filtrado.`}
-              context="No período filtrado"
-              tone="success"
-            />
-          </div>
-          {/* Faturamento por dia */}
-          <SurfaceCard
-            className="min-w-0"
-            title="Faturamento por dia"
-            description={`Evolução do faturamento de ${cfg.noun} ${cfg.verb} por dia no período filtrado`}
-          >
-            {!hasData ? (
-              emptyState
-            ) : (
-              <>
-                <div className="h-60 sm:h-72 xl:h-80" data-chart="daily-revenue" ref={revenueChartRef}>
-                  <ResponsiveContainer width="100%" height="100%">
-                    <AreaChart
-                      data={dailyData}
-                      margin={{ top: 10, right: 12, left: isMobile ? 4 : 6, bottom: isMobile ? 0 : 6 }}
-                    >
-                      <defs>
-                        <linearGradient id="gradRevenue" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="0%" stopColor="var(--primary)" stopOpacity={0.45} />
-                          <stop offset="100%" stopColor="var(--primary)" stopOpacity={0} />
-                        </linearGradient>
-                      </defs>
-                      <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" vertical={false} />
-                      <XAxis
-                        dataKey="date"
-                        stroke="var(--muted-foreground)"
-                        fontSize={11}
-                        tickLine={false}
-                        axisLine={false}
-                        tickMargin={4}
-                        height={isMobile ? 46 : 48}
-                        ticks={revenueTicks}
-                        interval={0}
-                        tick={<DailyAxisTick monthStarts={revenueMonthStarts} />}
-                        label={
-                          isMobile
-                            ? undefined
-                            : {
-                                value: "Dia do período",
-                                position: "insideBottom",
-                                offset: 2,
-                                fill: "var(--muted-foreground)",
-                                fontSize: 11,
-                              }
-                        }
-                      />
-                      <YAxis
-                        stroke="var(--muted-foreground)"
-                        fontSize={11}
-                        tickLine={false}
-                        axisLine={false}
-                        width={isMobile ? 56 : 84}
-                        tickFormatter={(v: number) => formatBRLCompact(v)}
-                        label={
-                          isMobile
-                            ? undefined
-                            : {
-                                value: "Faturamento (R$)",
-                                angle: -90,
-                                position: "insideLeft",
-                                fill: "var(--muted-foreground)",
-                                fontSize: 11,
-                                style: { textAnchor: "middle" },
-                              }
-                        }
-                      />
-                      <RTooltip
-                        content={<ChartTooltip currency />}
-                        cursor={{ stroke: "var(--primary)", strokeOpacity: 0.25, strokeWidth: 1 }}
-                      />
-                      <Area
-                        type="monotone"
-                        dataKey="faturamento"
-                        name="Faturamento"
-                        stroke="var(--primary)"
-                        strokeWidth={2.5}
-                        fill="url(#gradRevenue)"
-                        dot={{ r: 0 }}
-                        activeDot={{ r: 5, strokeWidth: 2, stroke: "var(--card)" }}
-                        isAnimationActive={false}
-                      />
-                    </AreaChart>
-                  </ResponsiveContainer>
-                </div>
-                {isMobile ? (
-                  <p className="mt-2 text-xs leading-snug text-muted-foreground">
-                    Eixo vertical: faturamento em R$ · Eixo horizontal: dia do período
-                  </p>
-                ) : null}
-              </>
-            )}
-          </SurfaceCard>
-
-          {/* Faturamento por prestador */}
-          <SurfaceCard
-            title="Faturamento por prestador"
-            description={`Soma dos valores de ${cfg.noun} ${cfg.verb} por prestador no período filtrado`}
-          >
-            {providerRevenue.length === 0 ? (
-              emptyState
-            ) : (
-              <div className={`${SPLIT_GRID_CLASS} items-stretch`}>
-                <div className="min-w-0 flex h-full flex-col gap-3 xl:pr-8">
-                  <div>
-                    <p className="text-xs font-medium text-muted-foreground">
-                      Ranking de prestadores
-                    </p>
-                  </div>
-                  <div
-                    className="w-full flex-1"
-                    style={{ minHeight: horizontalBarsHeight(providerRevenue.length, isMobile) }}
-                    data-chart="providers-revenue"
-                  >
-                    <ResponsiveContainer width="100%" height="100%">
-                      <BarChart
-                        data={providerRevenue}
-                        layout="vertical"
-                        margin={{
-                          top: 4,
-                          right: isMobile ? 48 : 64,
-                          left: isMobile ? 0 : 8,
-                          bottom: isMobile ? 4 : 16,
-                        }}
-                        barCategoryGap={HORIZONTAL_BAR_GAP}
-                      >
-                        <CartesianGrid
-                          strokeDasharray="3 3"
-                          stroke="var(--border)"
-                          horizontal={false}
-                        />
-                        <XAxis
-                          type="number"
-                          stroke="var(--muted-foreground)"
-                          fontSize={11}
-                          tickLine={false}
-                          axisLine={false}
-                          tickFormatter={(v: number) => formatBRLCompact(v)}
-                          label={
-                            isMobile
-                              ? undefined
-                              : {
-                                  value: "Faturamento (R$)",
-                                  position: "insideBottom",
-                                  offset: -12,
-                                  fill: "var(--muted-foreground)",
-                                  fontSize: 11,
+                          <ResponsiveContainer width="100%" height="100%">
+                            <BarChart
+                              data={providerRevenue}
+                              layout="vertical"
+                              margin={{
+                                top: 4,
+                                right: isMobile ? 48 : 64,
+                                left: isMobile ? 0 : 8,
+                                bottom: isMobile ? 4 : 16,
+                              }}
+                              barCategoryGap={HORIZONTAL_BAR_GAP}
+                            >
+                              <CartesianGrid
+                                strokeDasharray="3 3"
+                                stroke="var(--border)"
+                                horizontal={false}
+                              />
+                              <XAxis
+                                type="number"
+                                stroke="var(--muted-foreground)"
+                                fontSize={11}
+                                tickLine={false}
+                                axisLine={false}
+                                tickFormatter={(v: number) => formatBRLCompact(v)}
+                                label={
+                                  isMobile
+                                    ? undefined
+                                    : {
+                                        value: "Faturamento (R$)",
+                                        position: "insideBottom",
+                                        offset: -12,
+                                        fill: "var(--muted-foreground)",
+                                        fontSize: 11,
+                                      }
                                 }
-                          }
-                        />
-                        <YAxis
-                          type="category"
-                          dataKey="name"
-                          stroke="var(--muted-foreground)"
-                          fontSize={11}
-                          width={isMobile ? 104 : 158}
-                          tickLine={false}
-                          axisLine={false}
-                          label={
-                            isMobile
-                              ? undefined
-                              : {
-                                  value: "Prestador",
-                                  angle: -90,
-                                  position: "insideLeft",
-                                  fill: "var(--muted-foreground)",
-                                  fontSize: 11,
-                                  style: { textAnchor: "middle" },
+                              />
+                              <YAxis
+                                type="category"
+                                dataKey="name"
+                                stroke="var(--muted-foreground)"
+                                fontSize={11}
+                                width={isMobile ? 104 : 158}
+                                tickLine={false}
+                                axisLine={false}
+                                label={
+                                  isMobile
+                                    ? undefined
+                                    : {
+                                        value: "Prestador",
+                                        angle: -90,
+                                        position: "insideLeft",
+                                        fill: "var(--muted-foreground)",
+                                        fontSize: 11,
+                                        style: { textAnchor: "middle" },
+                                      }
                                 }
-                          }
-                        />
-                        <RTooltip
-                          content={<ChartTooltip currency />}
-                          cursor={{ fill: "var(--muted)", opacity: 0.4 }}
-                        />
-                        <Bar
-                          dataKey="value"
-                          name=""
-                          fill="var(--primary)"
-                          radius={[0, 6, 6, 0]}
-                          barSize={HORIZONTAL_BAR_SIZE}
-                          isAnimationActive={false}
-                        >
-                          <LabelList
-                            dataKey="value"
-                            position="right"
-                            className="fill-foreground"
-                            style={{ fontSize: 11, fontWeight: 600 }}
-                            formatter={(v: number) => formatBRLCompact(v)}
-                          />
-                        </Bar>
-                      </BarChart>
-                    </ResponsiveContainer>
-                  </div>
-                  {isMobile ? (
-                    <p className="text-xs leading-snug text-muted-foreground">
-                      Eixo vertical: prestador · Eixo horizontal: faturamento em R$
-                    </p>
-                  ) : null}
-                </div>
-                <div className="min-w-0 space-y-3 xl:pl-8">
-                  <div>
-                    <p className="text-xs font-medium text-muted-foreground">
-                      Detalhamento dos prestadores
-                    </p>
-                  </div>
+                              />
+                              <RTooltip
+                                content={<ChartTooltip currency />}
+                                cursor={{ fill: "var(--muted)", opacity: 0.4 }}
+                              />
+                              <Bar
+                                dataKey="value"
+                                name=""
+                                fill="var(--primary)"
+                                radius={[0, 6, 6, 0]}
+                                barSize={HORIZONTAL_BAR_SIZE}
+                                isAnimationActive={false}
+                              >
+                                <LabelList
+                                  dataKey="value"
+                                  position="right"
+                                  className="fill-foreground"
+                                  style={{ fontSize: 11, fontWeight: 600 }}
+                                  formatter={(v: number) => formatBRLCompact(v)}
+                                />
+                              </Bar>
+                            </BarChart>
+                          </ResponsiveContainer>
+                        </div>
+                        {isMobile ? (
+                          <p className="text-xs leading-snug text-muted-foreground">
+                            Eixo vertical: prestador · Eixo horizontal: faturamento em R$
+                          </p>
+                        ) : null}
+                      </div>
+                      <div className="min-w-0 space-y-3 xl:pl-8">
+                        <div>
+                          <p className="text-xs font-medium text-muted-foreground">
+                            Detalhamento dos prestadores
+                          </p>
+                        </div>
 
-                  <DataTable>
-                    <DataTableDesktop breakpoint="md">
-                      <DataTableRoot className="min-w-72">
-                        <DataTableHeader>
-                          <DataTableRow>
-                            <SortableHead
-                              label="Prestador"
-                              column="name"
-                              sort={revenueSort}
-                              onSort={setRevenueSort}
-                            />
-                            <SortableHead
-                              label="Faturamento"
-                              column="count"
-                              sort={revenueSort}
-                              onSort={setRevenueSort}
-                              align="right"
-                            />
-                          </DataTableRow>
-                        </DataTableHeader>
-                        <DataTableBody>
-                          {sortedRevenue.map((p) => (
-                            <DataTableRow key={p.name}>
-                              <DataTableCell title={p.name}>{p.name}</DataTableCell>
-                              <DataTableCell className="text-right font-medium tabular-nums">
-                                {formatBRL(p.value)}
-                              </DataTableCell>
-                            </DataTableRow>
-                          ))}
-                        </DataTableBody>
-                      </DataTableRoot>
-                    </DataTableDesktop>
+                        <DataTable>
+                          <DataTableDesktop breakpoint="md">
+                            <DataTableRoot className="min-w-72">
+                              <DataTableHeader>
+                                <DataTableRow>
+                                  <SortableHead
+                                    label="Prestador"
+                                    column="name"
+                                    sort={revenueSort}
+                                    onSort={setRevenueSort}
+                                  />
+                                  <SortableHead
+                                    label="Faturamento"
+                                    column="count"
+                                    sort={revenueSort}
+                                    onSort={setRevenueSort}
+                                    align="right"
+                                  />
+                                </DataTableRow>
+                              </DataTableHeader>
+                              <DataTableBody>
+                                {sortedRevenue.map((p) => (
+                                  <DataTableRow key={p.name}>
+                                    <DataTableCell title={p.name}>{p.name}</DataTableCell>
+                                    <DataTableCell className="text-right font-medium tabular-nums">
+                                      {formatBRL(p.value)}
+                                    </DataTableCell>
+                                  </DataTableRow>
+                                ))}
+                              </DataTableBody>
+                            </DataTableRoot>
+                          </DataTableDesktop>
 
-                    <DataTableCardList breakpoint="md" divided>
-                      {sortedRevenue.map((p) => (
-                        <DataTableCard key={p.name} flat>
-                          <DataTableCardHeader
-                            title={<span className="min-w-0 break-words">{p.name}</span>}
-                            trailing={
-                              <Badge variant="secondary" className="tabular-nums">
-                                {formatBRL(p.value)}
-                              </Badge>
-                            }
-                          />
-                        </DataTableCard>
-                      ))}
-                    </DataTableCardList>
-                  </DataTable>
-                </div>
-              </div>
-            )}
-          </SurfaceCard>
-
-
-            </TabsContent>
-          </Tabs>
+                          <DataTableCardList breakpoint="md" divided>
+                            {sortedRevenue.map((p) => (
+                              <DataTableCard key={p.name} flat>
+                                <DataTableCardHeader
+                                  title={<span className="min-w-0 break-words">{p.name}</span>}
+                                  trailing={
+                                    <Badge variant="secondary" className="tabular-nums">
+                                      {formatBRL(p.value)}
+                                    </Badge>
+                                  }
+                                />
+                              </DataTableCard>
+                            ))}
+                          </DataTableCardList>
+                        </DataTable>
+                      </div>
+                    </div>
+                  )}
+                </SurfaceCard>
+              </TabsContent>
+            </Tabs>
           </div>
-
         </div>
         <SiteFooter />
       </main>
@@ -2906,7 +2941,6 @@ function Kpi({
       )}
     </SurfaceCard>
   );
-
 }
 
 /** Quantidade de faixas da escala de intensidade do heatmap. */
@@ -2963,13 +2997,7 @@ function HeatmapLegend({
     Math.round(min + ((max - min) * i) / HEAT_STEPS),
   );
   return (
-    <div
-      className={cn(
-        "w-full min-w-0 lg:w-56 lg:shrink",
-        muted && "opacity-50",
-        className,
-      )}
-    >
+    <div className={cn("w-full min-w-0 lg:w-56 lg:shrink", muted && "opacity-50", className)}>
       <p className="text-xs font-medium text-muted-foreground">Quantidade de solicitações</p>
       <div className="mt-1.5">
         <div className="flex overflow-hidden rounded-md border border-border" aria-hidden="true">
@@ -3045,9 +3073,6 @@ function HeatmapSkeleton({
     </div>
   );
 }
-
-
-
 
 /**
  * Heatmap procedimento (linhas) x prestador solicitante (colunas).
@@ -3130,7 +3155,6 @@ const ProviderProcedureHeatmap = memo(function ProviderProcedureHeatmap({
       <div ref={hostRef} className="@container min-w-0">
         {/* Colunas medidas pelo espaço do card (container query), não pela viewport. */}
         <div className="grid grid-cols-1 gap-3 @xl:grid-cols-2 @4xl:grid-cols-3">
-
           {rows.map((row) => {
             const items = columns
               .map((provider) => ({ provider, value: get(row.code, provider) }))
@@ -3207,7 +3231,6 @@ const ProviderProcedureHeatmap = memo(function ProviderProcedureHeatmap({
             <col style={{ width: MIN_TOTAL }} />
           </colgroup>
 
-
           <thead>
             <tr>
               <th
@@ -3255,7 +3278,10 @@ const ProviderProcedureHeatmap = memo(function ProviderProcedureHeatmap({
                   </Tooltip>
                 </th>
               ))}
-              <th scope="col" className="px-1 pb-1 text-right align-bottom text-xs font-medium uppercase tracking-wide text-muted-foreground">
+              <th
+                scope="col"
+                className="px-1 pb-1 text-right align-bottom text-xs font-medium uppercase tracking-wide text-muted-foreground"
+              >
                 Total
               </th>
             </tr>
@@ -3294,7 +3320,8 @@ const ProviderProcedureHeatmap = memo(function ProviderProcedureHeatmap({
                         <TooltipContent
                           variant="panel"
                           collisionPadding={12}
-                          className="max-w-56 sm:max-w-64">
+                          className="max-w-56 sm:max-w-64"
+                        >
                           <div className="flex flex-col gap-1 text-xs">
                             <span className="text-xs uppercase tracking-wider text-muted-foreground">
                               CBHPM {row.code}
@@ -3315,7 +3342,6 @@ const ProviderProcedureHeatmap = memo(function ProviderProcedureHeatmap({
 
                 {/* Fonte mono + peso normal: evita que números repetidos (44) pareçam mais pesados. */}
                 <td className="pl-2 text-right font-mono text-sm tabular-nums text-foreground">
-
                   {row.total}
                 </td>
               </tr>
