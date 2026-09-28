@@ -515,3 +515,40 @@ export function buildProviderRevenue(
     .sort((a, b) => b.value - a.value || a.name.localeCompare(b.name, "pt-BR"))
     .slice(0, limit);
 }
+
+export type MonthlyRevenue = { month: string; label: string; faturamento: number };
+
+const MONTH_LABEL = new Intl.DateTimeFormat("pt-BR", { month: "short", year: "2-digit" });
+
+/**
+ * Faturamento previsto consolidado por mês (yyyy-MM), em ordem cronológica.
+ * Sem período informado, cobre os últimos 12 meses até o mês atual; com
+ * período, cobre os meses entre as datas (a data ausente usa hoje ou 12 meses antes).
+ */
+export function buildMonthlyRevenue(
+  guides: DashboardGuide[],
+  period?: { from?: string; to?: string },
+): MonthlyRevenue[] {
+  const totals = new Map<string, number>();
+  for (const g of guides) {
+    const key = g.data.slice(0, 7);
+    totals.set(key, (totals.get(key) ?? 0) + g.valorTotal);
+  }
+  const to = period?.to || (period?.from && period.from > TODAY_ISO ? period.from : TODAY_ISO);
+  const toDate = new Date(`${to.slice(0, 7)}-01T12:00:00`);
+  const fromDate = period?.from
+    ? new Date(`${period.from.slice(0, 7)}-01T12:00:00`)
+    : new Date(toDate.getFullYear(), toDate.getMonth() - 11, 1, 12);
+  const months: MonthlyRevenue[] = [];
+  const cursor = new Date(fromDate);
+  while (cursor.getTime() <= toDate.getTime()) {
+    const key = toLocalIsoDate(cursor).slice(0, 7);
+    months.push({
+      month: key,
+      label: MONTH_LABEL.format(cursor).replace(/\./g, "").replace(" de ", "/"),
+      faturamento: totals.get(key) ?? 0,
+    });
+    cursor.setMonth(cursor.getMonth() + 1);
+  }
+  return months;
+}
