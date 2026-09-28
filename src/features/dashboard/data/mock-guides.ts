@@ -241,21 +241,23 @@ export interface DashboardDataKindConfig {
   rows: DashboardGuide[];
   /** Só guias processadas têm status de processamento. */
   hasProcessingStatus: boolean;
+  /** Documentos não têm procedimentos TUSS associados. */
+  hasProcedures: boolean;
 }
 
 export const DASHBOARD_DATA_KINDS: Record<DashboardDataKind, DashboardDataKindConfig> = {
   processadas: {
     label: "Guias processadas", noun: "guias", verb: "processadas", typeLabel: "Tipo de guia",
-    types: GUIDE_TYPES, rows: DASHBOARD_GUIDES, hasProcessingStatus: true,
+    types: GUIDE_TYPES, rows: DASHBOARD_GUIDES, hasProcessingStatus: true, hasProcedures: true,
   },
   emitidas: {
     label: "Guias emitidas", noun: "guias", verb: "emitidas", typeLabel: "Tipo de guia",
-    types: ISSUED_GUIDE_TYPES, hasProcessingStatus: false,
+    types: ISSUED_GUIDE_TYPES, hasProcessingStatus: false, hasProcedures: true,
     rows: buildGuides(20260921, { types: ISSUED_GUIDE_TYPES.map((t) => t.name), failRate: 0, scale: 0.6 }),
   },
   documentos: {
     label: "Documentos emitidos", noun: "documentos", verb: "emitidos", typeLabel: "Tipo de documento",
-    types: DOCUMENT_TYPES, hasProcessingStatus: false,
+    types: DOCUMENT_TYPES, hasProcessingStatus: false, hasProcedures: false,
     rows: buildGuides(20260922, { types: DOCUMENT_TYPES.map((t) => t.name), failRate: 0, scale: 0.45 }),
   },
 };
