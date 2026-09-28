@@ -110,6 +110,7 @@ import {
   buildProviderCounts,
   buildProviderRevenue,
   buildMonthlyRevenue,
+  MONTHLY_HISTORY_GUIDES,
   GUIDE_TYPES,
   FAILURE_CATEGORIES,
   type DashboardMetrics,
