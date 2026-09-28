@@ -936,6 +936,10 @@ function dailyAxisTicks(data: { date: string }[], maxTicks: number): string[] {
   dates.forEach((date, index) => {
     if (index === 0 || date.slice(8, 10) === "01") anchors.push(index);
   });
+  // Descarta a âncora inicial quando a virada de mês vem logo em seguida.
+  if (anchors.length > 1 && anchors[1]! - anchors[0]! < Math.max(2, Math.ceil(step * 0.7))) {
+    anchors.shift();
+  }
 
   const selected = new Set<number>();
   anchors.forEach((anchor, i) => {
