@@ -13,6 +13,7 @@ import autoTable from "jspdf-autotable";
 import {
   FileText,
   TrendingUp,
+  Wallet,
   Layers,
   Download,
   Activity,
@@ -46,7 +47,8 @@ import {
   Bar,
   LabelList,
   Sector,
-  
+  LineChart,
+  Line,
 } from "recharts";
 
 import { AppBreadcrumb } from "@/components/app-breadcrumb";
@@ -98,6 +100,7 @@ import {
   buildMetrics,
   buildProviderProcedureMatrix,
   buildProviderCounts,
+  buildProviderRevenue,
   GUIDE_TYPES,
   FAILURE_CATEGORIES,
   type DashboardMetrics,
@@ -695,7 +698,21 @@ const SPLIT_GRID_CLASS =
   "[&>*+*]:mt-6 [&>*+*]:border-t [&>*+*]:border-border/50 [&>*+*]:pt-6 " +
   "xl:[&>*+*]:mt-0 xl:[&>*+*]:border-t-0 xl:[&>*+*]:pt-0";
 
-function ChartTooltip({ active, payload, label, suffix, unit }: any) {
+const BRL = new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" });
+const BRL_COMPACT = new Intl.NumberFormat("pt-BR", {
+  style: "currency",
+  currency: "BRL",
+  notation: "compact",
+  maximumFractionDigits: 1,
+});
+function formatBRL(value: number) {
+  return BRL.format(value);
+}
+function formatBRLCompact(value: number) {
+  return BRL_COMPACT.format(value);
+}
+
+function ChartTooltip({ active, payload, label, suffix, unit, currency }: any) {
   if (!active || !payload?.length) return null;
   const iso: string | undefined = payload[0]?.payload?.date;
   // Aggregated per day: plain dd/MM/yyyy, without weekday or timezone noise.
@@ -721,7 +738,7 @@ function ChartTooltip({ active, payload, label, suffix, unit }: any) {
             />
             {seriesName && <span className="text-muted-foreground">{seriesName}</span>}
             <span className={`${seriesName ? "ml-auto" : ""} font-semibold tabular-nums`}>
-              {p.value}
+              {currency ? formatBRL(Number(p.value)) : p.value}
               {suffix ?? ""}
               {unit ? ` ${unit}` : ""}
             </span>
@@ -1193,6 +1210,23 @@ function DashboardPage() {
         : a.name.localeCompare(b.name, "pt-BR") * factor,
     );
   }, [providerCounts, providerSort]);
+  const providerRevenue = useMemo(
+    () => buildProviderRevenue(filteredGuides, 10),
+    [filteredGuides],
+  );
+  const [revenueSort, setRevenueSort] = useState<ProviderSort>({
+    column: "count",
+    direction: "desc",
+  });
+  const sortedRevenue = useMemo(() => {
+    const { column, direction } = revenueSort;
+    const factor = direction === "asc" ? 1 : -1;
+    return [...providerRevenue].sort((a, b) =>
+      column === "count"
+        ? (a.value - b.value) * factor
+        : a.name.localeCompare(b.name, "pt-BR") * factor,
+    );
+  }, [providerRevenue, revenueSort]);
   const dailyData = metrics.daily;
   const dailyChartRef = useRef<HTMLDivElement>(null);
   const dailyChartWidth = useElementWidth(dailyChartRef);
@@ -1623,7 +1657,7 @@ function DashboardPage() {
 
           {/* KPIs */}
           <div
-            className="grid gap-4 grid-cols-1 sm:grid-cols-2 xl:grid-cols-4"
+            className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-5"
             data-testid="kpi-grid"
           >
             <Kpi
@@ -1661,6 +1695,14 @@ function DashboardPage() {
               tooltip={kpiTooltips.types}
               context="Tipos distintos no período filtrado"
               tone="purple"
+            />
+            <Kpi
+              icon={Wallet}
+              label="Faturamento total"
+              value={formatBRL(metrics.totalValue)}
+              tooltip={`Soma dos valores de ${cfg.noun} ${cfg.verb} no período filtrado.`}
+              context="No período filtrado"
+              tone="success"
             />
 
           </div>
@@ -1858,6 +1900,80 @@ function DashboardPage() {
             </SurfaceCard>
           </div>
 
+          {/* Faturamento por dia */}
+          <SurfaceCard
+            className="min-w-0"
+            title="Faturamento por dia"
+            description={`Evolução do faturamento de ${cfg.noun} ${cfg.verb} por dia no período filtrado`}
+          >
+            {!hasData ? (
+              emptyState
+            ) : (
+              <>
+                <div className="h-60 sm:h-72" data-chart="daily-revenue">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <LineChart
+                      data={dailyData}
+                      margin={{ top: 10, right: 12, left: isMobile ? 4 : 6, bottom: isMobile ? 0 : 6 }}
+                    >
+                      <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" vertical={false} />
+                      <XAxis
+                        dataKey="date"
+                        stroke="var(--muted-foreground)"
+                        fontSize={11}
+                        tickLine={false}
+                        axisLine={false}
+                        tickMargin={4}
+                        height={isMobile ? 46 : 48}
+                        ticks={dailyTicks}
+                        interval={0}
+                        tick={<DailyAxisTick monthStarts={dailyMonthStarts} />}
+                        label={
+                          isMobile
+                            ? undefined
+                            : {
+                                value: "Dia do período",
+                                position: "insideBottom",
+                                offset: 2,
+                                fill: "var(--muted-foreground)",
+                                fontSize: 11,
+                              }
+                        }
+                      />
+                      <YAxis
+                        stroke="var(--muted-foreground)"
+                        fontSize={11}
+                        tickLine={false}
+                        axisLine={false}
+                        width={isMobile ? 56 : 72}
+                        tickFormatter={(v: number) => formatBRLCompact(v)}
+                      />
+                      <RTooltip
+                        content={<ChartTooltip currency />}
+                        cursor={{ stroke: "var(--primary)", strokeOpacity: 0.25, strokeWidth: 1 }}
+                      />
+                      <Line
+                        type="monotone"
+                        dataKey="faturamento"
+                        name="Faturamento"
+                        stroke="var(--success)"
+                        strokeWidth={2.5}
+                        dot={false}
+                        activeDot={{ r: 5, strokeWidth: 2, stroke: "var(--card)" }}
+                        isAnimationActive={false}
+                      />
+                    </LineChart>
+                  </ResponsiveContainer>
+                </div>
+                {isMobile ? (
+                  <p className="mt-2 text-xs leading-snug text-muted-foreground">
+                    Eixo vertical: faturamento em R$ · Eixo horizontal: dia do período
+                  </p>
+                ) : null}
+              </>
+            )}
+          </SurfaceCard>
+
           {/* Prestadores */}
           <SurfaceCard
             title={`${cfg.label} por prestador`}
@@ -2011,6 +2127,173 @@ function DashboardPage() {
                             trailing={
                               <Badge variant="secondary" className="tabular-nums">
                                 {p.count}
+                              </Badge>
+                            }
+                          />
+                        </DataTableCard>
+                      ))}
+                    </DataTableCardList>
+                  </DataTable>
+                </div>
+              </div>
+            )}
+          </SurfaceCard>
+
+
+          {/* Faturamento por prestador */}
+          <SurfaceCard
+            title="Faturamento por prestador"
+            description={`Soma dos valores de ${cfg.noun} ${cfg.verb} por prestador no período filtrado`}
+          >
+            {providerRevenue.length === 0 ? (
+              emptyState
+            ) : (
+              <div className={`${SPLIT_GRID_CLASS} items-stretch`}>
+                <div className="min-w-0 flex h-full flex-col gap-3 xl:pr-8">
+                  <div>
+                    <p className="text-xs font-medium text-muted-foreground">
+                      Ranking de prestadores
+                    </p>
+                  </div>
+                  <div
+                    className="w-full flex-1"
+                    style={{ minHeight: horizontalBarsHeight(providerRevenue.length, isMobile) }}
+                    data-chart="providers-revenue"
+                  >
+                    <ResponsiveContainer width="100%" height="100%">
+                      <BarChart
+                        data={providerRevenue}
+                        layout="vertical"
+                        margin={{
+                          top: 4,
+                          right: isMobile ? 48 : 64,
+                          left: isMobile ? 0 : 8,
+                          bottom: isMobile ? 4 : 16,
+                        }}
+                        barCategoryGap={HORIZONTAL_BAR_GAP}
+                      >
+                        <CartesianGrid
+                          strokeDasharray="3 3"
+                          stroke="var(--border)"
+                          horizontal={false}
+                        />
+                        <XAxis
+                          type="number"
+                          stroke="var(--muted-foreground)"
+                          fontSize={11}
+                          tickLine={false}
+                          axisLine={false}
+                          tickFormatter={(v: number) => formatBRLCompact(v)}
+                          label={
+                            isMobile
+                              ? undefined
+                              : {
+                                  value: "Faturamento (R$)",
+                                  position: "insideBottom",
+                                  offset: -12,
+                                  fill: "var(--muted-foreground)",
+                                  fontSize: 11,
+                                }
+                          }
+                        />
+                        <YAxis
+                          type="category"
+                          dataKey="name"
+                          stroke="var(--muted-foreground)"
+                          fontSize={11}
+                          width={isMobile ? 104 : 158}
+                          tickLine={false}
+                          axisLine={false}
+                          label={
+                            isMobile
+                              ? undefined
+                              : {
+                                  value: "Prestador",
+                                  angle: -90,
+                                  position: "insideLeft",
+                                  fill: "var(--muted-foreground)",
+                                  fontSize: 11,
+                                  style: { textAnchor: "middle" },
+                                }
+                          }
+                        />
+                        <RTooltip
+                          content={<ChartTooltip currency />}
+                          cursor={{ fill: "var(--muted)", opacity: 0.4 }}
+                        />
+                        <Bar
+                          dataKey="value"
+                          name=""
+                          fill="var(--primary)"
+                          radius={[0, 6, 6, 0]}
+                          barSize={HORIZONTAL_BAR_SIZE}
+                          isAnimationActive={false}
+                        >
+                          <LabelList
+                            dataKey="value"
+                            position="right"
+                            className="fill-foreground"
+                            style={{ fontSize: 11, fontWeight: 600 }}
+                            formatter={(v: number) => formatBRLCompact(v)}
+                          />
+                        </Bar>
+                      </BarChart>
+                    </ResponsiveContainer>
+                  </div>
+                  {isMobile ? (
+                    <p className="text-xs leading-snug text-muted-foreground">
+                      Eixo vertical: prestador · Eixo horizontal: faturamento em R$
+                    </p>
+                  ) : null}
+                </div>
+                <div className="min-w-0 space-y-3 xl:pl-8">
+                  <div>
+                    <p className="text-xs font-medium text-muted-foreground">
+                      Detalhamento dos prestadores
+                    </p>
+                  </div>
+
+                  <DataTable>
+                    <DataTableDesktop breakpoint="md">
+                      <DataTableRoot className="min-w-72">
+                        <DataTableHeader>
+                          <DataTableRow>
+                            <SortableHead
+                              label="Prestador"
+                              column="name"
+                              sort={revenueSort}
+                              onSort={setRevenueSort}
+                            />
+                            <SortableHead
+                              label="Faturamento"
+                              column="count"
+                              sort={revenueSort}
+                              onSort={setRevenueSort}
+                              align="right"
+                            />
+                          </DataTableRow>
+                        </DataTableHeader>
+                        <DataTableBody>
+                          {sortedRevenue.map((p) => (
+                            <DataTableRow key={p.name}>
+                              <DataTableCell title={p.name}>{p.name}</DataTableCell>
+                              <DataTableCell className="text-right font-medium tabular-nums">
+                                {formatBRL(p.value)}
+                              </DataTableCell>
+                            </DataTableRow>
+                          ))}
+                        </DataTableBody>
+                      </DataTableRoot>
+                    </DataTableDesktop>
+
+                    <DataTableCardList breakpoint="md" divided>
+                      {sortedRevenue.map((p) => (
+                        <DataTableCard key={p.name} flat>
+                          <DataTableCardHeader
+                            title={<span className="min-w-0 break-words">{p.name}</span>}
+                            trailing={
+                              <Badge variant="secondary" className="tabular-nums">
+                                {formatBRL(p.value)}
                               </Badge>
                             }
                           />
