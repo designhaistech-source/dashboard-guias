@@ -49,7 +49,6 @@ import {
   Bar,
   LabelList,
   Sector,
-  Line,
 } from "recharts";
 
 import { AppBreadcrumb } from "@/components/app-breadcrumb";
