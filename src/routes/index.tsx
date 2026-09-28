@@ -7,6 +7,7 @@ import {
   formatIsoToBr,
   formatIsoToBrFull,
   localTimeZoneLabel,
+  localIsoDaysAgo,
 } from "@/lib/date";
 import autoTable from "jspdf-autotable";
 import {
@@ -2623,13 +2624,11 @@ function DashboardPage() {
                   <Kpi
                     icon={Wallet}
                     label="Faturamento previsto hoje"
-                    value={formatBRL(
-                      filteredGuides
-                        .filter((g) => g.data === todayLocalIsoDate())
-                        .reduce((sum, g) => sum + g.valorTotal, 0),
-                    )}
+                    value={formatBRL(revenueToday)}
                     tooltip="Soma dos valores previstos das guias processadas hoje."
-                    context="Hoje"
+                    context={`Hoje, ${todayLabel}`}
+                    comparison={revenueTrend.label}
+                    trend={revenueTrend.direction}
                     tone="success"
                   />
                   <Kpi
@@ -2637,7 +2636,7 @@ function DashboardPage() {
                     label="Faturamento previsto"
                     value={formatBRL(metrics.totalValue)}
                     tooltip={`Soma dos valores previstos de ${cfg.noun} ${cfg.verb} no período filtrado.`}
-                    context="No período filtrado"
+                    context={revenuePeriodLabel}
                     tone="success"
                   />
                 </div>
