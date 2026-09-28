@@ -1688,10 +1688,12 @@ function DashboardPage() {
                     A data inicial deve ser anterior ou igual à data final.
                   </p>
                 )}
+                {tab !== "faturamento" && (
                 <p className="text-xs text-muted-foreground">
                   Para localizar uma guia específica por paciente, número ou procedimento, use a
                   página Guias processadas.
                 </p>
+                )}
               </div>
             )}
           </section>
