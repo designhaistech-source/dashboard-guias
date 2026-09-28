@@ -1935,221 +1935,6 @@ function DashboardPage() {
 
             </TabsContent>
             <TabsContent value="producao" className="mt-0 space-y-6">
-          {cfg.hasProcessingStatus && (<>          {/* Status do processamento de guias */}
-          <SurfaceCard
-            title="Status do processamento de guias"
-            description="Distribuição das guias por status no período filtrado"
-          >
-            {!hasData ? (
-              emptyState
-            ) : (
-              <div className={`${SPLIT_GRID_CLASS} items-start`}>
-                <div className="min-w-0 flex flex-col gap-3 xl:pr-8">
-                  <div className="relative h-44 sm:h-48" data-chart="quality-status">
-                    <ResponsiveContainer width="100%" height="100%">
-                      <PieChart>
-                        <Pie
-                          data={statusData}
-                          innerRadius={58}
-                          outerRadius={82}
-                          paddingAngle={statusData.length > 1 ? 2 : 0}
-                          dataKey="value"
-                          stroke="var(--card)"
-                          strokeWidth={statusData.length > 1 ? 2 : 0}
-                          isAnimationActive={false}
-                        >
-                          {statusData.map((d) => (
-                            <Cell key={d.name} fill={d.color} />
-                          ))}
-                        </Pie>
-                        <RTooltip content={<ChartTooltip unit={cfg.noun} />} wrapperStyle={{ zIndex: 30 }} />
-                      </PieChart>
-                    </ResponsiveContainer>
-                    <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center px-6 text-center">
-                      <div className="metric-value text-foreground">
-                        {total > 0 ? Math.round((metrics.quality.success / total) * 100) : 0}%
-                      </div>
-                      <div className="max-w-24 text-xs leading-tight text-muted-foreground">
-                        com sucesso
-                      </div>
-                    </div>
-                  </div>
-                  <p className="text-center text-xs text-muted-foreground">
-                    <span className="tabular-nums">{total}</span> guias no período
-                  </p>
-                  <ul className="space-y-1 text-sm">
-                    <TooltipProvider>
-                      {statusData.map((d) => {
-                        const pct = total > 0 ? Math.round((d.value / total) * 100) : 0;
-                        return (
-                          <li
-                            key={d.name}
-                            className="flex min-w-0 items-center gap-2 rounded-md px-2 py-1"
-                          >
-                            <span
-                              aria-hidden="true"
-                              className="h-2.5 w-2.5 rounded-full shrink-0"
-                              style={{ background: d.color }}
-                            />
-                            <span className="truncate">{d.name}</span>
-                            {d.hint ? (
-                              <InfoHint label={`Sobre ${d.name}`}>{d.hint}</InfoHint>
-                            ) : null}
-
-                            <span className="ml-auto shrink-0 tabular-nums text-xs">
-                              <span className="font-semibold text-foreground">{pct}%</span>
-                              <span className="font-normal text-muted-foreground">
-                                {" "}
-                                · {d.value}
-                              </span>
-                            </span>
-                          </li>
-                        );
-                      })}
-                    </TooltipProvider>
-                  </ul>
-
-
-                </div>
-
-                {/* Motivos de não processamento, coloridos pela categoria de status. */}
-                <div className="min-w-0 flex flex-col gap-3 xl:pl-8">
-                  <div className="flex flex-wrap items-center justify-between gap-2">
-                    <p className="text-xs font-medium text-muted-foreground">
-                      Motivos de não processamento
-                    </p>
-                    {metrics.quality.failuresByType.length > 0 && (
-                      <ul className="flex flex-wrap items-center gap-3">
-                        {(
-                          Object.entries(FAILURE_CATEGORIES) as [
-                            keyof typeof FAILURE_CATEGORIES,
-                            { label: string; color: string },
-                          ][]
-                        ).map(([key, cat]) => (
-                          <li key={key} className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                            <span
-                              aria-hidden="true"
-                              className="size-2 rounded-full"
-                              style={{ background: cat.color }}
-                            />
-                            {cat.label}
-                          </li>
-                        ))}
-                      </ul>
-                    )}
-                  </div>
-                  {metrics.quality.failuresByType.length === 0 ? (
-                    <EmptyState
-                      icon={<FileCheck2 className="h-10 w-10" />}
-                      title="Nenhuma falha no período"
-                      description="Todas as guias do período filtrado foram processadas com sucesso."
-                    />
-                  ) : (
-                    <div className="flex flex-1 flex-col gap-3">
-                      <div
-                        className="w-full"
-                        style={{
-                          height: horizontalBarsHeight(
-                            metrics.quality.failuresByType.length,
-                            isMobile,
-                          ),
-                        }}
-                        data-chart="quality-failures"
-                      >
-
-                        <ResponsiveContainer width="100%" height="100%">
-                          <BarChart
-                            data={metrics.quality.failuresByType}
-                            layout="vertical"
-                            margin={{
-                              top: 4,
-                              right: isMobile ? 20 : 28,
-                              left: isMobile ? 0 : 8,
-                              bottom: isMobile ? 4 : 16,
-                            }}
-                            barCategoryGap={HORIZONTAL_BAR_GAP}
-                          >
-                            <CartesianGrid
-                              strokeDasharray="3 3"
-                              stroke="var(--border)"
-                              horizontal={false}
-                            />
-                            <XAxis
-                              type="number"
-                              stroke="var(--muted-foreground)"
-                              fontSize={11}
-                              tickLine={false}
-                              axisLine={false}
-                              allowDecimals={false}
-                              label={
-                                isMobile
-                                  ? undefined
-                                  : {
-                                      value: "Quantidade de ocorrências",
-                                      position: "insideBottom",
-                                      offset: -12,
-                                      fill: "var(--muted-foreground)",
-                                      fontSize: 11,
-                                    }
-                              }
-                            />
-                            <YAxis
-                              type="category"
-                              dataKey="label"
-                              stroke="var(--muted-foreground)"
-                              fontSize={11}
-                              width={isMobile ? 104 : 172}
-                              tickLine={false}
-                              axisLine={false}
-                              label={
-                                isMobile
-                                  ? undefined
-                                  : {
-                                      value: "Motivo",
-                                      angle: -90,
-                                      position: "insideLeft",
-                                      fill: "var(--muted-foreground)",
-                                      fontSize: 11,
-                                      style: { textAnchor: "middle" },
-                                    }
-                              }
-                            />
-                            <RTooltip
-                              content={<ChartTooltip unit="ocorrências" />}
-                              cursor={{ fill: "var(--muted)", opacity: 0.4 }}
-                            />
-                            <Bar
-                              dataKey="count"
-                              name="Ocorrências"
-                              radius={[0, 6, 6, 0]}
-                              barSize={HORIZONTAL_BAR_SIZE}
-                              isAnimationActive={false}
-                            >
-                              {metrics.quality.failuresByType.map((f) => (
-                                <Cell key={f.name} fill={f.color} />
-                              ))}
-                              <LabelList
-                                dataKey="count"
-                                position="right"
-                                className="fill-foreground"
-                                style={{ fontSize: 11, fontWeight: 600 }}
-                              />
-                            </Bar>
-                          </BarChart>
-                        </ResponsiveContainer>
-                      </div>
-                      {isMobile ? (
-                        <p className="text-xs leading-snug text-muted-foreground">
-                          Eixo vertical: tipo de falha · Eixo horizontal: quantidade de ocorrências
-                        </p>
-                      ) : null}
-                    </div>
-
-                  )}
-                </div>
-              </div>
-            )}
-          </SurfaceCard></>)}
           {/* Prestadores */}
           <SurfaceCard
             title={`${cfg.label} por prestador`}
@@ -2535,6 +2320,221 @@ function DashboardPage() {
 
 
 
+          {cfg.hasProcessingStatus && (<>          {/* Status do processamento de guias */}
+          <SurfaceCard
+            title="Status do processamento de guias"
+            description="Distribuição das guias por status no período filtrado"
+          >
+            {!hasData ? (
+              emptyState
+            ) : (
+              <div className={`${SPLIT_GRID_CLASS} items-start`}>
+                <div className="min-w-0 flex flex-col gap-3 xl:pr-8">
+                  <div className="relative h-44 sm:h-48" data-chart="quality-status">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <PieChart>
+                        <Pie
+                          data={statusData}
+                          innerRadius={58}
+                          outerRadius={82}
+                          paddingAngle={statusData.length > 1 ? 2 : 0}
+                          dataKey="value"
+                          stroke="var(--card)"
+                          strokeWidth={statusData.length > 1 ? 2 : 0}
+                          isAnimationActive={false}
+                        >
+                          {statusData.map((d) => (
+                            <Cell key={d.name} fill={d.color} />
+                          ))}
+                        </Pie>
+                        <RTooltip content={<ChartTooltip unit={cfg.noun} />} wrapperStyle={{ zIndex: 30 }} />
+                      </PieChart>
+                    </ResponsiveContainer>
+                    <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center px-6 text-center">
+                      <div className="metric-value text-foreground">
+                        {total > 0 ? Math.round((metrics.quality.success / total) * 100) : 0}%
+                      </div>
+                      <div className="max-w-24 text-xs leading-tight text-muted-foreground">
+                        com sucesso
+                      </div>
+                    </div>
+                  </div>
+                  <p className="text-center text-xs text-muted-foreground">
+                    <span className="tabular-nums">{total}</span> guias no período
+                  </p>
+                  <ul className="space-y-1 text-sm">
+                    <TooltipProvider>
+                      {statusData.map((d) => {
+                        const pct = total > 0 ? Math.round((d.value / total) * 100) : 0;
+                        return (
+                          <li
+                            key={d.name}
+                            className="flex min-w-0 items-center gap-2 rounded-md px-2 py-1"
+                          >
+                            <span
+                              aria-hidden="true"
+                              className="h-2.5 w-2.5 rounded-full shrink-0"
+                              style={{ background: d.color }}
+                            />
+                            <span className="truncate">{d.name}</span>
+                            {d.hint ? (
+                              <InfoHint label={`Sobre ${d.name}`}>{d.hint}</InfoHint>
+                            ) : null}
+
+                            <span className="ml-auto shrink-0 tabular-nums text-xs">
+                              <span className="font-semibold text-foreground">{pct}%</span>
+                              <span className="font-normal text-muted-foreground">
+                                {" "}
+                                · {d.value}
+                              </span>
+                            </span>
+                          </li>
+                        );
+                      })}
+                    </TooltipProvider>
+                  </ul>
+
+
+                </div>
+
+                {/* Motivos de não processamento, coloridos pela categoria de status. */}
+                <div className="min-w-0 flex flex-col gap-3 xl:pl-8">
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    <p className="text-xs font-medium text-muted-foreground">
+                      Motivos de não processamento
+                    </p>
+                    {metrics.quality.failuresByType.length > 0 && (
+                      <ul className="flex flex-wrap items-center gap-3">
+                        {(
+                          Object.entries(FAILURE_CATEGORIES) as [
+                            keyof typeof FAILURE_CATEGORIES,
+                            { label: string; color: string },
+                          ][]
+                        ).map(([key, cat]) => (
+                          <li key={key} className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                            <span
+                              aria-hidden="true"
+                              className="size-2 rounded-full"
+                              style={{ background: cat.color }}
+                            />
+                            {cat.label}
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </div>
+                  {metrics.quality.failuresByType.length === 0 ? (
+                    <EmptyState
+                      icon={<FileCheck2 className="h-10 w-10" />}
+                      title="Nenhuma falha no período"
+                      description="Todas as guias do período filtrado foram processadas com sucesso."
+                    />
+                  ) : (
+                    <div className="flex flex-1 flex-col gap-3">
+                      <div
+                        className="w-full"
+                        style={{
+                          height: horizontalBarsHeight(
+                            metrics.quality.failuresByType.length,
+                            isMobile,
+                          ),
+                        }}
+                        data-chart="quality-failures"
+                      >
+
+                        <ResponsiveContainer width="100%" height="100%">
+                          <BarChart
+                            data={metrics.quality.failuresByType}
+                            layout="vertical"
+                            margin={{
+                              top: 4,
+                              right: isMobile ? 20 : 28,
+                              left: isMobile ? 0 : 8,
+                              bottom: isMobile ? 4 : 16,
+                            }}
+                            barCategoryGap={HORIZONTAL_BAR_GAP}
+                          >
+                            <CartesianGrid
+                              strokeDasharray="3 3"
+                              stroke="var(--border)"
+                              horizontal={false}
+                            />
+                            <XAxis
+                              type="number"
+                              stroke="var(--muted-foreground)"
+                              fontSize={11}
+                              tickLine={false}
+                              axisLine={false}
+                              allowDecimals={false}
+                              label={
+                                isMobile
+                                  ? undefined
+                                  : {
+                                      value: "Quantidade de ocorrências",
+                                      position: "insideBottom",
+                                      offset: -12,
+                                      fill: "var(--muted-foreground)",
+                                      fontSize: 11,
+                                    }
+                              }
+                            />
+                            <YAxis
+                              type="category"
+                              dataKey="label"
+                              stroke="var(--muted-foreground)"
+                              fontSize={11}
+                              width={isMobile ? 104 : 172}
+                              tickLine={false}
+                              axisLine={false}
+                              label={
+                                isMobile
+                                  ? undefined
+                                  : {
+                                      value: "Motivo",
+                                      angle: -90,
+                                      position: "insideLeft",
+                                      fill: "var(--muted-foreground)",
+                                      fontSize: 11,
+                                      style: { textAnchor: "middle" },
+                                    }
+                              }
+                            />
+                            <RTooltip
+                              content={<ChartTooltip unit="ocorrências" />}
+                              cursor={{ fill: "var(--muted)", opacity: 0.4 }}
+                            />
+                            <Bar
+                              dataKey="count"
+                              name="Ocorrências"
+                              radius={[0, 6, 6, 0]}
+                              barSize={HORIZONTAL_BAR_SIZE}
+                              isAnimationActive={false}
+                            >
+                              {metrics.quality.failuresByType.map((f) => (
+                                <Cell key={f.name} fill={f.color} />
+                              ))}
+                              <LabelList
+                                dataKey="count"
+                                position="right"
+                                className="fill-foreground"
+                                style={{ fontSize: 11, fontWeight: 600 }}
+                              />
+                            </Bar>
+                          </BarChart>
+                        </ResponsiveContainer>
+                      </div>
+                      {isMobile ? (
+                        <p className="text-xs leading-snug text-muted-foreground">
+                          Eixo vertical: tipo de falha · Eixo horizontal: quantidade de ocorrências
+                        </p>
+                      ) : null}
+                    </div>
+
+                  )}
+                </div>
+              </div>
+            )}
+          </SurfaceCard></>)}
             </TabsContent>
             <TabsContent value="faturamento" className="mt-0 space-y-6">
           <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3" data-testid="billing-kpi-grid">
