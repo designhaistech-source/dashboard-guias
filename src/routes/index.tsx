@@ -2537,7 +2537,7 @@ function DashboardPage() {
 
             </TabsContent>
             <TabsContent value="faturamento" className="mt-0 space-y-6">
-          <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 xl:grid-cols-4" data-testid="billing-kpi-grid">
+          <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3" data-testid="billing-kpi-grid">
             <Kpi
               icon={Wallet}
               label="Faturamento total"
