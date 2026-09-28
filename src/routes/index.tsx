@@ -1355,6 +1355,36 @@ function DashboardPage() {
   /** Reference date of the "today" KPI, shown discreetly in the card. */
   const todayLabel = formatIsoToBrFull(todayLocalIsoDate());
 
+  /** Forecast revenue today and its R$ variation against yesterday. */
+  const { revenueToday, revenueTrend } = useMemo(() => {
+    const today = todayLocalIsoDate();
+    const yesterday = localIsoDaysAgo(1);
+    let t = 0;
+    let y = 0;
+    for (const g of filteredGuides) {
+      if (g.data === today) t += g.valorTotal;
+      else if (g.data === yesterday) y += g.valorTotal;
+    }
+    const diff = t - y;
+    const trend: KpiTrend =
+      diff === 0
+        ? { direction: "flat", label: "Mesmo valor de ontem" }
+        : {
+            direction: diff > 0 ? "up" : "down",
+            label: `${formatBRL(Math.abs(diff))} ${diff > 0 ? "a mais" : "a menos"} que ontem`,
+          };
+    return { revenueToday: t, revenueTrend: trend };
+  }, [filteredGuides]);
+
+  /** Date range of the forecast total card, following the selected period. */
+  const revenuePeriodLabel = (() => {
+    const from = filters.dataAutorizacaoDe || dailyData[0]?.date;
+    const to = filters.dataAutorizacaoAte || dailyData[dailyData.length - 1]?.date;
+    if (!from && !to) return "No período filtrado";
+    if (from && to) return `${formatIsoToBr(from)} a ${formatIsoToBr(to)}`;
+    return from ? `A partir de ${formatIsoToBr(from)}` : `Até ${formatIsoToBr(to)}`;
+  })();
+
   /** Number of days covered by the selected period. */
   const dayCount = dailyData.length;
 
