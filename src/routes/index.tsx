@@ -1,6 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { memo, useDeferredValue, useEffect, useMemo, useRef, useState } from "react";
-import type { RefObject } from "react";
 import jsPDF from "jspdf";
 import {
   toLocalIsoDate,
@@ -903,11 +902,14 @@ const MONTH_ABBR = [
   "dez",
 ] as const;
 
-/** Largura observada de um elemento, para adaptar a densidade de rótulos. */
-function useElementWidth(ref: RefObject<HTMLElement | null>): number {
+/**
+ * Mede a largura de um elemento via callback ref, para que a medição recomece
+ * quando o elemento é montado depois (abas desmontam painéis inativos).
+ */
+function useElementWidth(): [(node: HTMLElement | null) => void, number] {
+  const [element, setElement] = useState<HTMLElement | null>(null);
   const [width, setWidth] = useState(0);
   useEffect(() => {
-    const element = ref.current;
     if (!element || typeof ResizeObserver === "undefined") return;
     const observer = new ResizeObserver((entries) => {
       const next = entries[0]?.contentRect.width ?? 0;
@@ -915,8 +917,8 @@ function useElementWidth(ref: RefObject<HTMLElement | null>): number {
     });
     observer.observe(element);
     return () => observer.disconnect();
-  }, [ref]);
-  return width;
+  }, [element]);
+  return [setElement, width];
 }
 
 /**
@@ -934,6 +936,10 @@ function dailyAxisTicks(data: { date: string }[], maxTicks: number): string[] {
   dates.forEach((date, index) => {
     if (index === 0 || date.slice(8, 10) === "01") anchors.push(index);
   });
+  // Descarta a âncora inicial quando a virada de mês vem logo em seguida.
+  if (anchors.length > 1 && anchors[1]! - anchors[0]! < Math.max(2, Math.ceil(step * 0.7))) {
+    anchors.shift();
+  }
 
   const selected = new Set<number>();
   anchors.forEach((anchor, i) => {
@@ -1250,8 +1256,7 @@ function DashboardPage() {
     );
   }, [providerRevenue, revenueSort]);
   const dailyData = metrics.daily;
-  const dailyChartRef = useRef<HTMLDivElement>(null);
-  const dailyChartWidth = useElementWidth(dailyChartRef);
+  const [dailyChartRef, dailyChartWidth] = useElementWidth();
   /** Quantidade de rótulos proporcional ao espaço disponível (~52px por rótulo). */
   const dailyMaxTicks = Math.max(3, Math.floor((dailyChartWidth || 640) / 52));
   const dailyTicks = useMemo(
@@ -1259,6 +1264,14 @@ function DashboardPage() {
     [dailyData, dailyMaxTicks],
   );
   const dailyMonthStarts = useMemo(() => monthStartTicks(dailyTicks), [dailyTicks]);
+  // Tabs unmount inactive panels, so the revenue chart measures its own width.
+  const [revenueChartRef, revenueChartWidth] = useElementWidth();
+  const revenueMaxTicks = Math.max(3, Math.floor((revenueChartWidth || 640) / 52));
+  const revenueTicks = useMemo(
+    () => dailyAxisTicks(dailyData, revenueMaxTicks),
+    [dailyData, revenueMaxTicks],
+  );
+  const revenueMonthStarts = useMemo(() => monthStartTicks(revenueTicks), [revenueTicks]);
 
   const hasData = total > 0;
 
@@ -2563,7 +2576,7 @@ function DashboardPage() {
               emptyState
             ) : (
               <>
-                <div className="h-60 sm:h-72 xl:h-80" data-chart="daily-revenue">
+                <div className="h-60 sm:h-72 xl:h-80" data-chart="daily-revenue" ref={revenueChartRef}>
                   <ResponsiveContainer width="100%" height="100%">
                     <AreaChart
                       data={dailyData}
@@ -2584,9 +2597,9 @@ function DashboardPage() {
                         axisLine={false}
                         tickMargin={4}
                         height={isMobile ? 46 : 48}
-                        ticks={dailyTicks}
+                        ticks={revenueTicks}
                         interval={0}
-                        tick={<DailyAxisTick monthStarts={dailyMonthStarts} />}
+                        tick={<DailyAxisTick monthStarts={revenueMonthStarts} />}
                         label={
                           isMobile
                             ? undefined
