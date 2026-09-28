@@ -1664,12 +1664,14 @@ function DashboardPage() {
                       options={prestadoresList}
                     />
                   </div>
+                  {cfg.hasProcedures && (
                   <div className="min-w-0 sm:col-span-2 lg:col-span-5">
                     <ProcedureFilter
                       values={filters.procedimentos}
                       onChange={setProcedimentos}
                     />
                   </div>
+                  )}
                   <Button
                     type="button"
                     variant="outline"
@@ -2101,6 +2103,7 @@ function DashboardPage() {
           </SurfaceCard>
 
 
+          {cfg.hasProcedures && (<>
           {/* Procedures */}
           <SurfaceCard
             title="Procedimentos mais solicitados"
@@ -2315,7 +2318,7 @@ function DashboardPage() {
             ) : (
               <ProviderProcedureHeatmap matrix={deferredProviderMatrix} isMobile={isMobile} />
             )}
-          </SurfaceCard>
+          </SurfaceCard></>)}
 
 
 
