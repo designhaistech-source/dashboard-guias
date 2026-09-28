@@ -110,6 +110,7 @@ import {
   buildProviderCounts,
   buildProviderRevenue,
   buildMonthlyRevenue,
+  MONTHLY_HISTORY_GUIDES,
   GUIDE_TYPES,
   FAILURE_CATEGORIES,
   type DashboardMetrics,
@@ -1221,13 +1222,17 @@ function DashboardPage() {
         : a.name.localeCompare(b.name, "pt-BR") * factor,
     );
   }, [providerCounts, providerSort]);
+  const hasCustomPeriod = Boolean(filters.dataAutorizacaoDe || filters.dataAutorizacaoAte);
   const monthlyRevenue = useMemo(
     () =>
-      buildMonthlyRevenue(filteredGuides, {
-        from: filters.dataAutorizacaoDe || undefined,
-        to: filters.dataAutorizacaoAte || undefined,
-      }),
-    [filteredGuides, filters.dataAutorizacaoDe, filters.dataAutorizacaoAte],
+      buildMonthlyRevenue(
+        [...filterGuides(MONTHLY_HISTORY_GUIDES, filters), ...filteredGuides],
+        {
+          from: filters.dataAutorizacaoDe || undefined,
+          to: filters.dataAutorizacaoAte || undefined,
+        },
+      ),
+    [filteredGuides, filters],
   );
   const providerRevenue = useMemo(() => buildProviderRevenue(filteredGuides, 10), [filteredGuides]);
   const [revenueSort, setRevenueSort] = useState<ProviderSort>({

@@ -214,6 +214,43 @@ function buildGuides(
 
 export const DASHBOARD_GUIDES: DashboardGuide[] = buildGuides();
 
+/**
+ * Older synthetic processed guides (30–364 days ago) used only by the monthly
+ * forecast chart, so the 12-month view is spread out without changing the
+ * 30-day dataset that feeds every other indicator.
+ */
+function buildHistoryGuides(seed = 20250101): DashboardGuide[] {
+  const rand = seeded(seed);
+  const rows: DashboardGuide[] = [];
+  for (let daysAgo = 364; daysAgo >= 30; daysAgo--) {
+    const data = isoDaysAgo(daysAgo);
+    const month = Number(data.slice(5, 7));
+    // Seasonal wave so months differ visibly instead of looking flat.
+    const base = 7 + 4 * Math.sin((month / 12) * Math.PI * 2);
+    const count = Math.max(2, Math.round(base + rand() * 5));
+    for (let i = 0; i < count; i++) {
+      const proc = PROCEDURES[Math.floor(rand() * PROCEDURES.length)];
+      rows.push({
+        id: `h-${data}-${i}`,
+        numGuiaPrestador: String(500000 + rows.length),
+        data,
+        beneficiarioNome: `${FIRST_NAMES[Math.floor(rand() * FIRST_NAMES.length)]} ${
+          LAST_NAMES[Math.floor(rand() * LAST_NAMES.length)]
+        }`,
+        tipoGuia: proc.tipo,
+        prestadorSolicitante: PRESTADORES[Math.floor(rand() * PRESTADORES.length)],
+        procCodigo: proc.code,
+        procDescricao: proc.name,
+        valorTotal: Math.round(proc.valor * (0.75 + rand() * 0.7)),
+        statusProcessamento: "sucesso",
+      });
+    }
+  }
+  return rows;
+}
+
+export const MONTHLY_HISTORY_GUIDES: DashboardGuide[] = buildHistoryGuides();
+
 /** Tipos por conjunto de dados da Visão geral (cores reaproveitam a paleta de tipos). */
 export const ISSUED_GUIDE_TYPES = [
   { name: "SP/SADT", color: "var(--guide-type-1)" },
