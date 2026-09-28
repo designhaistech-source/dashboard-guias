@@ -298,7 +298,7 @@ export type DashboardMetrics = {
   /** Dias do período que tiveram pelo menos 1 guia processada. */
   activeDays: number;
   distinctTypes: number;
-  daily: { day: string; date: string; guias: number }[];
+  daily: { day: string; date: string; guias: number; faturamento: number }[];
   types: { name: string; value: number; color: string }[];
   procedures: { code: string; name: string; count: number }[];
   totalValue: number;
@@ -345,7 +345,11 @@ export function buildMetrics(
   typeList: readonly { name: string; color: string }[] = GUIDE_TYPES,
 ): DashboardMetrics {
   const byDate = new Map<string, number>();
-  for (const g of guides) byDate.set(g.data, (byDate.get(g.data) ?? 0) + 1);
+  const revenueByDate = new Map<string, number>();
+  for (const g of guides) {
+    byDate.set(g.data, (byDate.get(g.data) ?? 0) + 1);
+    revenueByDate.set(g.data, (revenueByDate.get(g.data) ?? 0) + g.valorTotal);
+  }
 
   const observed = [...byDate.keys()].sort((a, b) => a.localeCompare(b));
   const from = period?.from || observed[0];
@@ -356,6 +360,7 @@ export function buildMetrics(
         day: date.slice(8, 10),
         date,
         guias: byDate.get(date) ?? 0,
+        faturamento: revenueByDate.get(date) ?? 0,
       }))
     : [];
 
@@ -489,5 +494,22 @@ export function buildProviderCounts(
   return [...totals.entries()]
     .map(([name, count]) => ({ name, count }))
     .sort((a, b) => b.count - a.count || a.name.localeCompare(b.name, "pt-BR"))
+    .slice(0, limit);
+}
+
+export type ProviderRevenue = { name: string; value: number };
+
+/** Faturamento (soma de `valorTotal`) por prestador, do maior para o menor. */
+export function buildProviderRevenue(
+  guides: DashboardGuide[],
+  limit = 10,
+): ProviderRevenue[] {
+  const totals = new Map<string, number>();
+  for (const g of guides) {
+    totals.set(g.prestadorSolicitante, (totals.get(g.prestadorSolicitante) ?? 0) + g.valorTotal);
+  }
+  return [...totals.entries()]
+    .map(([name, value]) => ({ name, value }))
+    .sort((a, b) => b.value - a.value || a.name.localeCompare(b.name, "pt-BR"))
     .slice(0, limit);
 }
