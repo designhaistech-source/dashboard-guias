@@ -49,7 +49,6 @@ import {
   Bar,
   LabelList,
   Sector,
-  LineChart,
   Line,
 } from "recharts";
 
