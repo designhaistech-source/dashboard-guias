@@ -1535,6 +1535,21 @@ function DashboardPage() {
           </p>
 
           {/* Container de filtros — cabeçalho próprio com expandir/recolher */}
+          <Tabs value={tab} onValueChange={(v) => changeTab(v as DashboardTab)} className="space-y-6">
+            <TabsList className={appTabsListClass} aria-label="Seções da visão geral">
+              <TabsTrigger value="geral" className={appTabsTriggerClass}>
+                <LayoutDashboard className={appTabsIconClass} aria-hidden="true" />
+                <span className={appTabsLabelClass}>Geral</span>
+              </TabsTrigger>
+              <TabsTrigger value="producao" className={appTabsTriggerClass}>
+                <BarChart3 className={appTabsIconClass} aria-hidden="true" />
+                <span className={appTabsLabelClass}>Operação</span>
+              </TabsTrigger>
+              <TabsTrigger value="faturamento" className={appTabsTriggerClass}>
+                <Wallet className={appTabsIconClass} aria-hidden="true" />
+                <span className={appTabsLabelClass}>Faturamento</span>
+              </TabsTrigger>
+            </TabsList>
           <section
             aria-label="Filtros"
             className="rounded-2xl border border-border bg-card shadow-xs"
