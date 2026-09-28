@@ -1632,7 +1632,7 @@ function DashboardPage() {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 items-end gap-3 sm:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] sm:gap-4 lg:grid-cols-[10rem_10rem_minmax(0,1fr)_minmax(0,1fr)_auto]">
+                <div className="grid grid-cols-1 items-end gap-3 sm:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] sm:gap-4 xl:grid-cols-[10rem_10rem_minmax(0,1fr)_minmax(0,1fr)]">
                   <FilterField
                     label="Data inicial"
                     type="date"
@@ -1648,7 +1648,7 @@ function DashboardPage() {
                     value={filters.dataAutorizacaoAte}
                     onChange={(v) => setFilter("dataAutorizacaoAte", v)}
                   />
-                  <div className="min-w-0 sm:col-span-2 lg:col-span-1">
+                  <div className="min-w-0 sm:col-span-2 lg:col-span-1 xl:col-span-1">
                     <FilterSelect
                       label={cfg.typeLabel}
                       value={filters.tipoGuia}
@@ -1656,7 +1656,7 @@ function DashboardPage() {
                       options={cfg.types.map((t) => t.name)}
                     />
                   </div>
-                  <div className="min-w-0 sm:col-span-2 lg:col-span-1">
+                  <div className="min-w-0 sm:col-span-2 lg:col-span-1 xl:col-span-1">
                     <FilterSelect
                       label="Prestador solicitante"
                       value={filters.prestadorSolicitante}
@@ -1665,7 +1665,7 @@ function DashboardPage() {
                     />
                   </div>
                   {cfg.hasProcedures && (
-                  <div className="min-w-0 sm:col-span-2 lg:col-span-5">
+                  <div className="min-w-0 sm:col-span-2 xl:col-span-4">
                     <ProcedureFilter
                       values={filters.procedimentos}
                       onChange={setProcedimentos}
@@ -1677,7 +1677,7 @@ function DashboardPage() {
                     variant="outline"
                     onClick={clearAllFilters}
                     disabled={activeFilters.length === 0}
-                    className="h-10 w-full justify-center sm:col-span-2 sm:h-9 lg:col-span-5 lg:w-auto lg:justify-self-start"
+                    className="h-10 w-full justify-center sm:col-span-2 sm:h-9 lg:w-auto lg:justify-self-start xl:col-span-4"
                   >
                     Limpar filtros
                   </Button>
