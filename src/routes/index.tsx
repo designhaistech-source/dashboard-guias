@@ -2560,13 +2560,23 @@ function DashboardPage() {
               emptyState
             ) : (
               <>
-                <div className="h-60 sm:h-72" data-chart="daily-revenue">
+                <div className="h-60 sm:h-72 xl:h-80" data-chart="daily-revenue">
                   <ResponsiveContainer width="100%" height="100%">
-                    <LineChart
+                    <AreaChart
                       data={dailyData}
                       margin={{ top: 10, right: 12, left: isMobile ? 4 : 6, bottom: isMobile ? 0 : 6 }}
                     >
-                      <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" vertical={false} />
+                      <defs>
+                        <linearGradient id="gradSuccess" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="0%" stopColor="var(--success)" stopOpacity={0.45} />
+                          <stop offset="100%" stopColor="var(--success)" stopOpacity={0} />
+                        </linearGradient>
+                      </defs>
+                      <CartesianGrid
+                        strokeDasharray="3 3"
+                        stroke="var(--border)"
+                        vertical={false}
+                      />
                       <XAxis
                         dataKey="date"
                         stroke="var(--muted-foreground)"
@@ -2597,22 +2607,35 @@ function DashboardPage() {
                         axisLine={false}
                         width={isMobile ? 56 : 72}
                         tickFormatter={(v: number) => formatBRLCompact(v)}
+                        label={
+                          isMobile
+                            ? undefined
+                            : {
+                                value: "Faturamento (R$)",
+                                angle: -90,
+                                position: "insideLeft",
+                                fill: "var(--muted-foreground)",
+                                fontSize: 11,
+                                style: { textAnchor: "middle" },
+                              }
+                        }
                       />
                       <RTooltip
                         content={<ChartTooltip currency />}
-                        cursor={{ stroke: "var(--primary)", strokeOpacity: 0.25, strokeWidth: 1 }}
+                        cursor={{ stroke: "var(--success)", strokeOpacity: 0.25, strokeWidth: 1 }}
                       />
-                      <Line
+                      <Area
                         type="monotone"
                         dataKey="faturamento"
                         name="Faturamento"
                         stroke="var(--success)"
                         strokeWidth={2.5}
-                        dot={false}
+                        fill="url(#gradSuccess)"
+                        dot={{ r: 0 }}
                         activeDot={{ r: 5, strokeWidth: 2, stroke: "var(--card)" }}
                         isAnimationActive={false}
                       />
-                    </LineChart>
+                    </AreaChart>
                   </ResponsiveContainer>
                 </div>
                 {isMobile ? (
