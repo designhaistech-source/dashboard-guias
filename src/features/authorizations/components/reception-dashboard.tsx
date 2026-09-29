@@ -1,202 +1,34 @@
-import { useMemo, useState } from "react";
 import { Link } from "@tanstack/react-router";
-import {
-  ArrowDownRight,
-  ArrowUpRight,
-  ChevronDown,
-  ChevronRight,
-  Clock,
-  FileText,
-  Hourglass,
-  Inbox,
-  ShieldCheck,
-  SlidersHorizontal,
-} from "lucide-react";
-import { Bar, BarChart, CartesianGrid, LabelList, XAxis, YAxis } from "recharts";
+import { AlertTriangle, ArrowRight, CheckCircle2, ChevronRight, Hourglass, Send, ShieldCheck, type LucideIcon } from "lucide-react";
 import { AppBreadcrumb } from "@/components/app-breadcrumb";
 import { AppSidebar } from "@/components/app-sidebar";
 import { SiteFooter } from "@/components/site-footer";
 import { PageHeader } from "@/components/page-header";
 import { SurfaceCard } from "@/components/surface-card";
-import { AppModal } from "@/components/app-modal";
-import { Field } from "@/components/form-field";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Chip } from "@/components/ui/chip";
-import { Badge } from "@/components/ui/badge";
-import { Combobox, MultiSelect } from "@/components/ui/combobox";
-import {
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-  type ChartConfig,
-} from "@/components/ui/chart";
-import {
-  DataTable,
-  DataTableBody,
-  DataTableCell,
-  DataTableDesktop,
-  DataTableHead,
-  DataTableHeader,
-  DataTableRoot,
-  DataTableRow,
-  DataTableCardList,
-  DataTableCard,
-  DataTableCardHeader,
-  DataTableCardFields,
-} from "@/components/data-table";
-import { useIsMobile } from "@/hooks/use-mobile";
-import { toLocalIsoDate, todayLocalIsoDate, formatIsoToBr } from "@/lib/date";
 import { cn } from "@/lib/utils";
-import {
-  ATTENTION_STATUSES,
-
-  AUTHORIZATION_STATUS_LABEL,
-  AUTHORIZATION_STATUS_ORDER,
-  DOCTORS,
-  OPERADORAS,
-  PROCEDURES,
-  byLongestWaiting,
-  formatElapsed,
-  type AuthorizationRequest,
-  type AuthorizationStatus,
-} from "../data/authorization-requests";
+import { type AuthorizationStatus } from "../data/authorization-requests";
 import { useExamRequests } from "../data/requests-store";
-import { RequestsTable, StatusLabel } from "./requests-table";
 
-interface Filters {
-  from: string;
-  to: string;
-  operadora: string;
-  doctor: string;
-  procedures: string[];
-}
-const EMPTY: Filters = { from: "", to: "", operadora: "", doctor: "", procedures: [] };
-const DAY = 86_400_000;
+const focusRing = "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring";
 
-function inRange(r: AuthorizationRequest, from: string, to: string) {
-  const d = toLocalIsoDate(new Date(r.receivedAt));
-  return (!from || d >= from) && (!to || d <= to);
-}
+const ACTIONS: { label: string; hint: string; status: AuthorizationStatus; icon: LucideIcon; tone: string }[] = [
+  { label: "Solicitar autorização", hint: "Pendentes de autorização", status: "pendente", icon: Send, tone: "bg-warning-muted text-warning-strong" },
+  { label: "Registrar retorno", hint: "Aguardando operadora", status: "aguardando", icon: Hourglass, tone: "bg-info/15 text-info" },
+  { label: "Registrar realização", hint: "Autorizadas", status: "autorizada", icon: ShieldCheck, tone: "bg-success/15 text-success" },
+];
 
-function applyDimensions(rows: AuthorizationRequest[], f: Filters) {
-  return rows.filter(
-    (r) =>
-      (!f.operadora || r.operadora === f.operadora) &&
-      (!f.doctor || r.doctor === f.doctor) &&
-      (f.procedures.length === 0 || f.procedures.includes(r.procedureCode)),
-  );
-}
-
-function countBy(rows: AuthorizationRequest[], status: AuthorizationStatus) {
-  return rows.filter((r) => r.status === status).length;
-}
-
-const statusChartConfig = {
-  total: { label: "Solicitações", color: "var(--primary)" },
-} satisfies ChartConfig;
+const FLOW: { label: string; status: AuthorizationStatus }[] = [
+  { label: "Pendente de autorização", status: "pendente" },
+  { label: "Aguardando operadora", status: "aguardando" },
+  { label: "Autorizados", status: "autorizada" },
+  { label: "Realizados", status: "realizada" },
+];
 
 export function ReceptionDashboard() {
-  const isMobile = useIsMobile();
-  const [filtersOpen, setFiltersOpen] = useState(true);
-  const [filters, setFilters] = useState<Filters>(EMPTY);
-  const [viewing, setViewing] = useState<AuthorizationRequest | null>(null);
-  const set = <K extends keyof Filters>(k: K, v: Filters[K]) => setFilters((p) => ({ ...p, [k]: v }));
-
-  const dateInvalid = Boolean(filters.from && filters.to && filters.from > filters.to);
-  const hasFilters =
-    Boolean(filters.from || filters.to || filters.operadora || filters.doctor) ||
-    filters.procedures.length > 0;
-
-  const applyPreset = (id: "hoje" | "7d" | "30d") => {
-    const today = todayLocalIsoDate();
-    const days = id === "hoje" ? 0 : id === "7d" ? 6 : 29;
-    const from = toLocalIsoDate(new Date(Date.now() - days * DAY));
-    setFilters((p) => ({ ...p, from, to: today }));
-  };
-
-  const allRequests = useExamRequests();
-  const scoped = useMemo(() => applyDimensions(allRequests, filters), [allRequests, filters]);
-  const rows = useMemo(
-    () => (dateInvalid ? [] : scoped.filter((r) => inRange(r, filters.from, filters.to))),
-    [scoped, filters.from, filters.to, dateInvalid],
-  );
-
-  // Período anterior de mesma duração, só quando as duas datas estão definidas.
-  const previous = useMemo(() => {
-    if (!filters.from || !filters.to || dateInvalid) return null;
-    const start = new Date(`${filters.from}T00:00:00`).getTime();
-    const end = new Date(`${filters.to}T00:00:00`).getTime();
-    const len = Math.round((end - start) / DAY) + 1;
-    const pFrom = toLocalIsoDate(new Date(start - len * DAY));
-    const pTo = toLocalIsoDate(new Date(start - DAY));
-    return scoped.filter((r) => inRange(r, pFrom, pTo));
-  }, [scoped, filters.from, filters.to, dateInvalid]);
-
-  const kpis = [
-    {
-      label: "Solicitações recebidas",
-      icon: Inbox,
-      value: rows.length,
-      prev: previous?.length,
-      context: "Enviadas pelos profissionais de saúde no período",
-      tone: "bg-primary/10 text-primary",
-    },
-    {
-      label: "Pendentes de autorização",
-      icon: Clock,
-      value: countBy(rows, "pendente"),
-      prev: previous ? countBy(previous, "pendente") : undefined,
-      context: "Autorização ainda não solicitada",
-      tone: "bg-warning-muted text-warning-strong",
-      status: "pendente" as const,
-    },
-    {
-      label: "Aguardando operadora",
-      icon: Hourglass,
-      value: countBy(rows, "aguardando"),
-      prev: previous ? countBy(previous, "aguardando") : undefined,
-      context: "Solicitadas, sem retorno da operadora",
-      tone: "bg-info/15 text-info",
-      status: "aguardando" as const,
-    },
-    {
-      label: "Autorizadas",
-      icon: ShieldCheck,
-      value: countBy(rows, "autorizada"),
-      prev: previous ? countBy(previous, "autorizada") : undefined,
-      context: "Com autorização da operadora",
-      tone: "bg-success/15 text-success",
-      status: "autorizada" as const,
-    },
-  ];
-
-  const attention = useMemo(
-    () =>
-      rows
-        .filter((r) => ATTENTION_STATUSES.includes(r.status))
-        .sort(byLongestWaiting),
-    [rows],
-  );
-
-  const statusData = AUTHORIZATION_STATUS_ORDER.map((s) => ({
-    status: AUTHORIZATION_STATUS_LABEL[s],
-    total: countBy(rows, s),
-  }));
-
-  const byOperadora = OPERADORAS.map((op) => {
-    const list = rows.filter((r) => r.operadora === op);
-    return {
-      operadora: op,
-      total: list.length,
-      counts: AUTHORIZATION_STATUS_ORDER.map((s) => countBy(list, s)),
-    };
-  }).filter((o) => o.total > 0);
-
-  const periodLabel =
-    filters.from || filters.to
-      ? `${filters.from ? formatIsoToBr(filters.from) : "início"} a ${filters.to ? formatIsoToBr(filters.to) : "hoje"}`
-      : "Todo o período disponível";
+  const all = useExamRequests();
+  const count = (s: AuthorizationStatus) => all.filter((r) => r.status === s).length;
+  const issues = count("pendencia");
 
   return (
     <div className="flex min-h-dvh w-full bg-background text-foreground">
@@ -204,306 +36,76 @@ export function ReceptionDashboard() {
       <main className="min-w-0 flex-1 flex flex-col min-h-dvh">
         <div className="w-full flex-1 space-y-6 px-4 py-6 pb-16 pt-20 sm:px-6 sm:py-8 md:pt-8 lg:px-10">
           <AppBreadcrumb />
-          <PageHeader
-            title="Visão geral"
-            description="Acompanhe as solicitações de exame e as autorizações junto às operadoras."
-          />
+          <PageHeader title="Visão geral" description="Central operacional das solicitações de exames." />
 
-          <p className="text-sm text-muted-foreground">
-            Período: <span className="font-medium text-foreground">{periodLabel}</span>
-          </p>
-
-          <section aria-label="Filtros" className="rounded-2xl border border-border bg-card shadow-xs">
-            <div className="flex items-center justify-between gap-3 px-4 py-3 sm:px-5">
-              <div className="flex items-center gap-2">
-                <SlidersHorizontal className="icon-optical h-4 w-4 text-muted-foreground" aria-hidden="true" />
-                <h2 className="font-display text-base font-semibold tracking-tight text-foreground">Filtros</h2>
-              </div>
-              <Button
-                type="button"
-                variant="ghost"
-                size="sm"
-                onClick={() => setFiltersOpen((o) => !o)}
-                aria-expanded={filtersOpen}
-                aria-controls="reception-filters-panel"
-              >
-                {filtersOpen ? "Recolher" : "Expandir"}
-                <ChevronDown className={cn("h-4 w-4 transition-transform", filtersOpen && "rotate-180")} aria-hidden="true" />
-              </Button>
-            </div>
-            {filtersOpen && (
-              <div id="reception-filters-panel" className="space-y-4 border-t border-border px-4 py-4 sm:px-5 sm:py-5">
-                <div className="space-y-1.5">
-                  <span className="block text-xs font-medium leading-snug text-muted-foreground">
-                    Períodos predefinidos
-                  </span>
-                  <div className="flex flex-wrap gap-2">
-                    {([
-                      { id: "hoje", label: "Hoje" },
-                      { id: "7d", label: "Últimos 7 dias" },
-                      { id: "30d", label: "Últimos 30 dias" },
-                    ] as const).map((p) => (
-                      <Chip
-                        key={p.id}
-                        onClick={() => applyPreset(p.id)}
-                        className="text-foreground hover:border-primary hover:bg-primary/5 hover:text-primary"
-                      >
-                        {p.label}
-                      </Chip>
-                    ))}
-                  </div>
-                </div>
-                <div className="grid grid-cols-1 items-end gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-[10rem_10rem_minmax(0,1fr)_minmax(0,1fr)]">
-                  <Field label="Data inicial">
-                    <Input type="date" value={filters.from} aria-invalid={dateInvalid || undefined} onChange={(e) => set("from", e.target.value)} className="h-9" />
-                  </Field>
-                  <Field label="Data final">
-                    <Input type="date" value={filters.to} aria-invalid={dateInvalid || undefined} onChange={(e) => set("to", e.target.value)} className="h-9" />
-                  </Field>
-                  <Field label="Operadora">
-                    <Combobox
-                      value={filters.operadora}
-                      onChange={(v) => set("operadora", v)}
-                      options={OPERADORAS.map((o) => ({ value: o, label: o }))}
-                      placeholder="Todas"
-                      searchPlaceholder="Buscar..."
-                      clearable
-                    />
-                  </Field>
-                  <Field label="Profissional solicitante">
-                    <Combobox
-                      value={filters.doctor}
-                      onChange={(v) => set("doctor", v)}
-                      options={DOCTORS.map((o) => ({ value: o, label: o }))}
-                      placeholder="Todos"
-                      searchPlaceholder="Buscar..."
-                      clearable
-                    />
-                  </Field>
-                  <div className="min-w-0 sm:col-span-2 lg:col-span-4">
-                    <Field label="Procedimento">
-                      <MultiSelect
-                        options={PROCEDURES.map((p) => ({ value: p.code, label: p.name, description: p.code, searchText: `${p.code} ${p.name}` }))}
-                        values={filters.procedures}
-                        onChange={(v) => set("procedures", v)}
-                        placeholder="Selecione um ou mais procedimentos"
-                        emptyLabel="Selecione um ou mais procedimentos"
-                        allLabel="Todos os procedimentos"
-                        searchPlaceholder="Buscar por código TUSS ou descrição"
-                        chips
-                        maxChips={2}
-                        className="w-full"
-                      />
-                    </Field>
-                  </div>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={() => setFilters(EMPTY)}
-                    disabled={!hasFilters}
-                    className="h-10 w-full justify-center sm:col-span-2 sm:h-9 lg:col-span-4 lg:w-auto lg:justify-self-start"
-                  >
-                    Limpar filtros
-                  </Button>
-                </div>
-                {dateInvalid && (
-                  <p className="text-xs text-destructive">A data inicial deve ser anterior ou igual à data final.</p>
-                )}
-              </div>
-            )}
-          </section>
-
-          <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 xl:grid-cols-4" data-testid="kpi-grid">
-            {kpis.map((k) => {
-              const diff = k.prev === undefined ? undefined : k.value - k.prev;
-              const body = (
-                <>
-                  <div className="flex w-full min-h-11 items-start justify-between gap-2">
-                    <span className="metric-label text-left">{k.label}</span>
-                    <span className={`grid place-items-center h-8 w-8 shrink-0 rounded-lg ${k.tone}`}>
-                      <k.icon className="h-4 w-4" />
-                    </span>
-                  </div>
-                  <div className="mt-3 metric-value text-foreground">{k.value}</div>
-                  <div className="mt-1 metric-hint text-muted-foreground">{k.context}</div>
-                  {diff !== undefined && (
-                    <div
-                      className={cn(
-                        "mt-1 metric-hint flex items-center icon-optical gap-1",
-                        diff > 0 ? "text-success" : diff < 0 ? "text-destructive" : "text-muted-foreground",
-                      )}
-                    >
-                      {diff > 0 && <ArrowUpRight className="h-3.5 w-3.5" aria-hidden="true" />}
-                      {diff < 0 && <ArrowDownRight className="h-3.5 w-3.5" aria-hidden="true" />}
-                      {diff > 0 ? `+${diff}` : diff} vs. período anterior
-                    </div>
-                  )}
-                  {k.status && (
-                    <span className="mt-3 flex items-center gap-1 text-xs font-medium text-primary">
-                      Ver em Autorizações
-                      <ChevronRight className="h-3.5 w-3.5" aria-hidden="true" />
-                    </span>
-                  )}
-                </>
-              );
-              const cardClass =
-                "flex h-full flex-col items-start rounded-2xl border border-border bg-card p-5 text-left shadow-xs transition-shadow hover:shadow-sm";
-              return k.status ? (
+          <SurfaceCard title="Ações" description="O que precisa ser feito agora.">
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+              {ACTIONS.map((a) => (
                 <Link
-                  key={k.label}
+                  key={a.status}
                   to="/autorizacoes"
-                  search={{ status: k.status }}
-                  className={cn(cardClass, "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring")}
+                  search={{ status: a.status }}
+                  className={cn("flex items-center gap-3 rounded-xl border border-border bg-card p-4 transition-colors hover:bg-muted", focusRing)}
                 >
-                  {body}
+                  <span className={cn("grid h-9 w-9 shrink-0 place-items-center rounded-lg", a.tone)}>
+                    <a.icon className="h-4 w-4" aria-hidden="true" />
+                  </span>
+                  <span className="min-w-0 flex-1">
+                    <span className="block text-sm font-semibold text-foreground">{a.label}</span>
+                    <span className="block text-xs text-muted-foreground">{a.hint}: {count(a.status)}</span>
+                  </span>
+                  <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground" aria-hidden="true" />
                 </Link>
-              ) : (
-                <div key={k.label} className={cardClass}>{body}</div>
-              );
-            })}
-          </div>
-
-          <SurfaceCard
-            title="Pendências que exigem atenção"
-            description="Solicitações que ainda dependem de alguma ação ou retorno."
-            actions={<Badge variant="secondary" size="sm">{attention.length}</Badge>}
-          >
-            <RequestsTable
-              rows={attention.slice(0, 8)}
-              emptyLabel="Nenhuma pendência no período filtrado."
-              onView={setViewing}
-            />
-            {attention.length > 8 && (
-              <div className="mt-4">
-                <Button asChild variant="outline" size="sm">
-                  <Link to="/autorizacoes" search={{ status: "" }}>Ver todas as {attention.length} pendências</Link>
-                </Button>
-              </div>
-            )}
+              ))}
+            </div>
           </SurfaceCard>
 
-          <div className="grid gap-4 grid-cols-1 items-stretch">
-            <SurfaceCard
-              className="min-w-0"
-              title="Solicitações por status"
-              description="Distribuição das solicitações de exame por situação no período filtrado."
-            >
-              {rows.length === 0 ? (
-                <p className="py-10 text-center text-sm text-muted-foreground">Nenhuma solicitação no período filtrado.</p>
-              ) : (
-                <ChartContainer config={statusChartConfig} className="aspect-auto h-72 w-full">
-                  <BarChart data={statusData} layout="vertical" margin={{ left: 8, right: 32 }}>
-                    <CartesianGrid horizontal={false} strokeDasharray="3 3" />
-                    <XAxis type="number" allowDecimals={false} hide />
-                    <YAxis
-                      type="category"
-                      dataKey="status"
-                      width={isMobile ? 120 : 170}
-                      tickLine={false}
-                      axisLine={false}
-                      fontSize={12}
-                    />
-                    <ChartTooltip content={<ChartTooltipContent />} />
-                    <Bar dataKey="total" fill="var(--color-total)" radius={4} maxBarSize={22} isAnimationActive={false}>
-                      <LabelList dataKey="total" position="right" className="fill-foreground" fontSize={12} />
-                    </Bar>
-                  </BarChart>
-                </ChartContainer>
-              )}
-            </SurfaceCard>
+          <SurfaceCard title="Fluxo dos exames" description="Etapas das solicitações. Clique para ver em Controle de exames.">
+            <ol className="flex flex-col gap-2 md:flex-row md:items-center">
+              {FLOW.map((f, i) => (
+                <li key={f.status} className="flex flex-col items-stretch gap-2 md:flex-1 md:flex-row md:items-center">
+                  <Link
+                    to="/autorizacoes"
+                    search={{ status: f.status }}
+                    className={cn("flex flex-1 items-center justify-between gap-2 rounded-xl border border-border bg-card px-4 py-3 transition-colors hover:bg-muted", focusRing)}
+                  >
+                    <span className="text-sm font-medium text-foreground">{f.label}</span>
+                    <span className="font-mono text-lg font-semibold tabular-nums text-foreground">{count(f.status)}</span>
+                  </Link>
+                  {i < FLOW.length - 1 && (
+                    <ArrowRight className="h-4 w-4 shrink-0 self-center rotate-90 text-muted-foreground md:rotate-0" aria-hidden="true" />
+                  )}
+                </li>
+              ))}
+            </ol>
+          </SurfaceCard>
 
-            <SurfaceCard
-              className="min-w-0"
-              title="Autorizações por operadora"
-              description="Volume e situação das solicitações por operadora no período filtrado."
-            >
-              <DataTable>
-                <DataTableDesktop breakpoint="md">
-                  <DataTableRoot className="min-w-200">
-                    <DataTableHeader>
-                      <DataTableRow>
-                        <DataTableHead>Operadora</DataTableHead>
-                        <DataTableHead className="text-right">Total</DataTableHead>
-                        {AUTHORIZATION_STATUS_ORDER.map((s) => (
-                          <DataTableHead key={s} className="text-right">{AUTHORIZATION_STATUS_LABEL[s]}</DataTableHead>
-                        ))}
-                      </DataTableRow>
-                    </DataTableHeader>
-                    <DataTableBody>
-                      {byOperadora.map((o) => (
-                        <DataTableRow key={o.operadora}>
-                          <DataTableCell className="font-medium">{o.operadora}</DataTableCell>
-                          <DataTableCell className="text-right font-mono tabular-nums">{o.total}</DataTableCell>
-                          {o.counts.map((c, i) => (
-                            <DataTableCell key={AUTHORIZATION_STATUS_ORDER[i]} className="text-right tabular-nums">{c}</DataTableCell>
-                          ))}
-                        </DataTableRow>
-                      ))}
-                    </DataTableBody>
-                  </DataTableRoot>
-                </DataTableDesktop>
-                <DataTableCardList breakpoint="md" divided>
-                  {byOperadora.map((o) => (
-                    <DataTableCard key={o.operadora} flat>
-                      <DataTableCardHeader title={o.operadora} trailing={<span className="font-mono text-sm">{o.total}</span>} />
-                      <DataTableCardFields
-                        fields={AUTHORIZATION_STATUS_ORDER.map((s, i) => ({
-                          label: AUTHORIZATION_STATUS_LABEL[s],
-                          value: o.counts[i],
-                        }))}
-                      />
-                    </DataTableCard>
-                  ))}
-                </DataTableCardList>
-              </DataTable>
-              {byOperadora.length === 0 && (
-                <p className="py-10 text-center text-sm text-muted-foreground">Nenhuma solicitação no período filtrado.</p>
+          <div
+            role="status"
+            className={cn(
+              "flex flex-col gap-3 rounded-2xl border p-4 sm:flex-row sm:items-center sm:justify-between",
+              issues > 0 ? "border-warning bg-warning-muted" : "border-border bg-card",
+            )}
+          >
+            <div className="flex items-center gap-3">
+              {issues > 0 ? (
+                <AlertTriangle className="h-5 w-5 shrink-0 text-warning-strong" aria-hidden="true" />
+              ) : (
+                <CheckCircle2 className="h-5 w-5 shrink-0 text-success-strong" aria-hidden="true" />
               )}
-            </SurfaceCard>
+              <span className="text-sm font-semibold text-foreground">
+                {issues === 0 ? "Nenhuma solicitação com pendência" : issues === 1 ? "1 solicitação com pendência" : `${issues} solicitações com pendência`}
+              </span>
+            </div>
+            {issues > 0 && (
+              <Button asChild variant="outline" size="sm">
+                <Link to="/autorizacoes" search={{ status: "pendencia" }}>Ver pendências</Link>
+              </Button>
+            )}
           </div>
         </div>
         <SiteFooter />
       </main>
-
-      <AppModal
-        open={viewing !== null}
-        onOpenChange={(o) => !o && setViewing(null)}
-        title="Solicitação de exame"
-        description={viewing?.id}
-        icon={<FileText className="h-5 w-5" aria-hidden="true" />}
-        size="sm"
-        footer={
-          viewing && (
-            <Button asChild size="sm">
-              <Link to="/autorizacoes" search={{ status: viewing.status, q: viewing.patient }}>
-                Ver em Autorizações
-              </Link>
-            </Button>
-          )
-        }
-      >
-        {viewing && (
-          <dl className="grid grid-cols-1 gap-3 text-sm sm:grid-cols-2">
-            {[
-              ["Paciente", viewing.patient],
-              ["Procedimento", `${viewing.procedureCode} · ${viewing.procedure}`],
-              ["Profissional solicitante", viewing.doctor],
-              ["Operadora", viewing.operadora],
-              ["Recebida em", formatIsoToBr(toLocalIsoDate(new Date(viewing.receivedAt)))],
-              ["Tempo na situação", formatElapsed(viewing.statusSince)],
-            ].map(([k, v]) => (
-              <div key={k} className="min-w-0">
-                <dt className="text-xs font-medium text-muted-foreground">{k}</dt>
-                <dd className="mt-0.5 break-words text-foreground">{v}</dd>
-              </div>
-            ))}
-            <div>
-              <dt className="text-xs font-medium text-muted-foreground">Situação</dt>
-              <dd className="mt-1"><StatusLabel request={viewing} /></dd>
-            </div>
-          </dl>
-        )}
-      </AppModal>
     </div>
   );
 }
