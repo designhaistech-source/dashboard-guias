@@ -51,8 +51,8 @@ export function ReceptionDashboard() {
               {ACTIONS.map((a) => (
                 <Link
                   key={a.status}
-                  to="/tarefas/$tarefa"
-                  params={{ tarefa: a.task }}
+                  to="/autorizacoes"
+                  search={{ status: a.status }}
                   className={cn("flex items-center gap-3 rounded-xl border border-border bg-card p-4 transition-colors hover:bg-muted", focusRing)}
                 >
                   <span className={cn("grid h-9 w-9 shrink-0 place-items-center rounded-lg", a.tone)}>
@@ -115,7 +115,7 @@ export function ReceptionDashboard() {
             </div>
             {issues > 0 && (
               <Button asChild variant="outline" size="sm">
-                <Link to="/tarefas/$tarefa" params={{ tarefa: "pendencias" }}>Ver pendências</Link>
+                <Link to="/autorizacoes" search={{ status: "pendencia" }}>Ver pendências</Link>
               </Button>
             )}
           </div>
@@ -128,7 +128,9 @@ export function ReceptionDashboard() {
                   {overdue === 1 ? "1 autorização aguardando" : `${overdue} autorizações aguardando`} retorno da operadora há mais tempo
                 </span>
               </div>
-              <Button variant="ghost" size="sm" disabled title="Disponível em breve">Cobrar operadora</Button>
+              <Button asChild variant="ghost" size="sm">
+                <Link to="/autorizacoes" search={{ status: "aguardando" }}>Cobrar operadora</Link>
+              </Button>
             </div>
           )}
         </div>

@@ -12,6 +12,7 @@ export {
 export {
   TRACKING_STATUS_LABEL,
   assignRequest,
+  chargeOperator,
   submitExamRequest,
   updateRequestStatus,
   useExamRequest,
