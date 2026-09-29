@@ -7,9 +7,9 @@ type Lane = { id: string; label: string; statuses: AuthorizationStatus[]; tone: 
 
 // Requests with an issue stay in the operator lane, flagged on the card.
 export const FLOW_LANES: Lane[] = [
-  { id: "pendente", label: "Para autorizar", statuses: ["pendente"], tone: "bg-secondary/60 text-secondary-foreground" },
+  { id: "pendente", label: "Para autorizar", statuses: ["pendente"], tone: "bg-card text-secondary-foreground" },
   { id: "aguardando", label: "Aguardando operadora", statuses: ["aguardando", "pendencia"], tone: "bg-primary-muted text-accent-foreground" },
-  { id: "autorizada", label: "Autorizados", statuses: ["autorizada"], tone: "bg-sidebar-accent text-sidebar-accent-foreground" },
+  { id: "autorizada", label: "Autorizados", statuses: ["autorizada"], tone: "bg-secondary text-accent-foreground" },
   { id: "realizada", label: "Realizados", statuses: ["realizada"], tone: "bg-muted text-secondary-foreground" },
 ];
 
