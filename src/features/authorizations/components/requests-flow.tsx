@@ -7,10 +7,10 @@ type Lane = { id: string; label: string; statuses: AuthorizationStatus[]; tone: 
 
 // Requests with an issue stay in the operator lane, flagged on the card.
 export const FLOW_LANES: Lane[] = [
-  { id: "pendente", label: "Para autorizar", statuses: ["pendente"], tone: "bg-warning-muted text-warning-strong" },
-  { id: "aguardando", label: "Aguardando operadora", statuses: ["aguardando", "pendencia"], tone: "bg-info/15 text-info" },
-  { id: "autorizada", label: "Autorizados", statuses: ["autorizada"], tone: "bg-success/15 text-success" },
-  { id: "realizada", label: "Realizados", statuses: ["realizada"], tone: "bg-muted text-foreground" },
+  { id: "pendente", label: "Para autorizar", statuses: ["pendente"], tone: "bg-card text-secondary-foreground" },
+  { id: "aguardando", label: "Aguardando operadora", statuses: ["aguardando", "pendencia"], tone: "bg-primary-muted text-accent-foreground" },
+  { id: "autorizada", label: "Autorizados", statuses: ["autorizada"], tone: "bg-secondary text-accent-foreground" },
+  { id: "realizada", label: "Realizados", statuses: ["realizada"], tone: "bg-muted text-secondary-foreground" },
 ];
 
 export const laneIdOf = (status: AuthorizationStatus) => FLOW_LANES.find((l) => l.statuses.includes(status))?.id;
