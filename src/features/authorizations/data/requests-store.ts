@@ -62,7 +62,7 @@ export interface TrackedRequest extends AuthorizationRequest {
 export const SYSTEM_ACTOR = "Guias+ (automático)";
 const RECEPTIONISTS = ["Maria Oliveira", "Juliana Castro"];
 // v2: inclui dados de autorização, retorno e realização.
-const STORAGE_KEY = "guiasplus:exam-requests:v2";
+const STORAGE_KEY = "guiasplus:exam-requests:v3";
 const MIN = 60_000;
 const DAY = 24 * 60 * MIN;
 
@@ -107,6 +107,12 @@ function seed(): TrackedRequest[] {
         if (r.status === "realizada") {
           execution = { date: isoDay(since), registeredBy: recep(assignee) };
           history.push({ at: r.statusSince, stage: "Realização registrada", by: recep(assignee) });
+          // Sample data: every other performed exam is already in "Para faturar".
+          if (i % 2 === 0) {
+            const preparedAt = new Date(since + (Date.now() - since) / 2).toISOString();
+            history.push({ at: preparedAt, stage: "Faturamento preparado", by: recep(assignee) });
+            return { ...r, status: "faturar" as const, statusSince: preparedAt, assignee, history, authorization, response, execution };
+          }
         }
       }
     }
