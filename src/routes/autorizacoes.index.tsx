@@ -12,6 +12,7 @@ import { toLocalIsoDate } from "@/lib/date";
 import {
   useExamRequests,
   ACTION_BY_STATUS,
+  VIEW_ONLY_STAGES,
   DOCTORS,
   OPERADORAS,
   RequestActionDialog,
@@ -160,7 +161,7 @@ function AuthorizationsPage() {
           <RequestsFlow
             rows={filtered}
             onOpen={(r) =>
-              ACTION_BY_STATUS[r.status]
+              ACTION_BY_STATUS[r.status] || VIEW_ONLY_STAGES[r.status]
                 ? setOpenId(r.id)
                 : navigate({ to: "/autorizacoes/$id", params: { id: r.id } })
             }

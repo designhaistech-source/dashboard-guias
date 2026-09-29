@@ -2,7 +2,7 @@ import { useEffect, useState, type ReactNode } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { CheckCircle2, ChevronDown, ClipboardCheck, FileText, Hourglass, Send, Wrench } from "lucide-react";
+import { CheckCircle2, ChevronDown, ClipboardCheck, FileText, Hourglass, Receipt, Send, Wrench } from "lucide-react";
 import { toast } from "sonner";
 import { AppModal } from "@/components/app-modal";
 import { Sheet, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle } from "@/components/ui/sheet";
@@ -16,6 +16,7 @@ import { formatIsoToBr, todayLocalIsoDate } from "@/lib/date";
 import { useCurrentProfile } from "@/lib/current-profile";
 import { AUTHORIZATION_STATUS_LABEL, type AuthorizationStatus } from "../data/authorization-requests";
 import {
+  prepareBilling,
   registerExecution,
   registerOperatorResponse,
   requestAuthorization,
@@ -23,7 +24,7 @@ import {
   type Actor,
   type TrackedRequest,
 } from "../data/requests-store";
-import { formatDateTime } from "./request-timeline";
+import { formatDateTime, RequestTimeline } from "./request-timeline";
 
 /** Ação executável por situação; `null` = somente consulta. */
 export const ACTION_BY_STATUS: Partial<Record<AuthorizationStatus, { label: string; icon: typeof Send }>> = {
@@ -31,7 +32,16 @@ export const ACTION_BY_STATUS: Partial<Record<AuthorizationStatus, { label: stri
   aguardando: { label: "Confirmar autorização", icon: Hourglass },
   autorizada: { label: "Confirmar realização", icon: ClipboardCheck },
   pendencia: { label: "Resolver pendência", icon: Wrench },
+  realizada: { label: "Preparar faturamento", icon: Receipt },
 };
+
+/** Stages opened in the drawer for consultation only, with no action yet. */
+export const VIEW_ONLY_STAGES: Partial<Record<AuthorizationStatus, { label: string; icon: typeof Send }>> = {
+  faturar: { label: "Para faturar", icon: Receipt },
+};
+
+/** Stages whose drawer also shows the request history. */
+const WITH_HISTORY: AuthorizationStatus[] = ["realizada", "faturar"];
 
 type Fact = [string, ReactNode];
 
@@ -68,6 +78,12 @@ export function requestFacts(r: TrackedRequest, status: AuthorizationStatus = r.
       ...base,
       ["Número da autorização", r.response?.number],
       ["Validade da autorização", formatIsoToBr(r.response?.validity) || "Não informada"],
+    ];
+  if (status === "realizada" || status === "faturar")
+    return [
+      ...base,
+      ["Número da autorização", r.response?.number],
+      ["Data da realização", formatIsoToBr(r.execution?.date)],
     ];
   if (status === "pendencia")
     return [
@@ -310,11 +326,36 @@ function IssueForm({ request: r, actor, onDone, formId }: FormProps) {
   );
 }
 
+function BillingForm({ request: r, actor, onDone, formId }: FormProps) {
+  const { register, handleSubmit } = useForm<z.infer<typeof issueSchema>>({
+    resolver: zodResolver(issueSchema),
+    defaultValues: { notes: "" },
+  });
+  return (
+    <form
+      id={formId}
+      className="space-y-4"
+      onSubmit={handleSubmit((v) =>
+        done(prepareBilling(r.id, v.notes, actor), "Faturamento preparado", `${r.patient} agora está em Para faturar.`, onDone),
+      )}
+    >
+      <h3 className="text-sm font-semibold text-foreground">Preparar faturamento</h3>
+      <p className="text-sm text-muted-foreground">
+        A solicitação seguirá para Para faturar. A conferência e o envio da cobrança à operadora serão definidos depois.
+      </p>
+      <Field id="billing-notes" label="Observações" optional>
+        <Textarea maxLength={500} {...register("notes")} />
+      </Field>
+    </form>
+  );
+}
+
 const FORMS: Partial<Record<AuthorizationStatus, { Form: (p: FormProps) => ReactNode; submit: string }>> = {
   pendente: { Form: AuthorizationForm, submit: "Confirmar solicitação" },
   aguardando: { Form: ResponseForm, submit: "Confirmar autorização" },
   autorizada: { Form: ExecutionForm, submit: "Confirmar realização" },
   pendencia: { Form: IssueForm, submit: "Reenviar à operadora" },
+  realizada: { Form: BillingForm, submit: "Preparar faturamento" },
 };
 
 /** Inline original-document summary; avoids opening a modal over the drawer. */
@@ -359,14 +400,14 @@ export function RequestActionDialog({
   }, [open, r?.id]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const entry = status ? FORMS[status] : undefined;
-  const action = status ? ACTION_BY_STATUS[status] : undefined;
-  const ready = Boolean(r && entry && action);
+  const action = status ? (ACTION_BY_STATUS[status] ?? VIEW_ONLY_STAGES[status]) : undefined;
+  const ready = Boolean(r && action);
   const formId = r ? `action-${r.id}` : "action";
   const Icon = action?.icon;
   return (
     <Sheet open={open && ready} onOpenChange={onOpenChange}>
       <SheetContent side="right" className="flex w-full flex-col gap-0 p-0 sm:max-w-lg">
-        {r && entry && action && Icon && (
+        {r && action && Icon && (
           <>
             <SheetHeader className="border-b border-border p-6 text-left">
               <SheetTitle className="flex items-center gap-2 font-display">
@@ -381,17 +422,29 @@ export function RequestActionDialog({
                 <FactList facts={requestFacts(r, status as AuthorizationStatus)} />
                 <OriginalDocumentInline request={r} />
               </section>
-              <entry.Form request={r} actor={{ name: profile.name, roleLabel: profile.roleLabel }} onDone={() => onOpenChange(false)} formId={formId} />
-              <p className="text-xs text-muted-foreground">
-                Será registrado automaticamente com data, hora e {profile.name} — {profile.roleLabel}.
-              </p>
+              {status && WITH_HISTORY.includes(status) && (
+                <section className="space-y-3" aria-labelledby={`${formId}-history`}>
+                  <h3 id={`${formId}-history`} className="text-sm font-semibold text-foreground">Histórico do andamento</h3>
+                  <RequestTimeline history={r.history} />
+                </section>
+              )}
+              {entry && (
+                <>
+                  <entry.Form request={r} actor={{ name: profile.name, roleLabel: profile.roleLabel }} onDone={() => onOpenChange(false)} formId={formId} />
+                  <p className="text-xs text-muted-foreground">
+                    Será registrado automaticamente com data, hora e {profile.name} — {profile.roleLabel}.
+                  </p>
+                </>
+              )}
             </div>
             <SheetFooter className="gap-2 border-t border-border p-4 sm:justify-end">
-              <Button variant="outline" onClick={() => onOpenChange(false)}>Cancelar</Button>
-              <Button type="submit" form={formId}>
-                <CheckCircle2 className="h-4 w-4" aria-hidden="true" />
-                {entry.submit}
-              </Button>
+              <Button variant="outline" onClick={() => onOpenChange(false)}>{entry ? "Cancelar" : "Fechar"}</Button>
+              {entry && (
+                <Button type="submit" form={formId}>
+                  <CheckCircle2 className="h-4 w-4" aria-hidden="true" />
+                  {entry.submit}
+                </Button>
+              )}
             </SheetFooter>
           </>
         )}

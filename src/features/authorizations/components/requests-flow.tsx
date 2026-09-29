@@ -11,6 +11,7 @@ export const FLOW_LANES: Lane[] = [
   { id: "aguardando", label: "Aguardando operadora", statuses: ["aguardando", "pendencia"], tone: "bg-primary-muted text-accent-foreground" },
   { id: "autorizada", label: "Autorizados", statuses: ["autorizada"], tone: "bg-cat-5/15 text-foreground" },
   { id: "realizada", label: "Realizados", statuses: ["realizada"], tone: "bg-neutral-200 text-foreground" },
+  { id: "faturar", label: "Para faturar", statuses: ["faturar"], tone: "bg-cat-3/10 text-foreground" },
 ];
 
 export const laneIdOf = (status: AuthorizationStatus) => FLOW_LANES.find((l) => l.statuses.includes(status))?.id;
