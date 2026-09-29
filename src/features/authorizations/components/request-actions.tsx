@@ -33,7 +33,7 @@ import { cn } from "@/lib/utils";
 
 /** Ação executável por situação; `null` = somente consulta. */
 export const ACTION_BY_STATUS: Partial<Record<AuthorizationStatus, { label: string; icon: typeof Send }>> = {
-  pendente: { label: "Solicitar autorização", icon: Send },
+  pendente: { label: "Registrar solicitação de autorização", icon: Send },
   aguardando: { label: "Registrar retorno da operadora", icon: Hourglass },
   autorizada: { label: "Confirmar realização", icon: ClipboardCheck },
   pendencia: { label: "Resolver pendência", icon: Wrench },
@@ -197,8 +197,8 @@ function AuthorizationForm({ request: r, actor, onDone, formId }: FormProps) {
         done(requestAuthorization(r.id, v, actor), "Autorização solicitada", `${r.patient} agora está em Aguardando operadora.`, onDone),
       )}
     >
-      <h3 className="text-sm font-semibold text-foreground">Solicitação de autorização</h3>
-      <Field id="auth-date" label="Data do envio à operadora" required error={formState.errors.requestedAt?.message}>
+      <h3 className="text-sm font-semibold text-foreground">Dados da solicitação à operadora</h3>
+      <Field id="auth-date" label="Data da solicitação" required error={formState.errors.requestedAt?.message}>
         <Input type="date" max={todayLocalIsoDate()} {...register("requestedAt")} />
       </Field>
       <Field id="auth-protocol" label="Protocolo" optional>
