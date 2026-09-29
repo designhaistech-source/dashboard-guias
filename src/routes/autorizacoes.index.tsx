@@ -1,15 +1,9 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { appTabsLabelClass, appTabsListClass, appTabsTriggerClass } from "@/components/app-tabs";
-import { cn } from "@/lib/utils";
-import { toast } from "sonner";
-import { useCurrentProfile } from "@/lib/current-profile";
 import { AppSidebar } from "@/components/app-sidebar";
 import { AppBreadcrumb } from "@/components/app-breadcrumb";
 import { SiteFooter } from "@/components/site-footer";
 import { PageHeader } from "@/components/page-header";
-import { SurfaceCard } from "@/components/surface-card";
 import { FilterCard } from "@/components/filter-card";
 import { SearchInput } from "@/components/form-field";
 import { Input } from "@/components/ui/input";
@@ -21,25 +15,11 @@ import {
   DOCTORS,
   OPERADORAS,
   RequestActionDialog,
-  chargeOperator,
-  RequestsTable,
+  RequestsFlow,
+  laneIdOf,
   ReceptionSummary,
-  byLongestWaiting,
   type AuthorizationStatus,
 } from "@/features/authorizations";
-
-// Queue tabs; "" = Todos. Uses the existing `status` search param so dashboard links keep working.
-const QUEUES: { value: "" | AuthorizationStatus; label: string }[] = [
-  { value: "", label: "Todos" },
-  { value: "pendente", label: "Para autorizar" },
-  { value: "aguardando", label: "Aguardando operadora" },
-  { value: "autorizada", label: "Autorizados" },
-  { value: "pendencia", label: "Pendências" },
-  { value: "realizada", label: "Realizados" },
-];
-
-// Prototype-only sample threshold for "waiting longer"; not a system rule.
-const SAMPLE_OVERDUE_MS = 3 * 24 * 60 * 60 * 1000;
 
 const str = (v: unknown) => (typeof v === "string" && v ? v : undefined);
 
@@ -77,11 +57,9 @@ function AuthorizationsPage() {
 
   const q = search.q.trim().toLowerCase();
   const all = useExamRequests();
-  const profile = useCurrentProfile();
   const [openId, setOpenId] = useState<string | null>(null);
   const selected = all.find((r) => r.id === openId) ?? null;
-  const tab = QUEUES.some((t) => t.value === search.status) ? search.status : "";
-  const secondary = all.filter((r) => {
+  const filtered = all.filter((r) => {
     const d = toLocalIsoDate(new Date(r.receivedAt));
     return (
       (!search.operadora || r.operadora === search.operadora) &&
@@ -91,8 +69,11 @@ function AuthorizationsPage() {
       (!q || r.patient.toLowerCase().includes(q) || r.procedure.toLowerCase().includes(q) || r.procedureCode.includes(q))
     );
   });
-  const rows = secondary.filter((r) => !tab || r.status === tab).sort(byLongestWaiting);
-  const countOf = (v: string) => (v ? secondary.filter((r) => r.status === v).length : secondary.length);
+  // Summary shortcuts still set `status`; on the board it scrolls to the matching lane.
+  useEffect(() => {
+    const lane = search.status && laneIdOf(search.status as AuthorizationStatus);
+    if (lane) document.getElementById(`raia-${lane}`)?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }, [search.status]);
 
   const { status: _tab, ...filters } = search;
   const activeCount = Object.values(filters).filter(Boolean).length;
@@ -110,23 +91,10 @@ function AuthorizationsPage() {
 
           <ReceptionSummary />
 
-          <Tabs value={tab || "todos"} onValueChange={(v) => set("status", v === "todos" ? "" : v)}>
-            <div className="overflow-x-auto">
-              <TabsList aria-label="Filas de exames" className={cn(appTabsListClass, "min-w-max auto-cols-auto lg:min-w-0")}>
-                {QUEUES.map((t) => (
-                  <TabsTrigger key={t.label} value={t.value || "todos"} className={cn(appTabsTriggerClass, "px-3 lg:px-3")}>
-                    <span className={"whitespace-nowrap text-xs lg:text-sm"}>{t.label}</span>
-                    <span className="font-mono text-xs tabular-nums text-muted-foreground">{countOf(t.value)}</span>
-                  </TabsTrigger>
-                ))}
-              </TabsList>
-            </div>
-          </Tabs>
-
           <FilterCard
             id="authorizations-filters"
             activeCount={activeCount}
-            onClear={() => navigate({ to: ".", search: { status: tab || undefined }, replace: true })}
+            onClear={() => navigate({ to: ".", search: {}, replace: true })}
             clearDisabled={activeCount === 0}
           >
             <div className="w-full min-w-0 sm:col-span-2 lg:w-auto lg:flex-1 lg:min-w-60">
@@ -191,35 +159,14 @@ function AuthorizationsPage() {
             </div>
           </FilterCard>
 
-          <SurfaceCard
-            title="Solicitações"
-            description={rows.length === 1 ? "1 solicitação" : `${rows.length} solicitações`}
-          >
-            <RequestsTable
-              rows={rows}
-              emptyLabel="Nenhuma solicitação encontrada com os filtros aplicados."
-              showStatus={!tab}
-              getSecondaryAction={(r) =>
-                tab && r.status === "aguardando" && Date.now() - new Date(r.statusSince).getTime() > SAMPLE_OVERDUE_MS
-                  ? {
-                      label: "Cobrar operadora",
-                      onClick: () => {
-                        if (chargeOperator(r.id, { name: profile.name, roleLabel: profile.roleLabel }))
-                          toast.success("Cobrança registrada", { description: `Registrado no histórico de ${r.patient}.` });
-                      },
-                    }
-                  : null
-              }
-              // "Todos" mixes stages, so one neutral label keeps the column uniform; the panel title names the task.
-              getActionLabel={(r) => (tab ? (ACTION_BY_STATUS[r.status]?.label ?? "Visualizar") : "Abrir")}
-              onOpenDetails={(r) => navigate({ to: "/autorizacoes/$id", params: { id: r.id } })}
-              onView={(r) =>
-                ACTION_BY_STATUS[r.status]
-                  ? setOpenId(r.id)
-                  : navigate({ to: "/autorizacoes/$id", params: { id: r.id } })
-              }
-            />
-          </SurfaceCard>
+          <RequestsFlow
+            rows={filtered}
+            onOpen={(r) =>
+              ACTION_BY_STATUS[r.status]
+                ? setOpenId(r.id)
+                : navigate({ to: "/autorizacoes/$id", params: { id: r.id } })
+            }
+          />
           <RequestActionDialog request={selected} open={!!openId} onOpenChange={(o) => !o && setOpenId(null)} />
         </div>
         <SiteFooter />
