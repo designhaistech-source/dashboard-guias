@@ -176,6 +176,112 @@ export function updateRequestStatus(id: string, status: AuthorizationStatus, by:
   }));
 }
 
+/** Actor as recorded in history: "Maria Oliveira — Recepção". */
+export interface Actor {
+  name: string;
+  roleLabel: string;
+}
+const label = (a: Actor) => `${a.name} — ${a.roleLabel}`;
+
+function transition(
+  id: string,
+  from: AuthorizationStatus,
+  to: AuthorizationStatus,
+  actor: Actor,
+  patch: (r: TrackedRequest, at: string) => Partial<TrackedRequest>,
+  entries: (r: TrackedRequest, at: string) => HistoryEntry[],
+): boolean {
+  hydrate();
+  const target = current.find((r) => r.id === id);
+  // Guards against stale screens acting on a request that already moved on.
+  if (!target || target.status !== from) return false;
+  const at = new Date().toISOString();
+  update(id, (r) => ({
+    ...r,
+    ...patch(r, at),
+    status: to,
+    statusSince: at,
+    assignee: actor.name,
+    history: [...r.history, ...entries(r, at)],
+  }));
+  return true;
+}
+
+export function requestAuthorization(id: string, data: AuthorizationData, actor: Actor) {
+  const authorization = { requestedAt: data.requestedAt, protocol: clean(data.protocol), notes: clean(data.notes) };
+  return transition(id, "pendente", "aguardando", actor, () => ({ authorization }), (_r, at) => [
+    {
+      at,
+      stage: "Autorização solicitada",
+      by: label(actor),
+      note: [authorization.protocol && `Protocolo ${authorization.protocol}`, authorization.notes].filter(Boolean).join(" · ") || undefined,
+    },
+  ]);
+}
+
+export function registerOperatorResponse(
+  id: string,
+  data: Omit<OperatorResponse, "registeredAt" | "registeredBy">,
+  actor: Actor,
+) {
+  return transition(
+    id,
+    "aguardando",
+    data.result,
+    actor,
+    (_r, at) => ({
+      response: {
+        result: data.result,
+        number: clean(data.number),
+        date: data.date,
+        validity: clean(data.validity),
+        reason: clean(data.reason),
+        notes: clean(data.notes),
+        registeredAt: at,
+        registeredBy: label(actor),
+      },
+    }),
+    (r, at) => {
+      const detail = data.result === "autorizada" ? `Autorização nº ${data.number?.trim()}` : clean(data.reason);
+      const entries: HistoryEntry[] = [
+        {
+          at,
+          stage: `Retorno da operadora: ${AUTHORIZATION_STATUS_LABEL[data.result]}`,
+          by: label(actor),
+          note: [detail, clean(data.notes)].filter(Boolean).join(" · ") || undefined,
+        },
+      ];
+      if (data.result === "autorizada") {
+        entries.push({
+          at,
+          stage: "Confirmação enviada ao profissional solicitante",
+          by: SYSTEM_ACTOR,
+          note: `${r.procedure} de ${r.patient} autorizado pela ${r.operadora} (nº ${data.number?.trim()}). Registrado por ${label(actor)}.`,
+        });
+      }
+      return entries;
+    },
+  );
+}
+
+export function registerExecution(id: string, data: { date: string; notes?: string }, actor: Actor) {
+  return transition(
+    id,
+    "autorizada",
+    "realizada",
+    actor,
+    () => ({ execution: { date: data.date, notes: clean(data.notes), registeredBy: label(actor) } }),
+    (_r, at) => [{ at, stage: "Realização registrada", by: label(actor), note: clean(data.notes) }],
+  );
+}
+
+/** Fluxo provisório: a resolução por tipo de pendência será definida depois. */
+export function resolveIssue(id: string, notes: string, actor: Actor) {
+  return transition(id, "pendencia", "aguardando", actor, () => ({}), (_r, at) => [
+    { at, stage: "Pendência resolvida e reenviada à operadora", by: label(actor), note: clean(notes) },
+  ]);
+}
+
 /** Cria a solicitação a partir de uma guia de Solicitação de exame processada. */
 export function submitExamRequest(input: { patient: string }): TrackedRequest {
   hydrate();
@@ -194,8 +300,7 @@ export function submitExamRequest(input: { patient: string }): TrackedRequest {
     statusSince: new Date(at).toISOString(),
     assignee: null,
     history: [
-      { at: new Date(at).toISOString(), stage: "Solicitação enviada", by: CURRENT_USER.name },
-      { at: new Date(at).toISOString(), stage: "Encaminhada para a Recepção", by: SYSTEM_ACTOR },
+      { at: new Date(at).toISOString(), stage: "Solicitação recebida", by: `${CURRENT_USER.name} — Profissional de saúde` },
     ],
   };
   commit([request, ...current]);
