@@ -9,6 +9,7 @@ const RESTRICTED_ROUTES: Record<string, ProfileRole[]> = {
   "/documentos": ["medico"],
   "/cid": ["medico"],
   "/solicitacoes": ["medico"],
+  "/guias": ["medico"],
   "/autorizacoes": ["recepcao"],
 };
 

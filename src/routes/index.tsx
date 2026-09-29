@@ -1136,12 +1136,21 @@ function DashboardPage() {
   /** Faturamento considera apenas guias processadas, independentemente do tipo de dado. */
   const effectiveKind: DashboardDataKind = tab === "faturamento" ? "processadas" : dataKind;
   const cfg = DASHBOARD_DATA_KINDS[effectiveKind];
+  // Stashes kind-specific filters while Faturamento swaps the data set, so they return on exit.
+  const stashedKindFilters = useRef<{ activeType: typeof activeType; tipoGuia: string; procedimentos: string[] } | null>(null);
   const changeTab = (next: DashboardTab) => {
     const nextKind = next === "faturamento" ? "processadas" : dataKind;
-    // Tipo e procedimentos dependem do conjunto de dados; só são limpos se ele mudar.
     if (nextKind !== effectiveKind) {
-      setActiveType(undefined);
-      setFilters((f) => ({ ...f, tipoGuia: "", procedimentos: [] }));
+      if (next === "faturamento") {
+        stashedKindFilters.current = { activeType, tipoGuia: filters.tipoGuia, procedimentos: filters.procedimentos };
+        setActiveType(undefined);
+        setFilters((f) => ({ ...f, tipoGuia: "", procedimentos: [] }));
+      } else {
+        const saved = stashedKindFilters.current;
+        stashedKindFilters.current = null;
+        setActiveType(saved?.activeType);
+        setFilters((f) => ({ ...f, tipoGuia: saved?.tipoGuia ?? "", procedimentos: saved?.procedimentos ?? [] }));
+      }
     }
     setTab(next);
   };
