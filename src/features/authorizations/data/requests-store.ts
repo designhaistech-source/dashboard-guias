@@ -20,16 +20,55 @@ export interface HistoryEntry {
   note?: string;
 }
 
+/** Dados registrados ao solicitar a autorização à operadora. */
+export interface AuthorizationData {
+  /** yyyy-MM-dd */
+  requestedAt: string;
+  protocol?: string;
+  notes?: string;
+}
+
+export type OperatorResult = "autorizada" | "negada" | "pendencia";
+
+/** Retorno da operadora registrado pela Recepção. */
+export interface OperatorResponse {
+  result: OperatorResult;
+  number?: string;
+  /** yyyy-MM-dd */
+  date?: string;
+  validity?: string;
+  reason?: string;
+  notes?: string;
+  registeredAt: string;
+  registeredBy: string;
+}
+
+export interface ExecutionData {
+  /** yyyy-MM-dd */
+  date: string;
+  notes?: string;
+  registeredBy: string;
+}
+
 export interface TrackedRequest extends AuthorizationRequest {
   /** Funcionário da Recepção que assumiu; null enquanto ninguém assumiu. */
   assignee: string | null;
   history: HistoryEntry[];
+  authorization?: AuthorizationData;
+  response?: OperatorResponse;
+  execution?: ExecutionData;
 }
 
 export const SYSTEM_ACTOR = "Guias+ (automático)";
 const RECEPTIONISTS = ["Maria Oliveira", "Juliana Castro"];
-const STORAGE_KEY = "guiasplus:exam-requests";
+// v2: inclui dados de autorização, retorno e realização.
+const STORAGE_KEY = "guiasplus:exam-requests:v2";
 const MIN = 60_000;
+const DAY = 24 * 60 * MIN;
+
+const isoDay = (ms: number) => new Date(ms).toISOString().slice(0, 10);
+const clean = (v?: string) => v?.trim() || undefined;
+const recep = (name: string) => `${name} — Recepção`;
 
 function seed(): TrackedRequest[] {
   return AUTHORIZATION_REQUESTS.map((r, i) => {
@@ -37,26 +76,44 @@ function seed(): TrackedRequest[] {
     const received = new Date(r.receivedAt).getTime();
     const since = new Date(r.statusSince).getTime();
     const history: HistoryEntry[] = [
-      { at: r.receivedAt, stage: "Solicitação enviada", by: r.doctor },
-      { at: new Date(received + MIN).toISOString(), stage: "Encaminhada para a Recepção", by: SYSTEM_ACTOR },
+      { at: r.receivedAt, stage: "Solicitação recebida", by: `${r.doctor} — Profissional de saúde` },
     ];
-    if (assignee) {
-      const assumedAt = r.status === "pendente" ? since : received + Math.max(2 * MIN, (since - received) / 3);
-      history.push({ at: new Date(assumedAt).toISOString(), stage: "Assumida pela Recepção", by: assignee });
-      if (r.status === "realizada") {
+    let authorization: AuthorizationData | undefined;
+    let response: OperatorResponse | undefined;
+    let execution: ExecutionData | undefined;
+    if (r.status !== "pendente" && assignee) {
+      const askedAt = received + Math.max(2 * MIN, (since - received) / 3);
+      authorization = { requestedAt: isoDay(askedAt), protocol: `PRT-${String(880000 + i * 37)}` };
+      history.push({ at: new Date(askedAt).toISOString(), stage: "Autorização solicitada", by: recep(assignee) });
+      if (r.status !== "aguardando") {
+        const respAt = r.status === "realizada" ? askedAt + (since - askedAt) / 2 : since;
+        const result: OperatorResult = r.status === "realizada" ? "autorizada" : (r.status as OperatorResult);
+        response = {
+          result,
+          registeredAt: new Date(respAt).toISOString(),
+          registeredBy: recep(assignee),
+          ...(result === "autorizada"
+            ? { number: `AUT-${String(550000 + i * 13)}`, date: isoDay(respAt), validity: isoDay(respAt + 30 * DAY) }
+            : result === "pendencia"
+              ? { reason: "Operadora solicitou relatório médico complementar." }
+              : { reason: "Procedimento fora da cobertura contratual." }),
+        };
         history.push({
-          at: new Date(assumedAt + (since - assumedAt) / 2).toISOString(),
-          stage: AUTHORIZATION_STATUS_LABEL.autorizada,
-          by: assignee,
+          at: response.registeredAt,
+          stage: `Retorno da operadora: ${AUTHORIZATION_STATUS_LABEL[result]}`,
+          by: recep(assignee),
+          note: response.number ? `Autorização nº ${response.number}` : response.reason,
         });
-      }
-      if (r.status !== "pendente") {
-        history.push({ at: r.statusSince, stage: AUTHORIZATION_STATUS_LABEL[r.status], by: assignee });
+        if (r.status === "realizada") {
+          execution = { date: isoDay(since), registeredBy: recep(assignee) };
+          history.push({ at: r.statusSince, stage: "Realização registrada", by: recep(assignee) });
+        }
       }
     }
-    return { ...r, assignee, history };
+    return { ...r, assignee, history, authorization, response, execution };
   });
 }
+
 
 const SEED = seed();
 let current: TrackedRequest[] = SEED;
