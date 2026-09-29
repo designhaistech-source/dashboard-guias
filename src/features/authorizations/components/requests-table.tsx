@@ -103,6 +103,7 @@ export function RequestsTable({
                       <Button
                         variant="ghost"
                         size="sm"
+                        className="px-2"
                         onClick={() => onView(r)}
                         aria-label={`${labelOf(r)}: ${r.patient}`}
                       >
