@@ -282,6 +282,16 @@ export function resolveIssue(id: string, notes: string, actor: Actor) {
   ]);
 }
 
+/** Records a follow-up with the operator; status stays "aguardando". */
+export function chargeOperator(id: string, actor: Actor) {
+  hydrate();
+  const target = current.find((r) => r.id === id);
+  if (!target || target.status !== "aguardando") return false;
+  const at = new Date().toISOString();
+  update(id, (r) => ({ ...r, history: [...r.history, { at, stage: "Operadora cobrada", by: label(actor) }] }));
+  return true;
+}
+
 /** Cria a solicitação a partir de uma guia de Solicitação de exame processada. */
 export function submitExamRequest(input: { patient: string }): TrackedRequest {
   hydrate();

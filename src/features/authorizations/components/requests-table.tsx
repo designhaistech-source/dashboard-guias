@@ -39,7 +39,10 @@ export function RequestsTable({
   getActionLabel,
   onOpenDetails,
   showStatus = true,
+  getSecondaryAction,
 }: {
+  /** Optional low-emphasis action shown next to the main one. */
+  getSecondaryAction?: (request: AuthorizationRequest) => { label: string; onClick: () => void } | null;
   actionLabel?: string;
   rows: AuthorizationRequest[];
   emptyLabel: string;
@@ -95,7 +98,15 @@ export function RequestsTable({
                     {formatElapsed(r.statusSince)}
                   </DataTableCell>
                   {onView && (
-                    <DataTableCell className="text-right">
+                    <DataTableCell className="text-right whitespace-nowrap">
+                      {(() => {
+                        const sec = getSecondaryAction?.(r);
+                        return sec ? (
+                          <Button variant="link" size="sm" className="text-muted-foreground" onClick={sec.onClick} aria-label={`${sec.label}: ${r.patient}`}>
+                            {sec.label}
+                          </Button>
+                        ) : null;
+                      })()}
                       <Button
                         variant="ghost"
                         size="sm"
@@ -132,6 +143,14 @@ export function RequestsTable({
                   { label: "Tempo", value: formatElapsed(r.statusSince) },
                 ]}
               />
+              {(() => {
+                const sec = getSecondaryAction?.(r);
+                return sec ? (
+                  <Button variant="ghost" size="sm" className="w-full text-muted-foreground" onClick={sec.onClick} aria-label={`${sec.label}: ${r.patient}`}>
+                    {sec.label}
+                  </Button>
+                ) : null;
+              })()}
               {onView && (
                 <Button variant="outline" size="sm" className="w-full" onClick={() => onView(r)} aria-label={`${labelOf(r)}: ${r.patient}`}>
                   {!getActionLabel && <Eye className="h-4 w-4" aria-hidden="true" />}

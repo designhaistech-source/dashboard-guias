@@ -2,9 +2,11 @@ import { useEffect, useState, type ReactNode } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { CheckCircle2, ClipboardCheck, FileText, Hourglass, Send, Wrench } from "lucide-react";
+import { CheckCircle2, ChevronDown, ClipboardCheck, FileText, Hourglass, Send, Wrench } from "lucide-react";
 import { toast } from "sonner";
 import { AppModal } from "@/components/app-modal";
+import { Sheet, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle } from "@/components/ui/sheet";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Field } from "@/components/form-field";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -310,12 +312,36 @@ function IssueForm({ request: r, actor, onDone, formId }: FormProps) {
 
 const FORMS: Partial<Record<AuthorizationStatus, { Form: (p: FormProps) => ReactNode; submit: string }>> = {
   pendente: { Form: AuthorizationForm, submit: "Confirmar solicitação" },
-  aguardando: { Form: ResponseForm, submit: "Registrar retorno" },
+  aguardando: { Form: ResponseForm, submit: "Confirmar autorização" },
   autorizada: { Form: ExecutionForm, submit: "Confirmar realização" },
   pendencia: { Form: IssueForm, submit: "Reenviar à operadora" },
 };
 
-/** Modal que executa a próxima ação da solicitação conforme a situação atual. */
+/** Inline original-document summary; avoids opening a modal over the drawer. */
+function OriginalDocumentInline({ request: r }: { request: TrackedRequest }) {
+  return (
+    <Collapsible>
+      <CollapsibleTrigger asChild>
+        <Button type="button" variant="outline" size="sm" className="group">
+          <FileText className="h-4 w-4" aria-hidden="true" />
+          Ver solicitação original
+          <ChevronDown className="h-4 w-4 transition-transform group-data-[state=open]:rotate-180" aria-hidden="true" />
+        </Button>
+      </CollapsibleTrigger>
+      <CollapsibleContent className="mt-3 space-y-3 rounded-xl border border-border bg-muted p-4">
+        <p className="text-sm font-semibold text-foreground">Solicitação de exame · {r.id}</p>
+        <FactList
+          facts={[
+            ["Código TUSS", <span className="font-mono">{r.procedureCode}</span>],
+            ["Enviada em", formatDateTime(r.receivedAt)],
+          ]}
+        />
+      </CollapsibleContent>
+    </Collapsible>
+  );
+}
+
+/** Right-side drawer that runs the request's next action, keeping the queue visible behind it. */
 export function RequestActionDialog({
   request: r,
   open,
@@ -326,7 +352,7 @@ export function RequestActionDialog({
   onOpenChange: (open: boolean) => void;
 }) {
   const profile = useCurrentProfile();
-  // Freezes the status the dialog opened with so the form doesn't swap after submit.
+  // Freezes the status the drawer opened with so the form doesn't swap after submit.
   const [status, setStatus] = useState<AuthorizationStatus | null>(null);
   useEffect(() => {
     if (open && r) setStatus(r.status);
@@ -334,37 +360,42 @@ export function RequestActionDialog({
 
   const entry = status ? FORMS[status] : undefined;
   const action = status ? ACTION_BY_STATUS[status] : undefined;
-  if (!r || !entry || !action) return null;
-  const formId = `action-${r.id}`;
-  const Icon = action.icon;
+  const ready = Boolean(r && entry && action);
+  const formId = r ? `action-${r.id}` : "action";
+  const Icon = action?.icon;
   return (
-    <AppModal
-      open={open}
-      onOpenChange={onOpenChange}
-      size="lg"
-      title={action.label}
-      description={`${r.id} · ${AUTHORIZATION_STATUS_LABEL[status as AuthorizationStatus]}`}
-      icon={<Icon className="h-5 w-5" aria-hidden="true" />}
-      footer={
-        <>
-          <Button variant="outline" onClick={() => onOpenChange(false)}>Cancelar</Button>
-          <Button type="submit" form={formId}>
-            <CheckCircle2 className="h-4 w-4" aria-hidden="true" />
-            {entry.submit}
-          </Button>
-        </>
-      }
-    >
-      <div className="space-y-6">
-        <section className="space-y-3" aria-label="Dados para conferência">
-          <FactList facts={requestFacts(r, status as AuthorizationStatus)} />
-          <OriginalDocumentButton request={r} />
-        </section>
-        <p className="text-xs text-muted-foreground">
-          Será registrado automaticamente com data, hora e {profile.name} — {profile.roleLabel}.
-        </p>
-        <entry.Form request={r} actor={{ name: profile.name, roleLabel: profile.roleLabel }} onDone={() => onOpenChange(false)} formId={formId} />
-      </div>
-    </AppModal>
+    <Sheet open={open && ready} onOpenChange={onOpenChange}>
+      <SheetContent side="right" className="flex w-full flex-col gap-0 p-0 sm:max-w-lg">
+        {r && entry && action && Icon && (
+          <>
+            <SheetHeader className="border-b border-border p-6 text-left">
+              <SheetTitle className="flex items-center gap-2 font-display">
+                <Icon className="h-5 w-5 text-primary" aria-hidden="true" />
+                {action.label}
+              </SheetTitle>
+              <SheetDescription>{`${r.id} · ${AUTHORIZATION_STATUS_LABEL[status as AuthorizationStatus]}`}</SheetDescription>
+            </SheetHeader>
+            <div className="flex-1 space-y-6 overflow-y-auto p-6">
+              <section className="space-y-3" aria-labelledby={`${formId}-facts`}>
+                <h3 id={`${formId}-facts`} className="text-sm font-semibold text-foreground">Dados da solicitação</h3>
+                <FactList facts={requestFacts(r, status as AuthorizationStatus)} />
+                <OriginalDocumentInline request={r} />
+              </section>
+              <entry.Form request={r} actor={{ name: profile.name, roleLabel: profile.roleLabel }} onDone={() => onOpenChange(false)} formId={formId} />
+              <p className="text-xs text-muted-foreground">
+                Será registrado automaticamente com data, hora e {profile.name} — {profile.roleLabel}.
+              </p>
+            </div>
+            <SheetFooter className="gap-2 border-t border-border p-4 sm:justify-end">
+              <Button variant="outline" onClick={() => onOpenChange(false)}>Cancelar</Button>
+              <Button type="submit" form={formId}>
+                <CheckCircle2 className="h-4 w-4" aria-hidden="true" />
+                {entry.submit}
+              </Button>
+            </SheetFooter>
+          </>
+        )}
+      </SheetContent>
+    </Sheet>
   );
 }

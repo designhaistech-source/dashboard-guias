@@ -3,6 +3,8 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { appTabsLabelClass, appTabsListClass, appTabsTriggerClass } from "@/components/app-tabs";
 import { cn } from "@/lib/utils";
+import { toast } from "sonner";
+import { useCurrentProfile } from "@/lib/current-profile";
 import { AppSidebar } from "@/components/app-sidebar";
 import { AppBreadcrumb } from "@/components/app-breadcrumb";
 import { SiteFooter } from "@/components/site-footer";
@@ -19,6 +21,7 @@ import {
   DOCTORS,
   OPERADORAS,
   RequestActionDialog,
+  chargeOperator,
   RequestsTable,
   byLongestWaiting,
   type AuthorizationStatus,
@@ -33,6 +36,9 @@ const QUEUES: { value: "" | AuthorizationStatus; label: string }[] = [
   { value: "pendencia", label: "Pendências" },
   { value: "realizada", label: "Realizados" },
 ];
+
+// Prototype-only sample threshold for "waiting longer"; not a system rule.
+const SAMPLE_OVERDUE_MS = 3 * 24 * 60 * 60 * 1000;
 
 const str = (v: unknown) => (typeof v === "string" && v ? v : undefined);
 
@@ -70,6 +76,7 @@ function AuthorizationsPage() {
 
   const q = search.q.trim().toLowerCase();
   const all = useExamRequests();
+  const profile = useCurrentProfile();
   const [openId, setOpenId] = useState<string | null>(null);
   const selected = all.find((r) => r.id === openId) ?? null;
   const tab = QUEUES.some((t) => t.value === search.status) ? search.status : "";
@@ -189,6 +196,17 @@ function AuthorizationsPage() {
               rows={rows}
               emptyLabel="Nenhuma solicitação encontrada com os filtros aplicados."
               showStatus={!tab}
+              getSecondaryAction={(r) =>
+                r.status === "aguardando" && Date.now() - new Date(r.statusSince).getTime() > SAMPLE_OVERDUE_MS
+                  ? {
+                      label: "Cobrar operadora",
+                      onClick: () => {
+                        if (chargeOperator(r.id, { name: profile.name, roleLabel: profile.roleLabel }))
+                          toast.success("Cobrança registrada", { description: `Registrado no histórico de ${r.patient}.` });
+                      },
+                    }
+                  : null
+              }
               getActionLabel={(r) => ACTION_BY_STATUS[r.status]?.label ?? "Visualizar"}
               onOpenDetails={(r) => navigate({ to: "/autorizacoes/$id", params: { id: r.id } })}
               onView={(r) =>
