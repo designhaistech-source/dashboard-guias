@@ -22,6 +22,7 @@ export {
 } from "./data/requests-store";
 export { ACTION_BY_STATUS, FactList, OriginalDocumentButton, RequestActionDialog } from "./components/request-actions";
 export { RequestsTable, StatusLabel } from "./components/requests-table";
+export { RequestsFlow, laneIdOf } from "./components/requests-flow";
 export { ReceptionSummary } from "./components/reception-summary";
 export { RequestTimeline, formatDateTime } from "./components/request-timeline";
 export { TrackingTable, TrackingStatus } from "./components/tracking-table";
