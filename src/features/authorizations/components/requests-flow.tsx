@@ -7,10 +7,10 @@ type Lane = { id: string; label: string; statuses: AuthorizationStatus[]; tone: 
 
 // Requests with an issue stay in the operator lane, flagged on the card.
 export const FLOW_LANES: Lane[] = [
-  { id: "pendente", label: "Para autorizar", statuses: ["pendente"], tone: "bg-card text-secondary-foreground" },
+  { id: "pendente", label: "Para autorizar", statuses: ["pendente"], tone: "bg-purple/10 text-foreground" },
   { id: "aguardando", label: "Aguardando operadora", statuses: ["aguardando", "pendencia"], tone: "bg-primary-muted text-accent-foreground" },
-  { id: "autorizada", label: "Autorizados", statuses: ["autorizada"], tone: "bg-secondary text-accent-foreground" },
-  { id: "realizada", label: "Realizados", statuses: ["realizada"], tone: "bg-muted text-secondary-foreground" },
+  { id: "autorizada", label: "Autorizados", statuses: ["autorizada"], tone: "bg-cat-5/15 text-foreground" },
+  { id: "realizada", label: "Realizados", statuses: ["realizada"], tone: "bg-neutral-200 text-foreground" },
 ];
 
 export const laneIdOf = (status: AuthorizationStatus) => FLOW_LANES.find((l) => l.statuses.includes(status))?.id;
@@ -34,7 +34,7 @@ export function RequestsFlow({ rows, onOpen }: { rows: TrackedRequest[]; onOpen:
             >
               <header className={cn("flex items-center justify-between gap-2 rounded-t-2xl px-4 py-3", lane.tone)}>
                 <h2 id={headingId} className="text-sm font-semibold">{lane.label}</h2>
-                <span className="rounded-md bg-card px-2 py-0.5 font-mono text-xs font-semibold tabular-nums text-foreground" aria-label={`${items.length} solicitações`}>
+                <span className="rounded-md border border-border bg-card px-2 py-0.5 font-mono text-xs font-semibold tabular-nums text-foreground" aria-label={`${items.length} solicitações`}>
                   {items.length}
                 </span>
               </header>
