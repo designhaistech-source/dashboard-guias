@@ -18,7 +18,7 @@ export const laneIdOf = (status: AuthorizationStatus) => FLOW_LANES.find((l) => 
 export function RequestsFlow({ rows, onOpen }: { rows: TrackedRequest[]; onOpen: (r: TrackedRequest) => void }) {
   return (
     <div className="-mx-4 overflow-x-auto px-4 pb-2 sm:mx-0 sm:px-0">
-      <div className="grid min-w-max grid-flow-col auto-cols-[minmax(16rem,1fr)] gap-4 lg:min-w-0">
+      <div className="grid min-w-max grid-flow-col auto-cols-[minmax(13rem,1fr)] gap-3 lg:min-w-0">
         {FLOW_LANES.map((lane) => {
           const items = rows.filter((r) => lane.statuses.includes(r.status)).sort(byLongestWaiting);
           const headingId = `lane-${lane.id}`;
