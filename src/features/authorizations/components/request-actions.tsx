@@ -84,7 +84,6 @@ export function requestFacts(r: TrackedRequest, status: AuthorizationStatus = r.
   if (status === "faturar")
     return [
       ...base,
-      ["Profissional executante", r.doctor],
       ["Protocolo", r.authorization?.protocol],
       ["Número da autorização", r.response?.number],
       ["Validade da autorização", formatIsoToBr(r.response?.validity) || "Não informada"],
