@@ -5,7 +5,7 @@ import { z } from "zod";
 import { AlertTriangle, CheckCircle2, ChevronDown, Sparkles, ClipboardCheck, FileText, Hourglass, XCircle, Receipt, Send, Wrench } from "lucide-react";
 import { toast } from "sonner";
 import { AppModal } from "@/components/app-modal";
-import { Sheet, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle } from "@/components/ui/sheet";
+
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Field } from "@/components/form-field";
 import { Button } from "@/components/ui/button";
@@ -526,7 +526,7 @@ function OriginalDocumentInline({ request: r }: { request: TrackedRequest }) {
   );
 }
 
-/** Right-side drawer that runs the request's next action, keeping the queue visible behind it. */
+/** Centered modal that runs the request's next action. */
 export function RequestActionDialog({
   request: r,
   open,
@@ -537,7 +537,7 @@ export function RequestActionDialog({
   onOpenChange: (open: boolean) => void;
 }) {
   const profile = useCurrentProfile();
-  // Freezes the status the drawer opened with so the form doesn't swap after submit.
+  // Freezes the status the drawer opened with so the form does not swap after submit.
   const [status, setStatus] = useState<AuthorizationStatus | null>(null);
   useEffect(() => {
     if (open && r) setStatus(r.status);
@@ -548,116 +548,81 @@ export function RequestActionDialog({
   const ready = Boolean(r && action);
   const formId = r ? `action-${r.id}` : "action";
   const Icon = action?.icon;
-  // Short, objective step: centered modal instead of the drawer.
-  if (status === "pendente" && r && entry && Icon) {
-    return (
-      <AppModal
-        open={open}
-        onOpenChange={onOpenChange}
-        size="md"
-        title="Solicitar autorização"
-        description={`${r.id} · ${AUTHORIZATION_STATUS_LABEL.pendente}`}
-        icon={<Icon className="h-5 w-5" aria-hidden="true" />}
-        footer={
-          <>
-            <Button variant="outline" onClick={() => onOpenChange(false)}>Cancelar</Button>
+  if (!r || !action || !Icon) return null;
+  const hasIssues = status === "faturar" && billingValidationOf(r).hasIssues;
+  // Centered modal is the standard for every lane action.
+  return (
+    <AppModal
+      open={open && ready}
+      onOpenChange={onOpenChange}
+      size="lg"
+      title={action.label}
+      description={`${r.id} · ${AUTHORIZATION_STATUS_LABEL[status as AuthorizationStatus]}`}
+      icon={<Icon className="h-5 w-5" aria-hidden="true" />}
+      footer={
+        <>
+          <Button variant="outline" onClick={() => onOpenChange(false)}>{entry ? "Cancelar" : "Fechar"}</Button>
+          {hasIssues ? (
+            <Button
+              type="button"
+              onClick={() =>
+                toast.info("Revisão de inconsistências", {
+                  description: "Os tipos de inconsistência e as correções ainda serão definidos.",
+                })
+              }
+            >
+              <AlertTriangle className="h-4 w-4" aria-hidden="true" />
+              Revisar inconsistências
+            </Button>
+          ) : entry && (
             <Button type="submit" form={formId}>
               <CheckCircle2 className="h-4 w-4" aria-hidden="true" />
-              Solicitar autorização
+              {entry.submit}
             </Button>
-          </>
-        }
-      >
-        <div className="space-y-5">
-          <section className="space-y-3" aria-labelledby={`${formId}-facts`}>
-            <h3 id={`${formId}-facts`} className="text-sm font-semibold text-foreground">Dados da solicitação</h3>
-            <FactList facts={requestFacts(r, "pendente")} />
-            <OriginalDocumentInline request={r} />
+          )}
+        </>
+      }
+    >
+      <div className="space-y-5">
+        <section className="space-y-3" aria-labelledby={`${formId}-facts`}>
+          <h3 id={`${formId}-facts`} className="text-sm font-semibold text-foreground">
+            {status === "faturar" ? "Dados do atendimento" : "Dados da solicitação"}
+          </h3>
+          <FactList facts={requestFacts(r, status as AuthorizationStatus)} />
+          <OriginalDocumentInline request={r} />
+        </section>
+        {status === "faturar" && (
+          <section className="space-y-3" aria-labelledby={`${formId}-ai`}>
+            <h3 id={`${formId}-ai`} className="flex items-center gap-2 text-sm font-semibold text-foreground">
+              <Sparkles className="h-4 w-4 text-primary" aria-hidden="true" />
+              Validação da IA
+            </h3>
+            <BillingValidationPanel request={r} />
           </section>
-          <entry.Form request={r} actor={{ name: profile.name, roleLabel: profile.roleLabel }} onDone={() => onOpenChange(false)} formId={formId} />
-          <p className="text-xs text-muted-foreground">
-            Será registrado automaticamente com data, hora e {profile.name} — {profile.roleLabel}.
-          </p>
-        </div>
-      </AppModal>
-    );
-  }
-  return (
-    <Sheet open={open && ready} onOpenChange={onOpenChange}>
-      <SheetContent side="right" className="flex w-full flex-col gap-0 p-0 sm:max-w-lg">
-        {r && action && Icon && (
+        )}
+        {status === "negada" && (
+          <section className="space-y-3" aria-labelledby={`${formId}-response`}>
+            <h3 id={`${formId}-response`} className="text-sm font-semibold text-foreground">Retorno da operadora</h3>
+            <DeniedResponse request={r} />
+          </section>
+        )}
+        {status && WITH_HISTORY.includes(status) && (
+          <section className="space-y-3" aria-labelledby={`${formId}-history`}>
+            <h3 id={`${formId}-history`} className="text-sm font-semibold text-foreground">
+              {status === "negada" ? "Histórico da solicitação" : "Histórico do andamento"}
+            </h3>
+            <RequestTimeline history={r.history} />
+          </section>
+        )}
+        {entry && (
           <>
-            <SheetHeader className="border-b border-border p-6 text-left">
-              <SheetTitle className="flex items-center gap-2 font-display">
-                <Icon className="h-5 w-5 text-primary" aria-hidden="true" />
-                {action.label}
-              </SheetTitle>
-              <SheetDescription>{`${r.id} · ${AUTHORIZATION_STATUS_LABEL[status as AuthorizationStatus]}`}</SheetDescription>
-            </SheetHeader>
-            <div className="flex-1 space-y-6 overflow-y-auto p-6">
-              <section className="space-y-3" aria-labelledby={`${formId}-facts`}>
-                <h3 id={`${formId}-facts`} className="text-sm font-semibold text-foreground">
-                  {status === "faturar" ? "Dados do atendimento" : "Dados da solicitação"}
-                </h3>
-                <FactList facts={requestFacts(r, status as AuthorizationStatus)} />
-                <OriginalDocumentInline request={r} />
-              </section>
-              {status === "faturar" && (
-                <section className="space-y-3" aria-labelledby={`${formId}-ai`}>
-                  <h3 id={`${formId}-ai`} className="flex items-center gap-2 text-sm font-semibold text-foreground">
-                    <Sparkles className="h-4 w-4 text-primary" aria-hidden="true" />
-                    Validação da IA
-                  </h3>
-                  <BillingValidationPanel request={r} />
-                </section>
-              )}
-              {status === "negada" && (
-                <section className="space-y-3" aria-labelledby={`${formId}-response`}>
-                  <h3 id={`${formId}-response`} className="text-sm font-semibold text-foreground">Retorno da operadora</h3>
-                  <DeniedResponse request={r} />
-                </section>
-              )}
-              {status && WITH_HISTORY.includes(status) && (
-                <section className="space-y-3" aria-labelledby={`${formId}-history`}>
-                  <h3 id={`${formId}-history`} className="text-sm font-semibold text-foreground">
-                    {status === "negada" ? "Histórico da solicitação" : "Histórico do andamento"}
-                  </h3>
-                  <RequestTimeline history={r.history} />
-                </section>
-              )}
-              {entry && (
-                <>
-                  <entry.Form request={r} actor={{ name: profile.name, roleLabel: profile.roleLabel }} onDone={() => onOpenChange(false)} formId={formId} />
-                  <p className="text-xs text-muted-foreground">
-                    Será registrado automaticamente com data, hora e {profile.name} — {profile.roleLabel}.
-                  </p>
-                </>
-              )}
-            </div>
-            <SheetFooter className="gap-2 border-t border-border p-4 sm:justify-end">
-              <Button variant="outline" onClick={() => onOpenChange(false)}>{entry ? "Cancelar" : "Fechar"}</Button>
-              {status === "faturar" && billingValidationOf(r).hasIssues ? (
-                <Button
-                  type="button"
-                  onClick={() =>
-                    toast.info("Revisão de inconsistências", {
-                      description: "Os tipos de inconsistência e as correções ainda serão definidos.",
-                    })
-                  }
-                >
-                  <AlertTriangle className="h-4 w-4" aria-hidden="true" />
-                  Revisar inconsistências
-                </Button>
-              ) : entry && (
-                <Button type="submit" form={formId}>
-                  <CheckCircle2 className="h-4 w-4" aria-hidden="true" />
-                  {entry.submit}
-                </Button>
-              )}
-            </SheetFooter>
+            <entry.Form request={r} actor={{ name: profile.name, roleLabel: profile.roleLabel }} onDone={() => onOpenChange(false)} formId={formId} />
+            <p className="text-xs text-muted-foreground">
+              Será registrado automaticamente com data, hora e {profile.name} — {profile.roleLabel}.
+            </p>
           </>
         )}
-      </SheetContent>
-    </Sheet>
+      </div>
+    </AppModal>
   );
 }
