@@ -8,15 +8,14 @@ import { SurfaceCard } from "@/components/surface-card";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { type AuthorizationStatus } from "../data/authorization-requests";
-import { type ReceptionTask } from "../data/reception-tasks";
 import { useExamRequests } from "../data/requests-store";
 
 const focusRing = "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring";
 
-const ACTIONS: { task: ReceptionTask; label: string; hint: string; status: AuthorizationStatus; icon: LucideIcon; tone: string }[] = [
-  { task: "solicitar", label: "Solicitar autorização", hint: "Solicitações aguardando envio à operadora.", status: "pendente", icon: Send, tone: "bg-warning-muted text-warning-strong" },
-  { task: "retorno", label: "Confirmar autorização", hint: "Solicitações aguardando retorno da operadora.", status: "aguardando", icon: Hourglass, tone: "bg-info/15 text-info" },
-  { task: "realizacao", label: "Confirmar realização", hint: "Exames autorizados aguardando confirmação de realização.", status: "autorizada", icon: ShieldCheck, tone: "bg-success/15 text-success" },
+const ACTIONS: { label: string; hint: string; status: AuthorizationStatus; icon: LucideIcon; tone: string }[] = [
+  { label: "Solicitar autorização", hint: "Solicitações aguardando envio à operadora.", status: "pendente", icon: Send, tone: "bg-warning-muted text-warning-strong" },
+  { label: "Confirmar autorização", hint: "Solicitações aguardando retorno da operadora.", status: "aguardando", icon: Hourglass, tone: "bg-info/15 text-info" },
+  { label: "Confirmar realização", hint: "Exames autorizados aguardando confirmação de realização.", status: "autorizada", icon: ShieldCheck, tone: "bg-success/15 text-success" },
 ];
 
 // "faturamento" is a future stage with no status in the store yet.

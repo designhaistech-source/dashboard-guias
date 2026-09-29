@@ -10,12 +10,11 @@ const RESTRICTED_ROUTES: Record<string, ProfileRole[]> = {
   "/cid": ["medico"],
   "/solicitacoes": ["medico"],
   "/autorizacoes": ["recepcao"],
-  "/tarefas": ["recepcao"],
 };
 
 export function canAccessRoute(pathname: string, role: ProfileRole): boolean {
   const path = pathname.replace(/\/+$/, "") || "/";
-  // Child pages inherit the restriction of their first segment (e.g. /tarefas/solicitar).
+  // Child pages inherit the restriction of their first segment (e.g. /autorizacoes/SOL-00001).
   const allowed = RESTRICTED_ROUTES[path] ?? RESTRICTED_ROUTES[`/${path.split("/")[1]}`];
   return !allowed || allowed.includes(role);
 }
