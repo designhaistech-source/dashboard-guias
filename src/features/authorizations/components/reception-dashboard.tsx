@@ -28,14 +28,15 @@ const FLOW: { label: string; status: AuthorizationStatus | null }[] = [
   { label: "Encaminhado para faturamento", status: null },
 ];
 
-const OVERDUE_MS = 3 * 24 * 60 * 60 * 1000;
+// Prototype-only sample threshold; not a system rule.
+const SAMPLE_OVERDUE_MS = 3 * 24 * 60 * 60 * 1000;
 
 export function ReceptionDashboard() {
   const all = useExamRequests();
   const count = (s: AuthorizationStatus) => all.filter((r) => r.status === s).length;
   const issues = count("pendencia");
   const now = Date.now();
-  const overdue = all.filter((r) => r.status === "aguardando" && now - new Date(r.statusSince).getTime() > OVERDUE_MS).length;
+  const overdue = all.filter((r) => r.status === "aguardando" && now - new Date(r.statusSince).getTime() > SAMPLE_OVERDUE_MS).length;
 
   return (
     <div className="flex min-h-dvh w-full bg-background text-foreground">
@@ -124,7 +125,7 @@ export function ReceptionDashboard() {
               <div className="flex items-center gap-3">
                 <Clock className="h-5 w-5 shrink-0 text-muted-foreground" aria-hidden="true" />
                 <span className="text-sm text-foreground">
-                  {overdue === 1 ? "1 autorização aguardando" : `${overdue} autorizações aguardando`} retorno da operadora há mais de 3 dias
+                  {overdue === 1 ? "1 autorização aguardando" : `${overdue} autorizações aguardando`} retorno da operadora há mais tempo
                 </span>
               </div>
               <Button variant="ghost" size="sm" disabled title="Disponível em breve">Cobrar operadora</Button>
