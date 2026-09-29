@@ -165,6 +165,8 @@ const responseSchema = z
     }
     if (v.result === "pendencia" && !v.reason?.trim())
       ctx.addIssue({ code: "custom", path: ["reason"], message: "Descreva a pendência." });
+    if (v.result === "negada" && !v.reason?.trim())
+      ctx.addIssue({ code: "custom", path: ["reason"], message: "Informe o motivo da negativa." });
   });
 const executionSchema = z.object({ date: requiredDate, notes: optional });
 const issueSchema = z.object({ notes: optional });
@@ -278,9 +280,8 @@ function ResponseForm({ request: r, actor, onDone, formId }: FormProps) {
       {(result === "negada" || result === "pendencia") && (
         <Field
           id="resp-reason"
-          label={result === "negada" ? "Motivo" : "Descrição da pendência"}
-          required={result === "pendencia"}
-          optional={result === "negada"}
+          label={result === "negada" ? "Motivo da negativa" : "Descrição da pendência"}
+          required
           error={e.reason?.message}
         >
           <Textarea maxLength={500} {...register("reason")} />
