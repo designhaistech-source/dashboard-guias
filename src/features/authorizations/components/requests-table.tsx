@@ -80,7 +80,7 @@ export function RequestsTable({
               <DataTableHead>Operadora</DataTableHead>
               {showStatus && <DataTableHead>Situação</DataTableHead>}
               <DataTableHead>Tempo</DataTableHead>
-              {onView && <DataTableHead className="text-right">Ações</DataTableHead>}
+              {onView && <DataTableHead className="sticky right-0 bg-muted text-right">Ações</DataTableHead>}
             </DataTableRow>
           </DataTableHeader>
           <DataTableBody>
@@ -98,7 +98,7 @@ export function RequestsTable({
                     {formatElapsed(r.statusSince)}
                   </DataTableCell>
                   {onView && (
-                    <DataTableCell className="text-right whitespace-nowrap">
+                    <DataTableCell className="sticky right-0 bg-card text-right whitespace-nowrap shadow-[inset_1px_0_0_var(--color-border)]">
                       {(() => {
                         const sec = getSecondaryAction?.(r);
                         return sec ? (
