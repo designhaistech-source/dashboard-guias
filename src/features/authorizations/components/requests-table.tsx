@@ -100,14 +100,6 @@ export function RequestsTable({
                   {onView && (
                     <DataTableCell className="text-right">
                       <div className="flex flex-col items-end gap-0.5">
-                      {(() => {
-                        const sec = getSecondaryAction?.(r);
-                        return sec ? (
-                          <Button variant="link" size="sm" className="text-muted-foreground" onClick={sec.onClick} aria-label={`${sec.label}: ${r.patient}`}>
-                            {sec.label}
-                          </Button>
-                        ) : null;
-                      })()}
                       <Button
                         variant="ghost"
                         size="sm"
@@ -117,6 +109,15 @@ export function RequestsTable({
                         {!getActionLabel && <Eye className="h-4 w-4" aria-hidden="true" />}
                         {labelOf(r)}
                       </Button>
+                      {(() => {
+                        const sec = getSecondaryAction?.(r);
+                        return sec ? (
+                          <Button variant="link" size="sm" className="text-muted-foreground" onClick={sec.onClick} aria-label={`${sec.label}: ${r.patient}`}>
+                            {sec.label}
+                          </Button>
+                        ) : null;
+                      })()}
+                      </div>
                     </DataTableCell>
                   )}
                 </DataTableRow>
