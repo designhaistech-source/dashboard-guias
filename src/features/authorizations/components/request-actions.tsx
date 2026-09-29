@@ -500,7 +500,7 @@ function DeniedResponse({ request: r }: { request: TrackedRequest }) {
 }
 
 const FORMS: Partial<Record<AuthorizationStatus, { Form: (p: FormProps) => ReactNode; submit: string }>> = {
-  pendente: { Form: AuthorizationForm, submit: "Confirmar solicitação" },
+  pendente: { Form: AuthorizationForm, submit: "Registrar solicitação" },
   aguardando: { Form: ResponseForm, submit: "Registrar retorno" },
   autorizada: { Form: ExecutionForm, submit: "Confirmar realização" },
   pendencia: { Form: IssueForm, submit: "Reenviar à operadora" },
