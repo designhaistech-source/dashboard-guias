@@ -236,10 +236,10 @@ function SidebarNav({
       </SidebarGroup>
 
       {!isDoctor && (
-        <SidebarGroup label="Autorizações" collapsed={collapsed}>
+        <SidebarGroup label="Exames" collapsed={collapsed}>
           <SidebarItem
             icon={ClipboardCheck}
-            label="Autorizações"
+            label="Controle de exames"
             to="/autorizacoes"
             active={activeKey === "autorizacoes"}
             hint="Acompanhe e gerencie as solicitações de exames enviadas pelos profissionais de saúde."
