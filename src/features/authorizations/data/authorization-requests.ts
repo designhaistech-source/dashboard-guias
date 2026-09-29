@@ -10,7 +10,8 @@ export type AuthorizationStatus =
   | "negada"
   | "pendencia"
   | "realizada"
-  | "faturar";
+  | "faturar"
+  | "cobranca_enviada";
 
 export const AUTHORIZATION_STATUS_LABEL: Record<AuthorizationStatus, string> = {
   pendente: "Pendente de autorização",
@@ -20,6 +21,7 @@ export const AUTHORIZATION_STATUS_LABEL: Record<AuthorizationStatus, string> = {
   pendencia: "Com pendência",
   realizada: "Realizada",
   faturar: "Para faturar",
+  cobranca_enviada: "Cobrança enviada",
 };
 
 export const AUTHORIZATION_STATUS_ORDER: AuthorizationStatus[] = [
@@ -30,6 +32,7 @@ export const AUTHORIZATION_STATUS_ORDER: AuthorizationStatus[] = [
   "pendencia",
   "realizada",
   "faturar",
+  "cobranca_enviada",
 ];
 
 /** Situações que ainda dependem de ação da recepção ou retorno da operadora. */
@@ -119,7 +122,8 @@ export const NEXT_ACTION: Record<AuthorizationStatus, string> = {
   autorizada: "Registrar realização",
   negada: "Consultar retorno da operadora",
   realizada: "Preparar faturamento",
-  faturar: "Somente acompanhamento",
+  faturar: "Enviar cobrança à operadora",
+  cobranca_enviada: "Somente acompanhamento",
 };
 
 /** Mais tempo na situação atual primeiro. */

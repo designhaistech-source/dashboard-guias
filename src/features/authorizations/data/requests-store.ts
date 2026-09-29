@@ -282,6 +282,13 @@ export function prepareBilling(id: string, notes: string | undefined, actor: Act
   ]);
 }
 
+/** Prototype: sending always succeeds; no operator integration. */
+export function sendBilling(id: string, actor: Actor) {
+  return transition(id, "faturar", "cobranca_enviada", actor, () => ({}), (_r, at) => [
+    { at, stage: "Cobrança enviada à operadora", by: label(actor) },
+  ]);
+}
+
 /** Fluxo provisório: a resolução por tipo de pendência será definida depois. */
 export function resolveIssue(id: string, notes: string, actor: Actor) {
   return transition(id, "pendencia", "aguardando", actor, () => ({}), (_r, at) => [
@@ -334,4 +341,5 @@ export const TRACKING_STATUS_LABEL: Record<AuthorizationStatus, string> = {
   realizada: "Realizada",
   // Billing is internal to the reception; the professional still sees the exam as done.
   faturar: "Realizada",
+  cobranca_enviada: "Realizada",
 };
