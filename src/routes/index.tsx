@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { Navigate, createFileRoute } from "@tanstack/react-router";
 import { memo, useDeferredValue, useEffect, useMemo, useRef, useState } from "react";
 import jsPDF from "jspdf";
 import {
@@ -56,7 +56,7 @@ import {
 import { AppBreadcrumb } from "@/components/app-breadcrumb";
 import { AppSidebar } from "@/components/app-sidebar";
 import { useCurrentProfile } from "@/lib/current-profile";
-import { ReceptionDashboard } from "@/features/authorizations";
+
 import { SiteFooter } from "@/components/site-footer";
 import { EmptyState } from "@/components/data-state";
 import {
@@ -152,7 +152,8 @@ export const Route = createFileRoute("/")({
 /** Profissional de saúde mantém o painel atual; Recepção vê o acompanhamento de autorizações. */
 function OverviewByProfile() {
   const { role } = useCurrentProfile();
-  return role === "recepcao" ? <ReceptionDashboard /> : <DashboardPage />;
+  // Recepção works from a single page (summary + queue) under Exames.
+  return role === "recepcao" ? <Navigate to="/autorizacoes" replace /> : <DashboardPage />;
 }
 
 /** Human label for the period actually filtered by the user. */

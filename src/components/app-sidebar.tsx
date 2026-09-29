@@ -223,6 +223,7 @@ function SidebarNav({
   const isDoctor = useCurrentProfile().role === "medico";
   return (
     <nav className="flex-1 overflow-y-auto px-3 py-4 space-y-6">
+      {isDoctor && (
       <SidebarGroup label="Início" collapsed={collapsed}>
         <SidebarItem
           icon={LayoutGrid}
@@ -234,6 +235,7 @@ function SidebarNav({
           onNavigate={onNavigate}
         />
       </SidebarGroup>
+      )}
 
       {!isDoctor && (
         <SidebarGroup label="Exames" collapsed={collapsed}>
