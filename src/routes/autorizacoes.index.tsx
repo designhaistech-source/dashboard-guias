@@ -17,7 +17,6 @@ import {
   RequestActionDialog,
   RequestsFlow,
   laneIdOf,
-  ReceptionSummary,
   type AuthorizationStatus,
 } from "@/features/authorizations";
 
@@ -84,14 +83,12 @@ function AuthorizationsPage() {
       <main className="min-w-0 flex-1 flex flex-col min-h-dvh">
         <div className="w-full flex-1 space-y-6 px-4 py-6 pb-16 pt-20 sm:px-6 sm:py-8 md:pt-8 lg:px-10">
           <AppBreadcrumb />
+          <div className="space-y-3">
           <PageHeader
             title="Exames"
             description="Acompanhe e gerencie as solicitações de exames."
           />
 
-          <ReceptionSummary />
-
-          <div className="space-y-3">
           <FilterCard
             id="authorizations-filters"
             activeCount={activeCount}
