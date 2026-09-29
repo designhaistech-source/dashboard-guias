@@ -30,7 +30,6 @@ import { Route as AutorizacoesIndexRouteImport } from './routes/autorizacoes.ind
 import { Route as AutorizacoesIdRouteImport } from './routes/autorizacoes.$id'
 import { Route as SolicitacoesIndexRouteImport } from './routes/solicitacoes.index'
 import { Route as SolicitacoesIdRouteImport } from './routes/solicitacoes.$id'
-import { Route as TarefasTarefaRouteImport } from './routes/tarefas.$tarefa'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -137,11 +136,6 @@ const SolicitacoesIdRoute = SolicitacoesIdRouteImport.update({
   path: '/solicitacoes/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
-const TarefasTarefaRoute = TarefasTarefaRouteImport.update({
-  id: '/tarefas/$tarefa',
-  path: '/tarefas/$tarefa',
-  getParentRoute: () => rootRouteImport,
-} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -163,7 +157,6 @@ export interface FileRoutesByFullPath {
   '/api/cid': typeof ApiCidRoute
   '/autorizacoes/$id': typeof AutorizacoesIdRoute
   '/solicitacoes/$id': typeof SolicitacoesIdRoute
-  '/tarefas/$tarefa': typeof TarefasTarefaRoute
   '/autorizacoes/': typeof AutorizacoesIndexRoute
   '/solicitacoes/': typeof SolicitacoesIndexRoute
 }
@@ -187,7 +180,6 @@ export interface FileRoutesByTo {
   '/api/cid': typeof ApiCidRoute
   '/autorizacoes/$id': typeof AutorizacoesIdRoute
   '/solicitacoes/$id': typeof SolicitacoesIdRoute
-  '/tarefas/$tarefa': typeof TarefasTarefaRoute
   '/autorizacoes': typeof AutorizacoesIndexRoute
   '/solicitacoes': typeof SolicitacoesIndexRoute
 }
@@ -212,7 +204,6 @@ export interface FileRoutesById {
   '/api/cid': typeof ApiCidRoute
   '/autorizacoes/$id': typeof AutorizacoesIdRoute
   '/solicitacoes/$id': typeof SolicitacoesIdRoute
-  '/tarefas/$tarefa': typeof TarefasTarefaRoute
   '/autorizacoes/': typeof AutorizacoesIndexRoute
   '/solicitacoes/': typeof SolicitacoesIndexRoute
 }
@@ -238,7 +229,6 @@ export interface FileRouteTypes {
     | '/api/cid'
     | '/autorizacoes/$id'
     | '/solicitacoes/$id'
-    | '/tarefas/$tarefa'
     | '/autorizacoes/'
     | '/solicitacoes/'
   fileRoutesByTo: FileRoutesByTo
@@ -262,7 +252,6 @@ export interface FileRouteTypes {
     | '/api/cid'
     | '/autorizacoes/$id'
     | '/solicitacoes/$id'
-    | '/tarefas/$tarefa'
     | '/autorizacoes'
     | '/solicitacoes'
   id:
@@ -286,7 +275,6 @@ export interface FileRouteTypes {
     | '/api/cid'
     | '/autorizacoes/$id'
     | '/solicitacoes/$id'
-    | '/tarefas/$tarefa'
     | '/autorizacoes/'
     | '/solicitacoes/'
   fileRoutesById: FileRoutesById
@@ -311,7 +299,6 @@ export interface RootRouteChildren {
   ApiCidRoute: typeof ApiCidRoute
   AutorizacoesIdRoute: typeof AutorizacoesIdRoute
   SolicitacoesIdRoute: typeof SolicitacoesIdRoute
-  TarefasTarefaRoute: typeof TarefasTarefaRoute
   AutorizacoesIndexRoute: typeof AutorizacoesIndexRoute
   SolicitacoesIndexRoute: typeof SolicitacoesIndexRoute
 }
@@ -465,13 +452,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SolicitacoesIdRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/tarefas/$tarefa': {
-      id: '/tarefas/$tarefa'
-      path: '/tarefas/$tarefa'
-      fullPath: '/tarefas/$tarefa'
-      preLoaderRoute: typeof TarefasTarefaRouteImport
-      parentRoute: typeof rootRouteImport
-    }
   }
 }
 
@@ -495,7 +475,6 @@ const rootRouteChildren: RootRouteChildren = {
   ApiCidRoute: ApiCidRoute,
   AutorizacoesIdRoute: AutorizacoesIdRoute,
   SolicitacoesIdRoute: SolicitacoesIdRoute,
-  TarefasTarefaRoute: TarefasTarefaRoute,
   AutorizacoesIndexRoute: AutorizacoesIndexRoute,
   SolicitacoesIndexRoute: SolicitacoesIndexRoute,
 }
