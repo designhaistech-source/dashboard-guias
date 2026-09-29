@@ -22,6 +22,7 @@ import {
   Wrench,
   Check,
   ClipboardCheck,
+  ArrowLeftRight,
   ClipboardList,
   FileSpreadsheet,
   FolderCheck,
@@ -46,6 +47,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Switch } from "@/components/ui/switch";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { ConfirmDialog } from "@/components/confirm-dialog";
 import { toast } from "sonner";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -368,13 +370,53 @@ function UserMenu({ collapsed }: { collapsed: boolean }) {
   const profile = useCurrentProfile();
   const navigate = useNavigate();
 
-  const switchProfile = (role: ProfileRole) => {
-    setMenuOpen(false);
+  const [switchOpen, setSwitchOpen] = useState(false);
+  const switchUser = (role: ProfileRole) => {
+    setSwitchOpen(false);
     if (role === profile.role) return;
     setProfileRole(role);
-    toast.success(`Perfil alterado para ${PROFILES[role].roleLabel}.`);
+    toast.success(`Usuário alternado para ${PROFILES[role].name}.`);
     navigate({ to: "/" });
   };
+
+  const switchUserPanel = (
+    <PopoverContent side="top" align="start" sideOffset={8} className="w-72 p-0">
+      <div className="px-4 pt-3 pb-2">
+        <p className="text-sm font-semibold text-foreground">Alternar usuário</p>
+        <p className="mt-1 text-xs text-muted-foreground">
+          Selecione o usuário para visualizar o sistema com diferentes perfis e funcionalidades.
+        </p>
+      </div>
+      <ul role="listbox" aria-label="Usuários" className="px-2 pb-2">
+        {Object.values(PROFILES).map((p) => {
+          const active = p.role === profile.role;
+          return (
+            <li key={p.userId}>
+              <button /* ds-allow: opção de usuário do popover */
+                type="button"
+                role="option"
+                aria-selected={active}
+                onClick={() => switchUser(p.role)}
+                className={`flex w-full items-start gap-3 rounded-md px-3 py-2.5 text-left transition-colors hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${active ? "bg-primary/10" : ""}`}
+              >
+                <div className="min-w-0 flex-1">
+                  <div className="text-sm font-semibold text-foreground">{p.name}</div>
+                  <div className="text-xs text-muted-foreground">{p.roleLabel}</div>
+                  {p.registry && (
+                    <div className="text-xs text-muted-foreground">{p.registry}</div>
+                  )}
+                </div>
+                <Check
+                  className={`mt-0.5 h-4 w-4 shrink-0 text-primary ${active ? "" : "invisible"}`}
+                  aria-hidden="true"
+                />
+              </button>
+            </li>
+          );
+        })}
+      </ul>
+    </PopoverContent>
+  );
 
   const itemClass = "gap-3 px-4 py-2.5 min-h-11 text-sm";
 
@@ -430,37 +472,6 @@ function UserMenu({ collapsed }: { collapsed: boolean }) {
           </div>
         </div>
       </DropdownMenuLabel>
-      <DropdownMenuSeparator className="mx-0 my-0" />
-
-      {/* Seletor de perfil do protótipo: alterna a experiência demonstrada. */}
-      <DropdownMenuGroup className="py-2">
-        <DropdownMenuLabel className="px-4 pb-1 pt-0 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-          Trocar perfil
-        </DropdownMenuLabel>
-        {Object.values(PROFILES).map((p) => {
-          const active = p.role === profile.role;
-          return (
-            <DropdownMenuItem
-              key={p.role}
-              role="menuitemradio"
-              aria-checked={active}
-              className={`${itemClass} items-start`}
-              onSelect={() => switchProfile(p.role)}
-            >
-              <Check
-                className={`mt-0.5 h-4 w-4 shrink-0 text-primary ${active ? "" : "invisible"}`}
-                aria-hidden="true"
-              />
-              <div className="min-w-0">
-                <div className="text-sm font-semibold">{p.roleLabel}</div>
-                <div className="text-xs text-muted-foreground">
-                  {p.name} · {p.subtitle}
-                </div>
-              </div>
-            </DropdownMenuItem>
-          );
-        })}
-      </DropdownMenuGroup>
       <DropdownMenuSeparator className="mx-0 my-0" />
 
       {/* Bloco 1 — conta, sistema e preferência de interface. */}
@@ -535,7 +546,26 @@ function UserMenu({ collapsed }: { collapsed: boolean }) {
 
   if (collapsed) {
     return (
-      <div className="border-t border-sidebar-border flex flex-col items-center py-3">
+      <div className="border-t border-sidebar-border flex flex-col items-center gap-1 py-3">
+        <Popover open={switchOpen} onOpenChange={setSwitchOpen}>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <PopoverTrigger asChild>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  aria-label="Alternar usuário"
+                  className="text-sidebar-muted"
+                >
+                  <ArrowLeftRight className="h-4 w-4" aria-hidden="true" />
+                </Button>
+              </PopoverTrigger>
+            </TooltipTrigger>
+            <TooltipContent side="right">Alternar usuário</TooltipContent>
+          </Tooltip>
+          {switchUserPanel}
+        </Popover>
         <DropdownMenu open={menuOpen} onOpenChange={setMenuOpen}>
           <Tooltip>
             <TooltipTrigger asChild>
@@ -561,7 +591,20 @@ function UserMenu({ collapsed }: { collapsed: boolean }) {
   }
 
   return (
-    <div className="border-t border-sidebar-border flex items-center">
+    <div className="border-t border-sidebar-border">
+      <Popover open={switchOpen} onOpenChange={setSwitchOpen}>
+        <PopoverTrigger asChild>
+          <button /* ds-allow: ação discreta do rodapé do sidebar */
+            type="button"
+            className="flex w-full items-center gap-2 px-4 pt-3 pb-1 text-xs font-medium text-sidebar-muted hover:text-sidebar-foreground transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          >
+            <ArrowLeftRight className="h-3.5 w-3.5 icon-optical" aria-hidden="true" />
+            Alternar usuário
+          </button>
+        </PopoverTrigger>
+        {switchUserPanel}
+      </Popover>
+      <div className="flex items-center">
       <DropdownMenu open={menuOpen} onOpenChange={setMenuOpen}>
         <DropdownMenuTrigger asChild>
           <button /* ds-allow: item de perfil do sidebar */
@@ -571,7 +614,10 @@ function UserMenu({ collapsed }: { collapsed: boolean }) {
             <CircleUser className="h-9 w-9 text-sidebar-muted shrink-0" strokeWidth={1.5} />
             <div className="flex-1 min-w-0">
               <div className="text-sm font-semibold truncate">{profile.name}</div>
-              <div className="text-xs text-sidebar-muted">{profile.subtitle}</div>
+              <div className="text-xs text-sidebar-muted">{profile.roleLabel}</div>
+              {profile.registry && (
+                <div className="text-xs text-sidebar-muted">{profile.registry}</div>
+              )}
             </div>
           </button>
         </DropdownMenuTrigger>
@@ -594,6 +640,7 @@ function UserMenu({ collapsed }: { collapsed: boolean }) {
         <TooltipContent side="top">Sair</TooltipContent>
       </Tooltip>
 
+      </div>
       {logoutConfirmation}
     </div>
   );
