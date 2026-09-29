@@ -9,7 +9,7 @@ export const RECEPTION_TASKS: Record<
   solicitar: {
     status: "pendente",
     title: "Solicitar autorização",
-    description: "Escolha uma solicitação para confira os dados e solicitar a autorização à operadora.",
+    description: "Escolha uma solicitação para conferir os dados e solicitar a autorização à operadora.",
     listTitle: "Pendentes de autorização",
     action: "Solicitar autorização",
     empty: "Nenhuma solicitação pendente de autorização.",

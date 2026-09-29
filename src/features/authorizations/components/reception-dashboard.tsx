@@ -8,14 +8,15 @@ import { SurfaceCard } from "@/components/surface-card";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { type AuthorizationStatus } from "../data/authorization-requests";
+import { type ReceptionTask } from "../data/reception-tasks";
 import { useExamRequests } from "../data/requests-store";
 
 const focusRing = "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring";
 
-const ACTIONS: { label: string; hint: string; status: AuthorizationStatus; icon: LucideIcon; tone: string }[] = [
-  { label: "Solicitar autorização", hint: "Pendentes de autorização", status: "pendente", icon: Send, tone: "bg-warning-muted text-warning-strong" },
-  { label: "Registrar retorno", hint: "Aguardando operadora", status: "aguardando", icon: Hourglass, tone: "bg-info/15 text-info" },
-  { label: "Registrar realização", hint: "Autorizadas", status: "autorizada", icon: ShieldCheck, tone: "bg-success/15 text-success" },
+const ACTIONS: { task: ReceptionTask; label: string; hint: string; status: AuthorizationStatus; icon: LucideIcon; tone: string }[] = [
+  { task: "solicitar", label: "Solicitar autorização", hint: "Pendentes de autorização", status: "pendente", icon: Send, tone: "bg-warning-muted text-warning-strong" },
+  { task: "retorno", label: "Registrar retorno", hint: "Aguardando operadora", status: "aguardando", icon: Hourglass, tone: "bg-info/15 text-info" },
+  { task: "realizacao", label: "Registrar realização", hint: "Autorizadas", status: "autorizada", icon: ShieldCheck, tone: "bg-success/15 text-success" },
 ];
 
 const FLOW: { label: string; status: AuthorizationStatus }[] = [
@@ -43,8 +44,8 @@ export function ReceptionDashboard() {
               {ACTIONS.map((a) => (
                 <Link
                   key={a.status}
-                  to="/autorizacoes"
-                  search={{ status: a.status }}
+                  to="/tarefas/$tarefa"
+                  params={{ tarefa: a.task }}
                   className={cn("flex items-center gap-3 rounded-xl border border-border bg-card p-4 transition-colors hover:bg-muted", focusRing)}
                 >
                   <span className={cn("grid h-9 w-9 shrink-0 place-items-center rounded-lg", a.tone)}>
@@ -99,7 +100,7 @@ export function ReceptionDashboard() {
             </div>
             {issues > 0 && (
               <Button asChild variant="outline" size="sm">
-                <Link to="/autorizacoes" search={{ status: "pendencia" }}>Ver pendências</Link>
+                <Link to="/tarefas/$tarefa" params={{ tarefa: "pendencias" }}>Ver pendências</Link>
               </Button>
             )}
           </div>
