@@ -1,4 +1,4 @@
-import { AlertTriangle, Clock } from "lucide-react";
+import { AlarmClock, AlertTriangle, ChevronRight, Clock } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { byLongestWaiting, formatElapsed, type AuthorizationStatus } from "../data/authorization-requests";
 import type { TrackedRequest } from "../data/requests-store";
@@ -15,11 +15,14 @@ export const FLOW_LANES: Lane[] = [
 
 export const laneIdOf = (status: AuthorizationStatus) => FLOW_LANES.find((l) => l.statuses.includes(status))?.id;
 
+// Prototype-only sample threshold; not a system rule.
+const SAMPLE_OVERDUE_MS = 3 * 24 * 60 * 60 * 1000;
+
 export function RequestsFlow({ rows, onOpen }: { rows: TrackedRequest[]; onOpen: (r: TrackedRequest) => void }) {
   return (
     <div className="-mx-4 overflow-x-auto px-4 pb-2 sm:mx-0 sm:px-0">
       <div className="grid min-w-max grid-flow-col auto-cols-[minmax(13rem,1fr)] gap-3 lg:min-w-0">
-        {FLOW_LANES.map((lane) => {
+        {FLOW_LANES.map((lane, index) => {
           const items = rows.filter((r) => lane.statuses.includes(r.status)).sort(byLongestWaiting);
           const headingId = `lane-${lane.id}`;
           return (
@@ -27,7 +30,7 @@ export function RequestsFlow({ rows, onOpen }: { rows: TrackedRequest[]; onOpen:
               key={lane.id}
               id={`raia-${lane.id}`}
               aria-labelledby={headingId}
-              className="flex scroll-mt-6 flex-col rounded-2xl border border-border bg-muted/40"
+              className="relative flex scroll-mt-6 flex-col rounded-2xl border border-border bg-muted/40"
             >
               <header className={cn("flex items-center justify-between gap-2 rounded-t-2xl px-4 py-3", lane.tone)}>
                 <h2 id={headingId} className="text-sm font-semibold">{lane.label}</h2>
@@ -35,6 +38,12 @@ export function RequestsFlow({ rows, onOpen }: { rows: TrackedRequest[]; onOpen:
                   {items.length}
                 </span>
               </header>
+              {index < FLOW_LANES.length - 1 && (
+                <ChevronRight
+                  className="pointer-events-none absolute -right-3 top-3 z-10 h-5 w-3 text-muted-foreground"
+                  aria-hidden="true"
+                />
+              )}
               {items.length === 0 ? (
                 <p className="px-4 py-8 text-center text-sm text-muted-foreground">Nenhuma solicitação nesta etapa.</p>
               ) : (
@@ -56,6 +65,8 @@ export function RequestsFlow({ rows, onOpen }: { rows: TrackedRequest[]; onOpen:
 
 function FlowCard({ request: r, onOpen }: { request: TrackedRequest; onOpen: () => void }) {
   const issue = r.status === "pendencia";
+  const overdue = r.status === "aguardando" && Date.now() - new Date(r.statusSince).getTime() > SAMPLE_OVERDUE_MS;
+  const TimeIcon = overdue ? AlarmClock : Clock;
   return (
     <button
       type="button"
@@ -78,9 +89,12 @@ function FlowCard({ request: r, onOpen }: { request: TrackedRequest; onOpen: () 
       )}
       <span className="mt-2 flex items-center justify-between gap-2 text-xs text-muted-foreground">
         <span>{r.operadora}</span>
-        <span className="inline-flex items-center gap-1 tabular-nums">
-          <Clock className="h-3 w-3" aria-hidden="true" />
-          <span className="sr-only">Tempo na etapa:</span>
+        <span
+          className={cn("inline-flex items-center gap-1 tabular-nums", overdue && "font-semibold text-warning-strong")}
+          title={overdue ? "Aguardando há mais tempo — cobrar operadora" : undefined}
+        >
+          <TimeIcon className="h-3 w-3" aria-hidden="true" />
+          <span className="sr-only">{overdue ? "Aguardando há mais tempo, cobrar operadora. Tempo na etapa:" : "Tempo na etapa:"}</span>
           {formatElapsed(r.statusSince)}
         </span>
       </span>
