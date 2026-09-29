@@ -9,7 +9,7 @@ type Lane = { id: string; label: string; statuses: AuthorizationStatus[]; tone: 
 export const FLOW_LANES: Lane[] = [
   { id: "pendente", label: "Para autorizar", statuses: ["pendente"], tone: "bg-purple/10 text-foreground" },
   { id: "aguardando", label: "Aguardando operadora", statuses: ["aguardando", "pendencia", "negada"], tone: "bg-primary-muted text-accent-foreground" },
-  { id: "autorizada", label: "Autorizados", statuses: ["autorizada"], tone: "bg-cat-5/15 text-foreground" },
+  { id: "autorizada", label: "Para realizar", statuses: ["autorizada"], tone: "bg-cat-5/15 text-foreground" },
   { id: "realizada", label: "Realizados", statuses: ["realizada"], tone: "bg-neutral-200 text-foreground" },
   { id: "faturar", label: "Para faturar", statuses: ["faturar"], tone: "bg-cat-3/10 text-foreground" },
 ];
