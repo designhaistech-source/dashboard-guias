@@ -194,7 +194,7 @@ function AuthorizationForm({ request: r, actor, onDone, formId }: FormProps) {
       id={formId}
       className="space-y-4"
       onSubmit={handleSubmit((v) =>
-        done(requestAuthorization(r.id, v, actor), "Autorização solicitada", `${r.patient} agora está em Aguardando operadora.`, onDone),
+        done(requestAuthorization(r.id, v, actor), "Solicitação registrada", `${r.patient} agora está em Aguardando operadora.`, onDone),
       )}
     >
       <h3 className="text-sm font-semibold text-foreground">Dados da solicitação à operadora</h3>
