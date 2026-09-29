@@ -197,7 +197,7 @@ function AuthorizationsPage() {
               emptyLabel="Nenhuma solicitação encontrada com os filtros aplicados."
               showStatus={!tab}
               getSecondaryAction={(r) =>
-                r.status === "aguardando" && Date.now() - new Date(r.statusSince).getTime() > SAMPLE_OVERDUE_MS
+                tab && r.status === "aguardando" && Date.now() - new Date(r.statusSince).getTime() > SAMPLE_OVERDUE_MS
                   ? {
                       label: "Cobrar operadora",
                       onClick: () => {
@@ -207,7 +207,8 @@ function AuthorizationsPage() {
                     }
                   : null
               }
-              getActionLabel={(r) => ACTION_BY_STATUS[r.status]?.label ?? "Visualizar"}
+              // "Todos" mixes stages, so one neutral label keeps the column uniform; the panel title names the task.
+              getActionLabel={(r) => (tab ? (ACTION_BY_STATUS[r.status]?.label ?? "Visualizar") : "Abrir")}
               onOpenDetails={(r) => navigate({ to: "/autorizacoes/$id", params: { id: r.id } })}
               onView={(r) =>
                 ACTION_BY_STATUS[r.status]
