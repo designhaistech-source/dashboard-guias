@@ -104,8 +104,8 @@ function AuthorizationsPage() {
             <div className="overflow-x-auto">
               <TabsList aria-label="Filas de exames" className={cn(appTabsListClass, "min-w-max lg:min-w-0")}>
                 {QUEUES.map((t) => (
-                  <TabsTrigger key={t.label} value={t.value || "todos"} className={cn(appTabsTriggerClass, "px-3")}>
-                    <span className={appTabsLabelClass}>{t.label}</span>
+                  <TabsTrigger key={t.label} value={t.value || "todos"} className={cn(appTabsTriggerClass, "px-3 lg:px-3")}>
+                    <span className={cn(appTabsLabelClass, "lg:overflow-visible")}>{t.label}</span>
                     <span className="font-mono text-xs tabular-nums text-muted-foreground">{countOf(t.value)}</span>
                   </TabsTrigger>
                 ))}
