@@ -275,6 +275,13 @@ export function registerExecution(id: string, data: { date: string; notes?: stri
   );
 }
 
+/** First billing step only; AI validation and sending to the operator come later. */
+export function prepareBilling(id: string, notes: string | undefined, actor: Actor) {
+  return transition(id, "realizada", "faturar", actor, () => ({}), (_r, at) => [
+    { at, stage: "Faturamento preparado", by: label(actor), note: clean(notes) },
+  ]);
+}
+
 /** Fluxo provisório: a resolução por tipo de pendência será definida depois. */
 export function resolveIssue(id: string, notes: string, actor: Actor) {
   return transition(id, "pendencia", "aguardando", actor, () => ({}), (_r, at) => [
@@ -325,4 +332,6 @@ export const TRACKING_STATUS_LABEL: Record<AuthorizationStatus, string> = {
   pendencia: "Pendente",
   negada: "Negada",
   realizada: "Realizada",
+  // Billing is internal to the reception; the professional still sees the exam as done.
+  faturar: "Realizada",
 };
