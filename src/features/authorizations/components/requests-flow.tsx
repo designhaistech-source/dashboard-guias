@@ -85,7 +85,7 @@ function FlowCard({ request: r, onOpen }: { request: TrackedRequest; onOpen: () 
         </span>
       )}
       {denied && (
-        <span className="mb-2 inline-flex items-center gap-1 rounded-md bg-destructive/10 px-2 py-0.5 text-xs font-semibold text-destructive">
+        <span className="mb-2 inline-flex items-center gap-1 rounded-md bg-destructive/10 px-2 py-0.5 text-xs font-semibold text-destructive-strong">
           <XCircle className="h-3 w-3" aria-hidden="true" />
           Não autorizada
         </span>

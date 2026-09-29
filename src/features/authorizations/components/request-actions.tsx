@@ -2,7 +2,7 @@ import { useEffect, useState, type ReactNode } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { AlertTriangle, CheckCircle2, ChevronDown, Sparkles, ClipboardCheck, FileText, Hourglass, Receipt, Send, Wrench } from "lucide-react";
+import { AlertTriangle, CheckCircle2, ChevronDown, Sparkles, ClipboardCheck, FileText, Hourglass, XCircle, Receipt, Send, Wrench } from "lucide-react";
 import { toast } from "sonner";
 import { AppModal } from "@/components/app-modal";
 import { Sheet, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle } from "@/components/ui/sheet";
@@ -22,6 +22,8 @@ import {
   registerOperatorResponse,
   requestAuthorization,
   resolveIssue,
+  resendDenied,
+  closeDenied,
   type Actor,
   type TrackedRequest,
 } from "../data/requests-store";
@@ -37,13 +39,14 @@ export const ACTION_BY_STATUS: Partial<Record<AuthorizationStatus, { label: stri
   pendencia: { label: "Resolver pendência", icon: Wrench },
   realizada: { label: "Preparar faturamento", icon: Receipt },
   faturar: { label: "Faturamento", icon: Receipt },
+  negada: { label: "Resolver negativa", icon: XCircle },
 };
 
 /** Stages opened in the drawer for consultation only, with no action yet. */
 export const VIEW_ONLY_STAGES: Partial<Record<AuthorizationStatus, { label: string; icon: typeof Send }>> = {};
 
 /** Stages whose drawer also shows the request history. */
-const WITH_HISTORY: AuthorizationStatus[] = ["realizada", "faturar"];
+const WITH_HISTORY: AuthorizationStatus[] = ["realizada", "faturar", "negada"];
 
 type Fact = [string, ReactNode];
 
@@ -96,6 +99,7 @@ export function requestFacts(r: TrackedRequest, status: AuthorizationStatus = r.
       ["Número da autorização", r.response?.number],
       ["Data da realização", formatIsoToBr(r.execution?.date)],
     ];
+  if (status === "negada") return [...base, ["Protocolo", r.authorization?.protocol || "Não informado"]];
   if (status === "pendencia")
     return [
       ...base,
@@ -398,6 +402,96 @@ function SendBillingForm({ request: r, actor, onDone, formId }: FormProps) {
   );
 }
 
+const deniedSchema = z.object({
+  path: z.enum(["reenviar", "encerrar"], { required_error: "Selecione como resolver." }),
+  notes: optional,
+});
+const DENIED_PATHS = [
+  { value: "reenviar", label: "Reenviar solicitação", hint: "Corrigida ou complementada, volta a aguardar a resposta da operadora." },
+  { value: "encerrar", label: "Encerrar solicitação", hint: "Sem continuidade. Sai das raias e mantém o histórico." },
+] as const;
+
+function DeniedForm({ request: r, actor, onDone, formId }: FormProps) {
+  const { register, handleSubmit, control, watch, formState } = useForm<z.infer<typeof deniedSchema>>({
+    resolver: zodResolver(deniedSchema),
+    defaultValues: { notes: "" },
+  });
+  const [confirming, setConfirming] = useState(false);
+  const path = watch("path");
+  useEffect(() => setConfirming(false), [path]);
+  return (
+    <form
+      id={formId}
+      className="space-y-4"
+      onSubmit={handleSubmit((v) => {
+        if (v.path === "reenviar")
+          return done(resendDenied(r.id, v.notes, actor), "Solicitação reenviada", `${r.patient} aguarda nova resposta da operadora.`, onDone);
+        // Closing is irreversible in the prototype, so it takes a second, explicit confirmation.
+        if (!confirming) return setConfirming(true);
+        done(closeDenied(r.id, v.notes, actor), "Solicitação encerrada", `${r.patient} saiu das raias. O histórico foi mantido.`, onDone);
+      })}
+    >
+      <h3 className="text-sm font-semibold text-foreground">Resolver negativa</h3>
+      <fieldset className="space-y-2" aria-describedby={formState.errors.path ? "denied-path-msg" : undefined}>
+        <legend className="text-xs font-medium text-muted-foreground">
+          Como resolver<span aria-hidden className="text-destructive"> *</span>
+        </legend>
+        <Controller
+          control={control}
+          name="path"
+          render={({ field }) => (
+            <RadioGroup value={field.value ?? ""} onValueChange={field.onChange} className="grid-cols-1">
+              {DENIED_PATHS.map((o) => (
+                <label
+                  key={o.value}
+                  className="flex cursor-pointer items-start gap-2 rounded-lg border border-border bg-card px-3 py-2 text-sm text-foreground has-[[data-state=checked]]:border-primary"
+                >
+                  <RadioGroupItem value={o.value} className="mt-0.5" />
+                  <span>
+                    <span className="block font-medium">{o.label}</span>
+                    <span className="block text-xs text-muted-foreground">{o.hint}</span>
+                  </span>
+                </label>
+              ))}
+            </RadioGroup>
+          )}
+        />
+        {formState.errors.path && (
+          <p id="denied-path-msg" role="alert" className="text-xs text-destructive">{formState.errors.path.message}</p>
+        )}
+      </fieldset>
+      <Field id="denied-notes" label={path === "encerrar" ? "Motivo do encerramento" : "O que foi feito"} optional error={formState.errors.notes?.message}>
+        <Textarea maxLength={500} {...register("notes")} />
+      </Field>
+      {confirming && (
+        <div role="alert" className="flex items-start gap-3 rounded-xl border border-destructive bg-destructive/10 p-4">
+          <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-destructive-strong" aria-hidden="true" />
+          <div className="space-y-1 text-sm">
+            <p className="font-semibold text-foreground">Encerrar esta solicitação?</p>
+            <p className="text-muted-foreground">
+              {r.patient} sairá das raias ativas e não terá mais ações. O histórico será mantido. Clique em "Confirmar encerramento" para concluir.
+            </p>
+          </div>
+        </div>
+      )}
+    </form>
+  );
+}
+
+/** Operator denial summary shown before resolving it. */
+function DeniedResponse({ request: r }: { request: TrackedRequest }) {
+  return (
+    <FactList
+      facts={[
+        ["Situação", <span className="inline-flex items-center gap-1 font-semibold text-destructive-strong"><XCircle className="h-3.5 w-3.5" aria-hidden="true" />Não autorizada</span>],
+        ["Data e horário do retorno", r.response ? formatDateTime(r.response.registeredAt) : undefined],
+        ["Motivo da negativa", r.response?.reason || "Não informado"],
+        ["Registrado por", r.response?.registeredBy],
+      ]}
+    />
+  );
+}
+
 const FORMS: Partial<Record<AuthorizationStatus, { Form: (p: FormProps) => ReactNode; submit: string }>> = {
   pendente: { Form: AuthorizationForm, submit: "Confirmar solicitação" },
   aguardando: { Form: ResponseForm, submit: "Confirmar autorização" },
@@ -405,6 +499,7 @@ const FORMS: Partial<Record<AuthorizationStatus, { Form: (p: FormProps) => React
   pendencia: { Form: IssueForm, submit: "Reenviar à operadora" },
   realizada: { Form: BillingForm, submit: "Preparar faturamento" },
   faturar: { Form: SendBillingForm, submit: "Enviar cobrança à operadora" },
+  negada: { Form: DeniedForm, submit: "Confirmar" },
 };
 
 /** Inline original-document summary; avoids opening a modal over the drawer. */
@@ -482,9 +577,17 @@ export function RequestActionDialog({
                   <BillingValidationPanel request={r} />
                 </section>
               )}
+              {status === "negada" && (
+                <section className="space-y-3" aria-labelledby={`${formId}-response`}>
+                  <h3 id={`${formId}-response`} className="text-sm font-semibold text-foreground">Retorno da operadora</h3>
+                  <DeniedResponse request={r} />
+                </section>
+              )}
               {status && WITH_HISTORY.includes(status) && (
                 <section className="space-y-3" aria-labelledby={`${formId}-history`}>
-                  <h3 id={`${formId}-history`} className="text-sm font-semibold text-foreground">Histórico do andamento</h3>
+                  <h3 id={`${formId}-history`} className="text-sm font-semibold text-foreground">
+                    {status === "negada" ? "Histórico da solicitação" : "Histórico do andamento"}
+                  </h3>
                   <RequestTimeline history={r.history} />
                 </section>
               )}
