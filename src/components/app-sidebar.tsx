@@ -239,7 +239,7 @@ function SidebarNav({
         <SidebarGroup label="Exames" collapsed={collapsed}>
           <SidebarItem
             icon={ClipboardCheck}
-            label="Controle de exames"
+            label="Exames"
             to="/autorizacoes"
             active={activeKey === "autorizacoes"}
             hint="Acompanhe e gerencie as solicitações de exames enviadas pelos profissionais de saúde."
