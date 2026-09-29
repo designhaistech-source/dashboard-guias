@@ -34,7 +34,7 @@ import { cn } from "@/lib/utils";
 /** Ação executável por situação; `null` = somente consulta. */
 export const ACTION_BY_STATUS: Partial<Record<AuthorizationStatus, { label: string; icon: typeof Send }>> = {
   pendente: { label: "Solicitar autorização", icon: Send },
-  aguardando: { label: "Confirmar autorização", icon: Hourglass },
+  aguardando: { label: "Registrar retorno da operadora", icon: Hourglass },
   autorizada: { label: "Confirmar realização", icon: ClipboardCheck },
   pendencia: { label: "Resolver pendência", icon: Wrench },
   realizada: { label: "Preparar faturamento", icon: Receipt },
@@ -174,6 +174,8 @@ interface FormProps {
   actor: Actor;
   onDone: () => void;
   formId: string;
+  /** Lets a form with several paths name the footer CTA; undefined disables it. */
+  onSubmitLabel?: (label: string | undefined) => void;
 }
 
 function done(ok: boolean, title: string, description: string, onDone: () => void) {
@@ -411,7 +413,7 @@ const DENIED_PATHS = [
   { value: "encerrar", label: "Encerrar solicitação", hint: "Sem continuidade. Sai das raias e mantém o histórico." },
 ] as const;
 
-function DeniedForm({ request: r, actor, onDone, formId }: FormProps) {
+function DeniedForm({ request: r, actor, onDone, formId, onSubmitLabel }: FormProps) {
   const { register, handleSubmit, control, watch, formState } = useForm<z.infer<typeof deniedSchema>>({
     resolver: zodResolver(deniedSchema),
     defaultValues: { notes: "" },
@@ -419,6 +421,11 @@ function DeniedForm({ request: r, actor, onDone, formId }: FormProps) {
   const [confirming, setConfirming] = useState(false);
   const path = watch("path");
   useEffect(() => setConfirming(false), [path]);
+  useEffect(() => {
+    onSubmitLabel?.(
+      path === "reenviar" ? "Reenviar solicitação" : path === "encerrar" ? (confirming ? "Confirmar encerramento" : "Encerrar solicitação") : undefined,
+    );
+  }, [path, confirming, onSubmitLabel]);
   return (
     <form
       id={formId}
@@ -469,7 +476,7 @@ function DeniedForm({ request: r, actor, onDone, formId }: FormProps) {
           <div className="space-y-1 text-sm">
             <p className="font-semibold text-foreground">Encerrar esta solicitação?</p>
             <p className="text-muted-foreground">
-              {r.patient} sairá das raias ativas e não terá mais ações. O histórico será mantido. Clique em "Confirmar" novamente para concluir.
+              {r.patient} sairá das raias ativas e não terá mais ações. O histórico será mantido. Clique em "Confirmar encerramento" para concluir.
             </p>
           </div>
         </div>
@@ -494,12 +501,12 @@ function DeniedResponse({ request: r }: { request: TrackedRequest }) {
 
 const FORMS: Partial<Record<AuthorizationStatus, { Form: (p: FormProps) => ReactNode; submit: string }>> = {
   pendente: { Form: AuthorizationForm, submit: "Confirmar solicitação" },
-  aguardando: { Form: ResponseForm, submit: "Confirmar autorização" },
+  aguardando: { Form: ResponseForm, submit: "Registrar retorno" },
   autorizada: { Form: ExecutionForm, submit: "Confirmar realização" },
   pendencia: { Form: IssueForm, submit: "Reenviar à operadora" },
   realizada: { Form: BillingForm, submit: "Preparar faturamento" },
   faturar: { Form: SendBillingForm, submit: "Enviar cobrança à operadora" },
-  negada: { Form: DeniedForm, submit: "Confirmar" },
+  negada: { Form: DeniedForm, submit: "Escolha como resolver" },
 };
 
 /** Inline original-document summary; avoids opening a modal over the drawer. */
@@ -548,7 +555,11 @@ export function RequestActionDialog({
   const ready = Boolean(r && action);
   const formId = r ? `action-${r.id}` : "action";
   const Icon = action?.icon;
+  const [dynamicLabel, setDynamicLabel] = useState<string | undefined>();
+  useEffect(() => setDynamicLabel(undefined), [r?.id, status]);
   if (!r || !action || !Icon) return null;
+  const multiPath = status === "negada";
+  const submitLabel = multiPath ? (dynamicLabel ?? entry?.submit) : entry?.submit;
   const hasIssues = status === "faturar" && billingValidationOf(r).hasIssues;
   // Centered modal is the standard for every lane action.
   return (
@@ -575,9 +586,9 @@ export function RequestActionDialog({
               Revisar inconsistências
             </Button>
           ) : entry && (
-            <Button type="submit" form={formId}>
+            <Button type="submit" form={formId} disabled={multiPath && !dynamicLabel}>
               <CheckCircle2 className="h-4 w-4" aria-hidden="true" />
-              {entry.submit}
+              {submitLabel}
             </Button>
           )}
         </>
@@ -616,7 +627,7 @@ export function RequestActionDialog({
         )}
         {entry && (
           <>
-            <entry.Form request={r} actor={{ name: profile.name, roleLabel: profile.roleLabel }} onDone={() => onOpenChange(false)} formId={formId} />
+            <entry.Form request={r} actor={{ name: profile.name, roleLabel: profile.roleLabel }} onDone={() => onOpenChange(false)} formId={formId} onSubmitLabel={setDynamicLabel} />
             <p className="text-xs text-muted-foreground">
               Será registrado automaticamente com data, hora e {profile.name} — {profile.roleLabel}.
             </p>
