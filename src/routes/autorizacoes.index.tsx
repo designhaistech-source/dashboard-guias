@@ -1,4 +1,8 @@
+import { useState } from "react";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { appTabsLabelClass, appTabsListClass, appTabsTriggerClass } from "@/components/app-tabs";
+import { cn } from "@/lib/utils";
 import { AppSidebar } from "@/components/app-sidebar";
 import { AppBreadcrumb } from "@/components/app-breadcrumb";
 import { SiteFooter } from "@/components/site-footer";
@@ -11,13 +15,24 @@ import { Combobox } from "@/components/ui/combobox";
 import { toLocalIsoDate } from "@/lib/date";
 import {
   useExamRequests,
-  AUTHORIZATION_STATUS_LABEL,
-  AUTHORIZATION_STATUS_ORDER,
+  ACTION_BY_STATUS,
   DOCTORS,
   OPERADORAS,
+  RequestActionDialog,
   RequestsTable,
   byLongestWaiting,
+  type AuthorizationStatus,
 } from "@/features/authorizations";
+
+// Queue tabs; "" = Todos. Uses the existing `status` search param so dashboard links keep working.
+const QUEUES: { value: "" | AuthorizationStatus; label: string }[] = [
+  { value: "", label: "Todos" },
+  { value: "pendente", label: "Para autorizar" },
+  { value: "aguardando", label: "Aguardando operadora" },
+  { value: "autorizada", label: "Autorizados" },
+  { value: "pendencia", label: "Pendências" },
+  { value: "realizada", label: "Realizados" },
+];
 
 const str = (v: unknown) => (typeof v === "string" && v ? v : undefined);
 
@@ -32,9 +47,9 @@ export const Route = createFileRoute("/autorizacoes/")({
   }),
   head: () => ({
     meta: [
-      { title: "Autorizações | Guias+" },
+      { title: "Exames | Guias+" },
       { name: "description", content: "Fila de solicitações de exame e autorizações junto às operadoras." },
-      { property: "og:title", content: "Autorizações | Guias+" },
+      { property: "og:title", content: "Exames | Guias+" },
       { property: "og:description", content: "Solicitações de exame e autorizações no Guias+." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
@@ -55,19 +70,24 @@ function AuthorizationsPage() {
 
   const q = search.q.trim().toLowerCase();
   const all = useExamRequests();
-  const rows = all.filter((r) => {
+  const [openId, setOpenId] = useState<string | null>(null);
+  const selected = all.find((r) => r.id === openId) ?? null;
+  const tab = QUEUES.some((t) => t.value === search.status) ? search.status : "";
+  const secondary = all.filter((r) => {
     const d = toLocalIsoDate(new Date(r.receivedAt));
     return (
-      (!search.status || r.status === search.status) &&
       (!search.operadora || r.operadora === search.operadora) &&
       (!search.medico || r.doctor === search.medico) &&
       (!search.de || d >= search.de) &&
       (!search.ate || d <= search.ate) &&
       (!q || r.patient.toLowerCase().includes(q) || r.procedure.toLowerCase().includes(q) || r.procedureCode.includes(q))
     );
-  }).sort(byLongestWaiting);
+  });
+  const rows = secondary.filter((r) => !tab || r.status === tab).sort(byLongestWaiting);
+  const countOf = (v: string) => (v ? secondary.filter((r) => r.status === v).length : secondary.length);
 
-  const activeCount = Object.values(search).filter(Boolean).length;
+  const { status: _tab, ...filters } = search;
+  const activeCount = Object.values(filters).filter(Boolean).length;
 
   return (
     <div className="flex min-h-dvh w-full bg-background text-foreground">
@@ -77,13 +97,26 @@ function AuthorizationsPage() {
           <AppBreadcrumb />
           <PageHeader
             title="Exames"
-            description="Acompanhe as solicitações de exames, autorizações e realizações."
+            description="Acompanhe e gerencie as solicitações de exames."
           />
+
+          <Tabs value={tab || "todos"} onValueChange={(v) => set("status", v === "todos" ? "" : v)}>
+            <div className="overflow-x-auto">
+              <TabsList aria-label="Filas de exames" className={cn(appTabsListClass, "min-w-max auto-cols-auto lg:min-w-0")}>
+                {QUEUES.map((t) => (
+                  <TabsTrigger key={t.label} value={t.value || "todos"} className={cn(appTabsTriggerClass, "px-3 lg:px-3")}>
+                    <span className={"whitespace-nowrap text-xs lg:text-sm"}>{t.label}</span>
+                    <span className="font-mono text-xs tabular-nums text-muted-foreground">{countOf(t.value)}</span>
+                  </TabsTrigger>
+                ))}
+              </TabsList>
+            </div>
+          </Tabs>
 
           <FilterCard
             id="authorizations-filters"
             activeCount={activeCount}
-            onClear={() => navigate({ to: ".", search: {}, replace: true })}
+            onClear={() => navigate({ to: ".", search: { status: tab || undefined }, replace: true })}
             clearDisabled={activeCount === 0}
           >
             <div className="w-full min-w-0 sm:col-span-2 lg:w-auto lg:flex-1 lg:min-w-60">
@@ -105,18 +138,6 @@ function AuthorizationsPage() {
                 placeholder="Todas as operadoras"
                 searchPlaceholder="Buscar operadora..."
                 allOptionLabel="Todas as operadoras"
-                clearable
-              />
-            </div>
-            <div className="w-full min-w-0 lg:w-52">
-              <Combobox
-                aria-label="Situação"
-                options={AUTHORIZATION_STATUS_ORDER.map((s) => ({ value: s, label: AUTHORIZATION_STATUS_LABEL[s] }))}
-                value={search.status}
-                onChange={(v) => set("status", v)}
-                placeholder="Todas as situações"
-                searchPlaceholder="Buscar situação..."
-                allOptionLabel="Todas as situações"
                 clearable
               />
             </div>
@@ -167,9 +188,17 @@ function AuthorizationsPage() {
             <RequestsTable
               rows={rows}
               emptyLabel="Nenhuma solicitação encontrada com os filtros aplicados."
-              onView={(r) => navigate({ to: "/autorizacoes/$id", params: { id: r.id } })}
+              showStatus={!tab}
+              getActionLabel={(r) => ACTION_BY_STATUS[r.status]?.label ?? "Visualizar"}
+              onOpenDetails={(r) => navigate({ to: "/autorizacoes/$id", params: { id: r.id } })}
+              onView={(r) =>
+                ACTION_BY_STATUS[r.status]
+                  ? setOpenId(r.id)
+                  : navigate({ to: "/autorizacoes/$id", params: { id: r.id } })
+              }
             />
           </SurfaceCard>
+          <RequestActionDialog request={selected} open={!!openId} onOpenChange={(o) => !o && setOpenId(null)} />
         </div>
         <SiteFooter />
       </main>
