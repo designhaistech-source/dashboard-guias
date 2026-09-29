@@ -91,6 +91,7 @@ function AuthorizationsPage() {
 
           <ReceptionSummary />
 
+          <div className="space-y-3">
           <FilterCard
             id="authorizations-filters"
             activeCount={activeCount}
@@ -167,6 +168,7 @@ function AuthorizationsPage() {
                 : navigate({ to: "/autorizacoes/$id", params: { id: r.id } })
             }
           />
+          </div>
           <RequestActionDialog request={selected} open={!!openId} onOpenChange={(o) => !o && setOpenId(null)} />
         </div>
         <SiteFooter />
