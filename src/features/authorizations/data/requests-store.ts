@@ -62,7 +62,7 @@ export interface TrackedRequest extends AuthorizationRequest {
 export const SYSTEM_ACTOR = "Guias+ (automático)";
 const RECEPTIONISTS = ["Maria Oliveira", "Juliana Castro"];
 // v2: inclui dados de autorização, retorno e realização.
-const STORAGE_KEY = "guiasplus:exam-requests:v2";
+const STORAGE_KEY = "guiasplus:exam-requests:v3";
 const MIN = 60_000;
 const DAY = 24 * 60 * MIN;
 
@@ -71,7 +71,10 @@ const clean = (v?: string) => v?.trim() || undefined;
 const recep = (name: string) => `${name} — Recepção`;
 
 function seed(): TrackedRequest[] {
-  return AUTHORIZATION_REQUESTS.map((r, i) => {
+  return AUTHORIZATION_REQUESTS.map((base, i) => {
+    // Sample billing items: part of the done exams already wait for billing.
+    const toBill = base.status === "realizada" && i % 12 === 10;
+    const r = toBill ? { ...base, status: "realizada" as AuthorizationStatus } : base;
     const assignee = r.status === "pendente" && i % 2 === 0 ? null : RECEPTIONISTS[i % RECEPTIONISTS.length];
     const received = new Date(r.receivedAt).getTime();
     const since = new Date(r.statusSince).getTime();
@@ -107,10 +110,11 @@ function seed(): TrackedRequest[] {
         if (r.status === "realizada") {
           execution = { date: isoDay(since), registeredBy: recep(assignee) };
           history.push({ at: r.statusSince, stage: "Realização registrada", by: recep(assignee) });
+          if (toBill) history.push({ at: r.statusSince, stage: "Faturamento preparado", by: recep(assignee) });
         }
       }
     }
-    return { ...r, assignee, history, authorization, response, execution };
+    return { ...r, status: toBill ? "faturar" : r.status, assignee, history, authorization, response, execution };
   });
 }
 
