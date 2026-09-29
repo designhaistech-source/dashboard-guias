@@ -79,7 +79,7 @@ export function RequestsTable({
               <DataTableHead>Profissional solicitante</DataTableHead>
               <DataTableHead>Operadora</DataTableHead>
               {showStatus && <DataTableHead>Situação</DataTableHead>}
-              <DataTableHead>Tempo</DataTableHead>
+              <DataTableHead className="whitespace-nowrap">Tempo</DataTableHead>
               {onView && <DataTableHead className="text-right">Ações</DataTableHead>}
             </DataTableRow>
           </DataTableHeader>
@@ -93,7 +93,7 @@ export function RequestsTable({
                   <DataTableCell title={r.procedure}>{r.procedure}</DataTableCell>
                   <DataTableCell>{r.doctor}</DataTableCell>
                   <DataTableCell>{r.operadora}</DataTableCell>
-                  {showStatus && <DataTableCell><StatusLabel request={r} /></DataTableCell>}
+                  {showStatus && <DataTableCell className="[&_*]:whitespace-normal"><StatusLabel request={r} /></DataTableCell>}
                   <DataTableCell className="tabular-nums whitespace-nowrap">
                     {formatElapsed(r.statusSince)}
                   </DataTableCell>
