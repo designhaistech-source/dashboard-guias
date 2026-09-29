@@ -50,6 +50,12 @@ function hydrate() {
   if (saved === "medico" || saved === "recepcao") current = saved;
 }
 
+/** Current role read straight from storage; safe before the hydrated render. */
+export function getProfileRole(): ProfileRole {
+  hydrate();
+  return current;
+}
+
 export function setProfileRole(role: ProfileRole) {
   current = role;
   if (typeof window !== "undefined") window.localStorage.setItem(STORAGE_KEY, role);

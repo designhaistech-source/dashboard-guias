@@ -1,29 +1,24 @@
 import { useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowLeft, UserCheck } from "lucide-react";
-import { toast } from "sonner";
+import { ArrowLeft } from "lucide-react";
 import { AppSidebar } from "@/components/app-sidebar";
 import { AppBreadcrumb } from "@/components/app-breadcrumb";
 import { SiteFooter } from "@/components/site-footer";
 import { PageHeader } from "@/components/page-header";
 import { SurfaceCard } from "@/components/surface-card";
 import { Button } from "@/components/ui/button";
-import { Combobox } from "@/components/ui/combobox";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { useCurrentProfile } from "@/lib/current-profile";
+import { formatIsoToBr } from "@/lib/date";
 import {
   AUTHORIZATION_STATUS_LABEL,
-  AUTHORIZATION_STATUS_ORDER,
-  NEXT_ACTION,
+  ACTION_BY_STATUS,
+  FactList,
+  OriginalDocumentButton,
+  RequestActionDialog,
   RequestTimeline,
   StatusLabel,
-  assignRequest,
+  formatDateTime,
   formatElapsed,
-  updateRequestStatus,
   useExamRequest,
-  type AuthorizationStatus,
-  type TrackedRequest,
 } from "@/features/authorizations";
 
 export const Route = createFileRoute("/autorizacoes/$id")({
@@ -70,6 +65,7 @@ function BackButton() {
 function RequestDetailPage() {
   const { id } = Route.useParams();
   const r = useExamRequest(id);
+  const [open, setOpen] = useState(false);
   if (!r) {
     return (
       <Shell>
@@ -77,112 +73,86 @@ function RequestDetailPage() {
       </Shell>
     );
   }
+  const action = ACTION_BY_STATUS[r.status];
   const fields: [string, string][] = [
     ["Paciente", r.patient],
     ["Procedimento", `${r.procedureCode} · ${r.procedure}`],
     ["Profissional solicitante", r.doctor],
     ["Operadora", r.operadora],
-    ["Responsável pela autorização", r.assignee ?? "—"],
+    ["Data da solicitação", formatDateTime(r.receivedAt)],
+    ["Responsável", r.assignee ?? "—"],
     ["Tempo na situação", formatElapsed(r.statusSince)],
-    ["Próxima ação", NEXT_ACTION[r.status]],
   ];
+  const resp = r.response;
   return (
     <Shell>
       <PageHeader title="Solicitação de exame" description={r.id} actions={<BackButton />} />
-      <SurfaceCard title="Resumo">
-        <dl className="grid grid-cols-1 gap-4 text-sm sm:grid-cols-2 lg:grid-cols-3">
-          <div>
-            <dt className="text-xs font-medium text-muted-foreground">Situação</dt>
-            <dd className="mt-1"><StatusLabel request={r} /></dd>
+      <SurfaceCard title="Situação atual">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div className="space-y-1">
+            <StatusLabel request={r} />
+            <p className="text-sm text-muted-foreground">Próxima ação: {action ? action.label : "somente consulta"}</p>
           </div>
-          {fields.map(([k, v]) => (
-            <div key={k} className="min-w-0">
-              <dt className="text-xs font-medium text-muted-foreground">{k}</dt>
-              <dd className="mt-0.5 break-words text-foreground" suppressHydrationWarning>{v}</dd>
-            </div>
-          ))}
-        </dl>
+          {action && (
+            <Button onClick={() => setOpen(true)}>
+              <action.icon className="h-4 w-4" aria-hidden="true" />
+              {action.label}
+            </Button>
+          )}
+        </div>
+      </SurfaceCard>
+      <SurfaceCard title="Dados da solicitação" actions={<OriginalDocumentButton request={r} />}>
+        <FactList facts={fields} />
       </SurfaceCard>
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-        <ManageCard request={r} />
+        <div className="space-y-6">
+          {r.authorization && (
+            <SurfaceCard title="Dados da autorização">
+              <FactList
+                facts={[
+                  ["Solicitada à operadora em", formatIsoToBr(r.authorization.requestedAt)],
+                  ["Protocolo", r.authorization.protocol ?? ""],
+                  ["Observações", r.authorization.notes ?? ""],
+                  ...(resp
+                    ? ([
+                        ["Retorno da operadora", AUTHORIZATION_STATUS_LABEL[resp.result]],
+                        ...(resp.result === "autorizada"
+                          ? [
+                              ["Número da autorização", resp.number ?? ""],
+                              ["Data da autorização", formatIsoToBr(resp.date)],
+                              ["Validade", formatIsoToBr(resp.validity) || "Não informada"],
+                            ]
+                          : [[resp.result === "pendencia" ? "Motivo da pendência" : "Motivo", resp.reason ?? ""]]),
+                        ["Observações do retorno", resp.notes ?? ""],
+                        ["Registrado por", resp.registeredBy],
+                      ] as [string, string][])
+                    : []),
+                ]}
+              />
+            </SurfaceCard>
+          )}
+          {r.execution && (
+            <SurfaceCard title="Dados da realização">
+              <FactList
+                facts={[
+                  ["Data da realização", formatIsoToBr(r.execution.date)],
+                  ["Observações", r.execution.notes ?? ""],
+                  ["Registrado por", r.execution.registeredBy],
+                ]}
+              />
+            </SurfaceCard>
+          )}
+          {!r.authorization && (
+            <SurfaceCard title="Dados da autorização">
+              <p className="text-sm text-muted-foreground">A autorização ainda não foi solicitada à operadora.</p>
+            </SurfaceCard>
+          )}
+        </div>
         <SurfaceCard title="Histórico do andamento">
           <RequestTimeline history={r.history} />
         </SurfaceCard>
       </div>
+      <RequestActionDialog request={r} open={open} onOpenChange={setOpen} />
     </Shell>
-  );
-}
-
-function ManageCard({ request: r }: { request: TrackedRequest }) {
-  const me = useCurrentProfile().name;
-  const [status, setStatus] = useState("");
-  const [note, setNote] = useState("");
-  const mine = r.assignee === me;
-
-  const submit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!status) return;
-    updateRequestStatus(r.id, status as AuthorizationStatus, me, note);
-    toast.success(`Andamento atualizado: ${AUTHORIZATION_STATUS_LABEL[status as AuthorizationStatus]}`, {
-      description: "O profissional solicitante já vê a atualização.",
-    });
-    setStatus("");
-    setNote("");
-  };
-
-  return (
-    <SurfaceCard title="Gerenciar autorização" description={mine ? "Você é responsável por esta solicitação." : undefined}>
-      {!mine ? (
-        <div className="space-y-3">
-          <p className="text-sm text-muted-foreground">
-            {r.assignee
-              ? `Esta solicitação está com ${r.assignee}. Assuma para atualizar o andamento.`
-              : "Nenhum funcionário da Recepção assumiu esta solicitação ainda."}
-          </p>
-          <Button
-            onClick={() => {
-              assignRequest(r.id, me);
-              toast.success("Solicitação assumida");
-            }}
-          >
-            <UserCheck className="h-4 w-4" aria-hidden="true" />
-            Assumir solicitação
-          </Button>
-        </div>
-      ) : (
-        <form className="space-y-4" onSubmit={submit}>
-          <div className="space-y-1.5">
-            <Label htmlFor="request-status">
-              Nova situação<span className="text-destructive" aria-hidden="true">*</span>
-            </Label>
-            <Combobox
-              id="request-status"
-              aria-label="Nova situação"
-              options={AUTHORIZATION_STATUS_ORDER.filter((s) => s !== r.status).map((s) => ({
-                value: s,
-                label: AUTHORIZATION_STATUS_LABEL[s],
-              }))}
-              value={status}
-              onChange={setStatus}
-              placeholder="Selecione a situação"
-              searchPlaceholder="Buscar situação..."
-            />
-          </div>
-          <div className="space-y-1.5">
-            <Label htmlFor="request-note">Observação</Label>
-            <Textarea
-              id="request-note"
-              value={note}
-              maxLength={500}
-              onChange={(e) => setNote(e.target.value)}
-              placeholder="Ex.: protocolo da operadora, documento pendente..."
-            />
-          </div>
-          <Button type="submit" disabled={!status}>
-            Atualizar andamento
-          </Button>
-        </form>
-      )}
-    </SurfaceCard>
   );
 }

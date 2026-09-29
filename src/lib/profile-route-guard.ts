@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useNavigate, useRouterState } from "@tanstack/react-router";
-import { useCurrentProfile, type ProfileRole } from "@/lib/current-profile";
+import { getProfileRole, useCurrentProfile, type ProfileRole } from "@/lib/current-profile";
 
 /** Rotas exclusivas por perfil; as demais valem para todos. */
 const RESTRICTED_ROUTES: Record<string, ProfileRole[]> = {
@@ -10,10 +10,13 @@ const RESTRICTED_ROUTES: Record<string, ProfileRole[]> = {
   "/cid": ["medico"],
   "/solicitacoes": ["medico"],
   "/autorizacoes": ["recepcao"],
+  "/tarefas": ["recepcao"],
 };
 
 export function canAccessRoute(pathname: string, role: ProfileRole): boolean {
-  const allowed = RESTRICTED_ROUTES[pathname.replace(/\/+$/, "") || "/"];
+  const path = pathname.replace(/\/+$/, "") || "/";
+  // Child pages inherit the restriction of their first segment (e.g. /tarefas/solicitar).
+  const allowed = RESTRICTED_ROUTES[path] ?? RESTRICTED_ROUTES[`/${path.split("/")[1]}`];
   return !allowed || allowed.includes(role);
 }
 
@@ -23,6 +26,7 @@ export function useProfileRouteGuard() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const navigate = useNavigate();
   useEffect(() => {
-    if (!canAccessRoute(pathname, role)) navigate({ to: "/", replace: true });
+    // The first client render uses the SSR default role; check the stored one.
+    if (!canAccessRoute(pathname, getProfileRole())) navigate({ to: "/", replace: true });
   }, [pathname, role, navigate]);
 }

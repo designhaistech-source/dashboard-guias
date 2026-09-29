@@ -35,7 +35,9 @@ export function RequestsTable({
   rows,
   emptyLabel,
   onView,
+  actionLabel = "Visualizar",
 }: {
+  actionLabel?: string;
   rows: AuthorizationRequest[];
   emptyLabel: string;
   onView?: (request: AuthorizationRequest) => void;
@@ -76,10 +78,10 @@ export function RequestsTable({
                         variant="ghost"
                         size="sm"
                         onClick={() => onView(r)}
-                        aria-label={`Visualizar solicitação de ${r.patient}`}
+                        aria-label={`${actionLabel}: ${r.patient}`}
                       >
                         <Eye className="h-4 w-4" aria-hidden="true" />
-                        Visualizar
+                        {actionLabel}
                       </Button>
                     </DataTableCell>
                   )}
@@ -111,7 +113,7 @@ export function RequestsTable({
               {onView && (
                 <Button variant="outline" size="sm" className="w-full" onClick={() => onView(r)}>
                   <Eye className="h-4 w-4" aria-hidden="true" />
-                  Visualizar
+                  {actionLabel}
                 </Button>
               )}
             </DataTableCard>
