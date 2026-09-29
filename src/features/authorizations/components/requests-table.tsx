@@ -36,13 +36,35 @@ export function RequestsTable({
   emptyLabel,
   onView,
   actionLabel = "Visualizar",
+  getActionLabel,
+  onOpenDetails,
+  showStatus = true,
 }: {
   actionLabel?: string;
   rows: AuthorizationRequest[];
   emptyLabel: string;
   onView?: (request: AuthorizationRequest) => void;
+  /** Per-row action label; falls back to `actionLabel`. */
+  getActionLabel?: (request: AuthorizationRequest) => string;
+  /** Makes the patient name a link to the full request details. */
+  onOpenDetails?: (request: AuthorizationRequest) => void;
+  showStatus?: boolean;
 }) {
-  const cols = onView ? 7 : 6;
+  const cols = 5 + (showStatus ? 1 : 0) + (onView ? 1 : 0);
+  const labelOf = (r: AuthorizationRequest) => getActionLabel?.(r) ?? actionLabel;
+  const patient = (r: AuthorizationRequest) =>
+    onOpenDetails ? (
+      <button
+        type="button"
+        onClick={() => onOpenDetails(r)}
+        className="rounded-sm text-left font-medium text-primary underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+        aria-label={`Ver detalhes da solicitação de ${r.patient}`}
+      >
+        {r.patient}
+      </button>
+    ) : (
+      r.patient
+    );
   return (
     <DataTable>
       <DataTableDesktop breakpoint="md">
@@ -53,7 +75,7 @@ export function RequestsTable({
               <DataTableHead>Procedimento</DataTableHead>
               <DataTableHead>Profissional solicitante</DataTableHead>
               <DataTableHead>Operadora</DataTableHead>
-              <DataTableHead>Situação</DataTableHead>
+              {showStatus && <DataTableHead>Situação</DataTableHead>}
               <DataTableHead>Tempo</DataTableHead>
               {onView && <DataTableHead className="text-right">Ações</DataTableHead>}
             </DataTableRow>
@@ -64,11 +86,11 @@ export function RequestsTable({
             ) : (
               rows.map((r) => (
                 <DataTableRow key={r.id}>
-                  <DataTableCell className="font-medium">{r.patient}</DataTableCell>
+                  <DataTableCell className="font-medium">{patient(r)}</DataTableCell>
                   <DataTableCell title={r.procedure}>{r.procedure}</DataTableCell>
                   <DataTableCell>{r.doctor}</DataTableCell>
                   <DataTableCell>{r.operadora}</DataTableCell>
-                  <DataTableCell><StatusLabel request={r} /></DataTableCell>
+                  {showStatus && <DataTableCell><StatusLabel request={r} /></DataTableCell>}
                   <DataTableCell className="tabular-nums whitespace-nowrap">
                     {formatElapsed(r.statusSince)}
                   </DataTableCell>
@@ -78,10 +100,10 @@ export function RequestsTable({
                         variant="ghost"
                         size="sm"
                         onClick={() => onView(r)}
-                        aria-label={`${actionLabel}: ${r.patient}`}
+                        aria-label={`${labelOf(r)}: ${r.patient}`}
                       >
-                        <Eye className="h-4 w-4" aria-hidden="true" />
-                        {actionLabel}
+                        {!getActionLabel && <Eye className="h-4 w-4" aria-hidden="true" />}
+                        {labelOf(r)}
                       </Button>
                     </DataTableCell>
                   )}
@@ -99,9 +121,9 @@ export function RequestsTable({
           rows.map((r) => (
             <DataTableCard key={r.id} flat>
               <DataTableCardHeader
-                title={r.patient}
+                title={patient(r)}
                 subtitle={r.procedure}
-                trailing={<StatusLabel request={r} />}
+                trailing={showStatus ? <StatusLabel request={r} /> : undefined}
               />
               <DataTableCardFields
                 fields={[
@@ -111,9 +133,9 @@ export function RequestsTable({
                 ]}
               />
               {onView && (
-                <Button variant="outline" size="sm" className="w-full" onClick={() => onView(r)}>
-                  <Eye className="h-4 w-4" aria-hidden="true" />
-                  {actionLabel}
+                <Button variant="outline" size="sm" className="w-full" onClick={() => onView(r)} aria-label={`${labelOf(r)}: ${r.patient}`}>
+                  {!getActionLabel && <Eye className="h-4 w-4" aria-hidden="true" />}
+                  {labelOf(r)}
                 </Button>
               )}
             </DataTableCard>

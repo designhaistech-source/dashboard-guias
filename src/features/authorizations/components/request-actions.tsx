@@ -26,8 +26,8 @@ import { formatDateTime } from "./request-timeline";
 /** Ação executável por situação; `null` = somente consulta. */
 export const ACTION_BY_STATUS: Partial<Record<AuthorizationStatus, { label: string; icon: typeof Send }>> = {
   pendente: { label: "Solicitar autorização", icon: Send },
-  aguardando: { label: "Registrar retorno", icon: Hourglass },
-  autorizada: { label: "Registrar realização", icon: ClipboardCheck },
+  aguardando: { label: "Confirmar autorização", icon: Hourglass },
+  autorizada: { label: "Confirmar realização", icon: ClipboardCheck },
   pendencia: { label: "Resolver pendência", icon: Wrench },
 };
 
