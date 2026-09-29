@@ -69,7 +69,7 @@ export function ReceptionDashboard() {
             </div>
           </SurfaceCard>
 
-          <SurfaceCard title="Fluxo dos exames" description="Etapas das solicitações. Clique para ver em Controle de exames.">
+          <SurfaceCard title="Fluxo dos exames" description="Etapas das solicitações. Clique para ver em Exames.">
             <ol className="flex flex-col gap-2 md:flex-row md:items-center">
               {FLOW.map((f, i) => (
                 <li key={f.label} className="flex flex-col items-stretch gap-2 md:flex-1 md:flex-row md:items-center">
