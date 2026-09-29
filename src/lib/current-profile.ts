@@ -1,11 +1,17 @@
 import { useSyncExternalStore } from "react";
 import { CURRENT_USER } from "@/lib/current-user";
 
-/** Perfis sintéticos para demonstrar experiências distintas no protótipo. */
+/**
+ * Usuário = pessoa que acessa o sistema; perfil (`role`) = permissões associadas.
+ * Cada usuário sintético tem um perfil fixo: alternar simula a entrada de outra pessoa.
+ */
 export type ProfileRole = "medico" | "recepcao";
 
 export interface Profile {
+  userId: string;
   role: ProfileRole;
+  /** Registro profissional exibido na identificação, quando houver. */
+  registry?: string;
   roleLabel: string;
   name: string;
   subtitle: string;
@@ -14,13 +20,16 @@ export interface Profile {
 
 export const PROFILES: Record<ProfileRole, Profile> = {
   medico: {
+    userId: "u-fulano",
     role: "medico",
+    registry: CURRENT_USER.crm,
     roleLabel: "Profissional de saúde",
     name: CURRENT_USER.name,
     subtitle: CURRENT_USER.crm,
     email: CURRENT_USER.email,
   },
   recepcao: {
+    userId: "u-maria",
     role: "recepcao",
     roleLabel: "Recepção",
     name: "Maria Oliveira",
