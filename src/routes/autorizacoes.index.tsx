@@ -23,6 +23,7 @@ import {
   RequestActionDialog,
   chargeOperator,
   RequestsTable,
+  ReceptionSummary,
   byLongestWaiting,
   type AuthorizationStatus,
 } from "@/features/authorizations";
@@ -106,6 +107,8 @@ function AuthorizationsPage() {
             title="Exames"
             description="Acompanhe e gerencie as solicitações de exames."
           />
+
+          <ReceptionSummary />
 
           <Tabs value={tab || "todos"} onValueChange={(v) => set("status", v === "todos" ? "" : v)}>
             <div className="overflow-x-auto">
