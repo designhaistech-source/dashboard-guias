@@ -2,7 +2,7 @@ import { useEffect, useState, type ReactNode } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { CheckCircle2, ChevronDown, ClipboardCheck, FileText, Hourglass, Receipt, Send, Wrench } from "lucide-react";
+import { AlertTriangle, CheckCircle2, ChevronDown, Sparkles, ClipboardCheck, FileText, Hourglass, Receipt, Send, Wrench } from "lucide-react";
 import { toast } from "sonner";
 import { AppModal } from "@/components/app-modal";
 import { Sheet, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle } from "@/components/ui/sheet";
@@ -17,6 +17,7 @@ import { useCurrentProfile } from "@/lib/current-profile";
 import { AUTHORIZATION_STATUS_LABEL, type AuthorizationStatus } from "../data/authorization-requests";
 import {
   prepareBilling,
+  sendBilling,
   registerExecution,
   registerOperatorResponse,
   requestAuthorization,
@@ -25,6 +26,8 @@ import {
   type TrackedRequest,
 } from "../data/requests-store";
 import { formatDateTime, RequestTimeline } from "./request-timeline";
+import { billingValidationOf } from "../data/billing-validation";
+import { cn } from "@/lib/utils";
 
 /** Ação executável por situação; `null` = somente consulta. */
 export const ACTION_BY_STATUS: Partial<Record<AuthorizationStatus, { label: string; icon: typeof Send }>> = {
@@ -33,12 +36,11 @@ export const ACTION_BY_STATUS: Partial<Record<AuthorizationStatus, { label: stri
   autorizada: { label: "Confirmar realização", icon: ClipboardCheck },
   pendencia: { label: "Resolver pendência", icon: Wrench },
   realizada: { label: "Preparar faturamento", icon: Receipt },
+  faturar: { label: "Faturamento", icon: Receipt },
 };
 
 /** Stages opened in the drawer for consultation only, with no action yet. */
-export const VIEW_ONLY_STAGES: Partial<Record<AuthorizationStatus, { label: string; icon: typeof Send }>> = {
-  faturar: { label: "Para faturar", icon: Receipt },
-};
+export const VIEW_ONLY_STAGES: Partial<Record<AuthorizationStatus, { label: string; icon: typeof Send }>> = {};
 
 /** Stages whose drawer also shows the request history. */
 const WITH_HISTORY: AuthorizationStatus[] = ["realizada", "faturar"];
@@ -79,7 +81,16 @@ export function requestFacts(r: TrackedRequest, status: AuthorizationStatus = r.
       ["Número da autorização", r.response?.number],
       ["Validade da autorização", formatIsoToBr(r.response?.validity) || "Não informada"],
     ];
-  if (status === "realizada" || status === "faturar")
+  if (status === "faturar")
+    return [
+      ...base,
+      ["Protocolo", r.authorization?.protocol],
+      ["Número da autorização", r.response?.number],
+      ["Validade da autorização", formatIsoToBr(r.response?.validity) || "Não informada"],
+      ["Data da realização", formatIsoToBr(r.execution?.date)],
+      ["Realização registrada por", r.execution?.registeredBy],
+    ];
+  if (status === "realizada")
     return [
       ...base,
       ["Número da autorização", r.response?.number],
@@ -350,12 +361,50 @@ function BillingForm({ request: r, actor, onDone, formId }: FormProps) {
   );
 }
 
+/** Prototype: shows a sample AI result; real validation rules are not defined yet. */
+function BillingValidationPanel({ request: r }: { request: TrackedRequest }) {
+  const { hasIssues } = billingValidationOf(r);
+  const Icon = hasIssues ? AlertTriangle : CheckCircle2;
+  return (
+    <div
+      role="status"
+      className={cn(
+        "flex items-start gap-3 rounded-xl border p-4",
+        hasIssues ? "border-warning bg-warning-muted" : "border-border bg-card",
+      )}
+    >
+      <Icon className={cn("mt-0.5 h-5 w-5 shrink-0", hasIssues ? "text-warning-strong" : "text-success-strong")} aria-hidden="true" />
+      <div className="space-y-1 text-sm">
+        <p className="font-semibold text-foreground">{hasIssues ? "Inconsistências identificadas" : "Validação concluída"}</p>
+        <p className="text-foreground">
+          {hasIssues
+            ? "Foram identificadas inconsistências que precisam ser revisadas antes do envio."
+            : "Nenhuma inconsistência identificada."}
+        </p>
+      </div>
+    </div>
+  );
+}
+
+function SendBillingForm({ request: r, actor, onDone, formId }: FormProps) {
+  return (
+    <form
+      id={formId}
+      onSubmit={(e) => {
+        e.preventDefault();
+        done(sendBilling(r.id, actor), "Cobrança enviada à operadora", `A cobrança de ${r.patient} foi enviada à ${r.operadora}.`, onDone);
+      }}
+    />
+  );
+}
+
 const FORMS: Partial<Record<AuthorizationStatus, { Form: (p: FormProps) => ReactNode; submit: string }>> = {
   pendente: { Form: AuthorizationForm, submit: "Confirmar solicitação" },
   aguardando: { Form: ResponseForm, submit: "Confirmar autorização" },
   autorizada: { Form: ExecutionForm, submit: "Confirmar realização" },
   pendencia: { Form: IssueForm, submit: "Reenviar à operadora" },
   realizada: { Form: BillingForm, submit: "Preparar faturamento" },
+  faturar: { Form: SendBillingForm, submit: "Enviar cobrança à operadora" },
 };
 
 /** Inline original-document summary; avoids opening a modal over the drawer. */
@@ -418,10 +467,21 @@ export function RequestActionDialog({
             </SheetHeader>
             <div className="flex-1 space-y-6 overflow-y-auto p-6">
               <section className="space-y-3" aria-labelledby={`${formId}-facts`}>
-                <h3 id={`${formId}-facts`} className="text-sm font-semibold text-foreground">Dados da solicitação</h3>
+                <h3 id={`${formId}-facts`} className="text-sm font-semibold text-foreground">
+                  {status === "faturar" ? "Dados do atendimento" : "Dados da solicitação"}
+                </h3>
                 <FactList facts={requestFacts(r, status as AuthorizationStatus)} />
                 <OriginalDocumentInline request={r} />
               </section>
+              {status === "faturar" && (
+                <section className="space-y-3" aria-labelledby={`${formId}-ai`}>
+                  <h3 id={`${formId}-ai`} className="flex items-center gap-2 text-sm font-semibold text-foreground">
+                    <Sparkles className="h-4 w-4 text-primary" aria-hidden="true" />
+                    Validação da IA
+                  </h3>
+                  <BillingValidationPanel request={r} />
+                </section>
+              )}
               {status && WITH_HISTORY.includes(status) && (
                 <section className="space-y-3" aria-labelledby={`${formId}-history`}>
                   <h3 id={`${formId}-history`} className="text-sm font-semibold text-foreground">Histórico do andamento</h3>
@@ -439,7 +499,19 @@ export function RequestActionDialog({
             </div>
             <SheetFooter className="gap-2 border-t border-border p-4 sm:justify-end">
               <Button variant="outline" onClick={() => onOpenChange(false)}>{entry ? "Cancelar" : "Fechar"}</Button>
-              {entry && (
+              {status === "faturar" && billingValidationOf(r).hasIssues ? (
+                <Button
+                  type="button"
+                  onClick={() =>
+                    toast.info("Revisão de inconsistências", {
+                      description: "Os tipos de inconsistência e as correções ainda serão definidos.",
+                    })
+                  }
+                >
+                  <AlertTriangle className="h-4 w-4" aria-hidden="true" />
+                  Revisar inconsistências
+                </Button>
+              ) : entry && (
                 <Button type="submit" form={formId}>
                   <CheckCircle2 className="h-4 w-4" aria-hidden="true" />
                   {entry.submit}
