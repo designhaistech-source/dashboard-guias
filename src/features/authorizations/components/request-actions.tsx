@@ -195,8 +195,8 @@ function AuthorizationForm({ request: r, actor, onDone, formId }: FormProps) {
         done(requestAuthorization(r.id, v, actor), "Autorização solicitada", `${r.patient} agora está em Aguardando operadora.`, onDone),
       )}
     >
-      <h3 className="text-sm font-semibold text-foreground">Dados da autorização</h3>
-      <Field id="auth-date" label="Data da solicitação à operadora" required error={formState.errors.requestedAt?.message}>
+      <h3 className="text-sm font-semibold text-foreground">Solicitação de autorização</h3>
+      <Field id="auth-date" label="Data do envio à operadora" required error={formState.errors.requestedAt?.message}>
         <Input type="date" max={todayLocalIsoDate()} {...register("requestedAt")} />
       </Field>
       <Field id="auth-protocol" label="Protocolo" optional>
@@ -548,6 +548,40 @@ export function RequestActionDialog({
   const ready = Boolean(r && action);
   const formId = r ? `action-${r.id}` : "action";
   const Icon = action?.icon;
+  // Short, objective step: centered modal instead of the drawer.
+  if (status === "pendente" && r && entry && Icon) {
+    return (
+      <AppModal
+        open={open}
+        onOpenChange={onOpenChange}
+        size="md"
+        title="Solicitar autorização"
+        description={`${r.id} · ${AUTHORIZATION_STATUS_LABEL.pendente}`}
+        icon={<Icon className="h-5 w-5" aria-hidden="true" />}
+        footer={
+          <>
+            <Button variant="outline" onClick={() => onOpenChange(false)}>Cancelar</Button>
+            <Button type="submit" form={formId}>
+              <CheckCircle2 className="h-4 w-4" aria-hidden="true" />
+              Solicitar autorização
+            </Button>
+          </>
+        }
+      >
+        <div className="space-y-5">
+          <section className="space-y-3" aria-labelledby={`${formId}-facts`}>
+            <h3 id={`${formId}-facts`} className="text-sm font-semibold text-foreground">Dados da solicitação</h3>
+            <FactList facts={requestFacts(r, "pendente")} />
+            <OriginalDocumentInline request={r} />
+          </section>
+          <entry.Form request={r} actor={{ name: profile.name, roleLabel: profile.roleLabel }} onDone={() => onOpenChange(false)} formId={formId} />
+          <p className="text-xs text-muted-foreground">
+            Será registrado automaticamente com data, hora e {profile.name} — {profile.roleLabel}.
+          </p>
+        </div>
+      </AppModal>
+    );
+  }
   return (
     <Sheet open={open && ready} onOpenChange={onOpenChange}>
       <SheetContent side="right" className="flex w-full flex-col gap-0 p-0 sm:max-w-lg">

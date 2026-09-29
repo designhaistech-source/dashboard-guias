@@ -216,7 +216,7 @@ export function requestAuthorization(id: string, data: AuthorizationData, actor:
   return transition(id, "pendente", "aguardando", actor, () => ({ authorization }), (_r, at) => [
     {
       at,
-      stage: "Autorização solicitada",
+      stage: "Autorização solicitada à operadora",
       by: label(actor),
       note: [authorization.protocol && `Protocolo ${authorization.protocol}`, authorization.notes].filter(Boolean).join(" · ") || undefined,
     },
