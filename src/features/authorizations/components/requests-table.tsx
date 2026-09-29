@@ -71,7 +71,7 @@ export function RequestsTable({
   return (
     <DataTable>
       <DataTableDesktop breakpoint="md">
-        <DataTableRoot className="min-w-200">
+        <DataTableRoot className="min-w-200 [&_td]:px-3 [&_th]:px-3">
           <DataTableHeader>
             <DataTableRow>
               <DataTableHead>Paciente</DataTableHead>
@@ -79,7 +79,7 @@ export function RequestsTable({
               <DataTableHead>Profissional solicitante</DataTableHead>
               <DataTableHead>Operadora</DataTableHead>
               {showStatus && <DataTableHead>Situação</DataTableHead>}
-              <DataTableHead>Tempo</DataTableHead>
+              <DataTableHead className="whitespace-nowrap">Tempo</DataTableHead>
               {onView && <DataTableHead className="text-right">Ações</DataTableHead>}
             </DataTableRow>
           </DataTableHeader>
@@ -98,7 +98,18 @@ export function RequestsTable({
                     {formatElapsed(r.statusSince)}
                   </DataTableCell>
                   {onView && (
-                    <DataTableCell className="text-right whitespace-nowrap">
+                    <DataTableCell className="text-right">
+                      <div className="flex flex-col items-end gap-0.5">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="px-1"
+                        onClick={() => onView(r)}
+                        aria-label={`${labelOf(r)}: ${r.patient}`}
+                      >
+                        {!getActionLabel && <Eye className="h-4 w-4" aria-hidden="true" />}
+                        {labelOf(r)}
+                      </Button>
                       {(() => {
                         const sec = getSecondaryAction?.(r);
                         return sec ? (
@@ -107,15 +118,7 @@ export function RequestsTable({
                           </Button>
                         ) : null;
                       })()}
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => onView(r)}
-                        aria-label={`${labelOf(r)}: ${r.patient}`}
-                      >
-                        {!getActionLabel && <Eye className="h-4 w-4" aria-hidden="true" />}
-                        {labelOf(r)}
-                      </Button>
+                      </div>
                     </DataTableCell>
                   )}
                 </DataTableRow>

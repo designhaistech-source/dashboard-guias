@@ -56,7 +56,7 @@ function BackButton() {
     <Button asChild variant="outline" size="sm">
       <Link to="/autorizacoes">
         <ArrowLeft className="h-4 w-4" aria-hidden="true" />
-        Voltar para Autorizações
+        Voltar para Exames
       </Link>
     </Button>
   );
