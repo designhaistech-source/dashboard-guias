@@ -469,7 +469,7 @@ function DeniedForm({ request: r, actor, onDone, formId }: FormProps) {
           <div className="space-y-1 text-sm">
             <p className="font-semibold text-foreground">Encerrar esta solicitação?</p>
             <p className="text-muted-foreground">
-              {r.patient} sairá das raias ativas e não terá mais ações. O histórico será mantido. Clique em "Confirmar encerramento" para concluir.
+              {r.patient} sairá das raias ativas e não terá mais ações. O histórico será mantido. Clique em "Confirmar" novamente para concluir.
             </p>
           </div>
         </div>
