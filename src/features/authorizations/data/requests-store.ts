@@ -296,6 +296,20 @@ export function resolveIssue(id: string, notes: string, actor: Actor) {
   ]);
 }
 
+/** Resends a denied request; no rule yet decides when a resend is allowed. */
+export function resendDenied(id: string, notes: string | undefined, actor: Actor) {
+  return transition(id, "negada", "aguardando", actor, () => ({}), (_r, at) => [
+    { at, stage: "Solicitação reenviada à operadora após negativa", by: label(actor), note: clean(notes) },
+  ]);
+}
+
+/** Closes a denied request; it leaves the active lanes but keeps its history. */
+export function closeDenied(id: string, notes: string | undefined, actor: Actor) {
+  return transition(id, "negada", "encerrada", actor, () => ({}), (_r, at) => [
+    { at, stage: "Solicitação encerrada", by: label(actor), note: clean(notes) },
+  ]);
+}
+
 /** Records a follow-up with the operator; status stays "aguardando". */
 export function chargeOperator(id: string, actor: Actor) {
   hydrate();
@@ -342,4 +356,6 @@ export const TRACKING_STATUS_LABEL: Record<AuthorizationStatus, string> = {
   // Billing is internal to the reception; the professional still sees the exam as done.
   faturar: "Realizada",
   cobranca_enviada: "Realizada",
+  // Closing is a reception decision; the professional keeps seeing the operator's denial.
+  encerrada: "Negada",
 };

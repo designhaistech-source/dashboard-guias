@@ -1,4 +1,4 @@
-import { AlarmClock, AlertTriangle, ChevronRight, Clock } from "lucide-react";
+import { AlarmClock, AlertTriangle, XCircle, ChevronRight, Clock } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { byLongestWaiting, formatElapsed, type AuthorizationStatus } from "../data/authorization-requests";
 import type { TrackedRequest } from "../data/requests-store";
@@ -8,7 +8,7 @@ type Lane = { id: string; label: string; statuses: AuthorizationStatus[]; tone: 
 // Requests with an issue stay in the operator lane, flagged on the card.
 export const FLOW_LANES: Lane[] = [
   { id: "pendente", label: "Para autorizar", statuses: ["pendente"], tone: "bg-purple/10 text-foreground" },
-  { id: "aguardando", label: "Aguardando operadora", statuses: ["aguardando", "pendencia"], tone: "bg-primary-muted text-accent-foreground" },
+  { id: "aguardando", label: "Aguardando operadora", statuses: ["aguardando", "pendencia", "negada"], tone: "bg-primary-muted text-accent-foreground" },
   { id: "autorizada", label: "Autorizados", statuses: ["autorizada"], tone: "bg-cat-5/15 text-foreground" },
   { id: "realizada", label: "Realizados", statuses: ["realizada"], tone: "bg-neutral-200 text-foreground" },
   { id: "faturar", label: "Para faturar", statuses: ["faturar"], tone: "bg-cat-3/10 text-foreground" },
@@ -66,6 +66,7 @@ export function RequestsFlow({ rows, onOpen }: { rows: TrackedRequest[]; onOpen:
 
 function FlowCard({ request: r, onOpen }: { request: TrackedRequest; onOpen: () => void }) {
   const issue = r.status === "pendencia";
+  const denied = r.status === "negada";
   const overdue = r.status === "aguardando" && Date.now() - new Date(r.statusSince).getTime() > SAMPLE_OVERDUE_MS;
   const TimeIcon = overdue ? AlarmClock : Clock;
   return (
@@ -74,7 +75,7 @@ function FlowCard({ request: r, onOpen }: { request: TrackedRequest; onOpen: () 
       onClick={onOpen}
       className={cn(
         "w-full rounded-xl border bg-card p-3 text-left transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
-        issue ? "border-warning" : "border-border",
+        issue ? "border-warning" : denied ? "border-destructive" : "border-border",
       )}
     >
       {issue && (
@@ -83,9 +84,15 @@ function FlowCard({ request: r, onOpen }: { request: TrackedRequest; onOpen: () 
           Com pendência
         </span>
       )}
+      {denied && (
+        <span className="mb-2 inline-flex items-center gap-1 rounded-md bg-destructive/10 px-2 py-0.5 text-xs font-semibold text-destructive">
+          <XCircle className="h-3 w-3" aria-hidden="true" />
+          Não autorizada
+        </span>
+      )}
       <span className="block text-sm font-semibold text-foreground">{r.patient}</span>
       <span className="block text-xs text-muted-foreground">{r.procedure}</span>
-      {issue && r.response?.reason && (
+      {(issue || denied) && r.response?.reason && (
         <span className="mt-2 line-clamp-2 block text-xs text-foreground">{r.response.reason}</span>
       )}
       <span className="mt-2 flex items-center justify-between gap-2 text-xs text-muted-foreground">
