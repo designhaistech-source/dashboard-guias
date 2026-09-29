@@ -71,7 +71,7 @@ export function RequestsTable({
   return (
     <DataTable>
       <DataTableDesktop breakpoint="md">
-        <DataTableRoot className="min-w-200">
+        <DataTableRoot className="min-w-200 [&_td]:px-3 [&_th]:px-3">
           <DataTableHeader>
             <DataTableRow>
               <DataTableHead>Paciente</DataTableHead>
